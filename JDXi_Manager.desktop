@@ -1,0 +1,10 @@
+[Desktop Entry]
+Comment=Software Patch Editor for the Roland JD-Xi Synthesizer
+Exec=jdxi_manager.pl
+GenericName=Patch Editor
+Icon=jdxi32f.png
+Name=JDXi Manager
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Midi;Music
