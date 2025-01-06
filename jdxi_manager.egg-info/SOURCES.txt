@@ -13,6 +13,7 @@ jdxi_manager.egg-info/top_level.txt
 jdxi_manager/ui/__init__.py
 jdxi_manager/ui/main_window.py
 jdxi_manager/ui/midi_config.py
+jdxi_manager/ui/style.py
 jdxi_manager/ui/editors/__init__.py
 jdxi_manager/ui/editors/analog.py
 jdxi_manager/ui/editors/arpeggio.py
