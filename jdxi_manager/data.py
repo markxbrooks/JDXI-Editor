@@ -73,13 +73,15 @@ class ARP:
     ] 
 
 class FX:
-    REVERB_TYPES = [
-        "Room 1",
-        "Room 2",
-        "Stage 1",
-        "Stage 2",
-        "Hall 1",
-        "Hall 2"
+    """Effect parameters and constants"""
+    
+    # Effect types (limited to actual options)
+    EFFECT_TYPES = [
+        "Thru",
+        "Distortion",
+        "Fuzz",
+        "Compressor",
+        "Bit Crusher"
     ]
     
     DELAY_NOTES = [
@@ -96,19 +98,15 @@ class FX:
         "1/1"
     ]
     
-    EFFECT_TYPES = [
-        "Distortion",
-        "Fuzz",
-        "Compressor",
-        "Bit Crusher",
-        "Ring Mod",
-        "Slicer",
-        "Auto Pan",
-        "Tremolo",
-        "Phaser",
-        "Flanger"
-    ] 
-
+    REVERB_TYPES = [
+        "Room 1",
+        "Room 2",
+        "Stage 1",
+        "Stage 2",
+        "Hall 1",
+        "Hall 2"
+    ]
+    
 class DigitalSynth:
     # SysEx header
     HEADER = bytes([

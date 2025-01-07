@@ -420,7 +420,11 @@ class EffectsEditor(QMainWindow):
         type_layout.addWidget(type_label)
         
         effect_type = QComboBox()
-        effect_type.addItems(FX.EFFECT_TYPES)
+        # Use different lists for Effect 1 and Effect 2
+        if number == 1:
+            effect_type.addItems(FX.EFFECT_TYPES[:5])  # Only first 5 items for Effect 1
+        else:
+            effect_type.addItems(FX.EFFECT_TYPES)  # All items for Effect 2
         effect_type.setMinimumWidth(150)
         type_layout.addWidget(effect_type)
         setattr(self, f"effect{number}_type", effect_type)
@@ -473,7 +477,7 @@ class EffectsEditor(QMainWindow):
         
         # Effect 1 parameters
         self.effect1_type.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x50, 0x00, v))
+            lambda v: self._handle_effect1_change(v))
         self.effect1_level.valueChanged.connect(
             lambda v: self._send_parameter(0x50, 0x01, v))
         self.effect1_param1.valueChanged.connect(
@@ -802,3 +806,121 @@ class EffectsEditor(QMainWindow):
             }}
         """)
         return separator 
+
+    def _handle_effect1_change(self, value):
+        """Handle Effect 1 type change"""
+        if not self.midi_out:
+            return
+            
+        try:
+            # Base message structure
+            base_msg = [
+                0xF0, 0x41, 0x10,             # SysEx header
+                0x00, 0x00, 0x00,             # Model ID
+                0x0E,                         # JD-Xi ID
+                0x12,                         # DT1 Command
+                0x18,                         # Effects area
+                0x00,                         # Effect 1
+                0x02, 0x00                    # Base address
+            ]
+            
+            if value == 0:  # Thru
+                pattern_data = [
+                    0x00,                     # Thru address
+                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00                      # Start of pattern
+                ]
+                checksum = 0x02
+                
+            elif value == 1:  # Distortion 2
+                pattern_data = [
+                    0x01,                     # Distortion 2 address
+                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00,                     # Start of pattern
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
+                    0x00, 0x05, 0x00, 0x08,  # Pattern 2
+                    0x00, 0x06, 0x0E, 0x08,  # Pattern 3
+                    0x00, 0x00, 0x02, 0x08,  # Pattern 4
+                    0x00, 0x07, 0x0F, 0x08   # Pattern 5
+                ]
+                checksum = 0x50
+                
+            elif value == 2:  # Fuzz
+                pattern_data = [
+                    0x02,                     # Fuzz address
+                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00,                     # Start of pattern
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
+                    0x00, 0x04, 0x06, 0x08,  # Pattern 2
+                    0x00, 0x06, 0x04, 0x08,  # Pattern 3
+                    0x00, 0x00, 0x03, 0x08,  # Pattern 4
+                    0x00, 0x07, 0x0F, 0x08   # Pattern 5
+                ]
+                checksum = 0x53
+                
+            elif value == 4:  # Bit Crusher
+                pattern_data = [
+                    0x04,                     # Bit Crusher address
+                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00,                     # Start of pattern
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
+                    0x00, 0x07, 0x0F, 0x08,  # Pattern 2
+                    0x00, 0x04, 0x0B, 0x08,  # Pattern 3
+                    0x00, 0x04, 0x06, 0x08,  # Pattern 4
+                    0x00, 0x05, 0x05, 0x08,  # Pattern 5
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 6
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 7
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 8
+                    0x00, 0x03, 0x0C, 0x08,  # Pattern 9
+                    0x00, 0x00, 0x00, 0x08   # Pattern 10
+                ]
+                checksum = 0x36
+            
+            elif value == 3:  # Compressor
+                pattern_data = [
+                    0x03,                     # Compressor address
+                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00, 0x40, 0x00, 0x40,   # More parameters
+                    0x00,                     # Start of pattern
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
+                    0x00, 0x02, 0x08, 0x08,  # Pattern 2
+                    0x00, 0x00, 0x03, 0x08,  # Pattern 3
+                    0x00, 0x00, 0x09, 0x08,  # Pattern 4
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 5
+                    0x00, 0x03, 0x02, 0x08,  # Pattern 6
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 7
+                    0x00, 0x00, 0x00, 0x08,  # Pattern 8
+                    0x00, 0x02, 0x04, 0x08,  # Pattern 9
+                    0x00, 0x0F, 0x0A, 0x08,  # Pattern 10
+                    0x00, 0x03, 0x02, 0x08   # Pattern 11
+                ]
+                checksum = 0x40
+            
+            # Create full message
+            init_msg = bytes(base_msg + pattern_data)
+            
+            # Add empty patterns (32 times for all effects)
+            empty_pattern = bytes([0x00, 0x00, 0x00, 0x08])
+            init_msg += empty_pattern * 32
+            
+            # Add final bytes
+            init_msg += bytes([0x00, checksum, 0xF7])
+            
+            self.midi_out.send_message(init_msg)
+            logging.debug(f"Sent Effect 1 initialization for type {value}")
+            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in init_msg])}")
+            
+            # Then send the effect type
+            self._send_parameter(0x50, 0x00, value)
+            
+        except Exception as e:
+            logging.error(f"Error handling Effect 1 change: {str(e)}") 

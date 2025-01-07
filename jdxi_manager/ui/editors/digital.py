@@ -18,43 +18,45 @@ class DigitalSynthValidator:
     
     # Parameter ranges
     RANGES = {
-        # OSC 1 (0x20)
-        (0x20, 0x00): (0, 13),    # Wave Type (0=Saw, 1=Square, 2=Triangle, 3=Noise, 4=Sine, 5=Super Saw, 6-13=PCM)
-        (0x20, 0x01): (0, 48),    # Range (-24 to +24, stored as 0-48)
-        (0x20, 0x02): (0, 127),   # Color
+        # OSC 1 & 2 (0x20)
+        (0x20, 0x00): (0, 13),    # OSC1 Wave Type
+        (0x20, 0x01): (0, 48),    # OSC1 Range
+        (0x20, 0x02): (0, 127),   # OSC1 Color
+        (0x20, 0x03): (0, 13),    # OSC2 Wave Type
+        (0x20, 0x04): (0, 48),    # OSC2 Range
+        (0x20, 0x05): (0, 127),   # OSC2 Color
+        (0x20, 0x06): (0, 100),   # OSC2 Fine Tune
+        (0x20, 0x07): (0, 127),   # OSC Mix
         
-        # OSC 2 (0x20)
-        (0x20, 0x10): (0, 13),    # Wave Type (same as OSC 1)
-        (0x20, 0x11): (0, 48),    # Range
-        (0x20, 0x12): (0, 127),   # Color
-        (0x20, 0x13): (0, 100),   # Fine Tune (-50 to +50, stored as 0-100)
-        (0x20, 0x20): (0, 127),   # OSC Mix
+        # Filter (0x20)
+        (0x20, 0x08): (0, 127),   # Cutoff
+        (0x20, 0x09): (0, 127),   # Resonance
+        (0x20, 0x0A): (0, 127),   # Key Follow
+        (0x20, 0x0B): (0, 127),   # Env Depth
         
-        # Filter (0x21)
-        (0x21, 0x00): (0, 127),   # Cutoff
-        (0x21, 0x01): (0, 127),   # Resonance
-        (0x21, 0x02): (0, 127),   # Key Follow
-        (0x21, 0x03): (0, 127),   # Env Depth
-        (0x21, 0x10): (0, 127),   # Attack
-        (0x21, 0x11): (0, 127),   # Decay
-        (0x21, 0x12): (0, 127),   # Sustain
-        (0x21, 0x13): (0, 127),   # Release
+        # Amplifier (0x20)
+        (0x20, 0x0C): (0, 127),   # Level
+        (0x20, 0x0D): (0, 127),   # Pan
+        (0x20, 0x0E): (0, 127),   # Velocity
         
-        # Amplifier (0x22)
-        (0x22, 0x00): (0, 127),   # Level
-        (0x22, 0x01): (0, 127),   # Pan
-        (0x22, 0x02): (0, 127),   # Velocity
-        (0x22, 0x10): (0, 127),   # Attack
-        (0x22, 0x11): (0, 127),   # Decay
-        (0x22, 0x12): (0, 127),   # Sustain
-        (0x22, 0x13): (0, 127),   # Release
+        # LFO (0x20)
+        (0x20, 0x0F): (0, 3),     # LFO1 Wave
+        (0x20, 0x10): (0, 127),   # LFO1 Rate
+        (0x20, 0x11): (0, 3),     # LFO2 Wave
+        (0x20, 0x12): (0, 127),   # LFO2 Rate
+        (0x20, 0x13): (0, 127),   # LFO Mix
         
-        # LFO (0x26)
-        (0x26, 0x00): (0, 3),     # LFO1 Wave
-        (0x26, 0x01): (0, 127),   # LFO1 Rate
-        (0x26, 0x10): (0, 3),     # LFO2 Wave
-        (0x26, 0x11): (0, 127),   # LFO2 Rate
-        (0x26, 0x20): (0, 127),   # LFO Mix
+        # Filter Envelope (0x20)
+        (0x20, 0x17): (0, 127),   # Attack
+        (0x20, 0x18): (0, 127),   # Decay
+        (0x20, 0x19): (0, 127),   # Sustain
+        (0x20, 0x1A): (0, 127),   # Release
+        
+        # Amp Envelope (0x20)
+        (0x20, 0x1B): (0, 127),   # Attack
+        (0x20, 0x1C): (0, 127),   # Decay
+        (0x20, 0x1D): (0, 127),   # Sustain
+        (0x20, 0x1E): (0, 127),   # Release
     }
     
     @classmethod
@@ -453,78 +455,78 @@ class DigitalSynthEditor(QMainWindow):
         return frame
 
     def _setup_parameter_bindings(self):
-        """Set up MIDI parameter bindings for all controls"""
-        # OSC 1 parameters
+        """Set up MIDI parameter bindings"""
+        # OSC 1 parameters (0x20)
         self.osc1_wave.waveformChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x00, v))  # Wave Type
+            lambda v: self._send_parameter(0x20, 0x00, v))
         self.osc1_range.valueChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x01, v + 24))  # Range (-24-+24)
+            lambda v: self._send_parameter(0x20, 0x01, v + 24))  # Convert -24/+24 to 0-48
         self.osc1_color.valueChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x02, v))  # Color
-        
+            lambda v: self._send_parameter(0x20, 0x02, v))
+
         # OSC 2 parameters
         self.osc2_wave.waveformChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x10, v))  # Wave Type
+            lambda v: self._send_parameter(0x20, 0x03, v))
         self.osc2_range.valueChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x11, v + 24))  # Range (-24-+24)
+            lambda v: self._send_parameter(0x20, 0x04, v + 24))
         self.osc2_color.valueChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x12, v))  # Color
+            lambda v: self._send_parameter(0x20, 0x05, v))
         self.osc2_tune.valueChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x13, v + 50))  # Fine Tune (-50-+50)
+            lambda v: self._send_parameter(0x20, 0x06, v + 50))
             
         # OSC Mix parameters
         self.osc_mix.valueChanged.connect(
-            lambda v: self._send_parameter(0x20, 0x20, v))  # OSC Mix
+            lambda v: self._send_parameter(0x20, 0x07, v))  # Changed from 0x20
             
         # Filter parameters
         self.filter_cutoff.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x00, v))  # Cutoff
+            lambda v: self._send_parameter(0x20, 0x08, v))  # Changed from 0x21, 0x00
         self.filter_resonance.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x01, v))  # Resonance
+            lambda v: self._send_parameter(0x20, 0x09, v))  # Changed from 0x21, 0x01
         self.filter_key_follow.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x02, v + 64))  # Key Follow (-64-+63)
+            lambda v: self._send_parameter(0x20, 0x0A, v))  # Changed from 0x21, 0x02
         self.filter_env_depth.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x03, v + 64))  # Convert -64-+63 to 0-127
-            
-        # Filter envelope
-        self.filter_attack.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x10, v))
-        self.filter_decay.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x11, v))
-        self.filter_sustain.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x12, v))
-        self.filter_release.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, 0x13, v))
+            lambda v: self._send_parameter(0x20, 0x0B, v + 64))  # Changed from 0x21, 0x03
             
         # Amplifier parameters
         self.amp_level.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x00, v))
+            lambda v: self._send_parameter(0x20, 0x0C, v))  # Changed from 0x22, 0x00
         self.amp_pan.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x01, v + 64))  # Convert -64-+63 to 0-127
+            lambda v: self._send_parameter(0x20, 0x0D, v + 64))  # Changed from 0x22, 0x01
         self.amp_velocity.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x02, v))
+            lambda v: self._send_parameter(0x20, 0x0E, v))  # Changed from 0x22, 0x02
+            
+        # Filter envelope
+        self.filter_attack.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x17, v))
+        self.filter_decay.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x18, v))
+        self.filter_sustain.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x19, v))
+        self.filter_release.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x1A, v))
             
         # Amp envelope
         self.amp_attack.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x10, v))
+            lambda v: self._send_parameter(0x20, 0x1B, v))
         self.amp_decay.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x11, v))
+            lambda v: self._send_parameter(0x20, 0x1C, v))
         self.amp_sustain.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x12, v))
+            lambda v: self._send_parameter(0x20, 0x1D, v))
         self.amp_release.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, 0x13, v))
+            lambda v: self._send_parameter(0x20, 0x1E, v))
             
-        # LFO parameters - Updated addresses to match Perl version
+        # LFO parameters
         self.lfo1_wave.waveformChanged.connect(
-            lambda v: self._send_parameter(0x26, 0x00, v))  # Changed from 0x23 to 0x26
+            lambda v: self._send_parameter(0x20, 0x0F, v))  # Changed from 0x26, 0x00
         self.lfo1_rate.valueChanged.connect(
-            lambda v: self._send_parameter(0x26, 0x01, v))
+            lambda v: self._send_parameter(0x20, 0x10, v))  # Changed from 0x26, 0x01
         self.lfo2_wave.waveformChanged.connect(
-            lambda v: self._send_parameter(0x26, 0x10, v))  # Second LFO offset
+            lambda v: self._send_parameter(0x20, 0x11, v))  # Changed from 0x26, 0x10
         self.lfo2_rate.valueChanged.connect(
-            lambda v: self._send_parameter(0x26, 0x11, v))
+            lambda v: self._send_parameter(0x20, 0x12, v))  # Changed from 0x26, 0x11
         self.lfo_mix.valueChanged.connect(
-            lambda v: self._send_parameter(0x26, 0x20, v))  # Mix parameter
+            lambda v: self._send_parameter(0x20, 0x13, v))  # Changed from 0x26, 0x20
 
     def _request_patch_data(self):
         """Request current patch data from synth"""
@@ -641,7 +643,7 @@ class DigitalSynthEditor(QMainWindow):
                 0x12,                         # DT1 Command
                 0x19,                         # Digital Synth area
                 synth_num,                    # Synth number (0x01/0x02)
-                section,                      # Section (OSC/FILTER/etc)
+                0x20,                         # Fixed section (always 0x20)
                 parameter,                    # Parameter number
                 value & 0x7F,                # Parameter value (7-bit)
                 0x00,                        # Placeholder for checksum
@@ -704,7 +706,7 @@ class DigitalSynthEditor(QMainWindow):
             # Update the appropriate control based on section/parameter
             if section == 0x20:  # Oscillator
                 if param == 0x00:
-                    self.osc1_wave.setCurrentIndex(value)
+                    self.osc1_wave.setWaveform(value)
                 elif param == 0x01:
                     self.osc1_range.setValue(value - 24)  # Convert 0-48 to -24-+24
                 # ... etc for other oscillator parameters

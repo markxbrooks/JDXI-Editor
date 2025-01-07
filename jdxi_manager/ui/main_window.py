@@ -341,8 +341,21 @@ class MainWindow(QMainWindow):
         editor.setWindowTitle(title)
         editor.show()
         
-        # Connect MIDI ports
+        # Connect MIDI ports and indicators
+        if self.midi_in:
+            self.midi_in.set_callback(self._handle_midi_input)
+        if self.midi_out:
+            original_send = self.midi_out.send_message
+            def send_with_indicator(msg):
+                original_send(msg)
+                self.midi_out_indicator.flash()
+            self.midi_out.send_message = send_with_indicator
+            
         editor.set_midi_ports(self.midi_in, self.midi_out)
+        
+    def _handle_midi_input(self, message, timestamp):
+        """Handle incoming MIDI messages and flash indicator"""
+        self.midi_in_indicator.flash()
         
     def _open_analog_synth(self):
         self._show_editor("Analog Synth", AnalogSynthEditor)
