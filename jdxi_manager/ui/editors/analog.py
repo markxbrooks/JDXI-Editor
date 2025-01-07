@@ -1,18 +1,24 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QFrame, QLabel, QPushButton, QComboBox
+    QFrame, QLabel, QPushButton, QComboBox, QScrollArea
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPalette, QColor
 
 from ...data import AN
 from ...midi import MIDIHelper
+from ..style import Style
 from ..widgets import Slider, WaveformButton
 
 class AnalogSynthEditor(QMainWindow):
     def __init__(self, midi_out=None):
         super().__init__()
+        self.setStyleSheet(Style.DARK_THEME)
         self.midi_out = midi_out
+        
+        # Set window properties - taller with fixed width
+        self.setFixedWidth(1000)
+        self.setMinimumHeight(600)
         
         # Create UI
         self._create_ui()
@@ -20,98 +26,84 @@ class AnalogSynthEditor(QMainWindow):
         # Request current patch data
         self._request_patch_data()
         
+    def _create_separator(self):
+        """Create a red separator line"""
+        separator = QFrame()
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFixedHeight(2)
+        separator.setStyleSheet(f"""
+            QFrame {{
+                background-color: {Style.RED};
+                margin: 10px 0px;
+            }}
+        """)
+        return separator
+
     def _create_ui(self):
-        # Set window properties
-        self.setFixedSize(1150, 740)
+        """Create the user interface"""
+        # Create scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setCentralWidget(scroll)
         
-        # Create central widget
+        # Create main widget
         central = QWidget()
-        self.setCentralWidget(central)
         layout = QVBoxLayout(central)
-        layout.setSpacing(10)
+        layout.setSpacing(25)  # Increased spacing
+        layout.setContentsMargins(25, 25, 25, 25)  # Increased margins
         
         # Create sections
-        common = self._create_common_section()
         osc = self._create_oscillator_section()
-        filter_section = self._create_filter_section()
+        vcf = self._create_filter_section()
         amp = self._create_amplifier_section()
         mod = self._create_modulation_section()
         
-        # Add sections to layout
-        layout.addWidget(common)
+        # Add sections to layout with spacing and separators
         layout.addWidget(osc)
-        layout.addWidget(filter_section)
+        layout.addWidget(self._create_separator())
+        layout.addWidget(vcf)
+        layout.addWidget(self._create_separator())
         layout.addWidget(amp)
+        layout.addWidget(self._create_separator())
         layout.addWidget(mod)
+        
+        # Add stretch at the bottom
+        layout.addStretch()
+        
+        # Set the widget to scroll area
+        scroll.setWidget(central)
         
     def _create_section_header(self, title, color):
         """Create a colored header for a section"""
         header = QFrame()
-        header.setFixedHeight(24)
+        header.setFixedHeight(30)
         header.setAutoFillBackground(True)
         
-        # Set background color
         palette = header.palette()
         palette.setColor(QPalette.Window, QColor(color))
         header.setPalette(palette)
         
-        # Add label
         layout = QHBoxLayout(header)
-        layout.setContentsMargins(6, 0, 6, 0)
+        layout.setContentsMargins(10, 0, 10, 0)
+        
         label = QLabel(title)
-        label.setStyleSheet("color: white; font-weight: bold;")
+        label.setStyleSheet("color: white; font-weight: bold; font-size: 12px;")
         layout.addWidget(label)
         
         return header
-        
-    def _create_common_section(self):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-        
-        # Add header
-        layout.addWidget(self._create_section_header("Common", "#3A464E"))
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Volume and Pan
-        vol_frame = QFrame()
-        vol_frame.setFrameStyle(QFrame.StyledPanel)
-        vol_layout = QHBoxLayout(vol_frame)
-        self.volume = Slider("Volume", 0, 127)
-        self.pan = Slider("Pan", -64, 63, center=True)
-        vol_layout.addWidget(self.volume)
-        vol_layout.addWidget(self.pan)
-        controls.addWidget(vol_frame)
-        
-        # Portamento
-        porta_frame = QFrame()
-        porta_frame.setFrameStyle(QFrame.StyledPanel)
-        porta_layout = QHBoxLayout(porta_frame)
-        self.portamento = Slider("Portamento Time", 0, 127)
-        self.porta_mode = QPushButton("Portamento")
-        self.porta_mode.setCheckable(True)
-        self.porta_mode.setFixedWidth(100)
-        porta_layout.addWidget(self.portamento)
-        porta_layout.addWidget(self.porta_mode)
-        controls.addWidget(porta_frame)
-        
-        layout.addLayout(controls)
-        return frame
         
     def _create_oscillator_section(self):
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
         
         # Add header
-        layout.addWidget(self._create_section_header("Oscillator", "#FFA200"))
+        layout.addWidget(self._create_section_header("Oscillator", Style.OSC_BG))
+        layout.addSpacing(10)
         
         # Controls container
         controls = QHBoxLayout()
@@ -170,11 +162,12 @@ class AnalogSynthEditor(QMainWindow):
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
         
         # Add header
-        layout.addWidget(self._create_section_header("Filter", "#E83939"))
+        layout.addWidget(self._create_section_header("Filter", Style.VCF_BG))
+        layout.addSpacing(10)
         
         # Controls container
         controls = QHBoxLayout()
@@ -220,11 +213,12 @@ class AnalogSynthEditor(QMainWindow):
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
         
         # Add header
-        layout.addWidget(self._create_section_header("Amplifier", "#AF7200"))
+        layout.addWidget(self._create_section_header("Amplifier", Style.AMP_BG))
+        layout.addSpacing(10)
         
         # Controls container
         controls = QHBoxLayout()
@@ -267,11 +261,12 @@ class AnalogSynthEditor(QMainWindow):
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
         
         # Add header
-        layout.addWidget(self._create_section_header("Modulation", "#E86333"))
+        layout.addWidget(self._create_section_header("Modulation", Style.MOD_BG))
+        layout.addSpacing(10)
         
         # Controls container
         controls = QHBoxLayout()
@@ -402,7 +397,7 @@ class AnalogSynthEditor(QMainWindow):
         self.osc1_fine.valueChanged.connect(
             lambda v: self._send_parameter(0x12, v + 64))  # Fine Tune
             
-        # OSC 2 parameters
+        # OSC 2 parameters (0x20)
         self.osc2_wave.waveformChanged.connect(
             lambda v: self._send_parameter(0x20, v))  # Wave Type
         self.osc2_range.valueChanged.connect(
@@ -412,13 +407,13 @@ class AnalogSynthEditor(QMainWindow):
         self.osc2_sync.toggled.connect(
             lambda v: self._send_parameter(0x23, 1 if v else 0))  # Sync
             
-        # Mix parameters
+        # Mix parameters (0x30)
         self.osc_mix.valueChanged.connect(
             lambda v: self._send_parameter(0x30, v))  # OSC Mix
         self.cross_mod.valueChanged.connect(
             lambda v: self._send_parameter(0x31, v))  # Cross Mod
             
-        # Filter parameters
+        # Filter parameters (0x40)
         self.cutoff.valueChanged.connect(
             lambda v: self._send_parameter(0x40, v))  # Cutoff
         self.resonance.valueChanged.connect(
@@ -438,7 +433,7 @@ class AnalogSynthEditor(QMainWindow):
         self.env_depth.valueChanged.connect(
             lambda v: self._send_parameter(0x47, v + 64))  # Env Depth
             
-        # Amp parameters
+        # Amp parameters (0x50)
         self.amp_level.valueChanged.connect(
             lambda v: self._send_parameter(0x50, v))  # Level
         self.velocity_sens.valueChanged.connect(
@@ -454,7 +449,7 @@ class AnalogSynthEditor(QMainWindow):
         self.amp_release.valueChanged.connect(
             lambda v: self._send_parameter(0x55, v))  # Release
             
-        # LFO parameters
+        # LFO parameters (0x60)
         self.lfo_wave.currentIndexChanged.connect(
             lambda v: self._send_parameter(0x60, v))  # LFO Wave
         self.lfo_sync.toggled.connect(
@@ -510,3 +505,138 @@ class AnalogSynthEditor(QMainWindow):
         
         if midi_in:
             midi_in.set_callback(self._handle_midi_input) 
+
+    def _handle_midi_input(self, message, timestamp):
+        """Handle incoming MIDI messages"""
+        data = message[0]  # Get the raw MIDI data
+        
+        # Check if it's a SysEx message
+        if data[0] == 0xF0 and len(data) > 8:
+            # Verify it's a Roland message for JD-Xi
+            if (data[1] == 0x41 and  # Roland ID
+                data[4:8] == bytes([0x00, 0x00, 0x00, 0x0E])):  # JD-Xi ID
+                
+                # Get address and parameter data
+                addr = data[8:12]  # 4-byte address
+                param_data = data[12:-1]  # Parameter data (excluding F7)
+                
+                # Queue UI update on main thread
+                QTimer.singleShot(0, lambda: self._update_ui_from_sysex(addr, param_data))
+
+    def _update_ui_from_sysex(self, addr, data):
+        """Update UI controls based on received SysEx data"""
+        # Check if it's for analog synth (0x17)
+        if addr[0] != 0x17:
+            return
+            
+        section = addr[2]  # Section address
+        param = addr[3]    # Parameter number
+        value = data[0]    # Parameter value
+        
+        try:
+            # Common parameters (0x00)
+            if section == 0x00:
+                if param == 0x01:
+                    self.volume.setValue(value)
+                elif param == 0x02:
+                    self.pan.setValue(value - 64)  # Convert 0-127 to -64-+63
+                elif param == 0x03:
+                    self.portamento.setValue(value)
+                elif param == 0x04:
+                    self.porta_mode.setChecked(bool(value))
+                    
+            # OSC 1 parameters (0x10)
+            elif section == 0x10:
+                if param == 0x00:
+                    self.osc1_wave.setCurrentIndex(value)
+                elif param == 0x01:
+                    self.osc1_range.setValue(value - 64)  # Convert 0-127 to -64-+63
+                elif param == 0x02:
+                    self.osc1_fine.setValue(value - 64)  # Convert 0-127 to -64-+63
+                    
+            # OSC 2 parameters (0x20)
+            elif section == 0x20:
+                if param == 0x00:
+                    self.osc2_wave.setCurrentIndex(value)
+                elif param == 0x01:
+                    self.osc2_range.setValue(value - 64)  # Convert 0-127 to -64-+63
+                elif param == 0x02:
+                    self.osc2_fine.setValue(value - 64)  # Convert 0-127 to -64-+63
+                elif param == 0x03:
+                    self.osc2_sync.setChecked(bool(value))
+                    
+            # Mix parameters (0x30)
+            elif section == 0x30:
+                if param == 0x00:
+                    self.osc_mix.setValue(value)
+                elif param == 0x01:
+                    self.cross_mod.setValue(value)
+                    
+            # Filter parameters (0x40)
+            elif section == 0x40:
+                if param == 0x00:
+                    self.cutoff.setValue(value)
+                elif param == 0x01:
+                    self.resonance.setValue(value)
+                elif param == 0x02:
+                    self.key_follow.setValue(value - 64)  # Convert 0-127 to -64-+63
+                elif param == 0x03:
+                    self.filter_attack.setValue(value)
+                elif param == 0x04:
+                    self.filter_decay.setValue(value)
+                elif param == 0x05:
+                    self.filter_sustain.setValue(value)
+                elif param == 0x06:
+                    self.filter_release.setValue(value)
+                elif param == 0x07:
+                    self.env_depth.setValue(value - 64)  # Convert 0-127 to -64-+63
+                    
+            # Amp parameters (0x50)
+            elif section == 0x50:
+                if param == 0x00:
+                    self.amp_level.setValue(value)
+                elif param == 0x01:
+                    self.velocity_sens.setValue(value - 64)  # Convert 0-127 to -64-+63
+                elif param == 0x02:
+                    self.amp_attack.setValue(value)
+                elif param == 0x03:
+                    self.amp_decay.setValue(value)
+                elif param == 0x04:
+                    self.amp_sustain.setValue(value)
+                elif param == 0x05:
+                    self.amp_release.setValue(value)
+                    
+            # LFO parameters (0x60)
+            elif section == 0x60:
+                if param == 0x00:
+                    self.lfo_wave.setCurrentIndex(value)
+                elif param == 0x01:
+                    self.lfo_sync.setChecked(bool(value))
+                elif param == 0x02:
+                    self.lfo_rate.setValue(value)
+                elif param == 0x03:
+                    self.lfo_note.setCurrentIndex(value)
+                elif param == 0x04:
+                    self.lfo_key_trigger.setChecked(bool(value))
+                elif param == 0x05:
+                    self.lfo_fade.setValue(value)
+                elif param == 0x06:
+                    self.lfo_pitch.setValue(value)
+                elif param == 0x07:
+                    self.lfo_filter.setValue(value)
+                elif param == 0x08:
+                    self.lfo_amp.setValue(value)
+                    
+            # Modulation Matrix (0x70)
+            elif section == 0x70:
+                if param == 0x00:
+                    self.mod_source.setCurrentIndex(value)
+                elif param == 0x01:
+                    self.mod_dest.setCurrentIndex(value)
+                elif param == 0x02:
+                    self.mod_depth.setValue(value - 64)  # Convert 0-127 to -64-+63
+                    
+            logging.debug(f"Updated analog synth parameter - Section: {hex(section)}, Param: {hex(param)}, Value: {value}")
+            
+        except Exception as e:
+            logging.error(f"Error updating UI from SysEx: {str(e)}") 

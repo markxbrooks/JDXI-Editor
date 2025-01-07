@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QFrame, QLabel, QPushButton, QComboBox
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QFrame, QLabel, QComboBox, QCheckBox
 )
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPalette, QColor
 
 from ...data import ARP
@@ -13,7 +13,12 @@ from ..widgets import Slider
 class ArpeggioEditor(QMainWindow):
     def __init__(self, midi_out=None):
         super().__init__()
+        self.setStyleSheet(Style.DARK_THEME)  # Add dark theme
         self.midi_out = midi_out
+        
+        # Set window properties to match other editors
+        self.setFixedWidth(1000)
+        self.setMinimumHeight(600)
         
         # Create UI
         self._create_ui()
@@ -22,21 +27,18 @@ class ArpeggioEditor(QMainWindow):
         self._request_patch_data()
         
     def _create_ui(self):
-        # Set window properties
-        self.setFixedSize(480, 340)
-        
-        # Create central widget
+        """Create the user interface"""
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
         layout.setSpacing(10)
         
-        # Create sections
+        # Pattern section
         pattern = self._create_pattern_section()
-        timing = self._create_timing_section()
-        
-        # Add sections to layout
         layout.addWidget(pattern)
+        
+        # Timing section
+        timing = self._create_timing_section()
         layout.addWidget(timing)
         
         # Add MIDI parameter bindings
@@ -48,14 +50,13 @@ class ArpeggioEditor(QMainWindow):
         header.setFixedHeight(24)
         header.setAutoFillBackground(True)
         
-        # Set background color
         palette = header.palette()
         palette.setColor(QPalette.Window, QColor(color))
         header.setPalette(palette)
         
-        # Add label
         layout = QHBoxLayout(header)
         layout.setContentsMargins(6, 0, 6, 0)
+        
         label = QLabel(title)
         label.setStyleSheet("color: white; font-weight: bold;")
         layout.addWidget(label)
@@ -63,14 +64,14 @@ class ArpeggioEditor(QMainWindow):
         return header
         
     def _create_pattern_section(self):
+        """Create pattern controls section"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
         layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
         
         # Add header
-        layout.addWidget(self._create_section_header("Pattern", Style.OSC_BG))
+        layout.addWidget(self._create_section_header("Pattern", Style.ARP_BG))
         
         # Controls container
         controls = QHBoxLayout()
@@ -78,44 +79,43 @@ class ArpeggioEditor(QMainWindow):
         
         # Pattern selection
         pattern_frame = QFrame()
-        pattern_frame.setFrameStyle(QFrame.StyledPanel)
         pattern_layout = QVBoxLayout(pattern_frame)
-        pattern_layout.addWidget(QLabel("Pattern"))
+        
+        pattern_label = QLabel("Pattern Type")
+        pattern_layout.addWidget(pattern_label)
         
         self.pattern_type = QComboBox()
-        self.pattern_type.addItems([
-            "Up", "Down", "Up/Down", "Random",
-            "Note Order", "Up x2", "Down x2", "Up&Down"
-        ])
+        self.pattern_type.addItems(ARP.PATTERNS)
         pattern_layout.addWidget(self.pattern_type)
+        
         controls.addWidget(pattern_frame)
         
-        # Pattern parameters
+        # Parameters
         params_frame = QFrame()
-        params_frame.setFrameStyle(QFrame.StyledPanel)
         params_layout = QVBoxLayout(params_frame)
         
         self.octave_range = Slider("Octave Range", 0, 3,
-            display_format=lambda v: f"{v:d} oct")
+            display_format=lambda v: f"{v:d}")
         self.accent_rate = Slider("Accent Rate", 0, 100,
             display_format=lambda v: f"{v:d}%")
         
         params_layout.addWidget(self.octave_range)
         params_layout.addWidget(self.accent_rate)
-        controls.addWidget(params_frame)
         
+        controls.addWidget(params_frame)
         layout.addLayout(controls)
+        
         return frame
         
     def _create_timing_section(self):
+        """Create timing controls section"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         layout = QVBoxLayout(frame)
         layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
         
         # Add header
-        layout.addWidget(self._create_section_header("Timing", Style.VCF_BG))
+        layout.addWidget(self._create_section_header("Timing", Style.ARP_BG))
         
         # Controls container
         controls = QHBoxLayout()
@@ -123,83 +123,78 @@ class ArpeggioEditor(QMainWindow):
         
         # Sync controls
         sync_frame = QFrame()
-        sync_frame.setFrameStyle(QFrame.StyledPanel)
         sync_layout = QVBoxLayout(sync_frame)
         
-        self.sync = QPushButton("Sync")
-        self.sync.setCheckable(True)
+        self.sync = QCheckBox("Sync to Tempo")
+        self.sync.toggled.connect(self._handle_sync)
         sync_layout.addWidget(self.sync)
         
-        self.rate = Slider("Rate", 20, 250,
-            display_format=lambda v: f"{v:d} BPM")
-        sync_layout.addWidget(self.rate)
+        time_layout = QHBoxLayout()
+        time_layout.addWidget(self.sync)
+        
+        self.rate = Slider("Rate", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        time_layout.addWidget(self.rate)
         
         self.note = QComboBox()
-        self.note.addItems([
-            "1/32", "1/16T", "1/16", "1/8T", "1/8",
-            "1/4T", "1/4", "1/2T", "1/2", "1/1T", "1/1"
-        ])
-        self.note.setVisible(False)
-        sync_layout.addWidget(self.note)
+        self.note.addItems(ARP.NOTE_VALUES)
+        self.note.hide()  # Hidden until sync enabled
+        time_layout.addWidget(self.note)
+        
+        sync_layout.addLayout(time_layout)
         controls.addWidget(sync_frame)
         
-        # Duration parameters
-        duration_frame = QFrame()
-        duration_frame.setFrameStyle(QFrame.StyledPanel)
-        duration_layout = QVBoxLayout(duration_frame)
+        # Parameters
+        params_frame = QFrame()
+        params_layout = QVBoxLayout(params_frame)
         
         self.duration = Slider("Duration", 0, 100,
             display_format=lambda v: f"{v:d}%")
         self.shuffle = Slider("Shuffle", 0, 100,
             display_format=lambda v: f"{v:d}%")
         
-        duration_layout.addWidget(self.duration)
-        duration_layout.addWidget(self.shuffle)
-        controls.addWidget(duration_frame)
+        params_layout.addWidget(self.duration)
+        params_layout.addWidget(self.shuffle)
         
+        controls.addWidget(params_frame)
         layout.addLayout(controls)
+        
         return frame
         
-    def _setup_parameter_bindings(self):
-        """Set up MIDI parameter bindings for all controls"""
-        # Pattern parameters
-        self.pattern_type.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x01, v))  # Pattern Type
-        self.octave_range.valueChanged.connect(
-            lambda v: self._send_parameter(0x02, v))  # Octave Range
-        self.accent_rate.valueChanged.connect(
-            lambda v: self._send_parameter(0x03, v))  # Accent Rate
-            
-        # Timing parameters
-        self.sync.toggled.connect(
-            lambda v: self._send_parameter(0x10, 1 if v else 0))  # Sync
-        self.rate.valueChanged.connect(
-            lambda v: self._send_parameter(0x11, v))  # Rate
-        self.note.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x12, v))  # Note
-        self.duration.valueChanged.connect(
-            lambda v: self._send_parameter(0x13, v))  # Duration
-        self.shuffle.valueChanged.connect(
-            lambda v: self._send_parameter(0x14, v))  # Shuffle
-            
-        # Connect sync to note visibility
-        self.sync.toggled.connect(
-            lambda v: self._handle_sync(v))
-            
     def _handle_sync(self, sync_enabled):
         """Handle sync button toggle"""
         self.rate.setVisible(not sync_enabled)
         self.note.setVisible(sync_enabled)
+        
+    def _setup_parameter_bindings(self):
+        """Set up MIDI parameter bindings"""
+        if not self.midi_out:
+            return
+            
+        # Pattern parameters
+        self.pattern_type.currentIndexChanged.connect(
+            lambda v: self._send_parameter(0x01, v))
+        self.octave_range.valueChanged.connect(
+            lambda v: self._send_parameter(0x02, v))
+        self.accent_rate.valueChanged.connect(
+            lambda v: self._send_parameter(0x03, v))
+            
+        # Timing parameters
+        self.sync.toggled.connect(
+            lambda v: self._send_parameter(0x10, int(v)))
+        self.rate.valueChanged.connect(
+            lambda v: self._send_parameter(0x11, v))
+        self.note.currentIndexChanged.connect(
+            lambda v: self._send_parameter(0x12, v))
+        self.duration.valueChanged.connect(
+            lambda v: self._send_parameter(0x13, v))
+        self.shuffle.valueChanged.connect(
+            lambda v: self._send_parameter(0x14, v))
             
     def _send_parameter(self, parameter, value):
-        """Send a parameter change via MIDI"""
+        """Send parameter change to synth"""
         if self.midi_out:
-            msg = MIDIHelper.create_parameter_message(
-                0x15,  # Arpeggio address
-                None,  # No partial for arpeggio
-                parameter,
-                value
-            )
+            msg = MIDIHelper.create_parameter_message(0x15, None, parameter, value)
             self.midi_out.send_message(msg)
             
     def _request_patch_data(self):
@@ -264,3 +259,15 @@ class ArpeggioEditor(QMainWindow):
             self.duration.setValue(value)
         elif param == 0x14:  # Shuffle
             self.shuffle.setValue(value) 
+            
+        # Update pattern display after parameter changes
+        if param in (0x01, 0x02, 0x03):
+            self._update_pattern_display()
+            
+    def _update_pattern_display(self):
+        """Update the pattern visualization"""
+        self.pattern_display.set_pattern(
+            self.pattern_type.currentIndex(),
+            self.octave_range.value(),
+            self.accent_rate.value()
+        ) 

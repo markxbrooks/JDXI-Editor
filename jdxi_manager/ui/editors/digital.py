@@ -1,42 +1,95 @@
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QTabWidget, QFrame, QLabel, QPushButton,
-    QComboBox, QSpinBox, QLineEdit
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
+    QFileDialog, QMessageBox, QScrollArea
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPalette, QColor
-from ...data import SN1, SN2
+import logging
+from pathlib import Path
+
+from ...data import SN1, SN2, DigitalSynth
 from ...midi import MIDIHelper
 from ..style import Style
 from ..widgets import Slider, WaveformButton
 
+class DigitalSynthValidator:
+    """Validator for JD-Xi Digital Synth parameters"""
+    
+    # Parameter ranges
+    RANGES = {
+        # OSC 1 (0x20)
+        (0x20, 0x00): (0, 13),    # Wave Type (0=Saw, 1=Square, 2=Triangle, 3=Noise, 4=Sine, 5=Super Saw, 6-13=PCM)
+        (0x20, 0x01): (0, 48),    # Range (-24 to +24, stored as 0-48)
+        (0x20, 0x02): (0, 127),   # Color
+        
+        # OSC 2 (0x20)
+        (0x20, 0x10): (0, 13),    # Wave Type (same as OSC 1)
+        (0x20, 0x11): (0, 48),    # Range
+        (0x20, 0x12): (0, 127),   # Color
+        (0x20, 0x13): (0, 100),   # Fine Tune (-50 to +50, stored as 0-100)
+        (0x20, 0x20): (0, 127),   # OSC Mix
+        
+        # Filter (0x21)
+        (0x21, 0x00): (0, 127),   # Cutoff
+        (0x21, 0x01): (0, 127),   # Resonance
+        (0x21, 0x02): (0, 127),   # Key Follow
+        (0x21, 0x03): (0, 127),   # Env Depth
+        (0x21, 0x10): (0, 127),   # Attack
+        (0x21, 0x11): (0, 127),   # Decay
+        (0x21, 0x12): (0, 127),   # Sustain
+        (0x21, 0x13): (0, 127),   # Release
+        
+        # Amplifier (0x22)
+        (0x22, 0x00): (0, 127),   # Level
+        (0x22, 0x01): (0, 127),   # Pan
+        (0x22, 0x02): (0, 127),   # Velocity
+        (0x22, 0x10): (0, 127),   # Attack
+        (0x22, 0x11): (0, 127),   # Decay
+        (0x22, 0x12): (0, 127),   # Sustain
+        (0x22, 0x13): (0, 127),   # Release
+        
+        # LFO (0x26)
+        (0x26, 0x00): (0, 3),     # LFO1 Wave
+        (0x26, 0x01): (0, 127),   # LFO1 Rate
+        (0x26, 0x10): (0, 3),     # LFO2 Wave
+        (0x26, 0x11): (0, 127),   # LFO2 Rate
+        (0x26, 0x20): (0, 127),   # LFO Mix
+    }
+    
+    @classmethod
+    def validate_parameter(cls, section, parameter, value):
+        """Validate a parameter value"""
+        # Check section range
+        if section not in [0x20, 0x21, 0x22, 0x26]:
+            raise ValueError(f"Invalid section: {hex(section)}")
+            
+        # Get parameter range
+        param_range = cls.RANGES.get((section, parameter))
+        if param_range is None:
+            raise ValueError(f"Invalid parameter {hex(parameter)} for section {hex(section)}")
+            
+        # Check value range
+        min_val, max_val = param_range
+        if not min_val <= value <= max_val:
+            raise ValueError(f"Value {value} out of range ({min_val}-{max_val})")
+            
+        return True
+
 class DigitalSynthEditor(QMainWindow):
     def __init__(self, midi_out=None, synth_num=1):
         super().__init__()
-        self.synth_num = synth_num
+        self.setStyleSheet(Style.DARK_THEME)
         self.midi_out = midi_out
-        
-        # Initialize control lists
-        self.wave_buttons = []
-        self.pitch_sliders = []
-        self.fine_sliders = []
-        self.pwm_sliders = []
-        self.cutoff_sliders = []
-        self.resonance_sliders = []
-        self.keyfollow_sliders = []
-        self.filter_env_attack = []
-        self.filter_env_decay = []
-        self.filter_env_sustain = []
-        self.filter_env_release = []
-        self.level_sliders = []
-        self.velocity_sliders = []
-        self.amp_env_attack = []
-        self.amp_env_decay = []
-        self.amp_env_sustain = []
-        self.amp_env_release = []
-        
-        # Initialize synth data
+        self.synth_num = synth_num
         self.data = SN1 if synth_num == 1 else SN2
+        
+        # Set window properties - taller with fixed width
+        self.setFixedWidth(1000)  # Wider than before
+        self.setMinimumHeight(600)  # Minimum height
+        
+        # Create menu bar
+        self._create_menu_bar()
         
         # Create UI
         self._create_ui()
@@ -44,152 +97,647 @@ class DigitalSynthEditor(QMainWindow):
         # Request current patch data
         self._request_patch_data()
         
+    def _create_menu_bar(self):
+        """Create the menu bar"""
+        menubar = self.menuBar()
+        
+        # File menu
+        file_menu = menubar.addMenu("&File")
+        
+        load_action = file_menu.addAction("&Load Patch...")
+        load_action.setShortcut("Ctrl+O")
+        load_action.triggered.connect(self._load_patch)
+        
+        save_action = file_menu.addAction("&Save Patch...")
+        save_action.setShortcut("Ctrl+S")
+        save_action.triggered.connect(self._save_patch)
+        
+        file_menu.addSeparator()
+        
+        close_action = file_menu.addAction("&Close")
+        close_action.setShortcut("Ctrl+W")
+        close_action.triggered.connect(self.close)
+
+    def _create_separator(self):
+        """Create a red separator line"""
+        separator = QFrame()
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFixedHeight(2)
+        separator.setStyleSheet(f"""
+            QFrame {{
+                background-color: {Style.RED};
+                margin: 10px 0px;
+            }}
+        """)
+        return separator
+
     def _create_ui(self):
-        # Set window properties
-        self.setFixedSize(1150, 740)
+        """Create the user interface"""
+        # Create scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setCentralWidget(scroll)
         
-        # Create central widget
+        # Create main widget
         central = QWidget()
-        self.setCentralWidget(central)
         layout = QVBoxLayout(central)
+        layout.setSpacing(25)  # Increased from 15
+        layout.setContentsMargins(25, 25, 25, 25)  # Increased from 15
         
-        # Create common controls section
-        common_frame = self._create_common_section()
-        layout.addWidget(common_frame)
+        # Create sections
+        osc = self._create_oscillator_section()
+        vcf = self._create_filter_section()
+        amp = self._create_amplifier_section()
+        lfo = self._create_lfo_section()
         
-        # Create tab widget for partials
-        self.tabs = QTabWidget()
-        layout.addWidget(self.tabs)
+        # Add sections to layout with spacing and separators
+        layout.addWidget(osc)
+        layout.addWidget(self._create_separator())
+        layout.addWidget(vcf)
+        layout.addWidget(self._create_separator())
+        layout.addWidget(amp)
+        layout.addWidget(self._create_separator())
+        layout.addWidget(lfo)
         
-        # Add partial tabs
-        for i in range(1, 4):
-            partial = self._create_partial_tab(i)
-            self.tabs.addTab(partial, f"Partial {i}")
-            
-        # Create modulation section
-        mod_frame = self._create_modulation_section()
-        layout.addWidget(mod_frame)
+        # Add stretch at the bottom
+        layout.addStretch()
+        
+        # Set the widget to scroll area
+        scroll.setWidget(central)
         
         # Add MIDI parameter bindings
         self._setup_parameter_bindings()
         
+    def _create_section_header(self, title, color):
+        """Create a colored header for a section"""
+        header = QFrame()
+        header.setFixedHeight(30)  # Increased height
+        header.setAutoFillBackground(True)
+        
+        palette = header.palette()
+        palette.setColor(QPalette.Window, QColor(color))
+        header.setPalette(palette)
+        
+        layout = QHBoxLayout(header)
+        layout.setContentsMargins(10, 0, 10, 0)  # Increased margins
+        
+        label = QLabel(title)
+        label.setStyleSheet("color: white; font-weight: bold; font-size: 12px;")  # Larger font
+        layout.addWidget(label)
+        
+        return header
+        
+    def _create_oscillator_section(self):
+        """Create oscillator controls section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        layout.setSpacing(20)  # Increased from 15
+        layout.setContentsMargins(30, 25, 30, 25)  # Increased from 20
+        
+        # Add header
+        layout.addWidget(self._create_section_header("Oscillator", Style.OSC_BG))
+        layout.addSpacing(10)  # Add space after header
+        
+        # Controls container
+        controls = QHBoxLayout()
+        controls.setSpacing(30)  # Increased from 20
+        
+        # OSC 1
+        osc1_frame = QFrame()
+        osc1_layout = QVBoxLayout(osc1_frame)
+        
+        osc1_label = QLabel("OSC 1")
+        osc1_layout.addWidget(osc1_label)
+        
+        self.osc1_wave = WaveformButton()
+        osc1_layout.addWidget(self.osc1_wave)
+        
+        self.osc1_range = Slider("Range", -24, 24, center=True,
+            display_format=lambda v: f"{v:+d}")
+        self.osc1_color = Slider("Color", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        osc1_layout.addWidget(self.osc1_range)
+        osc1_layout.addWidget(self.osc1_color)
+        
+        controls.addWidget(osc1_frame)
+        
+        # OSC 2
+        osc2_frame = QFrame()
+        osc2_layout = QVBoxLayout(osc2_frame)
+        
+        osc2_label = QLabel("OSC 2")
+        osc2_layout.addWidget(osc2_label)
+        
+        self.osc2_wave = WaveformButton()
+        osc2_layout.addWidget(self.osc2_wave)
+        
+        self.osc2_range = Slider("Range", -24, 24, center=True,
+            display_format=lambda v: f"{v:+d}")
+        self.osc2_color = Slider("Color", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.osc2_tune = Slider("Tune", -50, 50, center=True,
+            display_format=lambda v: f"{v:+d}")
+        
+        osc2_layout.addWidget(self.osc2_range)
+        osc2_layout.addWidget(self.osc2_color)
+        osc2_layout.addWidget(self.osc2_tune)
+        
+        controls.addWidget(osc2_frame)
+        
+        # Mix
+        mix_frame = QFrame()
+        mix_layout = QVBoxLayout(mix_frame)
+        
+        mix_label = QLabel("Mix")
+        mix_layout.addWidget(mix_label)
+        
+        self.osc_mix = Slider("OSC Mix", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        mix_layout.addWidget(self.osc_mix)
+        
+        controls.addWidget(mix_frame)
+        
+        layout.addLayout(controls)
+        return frame
+
+    def _create_filter_section(self):
+        """Create filter controls section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
+        
+        # Add header
+        layout.addWidget(self._create_section_header("Filter", Style.VCF_BG))
+        
+        # Controls container
+        controls = QHBoxLayout()
+        controls.setSpacing(30)
+        
+        # Filter parameters
+        params_frame = QFrame()
+        params_layout = QVBoxLayout(params_frame)
+        params_layout.setSpacing(15)
+        
+        self.filter_cutoff = Slider("Cutoff", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.filter_resonance = Slider("Resonance", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.filter_env_depth = Slider("Env Depth", -63, 63, center=True,
+            display_format=lambda v: f"{v:+3d}")
+        self.filter_key_follow = Slider("Key Follow", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        params_layout.addWidget(self.filter_cutoff)
+        params_layout.addWidget(self.filter_resonance)
+        params_layout.addWidget(self.filter_env_depth)
+        params_layout.addWidget(self.filter_key_follow)
+        
+        controls.addWidget(params_frame)
+        
+        # Filter envelope
+        env_frame = QFrame()
+        env_layout = QVBoxLayout(env_frame)
+        env_layout.setSpacing(15)
+        
+        self.filter_attack = Slider("Attack", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.filter_decay = Slider("Decay", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.filter_sustain = Slider("Sustain", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.filter_release = Slider("Release", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        env_layout.addWidget(self.filter_attack)
+        env_layout.addWidget(self.filter_decay)
+        env_layout.addWidget(self.filter_sustain)
+        env_layout.addWidget(self.filter_release)
+        
+        controls.addWidget(env_frame)
+        layout.addLayout(controls)
+        
+        return frame
+
+    def _create_amplifier_section(self):
+        """Create amplifier controls section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
+        
+        # Add header
+        layout.addWidget(self._create_section_header("Amplifier", Style.AMP_BG))
+        
+        # Controls container
+        controls = QHBoxLayout()
+        controls.setSpacing(30)
+        
+        # Level parameters
+        level_frame = QFrame()
+        level_layout = QVBoxLayout(level_frame)
+        level_layout.setSpacing(15)
+        
+        self.amp_level = Slider("Level", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.amp_pan = Slider("Pan", -64, 63, center=True,
+            display_format=lambda v: f"{v:+3d}")
+        self.amp_velocity = Slider("Velocity", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        level_layout.addWidget(self.amp_level)
+        level_layout.addWidget(self.amp_pan)
+        level_layout.addWidget(self.amp_velocity)
+        
+        controls.addWidget(level_frame)
+        
+        # Envelope
+        env_frame = QFrame()
+        env_layout = QVBoxLayout(env_frame)
+        env_layout.setSpacing(15)
+        
+        self.amp_attack = Slider("Attack", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.amp_decay = Slider("Decay", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.amp_sustain = Slider("Sustain", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.amp_release = Slider("Release", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        env_layout.addWidget(self.amp_attack)
+        env_layout.addWidget(self.amp_decay)
+        env_layout.addWidget(self.amp_sustain)
+        env_layout.addWidget(self.amp_release)
+        
+        controls.addWidget(env_frame)
+        layout.addLayout(controls)
+        
+        return frame
+
+    def _create_lfo_section(self):
+        """Create LFO controls section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 25, 30, 25)
+        
+        # Add header
+        layout.addWidget(self._create_section_header("LFO", Style.LFO_BG))
+        
+        # Controls container
+        controls = QHBoxLayout()
+        controls.setSpacing(30)
+        
+        # LFO 1
+        lfo1_frame = QFrame()
+        lfo1_layout = QVBoxLayout(lfo1_frame)
+        
+        lfo1_label = QLabel("LFO 1")
+        lfo1_layout.addWidget(lfo1_label)
+        
+        self.lfo1_wave = WaveformButton()
+        lfo1_layout.addWidget(self.lfo1_wave)
+        
+        self.lfo1_rate = Slider("Rate", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.lfo1_depth = Slider("Depth", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        lfo1_layout.addWidget(self.lfo1_rate)
+        lfo1_layout.addWidget(self.lfo1_depth)
+        
+        controls.addWidget(lfo1_frame)
+        
+        # LFO 2
+        lfo2_frame = QFrame()
+        lfo2_layout = QVBoxLayout(lfo2_frame)
+        
+        lfo2_label = QLabel("LFO 2")
+        lfo2_layout.addWidget(lfo2_label)
+        
+        self.lfo2_wave = WaveformButton()
+        lfo2_layout.addWidget(self.lfo2_wave)
+        
+        self.lfo2_rate = Slider("Rate", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        self.lfo2_depth = Slider("Depth", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        
+        lfo2_layout.addWidget(self.lfo2_rate)
+        lfo2_layout.addWidget(self.lfo2_depth)
+        
+        controls.addWidget(lfo2_frame)
+        
+        # Mix
+        mix_frame = QFrame()
+        mix_layout = QVBoxLayout(mix_frame)
+        
+        mix_label = QLabel("Mix")
+        mix_layout.addWidget(mix_label)
+        
+        self.lfo_mix = Slider("LFO Mix", 0, 127,
+            display_format=lambda v: f"{v:3d}")
+        mix_layout.addWidget(self.lfo_mix)
+        
+        controls.addWidget(mix_frame)
+        
+        layout.addLayout(controls)
+        return frame
+
     def _setup_parameter_bindings(self):
         """Set up MIDI parameter bindings for all controls"""
-        # Common parameters
-        self.volume_slider.valueChanged.connect(
-            lambda v: self._send_parameter(0x01, v))  # Volume
-        self.pan_slider.valueChanged.connect(
-            lambda v: self._send_parameter(0x02, v + 64))  # Pan
-        self.portamento_slider.valueChanged.connect(
-            lambda v: self._send_parameter(0x03, v))  # Portamento Time
-        self.portamento_switch.toggled.connect(
-            lambda v: self._send_parameter(0x04, 1 if v else 0))  # Portamento Switch
+        # OSC 1 parameters
+        self.osc1_wave.waveformChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x00, v))  # Wave Type
+        self.osc1_range.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x01, v + 24))  # Range (-24-+24)
+        self.osc1_color.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x02, v))  # Color
+        
+        # OSC 2 parameters
+        self.osc2_wave.waveformChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x10, v))  # Wave Type
+        self.osc2_range.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x11, v + 24))  # Range (-24-+24)
+        self.osc2_color.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x12, v))  # Color
+        self.osc2_tune.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x13, v + 50))  # Fine Tune (-50-+50)
             
-        # Partial parameters (for each partial 1-3)
-        for partial in range(1, 4):
-            # OSC
-            self.wave_buttons[partial-1].waveformChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x40, v, p))  # Wave Type
-            self.pitch_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x41, v + 64, p))  # Coarse Tune
-            self.fine_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x42, v + 64, p))  # Fine Tune
-            self.pwm_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x43, v, p))  # PWM
-                
-            # FILTER
-            self.cutoff_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x50, v, p))  # Cutoff
-            self.resonance_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x51, v, p))  # Resonance
-            self.keyfollow_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x52, v + 64, p))  # Key Follow
-                
-            # Filter Envelope
-            self.filter_env_attack[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x53, v, p))  # Attack
-            self.filter_env_decay[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x54, v, p))  # Decay
-            self.filter_env_sustain[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x55, v, p))  # Sustain
-            self.filter_env_release[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x56, v, p))  # Release
-                
-            # AMP
-            self.level_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x60, v, p))  # Level
-            self.velocity_sliders[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x61, v + 64, p))  # Velocity Sens
-                
-            # Amp Envelope
-            self.amp_env_attack[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x62, v, p))  # Attack
-            self.amp_env_decay[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x63, v, p))  # Decay
-            self.amp_env_sustain[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x64, v, p))  # Sustain
-            self.amp_env_release[partial-1].valueChanged.connect(
-                lambda v, p=partial: self._send_parameter(0x65, v, p))  # Release
-                
-        # LFO parameters
-        self.lfo_wave.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x70, v))  # LFO Wave
-        
-        self.lfo_sync.toggled.connect(
-            lambda v: self._send_parameter(0x71, 1 if v else 0))  # LFO Sync
-        
-        self.lfo_rate.valueChanged.connect(
-            lambda v: self._send_parameter(0x72, v))  # LFO Rate
-        
-        self.lfo_note.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x73, v))  # LFO Note
-        
-        self.lfo_key_trigger.toggled.connect(
-            lambda v: self._send_parameter(0x74, 1 if v else 0))  # LFO Key Trigger
-        
-        self.lfo_fade.valueChanged.connect(
-            lambda v: self._send_parameter(0x75, v))  # LFO Fade Time
-        
-        self.lfo_pitch.valueChanged.connect(
-            lambda v: self._send_parameter(0x76, v))  # LFO Pitch Depth
-        
-        self.lfo_filter.valueChanged.connect(
-            lambda v: self._send_parameter(0x77, v))  # LFO Filter Depth
-        
-        self.lfo_amp.valueChanged.connect(
-            lambda v: self._send_parameter(0x78, v))  # LFO Amp Depth
-        
-        # Modulation Matrix
-        self.mod_source.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x80, v))  # Mod Source
-        
-        self.mod_dest.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x81, v))  # Mod Destination
-        
-        self.mod_depth.valueChanged.connect(
-            lambda v: self._send_parameter(0x82, v + 64))  # Mod Depth
-        
-    def _send_parameter(self, parameter, value, partial=None):
-        """Send a parameter change via MIDI"""
-        if self.midi_out:
-            msg = MIDIHelper.create_parameter_message(
-                self.synth_num, partial, parameter, value)
-            self.midi_out.send_message(msg)
+        # OSC Mix parameters
+        self.osc_mix.valueChanged.connect(
+            lambda v: self._send_parameter(0x20, 0x20, v))  # OSC Mix
             
+        # Filter parameters
+        self.filter_cutoff.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x00, v))  # Cutoff
+        self.filter_resonance.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x01, v))  # Resonance
+        self.filter_key_follow.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x02, v + 64))  # Key Follow (-64-+63)
+        self.filter_env_depth.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x03, v + 64))  # Convert -64-+63 to 0-127
+            
+        # Filter envelope
+        self.filter_attack.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x10, v))
+        self.filter_decay.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x11, v))
+        self.filter_sustain.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x12, v))
+        self.filter_release.valueChanged.connect(
+            lambda v: self._send_parameter(0x21, 0x13, v))
+            
+        # Amplifier parameters
+        self.amp_level.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x00, v))
+        self.amp_pan.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x01, v + 64))  # Convert -64-+63 to 0-127
+        self.amp_velocity.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x02, v))
+            
+        # Amp envelope
+        self.amp_attack.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x10, v))
+        self.amp_decay.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x11, v))
+        self.amp_sustain.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x12, v))
+        self.amp_release.valueChanged.connect(
+            lambda v: self._send_parameter(0x22, 0x13, v))
+            
+        # LFO parameters - Updated addresses to match Perl version
+        self.lfo1_wave.waveformChanged.connect(
+            lambda v: self._send_parameter(0x26, 0x00, v))  # Changed from 0x23 to 0x26
+        self.lfo1_rate.valueChanged.connect(
+            lambda v: self._send_parameter(0x26, 0x01, v))
+        self.lfo2_wave.waveformChanged.connect(
+            lambda v: self._send_parameter(0x26, 0x10, v))  # Second LFO offset
+        self.lfo2_rate.valueChanged.connect(
+            lambda v: self._send_parameter(0x26, 0x11, v))
+        self.lfo_mix.valueChanged.connect(
+            lambda v: self._send_parameter(0x26, 0x20, v))  # Mix parameter
+
     def _request_patch_data(self):
         """Request current patch data from synth"""
-        if self.midi_out:
-            # Request common parameters
-            addr = bytes([0x19, 0x20 + self.synth_num - 1, 0x00, 0x00])
-            msg = MIDIHelper.create_sysex_message(addr, bytes([0x00]))
+        if not self.midi_out:
+            return
+            
+        try:
+            # Use 0x01/0x02 for synth number instead of 0x20/0x21
+            synth_num = 0x01 if self.synth_num == 1 else 0x02
+            
+            # Build request message
+            msg = bytes([
+                0xF0, 0x41, 0x10,             # SysEx header
+                0x00, 0x00, 0x00,             # Model ID
+                0x0E,                         # JD-Xi ID
+                0x11,                         # RQ1 Command (request data)
+                0x19,                         # Digital Synth area
+                synth_num,                    # Synth number (0x01/0x02)
+                0x00, 0x00,                   # Address
+                0x00, 0x00, 0x00, 0x40,       # Size (64 bytes)
+                0x00,                         # Placeholder for checksum
+                0xF7                          # End of SysEx
+            ])
+            
+            # Calculate and update checksum
+            checksum = 0
+            for byte in msg[8:-2]:  # Sum from address to size
+                checksum += byte
+            checksum = (-checksum) & 0x7F
+            msg_list = list(msg)
+            msg_list[-2] = checksum
+            msg = bytes(msg_list)
+            
             self.midi_out.send_message(msg)
             
-            # Request partial parameters
-            for partial in range(1, 4):
-                addr = bytes([0x19, 0x20 + self.synth_num - 1, 0x20 + partial - 1, 0x00])
-                msg = MIDIHelper.create_sysex_message(addr, bytes([0x00]))
-                self.midi_out.send_message(msg)
+            # Log the request
+            logging.debug(f"Requesting patch data for Digital Synth {self.synth_num}")
+            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in msg])}")
+            logging.debug(f"Raw MIDI: dec = {' '.join([str(b) for b in msg])}")
+            
+        except Exception as e:
+            logging.error(f"Error requesting patch data: {str(e)}")
+
+    def _validate_sysex_message(self, data):
+        """Validate a SysEx message"""
+        try:
+            # Check basic SysEx structure
+            if not data or len(data) < 14:  # Updated minimum length to include checksum
+                raise ValueError("Message too short")
                 
+            # Check SysEx frame
+            if data[0] != 0xF0 or data[-1] != 0xF7:
+                raise ValueError("Invalid SysEx frame")
+                
+            # Check Roland ID and Device ID
+            if data[1] != 0x41:  # Roland ID
+                raise ValueError("Not a Roland message")
+                
+            # Check JD-Xi ID
+            if data[6] != 0x0E:  # JD-Xi ID
+                raise ValueError("Not a JD-Xi message")
+                
+            # Check DT1 Command
+            if data[7] != 0x12:  # Added DT1 check
+                raise ValueError("Not a DT1 message")
+                
+            # Check Digital Synth area
+            if data[8] != 0x19:  # Updated index due to DT1
+                raise ValueError("Not a Digital Synth message")
+                
+            # Check correct synth number
+            expected_synth = 0x20 if self.synth_num == 1 else 0x21
+            if data[9] != expected_synth:  # Updated index
+                raise ValueError(f"Wrong synth number (got {hex(data[9])}, expected {hex(expected_synth)})")
+                
+            # Verify checksum
+            expected_checksum = self._calculate_checksum(data)
+            if data[-2] != expected_checksum:  # Checksum is second-to-last byte
+                raise ValueError(f"Invalid checksum (got {hex(data[-2])}, expected {hex(expected_checksum)})")
+                
+            return True
+            
+        except Exception as e:
+            logging.error(f"SysEx validation failed: {str(e)}")
+            return False
+
+    def _calculate_checksum(self, data):
+        """Calculate Roland checksum for address and data bytes"""
+        # Sum address and data bytes (after DT1 command)
+        checksum = 0
+        for byte in data[8:-2]:  # Start after DT1 command, exclude checksum and F7
+            checksum += byte
+            
+        # Calculate 2's complement of 7-bit sum
+        checksum = (-checksum) & 0x7F
+        return checksum
+
+    def _send_parameter(self, section, parameter, value):
+        """Send parameter change to synth"""
+        if not self.midi_out:
+            return
+            
+        try:
+            # Validate parameter
+            DigitalSynthValidator.validate_parameter(section, parameter, value)
+            
+            # Use 0x01/0x02 for synth number instead of 0x20/0x21
+            synth_num = 0x01 if self.synth_num == 1 else 0x02
+            
+            msg = bytes([
+                0xF0, 0x41, 0x10,             # SysEx header
+                0x00, 0x00, 0x00,             # Model ID
+                0x0E,                         # JD-Xi ID
+                0x12,                         # DT1 Command
+                0x19,                         # Digital Synth area
+                synth_num,                    # Synth number (0x01/0x02)
+                section,                      # Section (OSC/FILTER/etc)
+                parameter,                    # Parameter number
+                value & 0x7F,                # Parameter value (7-bit)
+                0x00,                        # Placeholder for checksum
+                0xF7                         # End of SysEx
+            ])
+            
+            # Calculate and update checksum
+            checksum = 0
+            for byte in msg[8:-2]:  # Sum from address to value
+                checksum += byte
+            checksum = (-checksum) & 0x7F
+            msg_list = list(msg)
+            msg_list[-2] = checksum
+            msg = bytes(msg_list)
+            
+            self.midi_out.send_message(msg)
+            
+            # Log the MIDI message
+            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in msg])}")
+            logging.debug(f"Raw MIDI: dec = {' '.join([str(b) for b in msg])}")
+            
+        except Exception as e:
+            logging.error(f"Error sending parameter: {str(e)}")
+
+    def _handle_midi_input(self, message, timestamp):
+        """Handle incoming MIDI messages"""
+        try:
+            data = message[0]  # Get the raw MIDI data
+            
+            # Check if it's a SysEx message
+            if data[0] != 0xF0:
+                return  # Not a SysEx message
+                
+            # Get address and parameter data
+            addr = data[8:12]  # 4-byte address
+            param_data = data[12:-2]  # Parameter data (excluding checksum and F7)
+            
+            # Log received MIDI data
+            logging.debug(f"MIDI IN: hex = {' '.join([hex(b) for b in data])}")
+            logging.debug(f"MIDI IN: dec = {' '.join([str(b) for b in data])}")
+            
+            # Queue UI update on main thread
+            QTimer.singleShot(0, lambda: self._update_ui_from_sysex(addr, param_data))
+            
+        except Exception as e:
+            logging.error(f"Error handling MIDI input: {str(e)}")
+
+    def _update_ui_from_sysex(self, addr, data):
+        """Update UI controls based on received SysEx data"""
+        # Check if it's for this synth (0x19 0x01/0x02)
+        if (addr[0] != 0x19 or 
+            addr[1] != (0x01 if self.synth_num == 1 else 0x02)):
+            return
+            
+        section = addr[2]  # Section address
+        param = addr[3]    # Parameter number
+        value = data[0]    # Parameter value
+        
+        try:
+            # Update the appropriate control based on section/parameter
+            if section == 0x20:  # Oscillator
+                if param == 0x00:
+                    self.osc1_wave.setCurrentIndex(value)
+                elif param == 0x01:
+                    self.osc1_range.setValue(value - 24)  # Convert 0-48 to -24-+24
+                # ... etc for other oscillator parameters
+                
+            elif section == 0x21:  # Filter
+                if param == 0x00:
+                    self.filter_cutoff.setValue(value)
+                elif param == 0x01:
+                    self.filter_resonance.setValue(value)
+                # ... etc for other filter parameters
+                
+            elif section == 0x22:  # Amplifier
+                if param == 0x00:
+                    self.amp_level.setValue(value)
+                elif param == 0x01:
+                    self.amp_pan.setValue(value - 64)  # Convert 0-127 to -64-+63
+                # ... etc for other amplifier parameters
+                
+            elif section == 0x26:  # LFO (changed from 0x23)
+                if param == 0x00:
+                    self.lfo1_wave.setWaveform(value)
+                elif param == 0x01:
+                    self.lfo1_rate.setValue(value)
+                elif param == 0x10:
+                    self.lfo2_wave.setWaveform(value)
+                elif param == 0x11:
+                    self.lfo2_rate.setValue(value)
+                elif param == 0x20:
+                    self.lfo_mix.setValue(value)
+                
+        except Exception as e:
+            logging.error(f"Error updating UI from SysEx: {str(e)}")
+
     def set_midi_ports(self, midi_in, midi_out):
         """Update MIDI port connections"""
         self.midi_in = midi_in
@@ -197,562 +745,88 @@ class DigitalSynthEditor(QMainWindow):
         
         if midi_in:
             midi_in.set_callback(self._handle_midi_input)
+            logging.debug(f"Set MIDI input callback for Digital Synth {self.synth_num}")
             
-    def _handle_midi_input(self, message, timestamp):
-        """Handle incoming MIDI messages"""
-        data = message[0]  # Get the raw MIDI data
-        
-        # Check if it's a SysEx message
-        if data[0] == 0xF0 and len(data) > 8:
-            # Verify it's a Roland message for JD-Xi
-            if (data[1] == 0x41 and  # Roland ID
-                data[4:8] == bytes([0x00, 0x00, 0x00, 0x0E])):  # JD-Xi ID
-                
-                # Get address and parameter data
-                addr = data[8:12]  # 4-byte address
-                param_data = data[12:-1]  # Parameter data (excluding F7)
-                
-                # Queue UI update on main thread
-                QTimer.singleShot(0, lambda: self._update_ui_from_sysex(addr, param_data))
+        # Request current patch data when ports are set
+        self._request_patch_data()
 
-    def _update_ui_from_sysex(self, addr, data):
-        """Update UI controls based on received SysEx data"""
-        # Check if it's for this synth (Digital 1 or 2)
-        if addr[0] != 0x19 or addr[1] != (0x20 if self.synth_num == 1 else 0x21):
-            return
-        
-        # Common parameters (addr[2] == 0x00)
-        if addr[2] == 0x00:
-            param = addr[3]
-            value = data[0]
+    def _load_patch(self):
+        """Open file dialog to load a SysEx patch file"""
+        try:
+            filename, _ = QFileDialog.getOpenFileName(
+                parent=self,
+                caption="Load Patch File",
+                dir=str(Path.home()),  # Start in user's home directory
+                filter="SysEx Files (*.syx);;All Files (*.*)"
+            )
             
-            if param == 0x00:  # Patch name (12 bytes)
-                name = ''.join(chr(b) for b in data[:12]).strip()
-                self.patch_name.setText(name)
-                
-            elif param == 0x01:  # Volume
-                self.volume_slider.setValue(value)
-                
-            elif param == 0x02:  # Pan
-                self.pan_slider.setValue(value - 64)
-                
-            elif param == 0x03:  # Portamento Time
-                self.portamento_slider.setValue(value)
-                
-            elif param == 0x04:  # Portamento Switch
-                self.portamento_switch.setChecked(bool(value))
-                
-            elif param == 0x0D:  # Category
-                self.category_combo.setCurrentIndex(value)
-                
-        # Partial parameters (addr[2] == 0x20-0x22)
-        elif 0x20 <= addr[2] <= 0x22:
-            partial = addr[2] - 0x20  # 0-2
-            param = addr[3]
-            value = data[0]
+            if filename:
+                with open(filename, 'rb') as f:
+                    sysex_data = f.read()
+                    
+                # Verify it's a valid JD-Xi SysEx message
+                if (len(sysex_data) > 8 and
+                    sysex_data[0] == 0xF0 and
+                    sysex_data[1] == 0x41 and  # Roland ID
+                    sysex_data[4:8] == bytes([0x00, 0x00, 0x00, 0x0E])):  # JD-Xi ID
+                    
+                    # Send the SysEx message
+                    self.midi_out.send_message(sysex_data)
+                    logging.info(f"Loaded patch from {filename}")
+                    
+                    # Request current patch data to update UI
+                    self._request_patch_data()
+                    
+                else:
+                    QMessageBox.warning(
+                        self,
+                        "Invalid File",
+                        "The selected file is not a valid JD-Xi patch file."
+                    )
+                    
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to load patch file: {str(e)}"
+            )
+            logging.error(f"Error loading patch: {str(e)}")
+
+    def _save_patch(self):
+        """Save current patch as SysEx file"""
+        try:
+            filename, _ = QFileDialog.getSaveFileName(
+                parent=self,
+                caption="Save Patch File",
+                dir=str(Path.home()),  # Start in user's home directory
+                filter="SysEx Files (*.syx)"
+            )
             
-            # OSC parameters
-            if param == 0x00:  # Wave Type
-                self.wave_buttons[partial].current_wave = value
-                self.wave_buttons[partial].update()
+            if filename:
+                # Add .syx extension if not present
+                if not filename.lower().endswith('.syx'):
+                    filename += '.syx'
+                    
+                # Request current patch data from synth
+                base_addr = bytes([0x19, 0x20 if self.synth_num == 1 else 0x21, 0x00, 0x00])
+                msg = MIDIHelper.create_sysex_message(base_addr, bytes([0x00]))
+                self.midi_out.send_message(msg)
                 
-            elif param == 0x01:  # Coarse Tune
-                self.pitch_sliders[partial].setValue(value - 64)
+                # TODO: Wait for response and save to file
+                # For now, just show a message
+                QMessageBox.information(
+                    self,
+                    "Save Patch",
+                    f"Patch will be saved to: {filename}\n\n"
+                    "Note: Save functionality not yet implemented."
+                )
                 
-            elif param == 0x02:  # Fine Tune
-                self.fine_sliders[partial].setValue(value - 64)
-                
-            elif param == 0x03:  # PWM
-                self.pwm_sliders[partial].setValue(value)
-                
-            # FILTER parameters
-            elif param == 0x10:  # Cutoff
-                self.cutoff_sliders[partial].setValue(value)
-                
-            elif param == 0x11:  # Resonance
-                self.resonance_sliders[partial].setValue(value)
-                
-            elif param == 0x12:  # Key Follow
-                self.keyfollow_sliders[partial].setValue(value - 64)
-                
-            # Filter Envelope
-            elif param == 0x13:  # Attack
-                self.filter_env_attack[partial].setValue(value)
-                
-            elif param == 0x14:  # Decay
-                self.filter_env_decay[partial].setValue(value)
-                
-            elif param == 0x15:  # Sustain
-                self.filter_env_sustain[partial].setValue(value)
-                
-            elif param == 0x16:  # Release
-                self.filter_env_release[partial].setValue(value)
-                
-            # AMP parameters
-            elif param == 0x20:  # Level
-                self.level_sliders[partial].setValue(value)
-                
-            elif param == 0x21:  # Velocity Sensitivity
-                self.velocity_sliders[partial].setValue(value - 64)
-                
-            # Amp Envelope
-            elif param == 0x22:  # Attack
-                self.amp_env_attack[partial].setValue(value)
-                
-            elif param == 0x23:  # Decay
-                self.amp_env_decay[partial].setValue(value)
-                
-            elif param == 0x24:  # Sustain
-                self.amp_env_sustain[partial].setValue(value)
-                
-            elif param == 0x25:  # Release
-                self.amp_env_release[partial].setValue(value)
-        
-        # LFO parameters
-        elif param == 0x70:  # LFO Wave
-            self.lfo_wave.setCurrentIndex(value)
-        
-        elif param == 0x71:  # LFO Sync
-            self.lfo_sync.setChecked(bool(value))
-            self.lfo_note.setVisible(bool(value))
-            self.lfo_rate.setVisible(not bool(value))
-        
-        elif param == 0x72:  # LFO Rate
-            self.lfo_rate.setValue(value)
-        
-        elif param == 0x73:  # LFO Note
-            self.lfo_note.setCurrentIndex(value)
-        
-        elif param == 0x74:  # LFO Key Trigger
-            self.lfo_key_trigger.setChecked(bool(value))
-        
-        elif param == 0x75:  # LFO Fade Time
-            self.lfo_fade.setValue(value)
-        
-        elif param == 0x76:  # LFO Pitch Depth
-            self.lfo_pitch.setValue(value)
-        
-        elif param == 0x77:  # LFO Filter Depth
-            self.lfo_filter.setValue(value)
-        
-        elif param == 0x78:  # LFO Amp Depth
-            self.lfo_amp.setValue(value)
-        
-        # Modulation Matrix
-        elif param == 0x80:  # Mod Source
-            self.mod_source.setCurrentIndex(value)
-        
-        elif param == 0x81:  # Mod Destination
-            self.mod_dest.setCurrentIndex(value)
-        
-        elif param == 0x82:  # Mod Depth
-            self.mod_depth.setValue(value - 64)
-        
-    def _create_section_header(self, title, color):
-        """Create a colored header for a section"""
-        header = QFrame()
-        header.setFixedHeight(24)
-        header.setAutoFillBackground(True)
-        
-        # Set background color
-        palette = header.palette()
-        palette.setColor(QPalette.Window, QColor(color))
-        header.setPalette(palette)
-        
-        # Add label
-        layout = QHBoxLayout(header)
-        layout.setContentsMargins(6, 0, 6, 0)
-        label = QLabel(title)
-        label.setStyleSheet("color: white; font-weight: bold;")
-        layout.addWidget(label)
-        
-        return header
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to save patch file: {str(e)}"
+            )
+            logging.error(f"Error saving patch: {str(e)}")
 
-    def _create_common_section(self):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-        
-        # Add header
-        layout.addWidget(self._create_section_header("Common", Style.COM_BG))
-        
-        # Controls container
-        controls = QHBoxLayout()
-        
-        # Left side controls
-        left = QVBoxLayout()
-        left.setSpacing(15)
-        
-        # Patch name with border
-        name_frame = QFrame()
-        name_frame.setFrameStyle(QFrame.StyledPanel)
-        name_layout = QVBoxLayout(name_frame)
-        name_layout.addWidget(QLabel("Patch Name"))
-        self.patch_name = QLineEdit()
-        self.patch_name.setMaxLength(12)
-        self.patch_name.setFont(Style.PATCH_NAME_FONT)
-        name_layout.addWidget(self.patch_name)
-        left.addWidget(name_frame)
-        
-        # Category in its own frame
-        cat_frame = QFrame()
-        cat_frame.setFrameStyle(QFrame.StyledPanel)
-        cat_layout = QVBoxLayout(cat_frame)
-        cat_layout.addWidget(QLabel("Category"))
-        self.category_combo = QComboBox()
-        self.category_combo.addItems([
-            "00: not assigned", "09: Keyboard", "21: Bass", "34: Lead",
-            "35: Brass", "36: Strings/Pad", "39: FX/Other", "40: Seq"
-        ])
-        cat_layout.addWidget(self.category_combo)
-        left.addWidget(cat_frame)
-        
-        controls.addLayout(left, stretch=1)
-        
-        # Right side controls
-        right = QVBoxLayout()
-        right.setSpacing(15)
-        
-        # Volume and Pan in frame
-        vol_frame = QFrame()
-        vol_frame.setFrameStyle(QFrame.StyledPanel)
-        vol_layout = QHBoxLayout(vol_frame)
-        self.volume_slider = Slider("Volume", 0, 127)
-        self.pan_slider = Slider("Pan", -64, 63, center=True)
-        vol_layout.addWidget(self.volume_slider)
-        vol_layout.addWidget(self.pan_slider)
-        right.addWidget(vol_frame)
-        
-        # Portamento in frame
-        porta_frame = QFrame()
-        porta_frame.setFrameStyle(QFrame.StyledPanel)
-        porta_layout = QHBoxLayout(porta_frame)
-        self.portamento_slider = Slider("Portamento Time", 0, 127)
-        self.portamento_switch = QPushButton("Portamento")
-        self.portamento_switch.setCheckable(True)
-        self.portamento_switch.setFixedWidth(100)
-        porta_layout.addWidget(self.portamento_slider)
-        porta_layout.addWidget(self.portamento_switch)
-        right.addWidget(porta_frame)
-        
-        controls.addLayout(right, stretch=2)
-        layout.addLayout(controls)
-        
-        return frame
-
-    def _create_partial_tab(self, partial_num):
-        partial = QWidget()
-        layout = QVBoxLayout(partial)
-        
-        # Create sections
-        osc_frame = self._create_oscillator_section(partial_num)
-        filter_frame = self._create_filter_section(partial_num)
-        amp_frame = self._create_amplifier_section(partial_num)
-        
-        layout.addWidget(osc_frame)
-        layout.addWidget(filter_frame)
-        layout.addWidget(amp_frame)
-        
-        return partial
-        
-    def _create_oscillator_section(self, partial_num):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-        
-        # Add header
-        layout.addWidget(self._create_section_header("Oscillator", Style.OSC_BG))
-        
-        # Controls in horizontal layout
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Wave selection in its own frame
-        wave_frame = QFrame()
-        wave_frame.setFrameStyle(QFrame.StyledPanel)
-        wave_layout = QVBoxLayout(wave_frame)
-        wave_layout.addWidget(QLabel("Waveform"))
-        wave_btn = WaveformButton()
-        self.wave_buttons.append(wave_btn)
-        wave_layout.addWidget(wave_btn)
-        controls.addWidget(wave_frame)
-        
-        # Oscillator controls in frame
-        params_frame = QFrame()
-        params_frame.setFrameStyle(QFrame.StyledPanel)
-        params = QVBoxLayout(params_frame)
-        pitch_slider = Slider("Pitch", -24, 24, center=True)
-        fine_slider = Slider("Fine Tune", -50, 50, center=True)
-        pwm_slider = Slider("PWM", 0, 127)
-        
-        self.pitch_sliders.append(pitch_slider)
-        self.fine_sliders.append(fine_slider)
-        self.pwm_sliders.append(pwm_slider)
-        
-        params.addWidget(pitch_slider)
-        params.addWidget(fine_slider)
-        params.addWidget(pwm_slider)
-        controls.addWidget(params_frame)
-        
-        layout.addLayout(controls)
-        return frame
-        
-    def _create_filter_section(self, partial_num):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-        
-        # Add header
-        layout.addWidget(self._create_section_header("Filter", Style.VCF_BG))
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Filter parameters frame
-        params_frame = QFrame()
-        params_frame.setFrameStyle(QFrame.StyledPanel)
-        params_layout = QVBoxLayout(params_frame)
-        params_layout.setSpacing(10)
-        
-        # Cutoff and Resonance
-        cutoff = Slider("Cutoff", 0, 127)
-        resonance = Slider("Resonance", 0, 127)
-        keyfollow = Slider("Key Follow", -100, 100, center=True)
-        
-        self.cutoff_sliders.append(cutoff)
-        self.resonance_sliders.append(resonance)
-        self.keyfollow_sliders.append(keyfollow)
-        
-        params_layout.addWidget(cutoff)
-        params_layout.addWidget(resonance)
-        params_layout.addWidget(keyfollow)
-        controls.addWidget(params_frame)
-        
-        # Filter envelope frame
-        env_frame = QFrame()
-        env_frame.setFrameStyle(QFrame.StyledPanel)
-        env_layout = QVBoxLayout(env_frame)
-        env_layout.setSpacing(10)
-        
-        # Add envelope label
-        env_header = QLabel("Envelope")
-        env_header.setStyleSheet("font-weight: bold;")
-        env_layout.addWidget(env_header)
-        
-        # ADSR controls
-        attack = Slider("Attack", 0, 127)
-        decay = Slider("Decay", 0, 127)
-        sustain = Slider("Sustain", 0, 127)
-        release = Slider("Release", 0, 127)
-        
-        self.filter_env_attack.append(attack)
-        self.filter_env_decay.append(decay)
-        self.filter_env_sustain.append(sustain)
-        self.filter_env_release.append(release)
-        
-        env_layout.addWidget(attack)
-        env_layout.addWidget(decay)
-        env_layout.addWidget(sustain)
-        env_layout.addWidget(release)
-        controls.addWidget(env_frame)
-        
-        layout.addLayout(controls)
-        return frame
-        
-    def _create_amplifier_section(self, partial_num):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-        
-        # Add header
-        layout.addWidget(self._create_section_header("Amplifier", Style.AMP_BG))
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Level controls frame
-        level_frame = QFrame()
-        level_frame.setFrameStyle(QFrame.StyledPanel)
-        level_layout = QVBoxLayout(level_frame)
-        level_layout.setSpacing(10)
-        
-        # Add level label
-        level_header = QLabel("Level")
-        level_header.setStyleSheet("font-weight: bold;")
-        level_layout.addWidget(level_header)
-        
-        # Level and velocity controls
-        level = Slider("Level", 0, 127)
-        velocity = Slider("Velocity Sens", -63, 63, center=True)
-        
-        self.level_sliders.append(level)
-        self.velocity_sliders.append(velocity)
-        
-        level_layout.addWidget(level)
-        level_layout.addWidget(velocity)
-        controls.addWidget(level_frame)
-        
-        # Amp envelope frame
-        env_frame = QFrame()
-        env_frame.setFrameStyle(QFrame.StyledPanel)
-        env_layout = QVBoxLayout(env_frame)
-        env_layout.setSpacing(10)
-        
-        # Add envelope label
-        env_header = QLabel("Envelope")
-        env_header.setStyleSheet("font-weight: bold;")
-        env_layout.addWidget(env_header)
-        
-        # ADSR controls
-        attack = Slider("Attack", 0, 127)
-        decay = Slider("Decay", 0, 127)
-        sustain = Slider("Sustain", 0, 127)
-        release = Slider("Release", 0, 127)
-        
-        self.amp_env_attack.append(attack)
-        self.amp_env_decay.append(decay)
-        self.amp_env_sustain.append(sustain)
-        self.amp_env_release.append(release)
-        
-        env_layout.addWidget(attack)
-        env_layout.addWidget(decay)
-        env_layout.addWidget(sustain)
-        env_layout.addWidget(release)
-        controls.addWidget(env_frame)
-        
-        layout.addLayout(controls)
-        return frame
-        
-    def _create_modulation_section(self):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-        
-        # Add header
-        layout.addWidget(self._create_section_header("Modulation", Style.LFO_BG))
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # LFO Frame
-        lfo_frame = QFrame()
-        lfo_frame.setFrameStyle(QFrame.StyledPanel)
-        lfo_layout = QVBoxLayout(lfo_frame)
-        lfo_layout.setSpacing(10)
-        
-        # LFO Wave selection
-        wave_layout = QHBoxLayout()
-        wave_layout.addWidget(QLabel("Waveform:"))
-        self.lfo_wave = QComboBox()
-        self.lfo_wave.addItems(["Triangle", "Sine", "Square", "Sample & Hold", "Random"])
-        wave_layout.addWidget(self.lfo_wave)
-        lfo_layout.addLayout(wave_layout)
-        
-        # Rate controls in frame
-        rate_frame = QFrame()
-        rate_frame.setFrameStyle(QFrame.StyledPanel)
-        rate_layout = QVBoxLayout(rate_frame)
-        
-        sync_layout = QHBoxLayout()
-        self.lfo_sync = QPushButton("Sync")
-        self.lfo_sync.setCheckable(True)
-        self.lfo_sync.setFixedWidth(80)
-        sync_layout.addWidget(self.lfo_sync)
-        self.lfo_rate = Slider("Rate", 0, 127)
-        sync_layout.addWidget(self.lfo_rate)
-        rate_layout.addLayout(sync_layout)
-        
-        self.lfo_note = QComboBox()
-        self.lfo_note.addItems([
-            "16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2", "3/8", "1/3",
-            "1/4", "3/16", "1/6", "1/8", "3/32", "1/12", "1/16", "1/24", "1/32"
-        ])
-        self.lfo_note.setVisible(False)
-        rate_layout.addWidget(self.lfo_note)
-        lfo_layout.addWidget(rate_frame)
-        
-        # Other LFO controls
-        controls_frame = QFrame()
-        controls_frame.setFrameStyle(QFrame.StyledPanel)
-        controls_layout = QVBoxLayout(controls_frame)
-        
-        self.lfo_key_trigger = QPushButton("Key Trigger")
-        self.lfo_key_trigger.setCheckable(True)
-        self.lfo_key_trigger.setFixedWidth(80)
-        controls_layout.addWidget(self.lfo_key_trigger)
-        
-        self.lfo_fade = Slider("Fade Time", 0, 127)
-        controls_layout.addWidget(self.lfo_fade)
-        lfo_layout.addWidget(controls_frame)
-        
-        # LFO Depths in frame
-        depths_frame = QFrame()
-        depths_frame.setFrameStyle(QFrame.StyledPanel)
-        depths_layout = QVBoxLayout(depths_frame)
-        self.lfo_pitch = Slider("Pitch Depth", 0, 127)
-        self.lfo_filter = Slider("Filter Depth", 0, 127)
-        self.lfo_amp = Slider("Amp Depth", 0, 127)
-        depths_layout.addWidget(self.lfo_pitch)
-        depths_layout.addWidget(self.lfo_filter)
-        depths_layout.addWidget(self.lfo_amp)
-        lfo_layout.addWidget(depths_frame)
-        
-        controls.addWidget(lfo_frame)
-        
-        # Modulation Matrix frame
-        mod_frame = QFrame()
-        mod_frame.setFrameStyle(QFrame.StyledPanel)
-        mod_layout = QVBoxLayout(mod_frame)
-        mod_layout.setSpacing(10)
-        
-        # Source selection
-        source_frame = QFrame()
-        source_frame.setFrameStyle(QFrame.StyledPanel)
-        source_layout = QVBoxLayout(source_frame)
-        source_layout.addWidget(QLabel("Source:"))
-        self.mod_source = QComboBox()
-        self.mod_source.addItems([
-            "Off", "Velocity", "Key Follow", "Bender", "Modulation",
-            "Aftertouch", "Expression"
-        ])
-        source_layout.addWidget(self.mod_source)
-        mod_layout.addWidget(source_frame)
-        
-        # Destination selection
-        dest_frame = QFrame()
-        dest_frame.setFrameStyle(QFrame.StyledPanel)
-        dest_layout = QVBoxLayout(dest_frame)
-        dest_layout.addWidget(QLabel("Destination:"))
-        self.mod_dest = QComboBox()
-        self.mod_dest.addItems([
-            "Off", "Pitch", "Filter", "Amp", "LFO Rate", "LFO Pitch",
-            "LFO Filter", "LFO Amp"
-        ])
-        dest_layout.addWidget(self.mod_dest)
-        mod_layout.addWidget(dest_frame)
-        
-        # Depth control
-        depth_frame = QFrame()
-        depth_frame.setFrameStyle(QFrame.StyledPanel)
-        self.mod_depth = Slider("Depth", -63, 63, center=True)
-        depth_frame.setLayout(QVBoxLayout())
-        depth_frame.layout().addWidget(self.mod_depth)
-        mod_layout.addWidget(depth_frame)
-        
-        controls.addWidget(mod_frame)
-        layout.addLayout(controls)
-        
-        return frame 
+    # ... (to be continued in next message) 
