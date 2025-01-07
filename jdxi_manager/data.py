@@ -45,3 +45,124 @@ DR = {}  # Drums data
 FX = {}  # Effects data
 ARP = {} # Arpeggio data
 VFX = {} # Vocal FX data 
+
+class ARP:
+    PATTERNS = [
+        "Up",
+        "Down",
+        "Up/Down",
+        "Random",
+        "Note Order",
+        "Up x2",
+        "Down x2",
+        "Up&Down"
+    ]
+    
+    NOTE_VALUES = [
+        "1/32",
+        "1/16T",
+        "1/16",
+        "1/8T",
+        "1/8",
+        "1/4T",
+        "1/4",
+        "1/2T",
+        "1/2",
+        "1/1T",
+        "1/1"
+    ] 
+
+class FX:
+    REVERB_TYPES = [
+        "Room 1",
+        "Room 2",
+        "Stage 1",
+        "Stage 2",
+        "Hall 1",
+        "Hall 2"
+    ]
+    
+    DELAY_NOTES = [
+        "1/32",
+        "1/16T",
+        "1/16",
+        "1/8T",
+        "1/8",
+        "1/4T",
+        "1/4",
+        "1/2T",
+        "1/2",
+        "1/1T",
+        "1/1"
+    ]
+    
+    EFFECT_TYPES = [
+        "Distortion",
+        "Fuzz",
+        "Compressor",
+        "Bit Crusher",
+        "Ring Mod",
+        "Slicer",
+        "Auto Pan",
+        "Tremolo",
+        "Phaser",
+        "Flanger"
+    ] 
+
+class DigitalSynth:
+    # SysEx header
+    HEADER = bytes([
+        0xF0, 0x41,       # SysEx start, Roland ID
+        0x10,             # Device ID  
+        0x00, 0x00, 0x00, # Model ID
+        0x0E,             # JD-Xi ID
+        0x19              # Digital Synth area
+    ])
+    
+    # Parameter addresses
+    SECTIONS = {
+        'OSC': {
+            'base': 0x20,
+            'params': {
+                'WAVE': 0x00,
+                'RANGE': 0x01,
+                'COLOR': 0x02,
+                'TUNE': 0x03
+            }
+        },
+        'FILTER': {
+            'base': 0x21,
+            'params': {
+                'CUTOFF': 0x00,
+                'RESONANCE': 0x01,
+                'KEY_FOLLOW': 0x02,
+                'ENV_DEPTH': 0x03
+            }
+        },
+        'AMP': {
+            'base': 0x22,
+            'params': {
+                'LEVEL': 0x00,
+                'PAN': 0x01,
+                'VELOCITY': 0x02
+            }
+        },
+        'LFO': {
+            'base': 0x26,
+            'params': {
+                'WAVE': 0x00,
+                'RATE': 0x01,
+                'FADE': 0x02,
+                'PITCH_DEPTH': 0x03,
+                'FILTER_DEPTH': 0x04,
+                'AMP_DEPTH': 0x05
+            }
+        }
+    }
+    
+    # Parameter ranges and conversions
+    PARAM_INFO = {
+        ('OSC', 'RANGE'): {'min': -24, 'max': 24, 'offset': 24},
+        ('FILTER', 'KEY_FOLLOW'): {'min': -64, 'max': 63, 'offset': 64},
+        ('AMP', 'PAN'): {'min': -64, 'max': 63, 'offset': 64}
+    } 

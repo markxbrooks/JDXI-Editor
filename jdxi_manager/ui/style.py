@@ -3,55 +3,127 @@ from PySide6.QtCore import Qt
 
 class Style:
     # Colors
-    BACKGROUND = "#3C3C3C"
-    DIVIDER = "#232323"
-    FONT_COLOR = "#FFFFFF"
-    BUTTON_COLOR = "#303030"
-    BUTTON_SELECTED = "#2897B7"
-    BUTTON_DISABLED = "#545454"
-    
-    # Title strip colors
+    BACKGROUND = "black"
+    TEXT = "white"
+    MENU_HOVER = "#333333"
+    BORDER = "#333333"
+    RED = "#d51e35"
+    BLUE = "#00A0E9"
+    ORANGE = "#FF8C00"
+
+    # Section colors
     OSC_BG = "#FFA200"  # Orange
     VCF_BG = "#E83939"  # Red
     AMP_BG = "#AF7200"  # Brown
-    COM_BG = "#3A464E"  # Gray
-    CFG_BG = "#3C3C3C"  # Dark Gray
     LFO_BG = "#E86333"  # Orange-Red
+    MOD_BG = "#B75628"  # Dark Orange
+    COM_BG = "#3A464E"  # Gray
+    ARP_BG = "#E86333"  # Orange-Red
     
-    # Fonts
-    STANDARD_FONT = QFont("Sans", 10)
-    SMALL_FONT = QFont("Sans", 8)
-    SMALL_BOLD_FONT = QFont("Sans", 8, QFont.Bold)
-    MIDI_CONFIG_FONT = QFont("Sans", 9)
-    PATCH_NAME_FONT = QFont("Fixed", 10)
-    BUTTON_FONT = QFont("Sans", 9, QFont.Bold)
-    
-    # Dimensions
-    DIVIDER_WIDTH = 1
-    PADDING_Y = 5
-    BUTTON_PADDING_X = 6
-    BUTTON_PADDING_Y = 3
-    
-    @classmethod
-    def apply_to_widget(cls, widget):
-        """Apply default style to a widget"""
-        widget.setFont(cls.STANDARD_FONT)
-        widget.setStyleSheet(f"""
-            QWidget {{
-                background-color: {cls.BACKGROUND};
-                color: {cls.FONT_COLOR};
-            }}
-            QPushButton {{
-                background-color: {cls.BUTTON_COLOR};
-                color: {cls.BUTTON_SELECTED};
-                border: none;
-                padding: {cls.BUTTON_PADDING_Y}px {cls.BUTTON_PADDING_X}px;
-                font: {cls.BUTTON_FONT.toString()};
-            }}
-            QPushButton:disabled {{
-                color: {cls.BUTTON_DISABLED};
-            }}
-            QFrame {{
-                border: {cls.DIVIDER_WIDTH}px solid {cls.DIVIDER};
-            }}
-        """) 
+    # Effects colors
+    FX1_BG = "#FF8C00"   # Dark Orange
+    FX2_BG = "#FF4500"   # Orange-Red
+    REVERB_BG = "#E83939" # Red
+    DELAY_BG = "#FF6347"  # Tomato
+    CHORUS_BG = "#DC143C" # Crimson
+    MASTER_BG = "#8B0000" # Dark Red
+
+    # Common styles
+    DARK_THEME = """
+        QMainWindow, QDialog {
+            background-color: black;
+        }
+        QWidget {
+            background-color: black;
+            color: white;
+        }
+        QMenuBar {
+            background-color: black;
+            color: white;
+        }
+        QMenuBar::item:selected {
+            background-color: #333333;
+        }
+        QMenu {
+            background-color: black;
+            color: white;
+        }
+        QMenu::item:selected {
+            background-color: #333333;
+        }
+        QGroupBox {
+            border: 1px solid #333333;
+        }
+        QLabel {
+            background-color: transparent;
+        }
+        QStatusBar {
+            background-color: black;
+            color: white;
+        }
+        QScrollArea {
+            background-color: black;
+        }
+        QScrollBar {
+            background-color: black;
+            border: 1px solid #333333;
+        }
+        QFrame {
+            background-color: black;
+            color: white;
+        }
+        QPushButton {
+            background-color: black;
+            color: white;
+            border: 1px solid #333333;
+        }
+        QComboBox {
+            background-color: black;
+            color: white;
+            border: 1px solid #333333;
+            padding: 4px 8px;
+            text-align: left;
+        }
+        QComboBox::drop-down {
+            border: none;
+            padding-right: 8px;
+        }
+        QComboBox::down-arrow {
+            image: none;
+        }
+        QComboBox QAbstractItemView {
+            background-color: black;
+            color: white;
+            border: 1px solid #333333;
+            selection-background-color: #333333;
+        }
+        QComboBox QAbstractItemView::item {
+            padding: 4px 8px;
+            text-align: left;
+            min-height: 24px;
+        }
+        QComboBox::item:selected {
+            background-color: #333333;
+            color: white;
+            text-align: left;
+        }
+        QComboBox::indicator {
+            left: 4px;
+        }
+        QSlider {
+            background-color: black;
+        }
+        QSlider::groove:horizontal {
+            background-color: #d51e35;
+            height: 2px;
+        }
+        QSlider::handle:horizontal {
+            background-color: white;
+            width: 12px;
+            margin: -5px 0;
+            border-radius: 6px;
+        }
+        QSlider::sub-page:horizontal {
+            background-color: #d51e35;
+        }
+    """ 
