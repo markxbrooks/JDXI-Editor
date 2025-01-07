@@ -1,2 +1,0 @@
-[console_scripts]
-jdxi_manager = jdxi_manager.main:main
