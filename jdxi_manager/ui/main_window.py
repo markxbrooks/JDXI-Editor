@@ -3,8 +3,8 @@ from PySide6.QtWidgets import (
     QMenuBar, QMenu, QMessageBox, QLabel, QPushButton,
     QFrame, QGridLayout, QGroupBox
 )
-from PySide6.QtCore import Qt, QSettings
-from PySide6.QtGui import QIcon, QAction, QFont
+from PySide6.QtCore import Qt, QSettings, QByteArray
+from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor
 
 from .editors import (
     AnalogSynthEditor,
@@ -18,11 +18,103 @@ from .patch_manager import PatchManager
 from .widgets import MIDIIndicator, LogViewer
 from ..midi import MIDIHelper
 
+def get_jdxi_image():
+    """Create a QPixmap of the JD-Xi"""
+    # Create a black background image with correct aspect ratio
+    width = 620
+    height = 240
+    image = QImage(width, height, QImage.Format_RGB32)
+    image.fill(Qt.black)
+    
+    # Create a pixmap from the image
+    pixmap = QPixmap.fromImage(image)
+    
+    # Draw the JD-Xi
+    painter = QPainter(pixmap)
+    painter.setRenderHint(QPainter.Antialiasing)
+    
+    # Main body outline
+    margin = 10
+    painter.setPen(QPen(QColor("#d51e35"), 2))  # Red outline
+    painter.drawRoundedRect(margin, margin, width-2*margin, height-2*margin, 10, 10)
+    
+    # Top row of knobs
+    knob_size = 20
+    num_knobs = 6
+    knob_y = margin + 25
+    
+    # Calculate 15% of total width for additional offset
+    right_offset = width * 0.15
+    knob_start = margin + 150 + right_offset  # Added right_offset
+    knob_spacing = (width - knob_start - margin) / (num_knobs + 1)
+    
+    # LED display area (keep in original position)
+    display_x = margin + 20
+    display_y = margin + 20
+    display_width = 110
+    display_height = 35
+    painter.setPen(QPen(QColor("#FF8C00"), 1))
+    painter.drawRect(display_x, display_y, display_width, display_height)
+    
+    # Program buttons (next to display)
+    button_width = 25
+    button_x = display_x + display_width + 10
+    
+    # Draw black knobs with red outline
+    painter.setBrush(Qt.black)
+    painter.setPen(QPen(QColor("#d51e35"), 2))
+    for i in range(num_knobs):
+        x = knob_start + i * knob_spacing - knob_size/2
+        painter.drawEllipse(int(x), knob_y, knob_size, knob_size)
+    
+    # Keyboard section (offset to right, but within bounds)
+    keyboard_width = 520
+    keyboard_start = width - keyboard_width - margin - 10
+    key_width = keyboard_width / 25  # 25 white keys
+    white_keys = 25
+    black_key_width = key_width * 0.6
+    black_key_height = 45
+    white_key_height = 70
+    keyboard_y = height - white_key_height - margin - 5
+    
+    # Draw white keys
+    painter.setBrush(Qt.white)
+    painter.setPen(Qt.black)
+    for i in range(white_keys):
+        painter.drawRect(
+            keyboard_start + i*key_width, 
+            keyboard_y,
+            key_width-1,
+            white_key_height
+        )
+    
+    # Draw black keys
+    painter.setBrush(Qt.black)
+    black_key_positions = [0,1,3,4,5]  # Pattern for one octave
+    for octave in range(4):
+        for pos in black_key_positions:
+            x = keyboard_start + (octave*7 + pos)*key_width + key_width/2
+            painter.drawRect(
+                int(x),
+                keyboard_y,
+                int(black_key_width),
+                black_key_height
+            )
+    
+    # Draw some LEDs
+    painter.setBrush(QColor("#d51e35"))
+    led_y = display_y + 50
+    for i in range(6):
+        painter.drawEllipse(margin + 30 + i*25, led_y, 6, 6)
+    
+    painter.end()
+    return pixmap
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("JD-Xi Manager")
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(620, 248)
         
         # Set black background for entire application
         self.setStyleSheet("""
@@ -80,9 +172,17 @@ class MainWindow(QMainWindow):
         """Create the main dashboard"""
         central = QWidget()
         self.setCentralWidget(central)
-        layout = QVBoxLayout(central)
+        
+        # Create main horizontal layout to hold everything
+        main_layout = QHBoxLayout(central)
+        main_layout.setSpacing(20)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        
+        # Left side container for existing content
+        left_container = QWidget()
+        layout = QVBoxLayout(left_container)
         layout.setSpacing(20)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(0, 0, 0, 0)
         
         # Welcome header
         header = QLabel("JD-Xi Manager")
@@ -206,6 +306,17 @@ class MainWindow(QMainWindow):
         button_grid.addLayout(boxes_container, 1, 0, 1, 2)  # Row 1
         
         layout.addLayout(button_grid)
+        
+        # Add left container to main layout
+        main_layout.addWidget(left_container)
+        
+        # Right side image
+        image_label = QLabel()
+        pixmap = get_jdxi_image()
+        pixmap = pixmap.scaledToWidth(300, Qt.SmoothTransformation)
+        image_label.setPixmap(pixmap)
+        image_label.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(image_label)
         
     def _create_section(self, title):
         """Create a section frame with title"""
