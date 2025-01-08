@@ -3,8 +3,9 @@ from PySide6.QtWidgets import (
     QMenuBar, QMenu, QMessageBox, QLabel, QPushButton,
     QFrame, QGridLayout, QGroupBox
 )
-from PySide6.QtCore import Qt, QSettings, QByteArray
-from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor
+from PySide6.QtCore import Qt, QSettings, QByteArray, QTimer
+from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
+import logging
 
 from .editors import (
     AnalogSynthEditor,
@@ -18,7 +19,7 @@ from .patch_manager import PatchManager
 from .widgets import MIDIIndicator, LogViewer
 from ..midi import MIDIHelper
 
-def get_jdxi_image():
+def get_jdxi_image(digital_font_family=None):
     """Create a QPixmap of the JD-Xi"""
     # Create a black background image with correct aspect ratio
     width = 1000
@@ -43,7 +44,7 @@ def get_jdxi_image():
     title_x = display_x
     title_y = margin + 15
     painter.setPen(QPen(Qt.white))
-    painter.setFont(QFont("Arial", 28, QFont.Bold))
+    painter.setFont(QFont("Myriad Pro, Arial", 28, QFont.Bold))
     painter.drawText(title_x, title_y, "JD-Xi Manager")
     
     # LED display area (enlarged for 2 rows)
@@ -66,7 +67,10 @@ def get_jdxi_image():
     # Load button (text only)
     load_x = display_x + button_margin
     painter.setPen(QPen(QColor("#FF8C00")))
-    painter.setFont(QFont("Arial", 20))
+    if digital_font_family:
+        painter.setFont(QFont(digital_font_family, 18))
+    else:
+        painter.setFont(QFont("Consolas", 18))  # Fallback font
     painter.drawText(
         load_x, 
         button_y + button_height - 8, 
@@ -81,15 +85,15 @@ def get_jdxi_image():
         "Save Part"
     )
     
-    # Keyboard section (moved to bottom)
+    # Keyboard section (moved up and taller)
     keyboard_width = 800
     keyboard_start = width - keyboard_width - margin - 20
-    key_width = keyboard_width / 25
-    white_keys = 25
+    key_width = keyboard_width / 32  # Increased from 25 to 32 keys
+    white_keys = 32  # Increased total white keys
     black_key_width = key_width * 0.6
-    black_key_height = 70
-    white_key_height = 110
-    keyboard_y = height - white_key_height  # Removed bottom margin
+    black_key_height = 80
+    white_key_height = 127
+    keyboard_y = height - white_key_height - (height * 0.1) + (white_key_height * 0.3)  # Added 10% of key height
     
     # Draw white keys
     painter.setBrush(Qt.white)
@@ -140,27 +144,37 @@ def get_jdxi_image():
     """
     
     # Draw sequencer section
-    seq_y = keyboard_y - 50  # Position above keyboard
+    seq_y = keyboard_y - 50  # Keep same distance above keyboard
     seq_height = 30
     seq_width = keyboard_width * 0.5  # Use roughly half keyboard width
     seq_x = width - margin - 20 - seq_width  # Align with right edge of keyboard
     
     # Calculate step dimensions
     step_count = 16
-    step_size = seq_height  # Make steps square
-    step_spacing = (seq_width - (step_count * step_size)) / (step_count - 1)
+    step_size = 20  # Smaller square size
+    total_spacing = seq_width - (step_count * step_size)
+    step_spacing = total_spacing / (step_count - 1)
     
     # Draw horizontal measure lines (white)
     painter.setPen(QPen(Qt.white, 1))
-    line_spacing = seq_height / 3  # Divide height into 4 sections
-    for i in range(4):  # 3 lines (4 sections)
-        y = seq_y + (i + 1) * line_spacing
-        painter.drawLine(
-            int(seq_x), 
-            int(y), 
-            int(seq_x + seq_width), 
-            int(y)
-        )
+    line_y = seq_y - 10  # Move lines above buttons
+    measure_width = (step_size + step_spacing) * 4  # Width of 4 steps
+    line_spacing = step_size / 3  # Space between lines
+    
+    beats_list = [2, 3, 4]
+    # Draw 4 separate measure lines
+    for beats in beats_list:
+        for measure in range(beats):
+            measure_x = seq_x + measure * measure_width
+            for i in range(beats):  # 2, 3 or 4 horizontal lines per measure
+                y = line_y - 25 + i * line_spacing
+                painter.drawLine(
+                    int(measure_x),
+                    int(y),
+                    int(measure_x + measure_width - step_spacing),  # Stop before next measure
+                    int(y)
+                )
+
     
     # Draw sequence steps
     for i in range(step_count):
@@ -240,6 +254,26 @@ class MainWindow(QMainWindow):
         self.midi_in = None
         self.midi_out = None
         
+        # Load custom font with relative path
+        import os
+        font_path = os.path.join(os.path.dirname(__file__), "..", "..", "resources", "fonts", "DS-DIGI.TTF")
+        if os.path.exists(font_path):
+            logging.debug(f"Found file, Loading DS-DIGI font from {font_path}")
+            try:
+                font_id = QFontDatabase.addApplicationFont(font_path)
+                if font_id < 0:
+                    logging.debug(f"Error loading DS-DIGI font from {font_path} : {e}")
+                font_families = QFontDatabase.applicationFontFamilies(font_id)
+                if font_families:
+                    self.digital_font_family = font_families[0]
+                    logging.debug(f"Successfully loaded font family: {self.digital_font_family}")
+                else:
+                    logging.debug("No font families found after loading font")
+            except Exception as e:
+                logging.exception(f"Error loading DS-DIGI font from {font_path}: {e}")
+        else:
+            logging.debug(f"File not found: {font_path}")
+        
         # Create UI
         self._create_menu_bar()
         self._create_central_widget()
@@ -268,8 +302,8 @@ class MainWindow(QMainWindow):
         container.setLayout(QVBoxLayout())
         container.layout().setContentsMargins(0, 0, 0, 0)
         
-        # Get the JD-Xi image
-        pixmap = get_jdxi_image()
+        # Get the JD-Xi image with digital font
+        pixmap = get_jdxi_image(self.digital_font_family if hasattr(self, 'digital_font_family') else None)
         
         # Create label for image
         image_label = QLabel()
@@ -488,12 +522,14 @@ class MainWindow(QMainWindow):
         label = QLabel(text)
         if text == "Analog Synth":
             label.setStyleSheet("""
+                font-family: "Myriad Pro", Arial;
                 font-size: 13px;
                 color: #00A0E9;  /* Blue for Analog */
                 font-weight: bold;
             """)
         else:
             label.setStyleSheet("""
+                font-family: "Myriad Pro", Arial;
                 font-size: 13px;
                 color: #d51e35;  /* Base red */
                 font-weight: bold;
@@ -537,7 +573,7 @@ class MainWindow(QMainWindow):
         # Parts Select section with Arpeggiator
         parts_container = QWidget(widget)
         parts_x = self.display_x + self.display_width + 30
-        parts_y = self.display_y - (self.height * 0.15)  # Move up by 15% of window height
+        parts_y = self.display_y - (self.height * 0.15)  # Move up by 20% of window height
         
         parts_container.setGeometry(parts_x, parts_y, 220, 250)
         parts_layout = QVBoxLayout(parts_container)
@@ -546,6 +582,7 @@ class MainWindow(QMainWindow):
         # Add Parts Select label
         parts_label = QLabel("Parts Select")
         parts_label.setStyleSheet("""
+            font-family: "Myriad Pro", Arial;
             font-size: 14px;
             color: #d51e35;
             font-weight: bold;
@@ -579,3 +616,91 @@ class MainWindow(QMainWindow):
         # Make containers transparent
         parts_container.setStyleSheet("background: transparent;")
         fx_container.setStyleSheet("background: transparent;") 
+        
+        # Calculate keyboard dimensions
+        key_width = self.width * 0.8 / 25  # keyboard_width/25
+        key_height = 127  # white_key_height
+        keyboard_y = self.height - key_height - (self.height * 0.1) + (key_height * 0.3)
+        keyboard_start = self.width - (self.width * 0.8) - self.margin - 20
+        
+        # Add white keys C1 to F5
+        white_notes = [
+            36, 38, 40, 41, 43, 45, 47,  # C1 to B1
+            48, 50, 52, 53, 55, 57, 59,  # C2 to B2
+            60, 62, 64, 65, 67, 69, 71,  # C3 to B3
+            72, 74, 76, 77, 79, 81, 83,  # C4 to B4
+            84, 86, 88, 89              # C5 to F5
+        ]
+        
+        for i, note in enumerate(white_notes):
+            x_pos = keyboard_start + i * key_width
+            self._add_piano_key(widget, False, note, x_pos, keyboard_y, key_width, key_height)
+            
+        # Add black keys
+        black_notes = [
+            37, 39, None, 42, 44, 46,     # C#1 to B1
+            49, 51, None, 54, 56, 58,     # C#2 to B2
+            61, 63, None, 66, 68, 70,     # C#3 to B3
+            73, 75, None, 78, 80, 82,     # C#4 to B4
+            85, 87, None, 90              # C#5 to F#5
+        ]
+        
+        black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19, 
+                         21, 22, 24, 25, 26, 28, 29, 31, 32]  # Extended positions
+        
+        for pos, note in zip(black_positions, [n for n in black_notes if n is not None]):
+            x_pos = keyboard_start + pos * key_width + key_width/2
+            self._add_piano_key(widget, True, note, x_pos, keyboard_y, key_width, key_height)
+        
+    def _add_piano_key(self, widget, is_black, note_number, x_pos, keyboard_y, key_width, key_height):
+        """Helper to create a piano key button"""
+        button = QPushButton(widget)
+        
+        if is_black:
+            width = key_width * 0.6
+            height = 80
+            style = """
+                QPushButton {
+                    background-color: black;
+                    border: 1px solid black;
+                    border-radius: 0px;
+                }
+                QPushButton:hover {
+                    background-color: #1a1a1a;
+                }
+                QPushButton:pressed {
+                    background-color: #333333;
+                }
+            """
+        else:
+            width = key_width - 1
+            height = key_height
+            style = """
+                QPushButton {
+                    background-color: white;
+                    border: 1px solid black;
+                    border-radius: 0px;
+                }
+                QPushButton:hover {
+                    background-color: #f0f0f0;
+                }
+                QPushButton:pressed {
+                    background-color: #e0e0e0;
+                }
+            """
+            
+        button.setGeometry(
+            int(x_pos),
+            int(keyboard_y),
+            int(width),
+            int(height)
+        )
+        button.setStyleSheet(style)
+        
+        def key_pressed():
+            if self.midi_out:
+                self.midi_out.send_message([0x90, note_number, 1])
+                logging.debug(f"Sent MIDI Note On {note_number} velocity 1")
+                QTimer.singleShot(100, lambda: self.midi_out.send_message([0x80, note_number, 5]))
+                
+        button.clicked.connect(key_pressed) 
