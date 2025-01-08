@@ -21,61 +21,75 @@ from ..midi import MIDIHelper
 def get_jdxi_image():
     """Create a QPixmap of the JD-Xi"""
     # Create a black background image with correct aspect ratio
-    width = 620
-    height = 240
+    width = 1000
+    height = 400
     image = QImage(width, height, QImage.Format_RGB32)
     image.fill(Qt.black)
     
-    # Create a pixmap from the image
     pixmap = QPixmap.fromImage(image)
-    
-    # Draw the JD-Xi
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.Antialiasing)
     
-    # Main body outline
-    margin = 10
-    painter.setPen(QPen(QColor("#d51e35"), 2))  # Red outline
-    painter.drawRoundedRect(margin, margin, width-2*margin, height-2*margin, 10, 10)
+    # Use smaller margins without border
+    margin = 15
     
-    # Top row of knobs
-    knob_size = 20
-    num_knobs = 6
-    knob_y = margin + 25
-    
-    # Calculate 15% of total width for additional offset
-    right_offset = width * 0.15
-    knob_start = margin + 150 + right_offset  # Added right_offset
-    knob_spacing = (width - knob_start - margin) / (num_knobs + 1)
-    
-    # LED display area (keep in original position)
+    # Define display position and size first
     display_x = margin + 20
     display_y = margin + 20
-    display_width = 110
-    display_height = 35
+    display_width = 180
+    display_height = 45
+    
+    # Title above display (moved down)
+    title_x = display_x
+    title_y = margin + 15
+    painter.setPen(QPen(Qt.white))
+    painter.setFont(QFont("Arial", 28, QFont.Bold))
+    painter.drawText(title_x, title_y, "JD-Xi Manager")
+    
+    # LED display area (enlarged for 2 rows)
+    display_x = margin + 20
+    display_y = title_y + 30
+    display_width = 180
+    display_height = 70
+    
+    # Draw dark grey background for display
+    painter.setBrush(QColor("#1A1A1A"))
     painter.setPen(QPen(QColor("#FF8C00"), 1))
     painter.drawRect(display_x, display_y, display_width, display_height)
     
-    # Program buttons (next to display)
-    button_width = 25
-    button_x = display_x + display_width + 10
+    # Load/Save buttons in display (without boxes)
+    button_width = 70
+    button_height = 25
+    button_margin = 10
+    button_y = display_y + (display_height - button_height*2 - button_margin) / 2
     
-    # Draw black knobs with red outline
-    painter.setBrush(Qt.black)
-    painter.setPen(QPen(QColor("#d51e35"), 2))
-    for i in range(num_knobs):
-        x = knob_start + i * knob_spacing - knob_size/2
-        painter.drawEllipse(int(x), knob_y, knob_size, knob_size)
+    # Load button (text only)
+    load_x = display_x + button_margin
+    painter.setPen(QPen(QColor("#FF8C00")))
+    painter.setFont(QFont("Arial", 20))
+    painter.drawText(
+        load_x, 
+        button_y + button_height - 8, 
+        "Load Part"
+    )
     
-    # Keyboard section (offset to right, but within bounds)
-    keyboard_width = 520
-    keyboard_start = width - keyboard_width - margin - 10
-    key_width = keyboard_width / 25  # 25 white keys
+    # Save button (text only)
+    save_x = display_x + button_margin
+    painter.drawText(
+        save_x, 
+        button_y + button_height*2 + button_margin - 8, 
+        "Save Part"
+    )
+    
+    # Keyboard section (moved to bottom)
+    keyboard_width = 800
+    keyboard_start = width - keyboard_width - margin - 20
+    key_width = keyboard_width / 25
     white_keys = 25
     black_key_width = key_width * 0.6
-    black_key_height = 45
-    white_key_height = 70
-    keyboard_y = height - white_key_height - margin - 5
+    black_key_height = 70
+    white_key_height = 110
+    keyboard_y = height - white_key_height  # Removed bottom margin
     
     # Draw white keys
     painter.setBrush(Qt.white)
@@ -90,7 +104,7 @@ def get_jdxi_image():
     
     # Draw black keys
     painter.setBrush(Qt.black)
-    black_key_positions = [0,1,3,4,5]  # Pattern for one octave
+    black_key_positions = [0,1,3,4,5]
     for octave in range(4):
         for pos in black_key_positions:
             x = keyboard_start + (octave*7 + pos)*key_width + key_width/2
@@ -101,11 +115,67 @@ def get_jdxi_image():
                 black_key_height
             )
     
-    # Draw some LEDs
-    painter.setBrush(QColor("#d51e35"))
-    led_y = display_y + 50
-    for i in range(6):
-        painter.drawEllipse(margin + 30 + i*25, led_y, 6, 6)
+    # Draw control sections
+    section_margin = 40
+    section_width = (keyboard_start - margin - section_margin) / 2
+    section_height = 200
+    section_y = margin + 100
+    
+    # Remove the red box borders for effects sections
+    # (Delete or comment out these lines)
+    """
+    # Draw horizontal Effects section above keyboard
+    effects_y = keyboard_y - 60  # Position above keyboard
+    effects_width = 120  # Width for each section
+    effects_height = 40
+    effects_spacing = 20
+    
+    # Arpeggiator section
+    arp_x = keyboard_start + (keyboard_width - (effects_width * 2 + effects_spacing)) / 2
+    painter.drawRect(arp_x, effects_y, effects_width, effects_height)
+    
+    # Effects section
+    fx_x = arp_x + effects_width + effects_spacing
+    painter.drawRect(fx_x, effects_y, effects_width, effects_height)
+    """
+    
+    # Draw sequencer section
+    seq_y = keyboard_y - 50  # Position above keyboard
+    seq_height = 30
+    seq_width = keyboard_width * 0.5  # Use roughly half keyboard width
+    seq_x = width - margin - 20 - seq_width  # Align with right edge of keyboard
+    
+    # Calculate step dimensions
+    step_count = 16
+    step_size = seq_height  # Make steps square
+    step_spacing = (seq_width - (step_count * step_size)) / (step_count - 1)
+    
+    # Draw horizontal measure lines (white)
+    painter.setPen(QPen(Qt.white, 1))
+    line_spacing = seq_height / 3  # Divide height into 4 sections
+    for i in range(4):  # 3 lines (4 sections)
+        y = seq_y + (i + 1) * line_spacing
+        painter.drawLine(
+            int(seq_x), 
+            int(y), 
+            int(seq_x + seq_width), 
+            int(y)
+        )
+    
+    # Draw sequence steps
+    for i in range(step_count):
+        x = seq_x + i * (step_size + step_spacing)
+        
+        # Draw step squares with double grey border
+        painter.setPen(QPen(QColor("#666666"), 2))  # Mid-grey, doubled width
+        painter.setBrush(Qt.black)  # All steps unlit
+        
+        painter.drawRect(
+            int(x),
+            seq_y,
+            step_size,
+            step_size
+        )
     
     painter.end()
     return pixmap
@@ -115,6 +185,21 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("JD-Xi Manager")
         self.setMinimumSize(620, 248)
+        
+        # Store window dimensions
+        self.width = 1000
+        self.height = 400
+        self.margin = 15
+        
+        # Store display coordinates as class variables
+        self.display_x = self.margin + 20
+        self.display_y = self.margin + 15 + 30  # title_y + 30
+        self.display_width = 180
+        self.display_height = 70
+        
+        # Initialize MIDI indicators
+        self.midi_in_indicator = MIDIIndicator()
+        self.midi_out_indicator = MIDIIndicator()
         
         # Set black background for entire application
         self.setStyleSheet("""
@@ -173,150 +258,29 @@ class MainWindow(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
         
-        # Create main horizontal layout to hold everything
-        main_layout = QHBoxLayout(central)
-        main_layout.setSpacing(20)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        
-        # Left side container for existing content
-        left_container = QWidget()
-        layout = QVBoxLayout(left_container)
-        layout.setSpacing(20)
+        # Single layout to hold the image and overlays
+        layout = QVBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         
-        # Welcome header
-        header = QLabel("JD-Xi Manager")
-        header.setFont(QFont(self.font().family(), 24, QFont.Bold))
-        header.setAlignment(Qt.AlignCenter)
-        header.setStyleSheet("color: white;")
-        layout.addWidget(header)
+        # Create container for image and overlays
+        container = QWidget()
+        container.setLayout(QVBoxLayout())
+        container.layout().setContentsMargins(0, 0, 0, 0)
         
-        # LED-style patch display
-        patch_display = QFrame()
-        patch_display.setFixedWidth(200)  # Control width of display
-        patch_display.setFixedHeight(50)  # 25% of previous height (was ~200)
-        patch_display.setStyleSheet("""
-            QFrame {
-                background-color: #111111;
-                padding: 1px;  /* Reduced from 5px */
-            }
-        """)
-        patch_layout = QVBoxLayout(patch_display)
-        patch_layout.setSpacing(2)  # Reduced from 4
-        patch_layout.setContentsMargins(1, 1, 1, 1)  # Minimal margins
-        
-        load_label = QLabel("Load Patch")
-        load_label.setStyleSheet("""
-            QLabel {
-                color: #FF8C00;
-                font-family: 'Consolas', monospace;
-                font-size: 12px;
-                font-weight: bold;
-            }
-        """)
-        load_label.mousePressEvent = lambda e: self._load_patch()
-        
-        save_label = QLabel("Save Patch")
-        save_label.setStyleSheet("""
-            QLabel {
-                color: #FF8C00;  /* Digital orange */
-                font-family: 'Consolas', monospace;  /* Digital font */
-                font-size: 12px;
-                font-weight: bold;
-            }
-        """)
-        save_label.mousePressEvent = lambda e: self._save_patch()
-        
-        patch_layout.addWidget(load_label)
-        patch_layout.addWidget(save_label)
-        
-        # Add patch display to top-left
-        patch_container = QHBoxLayout()
-        patch_container.addWidget(patch_display)
-        patch_container.addStretch()  # Push display to left
-        layout.addLayout(patch_container)
-        
-        # Quick access buttons
-        button_grid = QGridLayout()
-        button_grid.setSpacing(10)
-        
-        # Parts Select label - moved above boxes
-        parts_label = QLabel("Parts Select")
-        parts_label.setStyleSheet("""
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-        """)
-        button_grid.addWidget(parts_label, 0, 0)  # Row 0
-        
-        # Create boxes container
-        boxes_container = QHBoxLayout()
-        
-        # Synth section (without title)
-        synth_group = QGroupBox()
-        synth_group.setFixedWidth(int(self.width() * 0.5))
-        synth_group.setMaximumHeight(200)
-        synth_group.setStyleSheet("""
-            QGroupBox {
-                border: 1px solid #333333;
-            }
-        """)
-        
-        # Create button rows first
-        digital1_row = self._create_button_row("Digital Synth 1", self._open_digital_synth1)
-        digital2_row = self._create_button_row("Digital Synth 2", self._open_digital_synth2)
-        drums_row = self._create_button_row("Drums", self._open_drums)
-        analog_row = self._create_button_row("Analog Synth", self._open_analog_synth)
-        
-        # Add synth buttons to layout
-        synth_layout = QVBoxLayout(synth_group)
-        synth_layout.setSpacing(10)
-        synth_layout.setContentsMargins(15, 15, 15, 15)
-        synth_layout.addLayout(digital1_row)
-        synth_layout.addLayout(digital2_row)
-        synth_layout.addLayout(drums_row)
-        synth_layout.addLayout(analog_row)
-        
-        boxes_container.addWidget(synth_group)
-        
-        # Effects section (without title)
-        fx_group = QGroupBox()
-        fx_group.setFixedWidth(int(self.width() * 0.5))
-        fx_group.setMaximumHeight(120)
-        fx_group.setStyleSheet("""
-            QGroupBox {
-                border: 1px solid #333333;
-            }
-        """)
-        
-        # Create effects button rows
-        arp_row = self._create_button_row("Arpeggiator", self._open_arpeggiator)
-        effects_row = self._create_button_row("Effects", self._open_effects)
-        
-        # Add effects buttons to layout
-        fx_layout = QVBoxLayout(fx_group)
-        fx_layout.setSpacing(10)
-        fx_layout.setContentsMargins(15, 15, 15, 15)
-        fx_layout.addLayout(arp_row)
-        fx_layout.addLayout(effects_row)
-        
-        boxes_container.addWidget(fx_group)
-        
-        # Add boxes below label
-        button_grid.addLayout(boxes_container, 1, 0, 1, 2)  # Row 1
-        
-        layout.addLayout(button_grid)
-        
-        # Add left container to main layout
-        main_layout.addWidget(left_container)
-        
-        # Right side image
-        image_label = QLabel()
+        # Get the JD-Xi image
         pixmap = get_jdxi_image()
-        pixmap = pixmap.scaledToWidth(300, Qt.SmoothTransformation)
+        
+        # Create label for image
+        image_label = QLabel()
         image_label.setPixmap(pixmap)
         image_label.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(image_label)
+        container.layout().addWidget(image_label)
+        
+        # Add overlaid controls
+        self._add_overlaid_controls(container)
+        
+        layout.addWidget(container)
         
     def _create_section(self, title):
         """Create a section frame with title"""
@@ -402,14 +366,12 @@ class MainWindow(QMainWindow):
     def _create_status_bar(self):
         status_bar = self.statusBar()
         
-        # Add MIDI activity indicators
-        self.midi_in_indicator = MIDIIndicator()
-        self.midi_out_indicator = MIDIIndicator()
-        
-        status_bar.addPermanentWidget(QLabel("MIDI In:"))
-        status_bar.addPermanentWidget(self.midi_in_indicator)
-        status_bar.addPermanentWidget(QLabel("MIDI Out:"))
-        status_bar.addPermanentWidget(self.midi_out_indicator)
+        # Add MIDI activity indicators at left side
+        status_bar.addWidget(QLabel("MIDI In:"))
+        status_bar.addWidget(self.midi_in_indicator)
+        status_bar.addWidget(QLabel("MIDI Out:"))
+        status_bar.addWidget(self.midi_out_indicator)
+        status_bar.addWidget(QLabel(""))  # Spacer
         
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
@@ -566,3 +528,54 @@ class MainWindow(QMainWindow):
         
         row.addWidget(button)
         return row 
+        
+    def _add_overlaid_controls(self, widget):
+        """Add interactive controls overlaid on the JD-Xi image"""
+        # Create absolute positioning layout
+        widget.setLayout(QVBoxLayout())
+        
+        # Parts Select section with Arpeggiator
+        parts_container = QWidget(widget)
+        parts_x = self.display_x + self.display_width + 30
+        parts_y = self.display_y - (self.height * 0.15)  # Move up by 15% of window height
+        
+        parts_container.setGeometry(parts_x, parts_y, 220, 250)
+        parts_layout = QVBoxLayout(parts_container)
+        parts_layout.setSpacing(15)  # Increased from 5 to 15 for more vertical spacing
+        
+        # Add Parts Select label
+        parts_label = QLabel("Parts Select")
+        parts_label.setStyleSheet("""
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+            padding-bottom: 10px;
+        """)
+        parts_label.setAlignment(Qt.AlignCenter)
+        parts_layout.addWidget(parts_label)
+        
+        # Parts buttons
+        digital1_row = self._create_button_row("Digital Synth 1", self._open_digital_synth1)
+        digital2_row = self._create_button_row("Digital Synth 2", self._open_digital_synth2)
+        drums_row = self._create_button_row("Drums", self._open_drums)
+        analog_row = self._create_button_row("Analog Synth", self._open_analog_synth)
+        arp_row = self._create_button_row("Arpeggiator", self._open_arpeggiator)
+        
+        parts_layout.addLayout(digital1_row)
+        parts_layout.addLayout(digital2_row)
+        parts_layout.addLayout(drums_row)
+        parts_layout.addLayout(analog_row)
+        parts_layout.addLayout(arp_row)
+        
+        # Effects button in top row
+        fx_container = QWidget(widget)
+        fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
+        fx_layout = QHBoxLayout(fx_container)
+        
+        effects_row = self._create_button_row("Effects", self._open_effects)
+        fx_layout.addLayout(effects_row)
+        
+        # Make containers transparent
+        parts_container.setStyleSheet("background: transparent;")
+        fx_container.setStyleSheet("background: transparent;") 
