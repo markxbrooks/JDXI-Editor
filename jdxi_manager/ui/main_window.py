@@ -93,31 +93,7 @@ def get_jdxi_image(digital_font_family=None):
     black_key_width = key_width * 0.6
     black_key_height = 80
     white_key_height = 127
-    keyboard_y = height - white_key_height - (height * 0.1) + (white_key_height * 0.3)  # Added 10% of key height
-    
-    # Draw white keys
-    painter.setBrush(Qt.white)
-    painter.setPen(Qt.black)
-    for i in range(white_keys):
-        painter.drawRect(
-            keyboard_start + i*key_width, 
-            keyboard_y,
-            key_width-1,
-            white_key_height
-        )
-    
-    # Draw black keys
-    painter.setBrush(Qt.black)
-    black_key_positions = [0,1,3,4,5]
-    for octave in range(4):
-        for pos in black_key_positions:
-            x = keyboard_start + (octave*7 + pos)*key_width + key_width/2
-            painter.drawRect(
-                int(x),
-                keyboard_y,
-                int(black_key_width),
-                black_key_height
-            )
+    keyboard_y = height - white_key_height - (height * 0.1) + (white_key_height * 0.3)
     
     # Draw control sections
     section_margin = 40
@@ -699,8 +675,14 @@ class MainWindow(QMainWindow):
         
         def key_pressed():
             if self.midi_out:
-                self.midi_out.send_message([0x90, note_number, 1])
+                self.midi_out.send_message([0x90, note_number, 1])  # Note On
                 logging.debug(f"Sent MIDI Note On {note_number} velocity 1")
-                QTimer.singleShot(100, lambda: self.midi_out.send_message([0x80, note_number, 5]))
-                
-        button.clicked.connect(key_pressed) 
+        
+        def key_released():
+            if self.midi_out:
+                self.midi_out.send_message([0x80, note_number, 5])  # Note Off
+                logging.debug(f"Sent MIDI Note Off {note_number} velocity 5")
+        
+        # Connect to mouse events instead of clicked
+        button.pressed.connect(key_pressed)
+        button.released.connect(key_released) 
