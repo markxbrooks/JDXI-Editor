@@ -1,3 +1,5 @@
+import logging
+
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QFrame, QLabel, QComboBox, QCheckBox
@@ -5,27 +7,30 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPalette, QColor
 
-from ...data import ARP
-from ...midi import MIDIHelper
+from ...data.arp import ARP  # Import ARP class directly
+from ...midi import MIDIHelper, MIDIConnection
 from ..style import Style
 from ..widgets import Slider
 
 class ArpeggioEditor(QMainWindow):
-    def __init__(self, midi_out=None):
-        super().__init__()
-        self.setStyleSheet(Style.DARK_THEME)  # Add dark theme
-        self.midi_out = midi_out
+    def __init__(self, midi_out=None, parent=None):
+        super().__init__(parent)
+        self.main_window = parent
         
-        # Set window properties to match other editors
-        self.setFixedWidth(1000)
-        self.setMinimumHeight(600)
+        # Set window properties
+        self.setStyleSheet(Style.DARK_THEME)
+        self.setFixedWidth(400)
+        self.setMinimumHeight(500)
         
         # Create UI
         self._create_ui()
         
+        # Set up parameter bindings
+        self._setup_parameter_bindings()
+        
         # Request current patch data
         self._request_patch_data()
-        
+
     def _create_ui(self):
         """Create the user interface"""
         central = QWidget()
@@ -65,47 +70,30 @@ class ArpeggioEditor(QMainWindow):
         
     def _create_pattern_section(self):
         """Create pattern controls section"""
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
+        section = QFrame()
+        layout = QVBoxLayout(section)
         
         # Add header
         layout.addWidget(self._create_section_header("Pattern", Style.ARP_BG))
         
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Pattern selection
-        pattern_frame = QFrame()
-        pattern_layout = QVBoxLayout(pattern_frame)
-        
-        pattern_label = QLabel("Pattern Type")
-        pattern_layout.addWidget(pattern_label)
-        
+        # Pattern type dropdown
+        pattern_row = QHBoxLayout()
+        pattern_label = QLabel("Pattern")
         self.pattern_type = QComboBox()
-        self.pattern_type.addItems(ARP.PATTERNS)
-        pattern_layout.addWidget(self.pattern_type)
+        self.pattern_type.addItems(ARP.PATTERNS)  # Use patterns from ARP class
+        pattern_row.addWidget(pattern_label)
+        pattern_row.addWidget(self.pattern_type)
+        layout.addLayout(pattern_row)
         
-        controls.addWidget(pattern_frame)
+        # Octave range slider
+        self.octave_range = Slider("Octave Range", 0, 3)
+        layout.addWidget(self.octave_range)
         
-        # Parameters
-        params_frame = QFrame()
-        params_layout = QVBoxLayout(params_frame)
+        # Accent rate slider
+        self.accent_rate = Slider("Accent Rate", 0, 100)
+        layout.addWidget(self.accent_rate)
         
-        self.octave_range = Slider("Octave Range", 0, 3,
-            display_format=lambda v: f"{v:d}")
-        self.accent_rate = Slider("Accent Rate", 0, 100,
-            display_format=lambda v: f"{v:d}%")
-        
-        params_layout.addWidget(self.octave_range)
-        params_layout.addWidget(self.accent_rate)
-        
-        controls.addWidget(params_frame)
-        layout.addLayout(controls)
-        
-        return frame
+        return section
         
     def _create_timing_section(self):
         """Create timing controls section"""
@@ -168,9 +156,6 @@ class ArpeggioEditor(QMainWindow):
         
     def _setup_parameter_bindings(self):
         """Set up MIDI parameter bindings"""
-        if not self.midi_out:
-            return
-            
         # Pattern parameters
         self.pattern_type.currentIndexChanged.connect(
             lambda v: self._send_parameter(0x01, v))
@@ -192,44 +177,52 @@ class ArpeggioEditor(QMainWindow):
             lambda v: self._send_parameter(0x14, v))
             
     def _send_parameter(self, parameter, value):
-        """Send parameter change to synth"""
-        if self.midi_out:
-            msg = MIDIHelper.create_parameter_message(0x15, None, parameter, value)
-            self.midi_out.send_message(msg)
+        """Send parameter change to JD-Xi"""
+        try:
+            msg = MIDIHelper.create_parameter_message(
+                0x15,        # Arpeggio address
+                0x00,        # No part number needed
+                parameter,   # Parameter number
+                value       # Parameter value (0-127)
+            )
+            if self.main_window and self.main_window.midi_out:
+                self.main_window.midi_out.send_message(msg)
+                if hasattr(self.main_window, 'midi_out_indicator'):
+                    self.main_window.midi_out_indicator.blink()
+                logging.debug(f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in msg])}")
+            
+        except Exception as e:
+            logging.error(f"Error sending parameter: {str(e)}")
             
     def _request_patch_data(self):
         """Request current patch data from synth"""
-        if self.midi_out:
-            # Request all arpeggio parameters
-            addr = bytes([0x15, 0x00, 0x00, 0x00])
-            msg = MIDIHelper.create_sysex_message(addr, bytes([0x00]))
-            self.midi_out.send_message(msg)
+        try:
+            msg = MIDIHelper.create_sysex_message(
+                bytes([0x15, 0x00, 0x00, 0x00]),  # Arpeggio address
+                bytes([0x00])  # Data
+            )
+            if self.main_window and self.main_window.midi_out:
+                self.main_window.midi_out.send_message(msg)
+                if hasattr(self.main_window, 'midi_out_indicator'):
+                    self.main_window.midi_out_indicator.blink()
+                logging.debug(f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in msg])}")
             
-    def set_midi_ports(self, midi_in, midi_out):
-        """Update MIDI port connections"""
-        self.midi_in = midi_in
-        self.midi_out = midi_out
-        
-        if midi_in:
-            midi_in.set_callback(self._handle_midi_input)
-            
+        except Exception as e:
+            logging.error(f"Error requesting patch data: {str(e)}")
+
     def _handle_midi_input(self, message, timestamp):
-        """Handle incoming MIDI messages"""
-        data = message[0]  # Get the raw MIDI data
-        
-        # Check if it's a SysEx message
-        if data[0] == 0xF0 and len(data) > 8:
-            # Verify it's a Roland message for JD-Xi
-            if (data[1] == 0x41 and  # Roland ID
-                data[4:8] == bytes([0x00, 0x00, 0x00, 0x0E])):  # JD-Xi ID
+        """Handle incoming MIDI message"""
+        try:
+            # Validate message is for arpeggiator
+            if not self._validate_sysex_message(message):
+                return
                 
-                # Get address and parameter data
-                addr = data[8:12]  # 4-byte address
-                param_data = data[12:-1]  # Parameter data (excluding F7)
-                
-                # Queue UI update on main thread
-                QTimer.singleShot(0, lambda: self._update_ui_from_sysex(addr, param_data))
-                
+            # Parse parameter values and update UI
+            self._update_parameters(message)
+            
+        except Exception as e:
+            logging.error(f"Error handling MIDI input: {str(e)}")
+
     def _update_ui_from_sysex(self, addr, data):
         """Update UI controls based on received SysEx data"""
         # Check if it's for arpeggio (0x15)

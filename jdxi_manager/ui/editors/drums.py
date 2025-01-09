@@ -11,6 +11,7 @@ from ...data import DR
 from ...midi import MIDIHelper
 from ..style import Style
 from ..widgets import Slider
+from ..widgets.preset_panel import PresetPanel
 
 class DrumValidator:
     """Validator for JD-Xi Drum parameters"""
@@ -68,10 +69,18 @@ class DrumValidator:
             return False
 
 class DrumEditor(QMainWindow):
-    def __init__(self, midi_out=None):
+    def __init__(self, midi_out=None, parent=None):
         super().__init__()
         self.setStyleSheet(Style.DARK_THEME)
         self.midi_out = midi_out
+        
+        # Create UI
+        central = QWidget()
+        self.central_layout = QVBoxLayout(central)
+        
+        # Add preset panel
+        self.preset_panel = PresetPanel('drums', self, parent=central)
+        self.central_layout.addWidget(self.preset_panel)
         
         # Set window properties
         self.setFixedWidth(1000)
@@ -588,3 +597,55 @@ class DrumEditor(QMainWindow):
         
         layout.addLayout(controls)
         return frame 
+
+    def get_parameters(self):
+        """Get current drum kit parameters"""
+        params = {}
+        
+        # Get parameters for each drum part
+        for part_idx, part_name in enumerate(DRUM_PARTS):
+            part_params = {
+                'level': self.part_levels[part_idx].value(),
+                'pan': self.part_pans[part_idx].value(),
+                'pitch': self.part_pitches[part_idx].value(),
+                'decay': self.part_decays[part_idx].value(),
+                'fx_send': self.part_fx_sends[part_idx].value()
+            }
+            params[part_name] = part_params
+            
+        return params
+        
+    def set_parameters(self, parameters):
+        """Set drum kit parameters"""
+        # Set parameters for each drum part
+        for part_name, part_params in parameters.items():
+            part_idx = DRUM_PARTS.index(part_name)
+            
+            self.part_levels[part_idx].setValue(part_params['level'])
+            self.part_pans[part_idx].setValue(part_params['pan'])
+            self.part_pitches[part_idx].setValue(part_params['pitch'])
+            self.part_decays[part_idx].setValue(part_params['decay'])
+            self.part_fx_sends[part_idx].setValue(part_params['fx_send'])
+            
+    def load_preset_from_device(self, kit_number):
+        """Load drum kit from JD-Xi memory"""
+        if self.midi_out:
+            self.midi_helper.midi_out = self.midi_out
+            self.midi_helper.request_preset_data('drums', kit_number)
+            
+    def handle_preset_data(self, data):
+        """Handle drum kit data received from JD-Xi"""
+        try:
+            # Parse SysEx data into parameters
+            params = self._parse_preset_data(data)
+            
+            # Update UI with new parameters
+            self.set_parameters(params)
+            
+            # Save as a local preset
+            kit_name = DRUM_KITS[data[2]]
+            name = f"From_JDXi_{kit_name}"
+            self.preset_panel.save_preset_with_name(name, data[2])
+            
+        except Exception as e:
+            logging.error(f"Error loading drum kit from device: {e}") 

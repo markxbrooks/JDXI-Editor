@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QComboBox,
-    QLabel, QPushButton, QFrame, QCheckBox
+    QLabel, QPushButton, QFrame, QCheckBox, QGroupBox
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPalette, QColor
@@ -17,41 +17,31 @@ class MidiConfigFrame(QDialog):
         self.setWindowTitle("MIDI Configuration")
         self.setFixedSize(400, 390)
         
+        # Get available MIDI ports
+        self.input_ports = MIDIHelper.get_input_ports()
+        self.output_ports = MIDIHelper.get_output_ports()
+        
         # Create layout
         layout = QVBoxLayout(self)
         layout.setSpacing(20)
         
-        # MIDI Input section
-        input_frame = self._create_section("MIDI Input", Style.COM_BG)
-        self.input_port = QComboBox()
-        ports = MIDIHelper.get_input_ports()
-        self.input_port.addItems(ports)
-        if not ports:
-            logging.warning("No MIDI input ports found")
-        input_frame.layout().addWidget(self.input_port)
+        # Input port selection
+        input_group = QGroupBox("MIDI Input")
+        input_layout = QVBoxLayout()
+        self.input_combo = QComboBox()
+        self.input_combo.addItems(self.input_ports)
+        input_layout.addWidget(self.input_combo)
+        input_group.setLayout(input_layout)
+        layout.addWidget(input_group)
         
-        # Input options
-        self.thru_enabled = QCheckBox("MIDI Thru")
-        self.thru_enabled.setToolTip("Forward incoming MIDI messages to output")
-        input_frame.layout().addWidget(self.thru_enabled)
-        
-        layout.addWidget(input_frame)
-        
-        # MIDI Output section
-        output_frame = self._create_section("MIDI Output", Style.COM_BG)
-        self.output_port = QComboBox()
-        ports = MIDIHelper.get_output_ports()
-        self.output_port.addItems(ports)
-        if not ports:
-            logging.warning("No MIDI output ports found")
-        output_frame.layout().addWidget(self.output_port)
-        
-        # Output options
-        self.auto_load = QCheckBox("Auto-load patches")
-        self.auto_load.setToolTip("Automatically request patch data when switching editors")
-        output_frame.layout().addWidget(self.auto_load)
-        
-        layout.addWidget(output_frame)
+        # Output port selection
+        output_group = QGroupBox("MIDI Output")
+        output_layout = QVBoxLayout()
+        self.output_combo = QComboBox()
+        self.output_combo.addItems(self.output_ports)
+        output_layout.addWidget(self.output_combo)
+        output_group.setLayout(output_layout)
+        layout.addWidget(output_group)
         
         # Status section
         status_frame = self._create_section("Status", Style.COM_BG)
@@ -110,30 +100,30 @@ class MidiConfigFrame(QDialog):
         """Refresh the available MIDI ports"""
         try:
             logging.debug("Refreshing MIDI ports")
-            current_in = self.input_port.currentText()
-            current_out = self.output_port.currentText()
+            current_in = self.input_combo.currentText()
+            current_out = self.output_combo.currentText()
             
-            self.input_port.clear()
-            self.output_port.clear()
+            self.input_combo.clear()
+            self.output_combo.clear()
             
             in_ports = MIDIHelper.get_input_ports()
             out_ports = MIDIHelper.get_output_ports()
             
-            self.input_port.addItems(in_ports)
-            self.output_port.addItems(out_ports)
+            self.input_combo.addItems(in_ports)
+            self.output_combo.addItems(out_ports)
             
             # Restore previous selections if still available
-            in_idx = self.input_port.findText(current_in)
-            out_idx = self.output_port.findText(current_out)
+            in_idx = self.input_combo.findText(current_in)
+            out_idx = self.output_combo.findText(current_out)
             
             if in_idx >= 0:
-                self.input_port.setCurrentIndex(in_idx)
+                self.input_combo.setCurrentIndex(in_idx)
                 logging.debug(f"Restored input port: {current_in}")
             else:
                 logging.info(f"Previous input port {current_in} no longer available")
                 
             if out_idx >= 0:
-                self.output_port.setCurrentIndex(out_idx)
+                self.output_combo.setCurrentIndex(out_idx)
                 logging.debug(f"Restored output port: {current_out}")
             else:
                 logging.info(f"Previous output port {current_out} no longer available")
@@ -149,17 +139,20 @@ class MidiConfigFrame(QDialog):
     def _test_connection(self):
         """Test MIDI connection by sending identity request"""
         try:
-            port_name = self.output_port.currentText()
+            port_name = self.output_combo.currentText()
             logging.debug(f"Testing connection to {port_name}")
             
             midi_out = MIDIHelper.open_output(port_name)
             if midi_out:
-                # Send identity request message
-                msg = MIDIHelper.create_identity_request()
-                midi_out.send_message(msg)
-                status = "Test message sent"
-                logging.info(f"Sent test message to {port_name}")
-                midi_out.close()
+                try:
+                    # Send both standard and Roland-specific identity requests
+                    midi_out.send_message(MIDIHelper.create_identity_request())
+                    midi_out.send_message(MIDIHelper.create_roland_identity_request())
+                    
+                    status = "Test messages sent"
+                    logging.info(f"Sent test messages to {port_name}")
+                finally:
+                    midi_out.delete()  # Use delete() instead of close()
             else:
                 status = "Could not open output port"
                 logging.error(f"Failed to open output port {port_name}")
@@ -174,8 +167,8 @@ class MidiConfigFrame(QDialog):
     def _apply_settings(self):
         """Apply the MIDI settings"""
         try:
-            in_port = self.input_port.currentText()
-            out_port = self.output_port.currentText()
+            in_port = self.input_combo.currentText()
+            out_port = self.output_combo.currentText()
             
             logging.debug(f"Opening MIDI ports - In: {in_port}, Out: {out_port}")
             
@@ -204,26 +197,18 @@ class MidiConfigFrame(QDialog):
     def get_settings(self):
         """Get current MIDI settings"""
         return {
-            'input_port': self.input_port.currentText(),
-            'output_port': self.output_port.currentText(),
-            'thru_enabled': self.thru_enabled.isChecked(),
-            'auto_load': self.auto_load.isChecked()
+            'input_port': self.input_combo.currentText(),
+            'output_port': self.output_combo.currentText()
         }
         
     def set_settings(self, settings):
         """Apply saved MIDI settings"""
         if 'input_port' in settings:
-            idx = self.input_port.findText(settings['input_port'])
+            idx = self.input_combo.findText(settings['input_port'])
             if idx >= 0:
-                self.input_port.setCurrentIndex(idx)
+                self.input_combo.setCurrentIndex(idx)
                 
         if 'output_port' in settings:
-            idx = self.output_port.findText(settings['output_port'])
+            idx = self.output_combo.findText(settings['output_port'])
             if idx >= 0:
-                self.output_port.setCurrentIndex(idx)
-                
-        if 'thru_enabled' in settings:
-            self.thru_enabled.setChecked(settings['thru_enabled'])
-            
-        if 'auto_load' in settings:
-            self.auto_load.setChecked(settings['auto_load']) 
+                self.output_combo.setCurrentIndex(idx) 

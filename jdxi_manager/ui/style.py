@@ -2,128 +2,85 @@ from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
 class Style:
-    # Colors
-    BACKGROUND = "black"
-    TEXT = "white"
-    MENU_HOVER = "#333333"
-    BORDER = "#333333"
-    RED = "#d51e35"
-    BLUE = "#00A0E9"
-    ORANGE = "#FF8C00"
-
-    # Section colors
-    OSC_BG = "#FFA200"  # Orange
-    VCF_BG = "#E83939"  # Red
-    AMP_BG = "#AF7200"  # Brown
-    LFO_BG = "#E86333"  # Orange-Red
-    MOD_BG = "#B75628"  # Dark Orange
-    COM_BG = "#3A464E"  # Gray
-    ARP_BG = "#E86333"  # Orange-Red
+    """Application style constants"""
     
-    # Effects colors
-    FX1_BG = "#FF8C00"   # Dark Orange
-    FX2_BG = "#FF4500"   # Orange-Red
-    REVERB_BG = "#E83939" # Red
-    DELAY_BG = "#FF6347"  # Tomato
-    CHORUS_BG = "#DC143C" # Crimson
-    MASTER_BG = "#8B0000" # Dark Red
-
-    # Common styles
-    DARK_THEME = """
-        QMainWindow, QDialog {
-            background-color: black;
-        }
-        QWidget {
-            background-color: black;
-            color: white;
-        }
-        QMenuBar {
-            background-color: black;
-            color: white;
-        }
-        QMenuBar::item:selected {
-            background-color: #333333;
-        }
-        QMenu {
-            background-color: black;
-            color: white;
-        }
-        QMenu::item:selected {
-            background-color: #333333;
-        }
-        QGroupBox {
-            border: 1px solid #333333;
-        }
-        QLabel {
-            background-color: transparent;
-        }
-        QStatusBar {
-            background-color: black;
-            color: white;
-        }
-        QScrollArea {
-            background-color: black;
-        }
-        QScrollBar {
-            background-color: black;
-            border: 1px solid #333333;
-        }
-        QFrame {
-            background-color: black;
-            color: white;
-        }
-        QPushButton {
-            background-color: black;
-            color: white;
-            border: 1px solid #333333;
-        }
-        QComboBox {
-            background-color: black;
-            color: white;
-            border: 1px solid #333333;
-            padding: 4px 8px;
-            text-align: left;
-        }
-        QComboBox::drop-down {
-            border: none;
-            padding-right: 8px;
-        }
-        QComboBox::down-arrow {
-            image: none;
-        }
-        QComboBox QAbstractItemView {
-            background-color: black;
-            color: white;
-            border: 1px solid #333333;
-            selection-background-color: #333333;
-        }
-        QComboBox QAbstractItemView::item {
-            padding: 4px 8px;
-            text-align: left;
-            min-height: 24px;
-        }
-        QComboBox::item:selected {
-            background-color: #333333;
-            color: white;
-            text-align: left;
-        }
-        QComboBox::indicator {
-            left: 4px;
-        }
-        QSlider {
-            background-color: black;
-        }
-        QSlider::groove:horizontal {
-            background-color: #d51e35;
-            height: 2px;
-        }
-        QSlider::handle:horizontal {
-            background-color: white;
-            width: 12px;
-            margin: -5px 0;
-            border-radius: 6px;
-        }
-        QSlider::sub-page:horizontal {
-            background-color: #d51e35;
-        }
+    # Colors
+    RED = "#FF0000"
+    GREEN = "#00FF00"
+    BLUE = "#0000FF"
+    ORANGE = "#FFA500"
+    YELLOW = "#FFFF00"
+    WHITE = "#FFFFFF"
+    BLACK = "#000000"
+    
+    # Background colors
+    DARK_BG = "#1E1E1E"
+    LIGHT_BG = "#2D2D2D"
+    
+    # Section background colors
+    COM_BG = "#2A2A2A"  # Common section
+    OSC_BG = "#2D2D2D"  # Oscillator section
+    VCF_BG = "#303030"  # Filter section
+    AMP_BG = "#333333"  # Amplifier section
+    MOD_BG = "#363636"  # Modulation section
+    ARP_BG = "#2A2A2A"  # Arpeggiator section
+    
+    # Theme definitions
+    DARK_THEME = f"""
+        QMainWindow, QDialog {{
+            background-color: {DARK_BG};
+            color: {WHITE};
+        }}
+        QWidget {{
+            background-color: {DARK_BG};
+            color: {WHITE};
+        }}
+        QPushButton {{
+            background-color: {LIGHT_BG};
+            color: {WHITE};
+            border: 1px solid {WHITE};
+            border-radius: 3px;
+            padding: 5px;
+            min-width: 80px;
+        }}
+        QPushButton:hover {{
+            background-color: {BLUE};
+        }}
+        QPushButton:pressed {{
+            background-color: {DARK_BG};
+        }}
+        QComboBox {{
+            background-color: {LIGHT_BG};
+            color: {WHITE};
+            border: 1px solid {WHITE};
+            border-radius: 3px;
+            padding: 5px;
+        }}
+        QGroupBox {{
+            border: 1px solid {WHITE};
+            margin-top: 0.5em;
+            padding-top: 0.5em;
+        }}
+    """
+    
+    # Specific component styles
+    ARP_STYLE = f"""
+        QWidget {{
+            background-color: {ARP_BG};
+            color: {WHITE};
+        }}
+        QPushButton {{
+            background-color: {LIGHT_BG};
+            color: {WHITE};
+            border: 1px solid {ORANGE};
+            border-radius: 3px;
+            padding: 5px;
+        }}
+        QPushButton:checked {{
+            background-color: {ORANGE};
+            color: {BLACK};
+        }}
+        QLabel {{
+            color: {ORANGE};
+        }}
     """ 

@@ -4,27 +4,31 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPalette, QColor
+import logging
 
 from ...data import AN
-from ...midi import MIDIHelper
+from ...midi import MIDIHelper, MIDIConnection
 from ..style import Style
 from ..widgets import Slider, WaveformButton
+from ..widgets.preset_panel import PresetPanel
 
 class AnalogSynthEditor(QMainWindow):
-    def __init__(self, midi_out=None):
-        super().__init__()
-        self.setStyleSheet(Style.DARK_THEME)
-        self.midi_out = midi_out
+    def __init__(self, midi_helper=None, parent=None):
+        super().__init__(parent)
+        self.midi_helper = midi_helper
+        self.main_window = parent
         
-        # Set window properties - taller with fixed width
+        # Set window properties
+        self.setStyleSheet(Style.DARK_THEME)
         self.setFixedWidth(1000)
         self.setMinimumHeight(600)
         
-        # Create UI
+        # Create UI and set up bindings
         self._create_ui()
+        self._setup_parameter_bindings()
         
-        # Request current patch data
-        self._request_patch_data()
+        # Request initial patch data
+        QTimer.singleShot(100, self._request_patch_data)
         
     def _create_separator(self):
         """Create a red separator line"""
@@ -51,16 +55,19 @@ class AnalogSynthEditor(QMainWindow):
         # Create main widget
         central = QWidget()
         layout = QVBoxLayout(central)
-        layout.setSpacing(25)  # Increased spacing
-        layout.setContentsMargins(25, 25, 25, 25)  # Increased margins
+        layout.setSpacing(25)
+        layout.setContentsMargins(25, 25, 25, 25)
         
-        # Create sections
+        # Create all sections
+        common = self._create_common_section()  # Create common section first
         osc = self._create_oscillator_section()
         vcf = self._create_filter_section()
         amp = self._create_amplifier_section()
         mod = self._create_modulation_section()
         
         # Add sections to layout with spacing and separators
+        layout.addWidget(common)  # Add common section
+        layout.addWidget(self._create_separator())
         layout.addWidget(osc)
         layout.addWidget(self._create_separator())
         layout.addWidget(vcf)
@@ -95,68 +102,68 @@ class AnalogSynthEditor(QMainWindow):
         return header
         
     def _create_oscillator_section(self):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(20)
-        layout.setContentsMargins(30, 25, 30, 25)
+        """Create oscillator section"""
+        section = QFrame()
+        layout = QVBoxLayout(section)
         
-        # Add header
-        layout.addWidget(self._create_section_header("Oscillator", Style.OSC_BG))
-        layout.addSpacing(10)
+        # Create OSC 1 controls
+        osc1_group = QFrame()
+        osc1_layout = QVBoxLayout(osc1_group)
+        osc1_layout.setSpacing(10)
         
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
+        osc1_label = QLabel("OSC 1")
+        osc1_label.setStyleSheet("font-weight: bold;")
         
-        # OSC 1
-        osc1_frame = QFrame()
-        osc1_frame.setFrameStyle(QFrame.StyledPanel)
-        osc1_layout = QVBoxLayout(osc1_frame)
-        osc1_layout.addWidget(QLabel("OSC 1"))
+        self.osc1_wave = WaveformButton()  # Create new WaveformButton instance
+        self.osc1_range = Slider("Range", -24, 24)
+        self.osc1_fine = Slider("Fine Tune", -50, 50)
         
-        self.osc1_wave = WaveformButton()
-        self.osc1_range = Slider("Range", -24, 24, center=True)
-        self.osc1_fine = Slider("Fine", -50, 50, center=True)
-        
+        osc1_layout.addWidget(osc1_label)
         osc1_layout.addWidget(self.osc1_wave)
         osc1_layout.addWidget(self.osc1_range)
         osc1_layout.addWidget(self.osc1_fine)
-        controls.addWidget(osc1_frame)
         
-        # OSC 2
-        osc2_frame = QFrame()
-        osc2_frame.setFrameStyle(QFrame.StyledPanel)
-        osc2_layout = QVBoxLayout(osc2_frame)
-        osc2_layout.addWidget(QLabel("OSC 2"))
+        # Create OSC 2 controls
+        osc2_group = QFrame()
+        osc2_layout = QVBoxLayout(osc2_group)
+        osc2_layout.setSpacing(10)
         
-        self.osc2_wave = WaveformButton()
-        self.osc2_range = Slider("Range", -24, 24, center=True)
-        self.osc2_fine = Slider("Fine", -50, 50, center=True)
+        osc2_label = QLabel("OSC 2")
+        osc2_label.setStyleSheet("font-weight: bold;")
+        
+        self.osc2_wave = WaveformButton()  # Create new WaveformButton instance
+        self.osc2_range = Slider("Range", -24, 24)
+        self.osc2_fine = Slider("Fine Tune", -50, 50)
         self.osc2_sync = QPushButton("Sync")
         self.osc2_sync.setCheckable(True)
         
+        osc2_layout.addWidget(osc2_label)
         osc2_layout.addWidget(self.osc2_wave)
         osc2_layout.addWidget(self.osc2_range)
         osc2_layout.addWidget(self.osc2_fine)
         osc2_layout.addWidget(self.osc2_sync)
-        controls.addWidget(osc2_frame)
         
-        # Mix
-        mix_frame = QFrame()
-        mix_frame.setFrameStyle(QFrame.StyledPanel)
-        mix_layout = QVBoxLayout(mix_frame)
-        mix_layout.addWidget(QLabel("Mix"))
+        # Create mix controls
+        mix_group = QFrame()
+        mix_layout = QVBoxLayout(mix_group)
+        mix_layout.setSpacing(10)
+        
+        mix_label = QLabel("MIX")
+        mix_label.setStyleSheet("font-weight: bold;")
         
         self.osc_mix = Slider("OSC Mix", 0, 127)
         self.cross_mod = Slider("Cross Mod", 0, 127)
         
+        mix_layout.addWidget(mix_label)
         mix_layout.addWidget(self.osc_mix)
         mix_layout.addWidget(self.cross_mod)
-        controls.addWidget(mix_frame)
         
-        layout.addLayout(controls)
-        return frame
+        # Add all groups to main layout
+        layout.addWidget(osc1_group)
+        layout.addWidget(osc2_group)
+        layout.addWidget(mix_group)
+        
+        return section
         
     def _create_filter_section(self):
         frame = QFrame()
@@ -258,245 +265,181 @@ class AnalogSynthEditor(QMainWindow):
         return frame
         
     def _create_modulation_section(self):
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(20)
-        layout.setContentsMargins(30, 25, 30, 25)
+        """Create modulation section"""
+        section = QFrame()
+        layout = QVBoxLayout(section)
         
-        # Add header
-        layout.addWidget(self._create_section_header("Modulation", Style.MOD_BG))
-        layout.addSpacing(10)
+        # Create LFO controls
+        lfo_group = QFrame()
+        lfo_layout = QVBoxLayout(lfo_group)
+        lfo_layout.setSpacing(10)
         
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
+        lfo_label = QLabel("LFO")
+        lfo_label.setStyleSheet("font-weight: bold;")
         
-        # LFO Frame
-        lfo_frame = QFrame()
-        lfo_frame.setFrameStyle(QFrame.StyledPanel)
-        lfo_layout = QVBoxLayout(lfo_frame)
-        lfo_layout.addWidget(QLabel("LFO"))
-        
-        # LFO Wave selection
-        wave_layout = QHBoxLayout()
-        wave_layout.addWidget(QLabel("Waveform:"))
-        self.lfo_wave = QComboBox()
-        self.lfo_wave.addItems(["Triangle", "Sine", "Square", "Sample & Hold", "Random"])
-        wave_layout.addWidget(self.lfo_wave)
-        lfo_layout.addLayout(wave_layout)
-        
-        # Rate controls
-        rate_frame = QFrame()
-        rate_frame.setFrameStyle(QFrame.StyledPanel)
-        rate_layout = QVBoxLayout(rate_frame)
-        
-        sync_layout = QHBoxLayout()
-        self.lfo_sync = QPushButton("Sync")
-        self.lfo_sync.setCheckable(True)
-        self.lfo_sync.setFixedWidth(80)
-        sync_layout.addWidget(self.lfo_sync)
+        self.lfo_wave = WaveformButton()
         self.lfo_rate = Slider("Rate", 0, 127)
-        sync_layout.addWidget(self.lfo_rate)
-        rate_layout.addLayout(sync_layout)
-        
-        self.lfo_note = QComboBox()
-        self.lfo_note.addItems([
-            "16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2", "3/8", "1/3",
-            "1/4", "3/16", "1/6", "1/8", "3/32", "1/12", "1/16", "1/24", "1/32"
-        ])
-        self.lfo_note.setVisible(False)
-        rate_layout.addWidget(self.lfo_note)
-        lfo_layout.addWidget(rate_frame)
-        
-        # Other LFO controls
-        self.lfo_key_trigger = QPushButton("Key Trigger")
-        self.lfo_key_trigger.setCheckable(True)
-        self.lfo_key_trigger.setFixedWidth(80)
-        lfo_layout.addWidget(self.lfo_key_trigger)
-        
         self.lfo_fade = Slider("Fade Time", 0, 127)
-        lfo_layout.addWidget(self.lfo_fade)
         
-        # LFO Depths
-        depths_frame = QFrame()
-        depths_frame.setFrameStyle(QFrame.StyledPanel)
-        depths_layout = QVBoxLayout(depths_frame)
+        # Add LFO depth controls
         self.lfo_pitch = Slider("Pitch Depth", 0, 127)
         self.lfo_filter = Slider("Filter Depth", 0, 127)
         self.lfo_amp = Slider("Amp Depth", 0, 127)
-        depths_layout.addWidget(self.lfo_pitch)
-        depths_layout.addWidget(self.lfo_filter)
-        depths_layout.addWidget(self.lfo_amp)
-        lfo_layout.addWidget(depths_frame)
         
-        controls.addWidget(lfo_frame)
-        
-        # Modulation Matrix
-        mod_frame = QFrame()
-        mod_frame.setFrameStyle(QFrame.StyledPanel)
-        mod_layout = QVBoxLayout(mod_frame)
-        mod_layout.addWidget(QLabel("Modulation Matrix"))
-        
-        # Source selection
-        source_frame = QFrame()
-        source_frame.setFrameStyle(QFrame.StyledPanel)
-        source_layout = QVBoxLayout(source_frame)
-        source_layout.addWidget(QLabel("Source:"))
+        # Add modulation matrix controls
         self.mod_source = QComboBox()
-        self.mod_source.addItems([
-            "Off", "Velocity", "Key Follow", "Bender", "Modulation",
-            "Aftertouch", "Expression"
-        ])
-        source_layout.addWidget(self.mod_source)
-        mod_layout.addWidget(source_frame)
+        self.mod_source.addItems(["LFO", "Velocity", "Key Follow", "Mod Wheel"])
         
-        # Destination selection
-        dest_frame = QFrame()
-        dest_frame.setFrameStyle(QFrame.StyledPanel)
-        dest_layout = QVBoxLayout(dest_frame)
-        dest_layout.addWidget(QLabel("Destination:"))
         self.mod_dest = QComboBox()
-        self.mod_dest.addItems([
-            "Off", "Pitch", "Filter", "Amp", "LFO Rate", "LFO Pitch",
-            "LFO Filter", "LFO Amp"
-        ])
-        dest_layout.addWidget(self.mod_dest)
-        mod_layout.addWidget(dest_frame)
+        self.mod_dest.addItems(["Pitch", "Filter", "Amp", "LFO Rate"])
         
-        # Depth control
-        depth_frame = QFrame()
-        depth_frame.setFrameStyle(QFrame.StyledPanel)
-        self.mod_depth = Slider("Depth", -63, 63, center=True)
-        depth_frame.setLayout(QVBoxLayout())
-        depth_frame.layout().addWidget(self.mod_depth)
-        mod_layout.addWidget(depth_frame)
+        self.mod_depth = Slider("Mod Depth", -63, 63, center=True)
         
-        controls.addWidget(mod_frame)
-        layout.addLayout(controls)
+        # Add all controls to layout
+        lfo_layout.addWidget(lfo_label)
+        lfo_layout.addWidget(self.lfo_wave)
+        lfo_layout.addWidget(self.lfo_rate)
+        lfo_layout.addWidget(self.lfo_fade)
         
-        return frame
+        # Add depth controls
+        depths_label = QLabel("LFO Depths")
+        depths_label.setStyleSheet("font-weight: bold;")
+        lfo_layout.addWidget(depths_label)
+        lfo_layout.addWidget(self.lfo_pitch)
+        lfo_layout.addWidget(self.lfo_filter)
+        lfo_layout.addWidget(self.lfo_amp)
+        
+        # Add modulation matrix
+        matrix_label = QLabel("Modulation Matrix")
+        matrix_label.setStyleSheet("font-weight: bold;")
+        lfo_layout.addWidget(matrix_label)
+        lfo_layout.addWidget(QLabel("Source:"))
+        lfo_layout.addWidget(self.mod_source)
+        lfo_layout.addWidget(QLabel("Destination:"))
+        lfo_layout.addWidget(self.mod_dest)
+        lfo_layout.addWidget(self.mod_depth)
+        
+        # Add all groups to main layout
+        layout.addWidget(lfo_group)
+        
+        return section
 
     def _setup_parameter_bindings(self):
         """Set up MIDI parameter bindings for all controls"""
-        # Common parameters
-        self.volume.valueChanged.connect(
-            lambda v: self._send_parameter(0x01, v))  # Volume
-        self.pan.valueChanged.connect(
-            lambda v: self._send_parameter(0x02, v + 64))  # Pan
-        self.portamento.valueChanged.connect(
-            lambda v: self._send_parameter(0x03, v))  # Portamento Time
-        self.porta_mode.toggled.connect(
-            lambda v: self._send_parameter(0x04, 1 if v else 0))  # Portamento Mode
+        try:
+            # Common parameters
+            self.volume.valueChanged.connect(
+                lambda v: self._send_parameter(0x01, v))  # Volume
+            self.pan.valueChanged.connect(
+                lambda v: self._send_parameter(0x02, v + 64))  # Pan (center at 64)
+            self.portamento.valueChanged.connect(
+                lambda v: self._send_parameter(0x03, v))  # Portamento Time
+            self.porta_mode.toggled.connect(
+                lambda v: self._send_parameter(0x04, 1 if v else 0))  # Portamento Mode
             
-        # OSC 1 parameters
-        self.osc1_wave.waveformChanged.connect(
-            lambda v: self._send_parameter(0x10, v))  # Wave Type
-        self.osc1_range.valueChanged.connect(
-            lambda v: self._send_parameter(0x11, v + 64))  # Range
-        self.osc1_fine.valueChanged.connect(
-            lambda v: self._send_parameter(0x12, v + 64))  # Fine Tune
+            # OSC 1 parameters
+            self.osc1_wave.waveformChanged.connect(
+                lambda v: self._send_parameter(0x10, v))  # Wave Type
+            self.osc1_range.valueChanged.connect(
+                lambda v: self._send_parameter(0x11, v + 64))  # Range
+            self.osc1_fine.valueChanged.connect(
+                lambda v: self._send_parameter(0x12, v + 64))  # Fine Tune
             
-        # OSC 2 parameters (0x20)
-        self.osc2_wave.waveformChanged.connect(
-            lambda v: self._send_parameter(0x20, v))  # Wave Type
-        self.osc2_range.valueChanged.connect(
-            lambda v: self._send_parameter(0x21, v + 64))  # Range
-        self.osc2_fine.valueChanged.connect(
-            lambda v: self._send_parameter(0x22, v + 64))  # Fine Tune
-        self.osc2_sync.toggled.connect(
-            lambda v: self._send_parameter(0x23, 1 if v else 0))  # Sync
+            # OSC 2 parameters (0x20)
+            self.osc2_wave.waveformChanged.connect(
+                lambda v: self._send_parameter(0x20, v))  # Wave Type
+            self.osc2_range.valueChanged.connect(
+                lambda v: self._send_parameter(0x21, v + 64))  # Range
+            self.osc2_fine.valueChanged.connect(
+                lambda v: self._send_parameter(0x22, v + 64))  # Fine Tune
+            self.osc2_sync.toggled.connect(
+                lambda v: self._send_parameter(0x23, 1 if v else 0))  # Sync
             
-        # Mix parameters (0x30)
-        self.osc_mix.valueChanged.connect(
-            lambda v: self._send_parameter(0x30, v))  # OSC Mix
-        self.cross_mod.valueChanged.connect(
-            lambda v: self._send_parameter(0x31, v))  # Cross Mod
+            # Mix parameters (0x30)
+            self.osc_mix.valueChanged.connect(
+                lambda v: self._send_parameter(0x30, v))  # OSC Mix
+            self.cross_mod.valueChanged.connect(
+                lambda v: self._send_parameter(0x31, v))  # Cross Mod
             
-        # Filter parameters (0x40)
-        self.cutoff.valueChanged.connect(
-            lambda v: self._send_parameter(0x40, v))  # Cutoff
-        self.resonance.valueChanged.connect(
-            lambda v: self._send_parameter(0x41, v))  # Resonance
-        self.key_follow.valueChanged.connect(
-            lambda v: self._send_parameter(0x42, v + 64))  # Key Follow
+            # Filter parameters (0x40)
+            self.cutoff.valueChanged.connect(
+                lambda v: self._send_parameter(0x40, v))  # Cutoff
+            self.resonance.valueChanged.connect(
+                lambda v: self._send_parameter(0x41, v))  # Resonance
+            self.key_follow.valueChanged.connect(
+                lambda v: self._send_parameter(0x42, v + 64))  # Key Follow
             
-        # Filter Envelope
-        self.filter_attack.valueChanged.connect(
-            lambda v: self._send_parameter(0x43, v))  # Attack
-        self.filter_decay.valueChanged.connect(
-            lambda v: self._send_parameter(0x44, v))  # Decay
-        self.filter_sustain.valueChanged.connect(
-            lambda v: self._send_parameter(0x45, v))  # Sustain
-        self.filter_release.valueChanged.connect(
-            lambda v: self._send_parameter(0x46, v))  # Release
-        self.env_depth.valueChanged.connect(
-            lambda v: self._send_parameter(0x47, v + 64))  # Env Depth
+            # Filter Envelope
+            self.filter_attack.valueChanged.connect(
+                lambda v: self._send_parameter(0x43, v))  # Attack
+            self.filter_decay.valueChanged.connect(
+                lambda v: self._send_parameter(0x44, v))  # Decay
+            self.filter_sustain.valueChanged.connect(
+                lambda v: self._send_parameter(0x45, v))  # Sustain
+            self.filter_release.valueChanged.connect(
+                lambda v: self._send_parameter(0x46, v))  # Release
+            self.env_depth.valueChanged.connect(
+                lambda v: self._send_parameter(0x47, v + 64))  # Env Depth
             
-        # Amp parameters (0x50)
-        self.amp_level.valueChanged.connect(
-            lambda v: self._send_parameter(0x50, v))  # Level
-        self.velocity_sens.valueChanged.connect(
-            lambda v: self._send_parameter(0x51, v + 64))  # Velocity Sens
+            # LFO parameters
+            self.lfo_wave.waveformChanged.connect(
+                lambda v: self._send_parameter(0x50, v))  # LFO Wave
+            self.lfo_rate.valueChanged.connect(
+                lambda v: self._send_parameter(0x51, v))  # LFO Rate
+            self.lfo_fade.valueChanged.connect(
+                lambda v: self._send_parameter(0x52, v))  # LFO Fade Time
             
-        # Amp Envelope
-        self.amp_attack.valueChanged.connect(
-            lambda v: self._send_parameter(0x52, v))  # Attack
-        self.amp_decay.valueChanged.connect(
-            lambda v: self._send_parameter(0x53, v))  # Decay
-        self.amp_sustain.valueChanged.connect(
-            lambda v: self._send_parameter(0x54, v))  # Sustain
-        self.amp_release.valueChanged.connect(
-            lambda v: self._send_parameter(0x55, v))  # Release
+            # LFO Depths
+            self.lfo_pitch.valueChanged.connect(
+                lambda v: self._send_parameter(0x66, v))  # Pitch Depth
+            self.lfo_filter.valueChanged.connect(
+                lambda v: self._send_parameter(0x67, v))  # Filter Depth
+            self.lfo_amp.valueChanged.connect(
+                lambda v: self._send_parameter(0x68, v))  # Amp Depth
             
-        # LFO parameters (0x60)
-        self.lfo_wave.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x60, v))  # LFO Wave
-        self.lfo_sync.toggled.connect(
-            lambda v: self._send_parameter(0x61, 1 if v else 0))  # LFO Sync
-        self.lfo_rate.valueChanged.connect(
-            lambda v: self._send_parameter(0x62, v))  # LFO Rate
-        self.lfo_note.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x63, v))  # LFO Note
-        self.lfo_key_trigger.toggled.connect(
-            lambda v: self._send_parameter(0x64, 1 if v else 0))  # LFO Key Trigger
-        self.lfo_fade.valueChanged.connect(
-            lambda v: self._send_parameter(0x65, v))  # LFO Fade Time
+            # Modulation Matrix
+            self.mod_source.currentIndexChanged.connect(
+                lambda v: self._send_parameter(0x70, v))  # Mod Source
+            self.mod_dest.currentIndexChanged.connect(
+                lambda v: self._send_parameter(0x71, v))  # Mod Destination
+            self.mod_depth.valueChanged.connect(
+                lambda v: self._send_parameter(0x72, v + 64))  # Mod Depth
             
-        # LFO Depths
-        self.lfo_pitch.valueChanged.connect(
-            lambda v: self._send_parameter(0x66, v))  # Pitch Depth
-        self.lfo_filter.valueChanged.connect(
-            lambda v: self._send_parameter(0x67, v))  # Filter Depth
-        self.lfo_amp.valueChanged.connect(
-            lambda v: self._send_parameter(0x68, v))  # Amp Depth
-            
-        # Modulation Matrix
-        self.mod_source.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x70, v))  # Mod Source
-        self.mod_dest.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x71, v))  # Mod Destination
-        self.mod_depth.valueChanged.connect(
-            lambda v: self._send_parameter(0x72, v + 64))  # Mod Depth
+        except Exception as e:
+            logging.error(f"Error setting up parameter bindings: {str(e)}")
             
     def _send_parameter(self, parameter, value):
-        """Send a parameter change via MIDI"""
-        if self.midi_out:
+        """Send parameter change to JD-Xi"""
+        try:
             msg = MIDIHelper.create_parameter_message(
-                0x18,  # Analog synth address
-                None,  # No partial for analog synth
-                parameter,
-                value
+                0x17,        # Analog synth address
+                0x00,        # No part number needed
+                parameter,   # Parameter number
+                value       # Parameter value (0-127)
             )
-            self.midi_out.send_message(msg)
+            if self.main_window and self.main_window.midi_out:
+                self.main_window.midi_out.send_message(msg)
+                if hasattr(self.main_window, 'midi_out_indicator'):
+                    self.main_window.midi_out_indicator.blink()
+                logging.debug(f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in msg])}")
+            
+        except Exception as e:
+            logging.error(f"Error sending parameter: {str(e)}")
             
     def _request_patch_data(self):
-        """Request current patch data from synth"""
-        if self.midi_out:
-            # Request all analog synth parameters
-            addr = bytes([0x18, 0x00, 0x00, 0x00])
-            msg = MIDIHelper.create_sysex_message(addr, bytes([0x00]))
-            self.midi_out.send_message(msg)
+        """Request current patch data from JD-Xi"""
+        try:
+            msg = MIDIHelper.create_sysex_message(
+                bytes([0x17, 0x00, 0x00, 0x00]),  # Analog synth address
+                bytes([0x00])  # Data
+            )
+            if self.main_window and self.main_window.midi_out:
+                self.main_window.midi_out.send_message(msg)
+                if hasattr(self.main_window, 'midi_out_indicator'):
+                    self.main_window.midi_out_indicator.blink()
+            
+        except Exception as e:
+            logging.error(f"Error requesting patch data: {str(e)}")
             
     def set_midi_ports(self, midi_in, midi_out):
         """Update MIDI port connections"""
@@ -640,3 +583,135 @@ class AnalogSynthEditor(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error updating UI from SysEx: {str(e)}") 
+
+    def get_parameters(self):
+        """Get current parameter values"""
+        return {
+            # Common parameters
+            'volume': self.volume.value(),
+            'pan': self.pan.value(),
+            'portamento': self.portamento.value(),
+            'porta_mode': self.porta_mode.isChecked(),
+            
+            # OSC 1
+            'osc1_wave': self.osc1_wave.value(),
+            'osc1_range': self.osc1_range.value(),
+            'osc1_fine': self.osc1_fine.value(),
+            
+            # OSC 2
+            'osc2_wave': self.osc2_wave.value(),
+            'osc2_range': self.osc2_range.value(),
+            'osc2_fine': self.osc2_fine.value(),
+            'osc2_sync': self.osc2_sync.isChecked(),
+            
+            # Mix
+            'osc_mix': self.osc_mix.value(),
+            'cross_mod': self.cross_mod.value(),
+            
+            # Filter
+            'cutoff': self.cutoff.value(),
+            'resonance': self.resonance.value(),
+            'key_follow': self.key_follow.value(),
+            'filter_attack': self.filter_attack.value(),
+            'filter_decay': self.filter_decay.value(),
+            'filter_sustain': self.filter_sustain.value(),
+            'filter_release': self.filter_release.value(),
+            
+            # Amp
+            'amp_attack': self.amp_attack.value(),
+            'amp_decay': self.amp_decay.value(),
+            'amp_sustain': self.amp_sustain.value(),
+            'amp_release': self.amp_release.value(),
+            
+            # LFO
+            'lfo_wave': self.lfo_wave.value(),
+            'lfo_rate': self.lfo_rate.value(),
+            'lfo_fade': self.lfo_fade.value(),
+            
+            # Modulation
+            'mod_source': self.mod_source.currentIndex(),
+            'mod_dest': self.mod_dest.currentIndex(),
+            'mod_depth': self.mod_depth.value()
+        }
+    
+    def set_parameters(self, parameters):
+        """Set parameters from preset"""
+        # Common parameters
+        self.volume.setValue(parameters['volume'])
+        self.pan.setValue(parameters['pan'])
+        self.portamento.setValue(parameters['portamento'])
+        self.porta_mode.setChecked(parameters['porta_mode'])
+        
+        # OSC 1
+        self.osc1_wave.setValue(parameters['osc1_wave'])
+        self.osc1_range.setValue(parameters['osc1_range'])
+        self.osc1_fine.setValue(parameters['osc1_fine'])
+        
+        # OSC 2
+        self.osc2_wave.setValue(parameters['osc2_wave'])
+        self.osc2_range.setValue(parameters['osc2_range'])
+        self.osc2_fine.setValue(parameters['osc2_fine'])
+        self.osc2_sync.setChecked(parameters['osc2_sync'])
+        
+        # Mix
+        self.osc_mix.setValue(parameters['osc_mix'])
+        self.cross_mod.setValue(parameters['cross_mod'])
+        
+        # Filter
+        self.cutoff.setValue(parameters['cutoff'])
+        self.resonance.setValue(parameters['resonance'])
+        self.key_follow.setValue(parameters['key_follow'])
+        self.filter_attack.setValue(parameters['filter_attack'])
+        self.filter_decay.setValue(parameters['filter_decay'])
+        self.filter_sustain.setValue(parameters['filter_sustain'])
+        self.filter_release.setValue(parameters['filter_release'])
+        
+        # Amp
+        self.amp_attack.setValue(parameters['amp_attack'])
+        self.amp_decay.setValue(parameters['amp_decay'])
+        self.amp_sustain.setValue(parameters['amp_sustain'])
+        self.amp_release.setValue(parameters['amp_release'])
+        
+        # LFO
+        self.lfo_wave.setValue(parameters['lfo_wave'])
+        self.lfo_rate.setValue(parameters['lfo_rate'])
+        self.lfo_fade.setValue(parameters['lfo_fade'])
+        
+        # Modulation
+        self.mod_source.setCurrentIndex(parameters['mod_source'])
+        self.mod_dest.setCurrentIndex(parameters['mod_dest'])
+        self.mod_depth.setValue(parameters['mod_depth']) 
+
+    def _create_common_section(self):
+        """Create common parameters section"""
+        section = QFrame()
+        layout = QVBoxLayout(section)
+        
+        # Create controls
+        self.volume = Slider("Volume", 0, 127)
+        self.pan = Slider("Pan", -64, 63)
+        self.portamento = Slider("Portamento", 0, 127)
+        self.porta_mode = QPushButton("Porta Mode")
+        self.porta_mode.setCheckable(True)
+        
+        # Add to layout
+        layout.addWidget(self.volume)
+        layout.addWidget(self.pan)
+        layout.addWidget(self.portamento)
+        layout.addWidget(self.porta_mode)
+        
+        return section 
+
+    def _handle_preset_load(self, preset_num, preset_name):
+        """Handle preset being loaded"""
+        try:
+            # Update main window display
+            self._update_main_window_preset(preset_num, preset_name)
+            
+            # Request patch data
+            self._request_patch_data()
+            
+            logging.debug(f"Loaded Analog Synth preset {preset_num}: {preset_name}")
+            
+        except Exception as e:
+            logging.error(f"Error handling preset load: {str(e)}") 

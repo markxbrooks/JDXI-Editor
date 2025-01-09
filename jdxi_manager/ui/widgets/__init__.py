@@ -1,5 +1,5 @@
 from .slider import Slider
-from .waveform_button import WaveformButton
+from .waveform import WaveformButton
 from .pattern_display import PatternDisplay
 from .midi_indicator import MIDIIndicator
 from .value_display import ValueDisplay
