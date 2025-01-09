@@ -237,9 +237,16 @@ class DigitalSynthEditor(QMainWindow):
             self.volume.valueChanged.connect(
                 lambda v: self._send_parameter(0x12, v))  # Volume
             self.pan.valueChanged.connect(
-                lambda v: self._send_parameter(0x7F, v + 64))  # Pan
+                lambda v: self._send_parameter(0x13, v + 64))  # Pan
             self.portamento.valueChanged.connect(
                 lambda v: self._send_parameter(0x14, v))  # Portamento
+            
+            # Test send a parameter to verify MIDI is working
+            if self.midi_helper and self.midi_helper.midi_out:
+                logging.debug("Testing MIDI output...")
+                self._send_parameter(0x12, 100)  # Send test volume message
+            else:
+                logging.warning("No MIDI output available during parameter binding setup")
             
             # OSC 1 parameters
             self.osc1_wave.waveformChanged.connect(
@@ -303,22 +310,11 @@ class DigitalSynthEditor(QMainWindow):
         """Request current patch data"""
         try:
             msg = MIDIHelper.create_sysex_message(
-                bytes([0x19, self.synth_num, 0x00, 0x00]),  # Digital synth address
+                bytes([0x19, self.synth_num, 0x00, 0x00]),  # Address
                 bytes([0x00])  # Data
             )
-            if not self.main_window:
-                logging.warning("No main window reference available")
-                return
+            MIDIConnection().send_message(msg)
             
-            if not hasattr(self.main_window, 'midi_out') or not self.main_window.midi_out:
-                logging.warning("No MIDI output available")
-                return
-            
-            self.main_window.midi_out.send_message(msg)
-            if hasattr(self.main_window, 'midi_out_indicator'):
-                self.main_window.midi_out_indicator.blink()
-            logging.debug(f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in msg])}")
-                
         except Exception as e:
             logging.error(f"Error requesting patch data: {str(e)}")
 
@@ -326,23 +322,12 @@ class DigitalSynthEditor(QMainWindow):
         """Send parameter change to JD-Xi"""
         try:
             msg = MIDIHelper.create_parameter_message(
-                0x19,        # Digital synth address
+                0x19,  # Digital synth address
                 self.synth_num,  # Part number (1 or 2)
-                parameter,   # Parameter number
-                value       # Parameter value (0-127)
+                parameter,
+                value
             )
-            if not self.main_window:
-                logging.warning("No main window reference available")
-                return
-            
-            if not hasattr(self.main_window, 'midi_out') or not self.main_window.midi_out:
-                logging.warning("No MIDI output available")
-                return
-            
-            self.main_window.midi_out.send_message(msg)
-            if hasattr(self.main_window, 'midi_out_indicator'):
-                self.main_window.midi_out_indicator.blink()
-            logging.debug(f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in msg])}")
+            MIDIConnection().send_message(msg)
             
         except Exception as e:
             logging.error(f"Error sending parameter: {str(e)}")
@@ -366,31 +351,11 @@ class DigitalSynthEditor(QMainWindow):
     def _handle_midi_input(self, message, timestamp):
         """Handle incoming MIDI message"""
         try:
-            # Check for program change messages
-            if len(message) >= 2 and message[0] & 0xF0 == 0xC0:  # Program Change
-                self._handle_program_change(message[1])
-                return
-            
-            # Check for SysEx messages
+            # Validate message is for this synth
             if not self._validate_sysex_message(message):
                 return
             
-            # Extract address and data from SysEx
-            addr = message[8:12]  # 4 bytes after Roland header
-            data = message[12:-2]  # Data before checksum and end
-            
-            # Check if this is a patch name response
-            if addr[0] == 0x19 and len(data) == 12:  # Patch name is 12 bytes
-                # Convert bytes to string
-                patch_name = ''.join(chr(b) for b in data).strip()
-                # Calculate patch number from address
-                patch_offset = (addr[1] | (addr[2] << 7))
-                patch_num = (patch_offset // 0x20) + 1
-                # Update display
-                self._update_main_window_preset(patch_num, patch_name)
-                return
-            
-            # Handle other parameter updates
+            # Parse parameter values and update UI
             self._update_parameters(message)
             
         except Exception as e:
@@ -420,50 +385,5 @@ class DigitalSynthEditor(QMainWindow):
         except Exception as e:
             logging.error(f"Error validating SysEx message: {str(e)}")
             return False
-
-    def _handle_preset_load(self, preset_num, preset_name):
-        """Handle preset being loaded"""
-        try:
-            # Update main window display
-            self._update_main_window_preset(preset_num, preset_name)
-            
-            # Request patch data
-            self._request_patch_data()
-            
-            logging.debug(f"Loaded Digital Synth preset {preset_num}: {preset_name}")
-            
-        except Exception as e:
-            logging.error(f"Error handling preset load: {str(e)}")
-
-    def _handle_program_change(self, program_number):
-        """Handle program change from device"""
-        try:
-            preset_num = program_number + 1  # Convert 0-based to 1-based
-            # Request patch name from device
-            self._request_patch_name(preset_num)
-            logging.debug(f"Received program change: {preset_num}")
-            
-        except Exception as e:
-            logging.error(f"Error handling program change: {str(e)}")
-
-    def _request_patch_name(self, preset_num):
-        """Request patch name from device"""
-        try:
-            # Calculate address for patch name
-            base_addr = 0x19  # Digital synth memory
-            patch_offset = (preset_num - 1) * 0x20  # Each patch is 32 bytes
-            name_addr = [base_addr, patch_offset & 0x7F, (patch_offset >> 7) & 0x7F, 0x00]
-            
-            msg = MIDIHelper.create_sysex_message(
-                bytes(name_addr),  # Address for patch name
-                bytes([0x0C])  # Request 12 bytes (name length)
-            )
-            
-            if self.main_window and self.main_window.midi_out:
-                self.main_window.midi_out.send_message(msg)
-                logging.debug(f"Requested name for preset {preset_num}")
-                
-        except Exception as e:
-            logging.error(f"Error requesting patch name: {str(e)}")
 
     # ... (rest of the file remains unchanged) 
