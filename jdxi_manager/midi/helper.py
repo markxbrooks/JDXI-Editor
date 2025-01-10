@@ -1,5 +1,6 @@
 import rtmidi
 import logging
+import time
 
 class MIDIHelper:
     """Helper class for MIDI operations"""
@@ -9,6 +10,8 @@ class MIDIHelper:
         self.midi_in = None
         self.midi_out = None
         self.main_window = main_window
+        self._last_message = None
+        self._last_message_time = 0
         
     @staticmethod
     def get_input_ports():
@@ -117,9 +120,20 @@ class MIDIHelper:
         return MIDIHelper.create_sysex_message(address, data)
         
     def send_message(self, message):
-        """Send MIDI message and blink indicator"""
+        """Send MIDI message with duplicate prevention"""
+        current_time = time.time()
+        
+        # Check if this is a duplicate message within 100ms
+        if (self._last_message == message and 
+            current_time - self._last_message_time < 0.1):
+            logging.debug("Skipping duplicate MIDI message")
+            return
+            
+        # Send message and update tracking
         if self.midi_out:
             self.midi_out.send_message(message)
+            self._last_message = message
+            self._last_message_time = current_time
             # Blink the output indicator
             if self.main_window and hasattr(self.main_window, 'midi_out_indicator'):
                 self.main_window.midi_out_indicator.blink()
