@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QFileDialog, QMessageBox, QScrollArea, QProgressDialog,
     QGroupBox
 )
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QMetaObject, Q_ARG
 from PySide6.QtGui import QIcon
 import logging
 
@@ -32,8 +32,9 @@ class DigitalSynthEditor(BaseEditor):
         self._create_ui()
         self._setup_parameter_bindings()
         
-        # Request initial patch data
-        QTimer.singleShot(100, self._request_patch_data)
+        # Use invokeMethod to ensure timer starts in main thread
+        QMetaObject.invokeMethod(self, "_schedule_patch_data_request", 
+                               Qt.ConnectionType.QueuedConnection)
 
     def _create_ui(self):
         """Create the user interface"""
@@ -466,5 +467,9 @@ class DigitalSynthEditor(BaseEditor):
                 
         except Exception as e:
             logging.error(f"Error requesting patch name: {str(e)}")
+
+    def _schedule_patch_data_request(self):
+        """Schedule patch data request in main thread"""
+        QTimer.singleShot(100, self._request_patch_data)
 
     # ... (rest of the file remains unchanged) 
