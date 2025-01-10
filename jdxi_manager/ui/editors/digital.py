@@ -12,9 +12,10 @@ from ..style import Style
 from ..widgets import Slider, WaveformButton
 from ..widgets.preset_panel import PresetPanel
 from ...midi import MIDIHelper, MIDIConnection
+from .base_editor import BaseEditor
 
 
-class DigitalSynthEditor(QMainWindow):
+class DigitalSynthEditor(BaseEditor):
     def __init__(self, synth_num=1, midi_helper=None, parent=None):
         """Initialize digital synth editor"""
         super().__init__(parent)

@@ -1,3 +1,4 @@
+import logging
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QPushButton, QLabel, QFrame, QApplication,
@@ -9,8 +10,8 @@ from pathlib import Path
 import rtmidi
 
 from ..style import Style
-from .midi_config import MidiConfigFrame
-from .editors import (
+from midi_config import MidiConfigFrame
+from editors import (
     DigitalSynthEditor,
     AnalogSynthEditor, 
     DrumEditor,
@@ -18,6 +19,33 @@ from .editors import (
     ArpeggioEditor,
     VocalFXEditor
 )
+
+
+def get_input_ports():
+    """List available MIDI input ports"""
+    try:
+        midi_in = rtmidi.MidiIn()
+        ports = midi_in.get_ports()
+        midi_in.delete()
+        return ports
+    except Exception as e:
+        logging.error(f"Error getting MIDI input ports: {str(e)}")
+        return []
+
+
+def list_ports():
+    """List all available MIDI ports"""
+    in_ports = get_input_ports()
+    out_ports = get_output_ports()
+    return in_ports, out_ports
+
+
+class MidiConnector:
+    def __init__(self, parent=None):
+        # Initialize state
+        self.midi_in = None
+        self.midi_out = None
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -46,6 +74,7 @@ class MainWindow(QMainWindow):
         
         # Create MIDI configuration section
         self.midi_config = MidiConfigFrame()
+        self.midi_connector = MidiConnector()
         self.midi_config.midi_connected.connect(self._on_midi_connected)
         left_side.addWidget(self.midi_config)
         
@@ -175,12 +204,12 @@ class MainWindow(QMainWindow):
         
     def _on_midi_connected(self, in_port, out_port):
         """Handle MIDI ports being connected"""
-        self.midi_in = in_port
-        self.midi_out = out_port
+        self.midi_connector.midi_in = in_port
+        self.midi_connector.midi_out = out_port
         
         # Update editor windows with new MIDI ports
         for editor in self.editor_windows.values():
-            editor.set_midi_ports(self.midi_in, self.midi_out)
+            editor.set_midi_ports(self.midi_connector.midi_in, self.midi_connector.midi_out)
             
     def _check_for_updates(self):
         """Check for software updates"""
@@ -203,9 +232,9 @@ class MainWindow(QMainWindow):
             editor.close()
             
         # Close MIDI ports
-        if self.midi_in:
-            self.midi_in.close_port()
-        if self.midi_out:
-            self.midi_out.close_port()
+        if self.midi_connector.midi_in:
+            self.midi_connector.midi_in.close_port()
+        if self.midi_connector.midi_out:
+            self.midi_connector.midi_out.close_port()
             
         event.accept() 
