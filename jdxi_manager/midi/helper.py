@@ -1,6 +1,12 @@
 import rtmidi
 import logging
 import time
+from jdxi_manager.midi.messages import (
+    create_parameter_message, 
+    create_sysex_message, 
+    create_patch_load_message
+)
+
 
 class MIDIHelper:
     """Helper class for MIDI operations"""
@@ -86,141 +92,27 @@ class MIDIHelper:
         except Exception as e:
             logging.error(f"Error opening MIDI output port: {str(e)}")
             return None
-            
-    @staticmethod
-    def create_sysex_message(address, data):
-        """Create Roland SysEx message"""
-        # Roland SysEx format:
-        # F0 41 10 00 00 00 0E 12 [address] [data] [checksum] F7
-        
-        # Calculate checksum
-        checksum = sum(address) + sum(data)
-        checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-        
-        # Construct message
-        msg = [
-            0xF0,   # Start of SysEx
-            0x41,   # Roland ID
-            0x10,   # Device ID
-            0x00, 0x00, 0x00, 0x0E,  # Model ID
-            0x12,   # Command ID (DT1)
-        ]
-        msg.extend(address)  # Add address bytes
-        msg.extend(data)     # Add data bytes
-        msg.append(checksum) # Add checksum
-        msg.append(0xF7)     # End of SysEx
-        
-        return msg
-        
-    @staticmethod
-    def create_parameter_message(address1, address2, parameter, value):
-        """Create parameter change message"""
-        address = bytes([address1, address2, 0x00, parameter])
-        data = bytes([value])
-        return MIDIHelper.create_sysex_message(address, data)
-        
+
     def send_message(self, message):
-        """Send MIDI message with duplicate prevention"""
-        current_time = time.time()
-        
-        # Check if this is a duplicate message within 100ms
-        if (self._last_message == message and 
-            current_time - self._last_message_time < 0.1):
-            logging.debug("Skipping duplicate MIDI message")
-            return
-            
-        # Send message and update tracking
+        """Send MIDI message"""
         if self.midi_out:
-            self.midi_out.send_message(message)
-            self._last_message = message
-            self._last_message_time = current_time
-            # Blink the output indicator
-            if self.main_window and hasattr(self.main_window, 'midi_out_indicator'):
-                self.main_window.midi_out_indicator.blink()
+            try:
+                self.midi_out.send_message(message)
                 
+                # Set indicator active
+                if self.main_window and hasattr(self.main_window, 'midi_out_indicator'):
+                    self.main_window.midi_out_indicator.set_active()
+                    
+            except Exception as e:
+                logging.error(f"Error sending MIDI message: {str(e)}")
+            
     def handle_midi_message(self, message, timestamp):
         """Handle incoming MIDI message"""
         # Forward to main window if available
         if self.main_window and hasattr(self.main_window, '_handle_midi_message'):
-            self.main_window._handle_midi_message(message, timestamp) 
-        
-    @staticmethod
-    def create_patch_load_message(patch_number):
-        """Create MIDI message to load a patch"""
-        return [0xC0, patch_number - 1]  # Convert 1-based to 0-based
-        
-    @staticmethod
-    def create_patch_save_message(patch_number):
-        """Create MIDI message to save current settings as a patch"""
-        # Calculate checksum
-        checksum = (0x19 + 0x01 + 0x00 + 0x20 + (patch_number - 1))
-        checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-        
-        return [
-            0xF0,   # Start of SysEx
-            0x41,   # Roland ID
-            0x10,   # Device ID
-            0x00, 0x00, 0x00, 0x0E,  # Model ID
-            0x12,   # Command ID (DT1)
-            0x19,   # Address 1
-            0x01,   # Address 2
-            0x00,   # Address 3
-            0x20,   # Address 4 (Save command)
-            patch_number - 1,  # Parameter value (0-based patch number)
-            checksum,  # Checksum
-            0xF7    # End of SysEx
-        ] 
-        
-    @staticmethod
-    def create_patch_name_message(patch_number, name):
-        """Create MIDI message to set patch name"""
-        # Pad name to 12 chars with spaces
-        name = name.ljust(12)[:12].upper()
-        
-        # Convert name to bytes
-        name_bytes = [ord(c) for c in name]
-        
-        # Calculate address
-        base_addr = 0x19  # Patch memory
-        patch_offset = (patch_number - 1) * 0x20  # Each patch is 32 bytes
-        name_addr = [base_addr, patch_offset & 0x7F, (patch_offset >> 7) & 0x7F, 0x00]
-        
-        # Calculate checksum
-        checksum = sum(name_addr) + sum(name_bytes)
-        checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-        
-        return [
-            0xF0,   # Start of SysEx
-            0x41,   # Roland ID
-            0x10,   # Device ID
-            0x00, 0x00, 0x00, 0x0E,  # Model ID
-            0x12,   # Command ID (DT1)
-        ] + name_addr + name_bytes + [checksum, 0xF7] 
-        
-    @staticmethod
-    def create_identity_request():
-        """Create MIDI identity request message"""
-        # Roland identity request format:
-        # F0 7E 10 06 01 F7
-        return [
-            0xF0,   # Start of SysEx
-            0x7E,   # Universal Non-realtime
-            0x10,   # Device ID
-            0x06,   # Identity Request
-            0x01,   # Identity Request command
-            0xF7    # End of SysEx
-        ]
-        
-    @staticmethod
-    def create_roland_identity_request():
-        """Create Roland-specific identity request"""
-        # Roland-specific identity request:
-        # F0 41 10 00 00 00 0E 11 F7
-        return [
-            0xF0,   # Start of SysEx
-            0x41,   # Roland ID
-            0x10,   # Device ID
-            0x00, 0x00, 0x00, 0x0E,  # Model ID (JD-Xi)
-            0x11,   # Identity Request
-            0xF7    # End of SysEx
-        ] 
+            self.main_window._handle_midi_message(message, timestamp)
+
+
+if __name__ == '__main__':
+    # Add any test code here if needed
+    pass 

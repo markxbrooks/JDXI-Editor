@@ -23,13 +23,19 @@ from .midi_debugger import MIDIDebugger
 from .midi_message_debug import MIDIMessageDebug
 from ..midi.connection import MIDIConnection
 from .patch_name_editor import PatchNameEditor
+from jdxi_manager.midi.constants import (
+    START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
+    DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
+    EFFECTS_AREA
+)
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
     """Create a QPixmap of the JD-Xi"""
     # Create a black background image with correct aspect ratio
     width = 1000
-    height = 400
+    height = 330
     image = QImage(width, height, QImage.Format_RGB32)
     image.fill(Qt.black)
     
@@ -199,12 +205,13 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     painter.end()
     return pixmap
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("JD-Xi Manager")
-        self.setMinimumSize(620, 248)
-        
+        self.setMinimumSize(1000, 400)
+        # self.setMaximumSize(1000, 440)
         # Store window dimensions
         self.width = 1000
         self.height = 400
@@ -219,7 +226,7 @@ class MainWindow(QMainWindow):
         # Initialize state variables
         self.current_octave = 0  # Initialize octave tracking first
         self.current_preset_num = 1  # Initialize preset number
-        self.current_preset_name = "INIT PATCH"  # Initialize preset name
+        self.current_preset_name = "JD Xi"  # Initialize preset name
         self.midi_in = None
         self.midi_out = None
         self.midi_in_port_name = ""  # Store input port name
@@ -1338,13 +1345,20 @@ class MainWindow(QMainWindow):
 
     def _handle_midi_message(self, message, timestamp):
         """Handle incoming MIDI message"""
-        # Blink the input indicator
-        if hasattr(self, 'midi_in_indicator'):
-            self.midi_in_indicator.blink()
+        data = message[0]  # Get the raw MIDI data
         
-        # Forward to MIDI helper
-        if hasattr(self, 'midi_helper'):
-            self.midi_helper.handle_midi_message(message, timestamp)
+        # Check if it's a SysEx message
+        if data[0] == START_OF_SYSEX and len(data) > 8:
+            # Verify it's a Roland message for JD-Xi
+            if (data[1] == DEVICE_ID and  # Roland ID
+                data[4:8] == bytes([MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID])):  # JD-Xi ID
+                # Blink the input indicator
+                if hasattr(self, 'midi_in_indicator'):
+                    self.midi_in_indicator.blink()
+                
+                # Forward to MIDI helper
+                if hasattr(self, 'midi_helper'):
+                    self.midi_helper.handle_midi_message(message, timestamp)
 
     def _send_midi_message(self, message):
         """Send MIDI message and blink indicator"""

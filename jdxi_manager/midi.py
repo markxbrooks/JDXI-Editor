@@ -1,5 +1,11 @@
 import rtmidi
 import logging
+from .constants import (
+    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
+    DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
+    SUBGROUP_ZERO, EFFECTS_AREA, PART_1
+)
 
 class MIDIPort:
     """Wrapper for rtmidi ports to store additional info"""
@@ -41,10 +47,7 @@ class MIDIPort:
         logging.debug(f"Closed MIDI port {self.port_name}")
 
 class MIDIHelper:
-    def __init__(self, main_window=None):
-        self.midi_out = None
-        self.midi_in = None
-        self.main_window = main_window  # Store reference to main window
+    """Helper class for MIDI operations"""
 
     # Add constants for preset retrieval
     DIGITAL_PRESET_START = 0x10  # Starting address for digital presets
@@ -54,7 +57,12 @@ class MIDIHelper:
     PAN_LEFT = 0x00
     PAN_CENTER = 0x40
     PAN_RIGHT = 0x7F
-    
+
+    def __init__(self, main_window=None):
+        self.midi_out = None
+        self.midi_in = None
+        self.main_window = main_window  # Store reference to main window
+
     @staticmethod
     def get_input_ports():
         """Get list of available MIDI input ports"""
@@ -127,14 +135,21 @@ class MIDIHelper:
     @staticmethod
     def create_parameter_message(address, partial, parameter, value):
         """Create Roland parameter change message"""
-        # Roland System Exclusive
-        # F0 41 10 00 00 00 0E 12 <addr> <param> <val> <checksum> F7
-        msg = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12]  # Added DT1 command (0x12)
+        msg = [
+            START_1,        # Start of SysEx
+            START_2,        # Roland ID
+            ROLAND_ID,      # Device ID
+            DEVICE_ID_1,    # Device ID 1
+            DEVICE_ID_2,    # Device ID 2
+            MODEL_ID,       # Model ID
+            JD_XI_ID,      # JD-Xi ID
+            DT1_COMMAND_12  # Command ID (DT1)
+        ]
         
         # Add address bytes
         msg.append(address)  # Base address
-        msg.append(0x00)     # Bank MSB
-        msg.append(partial if partial is not None else 0x00)  # Bank LSB
+        msg.append(SUBGROUP_ZERO)  # Bank MSB
+        msg.append(partial if partial is not None else SUBGROUP_ZERO)  # Bank LSB
         msg.append(parameter)  # Parameter number
         
         # Add value
@@ -148,19 +163,26 @@ class MIDIHelper:
         
         # Add checksum and end of message
         msg.append(checksum)
-        msg.append(0xF7)
+        msg.append(END_OF_SYSEX)
         
         return msg
         
     @staticmethod
     def create_sysex_message(address, data):
         """Create Roland System Exclusive message"""
-        # F0 41 10 00 00 00 0E <addr> <data> F7
-        msg = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]
+        msg = [
+            START_1,        # Start of SysEx
+            START_2,        # Roland ID
+            ROLAND_ID,      # Device ID
+            DEVICE_ID_1,    # Device ID 1
+            DEVICE_ID_2,    # Device ID 2
+            MODEL_ID,       # Model ID
+            JD_XI_ID       # JD-Xi ID
+        ]
         msg.extend(address)
         msg.extend(data)
-        msg.append(0xF7)
-        return msg 
+        msg.append(END_OF_SYSEX)
+        return msg
 
     def request_preset_data(self, synth_type, preset_number):
         """Request preset data from JD-Xi"""
@@ -170,28 +192,34 @@ class MIDIHelper:
 
         # Set up address based on synth type
         if synth_type == 'digital1':
-            addr = [0x19, 0x02, preset_number, 0x00]
+            addr = [DIGITAL_SYNTH_AREA, 0x02, preset_number, SUBGROUP_ZERO]
         elif synth_type == 'digital2':
-            addr = [0x19, 0x03, preset_number, 0x00]
+            addr = [DIGITAL_SYNTH_AREA, 0x03, preset_number, SUBGROUP_ZERO]
         elif synth_type == 'analog':
-            addr = [0x19, 0x01, preset_number, 0x00]
+            addr = [ANALOG_SYNTH_AREA, SUBGROUP_ZERO, preset_number, SUBGROUP_ZERO]
         elif synth_type == 'drums':
-            addr = [0x19, 0x04, preset_number, 0x00]  # Added drums address
+            addr = [DRUM_KIT_AREA, SUBGROUP_ZERO, preset_number, SUBGROUP_ZERO]
         else:
             logging.error(f"Invalid synth type: {synth_type}")
             return
 
         # Create RQ1 message
         sysex = [
-            0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E,  # Header
-            0x11,  # Command ID (RQ1)
-            *addr,  # Address
+            START_1,        # Start of SysEx
+            START_2,        # Roland ID
+            ROLAND_ID,      # Device ID
+            DEVICE_ID_1,    # Device ID 1
+            DEVICE_ID_2,    # Device ID 2
+            MODEL_ID,       # Model ID
+            JD_XI_ID,      # JD-Xi ID
+            0x11,          # Command ID (RQ1)
+            *addr,         # Address
             0x00, 0x00, 0x40,  # Size
-            0xF7   # End of SysEx
+            END_OF_SYSEX   # End of SysEx
         ]
         
         self.midi_out.send_message(sysex)
-        logging.debug(f"Requested preset data for {synth_type} #{preset_number}") 
+        logging.debug(f"Requested preset data for {synth_type} #{preset_number}")
 
     def send_pan(self, channel, value):
         """Send Pan (Panpot) control change message
@@ -222,16 +250,28 @@ class MIDIHelper:
             # Initial setup messages
             setup_messages = [
                 # First message: Set parameter 0x06 to 0x5F
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                 0x18, 0x00, 0x20, 0x06, 0x5F, 0x63, 0xF7],
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
+                    EFFECTS_AREA, SUBGROUP_ZERO, 0x20, 0x06, 0x5F, 0x63,
+                    END_OF_SYSEX
+                ],
                 
                 # Second message: Set parameter 0x07 to 0x40
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                 0x18, 0x00, 0x20, 0x07, 0x40, 0x01, 0xF7],
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
+                    EFFECTS_AREA, SUBGROUP_ZERO, 0x20, 0x07, 0x40, 0x01,
+                    END_OF_SYSEX
+                ],
                 
                 # Third message: Set parameter 0x08 to 0x00
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                 0x18, 0x00, 0x20, 0x08, 0x00, 0x40, 0xF7]
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
+                    EFFECTS_AREA, SUBGROUP_ZERO, 0x20, 0x08, SUBGROUP_ZERO, 0x40,
+                    END_OF_SYSEX
+                ]
             ]
             
             # Send setup messages
@@ -241,24 +281,49 @@ class MIDIHelper:
             # Request messages for different sections
             request_messages = [
                 # Common parameters
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11,
-                 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x40, 0x26, 0xF7],
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, 0x11,
+                    DIGITAL_SYNTH_AREA, PART_1, SUBGROUP_ZERO, SUBGROUP_ZERO,
+                    SUBGROUP_ZERO, SUBGROUP_ZERO, 0x40, 0x26,
+                    END_OF_SYSEX
+                ],
                 
                 # Part 1 parameters
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11,
-                 0x19, 0x01, 0x20, 0x00, 0x00, 0x00, 0x3D, 0x09, 0xF7],
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, 0x11,
+                    DIGITAL_SYNTH_AREA, PART_1, 0x20, SUBGROUP_ZERO,
+                    SUBGROUP_ZERO, SUBGROUP_ZERO, 0x3D, 0x09,
+                    END_OF_SYSEX
+                ],
                 
                 # Part 2 parameters
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11,
-                 0x19, 0x01, 0x21, 0x00, 0x00, 0x00, 0x3D, 0x08, 0xF7],
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, 0x11,
+                    DIGITAL_SYNTH_AREA, PART_1, 0x21, SUBGROUP_ZERO,
+                    SUBGROUP_ZERO, SUBGROUP_ZERO, 0x3D, 0x08,
+                    END_OF_SYSEX
+                ],
                 
                 # Part 3 parameters
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11,
-                 0x19, 0x01, 0x22, 0x00, 0x00, 0x00, 0x3D, 0x07, 0xF7],
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, 0x11,
+                    DIGITAL_SYNTH_AREA, PART_1, 0x22, SUBGROUP_ZERO,
+                    SUBGROUP_ZERO, SUBGROUP_ZERO, 0x3D, 0x07,
+                    END_OF_SYSEX
+                ],
                 
                 # Effects parameters
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11,
-                 0x19, 0x01, 0x50, 0x00, 0x00, 0x00, 0x25, 0x71, 0xF7]
+                [
+                    START_1, START_2, ROLAND_ID, DEVICE_ID_1, DEVICE_ID_2,
+                    MODEL_ID, JD_XI_ID, 0x11,
+                    DIGITAL_SYNTH_AREA, PART_1, 0x50, SUBGROUP_ZERO,
+                    SUBGROUP_ZERO, SUBGROUP_ZERO, 0x25, 0x71,
+                    END_OF_SYSEX
+                ]
             ]
             
             # Send request messages
@@ -277,9 +342,9 @@ class MIDIHelper:
         try:
             # Verify it's a Roland message
             if (len(message) < 8 or 
-                message[0] != 0xF0 or  # SysEx start
-                message[1] != 0x41 or  # Roland ID
-                message[7] != 0x12):   # DT1 response
+                message[0] != START_1 or  # SysEx start
+                message[1] != ROLAND_ID or  # Roland ID
+                message[7] != DT1_COMMAND_12):   # DT1 response
                 return
                 
             # Extract address and data

@@ -4,18 +4,24 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 import logging
+from jdxi_manager.midi.constants import (
+    START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
+    DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
+    EFFECTS_AREA
+)
 
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        0x19: "Digital Synth Area",
-        0x18: "System Area",
+        DIGITAL_SYNTH_AREA: "Digital Synth Area",
+        EFFECTS_AREA: "System Area",
         0x20: "Pattern Area"
     }
     
     COMMANDS = {
         0x11: "RQ1 (Data Request)",
-        0x12: "DT1 (Data Transfer)"
+        DT1_COMMAND_12: "DT1 (Data Transfer)"
     }
     
     SECTIONS = {

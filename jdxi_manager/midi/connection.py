@@ -29,16 +29,24 @@ class MIDIConnection:
         logging.debug("MIDI Connection singleton initialized")
         
     def send_message(self, message):
-        """Send MIDI message and blink indicator"""
+        """Send MIDI message and trigger indicator"""
         try:
             if self._midi_out:
-                self._main_window.midi_out.send_message(message)
+                self._midi_out.send_message(message)
+                # Blink indicator if main window exists
                 if self._main_window and hasattr(self._main_window, 'midi_out_indicator'):
                     self._main_window.midi_out_indicator.blink()
-        except Exception as ex:
-            print(f"Error {ex} occurred sending MIDI data")
+                logging.debug(f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in message])}")
+            else:
+                logging.warning("No MIDI output port available")
+                
+        except Exception as e:
+            logging.error(f"Error sending MIDI message: {str(e)}")
                 
     def set_input_callback(self, callback):
         """Set MIDI input callback"""
         if self._midi_in:
-            self._midi_in.set_callback(callback) 
+            self._midi_in.set_callback(callback)
+            logging.debug("MIDI input callback set")
+        else:
+            logging.warning("No MIDI input port available") 

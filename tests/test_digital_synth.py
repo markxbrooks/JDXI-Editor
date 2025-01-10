@@ -1,60 +1,45 @@
 import unittest
-from PySide6.QtWidgets import QApplication
+from unittest.mock import MagicMock
 from jdxi_manager.ui.editors.digital import DigitalSynthEditor
+from jdxi_manager.midi.helper import MIDIHelper
 
-class TestDigitalSynth(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Create QApplication instance
-        cls.app = QApplication([])
-        
+class TestDigitalSynthEditor(unittest.TestCase):
     def setUp(self):
-        # Create a mock MIDI output
-        self.sent_messages = []
-        class MockMidiOut:
-            def send_message(self_, msg):
-                self.sent_messages.append(msg)
-        self.midi_out = MockMidiOut()
+        """Set up test case"""
+        # Create mock MIDI helper
+        self.midi_helper = MIDIHelper()
+        self.midi_helper.midi_out = MagicMock()
         
-        # Create editor instance without requesting patch data
-        self.editor = DigitalSynthEditor(midi_out=self.midi_out, synth_num=1)
-        self.editor._request_patch_data = lambda: None  # Disable patch request
+        # Create mock main window
+        self.main_window = MagicMock()
+        self.main_window.midi_out = self.midi_helper.midi_out
         
-    def test_amp_attack_message(self):
-        """Test that Amp Attack at 127 sends correct MIDI message"""
-        # Clear any previous messages
-        self.sent_messages.clear()
+        # Create editor instance
+        self.editor = DigitalSynthEditor(
+            synth_num=1,
+            midi_helper=self.midi_helper,
+            parent=self.main_window
+        )
+
+    def test_oscillator1_waveform(self):
+        """Test Oscillator 1 waveform parameter message"""
+        # Simulate waveform change to SAW (0)
+        self.editor._send_parameter(0x20, 0x00)  # OSC1 waveform to SAW
         
-        # Set Amp Attack to 127
-        self.editor.amp_attack.setValue(127)
+        # Get the message that was sent
+        self.midi_helper.midi_out.send_message.assert_called_once()
+        args = self.midi_helper.midi_out.send_message.call_args[0][0]
         
-        # Expected parameter change message
-        expected_parameter = bytes([
-            0xF0,   # Start of SysEx
-            0x41,   # Roland ID
-            0x10,   # Device ID
-            0x00, 0x00, 0x00,  # Model ID
-            0x0E,   # JD-Xi ID
-            0x12,   # DT1 Command
-            0x19,   # Digital Synth area
-            0x01,   # Synth 1
-            0x20,   # Fixed section
-            0x1B,   # Parameter (Amp Attack)
-            0x7F,   # Value (127)
-            0x2C,   # Checksum
-            0xF7    # End of SysEx
-        ])
+        # Expected MIDI message for OSC1 SAW waveform
+        expected = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 
+                   0x19, 0x01, 0x20, 0x00, 0x00, 0x46, 0xF7]
         
-        # Check that the parameter message was sent
-        self.assertEqual(len(self.sent_messages), 1)
-        self.assertEqual(self.sent_messages[0], expected_parameter)
-        
-    def tearDown(self):
-        self.editor.close()
-        
-    @classmethod
-    def tearDownClass(cls):
-        cls.app.quit()
+        # Compare the message
+        self.assertEqual(
+            list(args),
+            expected,
+            "Incorrect MIDI message for Oscillator 1 SAW waveform"
+        )
 
 if __name__ == '__main__':
     unittest.main() 
