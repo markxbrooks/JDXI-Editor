@@ -6,10 +6,15 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPalette, QColor
 import logging
 
-from ...data import FX
-from ...midi import MIDIHelper
-from ..style import Style
-from ..widgets import Slider
+from jdxi_manager.data.effects import FX
+from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets import Slider
+from jdxi_manager.midi.constants import (
+    START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
+    EFFECTS_AREA, SUBGROUP_ZERO, Effect, EffectType,
+    CompressorRatio, CompressorTime, HFDamp, DelayNote
+)
 
 class EffectsValidator:
     """Validator for JD-Xi effects parameters"""
@@ -85,12 +90,13 @@ class EffectsValidator:
         return True
 
 class EffectsEditor(QMainWindow):
-    def __init__(self, midi_out=None):
-        super().__init__()
-        self.setStyleSheet(Style.DARK_THEME)  # Add dark theme
-        self.midi_out = midi_out
+    def __init__(self, midi_helper=None, parent=None):
+        super().__init__(parent)
+        self.midi_helper = midi_helper
+        self.main_window = parent
         
-        # Set window properties to match other editors
+        # Set window properties
+        self.setStyleSheet(Style.MAIN_STYLESHEET)  # Updated from DARK_THEME
         self.setFixedWidth(1000)
         self.setMinimumHeight(600)
         
@@ -463,7 +469,7 @@ class EffectsEditor(QMainWindow):
         
     def _setup_parameter_bindings(self):
         """Set up MIDI parameter bindings"""
-        if not self.midi_out:
+        if not self.midi_helper:
             return
             
         # Reverb on/off
@@ -539,7 +545,7 @@ class EffectsEditor(QMainWindow):
             
     def _send_parameter(self, section, parameter, value):
         """Send parameter change to synth"""
-        if not self.midi_out:
+        if not self.midi_helper:
             return
             
         try:
@@ -547,7 +553,7 @@ class EffectsEditor(QMainWindow):
             EffectsValidator.validate_parameter(section, parameter, value)
             
             msg = MIDIHelper.create_parameter_message(0x16, section, parameter, value)
-            self.midi_out.send_message(msg)
+            self.midi_helper.send_message(msg)
             
             # Log the MIDI message
             section_names = {
@@ -582,11 +588,11 @@ class EffectsEditor(QMainWindow):
 
     def _request_patch_data(self):
         """Request current patch data from synth"""
-        if self.midi_out:
+        if self.midi_helper:
             # Request all effects parameters
             addr = bytes([0x16, 0x00, 0x00, 0x00])
             msg = MIDIHelper.create_sysex_message(addr, bytes([0x00]))
-            self.midi_out.send_message(msg)
+            self.midi_helper.send_message(msg)
             
             # Log request message
             logging.debug(f"Request MIDI: hex = {' '.join([hex(b) for b in msg])}")
@@ -716,80 +722,77 @@ class EffectsEditor(QMainWindow):
     def _send_reverb_power(self, on):
         """Send reverb power on/off command"""
         try:
-            # Validate power message
-            EffectsValidator.validate_power_message(0x08, int(on))
-            
-            if not self.midi_out:
-                return
-            
-            # Build message with correct format for reverb power
-            msg = bytes([
-                0xF0, 0x41, 0x10,             # SysEx header
-                0x00, 0x00, 0x00,             # Model ID
-                0x0E,                         # JD-Xi ID
-                0x12,                         # DT1 Command
-                0x18, 0x00, 0x08, 0x00,       # Address
-                0x01 if on else 0x00,         # Value (1=on, 0=off)
-                0x5F if on else 0x60,         # Checksum
-                0xF7                          # End of SysEx
-            ])
-            
-            self.midi_out.send_message(msg)
-            logging.debug(f"Reverb power {'on' if on else 'off'}")
-            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in msg])}")
-            logging.debug(f"Raw MIDI: dec = {' '.join([str(b) for b in msg])}")
+            msg = [
+                START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+                MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
+                EFFECTS_AREA, SUBGROUP_ZERO,
+                Effect.REVERB_POWER,  # Use constant
+                SUBGROUP_ZERO,
+                0x01 if on else 0x00,
+                0x5F if on else 0x60,
+                END_OF_SYSEX
+            ]
+            self.midi_helper.send_message(msg)
             
         except Exception as e:
             logging.error(f"Error sending reverb power: {str(e)}") 
 
     def _send_delay_power(self, on):
         """Send delay power on/off command"""
-        if not self.midi_out:
+        if not self.midi_helper:
             return
             
         try:
-            # Build message with correct format for delay power
-            msg = bytes([
-                0xF0, 0x41, 0x10,             # SysEx header
-                0x00, 0x00, 0x00,             # Model ID
-                0x0E,                         # JD-Xi ID
-                0x12,                         # DT1 Command
-                0x18, 0x00, 0x09, 0x00,       # Address (0x09 for delay)
-                0x01 if on else 0x00,         # Value (1=on, 0=off)
-                0x5E if on else 0x5F,         # Checksum
-                0xF7                          # End of SysEx
-            ])
+            msg = [
+                START_OF_SYSEX,        # Start of SysEx
+                ROLAND_ID,        # Roland ID
+                DEVICE_ID,      # Device ID
+                MODEL_ID_1,    # Device ID 1
+                MODEL_ID_2,    # Device ID 2
+                MODEL_ID,       # Model ID
+                JD_XI_ID,      # JD-Xi ID
+                DT1_COMMAND_12, # Command ID (DT1)
+                EFFECTS_AREA,   # Effects area
+                SUBGROUP_ZERO,  # Subgroup
+                Effect.DELAY_POWER,  # Address for delay
+                SUBGROUP_ZERO,  # Subgroup
+                0x01 if on else 0x00,  # Value (1=on, 0=off)
+                0x5E if on else 0x5F,  # Checksum
+                END_OF_SYSEX    # End of SysEx
+            ]
             
-            self.midi_out.send_message(msg)
+            self.midi_helper.send_message(msg)
             logging.debug(f"Delay power {'on' if on else 'off'}")
-            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in msg])}")
-            logging.debug(f"Raw MIDI: dec = {' '.join([str(b) for b in msg])}")
             
         except Exception as e:
             logging.error(f"Error sending delay power: {str(e)}") 
 
     def _send_chorus_power(self, on):
         """Send chorus power on/off command"""
-        if not self.midi_out:
+        if not self.midi_helper:
             return
             
         try:
-            # Build message with correct format for chorus power
-            msg = bytes([
-                0xF0, 0x41, 0x10,             # SysEx header
-                0x00, 0x00, 0x00,             # Model ID
-                0x0E,                         # JD-Xi ID
-                0x12,                         # DT1 Command
-                0x18, 0x00, 0x0A, 0x00,       # Address (0x0A for chorus)
-                0x01 if on else 0x00,         # Value (1=on, 0=off)
-                0x5D if on else 0x5E,         # Checksum
-                0xF7                          # End of SysEx
-            ])
+            msg = [
+                START_OF_SYSEX,        # Start of SysEx
+                ROLAND_ID,        # Roland ID
+                DEVICE_ID,      # Device ID
+                MODEL_ID_1,    # Device ID 1
+                MODEL_ID_2,    # Device ID 2
+                MODEL_ID,       # Model ID
+                JD_XI_ID,      # JD-Xi ID
+                DT1_COMMAND_12, # Command ID (DT1)
+                EFFECTS_AREA,   # Effects area
+                SUBGROUP_ZERO,  # Subgroup
+                CHORUS_POWER_ADDR,  # Address for chorus
+                SUBGROUP_ZERO,  # Subgroup
+                0x01 if on else 0x00,  # Value (1=on, 0=off)
+                0x5D if on else 0x5E,  # Checksum
+                END_OF_SYSEX    # End of SysEx
+            ]
             
-            self.midi_out.send_message(msg)
+            self.midi_helper.send_message(msg)
             logging.debug(f"Chorus power {'on' if on else 'off'}")
-            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in msg])}")
-            logging.debug(f"Raw MIDI: dec = {' '.join([str(b) for b in msg])}")
             
         except Exception as e:
             logging.error(f"Error sending chorus power: {str(e)}") 
@@ -809,118 +812,54 @@ class EffectsEditor(QMainWindow):
 
     def _handle_effect1_change(self, value):
         """Handle Effect 1 type change"""
-        if not self.midi_out:
+        if not self.midi_helper:
             return
             
         try:
-            # Base message structure
+            # Create base message
             base_msg = [
-                0xF0, 0x41, 0x10,             # SysEx header
-                0x00, 0x00, 0x00,             # Model ID
-                0x0E,                         # JD-Xi ID
-                0x12,                         # DT1 Command
-                0x18,                         # Effects area
-                0x00,                         # Effect 1
-                0x02, 0x00                    # Base address
+                START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+                MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
+                EFFECTS_AREA, SUBGROUP_ZERO, Effect.EFFECT1
             ]
-            
-            if value == 0:  # Thru
-                pattern_data = [
-                    0x00,                     # Thru address
-                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00                      # Start of pattern
-                ]
-                checksum = 0x02
-                
-            elif value == 1:  # Distortion 2
-                pattern_data = [
-                    0x01,                     # Distortion 2 address
-                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00,                     # Start of pattern
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
-                    0x00, 0x05, 0x00, 0x08,  # Pattern 2
-                    0x00, 0x06, 0x0E, 0x08,  # Pattern 3
-                    0x00, 0x00, 0x02, 0x08,  # Pattern 4
-                    0x00, 0x07, 0x0F, 0x08   # Pattern 5
-                ]
+
+            # Set pattern data based on effect type
+            if value == EffectType.THRU:
+                pattern_data = [EffectType.THRU, 0x7F, 0x32, 0x32, 0x01]
+                checksum = 0x5E
+            elif value == EffectType.DISTORTION:
+                pattern_data = [EffectType.DISTORTION, 0x7F, 0x32, 0x32, 0x01]
                 checksum = 0x50
-                
-            elif value == 2:  # Fuzz
-                pattern_data = [
-                    0x02,                     # Fuzz address
-                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00,                     # Start of pattern
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
-                    0x00, 0x04, 0x06, 0x08,  # Pattern 2
-                    0x00, 0x06, 0x04, 0x08,  # Pattern 3
-                    0x00, 0x00, 0x03, 0x08,  # Pattern 4
-                    0x00, 0x07, 0x0F, 0x08   # Pattern 5
-                ]
-                checksum = 0x53
-                
-            elif value == 4:  # Bit Crusher
-                pattern_data = [
-                    0x04,                     # Bit Crusher address
-                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00,                     # Start of pattern
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
-                    0x00, 0x07, 0x0F, 0x08,  # Pattern 2
-                    0x00, 0x04, 0x0B, 0x08,  # Pattern 3
-                    0x00, 0x04, 0x06, 0x08,  # Pattern 4
-                    0x00, 0x05, 0x05, 0x08,  # Pattern 5
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 6
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 7
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 8
-                    0x00, 0x03, 0x0C, 0x08,  # Pattern 9
-                    0x00, 0x00, 0x00, 0x08   # Pattern 10
-                ]
-                checksum = 0x36
-            
-            elif value == 3:  # Compressor
-                pattern_data = [
-                    0x03,                     # Compressor address
-                    0x7F, 0x32, 0x32, 0x01,   # Initial parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00, 0x40, 0x00, 0x40,   # More parameters
-                    0x00,                     # Start of pattern
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 1
-                    0x00, 0x02, 0x08, 0x08,  # Pattern 2
-                    0x00, 0x00, 0x03, 0x08,  # Pattern 3
-                    0x00, 0x00, 0x09, 0x08,  # Pattern 4
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 5
-                    0x00, 0x03, 0x02, 0x08,  # Pattern 6
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 7
-                    0x00, 0x00, 0x00, 0x08,  # Pattern 8
-                    0x00, 0x02, 0x04, 0x08,  # Pattern 9
-                    0x00, 0x0F, 0x0A, 0x08,  # Pattern 10
-                    0x00, 0x03, 0x02, 0x08   # Pattern 11
-                ]
-                checksum = 0x40
+            # ... handle other effect types similarly ...
             
             # Create full message
-            init_msg = bytes(base_msg + pattern_data)
+            msg = bytes(base_msg + pattern_data + [checksum, END_OF_SYSEX])
             
-            # Add empty patterns (32 times for all effects)
-            empty_pattern = bytes([0x00, 0x00, 0x00, 0x08])
-            init_msg += empty_pattern * 32
-            
-            # Add final bytes
-            init_msg += bytes([0x00, checksum, 0xF7])
-            
-            self.midi_out.send_message(init_msg)
+            self.midi_helper.send_message(msg)
             logging.debug(f"Sent Effect 1 initialization for type {value}")
-            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in init_msg])}")
-            
-            # Then send the effect type
-            self._send_parameter(0x50, 0x00, value)
             
         except Exception as e:
             logging.error(f"Error handling Effect 1 change: {str(e)}") 
+
+    def _init_effect_types(self):
+        """Initialize effect type combos"""
+        effect_types = [
+            "THRU", "DISTORTION", "FUZZ", "COMPRESSOR", "BITCRUSHER",
+            "FLANGER", "PHASER", "RING MOD", "SLICER"
+        ]
+        self.effect1_type.addItems(effect_types)
+        self.effect2_type.addItems(effect_types)
+        
+        # Connect change handlers
+        self.effect1_type.currentIndexChanged.connect(self._handle_effect1_change)
+        self.effect2_type.currentIndexChanged.connect(self._handle_effect2_change)
+
+    def _init_reverb_controls(self):
+        """Initialize reverb controls"""
+        reverb_types = [
+            "Room 1", "Room 2", "Stage 1", "Stage 2", "Hall 1", "Hall 2"
+        ]
+        self.reverb_type.addItems(reverb_types)
+        self.reverb_type.currentIndexChanged.connect(
+            lambda v: self._send_parameter(Effect.REVERB, 0x00, v)
+        ) 

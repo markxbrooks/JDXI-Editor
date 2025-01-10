@@ -5,10 +5,18 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QTimer
 import logging
 
-from ..style import Style
-from ..widgets import Slider
-from ..widgets.preset_panel import PresetPanel
-from ...midi import MIDIHelper, MIDIConnection
+from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets import Slider
+from jdxi_manager.ui.widgets.preset_panel import PresetPanel
+from jdxi_manager.midi.messages import (
+    create_parameter_message,
+    create_sysex_message
+)
+from jdxi_manager.midi.constants import (
+    START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
+    DRUM_KIT_AREA, SUBGROUP_ZERO, DrumPad
+)
 
 class DrumEditor(QMainWindow):
     def __init__(self, parent=None):
@@ -114,16 +122,16 @@ class DrumEditor(QMainWindow):
             
             # Set up bindings for each drum pad
             for pad_num, controls in self.pad_controls.items():
-                base_addr = 0x20 + (pad_num * 0x10)  # Each pad has 16 parameters
+                base_addr = pad_num * DrumPad.PARAM_OFFSET  # Each pad has 16 parameters
                 
                 controls['level'].valueChanged.connect(
-                    lambda v, p=pad_num: self._send_parameter(base_addr + 0x00, v))
+                    lambda v, p=pad_num: self._send_parameter(base_addr + DrumPad.LEVEL, v))
                 controls['pan'].valueChanged.connect(
-                    lambda v, p=pad_num: self._send_parameter(base_addr + 0x01, v + 64))
+                    lambda v, p=pad_num: self._send_parameter(base_addr + DrumPad.PAN, v + 64))
                 controls['pitch'].valueChanged.connect(
-                    lambda v, p=pad_num: self._send_parameter(base_addr + 0x02, v + 64))
+                    lambda v, p=pad_num: self._send_parameter(base_addr + DrumPad.PITCH, v + 64))
                 controls['decay'].valueChanged.connect(
-                    lambda v, p=pad_num: self._send_parameter(base_addr + 0x03, v))
+                    lambda v, p=pad_num: self._send_parameter(base_addr + DrumPad.DECAY, v))
             
         except Exception as e:
             logging.error(f"Error setting up parameter bindings: {str(e)}")
@@ -131,11 +139,11 @@ class DrumEditor(QMainWindow):
     def _send_parameter(self, parameter, value):
         """Send parameter change to JD-Xi"""
         try:
-            msg = MIDIHelper.create_parameter_message(
-                0x1A,        # Drum kit address
-                0x00,        # No part number needed
-                parameter,   # Parameter number
-                value       # Parameter value (0-127)
+            msg = create_parameter_message(
+                DRUM_KIT_AREA,    # Drum kit address
+                SUBGROUP_ZERO,    # No part number needed
+                parameter,        # Parameter number
+                value            # Parameter value (0-127)
             )
             if self.main_window and self.main_window.midi_out:
                 self.main_window.midi_out.send_message(msg)
@@ -149,9 +157,9 @@ class DrumEditor(QMainWindow):
     def _request_patch_data(self):
         """Request current patch data"""
         try:
-            msg = MIDIHelper.create_sysex_message(
-                bytes([0x1A, 0x00, 0x00, 0x00]),  # Drum kit address
-                bytes([0x00])  # Data
+            msg = create_sysex_message(
+                bytes([DRUM_KIT_AREA, SUBGROUP_ZERO, SUBGROUP_ZERO, SUBGROUP_ZERO]),  # Drum kit address
+                bytes([SUBGROUP_ZERO])  # Data
             )
             if self.main_window and self.main_window.midi_out:
                 self.main_window.midi_out.send_message(msg)
