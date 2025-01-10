@@ -40,6 +40,7 @@ def list_ports():
     return in_ports, out_ports
 
 
+
 class MidiConnector:
     def __init__(self, parent=None):
         # Initialize state
