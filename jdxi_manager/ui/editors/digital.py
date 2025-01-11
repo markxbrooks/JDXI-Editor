@@ -251,33 +251,60 @@ class DigitalSynthEditor(BaseEditor):
         header.setStyleSheet(f"background-color: {Style.VCF_BG}; color: white; padding: 5px;")
         layout.addWidget(header)
         
-        # Create filter type selector
-        filter_type = QComboBox()
-        filter_types = [
-            ("LPF", 0x00),      # Low Pass Filter
-            ("HPF", 0x01),      # High Pass Filter
-            ("BPF", 0x02),      # Band Pass Filter
-            ("PKG", 0x03),      # Peaking Filter
-            ("OFF", 0x04)       # Filter Off
+        # Create filter mode selector
+        filter_mode = QComboBox()
+        filter_modes = [
+            ("BYPASS", 0x00),
+            ("LPF", 0x01),
+            ("HPF", 0x02),
+            ("BPF", 0x03),
+            ("PKG", 0x04),
+            ("LPF2", 0x05),
+            ("LPF3", 0x06),
+            ("LPF4", 0x07)
         ]
-        filter_type.addItems([name for name, _ in filter_types])
-        filter_type.currentIndexChanged.connect(
+        filter_mode.addItems([name for name, _ in filter_modes])
+        filter_mode.currentIndexChanged.connect(
             lambda idx: self._send_partial_parameter(
                 group=PARTIAL_GROUP,
-                param=DigitalPartial.CC.FILTER_TYPE.value,  # 0x0A
-                value=filter_types[idx][1],
+                param=DigitalPartial.CC.FILTER_MODE.value,
+                value=filter_modes[idx][1],
                 partial_num=partial_num
             )
         )
-        layout.addWidget(filter_type)
+        layout.addWidget(filter_mode)
+        
+        # Create slope selector
+        slope = QComboBox()
+        slopes = [("-12dB", 0), ("-24dB", 1)]
+        slope.addItems([name for name, _ in slopes])
+        slope.currentIndexChanged.connect(
+            lambda idx: self._send_partial_parameter(
+                group=PARTIAL_GROUP,
+                param=DigitalPartial.CC.FILTER_SLOPE.value,
+                value=slopes[idx][1],
+                partial_num=partial_num
+            )
+        )
+        layout.addWidget(slope)
         
         # Create filter parameter sliders
         cutoff = Slider("Cutoff", 0, 127)
         cutoff.valueChanged.connect(
             lambda v: self._send_partial_parameter(
                 group=PARTIAL_GROUP,
-                param=DigitalPartial.CC.FILTER_CUTOFF.value,  # 0x0B
+                param=DigitalPartial.CC.FILTER_CUTOFF.value,
                 value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        keyfollow = Slider("Keyfollow", -100, 100)
+        keyfollow.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,
+                param=DigitalPartial.CC.FILTER_KEYFOLLOW.value,
+                value=int(54 + (v * 20/100)),  # Map -100,+100 to 54,74
                 partial_num=partial_num
             )
         )
@@ -286,37 +313,68 @@ class DigitalSynthEditor(BaseEditor):
         resonance.valueChanged.connect(
             lambda v: self._send_partial_parameter(
                 group=PARTIAL_GROUP,
-                param=DigitalPartial.CC.FILTER_RESO.value,  # 0x0C
+                param=DigitalPartial.CC.FILTER_RESO.value,
                 value=v,
                 partial_num=partial_num
             )
         )
         
-        env_depth = Slider("Env Depth", -64, 63)
+        # Filter envelope controls
+        attack = Slider("Attack", 0, 127)
+        attack.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,
+                param=DigitalPartial.CC.FILTER_ATTACK.value,
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        decay = Slider("Decay", 0, 127)
+        decay.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,
+                param=DigitalPartial.CC.FILTER_DECAY.value,
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        sustain = Slider("Sustain", 0, 127)
+        sustain.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,
+                param=DigitalPartial.CC.FILTER_SUSTAIN.value,
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        release = Slider("Release", 0, 127)
+        release.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,
+                param=DigitalPartial.CC.FILTER_RELEASE.value,
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        env_depth = Slider("Env Depth", -63, 63)
         env_depth.valueChanged.connect(
             lambda v: self._send_partial_parameter(
                 group=PARTIAL_GROUP,
-                param=DigitalPartial.CC.FILTER_ENV.value,  # 0x0D
+                param=DigitalPartial.CC.FILTER_ENV_DEPTH.value,
                 value=v + 64,  # Center at 64
                 partial_num=partial_num
             )
         )
         
-        key_follow = Slider("Key Follow", -64, 63)
-        key_follow.valueChanged.connect(
+        velo_sens = Slider("Velocity Sens", -63, 63)
+        velo_sens.valueChanged.connect(
             lambda v: self._send_partial_parameter(
                 group=PARTIAL_GROUP,
-                param=DigitalPartial.CC.FILTER_KEY.value,  # 0x0E
-                value=v + 64,  # Center at 64
-                partial_num=partial_num
-            )
-        )
-        
-        velocity = Slider("Velocity", -64, 63)
-        velocity.valueChanged.connect(
-            lambda v: self._send_partial_parameter(
-                group=PARTIAL_GROUP,
-                param=DigitalPartial.CC.FILTER_VELO.value,  # 0x0F
+                param=DigitalPartial.CC.FILTER_VELO.value,
                 value=v + 64,  # Center at 64
                 partial_num=partial_num
             )
@@ -325,9 +383,18 @@ class DigitalSynthEditor(BaseEditor):
         # Add controls to layout
         layout.addWidget(cutoff)
         layout.addWidget(resonance)
+        layout.addWidget(keyfollow)
+        layout.addWidget(velo_sens)
         layout.addWidget(env_depth)
-        layout.addWidget(key_follow)
-        layout.addWidget(velocity)
+        
+        # Add envelope controls
+        env_group = QGroupBox("Filter Envelope")
+        env_layout = QVBoxLayout(env_group)
+        env_layout.addWidget(attack)
+        env_layout.addWidget(decay)
+        env_layout.addWidget(sustain)
+        env_layout.addWidget(release)
+        layout.addWidget(env_group)
         
         return frame
 
@@ -377,17 +444,73 @@ class DigitalSynthEditor(BaseEditor):
             )
         )
         
-        pan = Slider("Pan", -64, 63)
-        pan.valueChanged.connect(
+        velocity = Slider("Velocity Sens", -63, 63)
+        velocity.valueChanged.connect(
             lambda v: self._send_partial_parameter(
                 group=PARTIAL_GROUP,      # 0x20
-                param=DigitalPartial.CC.AMP_PAN.value,  # 0x16
+                param=DigitalPartial.CC.AMP_VELO.value,  # 0x16
                 value=v + 64,  # Center at 64
                 partial_num=partial_num
             )
         )
         
+        attack = Slider("Attack", 0, 127)
+        attack.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,      # 0x20
+                param=DigitalPartial.CC.AMP_ATTACK.value,  # 0x17
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        decay = Slider("Decay", 0, 127)
+        decay.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,      # 0x20
+                param=DigitalPartial.CC.AMP_DECAY.value,  # 0x18
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        sustain = Slider("Sustain", 0, 127)
+        sustain.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,      # 0x20
+                param=DigitalPartial.CC.AMP_SUSTAIN.value,  # 0x19
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        release = Slider("Release", 0, 127)
+        release.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,      # 0x20
+                param=DigitalPartial.CC.AMP_RELEASE.value,  # 0x1A
+                value=v,
+                partial_num=partial_num
+            )
+        )
+        
+        pan = Slider("Pan", -64, 63)
+        pan.valueChanged.connect(
+            lambda v: self._send_partial_parameter(
+                group=PARTIAL_GROUP,      # 0x20
+                param=DigitalPartial.CC.AMP_PAN.value,  # 0x1B
+                value=v + 64,  # Center at 64
+                partial_num=partial_num
+            )
+        )
+        
+        # Add controls to layout
         layout.addWidget(level)
+        layout.addWidget(velocity)
+        layout.addWidget(attack)
+        layout.addWidget(decay)
+        layout.addWidget(sustain)
+        layout.addWidget(release)
         layout.addWidget(pan)
         
         return frame
