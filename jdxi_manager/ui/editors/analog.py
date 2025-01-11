@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
-    QGroupBox, QTabWidget
+    QGroupBox, QTabWidget, QScrollArea
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
@@ -22,10 +22,10 @@ from jdxi_manager.midi.constants import (
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
     ANALOG_SYNTH_AREA, ANALOG_PART,
     PROGRAM_GROUP, COMMON_GROUP, PARTIAL_GROUP,
-    Waveform
+    SUBGROUP_ZERO,
+    Waveform, AnalogParameter, AnalogLFO, AnalogLFOSync
 )
 from jdxi_manager.data.analog import (
-    AnalogParameter,
     AnalogOscillator,
     AnalogFilter,
     AnalogAmplifier,
@@ -84,46 +84,79 @@ class AnalogSynthEditor(QMainWindow):
         # Add header
         layout.addWidget(self._create_section_header(f"OSC {osc_num}", Style.OSC_BG))
         
-        # Create controls
-        param_base = AnalogParameter.OSC1_WAVE if osc_num == 1 else AnalogParameter.OSC2_WAVE
-        
-        # Waveform selector
-        wave_selector = WaveformButton()
-        wave_selector.waveform_changed.connect(
-            lambda w: self._send_parameter(param_base.value, w.value)
+        # Waveform selector (0x16: 0-2)
+        wave = QComboBox()
+        wave.addItems(['SAW', 'TRI', 'PW-SQR'])  # Updated names to match spec
+        wave.currentIndexChanged.connect(
+            lambda idx: self._send_parameter(0x16, idx)
         )
+        layout.addWidget(wave)
         
-        # Range control (-24 to +24 semitones)
-        range_slider = Slider(
-            "Range", -24, 24,
-            lambda v: self._send_parameter(param_base.value + 1, v + 64)
+        # Pitch Coarse (0x17: 40-88 maps to -24 - +24)
+        pitch = Slider(
+            "Pitch", -24, 24,
+            lambda v: self._send_parameter(0x17, v + 64)  # Center at 64
         )
+        layout.addWidget(pitch)
         
-        # Fine tune control (-50 to +50 cents)
-        fine_slider = Slider(
+        # Pitch Fine (0x18: 14-114 maps to -50 - +50)
+        fine = Slider(
             "Fine", -50, 50,
-            lambda v: self._send_parameter(param_base.value + 2, v + 64)
+            lambda v: self._send_parameter(0x18, v + 64)  # Center at 64
         )
+        layout.addWidget(fine)
         
-        # Detune control
-        detune_slider = Slider(
-            "Detune", 0, 127,
-            lambda v: self._send_parameter(param_base.value + 3, v)
+        # Pulse Width (0x19: 0-127)
+        pw = Slider(
+            "Pulse Width", 0, 127,
+            lambda v: self._send_parameter(0x19, v)
         )
+        layout.addWidget(pw)
         
-        # Add controls to layout
-        layout.addWidget(wave_selector)
-        layout.addWidget(range_slider)
-        layout.addWidget(fine_slider)
-        layout.addWidget(detune_slider)
+        # PW Mod Depth (0x1A: 0-127)
+        pwm = Slider(
+            "PW Mod Depth", 0, 127,
+            lambda v: self._send_parameter(0x1A, v)
+        )
+        layout.addWidget(pwm)
         
-        # Add OSC2 sync if this is OSC2
-        if osc_num == 2:
-            sync_check = QCheckBox("Sync")
-            sync_check.toggled.connect(
-                lambda v: self._send_parameter(AnalogParameter.OSC2_SYNC.value, int(v))
+        # Pitch Envelope controls
+        # Velocity (0x1B: 1-127 maps to -63 - +63)
+        pitch_velo = Slider(
+            "Pitch Env Velocity", -63, 63,
+            lambda v: self._send_parameter(0x1B, v + 64)
+        )
+        layout.addWidget(pitch_velo)
+        
+        # Attack (0x1C: 0-127)
+        pitch_atk = Slider(
+            "Pitch Env Attack", 0, 127,
+            lambda v: self._send_parameter(0x1C, v)
+        )
+        layout.addWidget(pitch_atk)
+        
+        # Decay (0x1D: 0-127)
+        pitch_dec = Slider(
+            "Pitch Env Decay", 0, 127,
+            lambda v: self._send_parameter(0x1D, v)
+        )
+        layout.addWidget(pitch_dec)
+        
+        # Depth (0x1E: 1-127 maps to -63 - +63)
+        pitch_depth = Slider(
+            "Pitch Env Depth", -63, 63,
+            lambda v: self._send_parameter(0x1E, v + 64)
+        )
+        layout.addWidget(pitch_depth)
+        
+        # Sub oscillator type (0x1F: 0-2)
+        if osc_num == 1:
+            sub_type = QComboBox()
+            sub_type.addItems(['OFF', 'OCT-1', 'OCT-2'])  # Updated names to match spec
+            sub_type.currentIndexChanged.connect(
+                lambda idx: self._send_parameter(0x1F, idx)
             )
-            layout.addWidget(sync_check)
+            layout.addWidget(sub_type)
         
         return frame
 
@@ -163,8 +196,66 @@ class AnalogSynthEditor(QMainWindow):
         return frame
 
     def _send_parameter(self, param: int, value: int):
-        """Send analog synth parameter change"""
+        """Send analog synth parameter change with value validation"""
         try:
+            # Validate parameter ranges
+            if param in [0x31, 0x33]:  # Portamento and Legato switches
+                if value not in [0, 1]:
+                    logging.error(f"Switch value {value} invalid (must be 0 or 1)")
+                    return
+            elif param == 0x34:  # Octave Shift
+                if value < 61 or value > 67:
+                    logging.error(f"Octave shift value {value} out of range (61-67)")
+                    return
+            elif param in [0x35, 0x36]:  # Pitch Bend Ranges
+                if value < 0 or value > 24:
+                    logging.error(f"Pitch bend range {value} out of range (0-24)")
+                    return
+            elif param == 0x0D:  # LFO Shape
+                if value not in range(6):  # 0-5
+                    logging.error(f"LFO Shape value {value} invalid (must be 0-5)")
+                    return
+            elif param in [0x10, 0x15]:  # Switches (Tempo Sync, Key Trigger)
+                if value not in [0, 1]:
+                    logging.error(f"Switch value {value} invalid (must be 0 or 1)")
+                    return
+            elif param == 0x11:  # Sync Note
+                if value not in range(20):  # 0-19
+                    logging.error(f"Sync Note value {value} invalid (must be 0-19)")
+                    return
+            elif param in [0x12, 0x13, 0x14]:  # LFO Depths
+                if value < 1 or value > 127:
+                    logging.error(f"LFO Depth value {value} out of range (1-127)")
+                    return
+            elif param == 0x16:  # OSC Waveform
+                if value not in [0, 1, 2]:
+                    logging.error(f"Waveform value {value} invalid (must be 0-2)")
+                    return
+            elif param == 0x17:  # Pitch Coarse
+                if value < 40 or value > 88:
+                    logging.error(f"Pitch value {value} out of range (40-88)")
+                    return
+            elif param == 0x18:  # Pitch Fine
+                if value < 14 or value > 114:
+                    logging.error(f"Fine value {value} out of range (14-114)")
+                    return
+            elif param in [0x1B, 0x1E]:  # Velocity and Depth
+                if value < 1 or value > 127:
+                    logging.error(f"Parameter value {value} out of range (1-127)")
+                    return
+            elif param == 0x1F:  # Sub OSC Type
+                if value not in [0, 1, 2]:
+                    logging.error(f"Sub OSC type {value} invalid (must be 0-2)")
+                    return
+            elif param in [0x38, 0x39, 0x3A, 0x3B]:  # LFO Modulation controls
+                if value < 1 or value > 127:
+                    logging.error(f"LFO Modulation value {value} out of range (1-127)")
+                    return
+            else:  # Standard parameters
+                if value < 0 or value > 127:
+                    logging.error(f"Parameter value {value} out of range (0-127)")
+                    return
+                
             msg = JDXiSysEx.create_parameter_message(
                 area=ANALOG_SYNTH_AREA,
                 part=0x00,
@@ -214,39 +305,74 @@ class AnalogSynthEditor(QMainWindow):
         # Add header
         layout.addWidget(self._create_section_header("FILTER", Style.VCF_BG))
         
-        # Create controls
+        # Filter type selector (0x20: 0-1)
+        filter_type = QComboBox()
+        filter_type.addItems(['BYPASS', 'LPF'])
+        filter_type.currentIndexChanged.connect(
+            lambda idx: self._send_parameter(0x20, idx)
+        )
+        layout.addWidget(filter_type)
+        
+        # Cutoff control (0x21: 0-127)
         cutoff = Slider(
             "Cutoff", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.CUTOFF.value, v)
+            lambda v: self._send_parameter(0x21, v)
         )
+        layout.addWidget(cutoff)
+        
+        # Keyfollow (0x22: 54-74 maps to -100 - +100)
+        keyfollow = Slider(
+            "Keyfollow", -100, 100,
+            lambda v: self._send_parameter(0x22, int(((v + 100) * 20 / 200) + 54))
+        )
+        layout.addWidget(keyfollow)
+        
+        # Resonance (0x23: 0-127)
         resonance = Slider(
             "Resonance", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.RESONANCE.value, v)
+            lambda v: self._send_parameter(0x23, v)
         )
-        key_follow = Slider(
-            "Key Follow", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.KEY_FOLLOW.value, v)
-        )
-        env_depth = Slider(
-            "Env Depth", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.ENV_DEPTH.value, v)
-        )
-        lfo_depth = Slider(
-            "LFO Depth", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.LFO_DEPTH.value, v)
-        )
-        velocity = Slider(
-            "Velocity", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.VELOCITY_SENS.value, v)
-        )
-        
-        # Add controls to layout
-        layout.addWidget(cutoff)
         layout.addWidget(resonance)
-        layout.addWidget(key_follow)
+        
+        # Filter envelope controls
+        # Velocity sensitivity (0x24: 1-127 maps to -63 - +63)
+        env_velo = Slider(
+            "Env Velocity", -63, 63,
+            lambda v: self._send_parameter(0x24, v + 64)
+        )
+        layout.addWidget(env_velo)
+        
+        # ADSR controls (0x25-0x28: all 0-127)
+        env_atk = Slider(
+            "Attack", 0, 127,
+            lambda v: self._send_parameter(0x25, v)
+        )
+        layout.addWidget(env_atk)
+        
+        env_dec = Slider(
+            "Decay", 0, 127,
+            lambda v: self._send_parameter(0x26, v)
+        )
+        layout.addWidget(env_dec)
+        
+        env_sus = Slider(
+            "Sustain", 0, 127,
+            lambda v: self._send_parameter(0x27, v)
+        )
+        layout.addWidget(env_sus)
+        
+        env_rel = Slider(
+            "Release", 0, 127,
+            lambda v: self._send_parameter(0x28, v)
+        )
+        layout.addWidget(env_rel)
+        
+        # Envelope depth (0x29: 1-127 maps to -63 - +63)
+        env_depth = Slider(
+            "Env Depth", -63, 63,
+            lambda v: self._send_parameter(0x29, v + 64)
+        )
         layout.addWidget(env_depth)
-        layout.addWidget(lfo_depth)
-        layout.addWidget(velocity)
         
         return frame
 
@@ -259,29 +385,51 @@ class AnalogSynthEditor(QMainWindow):
         # Add header
         layout.addWidget(self._create_section_header("AMP", Style.VCA_BG))
         
-        # Create controls
+        # Level control (0x2A: 0-127)
         level = Slider(
             "Level", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.LEVEL.value, v)
+            lambda v: self._send_parameter(0x2A, v)  # Direct address instead of enum
         )
-        pan = Slider(
-            "Pan", -64, 63,
-            lambda v: self._send_parameter(AnalogParameter.PAN.value, v + 64)
-        )
-        portamento = Slider(
-            "Portamento", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.PORTAMENTO.value, v)
-        )
-        legato = QCheckBox("Legato")
-        legato.toggled.connect(
-            lambda v: self._send_parameter(AnalogParameter.LEGATO.value, int(v))
-        )
-        
-        # Add controls to layout
         layout.addWidget(level)
-        layout.addWidget(pan)
-        layout.addWidget(portamento)
-        layout.addWidget(legato)
+        
+        # Keyfollow (0x2B: 54-74 maps to -100 - +100)
+        keyfollow = Slider(
+            "Keyfollow", -100, 100,
+            lambda v: self._send_parameter(0x2B, int(((v + 100) * 20 / 200) + 54))
+        )
+        layout.addWidget(keyfollow)
+        
+        # Velocity sensitivity (0x2C: 1-127 maps to -63 - +63)
+        velocity = Slider(
+            "Velocity Sens", -63, 63,
+            lambda v: self._send_parameter(0x2C, v + 64)
+        )
+        layout.addWidget(velocity)
+        
+        # ADSR envelope controls (0x2D-0x30: all 0-127)
+        env_atk = Slider(
+            "Attack", 0, 127,
+            lambda v: self._send_parameter(0x2D, v)
+        )
+        layout.addWidget(env_atk)
+        
+        env_dec = Slider(
+            "Decay", 0, 127,
+            lambda v: self._send_parameter(0x2E, v)
+        )
+        layout.addWidget(env_dec)
+        
+        env_sus = Slider(
+            "Sustain", 0, 127,
+            lambda v: self._send_parameter(0x2F, v)
+        )
+        layout.addWidget(env_sus)
+        
+        env_rel = Slider(
+            "Release", 0, 127,
+            lambda v: self._send_parameter(0x30, v)
+        )
+        layout.addWidget(env_rel)
         
         return frame
 
@@ -294,38 +442,100 @@ class AnalogSynthEditor(QMainWindow):
         # Add header
         layout.addWidget(self._create_section_header("LFO", Style.LFO_BG))
         
-        # Create controls
-        wave = WaveformButton()
-        wave.waveform_changed.connect(
-            lambda w: self._send_parameter(AnalogParameter.LFO_WAVE.value, w.value)
+        # LFO Shape (0x0D: 0-5)
+        shape = QComboBox()
+        shape.addItems(['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'])  # Match spec names
+        shape.currentIndexChanged.connect(
+            lambda idx: self._send_parameter(0x0D, idx)
         )
+        layout.addWidget(shape)
         
+        # Rate (0x0E: 0-127)
         rate = Slider(
             "Rate", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.LFO_RATE.value, v)
+            lambda v: self._send_parameter(0x0E, v)
         )
+        layout.addWidget(rate)
         
-        sync = QCheckBox("Sync")
-        sync.toggled.connect(
-            lambda v: self._send_parameter(AnalogParameter.LFO_SYNC.value, int(v))
-        )
-        
+        # Fade Time (0x0F: 0-127)
         fade = Slider(
             "Fade Time", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.LFO_FADE.value, v)
+            lambda v: self._send_parameter(0x0F, v)
         )
-        
-        delay = Slider(
-            "Delay Time", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.LFO_DELAY.value, v)
-        )
-        
-        # Add controls to layout
-        layout.addWidget(wave)
-        layout.addWidget(rate)
-        layout.addWidget(sync)
         layout.addWidget(fade)
-        layout.addWidget(delay)
+        
+        # Tempo Sync switch (0x10: 0-1)
+        sync_sw = QCheckBox("Tempo Sync")
+        sync_sw.toggled.connect(
+            lambda v: self._send_parameter(0x10, int(v))
+        )
+        layout.addWidget(sync_sw)
+        
+        # Sync Note selector (0x11: 0-19)
+        sync_note = QComboBox()
+        sync_note.addItems([
+            "16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2",
+            "3/8", "1/3", "1/4", "3/16", "1/6", "1/8", "3/32",
+            "1/12", "1/16", "1/24", "1/32"
+        ])
+        sync_note.currentIndexChanged.connect(
+            lambda idx: self._send_parameter(0x11, idx)
+        )
+        layout.addWidget(sync_note)
+        
+        # Depth controls (all 1-127 map to -63 - +63)
+        pitch_depth = Slider(
+            "Pitch Depth", -63, 63,
+            lambda v: self._send_parameter(0x12, v + 64)
+        )
+        layout.addWidget(pitch_depth)
+        
+        filter_depth = Slider(
+            "Filter Depth", -63, 63,
+            lambda v: self._send_parameter(0x13, v + 64)
+        )
+        layout.addWidget(filter_depth)
+        
+        amp_depth = Slider(
+            "Amp Depth", -63, 63,
+            lambda v: self._send_parameter(0x14, v + 64)
+        )
+        layout.addWidget(amp_depth)
+        
+        # Key Trigger switch (0x15: 0-1)
+        key_trig = QCheckBox("Key Trigger")
+        key_trig.toggled.connect(
+            lambda v: self._send_parameter(0x15, int(v))
+        )
+        layout.addWidget(key_trig)
+        
+        # Add separator for modulation controls
+        layout.addWidget(QLabel("Modulation Controls"))
+        
+        # LFO Modulation controls (all 1-127 map to -63 - +63)
+        pitch_mod = Slider(
+            "Pitch Mod", -63, 63,
+            lambda v: self._send_parameter(0x38, v + 64)
+        )
+        layout.addWidget(pitch_mod)
+        
+        filter_mod = Slider(
+            "Filter Mod", -63, 63,
+            lambda v: self._send_parameter(0x39, v + 64)
+        )
+        layout.addWidget(filter_mod)
+        
+        amp_mod = Slider(
+            "Amp Mod", -63, 63,
+            lambda v: self._send_parameter(0x3A, v + 64)
+        )
+        layout.addWidget(amp_mod)
+        
+        rate_mod = Slider(
+            "Rate Mod", -63, 63,
+            lambda v: self._send_parameter(0x3B, v + 64)
+        )
+        layout.addWidget(rate_mod)
         
         return frame
 
@@ -343,29 +553,73 @@ class AnalogSynthEditor(QMainWindow):
         }[env_type]
         layout.addWidget(self._create_section_header(f"{env_type} ENV", bg_color))
         
-        # Create ADSR controls
-        attack = Slider(
-            "Attack", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.ENV_ATTACK.value, v)
-        )
-        decay = Slider(
-            "Decay", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.ENV_DECAY.value, v)
-        )
-        sustain = Slider(
-            "Sustain", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.ENV_SUSTAIN.value, v)
-        )
-        release = Slider(
-            "Release", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.ENV_RELEASE.value, v)
-        )
+        # Get correct parameter set based on envelope type
+        params = {
+            "PITCH": {
+                "attack": AnalogParameter.OSC_PITCH_ATK,
+                "decay": AnalogParameter.OSC_PITCH_DEC,
+                "depth": AnalogParameter.OSC_PITCH_DEPTH,
+                "velo": AnalogParameter.OSC_PITCH_VELO
+            },
+            "FILTER": {
+                "attack": AnalogParameter.FILTER_ENV_ATK,
+                "decay": AnalogParameter.FILTER_ENV_DEC,
+                "sustain": AnalogParameter.FILTER_ENV_SUS,
+                "release": AnalogParameter.FILTER_ENV_REL,
+                "depth": AnalogParameter.FILTER_ENV_DEPTH,
+                "velo": AnalogParameter.FILTER_ENV_VELO
+            },
+            "AMP": {
+                "attack": AnalogParameter.AMP_ENV_ATK,
+                "decay": AnalogParameter.AMP_ENV_DEC,
+                "sustain": AnalogParameter.AMP_ENV_SUS,
+                "release": AnalogParameter.AMP_ENV_REL,
+                "velo": AnalogParameter.AMP_VELO
+            }
+        }[env_type]
         
-        # Add controls to layout
-        layout.addWidget(attack)
-        layout.addWidget(decay)
-        layout.addWidget(sustain)
-        layout.addWidget(release)
+        # Create ADSR controls with correct parameters
+        if "attack" in params:
+            attack = Slider(
+                "Attack", 0, 127,
+                lambda v: self._send_parameter(params["attack"].value, v)
+            )
+            layout.addWidget(attack)
+            
+        if "decay" in params:
+            decay = Slider(
+                "Decay", 0, 127,
+                lambda v: self._send_parameter(params["decay"].value, v)
+            )
+            layout.addWidget(decay)
+            
+        if "sustain" in params:
+            sustain = Slider(
+                "Sustain", 0, 127,
+                lambda v: self._send_parameter(params["sustain"].value, v)
+            )
+            layout.addWidget(sustain)
+            
+        if "release" in params:
+            release = Slider(
+                "Release", 0, 127,
+                lambda v: self._send_parameter(params["release"].value, v)
+            )
+            layout.addWidget(release)
+            
+        if "depth" in params:
+            depth = Slider(
+                "Depth", -63, 63,
+                lambda v: self._send_parameter(params["depth"].value, v + 64)
+            )
+            layout.addWidget(depth)
+            
+        if "velo" in params:
+            velo = Slider(
+                "Velocity", -63, 63,
+                lambda v: self._send_parameter(params["velo"].value, v + 64)
+            )
+            layout.addWidget(velo)
         
         return frame
         
@@ -413,6 +667,9 @@ class AnalogSynthEditor(QMainWindow):
         sections.addWidget(self._create_envelope_section("PITCH"))
         sections.addWidget(self._create_envelope_section("FILTER"))
         sections.addWidget(self._create_envelope_section("AMP"))
+        
+        # Add performance section
+        sections.addWidget(self._create_performance_section())
         
         # Add sections to main layout
         layout.addLayout(sections)
@@ -538,3 +795,55 @@ class AnalogSynthEditor(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error updating UI from SysEx: {str(e)}") 
+
+    def _create_performance_section(self):
+        """Create performance controls section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        
+        # Add header
+        layout.addWidget(self._create_section_header("PERFORMANCE", Style.PERF_BG))
+        
+        # Portamento switch (0x31: 0-1)
+        porta_sw = QCheckBox("Portamento")
+        porta_sw.toggled.connect(
+            lambda v: self._send_parameter(0x31, int(v))
+        )
+        layout.addWidget(porta_sw)
+        
+        # Portamento time (0x32: 0-127)
+        porta_time = Slider(
+            "Portamento Time", 0, 127,
+            lambda v: self._send_parameter(0x32, v)
+        )
+        layout.addWidget(porta_time)
+        
+        # Legato switch (0x33: 0-1)
+        legato_sw = QCheckBox("Legato")
+        legato_sw.toggled.connect(
+            lambda v: self._send_parameter(0x33, int(v))
+        )
+        layout.addWidget(legato_sw)
+        
+        # Octave shift (0x34: 61-67 maps to -3 - +3)
+        octave = Slider(
+            "Octave Shift", -3, 3,
+            lambda v: self._send_parameter(0x34, v + 64)  # Center at 64
+        )
+        layout.addWidget(octave)
+        
+        # Pitch bend ranges (0x35, 0x36: 0-24)
+        bend_up = Slider(
+            "Bend Range Up", 0, 24,
+            lambda v: self._send_parameter(0x35, v)
+        )
+        layout.addWidget(bend_up)
+        
+        bend_down = Slider(
+            "Bend Range Down", 0, 24,
+            lambda v: self._send_parameter(0x36, v)
+        )
+        layout.addWidget(bend_down)
+        
+        return frame 

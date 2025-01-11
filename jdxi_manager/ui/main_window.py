@@ -29,6 +29,7 @@ from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
     EFFECTS_AREA
 )
+from .widgets.piano_keyboard import PianoKeyboard
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -322,6 +323,10 @@ class MainWindow(QMainWindow):
         # Add preset tracking
         self.current_preset_num = 1
         self.current_preset_name = "INIT PATCH"
+        
+        # Add piano keyboard at bottom
+        keyboard = PianoKeyboard(parent=self)
+        self.statusBar().addPermanentWidget(keyboard)
         
     def _create_central_widget(self):
         """Create the main dashboard"""
@@ -870,6 +875,18 @@ class MainWindow(QMainWindow):
         labels_row = QHBoxLayout()
         labels_row.setSpacing(20)  # Space between labels
 
+        # Add "OCTAVE" label at the top
+        octave_label = QLabel("OCTAVE")
+        octave_label.setStyleSheet("""
+            font-family: "Myriad Pro", Arial;
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+        """)
+        octave_label.setAlignment(Qt.AlignCenter)
+        octave_layout.addWidget(octave_label)
+        
         # Down label
         down_label = QLabel("Down")
         down_label.setStyleSheet("""
@@ -1567,3 +1584,50 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.error(f"Error showing Digital Synth {synth_num} editor: {str(e)}")
             self.show_error("Editor Error", str(e)) 
+
+    def _handle_piano_note_on(self, note_num):
+        """Handle piano key press"""
+        if self.midi_helper:
+            # Note on message: 0x90 (Note On, channel 1), note number, velocity 100
+            msg = [0x90, note_num, 100]
+            self.midi_helper.send_message(msg)
+            logging.debug(f"Sent Note On: {note_num}")
+
+    def _handle_piano_note_off(self, note_num):
+        """Handle piano key release"""
+        if self.midi_helper:
+            # Note off message: 0x80 (Note Off, channel 1), note number, velocity 0
+            msg = [0x80, note_num, 0]
+            self.midi_helper.send_message(msg)
+            logging.debug(f"Sent Note Off: {note_num}") 
+
+    def _create_midi_indicators(self):
+        """Create MIDI activity indicators"""
+        # Create indicators
+        self.midi_in_indicator = MIDIIndicator()
+        self.midi_out_indicator = MIDIIndicator()
+        
+        # Create labels
+        in_label = QLabel("MIDI IN")
+        out_label = QLabel("MIDI OUT")
+        in_label.setStyleSheet("color: white; font-size: 10px;")
+        out_label.setStyleSheet("color: white; font-size: 10px;")
+        
+        # Create container widget
+        indicator_widget = QWidget(self)
+        indicator_layout = QVBoxLayout(indicator_widget)
+        indicator_layout.setSpacing(4)
+        indicator_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Add indicators with labels
+        for label, indicator in [(in_label, self.midi_in_indicator), 
+                               (out_label, self.midi_out_indicator)]:
+            row = QHBoxLayout()
+            row.addWidget(label)
+            row.addWidget(indicator)
+            indicator_layout.addLayout(row)
+        
+        # Position the container - moved right by 20px and down by 50px from original position
+        indicator_widget.move(self.width() - 80, 120)  # Original was (self.width() - 100, 70)
+        
+        return indicator_widget 

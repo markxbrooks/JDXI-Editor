@@ -106,3 +106,37 @@ class DrumKitPatch:
         """Initialize pad settings"""
         if self.pads is None:
             self.pads = {i: DrumPadSettings() for i in range(16)} 
+
+# SuperNATURAL drum kit presets
+SN_PRESETS = [
+    "001: Studio Standard",
+    "002: Studio Rock",
+    "003: Studio Jazz",
+    "004: Studio Dance",
+    "005: Studio R&B",
+    "006: Studio Latin",
+    "007: Power Kit",
+    "008: Rock Kit",
+    "009: Jazz Kit",
+    "010: Brush Kit",
+    "011: Orchestra Kit",
+    "012: Dance Kit",
+    "013: House Kit",
+    "014: Hip Hop Kit",
+    "015: R&B Kit",
+    "016: Latin Kit",
+    "017: World Kit",
+    "018: Electronic Kit",
+    "019: TR-808 Kit",
+    "020: TR-909 Kit",
+    "021: CR-78 Kit",
+    "022: TR-606 Kit",
+    "023: TR-707 Kit",
+    "024: TR-727 Kit",
+    "025: Percussion Kit",
+    "026: SFX Kit",
+    "027: User Kit 1",
+    "028: User Kit 2",
+    "029: User Kit 3",
+    "030: User Kit 4"
+] 

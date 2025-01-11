@@ -146,7 +146,7 @@ class EffectsEditor(BaseEditor):
         
         # Update appropriate controls based on parameter
         self._update_parameter(param, value)
-
+        
     def _create_ui(self):
         """Create the user interface"""
         # Create scroll area for main content

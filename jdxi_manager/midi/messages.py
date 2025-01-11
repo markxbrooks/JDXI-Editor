@@ -54,6 +54,30 @@ class JDXiSysEx:
         )
         return msg.to_bytes()
 
+    @staticmethod
+    def create_program_change_message(area: int, program: int) -> list:
+        """Create program change SysEx message
+        
+        Args:
+            area: Memory area (DIGITAL_SYNTH_1, DIGITAL_SYNTH_2, etc.)
+            program: Program number (0-255)
+        """
+        return [
+            START_OF_SYSEX,
+            ROLAND_ID,
+            DEVICE_ID,
+            MODEL_ID_1,
+            MODEL_ID_2,
+            MODEL_ID,
+            JD_XI_ID,
+            DT1_COMMAND_12,
+            area,           # Memory area
+            PROGRAM_GROUP,  # Program group
+            0x00,          # MSB of program number
+            program,       # Program number
+            END_OF_SYSEX
+        ]
+
 def create_sysex_message(address, data):
     """Create Roland SysEx message
     

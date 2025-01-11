@@ -83,6 +83,12 @@ class MIDIHelper:
             ports = self.get_output_ports()
             if port_name in ports:
                 port_num = ports.index(port_name)
+                
+                # Close existing port if open
+                if self.midi_out.is_port_open():
+                    self.midi_out.close_port()
+                    
+                # Open new port
                 self.midi_out.open_port(port_num)
                 self.current_out_port = port_name
                 logging.info(f"Opened MIDI output port: {port_name}")
@@ -105,9 +111,21 @@ class MIDIHelper:
             True if message sent successfully
         """
         try:
+            # Convert bytes to list if necessary
             if isinstance(msg, bytes):
                 msg = list(msg)
+                
+            # Ensure midi_out is open and available    
+            if not self.midi_out or not self.midi_out.is_port_open():
+                logging.error("No MIDI output port open")
+                return False
+                
+            # Send the message
             self.midi_out.send_message(msg)
+            
+            # Log the sent message for debugging
+            msg_hex = ' '.join([f'{b:02X}' for b in msg])
+            logging.debug(f"Sent MIDI message: {msg_hex}")
             
             # Blink MIDI out indicator if available
             if self.parent and hasattr(self.parent, 'midi_out_indicator'):
@@ -121,6 +139,8 @@ class MIDIHelper:
             
     def close(self):
         """Close MIDI ports"""
-        self.midi_in.close_port()
-        self.midi_out.close_port()
+        if self.midi_in and self.midi_in.is_port_open():
+            self.midi_in.close_port()
+        if self.midi_out and self.midi_out.is_port_open():
+            self.midi_out.close_port()
         logging.info("Closed MIDI ports")

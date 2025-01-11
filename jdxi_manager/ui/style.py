@@ -112,6 +112,7 @@ class Style:
     
     # Section colors
     HEADER_BG = "#3c3c3c"
+    PRESET_BG = "#1E3F66"  # Add preset background color
     OSC_BG = "#4a4a4a"
     VCF_BG = "#5a5a5a"
     VCA_BG = "#6a6a6a"
@@ -131,3 +132,4 @@ class Style:
     COM_BG = "#2A2A2A"  # Common section
     MOD_BG = "#363636"  # Modulation section
     ARP_BG = "#2A2A2A"  # Arpeggiator section 
+    PERF_BG = "#455A64"  # Performance section background 
