@@ -95,14 +95,14 @@ class AnalogSynthEditor(QMainWindow):
         # Pitch Coarse (0x17: 40-88 maps to -24 - +24)
         pitch = Slider(
             "Pitch", -24, 24,
-            lambda v: self._send_parameter(AnalogParameter.OSC1_PITCH.value, v + 64)
+            callback=lambda v: self._send_parameter(AnalogParameter.OSC1_PITCH.value, v + 64)
         )
         layout.addWidget(pitch)
         
         # Pitch Fine
         fine = Slider(
             "Fine", -50, 50,
-            lambda v: self._send_parameter(AnalogParameter.OSC1_FINE.value, v + 64)
+            callback=lambda v: self._send_parameter(AnalogParameter.OSC1_FINE.value, v + 64)
         )
         layout.addWidget(fine)
         
