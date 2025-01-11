@@ -78,6 +78,38 @@ class JDXiSysEx:
             END_OF_SYSEX
         ]
 
+    @staticmethod
+    def create_parameter_request(area: int, part: int, group: int, param: int, size: int = 0x100) -> List[int]:
+        """Create parameter request message
+        
+        Args:
+            area: Memory area (ANALOG_SYNTH_AREA, etc.)
+            part: Part number
+            group: Parameter group (first byte of parameter address)
+            param: Parameter number (second byte of parameter address)
+            size: Number of bytes to request (default: 256)
+        """
+        size_msb = (size >> 7) & 0x7F
+        size_lsb = size & 0x7F
+        
+        return [
+            START_OF_SYSEX,
+            ROLAND_ID,
+            DEVICE_ID,
+            MODEL_ID_1,
+            MODEL_ID_2,
+            MODEL_ID,
+            JD_XI_ID,
+            RQ1_COMMAND_11,
+            area,           # Memory area
+            part,          # Part number
+            0x00,          # First byte of parameter address
+            param,         # Second byte of parameter address
+            size_msb,      # Size MSB
+            size_lsb,      # Size LSB
+            END_OF_SYSEX
+        ]
+
 def create_sysex_message(address, data):
     """Create Roland SysEx message
     
