@@ -2,134 +2,130 @@ from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
 class Style:
-    """Style constants and common stylesheets for UI"""
+    """Application styling constants"""
     
-    # Main application stylesheet
+    # Main colors
+    DARK_RED = "#8B0000"      # Dark red base
+    RED = "#B22222"           # Standard red
+    LIGHT_RED = "#CD5C5C"     # Indian red
+    PALE_RED = "#E9967A"      # Dark salmon
+    ORANGE_RED = "#FF4500"    # Orange red
+    LIGHT_ORANGE = "#FFA07A"  # Light salmon
+
+    # Basic UI colors
+    DARK_BG = "#1E1E1E"
+    LIGHT_BG = "#2D2D2D"
+    HEADER_BG = RED
+    PRESET_BG = DARK_RED
+
+    # Section background colors
+    OSC_BG = DARK_RED        # Darkest for oscillators
+    MIX_BG = RED             # Mixer sections
+    VCF_BG = LIGHT_RED       # Filter sections
+    VCA_BG = PALE_RED        # Amplifier sections
+    LFO_BG = ORANGE_RED      # LFO sections
+    ENV_BG = LIGHT_ORANGE    # Envelope sections
+    
+    # Envelope-specific backgrounds
+    PITCH_ENV_BG = DARK_RED
+    VCF_ENV_BG = RED
+    VCA_ENV_BG = LIGHT_RED
+    
+    # Performance section
+    PERF_BG = ORANGE_RED
+    
+    # Effects backgrounds
+    FX_BG = RED
+    DELAY_BG = LIGHT_RED
+    REVERB_BG = PALE_RED
+    
+    # Drum section
+    DRUM_BG = DARK_RED
+    DRUM_PAD_BG = LIGHT_RED
+    PATTERN_BG = PALE_RED
+    COMMON_BG = ORANGE_RED
+    
+    # Digital synth sections
+    DIG_OSC_BG = DARK_RED
+    DIG_FILTER_BG = RED
+    DIG_AMP_BG = LIGHT_RED
+    
+    # Additional sections
+    COM_BG = DARK_RED       # Common section
+    MOD_BG = RED           # Modulation section
+    ARP_BG = ORANGE_RED    # Arpeggiator section
+
+    # Main stylesheet
     MAIN_STYLESHEET = """
-        QMainWindow, QWidget {
-            background-color: black;
-            color: red;
-            font-family: "Myriad Pro"
+        * {
+            font-family: "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-        QMenuBar {
-            background-color: black;
-            color: white;
-        }
-        QMenuBar::item:selected {
-            background-color: #333333;
-        }
-        QMenu {
-            background-color: black;
-            color: white;
-        }
-        QMenu::item:selected {
-            background-color: #333333;
-        }
-        QGroupBox {
-            border: 1px solid #333333;
+        QMainWindow {
+            background-color: #1E1E1E;
+            color: #FFFFFF;
         }
         QLabel {
-            background-color: transparent;
-        }
-        QStatusBar {
-            background-color: black;
-            color: white;
-        }
-        QPushButton {
-            background-color: #3c3c3c;
-            color: #ffffff;
-            border: 1px solid #4c4c4c;
-            border-radius: 3px;
-            padding: 5px;
-            min-width: 80px;
-        }
-        QPushButton:hover {
-            background-color: #4c4c4c;
-        }
-        QPushButton:pressed {
-            background-color: #2b2b2b;
-        }
-        QComboBox {
-            background-color: #3c3c3c;
-            color: #ffffff;
-            border: 1px solid #4c4c4c;
-            border-radius: 3px;
-            padding: 5px;
-        }
-        QScrollArea {
-            border: none;
+            color: #FFFFFF;
+            font-size: 11px;
         }
         QFrame {
-            border: 1px solid #333333;
-            border-radius: 4px;
+            background-color: #2D2D2D;
+            border-radius: 5px;
+        }
+        QComboBox {
+            background-color: #3D3D3D;
+            color: #FFFFFF;
+            border: 1px solid #555555;
+            border-radius: 3px;
+            padding: 3px;
+            font-size: 11px;
+        }
+        QComboBox::drop-down {
+            border: none;
+        }
+        QComboBox::down-arrow {
+            image: url(resources/down_arrow.png);
+        }
+        QPushButton {
+            background-color: #3D3D3D;
+            color: #FFFFFF;
+            border: 1px solid #555555;
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 11px;
+        }
+        QPushButton:hover {
+            background-color: #4D4D4D;
+        }
+        QPushButton:pressed {
+            background-color: #2D2D2D;
         }
         QSlider::groove:horizontal {
-            border: 1px solid #4c4c4c;
-            height: 8px;
-            background: #2b2b2b;
+            border: 1px solid #555555;
+            height: 4px;
+            background: #3D3D3D;
             margin: 2px 0;
-            border-radius: 4px;
         }
         QSlider::handle:horizontal {
-            background: #4c4c4c;
-            border: 1px solid #5c5c5c;
+            background: #FFFFFF;
+            border: 1px solid #5A5A5A;
             width: 18px;
-            margin: -2px 0;
+            margin: -8px 0;
             border-radius: 3px;
-        }
-        QTabWidget::pane {
-            border: 1px solid #333333;
-        }
-        QTabBar::tab {
-            background: #2b2b2b;
-            color: white;
-            padding: 5px;
-            border: 1px solid #333333;
-        }
-        QTabBar::tab:selected {
-            background: #3c3c3c;
-        }
-        QCheckBox {
-            color: white;
-        }
-        QCheckBox::indicator {
-            width: 13px;
-            height: 13px;
-        }
-        QCheckBox::indicator:unchecked {
-            border: 1px solid #4c4c4c;
-            background: #2b2b2b;
-        }
-        QCheckBox::indicator:checked {
-            border: 1px solid #4c4c4c;
-            background: #5c5c5c;
         }
     """
 
-    # Colors
-    DARK_BG = "#1E1E1E"
-    LIGHT_BG = "#2D2D2D"
-    
-    # Section colors
-    HEADER_BG = "#3c3c3c"
-    PRESET_BG = "#1E3F66"  # Add preset background color
-    OSC_BG = "#4a4a4a"
-    VCF_BG = "#5a5a5a"
-    VCA_BG = "#6a6a6a"
-    LFO_BG = "#7a7a7a"
-    MIX_BG = "#8a8a8a"
-    PITCH_ENV_BG = "#9a9a9a"
-    VCF_ENV_BG = "#aaaaaa"
-    VCA_ENV_BG = "#bbbbbb"
-    
-    # Editor section colors
-    DRUM_PAD_BG = "#4a4a4a"
-    PATTERN_BG = "#5a5a5a"
-    FX_BG = "#6a6a6a"
-    COMMON_BG = "#7a7a7a"
-    
-    # Additional section colors
-    COM_BG = "#2A2A2A"  # Common section
-    MOD_BG = "#363636"  # Modulation section
-    ARP_BG = "#2A2A2A"  # Arpeggiator section 
-    PERF_BG = "#455A64"  # Performance section background 
+    @staticmethod
+    def section_header(bg_color):
+        """Create section header style"""
+        return f"""
+            QLabel {{
+                background-color: {bg_color};
+                color: white;
+                padding: 5px;
+                font-weight: bold;
+                font-size: 12px;
+                font-family: "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                border-radius: 3px;
+            }}
+        """ 
