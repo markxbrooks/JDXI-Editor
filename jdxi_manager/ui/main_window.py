@@ -1631,3 +1631,39 @@ class MainWindow(QMainWindow):
         indicator_widget.move(self.width() - 80, 120)  # Original was (self.width() - 100, 70)
         
         return indicator_widget 
+
+    def _handle_octave_shift(self, direction: int):
+        """Handle octave shift button press
+        
+        Args:
+            direction: +1 for up, -1 for down
+        """
+        try:
+            if self.midi_helper:
+                # Get current octave from UI (-3 to +3)
+                current = self.current_octave
+                
+                # Calculate new octave value
+                new_octave = max(min(current + direction, 3), -3)
+                
+                # Convert to MIDI value (61-67 maps to -3 to +3)
+                midi_value = new_octave + 64  # Center at 64
+                
+                # Send parameter change
+                msg = JDXiSysEx.create_parameter_message(
+                    area=ANALOG_SYNTH_AREA,
+                    part=0x00,
+                    group=0x00,
+                    param=0x34,  # Octave Shift parameter address
+                    value=midi_value
+                )
+                self.midi_helper.send_message(msg)
+                
+                # Update UI state
+                self.current_octave = new_octave
+                self._update_octave_display()
+                
+                logging.debug(f"Octave shifted to {new_octave} (MIDI value: {midi_value})")
+                
+        except Exception as e:
+            logging.error(f"Error shifting octave: {str(e)}") 

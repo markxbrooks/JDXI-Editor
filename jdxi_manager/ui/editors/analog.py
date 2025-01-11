@@ -169,28 +169,32 @@ class AnalogSynthEditor(QMainWindow):
         # Add header
         layout.addWidget(self._create_section_header("MIXER", Style.MIX_BG))
         
-        # Create controls
+        # OSC Balance (0x3C: 1-127 maps to -63 - +63)
         balance = Slider(
-            "OSC Balance", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.OSC_BALANCE.value, v)
+            "OSC Balance", -63, 63,
+            lambda v: self._send_parameter(0x3C, v + 64)
         )
+        layout.addWidget(balance)
+        
+        # Noise Level (0x3D: 0-127)
         noise = Slider(
             "Noise Level", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.NOISE_LEVEL.value, v)
+            lambda v: self._send_parameter(0x3D, v)
         )
-        ring_mod = Slider(
-            "Ring Mod", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.RING_MOD.value, v)
-        )
-        cross_mod = Slider(
-            "Cross Mod", 0, 127,
-            lambda v: self._send_parameter(AnalogParameter.CROSS_MOD.value, v)
-        )
-        
-        # Add controls to layout
-        layout.addWidget(balance)
         layout.addWidget(noise)
+        
+        # Ring Mod Level (0x3E: 0-127)
+        ring_mod = Slider(
+            "Ring Mod Level", 0, 127,
+            lambda v: self._send_parameter(0x3E, v)
+        )
         layout.addWidget(ring_mod)
+        
+        # Cross Mod Depth (0x3F: 0-127)
+        cross_mod = Slider(
+            "Cross Mod Depth", 0, 127,
+            lambda v: self._send_parameter(0x3F, v)
+        )
         layout.addWidget(cross_mod)
         
         return frame
@@ -199,7 +203,15 @@ class AnalogSynthEditor(QMainWindow):
         """Send analog synth parameter change with value validation"""
         try:
             # Validate parameter ranges
-            if param in [0x31, 0x33]:  # Portamento and Legato switches
+            if param == 0x3C:  # OSC Balance
+                if value < 1 or value > 127:
+                    logging.error(f"OSC Balance value {value} out of range (1-127)")
+                    return
+            elif param in [0x3D, 0x3E, 0x3F]:  # Noise, Ring Mod, Cross Mod
+                if value < 0 or value > 127:
+                    logging.error(f"Mixer parameter value {value} out of range (0-127)")
+                    return
+            elif param in [0x31, 0x33]:  # Portamento and Legato switches
                 if value not in [0, 1]:
                     logging.error(f"Switch value {value} invalid (must be 0 or 1)")
                     return
@@ -553,28 +565,28 @@ class AnalogSynthEditor(QMainWindow):
         }[env_type]
         layout.addWidget(self._create_section_header(f"{env_type} ENV", bg_color))
         
-        # Get correct parameter set based on envelope type
+        # Get correct parameter addresses based on envelope type
         params = {
             "PITCH": {
-                "attack": AnalogParameter.OSC_PITCH_ATK,
-                "decay": AnalogParameter.OSC_PITCH_DEC,
-                "depth": AnalogParameter.OSC_PITCH_DEPTH,
-                "velo": AnalogParameter.OSC_PITCH_VELO
+                "attack": 0x1C,    # OSC Pitch Env Attack Time
+                "decay": 0x1D,     # OSC Pitch Env Decay
+                "depth": 0x1E,     # OSC Pitch Env Depth
+                "velo": 0x1B       # OSC Pitch Env Velocity Sens
             },
             "FILTER": {
-                "attack": AnalogParameter.FILTER_ENV_ATK,
-                "decay": AnalogParameter.FILTER_ENV_DEC,
-                "sustain": AnalogParameter.FILTER_ENV_SUS,
-                "release": AnalogParameter.FILTER_ENV_REL,
-                "depth": AnalogParameter.FILTER_ENV_DEPTH,
-                "velo": AnalogParameter.FILTER_ENV_VELO
+                "attack": 0x25,    # Filter Env Attack Time
+                "decay": 0x26,     # Filter Env Decay Time
+                "sustain": 0x27,   # Filter Env Sustain Level
+                "release": 0x28,   # Filter Env Release Time
+                "depth": 0x29,     # Filter Env Depth
+                "velo": 0x24       # Filter Env Velocity Sens
             },
             "AMP": {
-                "attack": AnalogParameter.AMP_ENV_ATK,
-                "decay": AnalogParameter.AMP_ENV_DEC,
-                "sustain": AnalogParameter.AMP_ENV_SUS,
-                "release": AnalogParameter.AMP_ENV_REL,
-                "velo": AnalogParameter.AMP_VELO
+                "attack": 0x2D,    # AMP Env Attack Time
+                "decay": 0x2E,     # AMP Env Decay Time
+                "sustain": 0x2F,   # AMP Env Sustain Level
+                "release": 0x30,   # AMP Env Release Time
+                "velo": 0x2C       # AMP Level Velocity Sens
             }
         }[env_type]
         
@@ -582,42 +594,42 @@ class AnalogSynthEditor(QMainWindow):
         if "attack" in params:
             attack = Slider(
                 "Attack", 0, 127,
-                lambda v: self._send_parameter(params["attack"].value, v)
+                lambda v: self._send_parameter(params["attack"], v)
             )
             layout.addWidget(attack)
             
         if "decay" in params:
             decay = Slider(
                 "Decay", 0, 127,
-                lambda v: self._send_parameter(params["decay"].value, v)
+                lambda v: self._send_parameter(params["decay"], v)
             )
             layout.addWidget(decay)
             
         if "sustain" in params:
             sustain = Slider(
                 "Sustain", 0, 127,
-                lambda v: self._send_parameter(params["sustain"].value, v)
+                lambda v: self._send_parameter(params["sustain"], v)
             )
             layout.addWidget(sustain)
             
         if "release" in params:
             release = Slider(
                 "Release", 0, 127,
-                lambda v: self._send_parameter(params["release"].value, v)
+                lambda v: self._send_parameter(params["release"], v)
             )
             layout.addWidget(release)
             
         if "depth" in params:
             depth = Slider(
                 "Depth", -63, 63,
-                lambda v: self._send_parameter(params["depth"].value, v + 64)
+                lambda v: self._send_parameter(params["depth"], v + 64)
             )
             layout.addWidget(depth)
             
         if "velo" in params:
             velo = Slider(
                 "Velocity", -63, 63,
-                lambda v: self._send_parameter(params["velo"].value, v + 64)
+                lambda v: self._send_parameter(params["velo"], v + 64)
             )
             layout.addWidget(velo)
         

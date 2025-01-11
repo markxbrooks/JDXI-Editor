@@ -76,6 +76,34 @@ class Note(Enum):
     PAD_15 = 50  # D2
     PAD_16 = 51  # D#2
 
+class DrumPad:
+    """Represents a single drum pad's settings"""
+    
+    # Parameter offsets within each pad
+    PARAM_OFFSET = 0x10  # Each pad takes 16 bytes of parameter space
+    
+    # Parameter addresses within pad
+    WAVE = 0x00
+    LEVEL = 0x01 
+    PAN = 0x02
+    MUTE_GROUP = 0x03
+    TUNE = 0x04
+    DECAY = 0x05
+    REVERB_SEND = 0x06
+    DELAY_SEND = 0x07
+    FX_SEND = 0x08
+
+    def __init__(self):
+        self.wave = 0
+        self.level = 100
+        self.pan = 64  # Center
+        self.mute_group = 0
+        self.tune = 0
+        self.decay = 64
+        self.reverb_send = 0
+        self.delay_send = 0 
+        self.fx_send = 0
+
 @dataclass
 class DrumPadSettings:
     """Settings for a single drum pad"""

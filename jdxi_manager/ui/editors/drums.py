@@ -51,127 +51,90 @@ class DrumEditor(QMainWindow):
         # Request current patch data
         self._request_patch_data()
         
-    def _create_drum_pad(self, pad_number):
-        """Initialize a drum pad's controls"""
+    def _create_drum_pad(self, pad_number: int):
+        """Create controls for a single drum pad"""
         try:
-            pad = self.current_patch.pads[pad_number]
             frame = QFrame()
             frame.setFrameStyle(QFrame.StyledPanel)
             layout = QVBoxLayout(frame)
-
-            # Create wave selector
+            
+            # Get pad settings
+            pad = self.current_patch.pads[pad_number]
+            
+            # Wave selector
             wave_combo = QComboBox()
             wave_names = []
             for category in DRUM_PARTS.values():
                 wave_names.extend(category)
             wave_combo.addItems(wave_names)
-            wave_combo.setCurrentIndex(pad.wave)
+            wave_combo.setCurrentIndex(pad.wave if pad.wave is not None else 0)
             wave_combo.currentIndexChanged.connect(
-                lambda v: self._update_pad_parameter(pad_number, 'wave', v)
+                lambda v: self._update_pad_parameter(pad_number, "wave", v)
             )
-
-            # Create mute group selector
-            mute_combo = QComboBox()
-            mute_combo.addItems(["OFF"] + [str(i) for i in MuteGroup.GROUPS])
-            mute_combo.setCurrentIndex(pad.mute_group)
-            mute_combo.currentIndexChanged.connect(
-                lambda v: self._update_pad_parameter(pad_number, 'mute_group', v)
-            )
-
-            # Create level control
+            layout.addWidget(wave_combo)
+            
+            # Level control
             level = Slider(
                 "Level", 0, 127,
-                lambda v: self._update_pad_parameter(pad_number, 'level', v)
+                lambda v: self._update_pad_parameter(pad_number, "level", v)
             )
-            level.setValue(pad.level)
-
-            # Create pan control
+            layout.addWidget(level)
+            
+            # Pan control
             pan = Slider(
                 "Pan", -64, 63,
-                lambda v: self._update_pad_parameter(pad_number, 'pan', v)
+                lambda v: self._update_pad_parameter(pad_number, "pan", v + 64)
             )
-            pan.setValue(pad.pan - 64)  # Convert from 0-127 to -64-63
-
-            # Create tune control
-            tune = Slider(
-                "Tune", -50, 50,
-                lambda v: self._update_pad_parameter(pad_number, 'tune', v)
-            )
-            tune.setValue(pad.tune)
-
-            # Create decay control
-            decay = Slider(
-                "Decay", 0, 127,
-                lambda v: self._update_pad_parameter(pad_number, 'decay', v)
-            )
-            decay.setValue(pad.decay)
-
-            # Create sends section
-            sends_frame = QFrame()
-            sends_layout = QVBoxLayout(sends_frame)
-
-            reverb_send = Slider(
-                "Reverb", 0, 127,
-                lambda v: self._update_pad_parameter(pad_number, 'reverb_send', v)
-            )
-            delay_send = Slider(
-                "Delay", 0, 127,
-                lambda v: self._update_pad_parameter(pad_number, 'delay_send', v)
-            )
-            fx_send = Slider(
-                "FX", 0, 127,
-                lambda v: self._update_pad_parameter(pad_number, 'fx_send', v)
-            )
-
-            reverb_send.setValue(pad.reverb_send)
-            delay_send.setValue(pad.delay_send)
-            fx_send.setValue(pad.fx_send)
-
-            sends_layout.addWidget(reverb_send)
-            sends_layout.addWidget(delay_send)
-            sends_layout.addWidget(fx_send)
-
-            # Add all controls to layout
-            layout.addWidget(wave_combo)
-            layout.addWidget(mute_combo)
-            layout.addWidget(level)
             layout.addWidget(pan)
-            layout.addWidget(tune)
-            layout.addWidget(decay)
-            layout.addWidget(sends_frame)
-
+            
+            # Mute group selector
+            mute_group = QComboBox()
+            mute_group.addItems([str(i) for i in range(32)])  # 0-31 mute groups
+            mute_group.setCurrentIndex(pad.mute_group if pad.mute_group is not None else 0)
+            mute_group.currentIndexChanged.connect(
+                lambda v: self._update_pad_parameter(pad_number, "mute_group", v)
+            )
+            layout.addWidget(mute_group)
+            
             return frame
-
+            
         except Exception as e:
             logging.error(f"Error creating drum pad {pad_number}: {str(e)}")
-            return None
+            return QFrame()  # Return empty frame on error
 
-    def _update_pad_parameter(self, pad_number: int, param: str, value: int):
-        """Update a parameter for a specific pad"""
+    def _update_pad_parameter(self, pad_number: int, param_name: str, value: int):
+        """Update a drum pad parameter"""
         try:
-            # Update the data model
-            pad = self.current_patch.pads[pad_number]
-            setattr(pad, param, value)
-
-            # Calculate parameter address
-            param_offset = DR['pad'][param][0]  # Get parameter offset from DR dictionary
-            address = pad_number * DrumPad.PARAM_OFFSET + param_offset
-
-            # Send MIDI message
+            # Get pad and parameter offset from DR dictionary
+            param_info = DR['pad'].get(param_name)
+            if not param_info:
+                logging.error(f"Unknown parameter: {param_name}")
+                return
+                
+            param_offset = param_info[0]  # Get offset from tuple
+            
+            # Calculate parameter address (each pad has 16 bytes)
+            param_addr = (pad_number * 0x10) + param_offset
+            
+            # Send parameter change
             msg = JDXiSysEx.create_parameter_message(
                 area=DRUM_KIT_AREA,
-                part=pad_number,  # Pad number
-                group=0x00,    # Fixed group
-                param=param_offset,   # Parameter within pad
-                value=value   # Parameter value
+                part=pad_number,
+                group=0x00,
+                param=param_addr,
+                value=value
             )
             
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
-                logging.debug(f"Sent drum parameter: pad={pad_number} param={hex(param_offset)} value={value}")
-
+                logging.debug(f"Updated pad {pad_number} {param_name}: {value}")
+                
+            # Update local patch data
+            pad = self.current_patch.pads[pad_number]
+            setattr(pad, param_name, value)
+            
         except Exception as e:
-            logging.error(f"Error updating pad {pad_number} {param}: {str(e)}")
+            logging.error(f"Error updating pad {pad_number} {param_name}: {str(e)}")
 
     def _request_patch_data(self):
         """Request current patch data from synth"""
@@ -224,7 +187,7 @@ class DrumEditor(QMainWindow):
 
         except Exception as e:
             logging.error(f"Error handling SysEx data: {str(e)}") 
-
+        
     def _create_ui(self):
         """Create the user interface"""
         # Create scroll area
@@ -524,6 +487,99 @@ class DrumEditor(QMainWindow):
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
                 logging.debug(f"Sent program change: {program_num}")
-                
+            
         except Exception as e:
             logging.error(f"Error sending program change: {str(e)}") 
+
+    def _create_drum_pads(self):
+        """Create drum pad grid"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        
+        # Add header
+        layout.addWidget(self._create_section_header("DRUM PADS", Style.DRUM_BG))
+        
+        # Create grid for pads
+        grid = QGridLayout()
+        grid.setSpacing(5)
+        
+        # Create 4x4 grid of pads
+        for i in range(16):
+            row = i // 4
+            col = i % 4
+            
+            # Create pad button
+            pad = QPushButton()
+            pad.setFixedSize(60, 60)
+            pad.setCheckable(True)
+            
+            # Style the pad
+            pad.setStyleSheet("""
+                QPushButton {
+                    background-color: #333;
+                    border: 2px solid #555;
+                    border-radius: 5px;
+                }
+                QPushButton:checked {
+                    background-color: #666;
+                    border-color: #888;
+                }
+            """)
+            
+            # Add note number label
+            if hasattr(self, 'pad_notes') and i < len(self.pad_notes):
+                note = self.pad_notes[i]
+                if note:  # Only add if we have a valid note number
+                    grid.addWidget(pad, row, col)
+        
+        layout.addLayout(grid)
+        return frame 
+
+    def _create_common_section(self):
+        """Create common parameters section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        
+        # Add header
+        layout.addWidget(self._create_section_header("COMMON", Style.DRUM_BG))
+        
+        # Pan control (-64 to +63 maps to 0-127)
+        pan = Slider(
+            "Pan", -64, 63,
+            lambda v: self._send_common_parameter("pan", v + 64)  # Add offset for center
+        )
+        layout.addWidget(pan)
+        
+        return frame
+        
+    def _send_common_parameter(self, param_name: str, value: int):
+        """Send drum kit common parameter change"""
+        try:
+            # Get parameter info from DR dictionary
+            param_info = DR['common'].get(param_name)
+            if not param_info:
+                logging.error(f"Unknown common parameter: {param_name}")
+                return
+                
+            param_addr = param_info[0]  # Get address from tuple
+            
+            # Create parameter message with value
+            msg = JDXiSysEx.create_parameter_message(
+                area=DRUM_KIT_AREA,
+                part=0x00,  # Common parameters
+                group=COMMON_GROUP,
+                param=param_addr,
+                value=value
+            )
+            
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent drum common parameter {param_name}: {value}")
+                
+            # Update local patch data
+            setattr(self.current_patch, param_name, value)
+                
+        except Exception as e:
+            logging.error(f"Error updating common parameter {param_name}: {str(e)}") 
