@@ -132,18 +132,27 @@ class DigitalPartial:
         OSC_ENV_DEPTH = 0x04  # Pitch env depth
         OSC_PW_ENV = 0x05     # PW env depth
         
-        # Filter parameters (0x0A-0x0F)
-        FILTER_TYPE = 0x0A    # Filter type (LPF, HPF, BPF, PKG)
-        FILTER_CUTOFF = 0x0B  # Cutoff frequency
-        FILTER_RESO = 0x0C    # Resonance
-        FILTER_ENV = 0x0D     # Filter env depth
-        FILTER_KEY = 0x0E     # Key follow
-        FILTER_VELO = 0x0F    # Velocity sensitivity
+        # Filter parameters (0x0A-0x14)
+        FILTER_MODE = 0x0A     # Filter mode (0-7: BYPASS, LPF, HPF, BPF, PKG, LPF2, LPF3, LPF4)
+        FILTER_SLOPE = 0x0B    # Filter slope (0-1: -12dB, -24dB)
+        FILTER_CUTOFF = 0x0C   # Cutoff frequency (0-127)
+        FILTER_KEYFOLLOW = 0x0D # Cutoff keyfollow (54-74: -100 to +100)
+        FILTER_VELO = 0x0E     # Env velocity sensitivity (1-127: -63 to +63)
+        FILTER_RESO = 0x0F     # Resonance (0-127)
+        FILTER_ATTACK = 0x10   # Env attack time (0-127)
+        FILTER_DECAY = 0x11    # Env decay time (0-127)
+        FILTER_SUSTAIN = 0x12  # Env sustain level (0-127)
+        FILTER_RELEASE = 0x13  # Env release time (0-127)
+        FILTER_ENV_DEPTH = 0x14 # Env depth (1-127: -63 to +63)
         
         # Amplifier parameters (0x15-0x1F)
-        AMP_LEVEL = 0x15      # Level
-        AMP_PAN = 0x16        # Pan
-        AMP_VELO = 0x17       # Velocity sensitivity
+        AMP_LEVEL = 0x15      # Level (0-127)
+        AMP_VELO = 0x16       # Velocity sensitivity (-63 to +63)
+        AMP_ATTACK = 0x17     # Attack time (0-127)
+        AMP_DECAY = 0x18      # Decay time (0-127)
+        AMP_SUSTAIN = 0x19    # Sustain level (0-127)
+        AMP_RELEASE = 0x1A    # Release time (0-127)
+        AMP_PAN = 0x1B        # Pan (L64-63R)
         
         # LFO parameters (0x30-0x3F)
         LFO_WAVE = 0x30       # LFO waveform
