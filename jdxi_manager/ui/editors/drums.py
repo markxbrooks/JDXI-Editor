@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
     QScrollArea, QGridLayout
 )
@@ -18,7 +18,7 @@ from jdxi_manager.midi.messages import (
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
-    DRUM_KIT_AREA, SUBGROUP_ZERO, DrumPad
+    DRUM_KIT_AREA, SUBGROUP_ZERO, DrumPad, DRUM_SN_PRESETS as SN_PRESETS
 )
 from jdxi_manager.data.drums import (
     DR,  # Dictionary of drum parameters
@@ -29,6 +29,8 @@ from jdxi_manager.data.drums import (
     Note  # Note constants
 )
 from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.ui.widgets.preset_panel import PresetPanel
+from jdxi_manager.data.drums import DrumKitPatch, SN_PRESETS
 
 class DrumEditor(QMainWindow):
     def __init__(self, midi_helper=None, parent=None):
@@ -48,7 +50,7 @@ class DrumEditor(QMainWindow):
         
         # Request current patch data
         self._request_patch_data()
-
+        
     def _create_drum_pad(self, pad_number):
         """Initialize a drum pad's controls"""
         try:
@@ -238,8 +240,9 @@ class DrumEditor(QMainWindow):
         layout.setSpacing(25)
         layout.setContentsMargins(25, 25, 25, 25)
         
-        # Add preset panel
+        # Add preset panel with SuperNATURAL presets
         self.preset_panel = PresetPanel('drums', self)
+        self.preset_panel.add_presets(SN_PRESETS)  # Add the SuperNATURAL presets
         layout.addWidget(self.preset_panel)
         
         # Create horizontal layout for main sections
@@ -302,7 +305,7 @@ class DrumEditor(QMainWindow):
         
         layout.addLayout(grid)
         return frame
-
+        
     def _create_pattern_section(self):
         """Create pattern section controls"""
         frame = QFrame()
@@ -338,7 +341,7 @@ class DrumEditor(QMainWindow):
         
         layout.addLayout(buttons)
         return frame
-
+        
     def _create_fx_section(self):
         """Create FX section controls"""
         frame = QFrame()
@@ -454,7 +457,7 @@ class DrumEditor(QMainWindow):
         layout.addWidget(delay)
         layout.addWidget(fx)
         
-        return frame
+        return frame 
 
     def _update_common_parameter(self, param: str, value: int):
         """Update a common parameter"""
@@ -495,3 +498,32 @@ class DrumEditor(QMainWindow):
                 logging.debug(f"Sent drum parameter: pad={pad_num} param={hex(param)} value={value}")
         except Exception as e:
             logging.error(f"Error sending drum parameter: {str(e)}") 
+
+    def load_preset(self, preset_name: str):
+        """Load a preset patch"""
+        try:
+            if preset_name in SN_PRESETS:
+                # Extract program number from preset name (first 3 digits)
+                program_num = int(preset_name.split(':')[0])
+                # Send program change
+                self._send_program_change(program_num)
+                logging.info(f"Loaded drum preset: {preset_name}")
+            else:
+                logging.error(f"Preset not found: {preset_name}")
+                
+        except Exception as e:
+            logging.error(f"Error loading preset {preset_name}: {str(e)}")
+
+    def _send_program_change(self, program_num: int):
+        """Send program change message"""
+        try:
+            msg = JDXiSysEx.create_program_change_message(
+                area=DRUM_KIT_AREA,
+                program=program_num
+            )
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent program change: {program_num}")
+                
+        except Exception as e:
+            logging.error(f"Error sending program change: {str(e)}") 
