@@ -16,6 +16,7 @@ JD_XI_ID = 0x0E
 
 # Command constants
 DT1_COMMAND_12 = 0x12  # Data transfer command
+RQ1_COMMAND_11 = 0x11  # Data Request 1
 
 # Memory areas
 DIGITAL_SYNTH_AREA = 0x19  # Base area for digital synths
@@ -490,60 +491,59 @@ class AnalogFilterType(Enum):
     LPF = 1
 
 class AnalogParameter(Enum):
-    """Analog synth parameter addresses"""
-    # Oscillator parameters
-    OSC1_WAVE = 0x16        # OSC Waveform (0-2)
-    OSC1_PITCH = 0x17       # OSC Pitch Coarse (-24 - +24) [40-88]
-    OSC1_FINE = 0x18        # OSC Pitch Fine (-50 - +50) [14-114]
-    OSC1_PW = 0x19         # OSC Pulse Width (0-127)
-    OSC1_PWM = 0x1A        # OSC Pulse Width Mod Depth (0-127)
-    OSC_PITCH_VELO = 0x1B  # OSC Pitch Env Velocity Sens (-63 - +63)
-    OSC_PITCH_ATK = 0x1C   # OSC Pitch Env Attack Time (0-127)
-    OSC_PITCH_DEC = 0x1D   # OSC Pitch Env Decay (0-127)
-    OSC_PITCH_DEPTH = 0x1E # OSC Pitch Env Depth (-63 - +63)
-    SUB_OSC_TYPE = 0x1F    # Sub Oscillator Type (0-2)
-    
-    # Filter parameters
-    FILTER_TYPE = 0x20     # Filter Switch (0-1: BYPASS/LPF)
-    CUTOFF = 0x21         # Filter Cutoff (0-127)
-    FILTER_KEYFOLLOW = 0x22 # Filter Cutoff Keyfollow (-100 - +100) [54-74]
-    FILTER_RESONANCE = 0x23 # Filter Resonance (0-127)
-    FILTER_ENV_VELO = 0x24 # Filter Env Velocity Sens (-63 - +63)
-    FILTER_ENV_ATK = 0x25  # Filter Env Attack Time (0-127)
-    FILTER_ENV_DEC = 0x26  # Filter Env Decay Time (0-127)
-    FILTER_ENV_SUS = 0x27  # Filter Env Sustain Level (0-127)
-    FILTER_ENV_REL = 0x28  # Filter Env Release Time (0-127)
-    FILTER_ENV_DEPTH = 0x29 # Filter Env Depth (-63 - +63)
-    
-    # Amplifier parameters
-    AMP_LEVEL = 0x2A       # AMP Level (0-127)
-    AMP_KEYFOLLOW = 0x2B   # AMP Level Keyfollow (-100 - +100) [54-74]
-    AMP_VELO = 0x2C        # AMP Level Velocity Sens (-63 - +63)
-    AMP_ENV_ATK = 0x2D     # AMP Env Attack Time (0-127)
-    AMP_ENV_DEC = 0x2E     # AMP Env Decay Time (0-127)
-    AMP_ENV_SUS = 0x2F     # AMP Env Sustain Level (0-127)
-    AMP_ENV_REL = 0x30     # AMP Env Release Time (0-127)
+    """Analog synth parameter addresses and ranges"""
+    # Oscillator parameters (0x16-0x1F)
+    OSC1_WAVE = 0x16        # OSC Waveform (0-2: SAW, TRI, PW-SQR)
+    OSC1_PITCH = 0x17       # OSC Pitch Coarse (40-88: maps to -24 - +24)
+    OSC1_FINE = 0x18        # OSC Pitch Fine (14-114: maps to -50 - +50)
+    OSC1_PW = 0x19          # OSC Pulse Width (0-127)
+    OSC1_PWM = 0x1A         # OSC Pulse Width Mod Depth (0-127)
+    OSC_PITCH_VELO = 0x1B   # OSC Pitch Env Velocity Sens (1-127: maps to -63 - +63)
+    OSC_PITCH_ATK = 0x1C    # OSC Pitch Env Attack Time (0-127)
+    OSC_PITCH_DEC = 0x1D    # OSC Pitch Env Decay (0-127)
+    OSC_PITCH_DEPTH = 0x1E  # OSC Pitch Env Depth (1-127: maps to -63 - +63)
+    SUB_OSC_TYPE = 0x1F     # Sub Oscillator Type (0-2: OFF, OCT-1, OCT-2)
 
-    # Performance parameters
-    PORTA_SW = 0x31      # Portamento Switch (0-1)
-    PORTA_TIME = 0x32    # Portamento Time (0-127)
-    LEGATO_SW = 0x33     # Legato Switch (0-1)
-    OCT_SHIFT = 0x34     # Octave Shift (-3 - +3) [61-67]
-    BEND_RANGE_UP = 0x35 # Pitch Bend Range Up (0-24)
-    BEND_RANGE_DOWN = 0x36 # Pitch Bend Range Down (0-24)
+    @staticmethod
+    def validate_value(param: int, value: int) -> bool:
+        """Validate parameter value is within allowed range based on MIDI spec"""
+        ranges = {
+            0x16: (0, 2),       # OSC Waveform: 3-bit value (0-2)
+            0x17: (40, 88),     # OSC Pitch Coarse: 7-bit value (40-88)
+            0x18: (14, 114),    # OSC Pitch Fine: 7-bit value (14-114)
+            0x19: (0, 127),     # OSC Pulse Width: 7-bit value (0-127)
+            0x1A: (0, 127),     # PWM Depth: 7-bit value (0-127)
+            0x1B: (1, 127),     # Pitch Env Velocity: 7-bit value (1-127)
+            0x1C: (0, 127),     # Pitch Env Attack: 7-bit value (0-127)
+            0x1D: (0, 127),     # Pitch Env Decay: 7-bit value (0-127)
+            0x1E: (1, 127),     # Pitch Env Depth: 7-bit value (1-127)
+            0x1F: (0, 2),       # Sub OSC Type: 2-bit value (0-2)
+        }
+        
+        if param in ranges:
+            min_val, max_val = ranges[param]
+            return min_val <= value <= max_val
+        return True  # Allow other parameters to pass through
 
-    # LFO parameters
-    LFO_WAVE = 0x30
-    LFO_RATE = 0x31
-    LFO_PITCH_DEPTH = 0x32
-    LFO_FILTER_DEPTH = 0x33
-    LFO_AMP_DEPTH = 0x34
-    
-    # LFO Modulation Control parameters
-    LFO_PITCH_MOD = 0x38  # LFO Pitch Modulation Control (-63 - +63)
-    LFO_FILTER_MOD = 0x39 # LFO Filter Modulation Control (-63 - +63)
-    LFO_AMP_MOD = 0x3A    # LFO Amp Modulation Control (-63 - +63)
-    LFO_RATE_MOD = 0x3B   # LFO Rate Modulation Control (-63 - +63)
+    @staticmethod
+    def get_display_value(param: int, value: int) -> str:
+        """Convert raw MIDI value to display value based on parameter type"""
+        display_maps = {
+            0x16: ['SAW', 'TRI', 'PW-SQR'],           # Direct mapping for waveforms
+            0x17: lambda x: f"{x - 64:+d}",           # -24 to +24 (centered at 64)
+            0x18: lambda x: f"{x - 64:+d}",           # -50 to +50 (centered at 64)
+            0x1B: lambda x: f"{x - 64:+d}",           # -63 to +63 (centered at 64)
+            0x1E: lambda x: f"{x - 64:+d}",           # -63 to +63 (centered at 64)
+            0x1F: ['OFF', 'OCT-1', 'OCT-2']          # Direct mapping for sub osc type
+        }
+        
+        if param in display_maps:
+            mapper = display_maps[param]
+            if isinstance(mapper, list):
+                return mapper[value] if 0 <= value < len(mapper) else str(value)
+            elif callable(mapper):
+                return mapper(value)
+        return str(value)
 
 class DigitalParameter(Enum):
     """Digital synth parameter addresses"""

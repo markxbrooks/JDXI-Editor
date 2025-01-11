@@ -3,13 +3,15 @@ from PySide6.QtCore import Qt, Signal
 import logging
 
 class Slider(QWidget):
+    """Custom slider widget with label and value display"""
+    
     valueChanged = Signal(int)
     
     def __init__(self, 
                  label: str, 
                  min_val: int, 
                  max_val: int, 
-                 callback: callable = None, 
+                 callback=None, 
                  suffix: str = "", 
                  special_zero: str = None):
         """Initialize slider
@@ -17,7 +19,7 @@ class Slider(QWidget):
         Args:
             label: Label text
             min_val: Minimum value
-            max_val: Maximum value
+            max_val: Maximum value 
             callback: Function to call when value changes
             suffix: Text to append to value display
             special_zero: Special text to display when value is 0
@@ -38,7 +40,6 @@ class Slider(QWidget):
         
         # Add label
         self.label = QLabel(label)
-        self.label.setStyleSheet("font-size: 10px;")
         layout.addWidget(self.label)
         
         # Create slider
@@ -50,7 +51,6 @@ class Slider(QWidget):
         
         # Add value display
         self.value_label = QLabel()
-        self.value_label.setStyleSheet("font-size: 10px;")
         self.value_label.setAlignment(Qt.AlignRight)
         layout.addWidget(self.value_label)
         
@@ -67,11 +67,13 @@ class Slider(QWidget):
                 self.value_label.setText(f"{value}{self.suffix}")
             
             # Call callback if provided
-            if self.callback is not None:
+            if callable(self.callback):
                 try:
                     self.callback(value)
                 except Exception as e:
                     logging.error(f"Error in slider callback: {str(e)}")
+            elif self.callback is not None:
+                logging.error(f"Invalid callback provided: {self.callback}")
             
             # Emit signal
             self.valueChanged.emit(value)

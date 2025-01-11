@@ -19,7 +19,7 @@ from jdxi_manager.midi.messages import (
 )
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
-    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, RQ1_COMMAND_11, END_OF_SYSEX,
     ANALOG_SYNTH_AREA, ANALOG_PART,
     PROGRAM_GROUP, COMMON_GROUP, PARTIAL_GROUP,
     SUBGROUP_ZERO,
@@ -84,39 +84,39 @@ class AnalogSynthEditor(QMainWindow):
         # Add header
         layout.addWidget(self._create_section_header(f"OSC {osc_num}", Style.OSC_BG))
         
-        # Waveform selector (0x16: 0-2)
+        # Waveform selector
         wave = QComboBox()
-        wave.addItems(['SAW', 'TRI', 'PW-SQR'])  # Updated names to match spec
+        wave.addItems(['SAW', 'TRI', 'PW-SQR'])
         wave.currentIndexChanged.connect(
-            lambda idx: self._send_parameter(0x16, idx)
+            lambda idx: self._send_parameter(AnalogParameter.OSC1_WAVE.value, idx)
         )
         layout.addWidget(wave)
         
         # Pitch Coarse (0x17: 40-88 maps to -24 - +24)
         pitch = Slider(
             "Pitch", -24, 24,
-            lambda v: self._send_parameter(0x17, v + 64)  # Center at 64
+            lambda v: self._send_parameter(AnalogParameter.OSC1_PITCH.value, v + 64)
         )
         layout.addWidget(pitch)
         
-        # Pitch Fine (0x18: 14-114 maps to -50 - +50)
+        # Pitch Fine
         fine = Slider(
             "Fine", -50, 50,
-            lambda v: self._send_parameter(0x18, v + 64)  # Center at 64
+            lambda v: self._send_parameter(AnalogParameter.OSC1_FINE.value, v + 64)
         )
         layout.addWidget(fine)
         
-        # Pulse Width (0x19: 0-127)
+        # Pulse Width
         pw = Slider(
             "Pulse Width", 0, 127,
-            lambda v: self._send_parameter(0x19, v)
+            lambda v: self._send_parameter(AnalogParameter.OSC1_PW.value, v)
         )
         layout.addWidget(pw)
         
-        # PW Mod Depth (0x1A: 0-127)
+        # PW Mod Depth
         pwm = Slider(
             "PW Mod Depth", 0, 127,
-            lambda v: self._send_parameter(0x1A, v)
+            lambda v: self._send_parameter(AnalogParameter.OSC1_PWM.value, v)
         )
         layout.addWidget(pwm)
         
@@ -124,39 +124,38 @@ class AnalogSynthEditor(QMainWindow):
         # Velocity (0x1B: 1-127 maps to -63 - +63)
         pitch_velo = Slider(
             "Pitch Env Velocity", -63, 63,
-            lambda v: self._send_parameter(0x1B, v + 64)
+            lambda v: self._send_parameter(AnalogParameter.OSC_PITCH_VELO.value, v + 64)
         )
         layout.addWidget(pitch_velo)
         
         # Attack (0x1C: 0-127)
         pitch_atk = Slider(
             "Pitch Env Attack", 0, 127,
-            lambda v: self._send_parameter(0x1C, v)
+            lambda v: self._send_parameter(AnalogParameter.OSC_PITCH_ATK.value, v)
         )
         layout.addWidget(pitch_atk)
         
         # Decay (0x1D: 0-127)
         pitch_dec = Slider(
             "Pitch Env Decay", 0, 127,
-            lambda v: self._send_parameter(0x1D, v)
+            lambda v: self._send_parameter(AnalogParameter.OSC_PITCH_DEC.value, v)
         )
         layout.addWidget(pitch_dec)
         
         # Depth (0x1E: 1-127 maps to -63 - +63)
         pitch_depth = Slider(
             "Pitch Env Depth", -63, 63,
-            lambda v: self._send_parameter(0x1E, v + 64)
+            lambda v: self._send_parameter(AnalogParameter.OSC_PITCH_DEPTH.value, v + 64)
         )
         layout.addWidget(pitch_depth)
         
-        # Sub oscillator type (0x1F: 0-2)
+        # Sub oscillator type
         if osc_num == 1:
             sub_type = QComboBox()
-            sub_type.addItems(['OFF', 'OCT-1', 'OCT-2'])  # Updated names to match spec
+            sub_type.addItems(['OFF', 'OCT-1', 'OCT-2'])
             sub_type.currentIndexChanged.connect(
-                lambda idx: self._send_parameter(0x1F, idx)
+                lambda idx: self._send_parameter(AnalogParameter.SUB_OSC_TYPE.value, idx)
             )
-            layout.addWidget(sub_type)
         
         return frame
 
@@ -202,71 +201,14 @@ class AnalogSynthEditor(QMainWindow):
     def _send_parameter(self, param: int, value: int):
         """Send analog synth parameter change with value validation"""
         try:
-            # Validate parameter ranges
-            if param == 0x3C:  # OSC Balance
-                if value < 1 or value > 127:
-                    logging.error(f"OSC Balance value {value} out of range (1-127)")
-                    return
-            elif param in [0x3D, 0x3E, 0x3F]:  # Noise, Ring Mod, Cross Mod
-                if value < 0 or value > 127:
-                    logging.error(f"Mixer parameter value {value} out of range (0-127)")
-                    return
-            elif param in [0x31, 0x33]:  # Portamento and Legato switches
-                if value not in [0, 1]:
-                    logging.error(f"Switch value {value} invalid (must be 0 or 1)")
-                    return
-            elif param == 0x34:  # Octave Shift
-                if value < 61 or value > 67:
-                    logging.error(f"Octave shift value {value} out of range (61-67)")
-                    return
-            elif param in [0x35, 0x36]:  # Pitch Bend Ranges
-                if value < 0 or value > 24:
-                    logging.error(f"Pitch bend range {value} out of range (0-24)")
-                    return
-            elif param == 0x0D:  # LFO Shape
-                if value not in range(6):  # 0-5
-                    logging.error(f"LFO Shape value {value} invalid (must be 0-5)")
-                    return
-            elif param in [0x10, 0x15]:  # Switches (Tempo Sync, Key Trigger)
-                if value not in [0, 1]:
-                    logging.error(f"Switch value {value} invalid (must be 0 or 1)")
-                    return
-            elif param == 0x11:  # Sync Note
-                if value not in range(20):  # 0-19
-                    logging.error(f"Sync Note value {value} invalid (must be 0-19)")
-                    return
-            elif param in [0x12, 0x13, 0x14]:  # LFO Depths
-                if value < 1 or value > 127:
-                    logging.error(f"LFO Depth value {value} out of range (1-127)")
-                    return
-            elif param == 0x16:  # OSC Waveform
-                if value not in [0, 1, 2]:
-                    logging.error(f"Waveform value {value} invalid (must be 0-2)")
-                    return
-            elif param == 0x17:  # Pitch Coarse
-                if value < 40 or value > 88:
-                    logging.error(f"Pitch value {value} out of range (40-88)")
-                    return
-            elif param == 0x18:  # Pitch Fine
-                if value < 14 or value > 114:
-                    logging.error(f"Fine value {value} out of range (14-114)")
-                    return
-            elif param in [0x1B, 0x1E]:  # Velocity and Depth
-                if value < 1 or value > 127:
-                    logging.error(f"Parameter value {value} out of range (1-127)")
-                    return
-            elif param == 0x1F:  # Sub OSC Type
-                if value not in [0, 1, 2]:
-                    logging.error(f"Sub OSC type {value} invalid (must be 0-2)")
-                    return
-            elif param in [0x38, 0x39, 0x3A, 0x3B]:  # LFO Modulation controls
-                if value < 1 or value > 127:
-                    logging.error(f"LFO Modulation value {value} out of range (1-127)")
-                    return
-            else:  # Standard parameters
-                if value < 0 or value > 127:
-                    logging.error(f"Parameter value {value} out of range (0-127)")
-                    return
+            # Convert enum to value if needed
+            if isinstance(param, AnalogParameter):
+                param = param.value
+                
+            # Validate parameter value using enum class method
+            if not AnalogParameter.validate_value(param, value):
+                logging.error(f"Parameter value {value} out of range for param {hex(param)}")
+                return
                 
             msg = JDXiSysEx.create_parameter_message(
                 area=ANALOG_SYNTH_AREA,
@@ -275,9 +217,12 @@ class AnalogSynthEditor(QMainWindow):
                 param=param,
                 value=value
             )
+            
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
-                logging.debug(f"Sent analog parameter: {hex(param)}={value}")
+                display_value = AnalogParameter.get_display_value(param, value)
+                logging.debug(f"Sent analog parameter: {hex(param)}={display_value}")
+                
         except Exception as e:
             logging.error(f"Error sending analog parameter: {str(e)}")
 
@@ -691,76 +636,22 @@ class AnalogSynthEditor(QMainWindow):
         
         # Set the widget to scroll area
         scroll.setWidget(central)
-
+            
     def _request_patch_data(self):
-        """Request current patch data from device"""
+        """Request current patch data from synth"""
         try:
-            logging.debug("Requesting Analog Synth patch data")
-            
-            # Calculate base address for analog synth
-            base_addr = [
-                ANALOG_SYNTH_AREA,  # Analog synth area
-                SUBGROUP_ZERO,      # Part number (always 0 for analog)
-                0x00,               # Start at first parameter
-                0x00                # Parameter offset
-            ]
-            
-            # Request common parameters
-            common_msg = create_sysex_message(
-                bytes(base_addr),
-                bytes([0x20])  # Request 32 bytes of common parameters
+            # Request parameters starting from OSC section (0x16)
+            msg = JDXiSysEx.create_parameter_request(
+                area=ANALOG_SYNTH_AREA,
+                part=ANALOG_PART,
+                group=0x00,      # First byte of address (00)
+                param=0x16,      # Second byte of address (16)
+                size=0x40        # Request 64 bytes to cover all parameters
             )
             
-            # Request oscillator parameters
-            osc_addr = base_addr.copy()
-            osc_addr[2] = AnalogParameter.OSC1_WAVE.value
-            osc_msg = create_sysex_message(
-                bytes(osc_addr),
-                bytes([0x40])  # Request 64 bytes of oscillator parameters
-            )
-            
-            # Request filter parameters
-            filter_addr = base_addr.copy()
-            filter_addr[2] = AnalogParameter.CUTOFF.value
-            filter_msg = create_sysex_message(
-                bytes(filter_addr),
-                bytes([0x20])  # Request 32 bytes of filter parameters
-            )
-            
-            # Request amp parameters
-            amp_addr = base_addr.copy()
-            amp_addr[2] = AnalogParameter.LEVEL.value
-            amp_msg = create_sysex_message(
-                bytes(amp_addr),
-                bytes([0x20])  # Request 32 bytes of amp parameters
-            )
-            
-            # Request LFO parameters
-            lfo_addr = base_addr.copy()
-            lfo_addr[2] = AnalogParameter.LFO_WAVE.value
-            lfo_msg = create_sysex_message(
-                bytes(lfo_addr),
-                bytes([0x20])  # Request 32 bytes of LFO parameters
-            )
-            
-            # Send all requests if MIDI is available
             if self.midi_helper:
-                # Send requests with slight delays between
-                self.midi_helper.send_message(common_msg)
-                logging.debug("Sent common parameters request")
-                
-                self.midi_helper.send_message(osc_msg)
-                logging.debug("Sent oscillator parameters request")
-                
-                self.midi_helper.send_message(filter_msg)
-                logging.debug("Sent filter parameters request")
-                
-                self.midi_helper.send_message(amp_msg)
-                logging.debug("Sent amp parameters request")
-                
-                self.midi_helper.send_message(lfo_msg)
-                logging.debug("Sent LFO parameters request")
-                
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Requested analog patch data starting from {hex(0x16)}")
             else:
                 logging.warning("No MIDI helper available - cannot request patch data")
             
@@ -774,10 +665,11 @@ class AnalogSynthEditor(QMainWindow):
             if msg[0] == START_OF_SYSEX and msg[-1] == END_OF_SYSEX:
                 # Extract address and data
                 addr = msg[8:12]  # 4 bytes of address
-                data = msg[12:-1]  # Data bytes (excluding end of sysex)
+                data = msg[12:-2]  # Data bytes (excluding checksum and end of sysex)
                 
                 # Update UI based on received data
                 self._update_ui_from_sysex(addr, data)
+                logging.debug(f"Received patch data: addr={[hex(b) for b in addr]}, data={[hex(b) for b in data]}")
                 
         except Exception as e:
             logging.error(f"Error handling MIDI input: {str(e)}")
@@ -859,3 +751,31 @@ class AnalogSynthEditor(QMainWindow):
         layout.addWidget(bend_down)
         
         return frame 
+
+    def _handle_parameter_change(self, parameter: str, value: int):
+        """Handle parameter change from synth"""
+        try:
+            if not hasattr(self.current_patch, parameter.lower()):
+                logging.warning(f"Unknown parameter received: {parameter}")
+                return
+                
+            setattr(self.current_patch, parameter.lower(), value)
+            logging.debug(f"Updated parameter {parameter}: {value}")
+            
+            # Update UI if needed
+            self._update_ui_for_parameter(parameter, value)
+            
+        except Exception as e:
+            logging.error(f"Error handling parameter change {parameter}: {str(e)}")
+            
+    def _update_ui_for_parameter(self, parameter: str, value: int):
+        """Update UI controls for parameter change"""
+        try:
+            # Find and update the corresponding control
+            control = self.findChild(QWidget, f"{parameter.lower()}_control")
+            if control and hasattr(control, 'setValue'):
+                control.setValue(value)
+                logging.debug(f"Updated UI control for {parameter}")
+            
+        except Exception as e:
+            logging.error(f"Error updating UI for {parameter}: {str(e)}") 

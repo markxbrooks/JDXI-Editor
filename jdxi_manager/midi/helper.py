@@ -2,6 +2,9 @@ import rtmidi
 import logging
 from typing import Optional, List, Union
 
+from PySide6.QtWidgets import QWidget
+
+from jdxi_manager.midi.constants import START_OF_SYSEX
 from jdxi_manager.midi.messages import (
     create_sysex_message,
     create_patch_load_message,
@@ -12,8 +15,8 @@ from jdxi_manager.midi.messages import (
 class MIDIHelper:
     """Helper class for MIDI operations"""
     
-    def __init__(self, parent=None):
-        """Initialize MIDI in/out ports
+    def __init__(self, parent: Optional[QWidget] = None):
+        """Initialize MIDI input/output
         
         Args:
             parent: Parent window for MIDI indicators
@@ -23,7 +26,8 @@ class MIDIHelper:
         self.current_in_port = None
         self.current_out_port = None
         self.parent = parent
-        
+        self.callbacks = []
+
     def get_input_ports(self) -> List[str]:
         """Get list of available MIDI input ports"""
         return self.midi_in.get_ports()
@@ -32,84 +36,145 @@ class MIDIHelper:
         """Get list of available MIDI output ports"""
         return self.midi_out.get_ports()
         
-    def open_input_port(self, port_name: str) -> bool:
-        """Open MIDI input port by name"""
+    def open_input_port(self, port_name: str = None, port_number: int = None):
+        """Open MIDI input port"""
         try:
-            ports = self.get_input_ports()
-            if port_name in ports:
-                port_num = ports.index(port_name)
-                self.midi_in.open_port(port_num)
-                self.current_in_port = port_name
-                
-                # Set callback for identity response
-                self.midi_in.set_callback(self._handle_midi_message)
-                
-                logging.info(f"Opened MIDI input port: {port_name}")
-                return True
+            # Close existing port if open
+            if self.current_in_port is not None:
+                self.midi_in.close_port()
+                self.midi_in = rtmidi.MidiIn()  # Create new instance
+                self.current_in_port = None
+            
+            # Find port by name or number
+            available_ports = self.midi_in.get_ports()
+            
+            if port_name:
+                for i, name in enumerate(available_ports):
+                    if port_name.lower() in name.lower():
+                        port_number = i
+                        break
+            
+            if port_number is not None and 0 <= port_number < len(available_ports):
+                self.midi_in.open_port(port_number)
+                self.current_in_port = port_number
+                self.midi_in.set_callback(self._midi_callback)
+                logging.info(f"Opened MIDI input port: {available_ports[port_number]}")
+            else:
+                logging.error("Invalid MIDI input port specified")
                 
         except Exception as e:
             logging.error(f"Error opening MIDI input port: {str(e)}")
-        return False
 
-    def _handle_midi_message(self, message, timestamp):
+    def open_output_port(self, port_name: str = None, port_number: int = None):
+        """Open MIDI output port"""
+        try:
+            # Close existing port if open
+            if self.current_out_port is not None:
+                self.midi_out.close_port()
+                self.midi_out = rtmidi.MidiOut()  # Create new instance
+                self.current_out_port = None
+            
+            # Find port by name or number
+            available_ports = self.midi_out.get_ports()
+            
+            if port_name:
+                for i, name in enumerate(available_ports):
+                    if port_name.lower() in name.lower():
+                        port_number = i
+                        break
+            
+            if port_number is not None and 0 <= port_number < len(available_ports):
+                self.midi_out.open_port(port_number)
+                self.current_out_port = port_number
+                logging.info(f"Opened MIDI output port: {available_ports[port_number]}")
+            else:
+                logging.error("Invalid MIDI output port specified")
+                
+        except Exception as e:
+            logging.error(f"Error opening MIDI output port: {str(e)}")
+
+    def close_ports(self):
+        """Close all MIDI ports"""
+        try:
+            if self.current_in_port is not None:
+                self.midi_in.close_port()
+                self.current_in_port = None
+            if self.current_out_port is not None:
+                self.midi_out.close_port()
+                self.current_out_port = None
+            logging.debug("Closed all MIDI ports")
+        except Exception as e:
+            logging.error(f"Error closing MIDI ports: {str(e)}")
+
+    def _midi_callback(self, message, timestamp):
         """Handle incoming MIDI messages"""
         try:
             data = message[0]
             
-            # Check for identity response
-            if (len(data) > 8 and
-                data[0] == START_OF_SYSEX and
-                data[1] == ROLAND_ID and
-                data[4:8] == bytes([MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID])):
-                logging.info("JD-Xi identity confirmed")
-                
-            # Forward message to parent window
-            if self.parent:
+            # Forward message to parent window if available
+            if self.parent and hasattr(self.parent, '_handle_midi_message'):
                 self.parent._handle_midi_message(message, timestamp)
                 
+            # Blink MIDI in indicator if available
+            if self.parent and hasattr(self.parent, 'midi_in_indicator'):
+                self.parent.midi_in_indicator.blink()
+                
         except Exception as e:
-            logging.error(f"Error handling MIDI message: {str(e)}")
-            
-    def open_output_port(self, port_name: str) -> bool:
-        """Open MIDI output port by name
-        
-        Args:
-            port_name: Name of port to open
-            
-        Returns:
-            True if port opened successfully
-        """
+            logging.error(f"Error in MIDI callback: {str(e)}")
+
+    def _decode_sysex(self, msg: List[int]) -> str:
+        """Decode SysEx message into human-readable format"""
         try:
-            ports = self.get_output_ports()
-            if port_name in ports:
-                port_num = ports.index(port_name)
+            parts = []
+            parts.append("MIDI Message Breakdown:")
+            parts.append(f"F0 | SysEx Start")
+            parts.append(f"{msg[1]:02X} | Roland ID")
+            parts.append(f"{msg[2]:02X} | Device ID")
+            parts.append(f"{msg[3]:02X} {msg[4]:02X} {msg[5]:02X} | Model ID")
+            parts.append(f"{msg[6]:02X} | JD-Xi ID")
+            
+            # Command type
+            cmd = msg[7]
+            cmd_type = "DT1 Command" if cmd == 0x12 else "RQ1 Command" if cmd == 0x11 else f"Unknown Command"
+            parts.append(f"{cmd:02X} | {cmd_type}")
+            
+            # Memory area
+            area_names = {
+                0x19: "Digital Synth 1",
+                0x1A: "Digital Synth 2",
+                0x18: "Analog Synth",
+                0x17: "Drum Kit",
+                0x16: "Effects",
+                0x15: "Arpeggiator",
+                0x14: "Vocal FX"
+            }
+            area = msg[8]
+            area_name = area_names.get(area, "Unknown Area")
+            parts.append(f"{area:02X} | {area_name} Area")
+            
+            # Part/Section/Parameter
+            parts.append(f"{msg[9]:02X} | Part Number")
+            parts.append(f"{msg[10]:02X} | Parameter Group")
+            parts.append(f"{msg[11]:02X} | Parameter Address")
+            
+            # Value (if present)
+            if len(msg) > 13:
+                parts.append(f"{msg[12]:02X} | Parameter Value")
+            
+            # Checksum (if present)
+            if len(msg) > 14:
+                parts.append(f"{msg[-2]:02X} | Checksum")
                 
-                # Close existing port if open
-                if self.midi_out.is_port_open():
-                    self.midi_out.close_port()
-                    
-                # Open new port
-                self.midi_out.open_port(port_num)
-                self.current_out_port = port_name
-                logging.info(f"Opened MIDI output port: {port_name}")
-                return True
-            else:
-                logging.error(f"MIDI output port not found: {port_name}")
-                return False
-                
+            parts.append(f"{msg[-1]:02X} | End of SysEx")
+            
+            return "\n".join(parts)
+            
         except Exception as e:
-            logging.error(f"Error opening MIDI output port: {str(e)}")
-            return False
-            
+            logging.error(f"Error decoding SysEx: {str(e)}")
+            return "Error decoding SysEx message"
+
     def send_message(self, msg: Union[bytes, List[int]]) -> bool:
-        """Send MIDI message
-        
-        Args:
-            msg: MIDI message as bytes or list of integers
-            
-        Returns:
-            True if message sent successfully
-        """
+        """Send MIDI message"""
         try:
             # Convert bytes to list if necessary
             if isinstance(msg, bytes):
@@ -123,10 +188,14 @@ class MIDIHelper:
             # Send the message
             self.midi_out.send_message(msg)
             
-            # Log the sent message for debugging
+            # Log the message
             msg_hex = ' '.join([f'{b:02X}' for b in msg])
-            logging.debug(f"Sent MIDI message: {msg_hex}")
-            
+            if msg[0] == START_OF_SYSEX:
+                logging.debug(f"Sent MIDI message: {msg_hex}")
+                logging.debug(self._decode_sysex(msg))
+            else:
+                logging.debug(f"Sent MIDI message: {msg_hex}")
+                
             # Blink MIDI out indicator if available
             if self.parent and hasattr(self.parent, 'midi_out_indicator'):
                 self.parent.midi_out_indicator.blink()
@@ -136,11 +205,3 @@ class MIDIHelper:
         except Exception as e:
             logging.error(f"Error sending MIDI message: {str(e)}")
             return False
-            
-    def close(self):
-        """Close MIDI ports"""
-        if self.midi_in and self.midi_in.is_port_open():
-            self.midi_in.close_port()
-        if self.midi_out and self.midi_out.is_port_open():
-            self.midi_out.close_port()
-        logging.info("Closed MIDI ports")
