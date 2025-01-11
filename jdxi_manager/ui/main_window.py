@@ -15,7 +15,7 @@ from .editors import (
     ArpeggioEditor,
     EffectsEditor
 )
-from .midi_config import MidiConfigFrame
+from .midi_config import MIDIConfigDialog
 from .patch_manager import PatchManager
 from .widgets import MIDIIndicator, LogViewer
 from ..midi import MIDIHelper, MIDIConnection
@@ -35,7 +35,7 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     """Create a QPixmap of the JD-Xi"""
     # Create a black background image with correct aspect ratio
     width = 1000
-    height = 330
+    height = 400
     image = QImage(width, height, QImage.Format_RGB32)
     image.fill(Qt.black)
     
@@ -232,8 +232,15 @@ class MainWindow(QMainWindow):
         self.midi_in_port_name = ""  # Store input port name
         self.midi_out_port_name = ""  # Store output port name
         
-        # Initialize MIDI helper with reference to main window
-        self.midi_helper = MIDIHelper(self)
+        # Initialize MIDI helper
+        self.midi_helper = MIDIHelper(parent=self)
+        
+        # Try to auto-connect to JD-Xi
+        self._auto_connect_jdxi()
+        
+        # Show MIDI config if auto-connect failed
+        if not self.midi_helper.current_in_port or not self.midi_helper.current_out_port:
+            self._show_midi_config()
         
         # Initialize MIDI indicators
         self.midi_in_indicator = MIDIIndicator()
@@ -286,17 +293,8 @@ class MainWindow(QMainWindow):
         self.settings = QSettings("jdxi_manager", "settings")
         self._load_settings()
         
-        # Show MIDI config if no ports configured
-        if not self.midi_in or not self.midi_out:
-            self._show_midi_config()
-        
-        # Update display after everything is initialized
-        self._update_display()
-        
-        # Initialize settings
-        QSettings.setDefaultFormat(QSettings.IniFormat)
-        QSettings.setPath(QSettings.IniFormat, QSettings.UserScope,
-                         str(Path.home() / '.jdxi_manager'))
+        # Show window
+        self.show()
         
         # Store references to debug windows
         self.midi_debugger = None
@@ -456,27 +454,31 @@ class MainWindow(QMainWindow):
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
         try:
-            config = MidiConfigFrame(self)
+            # Get available ports using instance method
+            input_ports = self.midi_helper.get_input_ports()  # Use instance method
+            output_ports = self.midi_helper.get_output_ports()  # Use instance method
             
-            # Set current settings
-            current_settings = {
-                'input_port': self.midi_in_port_name,
-                'output_port': self.midi_out_port_name
-            }
-            config.set_settings(current_settings)
+            dialog = MIDIConfigDialog(
+                input_ports,
+                output_ports,
+                self.midi_helper.current_in_port,
+                self.midi_helper.current_out_port,
+                parent=self
+            )
             
-            if config.exec_():
-                # Get updated settings
-                settings = config.get_settings()
-                in_port = settings['input_port']
-                out_port = settings['output_port']
+            if dialog.exec():
+                in_port = dialog.get_input_port()
+                out_port = dialog.get_output_port()
                 
-                # Apply new settings
-                self._set_midi_ports(in_port, out_port)
-                logging.info(f"MIDI ports updated - In: {in_port}, Out: {out_port}")
-                
+                # Open selected ports using instance methods
+                if in_port:
+                    self.midi_helper.open_input_port(in_port)
+                if out_port:
+                    self.midi_helper.open_output_port(out_port)
+                    
         except Exception as e:
             logging.error(f"Error showing MIDI configuration: {str(e)}")
+            self.show_error("MIDI Configuration Error", str(e))
         
     def _update_midi_ports(self, midi_in, midi_out):
         """Update MIDI port connections"""
@@ -578,7 +580,18 @@ class MainWindow(QMainWindow):
             logging.error(f"Error showing Arpeggiator editor: {str(e)}")
         
     def _open_effects(self):
-        self._show_editor("Effects", EffectsEditor)
+        """Show the effects editor window"""
+        try:
+            if not hasattr(self, 'effects_editor'):
+                self.effects_editor = EffectsEditor(
+                    midi_helper=self.midi_helper,  # Pass midi_helper instead of midi_out
+                    parent=self
+                )
+            self.effects_editor.show()
+            self.effects_editor.raise_()
+            
+        except Exception as e:
+            logging.error(f"Error showing Effects editor: {str(e)}")
         
     def _load_patch(self):
         """Show patch manager for loading"""
@@ -1172,13 +1185,14 @@ class MainWindow(QMainWindow):
     def _load_digital_font(self):
         """Load the digital LCD font for the display"""
         import os
-        font_path = os.path.join(os.path.dirname(__file__), "..", "..", "resources", "fonts", "JdLCD.ttf")
+        font_name = "JdLCD.ttf"
+        font_path = os.path.join(os.path.dirname(__file__), "..", "..", "resources", "fonts", font_name)
         if os.path.exists(font_path):
-            logging.debug(f"Found file, Loading DS-DIGI font from {font_path}")
+            logging.debug(f"Found file, Loading {font_name}font from {font_path}")
             try:
                 font_id = QFontDatabase.addApplicationFont(font_path)
                 if font_id < 0:
-                    logging.debug("Error loading DS-DIGI font")
+                    logging.debug("Error loading {font_name} font")
                 font_families = QFontDatabase.applicationFontFamilies(font_id)
                 if font_families:
                     self.digital_font_family = font_families[0]
@@ -1186,67 +1200,79 @@ class MainWindow(QMainWindow):
                 else:
                     logging.debug("No font families found after loading font")
             except Exception as e:
-                logging.exception(f"Error loading DS-DIGI font from {font_path}: {e}")
+                logging.exception(f"Error loading {font_name} font from {font_path}: {e}")
         else:
             logging.debug(f"File not found: {font_path}") 
 
     def _send_arp_key_hold(self, state):
         """Send arpeggiator key hold (latch) command"""
-        if self.midi_out:
-            # Value: 0 = OFF, 1 = ON
-            value = 0x01 if state else 0x00
-            
-            # Calculate checksum
-            checksum = (0x19 + 0x01 + 0x00 + 0x14 + value)
-            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-            
-            # Create SysEx message
-            sysex_msg = [
-                0xF0,   # Start of SysEx
-                0x41,   # Roland ID
-                0x10,   # Device ID
-                0x00, 0x00, 0x00, 0x0E,  # Model ID
-                0x12,   # Command ID (DT1)
-                0x19,   # Address 1
-                0x01,   # Address 2
-                0x00,   # Address 3
-                0x14,   # Address 4
-                value,  # Parameter value
-                checksum,  # Checksum
-                0xF7    # End of SysEx
-            ]
-            
-            self.midi_out.send_message(sysex_msg)
-            logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}") 
+        try:
+            if self.midi_helper:
+                # Value: 0 = OFF, 1 = ON
+                value = 0x01 if state else 0x00
+                
+                # Create SysEx message using constants
+                sysex_msg = [
+                    START_OF_SYSEX,
+                    ROLAND_ID,
+                    DEVICE_ID,
+                    MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID,
+                    DT1_COMMAND_12,
+                    0x15,   # Arpeggio area
+                    0x00,   # Subgroup
+                    0x00,   # Part
+                    0x02,   # Key Hold parameter
+                    value,  # Parameter value
+                ]
+                
+                # Calculate checksum (sum all data bytes)
+                checksum = sum(sysex_msg[8:-1]) & 0x7F  # From address to value
+                checksum = (128 - checksum) & 0x7F
+                
+                # Add checksum and end of sysex
+                sysex_msg.extend([checksum, END_OF_SYSEX])
+                
+                # Send message
+                self.midi_helper.send_message(bytes(sysex_msg))
+                logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
+                
+        except Exception as e:
+            logging.error(f"Error sending arp key hold: {str(e)}")
 
     def _send_arp_on_off(self, state):
         """Send arpeggiator on/off command"""
-        if self.midi_out:
-            # Value: 0 = OFF, 1 = ON
-            value = 0x01 if state else 0x00
-            
-            # Calculate checksum
-            checksum = (0x19 + 0x01 + 0x00 + 0x13 + value)
-            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-            
-            # Create SysEx message
-            sysex_msg = [
-                0xF0,   # Start of SysEx
-                0x41,   # Roland ID
-                0x10,   # Device ID
-                0x00, 0x00, 0x00, 0x0E,  # Model ID
-                0x12,   # Command ID (DT1)
-                0x19,   # Address 1
-                0x01,   # Address 2
-                0x00,   # Address 3
-                0x13,   # Address 4
-                value,  # Parameter value
-                checksum,  # Checksum
-                0xF7    # End of SysEx
-            ]
-            
-            self.midi_out.send_message(sysex_msg)
-            logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}") 
+        try:
+            if self.midi_helper:
+                # Value: 0 = OFF, 1 = ON
+                value = 0x01 if state else 0x00
+                
+                # Create SysEx message using constants
+                sysex_msg = [
+                    START_OF_SYSEX,
+                    ROLAND_ID,
+                    DEVICE_ID,
+                    MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID,
+                    DT1_COMMAND_12,
+                    0x15,   # Arpeggio area
+                    0x00,   # Subgroup
+                    0x00,   # Part
+                    0x00,   # On/Off parameter
+                    value,  # Parameter value
+                ]
+                
+                # Calculate checksum (sum all data bytes)
+                checksum = sum(sysex_msg[8:-1]) & 0x7F  # From address to value
+                checksum = (128 - checksum) & 0x7F
+                
+                # Add checksum and end of sysex
+                sysex_msg.extend([checksum, END_OF_SYSEX])
+                
+                # Send message
+                self.midi_helper.send_message(bytes(sysex_msg))
+                logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
+                
+        except Exception as e:
+            logging.error(f"Error sending arp on/off: {str(e)}")
 
     def _open_midi_debugger(self):
         """Open MIDI debugger window"""
@@ -1430,3 +1456,114 @@ class MainWindow(QMainWindow):
                 
         except Exception as e:
             logging.error(f"Error saving settings: {str(e)}") 
+
+    def show_error(self, title: str, message: str):
+        """Show error message dialog
+        
+        Args:
+            title: Dialog title
+            message: Error message
+        """
+        QMessageBox.critical(self, title, message)
+
+    def show_warning(self, title: str, message: str):
+        """Show warning message dialog
+        
+        Args:
+            title: Dialog title
+            message: Warning message
+        """
+        QMessageBox.warning(self, title, message)
+
+    def show_info(self, title: str, message: str):
+        """Show info message dialog
+        
+        Args:
+            title: Dialog title
+            message: Info message
+        """
+        QMessageBox.information(self, title, message) 
+
+    def _auto_connect_jdxi(self):
+        """Attempt to automatically connect to JD-Xi MIDI ports"""
+        try:
+            # Get available ports
+            input_ports = self.midi_helper.get_input_ports()
+            output_ports = self.midi_helper.get_output_ports()
+            
+            # Look for JD-Xi in port names (case insensitive)
+            jdxi_names = ['jd-xi', 'jdxi', 'roland jd-xi']
+            
+            # Find input port
+            for port in input_ports:
+                if any(name in port.lower() for name in jdxi_names):
+                    self.midi_helper.open_input_port(port)
+                    logging.info(f"Auto-connected to JD-Xi input: {port}")
+                    break
+                
+            # Find output port
+            for port in output_ports:
+                if any(name in port.lower() for name in jdxi_names):
+                    self.midi_helper.open_output_port(port)
+                    logging.info(f"Auto-connected to JD-Xi output: {port}")
+                    break
+                
+            # Verify connection
+            if self.midi_helper.current_in_port and self.midi_helper.current_out_port:
+                # Send identity request to confirm it's a JD-Xi
+                self._verify_jdxi_connection()
+                return True
+                
+        except Exception as e:
+            logging.error(f"Error auto-connecting to JD-Xi: {str(e)}")
+            
+        return False
+
+    def _verify_jdxi_connection(self):
+        """Verify connected device is a JD-Xi by sending identity request"""
+        try:
+            # Create identity request message
+            identity_request = [
+                START_OF_SYSEX,
+                ROLAND_ID,
+                DEVICE_ID,
+                0x7E,  # Universal System Exclusive
+                0x7F,  # All channels
+                0x06,  # Identity Request
+                0x01,  # Identity Request command
+                END_OF_SYSEX
+            ]
+            
+            # Send request
+            if self.midi_helper:
+                self.midi_helper.send_message(bytes(identity_request))
+                logging.debug("Sent identity request to verify JD-Xi connection")
+                
+        except Exception as e:
+            logging.error(f"Error verifying JD-Xi connection: {str(e)}") 
+
+    def show_digital_synth_editor(self, synth_num=1):
+        """Show digital synth editor window"""
+        try:
+            if not hasattr(self, f'digital_synth_{synth_num}_editor'):
+                # Create new editor instance
+                editor = DigitalSynthEditor(
+                    synth_num=synth_num,
+                    midi_helper=self.midi_helper,
+                    parent=self
+                )
+                setattr(self, f'digital_synth_{synth_num}_editor', editor)
+            
+            # Get editor instance
+            editor = getattr(self, f'digital_synth_{synth_num}_editor')
+            
+            # Show editor window
+            editor.show()
+            editor.raise_()
+            editor.activateWindow()
+            
+            logging.debug(f"Showing Digital Synth {synth_num} editor")
+            
+        except Exception as e:
+            logging.error(f"Error showing Digital Synth {synth_num} editor: {str(e)}")
+            self.show_error("Editor Error", str(e)) 

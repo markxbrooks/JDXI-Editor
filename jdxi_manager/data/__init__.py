@@ -1,10 +1,38 @@
-from .digital import SN1, SN2, DigitalSynth
-from .analog import AN
-from .effects import FX
-from .drums import DR, DRUM_KITS, DRUM_PARTS
-from .arpeggio import ARP, PATTERNS, DURATIONS, OCTAVE_RANGES
-from .vocal_fx import VFX, FX_TYPES, VOCODER_PARAMS, AUTO_PITCH_PARAMS, HARMONIST_PARAMS
-from .presets import (
-    DIGITAL_PRESETS, PRESET_MAP, PRESET_CATEGORIES, 
-    DRUM_CATEGORIES, DRUM_KIT_MAP
+"""Data structures and constants for JD-Xi parameters"""
+
+# Import drum data
+from .drums import (
+    DR,  # Parameter definitions
+    DRUM_PARTS,  # Drum part categories
+    DrumPadSettings,  # Pad settings class
+    DrumKitPatch,  # Complete patch class
+    MuteGroup,  # Mute group enum
+    Note  # MIDI note enum
+)
+
+# Import analog synth data
+from .analog import (
+    AnalogParameter,  # Parameter enum
+    AnalogOscillator,  # Oscillator settings
+    AnalogFilter,  # Filter settings
+    AnalogAmplifier,  # Amplifier settings
+    AnalogLFO,  # LFO settings
+    AnalogEnvelope,  # Envelope settings
+    AnalogSynthPatch  # Complete patch class
+)
+
+# Import digital synth data
+from .digital import (
+    DigitalSynth,  # Constants and presets
+    DigitalParameter,  # Parameter enum
+    DigitalPartial,  # Partial constants
+    DigitalPatch  # Complete patch class
+)
+
+# Import effects data
+from .effects import (
+    FX,  # Parameter ranges and defaults
+    EffectType,  # Effect type enum
+    EffectParameter,  # Parameter enum
+    EffectPatch  # Complete patch class
 ) 

@@ -1,20 +1,32 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QFrame, QLabel, QComboBox, QGridLayout, QCheckBox
+    QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
+    QGroupBox, QTabWidget
 )
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 import logging
 
-from jdxi_manager.data.effects import FX
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
+from jdxi_manager.midi.messages import (
+    create_sysex_message,
+    create_patch_load_message,
+    create_patch_save_message,
+    JDXiSysEx
+)
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
-    EFFECTS_AREA, SUBGROUP_ZERO, Effect, EffectType,
-    CompressorRatio, CompressorTime, HFDamp, DelayNote
+    EFFECTS_AREA, EFFECTS_GROUP,
+    EffectType,
+    EffectGroup
 )
+from jdxi_manager.data.effects import (
+    FX,
+    EffectPatch
+)
+from jdxi_manager.ui.editors.base_editor import BaseEditor
 
 class EffectsValidator:
     """Validator for JD-Xi effects parameters"""
@@ -89,16 +101,18 @@ class EffectsValidator:
             
         return True
 
-class EffectsEditor(QMainWindow):
+class EffectsEditor(BaseEditor):
+    """Editor for JD-Xi effects settings"""
+    
     def __init__(self, midi_helper=None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
-        self.main_window = parent
         
         # Set window properties
-        self.setStyleSheet(Style.MAIN_STYLESHEET)  # Updated from DARK_THEME
+        self.setStyleSheet(Style.MAIN_STYLESHEET)
         self.setFixedWidth(1000)
         self.setMinimumHeight(600)
+        self.setWindowTitle("Effects")
         
         # Create UI
         self._create_ui()
@@ -106,412 +120,239 @@ class EffectsEditor(QMainWindow):
         # Request current patch data
         self._request_patch_data()
         
+    def _request_patch_data(self):
+        """Request current patch data from device"""
+        try:
+            self._send_sysex(
+                bytes([0x16, 0x00, 0x00, 0x00]),  # Effects area
+                bytes([0x00])  # Request all parameters
+            )
+        except Exception as e:
+            logging.error(f"Error requesting patch data: {str(e)}")
+
+    def _request_patch_name(self, preset_num: int):
+        """Request patch name from device"""
+        # Effects don't have patch names
+        pass
+
+    def _update_ui_from_sysex(self, addr: bytes, data: bytes):
+        """Update UI based on received SysEx data"""
+        # Check if it's for effects (0x16)
+        if addr[0] != 0x16:
+            return
+            
+        param = addr[3]
+        value = data[0]
+        
+        # Update appropriate controls based on parameter
+        self._update_parameter(param, value)
+
     def _create_ui(self):
         """Create the user interface"""
+        # Create scroll area for main content
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.setCentralWidget(scroll)
+        
+        # Create main widget
         central = QWidget()
-        self.setCentralWidget(central)
         layout = QVBoxLayout(central)
         layout.setSpacing(20)
         layout.setContentsMargins(20, 20, 20, 20)
         
         # Create sections
-        effect1 = self._create_effect_section(1)
-        effect2 = self._create_effect_section(2)
-        reverb = self._create_reverb_section()
-        delay = self._create_delay_section()
-        chorus = self._create_chorus_section()
-        master = self._create_master_section()
+        layout.addWidget(self._create_reverb_section())
+        layout.addWidget(self._create_delay_section())
+        layout.addWidget(self._create_chorus_section())
+        layout.addWidget(self._create_master_eq_section())
+        layout.addWidget(self._create_fx_section(1))  # Effect 1
+        layout.addWidget(self._create_fx_section(2))  # Effect 2
         
-        # Create container for sections with separators
-        sections_layout = QVBoxLayout()
+        # Add stretch at bottom
+        layout.addStretch()
         
-        # Top row: Effect 1, Effect 2
-        effects_row = QHBoxLayout()
-        effects_row.addWidget(effect1)
-        effects_row.addWidget(effect2)
-        sections_layout.addLayout(effects_row)
-        
-        # Add separator
-        sections_layout.addWidget(self._create_separator())
-        
-        # Middle row: Reverb, Delay
-        middle_row = QHBoxLayout()
-        middle_row.addWidget(reverb)
-        middle_row.addWidget(delay)
-        sections_layout.addLayout(middle_row)
-        
-        # Add separator
-        sections_layout.addWidget(self._create_separator())
-        
-        # Bottom row: Chorus, Master
-        bottom_row = QHBoxLayout()
-        bottom_row.addWidget(chorus)
-        bottom_row.addWidget(master)
-        sections_layout.addLayout(bottom_row)
-        
-        # Add sections layout to main layout
-        layout.addLayout(sections_layout)
-        
-        # Add MIDI parameter bindings
-        self._setup_parameter_bindings()
-        
-    def _create_section_header(self, title, color):
-        """Create a colored header for a section"""
-        header = QFrame()
-        header.setFixedHeight(30)
-        header.setAutoFillBackground(True)
-        
-        palette = header.palette()
-        palette.setColor(QPalette.Window, QColor(color))
-        header.setPalette(palette)
-        
-        layout = QHBoxLayout(header)
-        layout.setContentsMargins(10, 0, 10, 0)
-        
-        label = QLabel(title)
-        label.setStyleSheet("color: white; font-weight: bold; font-size: 12px;")
-        layout.addWidget(label)
-        
+        # Set the widget to scroll area
+        scroll.setWidget(central)
+
+    def _create_section_header(self, text: str) -> QLabel:
+        """Create a section header"""
+        header = QLabel(text)
+        header.setStyleSheet(f"""
+            background-color: {Style.HEADER_BG};
+            color: white;
+            padding: 5px;
+            font-weight: bold;
+            border-radius: 4px;
+        """)
         return header
         
-    def _create_reverb_section(self):
+    def _create_reverb_section(self) -> QFrame:
         """Create reverb controls section"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setMinimumHeight(200)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(15)
-        layout.setContentsMargins(15, 15, 15, 15)
         
-        # Header with on/off button
-        header_layout = QHBoxLayout()
-        header = self._create_section_header("Reverb", Style.REVERB_BG)
-        header.setFixedWidth(120)  # Make room for button
-        header_layout.addWidget(header)
+        # Add header
+        layout.addWidget(self._create_section_header("Reverb"))
         
-        self.reverb_on = QCheckBox("On/Off")
-        self.reverb_on.setStyleSheet("QCheckBox { color: white; }")
-        header_layout.addWidget(self.reverb_on)
-        header_layout.addStretch()
-        
-        layout.addLayout(header_layout)
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Type selection
-        type_frame = QFrame()
-        type_layout = QVBoxLayout(type_frame)
-        
-        type_label = QLabel("Type")
-        type_layout.addWidget(type_label)
-        
+        # Type selector
         self.reverb_type = QComboBox()
-        self.reverb_type.addItems(FX.REVERB_TYPES)
-        type_layout.addWidget(self.reverb_type)
+        self.reverb_type.addItems(["Room 1", "Room 2", "Stage 1", "Stage 2", "Hall 1", "Hall 2"])
+        layout.addWidget(self.reverb_type)
         
-        controls.addWidget(type_frame)
+        # Level control
+        self.reverb_level = Slider("Level", 0, 127)
+        layout.addWidget(self.reverb_level)
         
-        # Parameters
-        params_frame = QFrame()
-        params_layout = QVBoxLayout(params_frame)
+        # Time control
+        self.reverb_time = Slider("Time", 0, 127)
+        layout.addWidget(self.reverb_time)
         
-        self.reverb_level = Slider("Level", 0, 127, 
-            display_format=lambda v: f"{v:3d}")
-        self.reverb_time = Slider("Time", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        self.reverb_pre_delay = Slider("Pre-Delay", 0, 127,
-            display_format=lambda v: f"{v:3d} ms")
-        
-        params_layout.addWidget(self.reverb_level)
-        params_layout.addWidget(self.reverb_time)
-        params_layout.addWidget(self.reverb_pre_delay)
-        
-        controls.addWidget(params_frame)
-        layout.addLayout(controls)
+        # Pre-delay control
+        self.reverb_predelay = Slider("Pre-delay", 0, 127)
+        layout.addWidget(self.reverb_predelay)
         
         return frame
         
-    def _create_delay_section(self):
+    def _create_delay_section(self) -> QFrame:
         """Create delay controls section"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setMinimumHeight(200)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(15)
-        layout.setContentsMargins(15, 15, 15, 15)
         
-        # Header with on/off button
-        header_layout = QHBoxLayout()
-        header = self._create_section_header("Delay", Style.DELAY_BG)
-        header.setFixedWidth(120)  # Make room for button
-        header_layout.addWidget(header)
+        # Add header
+        layout.addWidget(self._create_section_header("Delay"))
         
-        self.delay_on = QCheckBox("On/Off")
-        self.delay_on.setStyleSheet("QCheckBox { color: white; }")
-        header_layout.addWidget(self.delay_on)
-        header_layout.addStretch()
-        
-        layout.addLayout(header_layout)
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Sync controls
-        sync_frame = QFrame()
-        sync_layout = QVBoxLayout(sync_frame)
-        
-        time_layout = QHBoxLayout()
-        
+        # Sync toggle
         self.delay_sync = QCheckBox("Sync to Tempo")
-        self.delay_sync.toggled.connect(self._handle_delay_sync)
-        time_layout.addWidget(self.delay_sync)
+        layout.addWidget(self.delay_sync)
         
-        self.delay_time = Slider("Time", 0, 127,
-            display_format=lambda v: f"{v:3d} ms")
-        time_layout.addWidget(self.delay_time)
+        # Time control
+        self.delay_time = Slider("Time", 0, 127)
+        layout.addWidget(self.delay_time)
         
+        # Note selector (when synced)
         self.delay_note = QComboBox()
-        self.delay_note.addItems(FX.DELAY_NOTES)
-        self.delay_note.hide()  # Hidden until sync enabled
-        time_layout.addWidget(self.delay_note)
+        self.delay_note.addItems(["1/32", "1/16", "1/8", "1/4", "1/2", "1/1"])
+        self.delay_note.setVisible(False)
+        layout.addWidget(self.delay_note)
         
-        sync_layout.addLayout(time_layout)
-        controls.addWidget(sync_frame)
+        # Feedback control
+        self.delay_feedback = Slider("Feedback", 0, 127)
+        layout.addWidget(self.delay_feedback)
         
-        # Parameters
-        params_frame = QFrame()
-        params_layout = QVBoxLayout(params_frame)
+        # HF Damp control
+        self.delay_hfdamp = Slider("HF Damp", 0, 127)
+        layout.addWidget(self.delay_hfdamp)
         
-        self.delay_feedback = Slider("Feedback", 0, 127,
-            display_format=lambda v: f"{v:3d}%")
-        self.delay_hf_damp = Slider("HF Damp", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        self.delay_level = Slider("Level", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        
-        params_layout.addWidget(self.delay_feedback)
-        params_layout.addWidget(self.delay_hf_damp)
-        params_layout.addWidget(self.delay_level)
-        
-        controls.addWidget(params_frame)
-        layout.addLayout(controls)
+        # Level control
+        self.delay_level = Slider("Level", 0, 127)
+        layout.addWidget(self.delay_level)
         
         return frame
 
-    def _create_chorus_section(self):
+    def _create_chorus_section(self) -> QFrame:
         """Create chorus controls section"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setMinimumHeight(200)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(15)
-        layout.setContentsMargins(15, 15, 15, 15)
-        
-        # Header with on/off button
-        header_layout = QHBoxLayout()
-        header = self._create_section_header("Chorus", Style.CHORUS_BG)
-        header.setFixedWidth(120)  # Make room for button
-        header_layout.addWidget(header)
-        
-        self.chorus_on = QCheckBox("On/Off")
-        self.chorus_on.setStyleSheet("QCheckBox { color: white; }")
-        header_layout.addWidget(self.chorus_on)
-        header_layout.addStretch()
-        
-        layout.addLayout(header_layout)
-        
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
-        
-        # Parameters
-        params_frame = QFrame()
-        params_layout = QVBoxLayout(params_frame)
-        
-        self.chorus_rate = Slider("Rate", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        self.chorus_depth = Slider("Depth", 0, 127,
-            display_format=lambda v: f"{v:3d}%")
-        self.chorus_level = Slider("Level", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        
-        params_layout.addWidget(self.chorus_rate)
-        params_layout.addWidget(self.chorus_depth)
-        params_layout.addWidget(self.chorus_level)
-        
-        controls.addWidget(params_frame)
-        layout.addLayout(controls)
-        
-        return frame
-        
-    def _create_master_section(self):
-        """Create master controls section"""
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setMinimumHeight(200)  # Set minimum height for uniformity
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(15)
-        layout.setContentsMargins(15, 15, 15, 15)
         
         # Add header
-        layout.addWidget(self._create_section_header("Master", Style.MASTER_BG))
+        layout.addWidget(self._create_section_header("Chorus"))
         
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(20)
+        # Rate control
+        self.chorus_rate = Slider("Rate", 0, 127)
+        layout.addWidget(self.chorus_rate)
         
-        # EQ controls
-        eq_frame = QFrame()
-        eq_layout = QVBoxLayout(eq_frame)
+        # Depth control
+        self.chorus_depth = Slider("Depth", 0, 127)
+        layout.addWidget(self.chorus_depth)
         
-        self.eq_low = Slider("Low", -12, 12, center=True,
-            display_format=lambda v: f"{v:+3d} dB")
-        self.eq_mid = Slider("Mid", -12, 12, center=True,
-            display_format=lambda v: f"{v:+3d} dB")
-        self.eq_high = Slider("High", -12, 12, center=True,
-            display_format=lambda v: f"{v:+3d} dB")
-        
-        eq_layout.addWidget(self.eq_low)
-        eq_layout.addWidget(self.eq_mid)
-        eq_layout.addWidget(self.eq_high)
-        
-        controls.addWidget(eq_frame)
-        
-        # Master level
-        level_frame = QFrame()
-        level_layout = QVBoxLayout(level_frame)
-        
-        self.master_level = Slider("Master Level", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        level_layout.addWidget(self.master_level)
-        
-        controls.addWidget(level_frame)
-        layout.addLayout(controls)
+        # Level control
+        self.chorus_level = Slider("Level", 0, 127)
+        layout.addWidget(self.chorus_level)
         
         return frame
         
-    def _handle_delay_sync(self, sync_enabled):
-        """Handle delay sync button toggle"""
-        self.delay_time.setVisible(not sync_enabled)
-        self.delay_note.setVisible(sync_enabled)
-        
-    def _create_effect_section(self, number):
-        """Create effect controls section"""
-        # Use different orange for each effect
-        color = Style.FX1_BG if number == 1 else Style.FX2_BG
-        
+    def _create_master_eq_section(self) -> QFrame:
+        """Create master EQ controls section"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setMinimumHeight(200)
         layout = QVBoxLayout(frame)
-        layout.setSpacing(15)
-        layout.setContentsMargins(15, 15, 15, 15)
         
-        # Add header with specific color
-        layout.addWidget(self._create_section_header(f"Effect {number}", color))
+        # Add header
+        layout.addWidget(self._create_section_header("Master EQ"))
         
-        # Controls container
-        controls = QHBoxLayout()
-        controls.setSpacing(30)
+        # Low control (-12 to +12)
+        self.eq_low = Slider("Low", -12, 12)
+        layout.addWidget(self.eq_low)
         
-        # Type selection
-        type_frame = QFrame()
-        type_layout = QVBoxLayout(type_frame)
-        type_layout.setSpacing(10)
+        # Mid control (-12 to +12)
+        self.eq_mid = Slider("Mid", -12, 12)
+        layout.addWidget(self.eq_mid)
         
-        type_label = QLabel("Type")
-        type_layout.addWidget(type_label)
+        # High control (-12 to +12)
+        self.eq_high = Slider("High", -12, 12)
+        layout.addWidget(self.eq_high)
         
-        effect_type = QComboBox()
-        # Use different lists for Effect 1 and Effect 2
-        if number == 1:
-            effect_type.addItems(FX.EFFECT_TYPES[:5])  # Only first 5 items for Effect 1
-        else:
-            effect_type.addItems(FX.EFFECT_TYPES)  # All items for Effect 2
-        effect_type.setMinimumWidth(150)
-        type_layout.addWidget(effect_type)
-        setattr(self, f"effect{number}_type", effect_type)
+        # Master Level control
+        self.master_level = Slider("Master Level", 0, 127)
+        layout.addWidget(self.master_level)
         
-        controls.addWidget(type_frame)
+        return frame
         
-        # Parameters
-        params_frame = QFrame()
-        params_layout = QVBoxLayout(params_frame)
-        params_layout.setSpacing(15)
+    def _create_fx_section(self, fx_num: int) -> QFrame:
+        """Create effect section controls"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
         
-        # Common parameters for all effect types
-        level = Slider("Level", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        level.setMinimumWidth(200)
-        setattr(self, f"effect{number}_level", level)
+        # Add header
+        layout.addWidget(self._create_section_header(f"Effect {fx_num}"))
         
-        param1 = Slider("Parameter 1", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        param1.setMinimumWidth(200)
-        setattr(self, f"effect{number}_param1", param1)
+        # Type selector
+        type_selector = QComboBox()
+        type_selector.addItems([
+            "THRU", "DISTORTION", "FUZZ", "COMPRESSOR", "BITCRUSHER",
+            "FLANGER", "PHASER", "RING MOD", "SLICER"
+        ])
+        layout.addWidget(type_selector)
         
-        param2 = Slider("Parameter 2", 0, 127,
-            display_format=lambda v: f"{v:3d}")
-        param2.setMinimumWidth(200)
-        setattr(self, f"effect{number}_param2", param2)
+        # Level control
+        level = Slider("Level", 0, 127)
+        layout.addWidget(level)
         
-        params_layout.addWidget(level)
-        params_layout.addWidget(param1)
-        params_layout.addWidget(param2)
+        # Parameter 1
+        param1 = Slider("Parameter 1", 0, 127)
+        layout.addWidget(param1)
         
-        controls.addWidget(params_frame)
-        layout.addLayout(controls)
+        # Parameter 2
+        param2 = Slider("Parameter 2", 0, 127)
+        layout.addWidget(param2)
+        
+        # Store controls
+        setattr(self, f'fx{fx_num}_type', type_selector)
+        setattr(self, f'fx{fx_num}_level', level)
+        setattr(self, f'fx{fx_num}_param1', param1)
+        setattr(self, f'fx{fx_num}_param2', param2)
         
         return frame
         
     def _setup_parameter_bindings(self):
         """Set up MIDI parameter bindings"""
-        if not self.midi_helper:
-            return
-            
-        # Reverb on/off
-        self.reverb_on.toggled.connect(self._send_reverb_power)
-            
-        # Delay on/off
-        self.delay_on.toggled.connect(self._send_delay_power)
-        
-        # Chorus on/off
-        self.chorus_on.toggled.connect(self._send_chorus_power)
-        
-        # Effect 1 parameters
-        self.effect1_type.currentIndexChanged.connect(
-            lambda v: self._handle_effect1_change(v))
-        self.effect1_level.valueChanged.connect(
-            lambda v: self._send_parameter(0x50, 0x01, v))
-        self.effect1_param1.valueChanged.connect(
-            lambda v: self._send_parameter(0x50, 0x02, v))
-        self.effect1_param2.valueChanged.connect(
-            lambda v: self._send_parameter(0x50, 0x03, v))
-            
-        # Effect 2 parameters
-        self.effect2_type.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x60, 0x00, v))
-        self.effect2_level.valueChanged.connect(
-            lambda v: self._send_parameter(0x60, 0x01, v))
-        self.effect2_param1.valueChanged.connect(
-            lambda v: self._send_parameter(0x60, 0x02, v))
-        self.effect2_param2.valueChanged.connect(
-            lambda v: self._send_parameter(0x60, 0x03, v))
-            
-        # Reverb parameters
+        # Reverb bindings
         self.reverb_type.currentIndexChanged.connect(
             lambda v: self._send_parameter(0x10, 0x00, v))
         self.reverb_level.valueChanged.connect(
             lambda v: self._send_parameter(0x10, 0x01, v))
         self.reverb_time.valueChanged.connect(
             lambda v: self._send_parameter(0x10, 0x02, v))
-        self.reverb_pre_delay.valueChanged.connect(
+        self.reverb_predelay.valueChanged.connect(
             lambda v: self._send_parameter(0x10, 0x03, v))
             
-        # Delay parameters
+        # Delay bindings
         self.delay_sync.toggled.connect(
             lambda v: self._send_parameter(0x20, 0x00, int(v)))
         self.delay_time.valueChanged.connect(
@@ -520,12 +361,12 @@ class EffectsEditor(QMainWindow):
             lambda v: self._send_parameter(0x20, 0x02, v))
         self.delay_feedback.valueChanged.connect(
             lambda v: self._send_parameter(0x20, 0x03, v))
-        self.delay_hf_damp.valueChanged.connect(
+        self.delay_hfdamp.valueChanged.connect(
             lambda v: self._send_parameter(0x20, 0x04, v))
         self.delay_level.valueChanged.connect(
             lambda v: self._send_parameter(0x20, 0x05, v))
             
-        # Chorus parameters
+        # Chorus bindings
         self.chorus_rate.valueChanged.connect(
             lambda v: self._send_parameter(0x30, 0x00, v))
         self.chorus_depth.valueChanged.connect(
@@ -533,9 +374,9 @@ class EffectsEditor(QMainWindow):
         self.chorus_level.valueChanged.connect(
             lambda v: self._send_parameter(0x30, 0x02, v))
             
-        # Master parameters
+        # Master EQ bindings
         self.eq_low.valueChanged.connect(
-            lambda v: self._send_parameter(0x40, 0x00, v + 12))  # Convert -12-+12 to 0-24
+            lambda v: self._send_parameter(0x40, 0x00, v + 12))  # Convert -12/+12 to 0-24
         self.eq_mid.valueChanged.connect(
             lambda v: self._send_parameter(0x40, 0x01, v + 12))
         self.eq_high.valueChanged.connect(
@@ -543,323 +384,114 @@ class EffectsEditor(QMainWindow):
         self.master_level.valueChanged.connect(
             lambda v: self._send_parameter(0x40, 0x03, v))
             
-    def _send_parameter(self, section, parameter, value):
-        """Send parameter change to synth"""
-        if not self.midi_helper:
-            return
-            
-        try:
-            # Validate parameter
-            EffectsValidator.validate_parameter(section, parameter, value)
-            
-            msg = MIDIHelper.create_parameter_message(0x16, section, parameter, value)
-            self.midi_helper.send_message(msg)
-            
-            # Log the MIDI message
-            section_names = {
-                0x50: "Effect 1",
-                0x60: "Effect 2",
-                0x10: "Reverb",
-                0x20: "Delay",
-                0x30: "Chorus",
-                0x40: "Master"
-            }
-            
-            param_names = {
-                0x00: "Type/Sync",
-                0x01: "Level/Time",
-                0x02: "Parameter 1/Note",
-                0x03: "Parameter 2/Feedback",
-                0x04: "HF Damp",
-                0x05: "Level"
-            }
-            
-            section_name = section_names.get(section, hex(section))
-            param_name = param_names.get(parameter, hex(parameter))
-            
-            logging.info(f"MIDI: {section_name} - {param_name} = {value}")
-            logging.debug(f"Raw MIDI: hex = {' '.join([hex(b) for b in msg])}")
-            logging.debug(f"Raw MIDI: dec = {' '.join([str(b) for b in msg])}")
-            
-        except ValueError as e:
-            logging.error(f"Parameter validation failed: {str(e)}")
-        except Exception as e:
-            logging.error(f"Error sending parameter: {str(e)}")
-
-    def _request_patch_data(self):
-        """Request current patch data from synth"""
-        if self.midi_helper:
-            # Request all effects parameters
-            addr = bytes([0x16, 0x00, 0x00, 0x00])
-            msg = MIDIHelper.create_sysex_message(addr, bytes([0x00]))
-            self.midi_helper.send_message(msg)
-            
-            # Log request message
-            logging.debug(f"Request MIDI: hex = {' '.join([hex(b) for b in msg])}")
-            logging.debug(f"Request MIDI: dec = {' '.join([str(b) for b in msg])}")
-            
-    def set_midi_ports(self, midi_in, midi_out):
-        """Update MIDI port connections"""
-        self.midi_in = midi_in
-        self.midi_out = midi_out
+        # Effect 1 bindings
+        self.fx1_type.currentIndexChanged.connect(
+            lambda v: self._send_parameter(0x50, 0x00, v))
+        self.fx1_level.valueChanged.connect(
+            lambda v: self._send_parameter(0x50, 0x01, v))
+        self.fx1_param1.valueChanged.connect(
+            lambda v: self._send_parameter(0x50, 0x02, v))
+        self.fx1_param2.valueChanged.connect(
+            lambda v: self._send_parameter(0x50, 0x03, v))
         
-        if midi_in:
-            midi_in.set_callback(self._handle_midi_input) 
-
-    def _handle_midi_input(self, message, timestamp):
-        """Handle incoming MIDI messages"""
-        data = message[0]  # Get the raw MIDI data
+        # Effect 2 bindings
+        self.fx2_type.currentIndexChanged.connect(
+            lambda v: self._send_parameter(0x60, 0x00, v))
+        self.fx2_level.valueChanged.connect(
+            lambda v: self._send_parameter(0x60, 0x01, v))
+        self.fx2_param1.valueChanged.connect(
+            lambda v: self._send_parameter(0x60, 0x02, v))
+        self.fx2_param2.valueChanged.connect(
+            lambda v: self._send_parameter(0x60, 0x03, v))
         
-        # Check if it's a SysEx message
-        if data[0] == 0xF0 and len(data) > 8:
-            # Verify it's a Roland message for JD-Xi
-            if (data[1] == 0x41 and  # Roland ID
-                data[4:8] == bytes([0x00, 0x00, 0x00, 0x0E])):  # JD-Xi ID
-                
-                # Get address and parameter data
-                addr = data[8:12]  # 4-byte address
-                param_data = data[12:-1]  # Parameter data (excluding F7)
-                
-                # Log received MIDI data
-                logging.debug(f"MIDI IN: hex = {' '.join([hex(b) for b in data])}")
-                logging.debug(f"MIDI IN: dec = {' '.join([str(b) for b in data])}")
-                
-                # Queue UI update on main thread
-                QTimer.singleShot(0, lambda: self._update_ui_from_sysex(addr, param_data))
-                
-    def _update_ui_from_sysex(self, addr, data):
-        """Update UI controls based on received SysEx data"""
-        try:
-            # Check for reverb power message
-            if (addr[0] == 0x18 and addr[1] == 0x00 and 
-                addr[2] == 0x08 and addr[3] == 0x00):
-                self.reverb_on.setChecked(bool(data[0]))
-                return
-                
-            # Check for delay power message
-            if (addr[0] == 0x18 and addr[1] == 0x00 and 
-                addr[2] == 0x09 and addr[3] == 0x00):
-                self.delay_on.setChecked(bool(data[0]))
-                return
-                
-            # Check for chorus power message
-            if (addr[0] == 0x18 and addr[1] == 0x00 and 
-                addr[2] == 0x0A and addr[3] == 0x00):
-                self.chorus_on.setChecked(bool(data[0]))
-                return
-                
-            # Effect 1 parameters (0x50)
-            if addr[0] == 0x50:
-                if addr[1] == 0x00:
-                    self.effect1_type.setCurrentIndex(data[0])
-                elif addr[1] == 0x01:
-                    self.effect1_level.setValue(data[0])
-                elif addr[1] == 0x02:
-                    self.effect1_param1.setValue(data[0])
-                elif addr[1] == 0x03:
-                    self.effect1_param2.setValue(data[0])
-                    
-            # Effect 2 parameters (0x60)
-            elif addr[0] == 0x60:
-                if addr[1] == 0x00:
-                    self.effect2_type.setCurrentIndex(data[0])
-                elif addr[1] == 0x01:
-                    self.effect2_level.setValue(data[0])
-                elif addr[1] == 0x02:
-                    self.effect2_param1.setValue(data[0])
-                elif addr[1] == 0x03:
-                    self.effect2_param2.setValue(data[0])
-                    
-            # Reverb parameters (0x10)
-            elif addr[0] == 0x10:
-                if addr[1] == 0x00:
-                    self.reverb_type.setCurrentIndex(data[0])
-                elif addr[1] == 0x01:
-                    self.reverb_level.setValue(data[0])
-                elif addr[1] == 0x02:
-                    self.reverb_time.setValue(data[0])
-                elif addr[1] == 0x03:
-                    self.reverb_pre_delay.setValue(data[0])
-                    
-            # Delay parameters (0x20)
-            elif addr[0] == 0x20:
-                if addr[1] == 0x00:
-                    self.delay_sync.setChecked(bool(data[0]))
-                elif addr[1] == 0x01:
-                    self.delay_time.setValue(data[0])
-                elif addr[1] == 0x02:
-                    self.delay_note.setCurrentIndex(data[0])
-                elif addr[1] == 0x03:
-                    self.delay_feedback.setValue(data[0])
-                elif addr[1] == 0x04:
-                    self.delay_hf_damp.setValue(data[0])
-                elif addr[1] == 0x05:
-                    self.delay_level.setValue(data[0])
-                    
-            # Chorus parameters (0x30)
-            elif addr[0] == 0x30:
-                if addr[1] == 0x00:
-                    self.chorus_rate.setValue(data[0])
-                elif addr[1] == 0x01:
-                    self.chorus_depth.setValue(data[0])
-                elif addr[1] == 0x02:
-                    self.chorus_level.setValue(data[0])
-                    
-            # Master parameters (0x40)
-            elif addr[0] == 0x40:
-                if addr[1] == 0x00:
-                    self.eq_low.setValue(data[0] - 12)  # Convert 0-24 to -12-+12
-                elif addr[1] == 0x01:
-                    self.eq_mid.setValue(data[0] - 12)
-                elif addr[1] == 0x02:
-                    self.eq_high.setValue(data[0] - 12)
-                elif addr[1] == 0x03:
-                    self.master_level.setValue(data[0])
-                    
-        except Exception as e:
-            logging.error(f"Error updating UI from SysEx: {str(e)}") 
+        # Handle delay sync state changes
+        self.delay_sync.toggled.connect(self._handle_delay_sync)
 
-    def _send_reverb_power(self, on):
-        """Send reverb power on/off command"""
+    def _handle_delay_sync(self, sync_enabled: bool):
+        """Handle delay sync mode changes"""
+        self.delay_time.setVisible(not sync_enabled)
+        self.delay_note.setVisible(sync_enabled)
+
+    def _update_parameter(self, param: int, value: int):
+        """Update UI control based on received parameter"""
         try:
-            msg = [
-                START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
-                MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
-                EFFECTS_AREA, SUBGROUP_ZERO,
-                Effect.REVERB_POWER,  # Use constant
-                SUBGROUP_ZERO,
-                0x01 if on else 0x00,
-                0x5F if on else 0x60,
-                END_OF_SYSEX
-            ]
-            self.midi_helper.send_message(msg)
+            # Reverb parameters
+            if param == 0x10:  # Reverb type
+                self.reverb_type.setCurrentIndex(value)
+            elif param == 0x11:  # Reverb level
+                self.reverb_level.setValue(value)
+            elif param == 0x12:  # Reverb time
+                self.reverb_time.setValue(value)
+            elif param == 0x13:  # Reverb pre-delay
+                self.reverb_predelay.setValue(value)
+            
+            # Delay parameters
+            elif param == 0x20:  # Delay sync
+                self.delay_sync.setChecked(bool(value))
+            elif param == 0x21:  # Delay time
+                self.delay_time.setValue(value)
+            elif param == 0x22:  # Delay note
+                self.delay_note.setCurrentIndex(value)
+            elif param == 0x23:  # Delay feedback
+                self.delay_feedback.setValue(value)
+            elif param == 0x24:  # Delay HF damp
+                self.delay_hfdamp.setValue(value)
+            elif param == 0x25:  # Delay level
+                self.delay_level.setValue(value)
+            
+            # Chorus parameters
+            elif param == 0x30:  # Chorus rate
+                self.chorus_rate.setValue(value)
+            elif param == 0x31:  # Chorus depth
+                self.chorus_depth.setValue(value)
+            elif param == 0x32:  # Chorus level
+                self.chorus_level.setValue(value)
+            
+            # Master EQ parameters
+            elif param == 0x40:  # EQ low
+                self.eq_low.setValue(value - 12)  # Convert 0-24 to -12/+12
+            elif param == 0x41:  # EQ mid
+                self.eq_mid.setValue(value - 12)
+            elif param == 0x42:  # EQ high
+                self.eq_high.setValue(value - 12)
+            elif param == 0x43:  # Master level
+                self.master_level.setValue(value)
+            
+            # Effect 1 parameters
+            elif param == 0x50:  # FX1 type
+                self.fx1_type.setCurrentIndex(value)
+            elif param == 0x51:  # FX1 level
+                self.fx1_level.setValue(value)
+            elif param == 0x52:  # FX1 param1
+                self.fx1_param1.setValue(value)
+            elif param == 0x53:  # FX1 param2
+                self.fx1_param2.setValue(value)
+            
+            # Effect 2 parameters
+            elif param == 0x60:  # FX2 type
+                self.fx2_type.setCurrentIndex(value)
+            elif param == 0x61:  # FX2 level
+                self.fx2_level.setValue(value)
+            elif param == 0x62:  # FX2 param1
+                self.fx2_param1.setValue(value)
+            elif param == 0x63:  # FX2 param2
+                self.fx2_param2.setValue(value)
             
         except Exception as e:
-            logging.error(f"Error sending reverb power: {str(e)}") 
+            logging.error(f"Error updating parameter {hex(param)}: {str(e)}")
 
-    def _send_delay_power(self, on):
-        """Send delay power on/off command"""
-        if not self.midi_helper:
-            return
-            
+    def _send_parameter(self, section: int, param: int, value: int):
+        """Send effect parameter change"""
         try:
-            msg = [
-                START_OF_SYSEX,        # Start of SysEx
-                ROLAND_ID,        # Roland ID
-                DEVICE_ID,      # Device ID
-                MODEL_ID_1,    # Device ID 1
-                MODEL_ID_2,    # Device ID 2
-                MODEL_ID,       # Model ID
-                JD_XI_ID,      # JD-Xi ID
-                DT1_COMMAND_12, # Command ID (DT1)
-                EFFECTS_AREA,   # Effects area
-                SUBGROUP_ZERO,  # Subgroup
-                Effect.DELAY_POWER,  # Address for delay
-                SUBGROUP_ZERO,  # Subgroup
-                0x01 if on else 0x00,  # Value (1=on, 0=off)
-                0x5E if on else 0x5F,  # Checksum
-                END_OF_SYSEX    # End of SysEx
-            ]
-            
-            self.midi_helper.send_message(msg)
-            logging.debug(f"Delay power {'on' if on else 'off'}")
-            
+            msg = JDXiSysEx.create_parameter_message(
+                area=EFFECTS_AREA,
+                part=section,
+                group=0x00,
+                param=param,
+                value=value
+            )
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent effect parameter: section={hex(section)} param={hex(param)} value={value}")
         except Exception as e:
-            logging.error(f"Error sending delay power: {str(e)}") 
-
-    def _send_chorus_power(self, on):
-        """Send chorus power on/off command"""
-        if not self.midi_helper:
-            return
-            
-        try:
-            msg = [
-                START_OF_SYSEX,        # Start of SysEx
-                ROLAND_ID,        # Roland ID
-                DEVICE_ID,      # Device ID
-                MODEL_ID_1,    # Device ID 1
-                MODEL_ID_2,    # Device ID 2
-                MODEL_ID,       # Model ID
-                JD_XI_ID,      # JD-Xi ID
-                DT1_COMMAND_12, # Command ID (DT1)
-                EFFECTS_AREA,   # Effects area
-                SUBGROUP_ZERO,  # Subgroup
-                CHORUS_POWER_ADDR,  # Address for chorus
-                SUBGROUP_ZERO,  # Subgroup
-                0x01 if on else 0x00,  # Value (1=on, 0=off)
-                0x5D if on else 0x5E,  # Checksum
-                END_OF_SYSEX    # End of SysEx
-            ]
-            
-            self.midi_helper.send_message(msg)
-            logging.debug(f"Chorus power {'on' if on else 'off'}")
-            
-        except Exception as e:
-            logging.error(f"Error sending chorus power: {str(e)}") 
-
-    def _create_separator(self):
-        """Create a red separator line"""
-        separator = QFrame()
-        separator.setFrameShape(QFrame.HLine)
-        separator.setFixedHeight(2)
-        separator.setStyleSheet(f"""
-            QFrame {{
-                background-color: {Style.RED};
-                margin: 10px 0px;
-            }}
-        """)
-        return separator 
-
-    def _handle_effect1_change(self, value):
-        """Handle Effect 1 type change"""
-        if not self.midi_helper:
-            return
-            
-        try:
-            # Create base message
-            base_msg = [
-                START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
-                MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
-                EFFECTS_AREA, SUBGROUP_ZERO, Effect.EFFECT1
-            ]
-
-            # Set pattern data based on effect type
-            if value == EffectType.THRU:
-                pattern_data = [EffectType.THRU, 0x7F, 0x32, 0x32, 0x01]
-                checksum = 0x5E
-            elif value == EffectType.DISTORTION:
-                pattern_data = [EffectType.DISTORTION, 0x7F, 0x32, 0x32, 0x01]
-                checksum = 0x50
-            # ... handle other effect types similarly ...
-            
-            # Create full message
-            msg = bytes(base_msg + pattern_data + [checksum, END_OF_SYSEX])
-            
-            self.midi_helper.send_message(msg)
-            logging.debug(f"Sent Effect 1 initialization for type {value}")
-            
-        except Exception as e:
-            logging.error(f"Error handling Effect 1 change: {str(e)}") 
-
-    def _init_effect_types(self):
-        """Initialize effect type combos"""
-        effect_types = [
-            "THRU", "DISTORTION", "FUZZ", "COMPRESSOR", "BITCRUSHER",
-            "FLANGER", "PHASER", "RING MOD", "SLICER"
-        ]
-        self.effect1_type.addItems(effect_types)
-        self.effect2_type.addItems(effect_types)
-        
-        # Connect change handlers
-        self.effect1_type.currentIndexChanged.connect(self._handle_effect1_change)
-        self.effect2_type.currentIndexChanged.connect(self._handle_effect2_change)
-
-    def _init_reverb_controls(self):
-        """Initialize reverb controls"""
-        reverb_types = [
-            "Room 1", "Room 2", "Stage 1", "Stage 2", "Hall 1", "Hall 2"
-        ]
-        self.reverb_type.addItems(reverb_types)
-        self.reverb_type.currentIndexChanged.connect(
-            lambda v: self._send_parameter(Effect.REVERB, 0x00, v)
-        ) 
+            logging.error(f"Error sending effect parameter: {str(e)}")

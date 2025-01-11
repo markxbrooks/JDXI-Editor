@@ -1,118 +1,126 @@
 import rtmidi
 import logging
-import time
-from jdxi_manager.midi.messages import (
-    create_parameter_message, 
-    create_sysex_message, 
-    create_patch_load_message
-)
+from typing import Optional, List, Union
 
+from jdxi_manager.midi.messages import (
+    create_sysex_message,
+    create_patch_load_message,
+    create_patch_save_message,
+    JDXiSysEx
+)
 
 class MIDIHelper:
     """Helper class for MIDI operations"""
     
-    def __init__(self, main_window=None):
-        """Initialize MIDI helper"""
-        self.midi_in = None
-        self.midi_out = None
-        self.main_window = main_window
-        self._last_message = None
-        self._last_message_time = 0
+    def __init__(self, parent=None):
+        """Initialize MIDI in/out ports
         
-    @staticmethod
-    def get_input_ports():
-        """List available MIDI input ports"""
-        try:
-            midi_in = rtmidi.MidiIn()
-            ports = midi_in.get_ports()
-            midi_in.delete()
-            return ports
-        except Exception as e:
-            logging.error(f"Error getting MIDI input ports: {str(e)}")
-            return []
-            
-    @staticmethod
-    def get_output_ports():
-        """List available MIDI output ports"""
-        try:
-            midi_out = rtmidi.MidiOut()
-            ports = midi_out.get_ports()
-            midi_out.delete()
-            return ports
-        except Exception as e:
-            logging.error(f"Error getting MIDI output ports: {str(e)}")
-            return []
-    
-    @staticmethod
-    def list_ports():
-        """List all available MIDI ports"""
-        in_ports = MIDIHelper.get_input_ports()
-        out_ports = MIDIHelper.get_output_ports()
-        return in_ports, out_ports
+        Args:
+            parent: Parent window for MIDI indicators
+        """
+        self.midi_in = rtmidi.MidiIn()
+        self.midi_out = rtmidi.MidiOut()
+        self.current_in_port = None
+        self.current_out_port = None
+        self.parent = parent
         
-    @staticmethod
-    def open_input(port_name, main_window=None):
+    def get_input_ports(self) -> List[str]:
+        """Get list of available MIDI input ports"""
+        return self.midi_in.get_ports()
+        
+    def get_output_ports(self) -> List[str]:
+        """Get list of available MIDI output ports"""
+        return self.midi_out.get_ports()
+        
+    def open_input_port(self, port_name: str) -> bool:
         """Open MIDI input port by name"""
         try:
-            midi_in = rtmidi.MidiIn()
-            ports = midi_in.get_ports()
-            
+            ports = self.get_input_ports()
             if port_name in ports:
                 port_num = ports.index(port_name)
-                midi_in.open_port(port_num)
-                midi_in.ignore_types(sysex=False)
+                self.midi_in.open_port(port_num)
+                self.current_in_port = port_name
+                
+                # Set callback for identity response
+                self.midi_in.set_callback(self._handle_midi_message)
+                
                 logging.info(f"Opened MIDI input port: {port_name}")
-                return midi_in
-            else:
-                midi_in.delete()
-                logging.warning(f"MIDI input port not found: {port_name}")
-                return None
+                return True
                 
         except Exception as e:
             logging.error(f"Error opening MIDI input port: {str(e)}")
-            return None
-            
-    @staticmethod
-    def open_output(port_name, main_window=None):
-        """Open MIDI output port by name"""
+        return False
+
+    def _handle_midi_message(self, message, timestamp):
+        """Handle incoming MIDI messages"""
         try:
-            midi_out = rtmidi.MidiOut()
-            ports = midi_out.get_ports()
+            data = message[0]
             
+            # Check for identity response
+            if (len(data) > 8 and
+                data[0] == START_OF_SYSEX and
+                data[1] == ROLAND_ID and
+                data[4:8] == bytes([MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID])):
+                logging.info("JD-Xi identity confirmed")
+                
+            # Forward message to parent window
+            if self.parent:
+                self.parent._handle_midi_message(message, timestamp)
+                
+        except Exception as e:
+            logging.error(f"Error handling MIDI message: {str(e)}")
+            
+    def open_output_port(self, port_name: str) -> bool:
+        """Open MIDI output port by name
+        
+        Args:
+            port_name: Name of port to open
+            
+        Returns:
+            True if port opened successfully
+        """
+        try:
+            ports = self.get_output_ports()
             if port_name in ports:
                 port_num = ports.index(port_name)
-                midi_out.open_port(port_num)
+                self.midi_out.open_port(port_num)
+                self.current_out_port = port_name
                 logging.info(f"Opened MIDI output port: {port_name}")
-                return midi_out
+                return True
             else:
-                midi_out.delete()
-                logging.warning(f"MIDI output port not found: {port_name}")
-                return None
+                logging.error(f"MIDI output port not found: {port_name}")
+                return False
                 
         except Exception as e:
             logging.error(f"Error opening MIDI output port: {str(e)}")
-            return None
-
-    def send_message(self, message):
-        """Send MIDI message"""
-        if self.midi_out:
-            try:
-                self.midi_out.send_message(message)
-                
-                # Set indicator active
-                if self.main_window and hasattr(self.main_window, 'midi_out_indicator'):
-                    self.main_window.midi_out_indicator.set_active()
-                    
-            except Exception as e:
-                logging.error(f"Error sending MIDI message: {str(e)}")
+            return False
             
-    def handle_midi_message(self, message, timestamp):
-        """Handle incoming MIDI message"""
-        # Forward to main window if available
-        if self.main_window and hasattr(self.main_window, '_handle_midi_message'):
-            self.main_window._handle_midi_message(message, timestamp)
-
-
-if __name__ == '__main__':
-    # Add any test code here if needed
-    pass 
+    def send_message(self, msg: Union[bytes, List[int]]) -> bool:
+        """Send MIDI message
+        
+        Args:
+            msg: MIDI message as bytes or list of integers
+            
+        Returns:
+            True if message sent successfully
+        """
+        try:
+            if isinstance(msg, bytes):
+                msg = list(msg)
+            self.midi_out.send_message(msg)
+            
+            # Blink MIDI out indicator if available
+            if self.parent and hasattr(self.parent, 'midi_out_indicator'):
+                self.parent.midi_out_indicator.blink()
+                
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error sending MIDI message: {str(e)}")
+            return False
+            
+    def close(self):
+        """Close MIDI ports"""
+        self.midi_in.close_port()
+        self.midi_out.close_port()
+        logging.info("Closed MIDI ports")

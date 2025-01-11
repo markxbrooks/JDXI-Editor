@@ -1,37 +1,56 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QComboBox, QLabel
+from PySide6.QtWidgets import (
+    QFrame, QVBoxLayout, QHBoxLayout, QLabel, 
+    QComboBox, QPushButton, QScrollArea, QWidget
+)
 from PySide6.QtCore import Signal
 import logging
 
-from ...midi.messages import create_parameter_message, create_patch_load_message
-
-class PresetPanel(QWidget):
+class PresetPanel(QFrame):
+    """Panel for selecting and managing presets"""
+    
     presetChanged = Signal(int, str)  # Emits (preset_number, preset_name)
     
-    def __init__(self, synth_type, editor, parent=None):
+    def __init__(self, preset_type, parent=None):
+        """Initialize preset panel
+        
+        Args:
+            preset_type: Type of presets to display (e.g. 'digital1', 'analog')
+            parent: Parent widget
+        """
         super().__init__(parent)
-        self.synth_type = synth_type
-        self.editor = editor
+        self.preset_type = preset_type
+        self.parent = parent
         
         # Create UI
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        self._create_ui()
         
-        # Add label
-        label = QLabel("Preset:")
-        layout.addWidget(label)
+    def _create_ui(self):
+        """Create the user interface"""
+        layout = QVBoxLayout(self)
         
-        # Create preset combo box
+        # Create header row
+        header = QHBoxLayout()
+        
+        # Preset selector
         self.preset_combo = QComboBox()
-        self.preset_combo.currentIndexChanged.connect(self._handle_preset_change)
-        layout.addWidget(self.preset_combo)
-        
-        # Load initial presets
         self._load_presets()
+        header.addWidget(self.preset_combo)
+        
+        # Load/Save buttons
+        load_btn = QPushButton("Load")
+        load_btn.clicked.connect(self._load_preset)
+        header.addWidget(load_btn)
+        
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self._save_preset)
+        header.addWidget(save_btn)
+        
+        layout.addLayout(header)
         
     def _load_presets(self):
-        """Load preset list"""
+        """Load preset list into combo box"""
         try:
-            # Load preset names (placeholder for now)
+            # Add preset names (placeholder for now)
             presets = [f"{i+1:03d}: Preset {i+1}" for i in range(128)]
             
             # Add to combo box
@@ -41,24 +60,31 @@ class PresetPanel(QWidget):
         except Exception as e:
             logging.error(f"Error loading presets: {str(e)}")
             
-    def _handle_preset_change(self, index):
-        """Handle preset selection change"""
+    def _load_preset(self):
+        """Load selected preset"""
         try:
-            preset_num = index + 1  # Convert to 1-based
+            preset_num = self.preset_combo.currentIndex() + 1
             preset_name = self.preset_combo.currentText()
             
-            logging.info(f"Loading preset: {preset_name}")
-            
-            # Create program change message
-            msg = create_patch_load_message(preset_num)
-            
-            # Send via editor's MIDI out
-            if self.editor and self.editor.main_window:
-                if hasattr(self.editor.main_window, 'midi_out'):
-                    self.editor.main_window.midi_out.send_message(msg)
-                    
             # Emit signal
             self.presetChanged.emit(preset_num, preset_name)
             
+            # Forward to parent if available
+            if self.parent and hasattr(self.parent, 'load_preset'):
+                self.parent.load_preset(preset_name)
+                
         except Exception as e:
-            logging.error(f"Error loading preset: {str(e)}") 
+            logging.error(f"Error loading preset: {str(e)}")
+            
+    def _save_preset(self):
+        """Save current settings to selected preset"""
+        try:
+            preset_num = self.preset_combo.currentIndex() + 1
+            preset_name = self.preset_combo.currentText()
+            
+            # Forward to parent if available
+            if self.parent and hasattr(self.parent, 'save_preset'):
+                self.parent.save_preset(preset_num, preset_name)
+                
+        except Exception as e:
+            logging.error(f"Error saving preset: {str(e)}") 

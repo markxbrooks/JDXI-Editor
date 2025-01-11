@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QComboBox,
-    QLabel, QPushButton, QFrame, QCheckBox, QGroupBox
+    QLabel, QPushButton, QFrame, QCheckBox, QGroupBox, QDialogButtonBox
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPalette, QColor
@@ -212,3 +212,79 @@ class MidiConfigFrame(QDialog):
             idx = self.output_combo.findText(settings['output_port'])
             if idx >= 0:
                 self.output_combo.setCurrentIndex(idx) 
+
+class MIDIConfigDialog(QDialog):
+    def __init__(self, input_ports, output_ports, current_in=None, current_out=None, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("MIDI Configuration")
+        
+        self.input_ports = input_ports
+        self.output_ports = output_ports
+        self.current_in = current_in
+        self.current_out = current_out
+        
+        self._create_ui()
+        
+    def _create_ui(self):
+        """Create the dialog UI"""
+        layout = QVBoxLayout(self)
+        
+        # Input port selection
+        input_group = QGroupBox("MIDI Input")
+        input_layout = QVBoxLayout(input_group)
+        
+        self.input_combo = QComboBox()
+        self.input_combo.addItems(self.input_ports)
+        if self.current_in and self.current_in in self.input_ports:
+            self.input_combo.setCurrentText(self.current_in)
+            
+        input_layout.addWidget(self.input_combo)
+        layout.addWidget(input_group)
+        
+        # Output port selection
+        output_group = QGroupBox("MIDI Output")
+        output_layout = QVBoxLayout(output_group)
+        
+        self.output_combo = QComboBox()
+        self.output_combo.addItems(self.output_ports)
+        if self.current_out and self.current_out in self.output_ports:
+            self.output_combo.setCurrentText(self.current_out)
+            
+        output_layout.addWidget(self.output_combo)
+        layout.addWidget(output_group)
+        
+        # Buttons
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def get_input_port(self) -> str:
+        """Get selected input port name
+        
+        Returns:
+            Selected input port name or empty string if none selected
+        """
+        return self.input_combo.currentText()
+
+    def get_output_port(self) -> str:
+        """Get selected output port name
+        
+        Returns:
+            Selected output port name or empty string if none selected
+        """
+        return self.output_combo.currentText()
+
+    def get_settings(self) -> dict:
+        """Get all selected settings
+        
+        Returns:
+            Dictionary containing input_port and output_port selections
+        """
+        return {
+            'input_port': self.get_input_port(),
+            'output_port': self.get_output_port()
+        } 
