@@ -1,30 +1,39 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QFrame, QLabel, QComboBox, QCheckBox, QScrollArea
+    QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
+    QGroupBox, QTabWidget
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QIcon
 import logging
 
-from jdxi_manager.data.analog import (
-    AnalogSynthPatch, AnalogParameter,
-    AnalogOscillator, AnalogMixer, AnalogFilter,
-    AnalogAmplifier, AnalogLFO, AnalogEnvelope
-)
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider, WaveformButton
 from jdxi_manager.ui.widgets.preset_panel import PresetPanel
+from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.messages import (
+    create_sysex_message,
+    create_patch_load_message,
+    create_patch_save_message,
+    JDXiSysEx
+)
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
-    ANALOG_SYNTH_AREA, SUBGROUP_ZERO, Waveform
+    ANALOG_SYNTH_AREA, ANALOG_PART,
+    PROGRAM_GROUP, COMMON_GROUP, PARTIAL_GROUP,
+    Waveform
 )
-from jdxi_manager.midi.messages import (
-    create_parameter_message,
-    create_sysex_message,
-    create_patch_load_message,
-    create_patch_save_message
+from jdxi_manager.data.analog import (
+    AnalogParameter,
+    AnalogOscillator,
+    AnalogFilter,
+    AnalogAmplifier,
+    AnalogLFO,
+    AnalogEnvelope,
+    AnalogSynthPatch
 )
+from jdxi_manager.ui.editors.base_editor import BaseEditor
 
 class AnalogSynthEditor(QMainWindow):
     def __init__(self, midi_helper=None, parent=None):
@@ -153,30 +162,21 @@ class AnalogSynthEditor(QMainWindow):
         
         return frame
 
-    def _send_parameter(self, parameter: int, value: int):
-        """Send parameter change to JD-Xi"""
+    def _send_parameter(self, param: int, value: int):
+        """Send analog synth parameter change"""
         try:
-            msg = [
-                START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
-                MODEL_ID, JD_XI_ID, DT1_COMMAND_12,
-                ANALOG_SYNTH_AREA, SUBGROUP_ZERO,
-                parameter, SUBGROUP_ZERO,
-                value
-            ]
-            
-            # Calculate checksum
-            checksum = 0
-            for byte in msg[8:]:
-                checksum = (checksum + byte) & 0x7F
-            checksum = (128 - checksum) & 0x7F
-            
-            msg.extend([checksum, END_OF_SYSEX])
-            
+            msg = JDXiSysEx.create_parameter_message(
+                area=ANALOG_SYNTH_AREA,
+                part=0x00,
+                group=0x00,
+                param=param,
+                value=value
+            )
             if self.midi_helper:
-                self.midi_helper.send_message(bytes(msg))
-                
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent analog parameter: {hex(param)}={value}")
         except Exception as e:
-            logging.error(f"Error sending parameter: {str(e)}")
+            logging.error(f"Error sending analog parameter: {str(e)}")
 
     def _update_ui_from_patch(self):
         """Update UI controls from current patch data"""
@@ -204,7 +204,7 @@ class AnalogSynthEditor(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error updating UI from patch: {str(e)}") 
-
+        
     def _create_filter_section(self):
         """Create filter section controls"""
         frame = QFrame()
@@ -368,7 +368,7 @@ class AnalogSynthEditor(QMainWindow):
         layout.addWidget(release)
         
         return frame
-
+        
     def _create_ui(self):
         """Create the complete user interface"""
         # Create scroll area
@@ -494,14 +494,14 @@ class AnalogSynthEditor(QMainWindow):
                 
             else:
                 logging.warning("No MIDI helper available - cannot request patch data")
-                
+            
         except Exception as e:
             logging.error(f"Error requesting patch data: {str(e)}")
-
+            
     def _handle_midi_input(self, msg):
         """Handle incoming MIDI messages"""
         try:
-            # Check if it's a SysEx message
+        # Check if it's a SysEx message
             if msg[0] == START_OF_SYSEX and msg[-1] == END_OF_SYSEX:
                 # Extract address and data
                 addr = msg[8:12]  # 4 bytes of address
@@ -535,6 +535,6 @@ class AnalogSynthEditor(QMainWindow):
             elif section == AnalogParameter.LFO_WAVE.value:
                 # Update LFO controls
                 self._update_lfo_controls(data)
-                
+            
         except Exception as e:
             logging.error(f"Error updating UI from SysEx: {str(e)}") 

@@ -1,23 +1,34 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QFrame, QLabel, QPushButton, QComboBox, QScrollArea,
-    QGridLayout
+    QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
+    QScrollArea, QGridLayout
 )
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPalette, QColor
 import logging
 
-from jdxi_manager.data.drums import DR, DrumKitPatch, DrumPadSettings
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
-from jdxi_manager.ui.widgets.preset_panel import PresetPanel
-from jdxi_manager.midi.messages import create_parameter_message
+from jdxi_manager.midi.messages import (
+    create_sysex_message,
+    create_patch_load_message,
+    create_patch_save_message,
+    JDXiSysEx
+)
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
-    DRUM_KIT_AREA, SUBGROUP_ZERO, DrumPad, DrumWave,
-    MuteGroup, Note, DRUM_PARTS
+    DRUM_KIT_AREA, SUBGROUP_ZERO, DrumPad
 )
+from jdxi_manager.data.drums import (
+    DR,  # Dictionary of drum parameters
+    DrumKitPatch,  # Patch data structure
+    DrumPadSettings,  # Individual pad settings
+    DRUM_PARTS,  # Drum part categories
+    MuteGroup,  # Mute group constants
+    Note  # Note constants
+)
+from jdxi_manager.ui.editors.base_editor import BaseEditor
 
 class DrumEditor(QMainWindow):
     def __init__(self, midi_helper=None, parent=None):
@@ -145,15 +156,17 @@ class DrumEditor(QMainWindow):
             address = pad_number * DrumPad.PARAM_OFFSET + param_offset
 
             # Send MIDI message
-            msg = create_parameter_message(
-                DRUM_KIT_AREA,
-                SUBGROUP_ZERO,
-                address,
-                value
+            msg = JDXiSysEx.create_parameter_message(
+                area=DRUM_KIT_AREA,
+                part=pad_number,  # Pad number
+                group=0x00,    # Fixed group
+                param=param_offset,   # Parameter within pad
+                value=value   # Parameter value
             )
             
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
+                logging.debug(f"Sent drum parameter: pad={pad_number} param={hex(param_offset)} value={value}")
 
         except Exception as e:
             logging.error(f"Error updating pad {pad_number} {param}: {str(e)}")
@@ -363,14 +376,15 @@ class DrumEditor(QMainWindow):
         """Update a pattern parameter"""
         try:
             # Send MIDI message for pattern parameter
-            msg = create_parameter_message(
-                DRUM_KIT_AREA,
-                SUBGROUP_ZERO,
-                0x70 + {'length': 0, 'velocity': 1, 'swing': 2}[param],
-                value
+            msg = JDXiSysEx.create_parameter_message(
+                area=DRUM_KIT_AREA,
+                part=0x70 + {'length': 0, 'velocity': 1, 'swing': 2}[param],
+                group=0x00,
+                param=value
             )
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
+                logging.debug(f"Sent pattern parameter: param={hex(0x70 + {'length': 0, 'velocity': 1, 'swing': 2}[param])} value={value}")
         except Exception as e:
             logging.error(f"Error updating pattern parameter {param}: {str(e)}")
 
@@ -378,14 +392,15 @@ class DrumEditor(QMainWindow):
         """Update an FX parameter"""
         try:
             # Send MIDI message for FX parameter
-            msg = create_parameter_message(
-                DRUM_KIT_AREA,
-                SUBGROUP_ZERO,
-                0x60 + {'level': 0, 1: 1, 2: 2}[param],
-                value
+            msg = JDXiSysEx.create_parameter_message(
+                area=DRUM_KIT_AREA,
+                part=0x60 + {'level': 0, 1: 1, 2: 2}[param],
+                group=0x00,
+                param=value
             )
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
+                logging.debug(f"Sent FX parameter: param={hex(0x60 + {'level': 0, 1: 1, 2: 2}[param])} value={value}")
         except Exception as e:
             logging.error(f"Error updating FX parameter {param}: {str(e)}")
 
@@ -451,15 +466,32 @@ class DrumEditor(QMainWindow):
             param_offset = DR['common'][param][0]
             
             # Send MIDI message
-            msg = create_parameter_message(
-                DRUM_KIT_AREA,
-                SUBGROUP_ZERO,
-                param_offset,
-                value
+            msg = JDXiSysEx.create_parameter_message(
+                area=DRUM_KIT_AREA,
+                part=param_offset,
+                group=0x00,
+                param=value
             )
             
             if self.midi_helper:
                 self.midi_helper.send_message(msg)
+                logging.debug(f"Sent common parameter: param={hex(param_offset)} value={value}")
                 
         except Exception as e:
             logging.error(f"Error updating common parameter {param}: {str(e)}") 
+
+    def _send_parameter(self, pad_num: int, param: int, value: int):
+        """Send drum pad parameter change"""
+        try:
+            msg = JDXiSysEx.create_parameter_message(
+                area=DRUM_KIT_AREA,
+                part=pad_num,  # Pad number
+                group=0x00,    # Fixed group
+                param=param,   # Parameter within pad
+                value=value   # Parameter value
+            )
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent drum parameter: pad={pad_num} param={hex(param)} value={value}")
+        except Exception as e:
+            logging.error(f"Error sending drum parameter: {str(e)}") 

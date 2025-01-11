@@ -1,215 +1,146 @@
 """Data structures for JD-Xi Analog Synth parameters"""
 
-from dataclasses import dataclass, field
-from typing import List, Dict, Optional
-from enum import Enum
+from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Dict, List
 
-from ..midi.constants import (
-    Waveform, RandomPitchDepth, SyncNote, Note,
-    EnvelopeSection, PCMWave
-)
-
-# Keep AN dictionary for backwards compatibility
-AN = {
-    'osc1': {
-        'wave': (0x00, 0, 7),
-        'range': (0x01, -24, 24),
-        'fine': (0x02, -50, 50),
-        'detune': (0x03, 0, 127),
-        'mod_depth': (0x04, 0, 127)
-    },
-    'osc2': {
-        'wave': (0x10, 0, 7),
-        'range': (0x11, -24, 24),
-        'fine': (0x12, -50, 50),
-        'detune': (0x13, 0, 127),
-        'mod_depth': (0x14, 0, 127),
-        'sync': (0x15, 0, 1)
-    },
-    'mixer': {
-        'balance': (0x20, 0, 127),
-        'noise': (0x21, 0, 127),
-        'ring_mod': (0x22, 0, 127),
-        'cross_mod': (0x23, 0, 127)
-    },
-    'filter': {
-        'cutoff': (0x30, 0, 127),
-        'resonance': (0x31, 0, 127),
-        'key_follow': (0x32, 0, 127),
-        'env_depth': (0x33, 0, 127),
-        'lfo_depth': (0x34, 0, 127),
-        'velocity': (0x35, 0, 127)
-    },
-    'amp': {
-        'level': (0x40, 0, 127),
-        'pan': (0x41, -64, 63),
-        'portamento': (0x42, 0, 127),
-        'legato': (0x43, 0, 1)
-    },
-    'lfo': {
-        'wave': (0x50, 0, 7),
-        'rate': (0x51, 0, 127),
-        'sync': (0x52, 0, 1),
-        'fade': (0x53, 0, 127),
-        'delay': (0x54, 0, 127)
-    },
-    'env': {
-        'attack': (0x60, 0, 127),
-        'decay': (0x61, 0, 127),
-        'sustain': (0x62, 0, 127),
-        'release': (0x63, 0, 127)
-    }
-}
-
-# New data structures follow...
 class AnalogParameter(Enum):
-    """Parameter addresses for analog synth"""
-    # OSC 1 parameters
-    OSC1_WAVE = 0x00
-    OSC1_RANGE = 0x01
-    OSC1_FINE = 0x02
-    OSC1_DETUNE = 0x03
-    OSC1_MOD_DEPTH = 0x04
-
-    # OSC 2 parameters
-    OSC2_WAVE = 0x10
-    OSC2_RANGE = 0x11
-    OSC2_FINE = 0x12
-    OSC2_DETUNE = 0x13
-    OSC2_MOD_DEPTH = 0x14
-    OSC2_SYNC = 0x15
-
-    # MIXER parameters
-    OSC_BALANCE = 0x20
-    NOISE_LEVEL = 0x21
-    RING_MOD = 0x22
-    CROSS_MOD = 0x23
-
-    # FILTER parameters
-    CUTOFF = 0x30
-    RESONANCE = 0x31
-    KEY_FOLLOW = 0x32
-    ENV_DEPTH = 0x33
-    LFO_DEPTH = 0x34
-    VELOCITY_SENS = 0x35
-
-    # AMP parameters
-    LEVEL = 0x40
-    PAN = 0x41
-    PORTAMENTO = 0x42
-    LEGATO = 0x43
-
+    """Analog synth parameters"""
+    # Common parameters
+    VOLUME = 0x00
+    PAN = 0x01
+    PORTAMENTO = 0x02
+    
+    # Oscillator parameters
+    OSC_WAVE = 0x10
+    OSC_PITCH = 0x11
+    OSC_FINE = 0x12
+    OSC_PWM = 0x13
+    
+    # Filter parameters
+    FILTER_TYPE = 0x20
+    FILTER_CUTOFF = 0x21
+    FILTER_RESONANCE = 0x22
+    FILTER_ENV_DEPTH = 0x23
+    FILTER_KEY_FOLLOW = 0x24
+    
+    # Amplifier parameters
+    AMP_LEVEL = 0x30
+    AMP_PAN = 0x31
+    
     # LFO parameters
-    LFO_WAVE = 0x50
-    LFO_RATE = 0x51
-    LFO_SYNC = 0x52
-    LFO_FADE = 0x53
-    LFO_DELAY = 0x54
-
-    # ENVELOPE parameters
-    ENV_ATTACK = 0x60
-    ENV_DECAY = 0x61
-    ENV_SUSTAIN = 0x62
-    ENV_RELEASE = 0x63
+    LFO_WAVE = 0x40
+    LFO_RATE = 0x41
+    LFO_DEPTH = 0x42
+    LFO_RANDOM_PITCH = 0x43
 
 @dataclass
 class AnalogOscillator:
-    """Oscillator settings"""
-    wave: Waveform = Waveform.SAW
-    range: int = 0  # -24 to +24 semitones
-    fine: int = 0   # -50 to +50 cents
-    detune: int = 0  # 0-127
-    mod_depth: int = 0  # 0-127
-
-@dataclass
-class AnalogMixer:
-    """Mixer settings"""
-    osc_balance: int = 64  # 0-127 (OSC1/OSC2 balance)
-    noise_level: int = 0   # 0-127
-    ring_mod: int = 0      # 0-127
-    cross_mod: int = 0     # 0-127
+    """Analog oscillator settings"""
+    wave: int = 0  # SAW
+    pitch: int = 64  # Center
+    fine: int = 64  # Center
+    pwm: int = 0
 
 @dataclass
 class AnalogFilter:
-    """Filter settings"""
-    cutoff: int = 127      # 0-127
-    resonance: int = 0     # 0-127
-    key_follow: int = 0    # 0-127
-    env_depth: int = 0     # 0-127
-    lfo_depth: int = 0     # 0-127
-    velocity_sens: int = 0  # 0-127
+    """Analog filter settings"""
+    type: int = 0  # LPF
+    cutoff: int = 127
+    resonance: int = 0
+    env_depth: int = 64  # Center
+    key_follow: int = 0
 
 @dataclass
 class AnalogAmplifier:
-    """Amplifier settings"""
-    level: int = 127       # 0-127
-    pan: int = 64         # 0-127 (center = 64)
-    portamento: int = 0    # 0-127
-    legato: bool = False   # True/False
+    """Analog amplifier settings"""
+    level: int = 100
+    pan: int = 64  # Center
 
 @dataclass
 class AnalogLFO:
-    """LFO settings"""
-    wave: Waveform = Waveform.TRIANGLE
-    rate: int = 64        # 0-127
-    sync: bool = False    # True/False
-    fade: int = 0         # 0-127
-    delay: int = 0        # 0-127
+    """Analog LFO settings"""
+    wave: int = 0  # Triangle
+    rate: int = 64  # Medium
+    depth: int = 0
+    random_pitch: int = 0
 
 @dataclass
 class AnalogEnvelope:
-    """Envelope settings"""
-    attack: int = 0    # 0-127
-    decay: int = 0     # 0-127
-    sustain: int = 127 # 0-127
-    release: int = 0   # 0-127
+    """Analog envelope settings"""
+    attack: int = 0
+    decay: int = 64
+    sustain: int = 64
+    release: int = 32
 
 @dataclass
 class AnalogSynthPatch:
-    """Complete analog synth patch"""
-    name: str = "Init Patch"
-    osc1: AnalogOscillator = field(default_factory=AnalogOscillator)
-    osc2: AnalogOscillator = field(default_factory=AnalogOscillator)
-    mixer: AnalogMixer = field(default_factory=AnalogMixer)
-    filter: AnalogFilter = field(default_factory=AnalogFilter)
-    amp: AnalogAmplifier = field(default_factory=AnalogAmplifier)
-    lfo: AnalogLFO = field(default_factory=AnalogLFO)
-    pitch_env: AnalogEnvelope = field(default_factory=AnalogEnvelope)
-    filter_env: AnalogEnvelope = field(default_factory=AnalogEnvelope)
-    amp_env: AnalogEnvelope = field(default_factory=AnalogEnvelope)
+    """Complete analog synth patch data"""
+    # Common parameters
+    volume: int = 100
+    pan: int = 64  # Center
+    portamento: int = 0
+    
+    # Section parameters
+    oscillator: AnalogOscillator = None
+    filter: AnalogFilter = None
+    amplifier: AnalogAmplifier = None
+    lfo: AnalogLFO = None
+    envelope: AnalogEnvelope = None
+    
+    def __post_init__(self):
+        """Initialize section parameters"""
+        if self.oscillator is None:
+            self.oscillator = AnalogOscillator()
+        if self.filter is None:
+            self.filter = AnalogFilter()
+        if self.amplifier is None:
+            self.amplifier = AnalogAmplifier()
+        if self.lfo is None:
+            self.lfo = AnalogLFO()
+        if self.envelope is None:
+            self.envelope = AnalogEnvelope()
 
-    def to_sysex(self) -> List[int]:
-        """Convert patch to SysEx data"""
-        data = []
-        # Add parameter data in correct order
-        # OSC1
-        data.extend([
-            self.osc1.wave.value,
-            self.osc1.range + 64,  # Convert -24/+24 to 40-88
-            self.osc1.fine + 64,   # Convert -50/+50 to 14-114
-            self.osc1.detune,
-            self.osc1.mod_depth
-        ])
-        # OSC2
-        data.extend([
-            self.osc2.wave.value,
-            self.osc2.range + 64,
-            self.osc2.fine + 64,
-            self.osc2.detune,
-            self.osc2.mod_depth
-        ])
-        # Continue with other sections...
-        return data
-
-    @classmethod
-    def from_sysex(cls, data: List[int]) -> 'AnalogSynthPatch':
-        """Create patch from SysEx data"""
-        patch = cls()
-        # Parse data and set parameters
-        patch.osc1.wave = Waveform(data[0])
-        patch.osc1.range = data[1] - 64
-        patch.osc1.fine = data[2] - 64
-        patch.osc1.detune = data[3]
-        patch.osc1.mod_depth = data[4]
-        # Continue parsing other sections...
-        return patch 
+    def validate_param(self, section: str, param: str, value: int) -> bool:
+        """Validate parameter value is in range"""
+        ranges = {
+            'common': {
+                'volume': (0, 127),
+                'pan': (0, 127),
+                'portamento': (0, 127)
+            },
+            'oscillator': {
+                'wave': (0, 7),
+                'pitch': (0, 127),
+                'fine': (0, 127),
+                'pwm': (0, 127)
+            },
+            'filter': {
+                'type': (0, 3),
+                'cutoff': (0, 127),
+                'resonance': (0, 127),
+                'env_depth': (0, 127),
+                'key_follow': (0, 127)
+            },
+            'amplifier': {
+                'level': (0, 127),
+                'pan': (0, 127)
+            },
+            'lfo': {
+                'wave': (0, 5),
+                'rate': (0, 127),
+                'depth': (0, 127),
+                'random_pitch': (0, 127)
+            },
+            'envelope': {
+                'attack': (0, 127),
+                'decay': (0, 127),
+                'sustain': (0, 127),
+                'release': (0, 127)
+            }
+        }
+        
+        if section in ranges and param in ranges[section]:
+            min_val, max_val = ranges[section][param]
+            return min_val <= value <= max_val
+        return False 

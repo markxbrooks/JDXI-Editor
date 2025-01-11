@@ -1,4 +1,58 @@
 from .constants import *  # Import all constants
+from dataclasses import dataclass
+from typing import List
+
+@dataclass
+class JDXiSysEx:
+    """JD-Xi SysEx message structure"""
+    START_OF_SYSEX: int = 0xF0
+    ROLAND_ID: int = 0x41
+    DEVICE_ID: int = 0x10
+    MODEL_ID_1: int = 0x00
+    MODEL_ID_2: int = 0x00
+    MODEL_ID: int = 0x00
+    JD_XI_ID: int = 0x0E
+    COMMAND: int = 0x12  # DT1 command
+    area: int = 0x19     # Digital Synth 1
+    part: int = 0x01     # Part 1
+    group: int = 0x20    # Partial parameters
+    param: int = 0x00    # Parameter number
+    value: int = 0x00    # Parameter value
+    END_OF_SYSEX: int = 0xF7
+
+    def to_bytes(self) -> bytes:
+        """Convert to bytes message"""
+        msg = [
+            self.START_OF_SYSEX,
+            self.ROLAND_ID,
+            self.DEVICE_ID,
+            self.MODEL_ID_1, self.MODEL_ID_2, self.MODEL_ID, self.JD_XI_ID,
+            self.COMMAND,
+            self.area,
+            self.part,
+            self.group,
+            self.param,
+            self.value
+        ]
+        
+        # Calculate checksum (sum from area to value)
+        checksum = sum(msg[8:]) & 0x7F
+        checksum = (128 - checksum) & 0x7F
+        
+        msg.extend([checksum, self.END_OF_SYSEX])
+        return bytes(msg)
+
+    @classmethod
+    def create_parameter_message(cls, area: int, part: int, group: int, param: int, value: int) -> bytes:
+        """Create parameter change message"""
+        msg = cls(
+            area=area,
+            part=part,
+            group=group,
+            param=param,
+            value=value
+        )
+        return msg.to_bytes()
 
 def create_sysex_message(address, data):
     """Create Roland SysEx message
@@ -30,37 +84,6 @@ def create_sysex_message(address, data):
     msg.append(checksum) # Add checksum
     msg.append(END_OF_SYSEX)  # End of SysEx
     
-    return msg
-
-def create_parameter_message(area: int, part: int, param: int, value: int) -> list:
-    """Create a parameter change message
-    
-    Args:
-        area: Memory area (e.g. DIGITAL_SYNTH_AREA)
-        part: Part number (1 or 2 for digital, 3 for analog)
-        param: Parameter number
-        value: Parameter value (0-127)
-        
-    Returns:
-        List of bytes representing the MIDI message
-    """
-    msg = [
-        START_OF_SYSEX,
-        ROLAND_ID,
-        DEVICE_ID,
-        MODEL_ID_1,
-        MODEL_ID_2,
-        MODEL_ID,
-        JD_XI_ID,
-        DT1_COMMAND_12,
-        area,
-        part,
-        param & 0x7F,  # Parameter LSB
-        param >> 7,    # Parameter MSB
-        value & 0x7F,  # Value LSB
-        value >> 7,    # Value MSB
-        END_OF_SYSEX
-    ]
     return msg
 
 def create_patch_load_message(patch_number):
@@ -95,3 +118,28 @@ def create_patch_save_message(patch_number):
     data = bytes([patch_number - 1])  # Convert to 0-based
     
     return create_sysex_message(address, data) 
+
+def create_program_change_message(program_number: int) -> bytes:
+    """Create program change SysEx message"""
+    # Adjust program number to 0-based index
+    program = (program_number - 1) & 0x7F
+    
+    msg = [
+        START_OF_SYSEX,
+        ROLAND_ID,
+        DEVICE_ID,
+        MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID,
+        DT1_COMMAND_12,
+        DIGITAL_SYNTH_1,  # Digital synth 1 area (0x19)
+        DIGITAL_PART_1,   # Part 1 (0x01)
+        PROGRAM_GROUP,    # Program change group (0x20)
+        0x00,            # Parameter number
+        program          # Program number (0-127)
+    ]
+    
+    # Calculate checksum
+    checksum = sum(msg[8:]) & 0x7F
+    checksum = (128 - checksum) & 0x7F
+    
+    msg.extend([checksum, END_OF_SYSEX])
+    return bytes(msg) 

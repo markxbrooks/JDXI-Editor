@@ -3,10 +3,10 @@ from PySide6.QtCore import Qt
 import logging
 
 from jdxi_manager.midi.messages import (
-    create_parameter_message,
     create_sysex_message,
     create_patch_load_message,
-    create_patch_save_message
+    create_patch_save_message,
+    JDXiSysEx
 )
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, END_OF_SYSEX,
@@ -17,10 +17,16 @@ from jdxi_manager.midi.constants import (
 class BaseEditor(QMainWindow):
     """Base class for all synth editors providing common MIDI functionality"""
     
-    def __init__(self, parent=None):
+    def __init__(self, midi_helper=None, parent=None):
+        """Initialize editor
+        
+        Args:
+            midi_helper: MIDI helper instance
+            parent: Parent window
+        """
         super().__init__(parent)
         self.main_window = parent
-        self.midi_helper = None
+        self.midi_helper = midi_helper
         self.current_preset_num = 1
         self.current_preset_name = "INIT PATCH"
         
@@ -28,24 +34,93 @@ class BaseEditor(QMainWindow):
         """Set MIDI helper instance"""
         self.midi_helper = midi_helper
         
-    def _send_parameter(self, area: int, param: int, value: int):
-        """Send parameter change to device
+    def _send_parameter(self, area: int, part: int, group: int, param: int, value: int):
+        """Send parameter change via MIDI SysEx
         
         Args:
-            area: Memory area (e.g. DIGITAL_SYNTH_AREA)
+            area: Memory area (e.g. DIGITAL_SYNTH_1)
+            part: Part number (e.g. DIGITAL_PART_1)
+            group: Parameter group (e.g. PARTIAL_GROUP)
             param: Parameter number
             value: Parameter value
         """
         try:
-            msg = create_parameter_message(area, 0x00, param, value)
             if self.midi_helper:
-                self.midi_helper.send_message(msg)
-                # Blink MIDI out indicator if available
-                if self.main_window and hasattr(self.main_window, 'midi_out_indicator'):
-                    self.main_window.midi_out_indicator.blink()
-                logging.debug(f"Sent parameter: area={hex(area)} param={hex(param)} value={value}")
+                # Create SysEx message
+                msg = [
+                    START_OF_SYSEX,
+                    ROLAND_ID,
+                    DEVICE_ID,
+                    MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID,
+                    DT1_COMMAND_12,  # DT1 command
+                    area,            # Memory area
+                    part,            # Part number
+                    group,           # Parameter group
+                    param,           # Parameter number
+                    value,          # Parameter value
+                ]
+                
+                # Calculate checksum (sum all data bytes)
+                checksum = sum(msg[8:-1]) & 0x7F  # From area to value
+                checksum = (128 - checksum) & 0x7F
+                
+                # Add checksum and end of sysex
+                msg.extend([checksum, END_OF_SYSEX])
+                
+                # Send message
+                self.midi_helper.send_message(bytes(msg))
+                logging.debug(
+                    f"Sent SysEx: area={hex(area)} part={hex(part)} "
+                    f"group={hex(group)} param={hex(param)} value={value}"
+                )
+            else:
+                logging.warning("No MIDI helper available - cannot send parameter")
+                
         except Exception as e:
             logging.error(f"Error sending parameter: {str(e)}")
+            
+    def _send_program_change(self, program_num: int):
+        """Send program change message
+        
+        Args:
+            program_num: Program number (1-128)
+        """
+        try:
+            msg = JDXiSysEx.create_parameter_message(
+                area=self.area,  # Set by subclass
+                part=self.part,  # Set by subclass
+                group=PROGRAM_GROUP,
+                param=0x00,
+                value=program_num - 1  # Convert to 0-based
+            )
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent program change: {program_num}")
+        except Exception as e:
+            logging.error(f"Error sending program change: {str(e)}")
+            
+    def _request_data(self, area: int, part: int, group: int, size: int):
+        """Request data from device
+        
+        Args:
+            area: Memory area
+            part: Part number
+            group: Parameter group
+            size: Number of bytes to request
+        """
+        try:
+            msg = create_sysex_message(
+                bytes([area, part, group, 0x00]),  # Address
+                bytes([size])  # Size
+            )
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(
+                    f"Requested data: area={hex(area)} part={hex(part)} "
+                    f"group={hex(group)} size={size}"
+                )
+        except Exception as e:
+            logging.error(f"Error requesting data: {str(e)}")
             
     def _send_sysex(self, address: bytes, data: bytes):
         """Send SysEx message to device
@@ -241,3 +316,21 @@ class BaseEditor(QMainWindow):
         except Exception as e:
             logging.error(f"Error restoring backup: {str(e)}")
             self.show_error("Restore Error", str(e)) 
+
+    def load_program(self, program_number: int):
+        """Load a program/patch
+        
+        Args:
+            program_number: Program number (1-128)
+        """
+        try:
+            msg = create_program_change_message(program_number)
+            if self.midi_helper:
+                self.midi_helper.send_message(msg)
+                logging.debug(f"Sent program change to {program_number}")
+                
+                # Request patch data after program change
+                self._request_patch_data()
+                
+        except Exception as e:
+            logging.error(f"Error loading program {program_number}: {str(e)}") 
