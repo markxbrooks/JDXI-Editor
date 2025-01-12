@@ -1,157 +1,181 @@
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QTextEdit,
-    QPushButton, QComboBox, QLabel, QSpinBox
+    QVBoxLayout, QHBoxLayout, QTextEdit,
+    QPushButton, QWidget, QTabWidget
 )
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QTextCursor, QColor, QTextCharFormat, QFont
-from pathlib import Path
 import logging
+import os
 
-class LogViewer(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Log Viewer")
-        self.setMinimumSize(800, 600)
+from jdxi_manager.ui.editors.base_editor import BaseEditor
+
+class LogViewer(BaseEditor):
+    """Widget for viewing log messages"""
+    
+    def __init__(self, midi_helper=None, parent=None):
+        super().__init__(midi_helper, parent)
         
-        # Create layout
-        layout = QVBoxLayout(self)
+        # Add debug logging
+        logging.debug("Initializing LogViewer")
+        logging.debug(f"MIDI helper: {midi_helper}")
         
-        # Controls
+        self.setWindowTitle("MIDI Log")
+        
+        # Create main widget and layout
+        main_widget = QWidget()
+        main_layout = QVBoxLayout(main_widget)
+        self.setCentralWidget(main_widget)
+        
+        # Create tab widget
+        self.tab_widget = QTabWidget()
+        main_layout.addWidget(self.tab_widget)
+        
+        # Create log file tab
+        self.log_text = QTextEdit()
+        self.log_text.setReadOnly(True)
+        self.tab_widget.addTab(self.log_text, "Log File")
+        
+        # Create decoded message tab
+        self.decoded_text = QTextEdit()
+        self.decoded_text.setReadOnly(True)
+        self.tab_widget.addTab(self.decoded_text, "Last Message")
+        
+        # Create detailed logs tab
+        # self.detailed_text = QTextEdit()
+        # self.detailed_text.setReadOnly(True)
+        # self.tab_widget.addTab(self.detailed_text, "Detailed Logs")
+        
+        # Create controls layout
         controls = QHBoxLayout()
+        main_layout.addLayout(controls)
         
-        # Level filter
-        level_layout = QHBoxLayout()
-        level_layout.addWidget(QLabel("Level:"))
-        self.level_combo = QComboBox()
-        self.level_combo.addItems(["ALL", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
-        self.level_combo.currentTextChanged.connect(self._filter_log)
-        level_layout.addWidget(self.level_combo)
-        controls.addLayout(level_layout)
-        
-        # Auto-refresh
-        refresh_layout = QHBoxLayout()
-        refresh_layout.addWidget(QLabel("Auto-refresh:"))
-        self.refresh_spin = QSpinBox()
-        self.refresh_spin.setRange(0, 60)
-        self.refresh_spin.setValue(5)
-        self.refresh_spin.setSuffix(" sec")
-        self.refresh_spin.valueChanged.connect(self._update_refresh_timer)
-        refresh_layout.addWidget(self.refresh_spin)
-        controls.addLayout(refresh_layout)
-        
-        # Buttons
-        self.refresh_btn = QPushButton("Refresh")
-        self.refresh_btn.clicked.connect(self._load_log)
-        controls.addWidget(self.refresh_btn)
-        
+        # Clear button
         self.clear_btn = QPushButton("Clear Log")
         self.clear_btn.clicked.connect(self._clear_log)
         controls.addWidget(self.clear_btn)
         
+        # Test message button
+        test_button = QPushButton("Test MIDI")
+        test_button.clicked.connect(self._send_test_message)
+        controls.addWidget(test_button)
+        
+        # Refresh button for detailed logs
+        refresh_btn = QPushButton("Refresh Logs")
+        refresh_btn.clicked.connect(self._refresh_detailed_logs)
+        controls.addWidget(refresh_btn)
+        
         controls.addStretch()
-        layout.addLayout(controls)
-        
-        # Log display
-        self.log_text = QTextEdit()
-        self.log_text.setReadOnly(True)
-        self.log_text.setLineWrapMode(QTextEdit.NoWrap)
-        font = QFont(self.font().family(), 10)
-        self.log_text.setFont(font)
-        layout.addWidget(self.log_text)
-        
-        # Status bar
-        self.status_label = QLabel()
-        layout.addWidget(self.status_label)
         
         # Set up refresh timer
         self.refresh_timer = QTimer()
-        self.refresh_timer.timeout.connect(self._load_log)
-        self._update_refresh_timer()
+        self.refresh_timer.timeout.connect(self._check_log_file)
+        self.refresh_timer.start(100)  # Check every 100ms
         
-        # Load initial log
-        self._load_log()
+        # Get log file path
+        self.log_file = parent.log_file
+
+        self.last_position = 0
         
-    def _get_log_file(self):
-        """Get path to current log file"""
-        return Path.home() / ".jdxi_manager" / "logs" / "jdxi_manager.log"
+        # Load initial detailed logs
+        self._refresh_detailed_logs()
         
-    def _load_log(self):
-        """Load and display log file"""
+        # Set window properties
+        self.setMinimumWidth(600)
+        self.setMinimumHeight(400)
+        
+        # Add initial status message
+        if self.midi_helper:
+            self.append_message("MIDI helper initialized")
+        else:
+            self.append_message("No MIDI helper available")
+            
+        logging.debug("LogViewer initialization complete")
+        
+    def _check_log_file(self):
+        """Check for new log messages"""
         try:
-            log_file = self._get_log_file()
-            if not log_file.exists():
-                self.status_label.setText("Log file not found")
-                return
-                
-            with open(log_file) as f:
-                content = f.readlines()
-                
-            self.log_text.clear()
-            cursor = self.log_text.textCursor()
-            
-            # Define formats for different log levels
-            formats = {
-                'DEBUG': QTextCharFormat(),
-                'INFO': QTextCharFormat(),
-                'WARNING': QTextCharFormat(),
-                'ERROR': QTextCharFormat(),
-                'CRITICAL': QTextCharFormat()
-            }
-            formats['DEBUG'].setForeground(QColor("#808080"))  # Gray
-            formats['INFO'].setForeground(QColor("#000000"))   # Black
-            formats['WARNING'].setForeground(QColor("#FFA500")) # Orange
-            formats['ERROR'].setForeground(QColor("#FF0000"))   # Red
-            formats['CRITICAL'].setForeground(QColor("#8B0000")) # Dark Red
-            
-            # Filter level
-            filter_level = self.level_combo.currentText()
-            if filter_level == "ALL":
-                filtered_content = content
-            else:
-                filtered_content = [line for line in content if filter_level in line]
-            
-            # Display log with colors
-            for line in filtered_content:
-                for level, fmt in formats.items():
-                    if level in line:
-                        cursor.insertText(line, fmt)
-                        break
-                else:
-                    cursor.insertText(line)
+            if os.path.exists(self.log_file):
+                with open(self.log_file, 'r') as f:
+                    # Seek to last position
+                    f.seek(self.last_position)
                     
-            # Scroll to bottom
-            cursor.movePosition(QTextCursor.End)
-            self.log_text.setTextCursor(cursor)
-            
-            self.status_label.setText(f"Loaded {len(filtered_content)} lines")
-            
+                    # Read new lines
+                    new_lines = f.readlines()
+                    
+                    if new_lines:
+                        # Update position
+                        self.last_position = f.tell()
+                        
+                        # Add new lines to display
+                        for line in new_lines:
+                            self.append_message(line.strip())
+                            
         except Exception as e:
-            self.status_label.setText(f"Error loading log: {str(e)}")
+            logging.error(f"Error reading log file: {str(e)}")
+            
+    def _refresh_detailed_logs(self):
+        """Refresh the detailed logs tab with full log file contents"""
+        try:
+            if os.path.exists(self.log_file):
+                with open(self.log_file, 'r') as f:
+                    log_contents = f.read()
+                    self.log_text.setText(log_contents)
+                    
+                    # Scroll to bottom
+                    scrollbar = self.log_text.verticalScrollBar()
+                    scrollbar.setValue(scrollbar.maximum())
+                    
+        except Exception as e:
+            logging.error(f"Error reading detailed logs: {str(e)}")
+            self.log_text.setText(f"Error reading log file: {str(e)}")
+            
+    def append_message(self, message: str, decoded: bool = False):
+        """Add message to log
+        
+        Args:
+            message: Message to add
+            decoded: If True, add to decoded tab instead of log tab
+        """
+        if decoded:
+            self.decoded_text.append(message)
+            # Scroll to bottom
+            scrollbar = self.decoded_text.verticalScrollBar()
+            scrollbar.setValue(scrollbar.maximum())
+        else:
+            self.log_text.append(message)
+            # Scroll to bottom
+            scrollbar = self.log_text.verticalScrollBar()
+            scrollbar.setValue(scrollbar.maximum())
             
     def _clear_log(self):
-        """Clear the log file"""
-        try:
-            log_file = self._get_log_file()
-            with open(log_file, 'w') as f:
-                f.write("")
-            self._load_log()
-            self.status_label.setText("Log cleared")
-        except Exception as e:
-            self.status_label.setText(f"Error clearing log: {str(e)}")
-            
-    def _filter_log(self):
-        """Reload log with current filter"""
-        self._load_log()
+        """Clear log contents"""
+        self.log_text.clear()
+        self.decoded_text.clear()
+        # Don't clear detailed logs as they come from file
         
-    def _update_refresh_timer(self):
-        """Update auto-refresh timer"""
-        interval = self.refresh_spin.value() * 1000  # Convert to milliseconds
-        if interval > 0:
-            self.refresh_timer.start(interval)
+    def _send_test_message(self):
+        """Send test MIDI message"""
+        if self.midi_helper:
+            # Check MIDI output status
+            if not self.midi_helper.midi_out:
+                self.append_message("No MIDI output port configured")
+                return
+            
+            if not self.midi_helper.midi_out.is_port_open():
+                self.append_message("MIDI output port is not open")
+                return
+            
+            # Try to send test message
+            if self.midi_helper.send_test_message():
+                self.append_message("Test MIDI message sent successfully")
+                self.append_message(f"Using output port: {self.midi_helper.current_out_port}")
+            else:
+                self.append_message("Failed to send test MIDI message")
+                self.append_message("Check MIDI connections and try again")
         else:
-            self.refresh_timer.stop()
+            self.append_message("No MIDI helper available")
+            self.append_message("Open MIDI Config to set up MIDI ports")
             
     def closeEvent(self, event):
-        """Stop timer when closing"""
+        """Stop timer when window closes"""
         self.refresh_timer.stop()
         super().closeEvent(event) 

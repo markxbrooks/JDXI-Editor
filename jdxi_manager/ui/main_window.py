@@ -37,6 +37,7 @@ from jdxi_manager.ui.widgets.channel_button import ChannelButton
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.ui.editors.preset_editor import PresetEditor
+from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -220,6 +221,7 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
         self.setMinimumSize(1000, 400)
         # self.setMaximumSize(1000, 440)
@@ -245,6 +247,11 @@ class MainWindow(QMainWindow):
         
         # Initialize MIDI helper
         self.midi_helper = MIDIHelper(parent=self)
+        
+        # Initialize windows to None
+        self.log_viewer = None
+        self.midi_debugger = None
+        self.midi_message_debug = None
         
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
@@ -297,8 +304,8 @@ class MainWindow(QMainWindow):
         
         # Create UI
         self._create_menu_bar()
-        self._create_central_widget()  # Now current_octave exists when this is called
         self._create_status_bar()
+        self._create_main_layout()
         
         # Load settings
         self.settings = QSettings("jdxi_manager", "settings")
@@ -306,11 +313,6 @@ class MainWindow(QMainWindow):
         
         # Show window
         self.show()
-        
-        # Store references to debug windows
-        self.midi_debugger = None
-        self.log_viewer = None
-        self.midi_message_debug = None
         
         # Add debug menu
         debug_menu = self.menuBar().addMenu("Debug")
@@ -327,7 +329,7 @@ class MainWindow(QMainWindow):
         
         # Add log viewer action
         log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._open_log_viewer)
+        log_viewer_action.triggered.connect(self._show_log_viewer)
         debug_menu.addAction(log_viewer_action)
         
         # Add preset tracking
@@ -360,7 +362,33 @@ class MainWindow(QMainWindow):
         self.settings = QSettings('JDXiManager', 'JDXiManager')
         self._load_last_preset()
         
-    def _create_central_widget(self):
+        # Create favorite buttons container
+        favorites_widget = QWidget()
+        favorites_layout = QVBoxLayout(favorites_widget)
+        favorites_layout.setSpacing(4)
+        favorites_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # Create favorite buttons
+        self.favorite_buttons = []
+        for i in range(4):  # Create 4 favorite slots
+            button = FavoriteButton(i)
+            button.clicked.connect(lambda checked, b=button: self._load_favorite(b))
+            button.setContextMenuPolicy(Qt.CustomContextMenu)
+            button.customContextMenuRequested.connect(
+                lambda pos, b=button: self._show_favorite_context_menu(pos, b)
+            )
+            favorites_layout.addWidget(button)
+            self.favorite_buttons.append(button)
+            
+        # Add to status bar
+        self.statusBar().addPermanentWidget(favorites_widget)
+        self.statusBar().addPermanentWidget(self.channel_button)
+        self.statusBar().addPermanentWidget(self.piano_keyboard)
+        
+        # Load saved favorites
+        self._load_saved_favorites()
+        
+    def _create_main_layout(self):
         """Create the main dashboard"""
         central = QWidget()
         self.setCentralWidget(central)
@@ -485,14 +513,30 @@ class MainWindow(QMainWindow):
         presets_action.triggered.connect(self._show_analog_presets)
         
     def _create_status_bar(self):
+        """Create status bar with MIDI indicators"""
+        # Create status bar
         status_bar = self.statusBar()
         
-        # Add MIDI activity indicators at left side
-        status_bar.addWidget(QLabel("MIDI In:"))
-        status_bar.addWidget(self.midi_in_indicator)
-        status_bar.addWidget(QLabel("MIDI Out:"))
-        status_bar.addWidget(self.midi_out_indicator)
-        status_bar.addWidget(QLabel(""))  # Spacer
+        # Create MIDI indicators
+        midi_in_label = QLabel("MIDI In:")
+        self.midi_in_indicator = MIDIIndicator()
+        midi_out_label = QLabel("MIDI Out:")
+        self.midi_out_indicator = MIDIIndicator()
+        
+        # Add to status bar
+        status_bar.addPermanentWidget(midi_in_label)
+        status_bar.addPermanentWidget(self.midi_in_indicator)
+        status_bar.addPermanentWidget(midi_out_label)
+        status_bar.addPermanentWidget(self.midi_out_indicator)
+        
+        # Update initial connection state
+        if self.midi_helper:
+            self.midi_in_indicator.set_connected(
+                self.midi_helper.midi_in and self.midi_helper.midi_in.is_port_open()
+            )
+            self.midi_out_indicator.set_connected(
+                self.midi_helper.midi_out and self.midi_helper.midi_out.is_port_open()
+            )
         
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
@@ -711,11 +755,20 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.error(f"Error during close event: {str(e)}")
             event.ignore()
-        
+
+    def set_log_file(self, log_file: str):
+        """
+        :param log_file: str
+        """
+        self.log_file = log_file
+
     def _show_log_viewer(self):
-        """Show log viewer dialog"""
-        viewer = LogViewer(self)
-        viewer.exec_() 
+        """Show log viewer window"""
+        if not self.log_viewer:
+            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
+        self.log_viewer.show()
+        self.log_viewer.raise_()
+        logging.debug("Showing LogViewer window")
         
     def _create_button_row(self, text, slot):
         """Create a row with label and circular button"""
@@ -1355,14 +1408,12 @@ class MainWindow(QMainWindow):
         self.midi_debugger = None
         
     def _open_log_viewer(self):
-        """Open log viewer window"""
+        """Show log viewer window"""
         if not self.log_viewer:
-            self.log_viewer = LogViewer()
-            # Clean up reference when window is closed
-            self.log_viewer.setAttribute(Qt.WA_DeleteOnClose)
-            self.log_viewer.destroyed.connect(self._log_viewer_closed)
+            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
         self.log_viewer.show()
-        self.log_viewer.raise_()  # Bring to front if already open
+        self.log_viewer.raise_()
+        logging.debug("Showing LogViewer window")
         
     def _log_viewer_closed(self):
         """Handle log viewer window closure"""
@@ -1808,3 +1859,105 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error saving last preset: {str(e)}") 
+
+    def _load_favorite(self, button: FavoriteButton):
+        """Load preset from favorite button"""
+        if button.preset:
+            if self.midi_helper:
+                # Get preset info
+                synth_type = button.preset.synth_type
+                preset_num = button.preset.preset_num
+                channel = button.preset.channel
+                
+                # Send MIDI messages
+                if synth_type == "Analog":
+                    bank_msb = 0
+                    bank_lsb = preset_num // 7
+                    program = preset_num % 7
+                elif synth_type == "Digital 1":
+                    bank_msb = 1
+                    bank_lsb = preset_num // 16
+                    program = preset_num % 16
+                elif synth_type == "Digital 2":
+                    bank_msb = 2
+                    bank_lsb = preset_num // 16
+                    program = preset_num % 16
+                else:  # Drums
+                    bank_msb = 3
+                    bank_lsb = preset_num // 16
+                    program = preset_num % 16
+                    
+                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
+                self.midi_helper.send_program_change(program, channel)
+                
+                # Update display
+                self._update_display_preset(
+                    preset_num + 1,
+                    button.preset.preset_name,
+                    channel
+                )
+                
+    def _show_favorite_context_menu(self, pos, button: FavoriteButton):
+        """Show context menu for favorite button"""
+        menu = QMenu()
+        
+        # Add save action if we have a current preset
+        if hasattr(self, 'current_preset_num'):
+            save_action = menu.addAction("Save Current Preset")
+            save_action.triggered.connect(
+                lambda: self._save_to_favorite(button)
+            )
+            
+        # Add clear action if slot has a preset
+        if button.preset:
+            clear_action = menu.addAction("Clear Slot")
+            clear_action.triggered.connect(
+                lambda: self._clear_favorite(button)
+            )
+            
+        menu.exec_(button.mapToGlobal(pos))
+        
+    def _save_to_favorite(self, button: FavoriteButton):
+        """Save current preset to favorite slot"""
+        if hasattr(self, 'current_preset_num'):
+            # Get current preset info from settings
+            synth_type = self.settings.value('last_preset/synth_type', 'Analog')
+            preset_num = self.settings.value('last_preset/preset_num', 0, type=int)
+            channel = self.settings.value('last_preset/channel', 0, type=int)
+            
+            # Get preset name
+            if synth_type == 'Analog':
+                preset_name = AN_PRESETS[preset_num]
+            elif synth_type.startswith('Digital'):
+                preset_name = DIGITAL_PRESETS[preset_num]
+            else:
+                preset_name = DRUM_PRESETS[preset_num]
+                
+            # Save to button
+            button.save_preset(synth_type, preset_num, preset_name, channel)
+            
+            # Save to settings
+            self.settings.setValue(f'favorites/slot{button.slot_num}/synth_type', synth_type)
+            self.settings.setValue(f'favorites/slot{button.slot_num}/preset_num', preset_num)
+            self.settings.setValue(f'favorites/slot{button.slot_num}/preset_name', preset_name)
+            self.settings.setValue(f'favorites/slot{button.slot_num}/channel', channel)
+            
+    def _clear_favorite(self, button: FavoriteButton):
+        """Clear favorite slot"""
+        button.preset = None
+        button._update_style()
+        
+        # Clear from settings
+        self.settings.remove(f'favorites/slot{button.slot_num}')
+        
+    def _load_saved_favorites(self):
+        """Load saved favorites from settings"""
+        for button in self.favorite_buttons:
+            # Check if slot has saved preset
+            synth_type = self.settings.value(f'favorites/slot{button.slot_num}/synth_type', '')
+            if synth_type:
+                preset_num = self.settings.value(f'favorites/slot{button.slot_num}/preset_num', 0, type=int)
+                preset_name = self.settings.value(f'favorites/slot{button.slot_num}/preset_name', '')
+                channel = self.settings.value(f'favorites/slot{button.slot_num}/channel', 0, type=int)
+                
+                button.save_preset(synth_type, preset_num, preset_name, channel) 

@@ -1,42 +1,96 @@
 from dataclasses import dataclass
-from enum import Enum, auto
-from typing import Dict, List, Tuple
+from enum import Enum, auto, IntEnum
+from typing import Dict, List, Tuple, Optional
+import logging
+
+class WaveGain(IntEnum):
+    """Wave gain values in dB"""
+    DB_MINUS_6 = 0  # -6 dB
+    DB_0 = 1       #  0 dB
+    DB_PLUS_6 = 2  # +6 dB
+    DB_PLUS_12 = 3 # +12 dB
+
+class OscWave(IntEnum):
+    """Oscillator waveform types"""
+    SAW = 0
+    SQUARE = 1
+    PW_SQUARE = 2  # Pulse Width Square
+    TRIANGLE = 3
+    SINE = 4
+    NOISE = 5
+    SUPER_SAW = 6
+    PCM = 7
+
+class FilterMode(IntEnum):
+    """Filter mode types"""
+    BYPASS = 0
+    LPF = 1    # Low Pass Filter
+    HPF = 2    # High Pass Filter
+    BPF = 3    # Band Pass Filter
+    PKG = 4    # Peak/Notch Filter
+    LPF2 = 5   # -12dB/oct Low Pass
+    LPF3 = 6   # -18dB/oct Low Pass
+    LPF4 = 7   # -24dB/oct Low Pass
+
+class FilterSlope(IntEnum):
+    """Filter slope values"""
+    DB_12 = 0  # -12 dB/octave
+    DB_24 = 1  # -24 dB/octave
+
+class LFOShape(IntEnum):
+    """LFO waveform shapes"""
+    TRIANGLE = 0
+    SINE = 1
+    SAW = 2
+    SQUARE = 3
+    SAMPLE_HOLD = 4  # S&H
+    RANDOM = 5
+
+class TempoSyncNote(IntEnum):
+    """Tempo sync note values"""
+    NOTE_16 = 0     # 16 bars
+    NOTE_12 = 1     # 12 bars
+    NOTE_8 = 2      # 8 bars
+    NOTE_4 = 3      # 4 bars
+    NOTE_2 = 4      # 2 bars
+    NOTE_1 = 5      # 1 bar
+    NOTE_3_4 = 6    # 3/4 (dotted half)
+    NOTE_2_3 = 7    # 2/3 (triplet whole)
+    NOTE_1_2 = 8    # 1/2 (half)
+    NOTE_3_8 = 9    # 3/8 (dotted quarter)
+    NOTE_1_3 = 10   # 1/3 (triplet half)
+    NOTE_1_4 = 11   # 1/4 (quarter)
+    NOTE_3_16 = 12  # 3/16 (dotted eighth)
+    NOTE_1_6 = 13   # 1/6 (triplet quarter)
+    NOTE_1_8 = 14   # 1/8 (eighth)
+    NOTE_3_32 = 15  # 3/32 (dotted sixteenth)
+    NOTE_1_12 = 16  # 1/12 (triplet eighth)
+    NOTE_1_16 = 17  # 1/16 (sixteenth)
+    NOTE_1_24 = 18  # 1/24 (triplet sixteenth)
+    NOTE_1_32 = 19  # 1/32 (thirty-second)
 
 class DigitalParameter(Enum):
-    """Digital synth parameters"""
-    # Common parameters
-    VOLUME = 0x00
-    PAN = 0x01
-    PORTAMENTO = 0x02
-    PORTA_MODE = 0x03
-    
-    # Oscillator parameters
-    OSC_WAVE = 0x20
-    OSC_PITCH = 0x21
-    OSC_FINE = 0x22
-    OSC_PWM = 0x23
-    
-    # Filter parameters
-    FILTER_TYPE = 0x30
-    FILTER_CUTOFF = 0x31
-    FILTER_RESONANCE = 0x32
-    FILTER_ENV_DEPTH = 0x33
-    FILTER_KEY_FOLLOW = 0x34
-    
-    # Amplifier parameters
-    AMP_LEVEL = 0x40
-    AMP_PAN = 0x41
-    
-    # LFO parameters
-    LFO_WAVE = 0x50
-    LFO_RATE = 0x51
-    LFO_DEPTH = 0x52
-    
-    # Envelope parameters
-    ENV_ATTACK = 0x60
-    ENV_DECAY = 0x61
-    ENV_SUSTAIN = 0x62
-    ENV_RELEASE = 0x63
+    """Digital synth parameter addresses and valid ranges"""
+    def __init__(self, address: int, min_val: int, max_val: int):
+        self.address = address
+        self.min_val = min_val
+        self.max_val = max_val
+
+    # Define enum values with their (address, min, max) tuples
+    OSC_WAVE = (0x00, 0, 7)          # SAW, SQR, PW-SQR, TRI, SINE, NOISE, SUPER-SAW, PCM
+    OSC_VARIATION = (0x01, 0, 2)      # A, B, C
+    OSC_PITCH = (0x03, 40, 88)        # -24 to +24 (64 = center)
+    OSC_DETUNE = (0x04, 14, 114)      # -50 to +50 (64 = center)
+    OSC_PW_MOD_DEPTH = (0x05, 0, 127) # Full range
+    OSC_PW = (0x06, 0, 127)          # Full range
+
+    def __new__(cls, *args):
+        obj = object.__new__(cls)
+        obj._value_ = args[0]  # Set the enum value to just the address
+        return obj
+
+    def __str__(self) -> str:
+        return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
 
 class DigitalPartial:
     """Digital synth partial parameters"""
@@ -208,3 +262,90 @@ class DigitalPatch:
             'lfo_rate': 64,
             'lfo_depth': 0
         } 
+
+def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
+    """Validate and convert parameter value"""
+    if not isinstance(value, int):
+        raise ValueError(f"Value must be integer, got {type(value)}")
+        
+    # Check enum parameters
+    if param == DigitalParameter.OSC_WAVE:
+        if not isinstance(value, OscWave):
+            try:
+                value = OscWave(value).value
+            except ValueError:
+                raise ValueError(f"Invalid oscillator wave value: {value}")
+            
+    elif param == DigitalParameter.FILTER_MODE:
+        if not isinstance(value, FilterMode):
+            try:
+                value = FilterMode(value).value
+            except ValueError:
+                raise ValueError(f"Invalid filter mode value: {value}")
+            
+    elif param == DigitalParameter.FILTER_SLOPE:
+        if not isinstance(value, FilterSlope):
+            try:
+                value = FilterSlope(value).value
+            except ValueError:
+                raise ValueError(f"Invalid filter slope value: {value}")
+            
+    elif param in [DigitalParameter.LFO_SHAPE, DigitalParameter.MOD_LFO_SHAPE]:
+        if not isinstance(value, LFOShape):
+            try:
+                value = LFOShape(value).value
+            except ValueError:
+                raise ValueError(f"Invalid LFO shape value: {value}")
+            
+    elif param in [DigitalParameter.LFO_TEMPO_NOTE, DigitalParameter.MOD_LFO_TEMPO_NOTE]:
+        if not isinstance(value, TempoSyncNote):
+            try:
+                value = TempoSyncNote(value).value
+            except ValueError:
+                raise ValueError(f"Invalid tempo sync note value: {value}")
+            
+    elif param == DigitalParameter.WAVE_GAIN:
+        if not isinstance(value, WaveGain):
+            try:
+                value = WaveGain(value).value
+            except ValueError:
+                raise ValueError(f"Invalid wave gain value: {value}")
+    
+    # Regular range check for non-bipolar parameters
+    if value < param.min_val or value > param.max_val:
+        raise ValueError(
+            f"Value {value} out of range for {param.name} "
+            f"(valid range: {param.min_val}-{param.max_val})"
+        )
+    
+    return value
+
+def send_digital_parameter(midi_helper, param: DigitalParameter, value: int, part: int = 1):
+    """Send digital synth parameter change"""
+    try:
+        # Validate part number
+        if part not in [1, 2]:
+            raise ValueError("Part must be 1 or 2")
+            
+        # Validate and convert value
+        midi_value = validate_value(param, value)
+        
+        # Convert part number to area
+        area = 0x19 if part == 1 else 0x1A  # Digital 1 or 2
+        
+        midi_helper.send_parameter(
+            area=area,
+            part=0x01,
+            group=0x00,
+            param=param._value_,  # Use the enum value (address)
+            value=midi_value
+        )
+        
+        logging.debug(
+            f"Sent digital parameter {param.name}: {value} "
+            f"(MIDI value: {midi_value}) to part {part}"
+        )
+        
+    except Exception as e:
+        logging.error(f"Error sending digital parameter: {str(e)}")
+        raise
