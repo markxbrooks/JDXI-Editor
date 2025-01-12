@@ -546,32 +546,246 @@ class AnalogParameter(Enum):
         return str(value)
 
 class DigitalParameter(Enum):
-    """Digital synth parameter addresses"""
-    # Oscillator parameters
-    OSC1_WAVE = 0x20
-    OSC1_PITCH = 0x21
-    OSC1_FINE = 0x22
-    OSC1_PWM = 0x23
+    """Digital synth parameter addresses and ranges"""
+    # Tone name parameters (0x00-0x0B)
+    TONE_NAME_1 = 0x00    # ASCII 32-127
+    TONE_NAME_2 = 0x01
+    TONE_NAME_3 = 0x02
+    TONE_NAME_4 = 0x03
+    TONE_NAME_5 = 0x04
+    TONE_NAME_6 = 0x05
+    TONE_NAME_7 = 0x06
+    TONE_NAME_8 = 0x07
+    TONE_NAME_9 = 0x08
+    TONE_NAME_10 = 0x09
+    TONE_NAME_11 = 0x0A
+    TONE_NAME_12 = 0x0B
     
-    # Filter parameters
-    FILTER_TYPE = 0x30
-    CUTOFF = 0x31        # Changed from FILTER_CUTOFF to match analog naming
-    FILTER_RESONANCE = 0x32
-    FILTER_ENV_DEPTH = 0x33
-    FILTER_KEY_FOLLOW = 0x34
+    # Common parameters (0x0C-0x18)
+    TONE_LEVEL = 0x0C      # 0-127
+    PORTAMENTO_SW = 0x12   # 0-1 (OFF/ON)
+    PORTAMENTO_TIME = 0x13 # 0-127
+    MONO_SW = 0x14        # 0-1 (OFF/ON)
+    OCTAVE_SHIFT = 0x15   # 61-67 (-3 to +3)
+    BEND_RANGE_UP = 0x16  # 0-24 semitones
+    BEND_RANGE_DOWN = 0x17 # 0-24 semitones
     
-    # Amplifier parameters
-    AMP_LEVEL = 0x40
-    AMP_PAN = 0x41
+    # Partial parameters (0x20-0x2F)
+    PARTIAL_SWITCH = 0x20  # 0-1 (OFF/ON)
+    PARTIAL_LEVEL = 0x21   # 0-127
+    PARTIAL_COARSE = 0x22  # 40-88 (-24 to +24)
+    PARTIAL_FINE = 0x23    # 14-114 (-50 to +50)
+    WAVE_SHAPE = 0x24      # 0-127
+    PULSE_WIDTH = 0x25     # 0-127
+    PWM_DEPTH = 0x26       # 0-127
+    SUPER_SAW_DEPTH = 0x27 # 0-127
+    FILTER_TYPE = 0x28     # 0-3 (OFF,LPF,BPF,HPF)
+    CUTOFF = 0x29          # 0-127
+    RESONANCE = 0x2A       # 0-127
+    FILTER_ENV = 0x2B      # 1-127 (-63 to +63)
+    FILTER_KEY = 0x2C      # 0-127
+    AMP_ENV = 0x2D         # 0-127
+    PAN = 0x2E             # 0-127 (L64-63R)
+    RING_SW = 0x1F         # 0-2 (OFF, ---, ON)
     
-    # Performance parameters
-    OCT_SHIFT = 0x44     # Added missing octave shift parameter
-    
-    # LFO parameters
-    LFO_WAVE = 0x50
-    LFO_RATE = 0x51
-    LFO_PITCH_DEPTH = 0x52
-    LFO_FILTER_DEPTH = 0x53
-    LFO_AMP_DEPTH = 0x54
+    # Partial switches (0x19-0x1E)
+    PARTIAL1_SWITCH = 0x19  # 0-1 (OFF/ON)
+    PARTIAL1_SELECT = 0x1A  # 0-1 (OFF/ON)
+    PARTIAL2_SWITCH = 0x1B  # 0-1 (OFF/ON)
+    PARTIAL2_SELECT = 0x1C  # 0-1 (OFF/ON)
+    PARTIAL3_SWITCH = 0x1D  # 0-1 (OFF/ON)
+    PARTIAL3_SELECT = 0x1E  # 0-1 (OFF/ON)
+
+    # Additional common parameters (0x2E-0x3C)
+    UNISON_SW = 0x2E        # 0-1 (OFF/ON)
+    PORTAMENTO_MODE = 0x31  # 0-1 (NORMAL/LEGATO)
+    LEGATO_SW = 0x32       # 0-1 (OFF/ON)
+    ANALOG_FEEL = 0x34     # 0-127
+    WAVE_SHAPE_COMMON = 0x35      # 0-127 (renamed from WAVE_SHAPE)
+    TONE_CATEGORY = 0x36   # 0-127
+    UNISON_SIZE = 0x3C     # 0-3 (2,4,6,8 voices)
+
+    # Modify parameters (0x01-0x06)
+    ATTACK_TIME_SENS = 0x01    # 0-127
+    RELEASE_TIME_SENS = 0x02   # 0-127
+    PORTA_TIME_SENS = 0x03     # 0-127
+    ENV_LOOP_MODE = 0x04       # 0-2 (OFF, FREE-RUN, TEMPO-SYNC)
+    ENV_LOOP_SYNC = 0x05       # 0-19 (sync note values)
+    CHROM_PORTA = 0x06         # 0-1 (OFF/ON)
+
+    # Partial oscillator parameters (0x00-0x09)
+    OSC_WAVE = 0x00         # 0-7 (SAW, SQR, PW-SQR, TRI, SINE, NOISE, SUPER-SAW, PCM)
+    OSC_VARIATION = 0x01    # 0-2 (A, B, C)
+    OSC_PITCH = 0x03        # 40-88 (-24 to +24)
+    OSC_DETUNE = 0x04       # 14-114 (-50 to +50)
+    OSC_PWM_DEPTH = 0x05    # 0-127
+    OSC_PW = 0x06          # 0-127
+    OSC_PITCH_ATK = 0x07   # 0-127
+    OSC_PITCH_DEC = 0x08   # 0-127
+    OSC_PITCH_DEPTH = 0x09  # 1-127 (-63 to +63)
+
+    # Filter parameters (0x0A-0x14)
+    FILTER_MODE = 0x0A       # 0-7 (BYPASS, LPF, HPF, BPF, PKG, LPF2, LPF3, LPF4)
+    FILTER_SLOPE = 0x0B      # 0-1 (-12, -24 dB)
+    FILTER_CUTOFF = 0x0C     # 0-127
+    FILTER_KEYFOLLOW = 0x0D  # 54-74 (-100 to +100)
+    FILTER_ENV_VELO = 0x0E   # 1-127 (-63 to +63)
+    FILTER_RESONANCE = 0x0F  # 0-127
+    FILTER_ENV_ATK = 0x10    # 0-127
+    FILTER_ENV_DEC = 0x11    # 0-127
+    FILTER_ENV_SUS = 0x12    # 0-127
+    FILTER_ENV_REL = 0x13    # 0-127
+    FILTER_ENV_DEPTH = 0x14  # 1-127 (-63 to +63)
+
+    # Amplifier parameters (0x15-0x1B)
+    AMP_LEVEL = 0x15         # 0-127
+    AMP_VELO_SENS = 0x16     # 1-127 (-63 to +63)
+    AMP_ENV_ATK = 0x17       # 0-127
+    AMP_ENV_DEC = 0x18       # 0-127
+    AMP_ENV_SUS = 0x19       # 0-127
+    AMP_ENV_REL = 0x1A       # 0-127
+    AMP_PAN = 0x1B          # 0-127 (L64-63R)
+
+    # LFO parameters (0x1C-0x25)
+    LFO_SHAPE = 0x1C        # 0-5 (TRI, SIN, SAW, SQR, S&H, RND)
+    LFO_RATE = 0x1D        # 0-127
+    LFO_SYNC_SW = 0x1E     # 0-1 (OFF/ON)
+    LFO_SYNC_NOTE = 0x1F   # 0-19 (sync note values)
+    LFO_FADE = 0x20        # 0-127
+    LFO_KEY_TRIG = 0x21    # 0-1 (OFF/ON)
+    LFO_PITCH_DEPTH = 0x22 # 1-127 (-63 to +63)
+    LFO_FILTER_DEPTH = 0x23 # 1-127 (-63 to +63)
+    LFO_AMP_DEPTH = 0x24   # 1-127 (-63 to +63)
+    LFO_PAN_DEPTH = 0x25   # 1-127 (-63 to +63)
+
+    # Modulation LFO parameters (0x26-0x2F)
+    MOD_LFO_SHAPE = 0x26     # 0-5 (TRI, SIN, SAW, SQR, S&H, RND)
+    MOD_LFO_RATE = 0x27      # 0-127
+    MOD_LFO_SYNC_SW = 0x28   # 0-1 (OFF/ON)
+    MOD_LFO_SYNC_NOTE = 0x29 # 0-19 (sync note values)
+    OSC_PW_SHIFT = 0x2A      # 0-127
+    MOD_LFO_PITCH = 0x2C     # 1-127 (-63 to +63)
+    MOD_LFO_FILTER = 0x2D    # 1-127 (-63 to +63)
+    MOD_LFO_AMP = 0x2E       # 1-127 (-63 to +63)
+    MOD_LFO_PAN = 0x2F       # 1-127 (-63 to +63)
+
+    @staticmethod
+    def validate_value(param: int, value: int) -> bool:
+        """Validate parameter value is within allowed range"""
+        ranges = {
+            # Tone name (0x00-0x0B): ASCII 32-127
+            range(0x00, 0x0C): lambda v: 32 <= v <= 127,
+            
+            # Level: 0-127
+            0x0C: lambda v: 0 <= v <= 127,
+            
+            # Switches: 0-1
+            0x12: lambda v: v in (0, 1),  # Portamento
+            0x14: lambda v: v in (0, 1),  # Mono
+            
+            # Portamento time: 0-127
+            0x13: lambda v: 0 <= v <= 127,
+            
+            # Octave shift: 61-67 (-3 to +3)
+            0x15: lambda v: 61 <= v <= 67,
+            
+            # Pitch bend ranges: 0-24
+            0x16: lambda v: 0 <= v <= 24,
+            0x17: lambda v: 0 <= v <= 24
+        }
+        
+        # Find matching range
+        for param_range, validator in ranges.items():
+            if isinstance(param_range, range):
+                if param in param_range:
+                    return validator(value)
+            elif param == param_range:
+                return validator(value)
+                
+        return True  # Allow other parameters to pass through
+
+    @staticmethod
+    def get_display_value(param: int, value: int) -> str:
+        """Convert raw value to display value"""
+        if 0x00 <= param <= 0x0B:  # Tone name
+            return chr(value)
+        elif param == 0x15:  # Octave shift
+            return f"{value - 64:+d}"  # Convert to -3 to +3
+        elif param in (0x12, 0x14, 0x20, 0x2F, 
+                     0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E):  # All switches
+            return "ON" if value else "OFF"
+        elif param == 0x22:  # Coarse tune
+            return f"{value - 64:+d}"  # Convert to -24/+24
+        elif param == 0x23:  # Fine tune
+            return f"{value - 64:+d}"  # Convert to -50/+50
+        elif param == 0x28:  # Filter type
+            return ['OFF', 'LPF', 'BPF', 'HPF'][value]
+        elif param == 0x2B:  # Filter env
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x2E:  # Pan
+            if value < 64:
+                return f"L{64 - value}"
+            elif value > 64:
+                return f"{value - 64}R"
+            return "C"
+        elif param == 0x1F:  # Ring switch
+            return ['OFF', '---', 'ON'][value]
+        elif param in (0x2E, 0x32):  # Unison and Legato switches
+            return "ON" if value else "OFF"
+        elif param == 0x31:  # Portamento mode
+            return "LEGATO" if value else "NORMAL"
+        elif param == 0x3C:  # Unison size
+            return str([2, 4, 6, 8][value])  # Convert 0-3 to actual voice count
+        elif param == 0x04:  # Envelope loop mode
+            return ['OFF', 'FREE-RUN', 'TEMPO-SYNC'][value]
+        elif param == 0x05:  # Envelope loop sync note
+            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
+                   '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
+                   '1/12', '1/16', '1/24', '1/32'][value]
+        elif param == 0x06:  # Chromatic portamento
+            return "ON" if value else "OFF"
+        elif param == 0x00:  # OSC wave type
+            return ['SAW', 'SQR', 'PW-SQR', 'TRI', 'SINE', 'NOISE', 'SUPER-SAW', 'PCM'][value]
+        elif param == 0x01:  # OSC variation
+            return ['A', 'B', 'C'][value]
+        elif param == 0x03:  # OSC pitch
+            return f"{value - 64:+d}"  # Convert to -24/+24
+        elif param == 0x04:  # OSC detune
+            return f"{value - 64:+d}"  # Convert to -50/+50
+        elif param == 0x09:  # OSC pitch env depth
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x0A:  # Filter mode
+            return ['BYPASS', 'LPF', 'HPF', 'BPF', 'PKG', 'LPF2', 'LPF3', 'LPF4'][value]
+        elif param == 0x0B:  # Filter slope
+            return '-24dB' if value else '-12dB'
+        elif param == 0x0D:  # Filter keyfollow
+            return f"{((value - 54) * 200 / 20) - 100:+.0f}"  # Convert to -100/+100
+        elif param in (0x0E, 0x14):  # Bipolar values
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x16:  # Amp velocity sens
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x1B:  # Pan
+            if value < 64:
+                return f"L{64 - value}"
+            elif value > 64:
+                return f"{value - 64}R"
+            return "C"
+        elif param == 0x1C:  # LFO shape
+            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+        elif param == 0x1F:  # LFO sync note
+            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
+                   '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
+                   '1/12', '1/16', '1/24', '1/32'][value]
+        elif param in (0x22, 0x23, 0x24, 0x25):  # LFO depths
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x26:  # Mod LFO shape
+            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+        elif param == 0x29:  # Mod LFO sync note
+            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
+                   '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
+                   '1/12', '1/16', '1/24', '1/32'][value]
+        elif param in (0x2C, 0x2D, 0x2E, 0x2F):  # Mod LFO depths
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        return str(value)
 
 # Other constants as needed... 
