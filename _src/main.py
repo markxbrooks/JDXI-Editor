@@ -5,12 +5,12 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon
 
-def setup_logging():
+def setup_logging() -> str:
     """Set up logging configuration"""
     # Create logs directory in user's home directory
     log_dir = Path.home() / ".jdxi_manager" / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Log file path
     log_file = log_dir / "jdxi_manager.log"
     
@@ -42,10 +42,12 @@ def setup_logging():
     # Log startup message
     logging.info("JDXi Manager starting up...")
     logging.debug(f"Log file: {log_file}")
+    return log_file
+
 
 def main():
     # Set up logging first
-    setup_logging()
+    self.log_file = setup_logging()
     print("setting up logging")
     # Create application
     app = QApplication(sys.argv)
@@ -79,6 +81,7 @@ def main():
     except Exception as e:
         logging.exception("Fatal error occurred")
         raise
+
 
 if __name__ == "__main__":
     try:
