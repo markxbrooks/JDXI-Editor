@@ -7,12 +7,12 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPalette, QColor
 import logging
 
-from ..widgets.slider import Slider
-from ..widgets.preset_panel import PresetPanel
-from .base_editor import BaseEditor
-from ...data.drums import DR, DRUM_PARTS, DrumPadSettings, Note, SN_PRESETS
-from ...midi.constants import DRUM_KIT_AREA, DRUM_PART
-from ..style import Style
+from jdxi_manager.ui.widgets.slider import Slider
+from jdxi_manager.ui.widgets.preset_panel import PresetPanel
+from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.data.drums import DR, DRUM_PARTS, DrumPadSettings, Note, SN_PRESETS
+from jdxi_manager.midi.constants import DRUM_KIT_AREA, DRUM_PART
+from jdxi_manager.ui.style import Style
 
 class DrumPadWidget(QFrame):
     """Widget for editing a single drum pad"""

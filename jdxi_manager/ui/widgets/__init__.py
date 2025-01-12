@@ -9,6 +9,7 @@ from .preset_panel import PresetPanel
 from .sequencer_square import SequencerSquare
 from .piano_key import PianoKey
 from .piano_keyboard import PianoKeyboard
+from .channel_button import ChannelButton
 
 __all__ = [
     'Slider',
@@ -21,5 +22,6 @@ __all__ = [
     'PresetPanel',
     'SequencerSquare',
     'PianoKey',
-    'PianoKeyboard'
+    'PianoKeyboard',
+    'ChannelButton'
 ] 

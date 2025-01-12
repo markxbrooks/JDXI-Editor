@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
+from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient, QPalette
 from PySide6.QtCore import Signal
 import logging
 
@@ -9,6 +9,7 @@ class PianoKeyboard(QWidget):
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.current_channel = 0  # Default to analog synth channel
         
         # Set keyboard range and dimensions
         self.white_key_width = 35
@@ -86,6 +87,98 @@ class PianoKeyboard(QWidget):
                 black_key.noteOn.connect(self.parent()._handle_piano_note_on)
             if hasattr(self.parent(), '_handle_piano_note_off'):
                 black_key.noteOff.connect(self.parent()._handle_piano_note_off)
+
+    def set_midi_channel(self, channel: int):
+        """Set MIDI channel for note messages"""
+        self.current_channel = channel
+        logging.debug(f"Piano keyboard set to channel {channel}")
+        
+    def _update_channel_display(self):
+        """Update channel indicator"""
+        self.channel_button.set_channel(self.current_channel)
+
+
+class ChannelButton(QPushButton):
+    """Channel indicator button with synth-specific styling"""
+    
+    CHANNEL_STYLES = {
+        0: ("ANALOG", "#FF8C00"),     # Orange for Analog
+        1: ("DIGI 1", "#00FF00"),     # Green for Digital 1
+        2: ("DIGI 2", "#00FFFF"),     # Cyan for Digital 2
+        9: ("DRUMS", "#FF00FF"),      # Magenta for Drums
+    }
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(30, 160)  # Same height as white keys
+        self.setFlat(True)
+        self.current_channel = 0
+        self._update_style()
+        
+    def set_channel(self, channel: int):
+        """Set channel and update appearance"""
+        self.current_channel = channel
+        self._update_style()
+        
+    def _update_style(self):
+        """Update button appearance based on channel"""
+        style, color = self.CHANNEL_STYLES.get(
+            self.current_channel, 
+            (f"CH {self.current_channel + 1}", "#FFFFFF")
+        )
+        
+        # Create gradient background
+        gradient = f"""
+            background: qlineargradient(
+                x1:0, y1:0, x2:0, y2:1,
+                stop:0 {color}33,
+                stop:0.5 {color}22,
+                stop:1 {color}33
+            );
+        """
+        
+        # Set button style
+        self.setStyleSheet(f"""
+            QPushButton {{
+                {gradient}
+                border: 1px solid {color};
+                border-radius: 3px;
+                color: {color};
+                font-size: 10px;
+                font-weight: bold;
+                padding: 2px;
+                text-align: center;
+            }}
+            QPushButton:pressed {{
+                background: {color}44;
+            }}
+        """)
+        
+        # Set text
+        self.setText(style)
+        
+    def paintEvent(self, event):
+        """Custom paint event for vertical text"""
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        
+        # Save current state
+        painter.save()
+        
+        # Rotate text
+        painter.translate(self.width(), 0)
+        painter.rotate(90)
+        
+        # Draw text
+        painter.drawText(
+            0, 0, 
+            self.height(), self.width(),
+            Qt.AlignCenter,
+            self.text()
+        )
+        
+        # Restore state
+        painter.restore()
 
 class JDXiKey(QPushButton):
     """Piano key styled like JD-Xi keys"""

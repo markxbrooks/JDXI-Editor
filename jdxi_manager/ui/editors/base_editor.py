@@ -1,24 +1,20 @@
-from PySide6.QtWidgets import QMainWindow, QWidget
+from PySide6.QtWidgets import QMainWindow
 from typing import Optional
 import logging
 
-from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.helper import MIDIHelper
 from jdxi_manager.midi.messages import JDXiSysEx
-from jdxi_manager.midi.constants import START_OF_SYSEX, END_OF_SYSEX
+from jdxi_manager.midi.constants import (
+    START_OF_SYSEX, END_OF_SYSEX,
+    ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12
+)
 
 class BaseEditor(QMainWindow):
     """Base class for synth editors"""
-    
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
-        """Initialize base editor
-        
-        Args:
-            midi_helper: MIDI helper instance
-            parent: Parent widget
-        """
+    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
-        self.main_window = parent
         
     def _request_patch_data(self):
         """Request current patch data from synth

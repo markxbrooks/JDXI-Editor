@@ -1,15 +1,20 @@
-from .digital import DigitalSynthEditor
-from .analog import AnalogSynthEditor
-from .drums import DrumKitEditor as DrumEditor
-from .effects import EffectsEditor
-from .arpeggio import ArpeggioEditor
-from .vocal_fx import VocalFXEditor
+"""Editor modules for JD-Xi parameters"""
+
+# First import base editor since others depend on it
+from jdxi_manager.ui.editors.base_editor import BaseEditor
+
+# Then import specific editors
+from jdxi_manager.ui.editors.analog import AnalogSynthEditor
+from jdxi_manager.ui.editors.digital import DigitalSynthEditor
+from jdxi_manager.ui.editors.drums import DrumKitEditor as DrumEditor
+from jdxi_manager.ui.editors.effects import EffectsEditor
+from jdxi_manager.ui.editors.arpeggio import ArpeggioEditor
 
 __all__ = [
-    'DigitalSynthEditor',
+    'BaseEditor',
     'AnalogSynthEditor',
+    'DigitalSynthEditor',
     'DrumEditor',
     'EffectsEditor',
-    'ArpeggioEditor',
-    'VocalFXEditor'
+    'ArpeggioEditor'
 ] 

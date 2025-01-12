@@ -1,6 +1,8 @@
 import logging
 from typing import Optional
 import rtmidi
+from jdxi_manager.midi.device import DeviceInfo
+from jdxi_manager.midi.messages import IdentityRequest
 
 class MIDIConnection:
     _instance = None
@@ -13,6 +15,9 @@ class MIDIConnection:
             cls._instance._main_window = None
         return cls._instance
     
+    def __init__(self):
+        self.device_info: Optional[DeviceInfo] = None
+        
     @property
     def midi_in(self):
         return self._midi_in
@@ -50,3 +55,32 @@ class MIDIConnection:
             logging.debug("MIDI input callback set")
         else:
             logging.warning("No MIDI input port available") 
+
+    def identify_device(self) -> bool:
+        """Send Identity Request and verify response"""
+        request = IdentityRequest()
+        self.send_message(request)
+        
+        # Wait for reply (with timeout)
+        reply = self.wait_for_message(0x7E, timeout=1.0)
+        if not reply:
+            return False
+            
+        try:
+            response = IdentityRequest.from_bytes(reply)
+            self.device_info = response.device_info
+            return self.device_info.is_jdxi
+        except:
+            return False
+
+    @property
+    def is_connected(self) -> bool:
+        """Check if connected to JD-Xi"""
+        return self.device_info is not None and self.device_info.is_jdxi
+
+    @property
+    def device_version(self) -> str:
+        """Get device firmware version"""
+        if self.device_info:
+            return self.device_info.version_string
+        return "unknown" 
