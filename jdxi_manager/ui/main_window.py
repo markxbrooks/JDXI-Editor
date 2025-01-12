@@ -30,6 +30,7 @@ from jdxi_manager.midi.constants import (
     EFFECTS_AREA
 )
 from .widgets.piano_keyboard import PianoKeyboard
+from ..midi.messages import IdentityRequest
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -1539,25 +1540,16 @@ class MainWindow(QMainWindow):
     def _verify_jdxi_connection(self):
         """Verify connected device is a JD-Xi by sending identity request"""
         try:
-            # Create identity request message
-            identity_request = [
-                START_OF_SYSEX,
-                ROLAND_ID,
-                DEVICE_ID,
-                0x7E,  # Universal System Exclusive
-                0x7F,  # All channels
-                0x06,  # Identity Request
-                0x01,  # Identity Request command
-                END_OF_SYSEX
-            ]
+            # Create identity request message using dataclass
+            identity_request = IdentityRequest()
             
             # Send request
             if self.midi_helper:
-                self.midi_helper.send_message(bytes(identity_request))
-                logging.debug("Sent identity request to verify JD-Xi connection")
+                self.midi_helper.send_message(identity_request.to_list())
+                logging.debug("Sent JD-Xi identity request")
                 
         except Exception as e:
-            logging.error(f"Error verifying JD-Xi connection: {str(e)}") 
+            logging.error(f"Error sending identity request: {str(e)}") 
 
     def show_digital_synth_editor(self, synth_num=1):
         """Show digital synth editor window"""

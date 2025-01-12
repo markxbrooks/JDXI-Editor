@@ -438,7 +438,7 @@ class DigitalSynthEditor(BaseEditor):
             if control:
                 control.setChecked(bool(value))
                 logging.debug(f"Updated partial control {control_name}: {value}")
-                
+            
         except Exception as e:
             logging.error(f"Error updating partial switch: {str(e)}") 
         
@@ -537,7 +537,7 @@ class DigitalSynthEditor(BaseEditor):
                 control.setValue(value)
             
             logging.debug(f"Updated modify control {control_name}: {value}")
-            
+                
         except Exception as e:
             logging.error(f"Error updating modify control: {str(e)}") 
         
