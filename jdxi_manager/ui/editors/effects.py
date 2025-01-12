@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 import logging
 from typing import Optional
-
+from PySide6.QtWidgets import QScrollArea
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.midi.messages import (
@@ -160,7 +160,7 @@ class EffectsEditor(BaseEditor):
                 
         except Exception as e:
             logging.error(f"Error updating effects UI: {str(e)}")
-
+        
     def _create_ui(self):
         """Create the user interface"""
         # Create scroll area for main content

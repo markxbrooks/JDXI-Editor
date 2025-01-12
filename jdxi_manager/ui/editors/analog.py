@@ -188,7 +188,7 @@ class AnalogSynthEditor(BaseEditor):
             }}
         """)
         return header
-
+        
     def _create_oscillator_section(self, osc_num: int):
         """Create oscillator section controls"""
         frame = QFrame()
@@ -509,7 +509,7 @@ class AnalogSynthEditor(BaseEditor):
         layout.addWidget(env_rel)
         
         return frame
-
+        
     def _create_lfo_section(self):
         """Create LFO section controls"""
         frame = QFrame()
@@ -835,8 +835,8 @@ class AnalogSynthEditor(BaseEditor):
         try:
             if not hasattr(self.current_patch, parameter.lower()):
                 logging.warning(f"Unknown parameter received: {parameter}")
-                return
-                
+            return
+            
             setattr(self.current_patch, parameter.lower(), value)
             logging.debug(f"Updated parameter {parameter}: {value}")
             

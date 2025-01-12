@@ -1,121 +1,41 @@
 from PySide6.QtWidgets import (
-    QFrame, QVBoxLayout, QHBoxLayout, QLabel, 
-    QComboBox, QPushButton, QScrollArea, QWidget
+    QWidget, QVBoxLayout, QHBoxLayout, 
+    QLabel, QComboBox, QPushButton
 )
-from PySide6.QtCore import Signal, Qt
-import logging
+from PySide6.QtCore import Signal
 
-from jdxi_manager.ui.style import Style
-
-class PresetPanel(QFrame):
-    """Panel for selecting and managing presets"""
+class PresetPanel(QWidget):
+    """Panel for loading/saving presets"""
     
-    presetChanged = Signal(int, str)  # Emits (preset_number, preset_name)
+    # Define signals
+    load_clicked = Signal(int)  # Emits preset number when load clicked
+    save_clicked = Signal(int)  # Emits preset number when save clicked
     
-    def __init__(self, name, parent=None):
-        """Initialize preset panel
-        
-        Args:
-            name: Name of the preset panel
-            parent: Parent widget
-        """
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.name = name
-        self.parent = parent
-        self.presets = []
-        self._create_ui()
         
-    def _create_ui(self):
-        """Create the preset panel UI"""
-        layout = QVBoxLayout(self)
+        layout = QHBoxLayout(self)
         
-        # Add header
-        header = QLabel("Presets")
-        header.setStyleSheet(f"background-color: {Style.PRESET_BG}; color: white; padding: 5px;")
-        layout.addWidget(header)
+        # Preset selector
+        self.preset_combo = QComboBox()
+        layout.addWidget(self.preset_combo)
         
-        # Create scroll area for presets
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        # Load button
+        load_btn = QPushButton("Load")
+        load_btn.clicked.connect(self._on_load)
+        layout.addWidget(load_btn)
         
-        # Create widget for preset buttons
-        self.preset_widget = QWidget()
-        self.preset_layout = QVBoxLayout(self.preset_widget)
+        # Save button
+        save_btn = QPushButton("Save")
+        save_btn.clicked.connect(self._on_save)
+        layout.addWidget(save_btn)
         
-        # Add stretch at bottom
-        self.preset_layout.addStretch()
+    def _on_load(self):
+        """Handle load button click"""
+        preset_num = self.preset_combo.currentIndex()
+        self.load_clicked.emit(preset_num)
         
-        # Set up scroll area
-        scroll.setWidget(self.preset_widget)
-        layout.addWidget(scroll)
-        
-    def add_presets(self, presets):
-        """Add presets to the panel with categories
-        
-        Args:
-            presets: List of preset names
-        """
-        # Clear existing presets
-        for i in reversed(range(self.preset_layout.count())):
-            widget = self.preset_layout.itemAt(i).widget()
-            if widget:
-                widget.deleteLater()
-        
-        # Store presets list
-        self.presets = presets
-        
-        # Define categories
-        categories = {
-            'KEYBOARD': [],    # 09: Keyboard
-            'BASS': [],       # 21: Bass
-            'LEAD': [],       # 34: Lead
-            'BRASS': [],      # 35: Brass
-            'PAD': [],        # 36: Strings/Pad
-            'FX': [],         # 39: FX/Other
-            'SEQ': []         # 40: Seq
-        }
-        
-        # Sort presets into categories
-        for preset in presets:
-            if 'Piano' in preset or 'EP' in preset or 'Clav' in preset or 'Key' in preset:
-                categories['KEYBOARD'].append(preset)
-            elif 'Bass' in preset:
-                categories['BASS'].append(preset)
-            elif 'Lead' in preset:
-                categories['LEAD'].append(preset)
-            elif 'Brass' in preset:
-                categories['BRASS'].append(preset)
-            elif 'Strings' in preset or 'Pad' in preset:
-                categories['PAD'].append(preset)
-            elif 'FX' in preset or 'Hit' in preset:
-                categories['FX'].append(preset)
-            elif 'SEQ' in preset:
-                categories['SEQ'].append(preset)
-            else:
-                categories['PAD'].append(preset)  # Default to PAD category
-        
-        # Add presets by category
-        for category, cat_presets in categories.items():
-            if cat_presets:  # Only add categories that have presets
-                # Add category header
-                header = QLabel(category)
-                header.setStyleSheet("""
-                    QLabel {
-                        background-color: #2A2A2A;
-                        color: white;
-                        padding: 5px;
-                        font-weight: bold;
-                    }
-                """)
-                self.preset_layout.addWidget(header)
-                
-                # Add category presets
-                for preset_name in cat_presets:
-                    btn = QPushButton(preset_name)
-                    btn.clicked.connect(lambda checked, name=preset_name: self.parent.load_preset(name))
-                    self.preset_layout.addWidget(btn)
-        
-        # Add stretch at bottom
-        self.preset_layout.addStretch() 
+    def _on_save(self):
+        """Handle save button click"""
+        preset_num = self.preset_combo.currentIndex()
+        self.save_clicked.emit(preset_num) 

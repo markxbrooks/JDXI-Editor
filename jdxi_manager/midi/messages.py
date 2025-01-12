@@ -1,6 +1,6 @@
 from .constants import *  # Import all constants
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 @dataclass
 class JDXiSysEx:
@@ -199,3 +199,129 @@ def create_program_change_message(program_number: int) -> bytes:
     
     msg.extend([checksum, END_OF_SYSEX])
     return bytes(msg) 
+
+@dataclass
+class RolandSysEx:
+    """Base Roland System Exclusive message structure"""
+    START_OF_SYSEX: int = START_OF_SYSEX
+    ROLAND_ID: int = ROLAND_ID
+    DEVICE_ID: int = DEVICE_ID
+    MODEL_ID_1: int = MODEL_ID_1
+    MODEL_ID_2: int = MODEL_ID_2
+    MODEL_ID: int = MODEL_ID
+    JD_XI_ID: int = JD_XI_ID
+    command: int = 0x00
+    address: List[int] = None
+    data: List[int] = None
+    END_OF_SYSEX: int = END_OF_SYSEX
+
+    def to_list(self) -> List[int]:
+        """Convert to list of bytes"""
+        message = [
+            self.START_OF_SYSEX,
+            self.ROLAND_ID,
+            self.DEVICE_ID,
+            self.MODEL_ID_1,
+            self.MODEL_ID_2,
+            self.MODEL_ID,
+            self.JD_XI_ID,
+            self.command
+        ]
+        
+        if self.address:
+            message.extend(self.address)
+            
+        if self.data:
+            message.extend(self.data)
+            
+        # Calculate checksum for DT1 messages
+        if self.command == DT1_COMMAND_12 and self.address:
+            checksum = sum(self.address + (self.data or [])) & 0x7F
+            checksum = (128 - checksum) & 0x7F
+            message.append(checksum)
+            
+        message.append(self.END_OF_SYSEX)
+        return message
+
+@dataclass
+class ParameterMessage(RolandSysEx):
+    """Parameter change message"""
+    command: int = DT1_COMMAND_12
+    area: int = 0x00
+    part: int = 0x00
+    group: int = 0x00
+    param: int = 0x00
+    value: int = 0x00
+
+    def __post_init__(self):
+        """Set up address and data"""
+        self.address = [self.area, self.part, self.group, self.param]
+        self.data = [self.value]
+
+@dataclass
+class ProgramChangeMessage(RolandSysEx):
+    """Program change message"""
+    command: int = DT1_COMMAND_12
+    program_number: int = 1
+
+    def __post_init__(self):
+        """Set up program change message"""
+        # Adjust to 0-based index
+        program = (self.program_number - 1) & 0x7F
+        self.address = [
+            DIGITAL_SYNTH_1,  # Digital synth 1 area
+            DIGITAL_PART_1,   # Part 1
+            PROGRAM_GROUP,    # Program change group
+            0x00             # Parameter number
+        ]
+        self.data = [program]
+
+@dataclass
+class PatchLoadMessage(RolandSysEx):
+    """Patch load message"""
+    command: int = DT1_COMMAND_12
+    area: int = 0x00
+    patch_number: int = 1
+
+    def __post_init__(self):
+        """Set up patch load message"""
+        self.address = [
+            self.area,   # Synth area
+            0x01,       # Part 1
+            0x00,       # Group
+            0x10        # Load command
+        ]
+        self.data = [self.patch_number - 1]  # Convert to 0-based
+
+@dataclass
+class PatchSaveMessage(RolandSysEx):
+    """Patch save message"""
+    command: int = DT1_COMMAND_12
+    area: int = 0x00
+    patch_number: int = 1
+
+    def __post_init__(self):
+        """Set up patch save message"""
+        self.address = [
+            self.area,   # Synth area
+            0x01,       # Part 1
+            0x00,       # Group
+            0x20        # Save command
+        ]
+        self.data = [self.patch_number - 1]  # Convert to 0-based
+
+@dataclass 
+class IdentityRequest(RolandSysEx):
+    """Identity Request message"""
+    command: int = 0x7E  # Universal System Exclusive
+    address: List[int] = None
+    data: List[int] = None
+
+    def __post_init__(self):
+        """Initialize with identity request data"""
+        self.address = [
+            0x7F,  # All channels
+            0x06,  # Identity Request
+            0x01   # Identity Request command
+        ]
+        self.data = [0x00, 0x00, 0x00, 0x00, 0x00]  # Sub IDs 1-5 
