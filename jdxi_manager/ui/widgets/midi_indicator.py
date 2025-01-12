@@ -1,52 +1,54 @@
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPainter, QColor
+from PySide6.QtGui import QPainter, QColor, QPen
 
-class MIDIIndicator(QWidget):
-    """LED-style indicator for MIDI activity"""
+class MIDIIndicator(QLabel):
+    """MIDI activity indicator light"""
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setFixedSize(12, 12)
-        self._active = False
-        self._blink_timer = QTimer()
-        self._blink_timer.timeout.connect(self._reset_state)
-        self._blink_timer.setSingleShot(True)
+        self.setFixedSize(12, 12)  # Small circular indicator
         
-    def set_active(self, state=True):
-        """Legacy method for compatibility - triggers a blink"""
-        if state:
-            self.blink()
-        else:
-            self._reset_state()
-            
-    def set_inactive(self):
-        """Legacy method for compatibility"""
-        self._reset_state()
+        # Initialize state
+        self.active = False
+        self.connected = False
         
-    def blink(self):
-        """Activate the indicator briefly"""
-        self._active = True
-        self.update()
-        self._blink_timer.start(50)  # 50ms blink duration
-        
-    def _reset_state(self):
-        """Reset indicator state after blink"""
-        self._active = False
-        self.update()
+        # Create blink timer
+        self.blink_timer = QTimer()
+        self.blink_timer.timeout.connect(self._reset_active)
+        self.blink_timer.setInterval(100)  # 100ms blink duration
         
     def paintEvent(self, event):
-        """Draw the LED indicator"""
+        """Draw the indicator light"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         
-        # Draw border
-        painter.setPen(Qt.black)
-        painter.setBrush(Qt.NoBrush)
+        # Choose color based on state
+        if self.active:
+            color = QColor("#00FF00")  # Bright green when active
+        elif self.connected:
+            color = QColor("#006400")  # Dark green when connected
+        else:
+            color = QColor("#640000")  # Dark red when disconnected
+            
+        # Draw circle
+        painter.setPen(QPen(Qt.black, 1))
+        painter.setBrush(color)
         painter.drawEllipse(1, 1, 10, 10)
         
-        # Draw LED
-        color = QColor("#00FF00") if self._active else QColor("#004400")
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(color)
-        painter.drawEllipse(2, 2, 8, 8) 
+    def blink(self):
+        """Trigger activity blink"""
+        self.active = True
+        self.update()
+        self.blink_timer.start()
+        
+    def set_connected(self, connected: bool):
+        """Set connection state"""
+        self.connected = connected
+        self.update()
+        
+    def _reset_active(self):
+        """Reset active state after blink"""
+        self.active = False
+        self.update()
+        self.blink_timer.stop() 

@@ -9,7 +9,7 @@ import logging
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.data.analog import AN_PRESETS, AN_CATEGORIES, AnalogTone
 from jdxi_manager.data.digital import DIGITAL_PRESETS, DIGITAL_CATEGORIES
-from jdxi_manager.midi.constants import ANALOG_SYNTH_AREA, DIGITAL_SYNTH_AREA
+from jdxi_manager.midi.constants import ANALOG_SYNTH_AREA, DIGITAL_SYNTH_AREA, BANK_MSB, BANK_LSB, ANALOG_BANK_MSB, DIGITAL_BANK_MSB, DRUM_BANK_MSB, PRESET_BANK_LSB, PRESET_BANK_2_LSB
 from jdxi_manager.data.drums import DRUM_PRESETS, DRUM_CATEGORIES
 
 
@@ -111,47 +111,59 @@ class PresetEditor(BaseEditor):
         """Load selected preset"""
         try:
             if self.midi_helper and preset_num >= 0:
-                if synth_type == "Analog":
-                    presets = AN_PRESETS
-                    bank_msb = 0
-                    bank_lsb = preset_num // 7
-                    program = preset_num % 7
-                    channel = 0
-                    
-                elif synth_type == "Digital 1":
+                if synth_type == "Digital 1":
                     presets = DIGITAL_PRESETS
-                    bank_msb = 1
-                    bank_lsb = preset_num // 16
-                    program = preset_num % 16
-                    channel = 1
+                    bank_msb = 0x5F        # 95 for SuperNATURAL
+                    bank_lsb = 0x40        # 64 for preset bank
+                    program = preset_num + 1  # 1-based program numbers
+                    channel = 1            # Digital 1 channel
                     
                 elif synth_type == "Digital 2":
                     presets = DIGITAL_PRESETS
-                    bank_msb = 2
-                    bank_lsb = preset_num // 16
-                    program = preset_num % 16
-                    channel = 2
+                    bank_msb = 0x5F        # 95 for SuperNATURAL
+                    bank_lsb = 0x40        # 64 for preset bank
+                    program = preset_num + 1  # 1-based program numbers
+                    channel = 2            # Digital 2 channel
+                    
+                elif synth_type == "Analog":
+                    presets = AN_PRESETS
+                    bank_msb = 0x5E        # 94 for Analog synth
+                    bank_lsb = 0x40        # 64 for preset bank
+                    program = preset_num + 1  # 1-based program numbers
+                    channel = 0            # Analog channel
                     
                 else:  # Drums
                     presets = DRUM_PRESETS
-                    bank_msb = 3
-                    bank_lsb = preset_num // 16
-                    program = preset_num % 16
-                    channel = 9
+                    bank_msb = 0x56        # 86 for Drum kits
+                    bank_lsb = 0x40        # 64 for preset bank
+                    program = preset_num + 1  # 1-based program numbers
+                    channel = 9            # Drum channel
                 
-                # Send bank select and program change
-                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
-                self.midi_helper.send_program_change(program, channel)
+                # Send bank select MSB (CC 0)
+                self.midi_helper.send_message([0xB0 | channel, 0x00, bank_msb])
+                
+                # Send bank select LSB (CC 32)
+                self.midi_helper.send_message([0xB0 | channel, 0x20, bank_lsb])
+                
+                # Send program change
+                self.midi_helper.send_message([0xC0 | channel, program])
+                
+                # Add detailed logging
+                logging.debug(
+                    f"Sending MIDI messages for {synth_type} preset {preset_num + 1}:\n"
+                    f"Bank Select MSB: {bank_msb:02X} (CC 0)\n"
+                    f"Bank Select LSB: {bank_lsb:02X} (CC 32)\n"
+                    f"Program Change: {program:02X}\n"
+                    f"Channel: {channel}"
+                )
                 
                 # Emit preset change signal
                 preset_name = presets[preset_num]
                 self.preset_changed.emit(preset_num + 1, preset_name, channel)
                 
-                # Save as last used preset in parent window
+                # Save as last used preset
                 if isinstance(self.parent(), QMainWindow):
                     self.parent()._save_last_preset(synth_type, preset_num, channel)
-                
-                logging.debug(f"Loaded {synth_type} preset {preset_num + 1}: {preset_name} on channel {channel}")
                 
         except Exception as e:
             logging.error(f"Error loading preset: {str(e)}")

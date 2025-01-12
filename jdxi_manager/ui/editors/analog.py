@@ -115,7 +115,7 @@ class AnalogSynthEditor(BaseEditor):
                     value
                 )
                 logging.debug(f"Sent analog parameter {param.name}: {value}")
-                
+            
         except Exception as e:
             logging.error(f"Error sending analog parameter: {str(e)}")
 
@@ -132,13 +132,13 @@ class AnalogSynthEditor(BaseEditor):
             elif param == AnalogParameter.OSC_PITCH.value:
                 self.pitch.setValue(value - 64)  # Convert to -24/+24
             elif param == AnalogParameter.FILTER_CUTOFF.value:
-                self.cutoff.setValue(value)
+                    self.cutoff.setValue(value)
             elif param == AnalogParameter.FILTER_RESONANCE.value:
-                self.resonance.setValue(value)
+                    self.resonance.setValue(value)
             elif param == AnalogParameter.AMP_LEVEL.value:
                 self.level.setValue(value)
             elif param == AnalogParameter.LFO_RATE.value:
-                self.lfo_rate.setValue(value)
+                    self.lfo_rate.setValue(value)
             elif param == AnalogParameter.LFO_DEPTH.value:
                 self.lfo_depth.setValue(value)
                 

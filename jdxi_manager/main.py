@@ -10,6 +10,7 @@ def setup_logging():
     """Set up logging configuration"""
     try:
         # Create logs directory in user's home directory
+        logger = logging.getLogger("jdxi_manager")
         log_dir = Path.home() / ".jdxi_manager" / "logs"
         log_dir.mkdir(parents=True, exist_ok=True)
         
@@ -49,7 +50,8 @@ def setup_logging():
         print("Logging setup complete")
         logging.info("JDXi Manager starting up...")
         logging.debug(f"Log file: {log_file}")
-        
+        return log_file
+
     except Exception as e:
         print(f"Error setting up logging: {str(e)}")
         raise
@@ -57,7 +59,7 @@ def setup_logging():
 def main():
     try:
         # Set up logging first
-        setup_logging()
+        log_file = setup_logging()
         
         # Create application
         app = QApplication(sys.argv)
@@ -99,7 +101,7 @@ def main():
         window = MainWindow()
         window.show()
         logging.info("Main window displayed")
-        
+        window.set_log_file(log_file)
         # Start event loop
         return app.exec()
         
