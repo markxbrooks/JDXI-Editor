@@ -669,6 +669,20 @@ class DigitalParameter(Enum):
     MOD_LFO_AMP = 0x2E       # 1-127 (-63 to +63)
     MOD_LFO_PAN = 0x2F       # 1-127 (-63 to +63)
 
+    # Aftertouch parameters (0x30-0x31)
+    CUTOFF_AFTERTOUCH = 0x30  # 1-127 (-63 to +63)
+    LEVEL_AFTERTOUCH = 0x31   # 1-127 (-63 to +63)
+
+    # Additional oscillator parameters (0x34-0x35)
+    WAVE_GAIN = 0x34          # 0-3 (-6, 0, +6, +12 dB)
+    WAVE_NUMBER = 0x35        # 0-16384 (OFF, 1-16384)
+    
+    # Filter and modulation parameters (0x39-0x3C)
+    HPF_CUTOFF = 0x39         # 0-127
+    SUPER_SAW_DETUNE = 0x3A   # 0-127
+    MOD_LFO_RATE_CTRL = 0x3B  # 1-127 (-63 to +63)
+    AMP_LEVEL_KEYFOLLOW = 0x3C # 54-74 (-100 to +100)
+
     @staticmethod
     def validate_value(param: int, value: int) -> bool:
         """Validate parameter value is within allowed range"""
@@ -786,6 +800,16 @@ class DigitalParameter(Enum):
                    '1/12', '1/16', '1/24', '1/32'][value]
         elif param in (0x2C, 0x2D, 0x2E, 0x2F):  # Mod LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param in (0x30, 0x31):  # Aftertouch sensitivities
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x34:  # Wave gain
+            return ["-6dB", "0dB", "+6dB", "+12dB"][value]
+        elif param == 0x35:  # Wave number
+            return "OFF" if value == 0 else str(value)
+        elif param == 0x3B:  # Mod LFO rate control
+            return f"{value - 64:+d}"  # Convert to -63/+63
+        elif param == 0x3C:  # Amp level keyfollow
+            return f"{((value - 54) * 200 / 20) - 100:+.0f}"  # Convert to -100/+100
         return str(value)
 
 # Other constants as needed... 
