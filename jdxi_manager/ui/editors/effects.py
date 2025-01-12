@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 import logging
+from typing import Optional
 
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
@@ -27,6 +28,7 @@ from jdxi_manager.data.effects import (
     EffectPatch
 )
 from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.midi import MIDIHelper
 
 class EffectsValidator:
     """Validator for JD-Xi effects parameters"""
@@ -104,9 +106,16 @@ class EffectsValidator:
 class EffectsEditor(BaseEditor):
     """Editor for JD-Xi effects settings"""
     
-    def __init__(self, midi_helper=None, parent=None):
-        super().__init__(parent)
-        self.midi_helper = midi_helper
+    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
+        super().__init__(midi_helper, parent)
+        self.setWindowTitle("Effects Editor")
+        
+        # Set up area and part for parameter requests
+        self.area = EFFECTS_AREA
+        self.part = 0x00
+        self.group = 0x00
+        self.start_param = 0x00
+        self.param_size = 0x80  # Request effects parameters
         
         # Set window properties
         self.setStyleSheet(Style.MAIN_STYLESHEET)
@@ -135,18 +144,23 @@ class EffectsEditor(BaseEditor):
         # Effects don't have patch names
         pass
 
-    def _update_ui_from_sysex(self, addr: bytes, data: bytes):
-        """Update UI based on received SysEx data"""
-        # Check if it's for effects (0x16)
-        if addr[0] != 0x16:
-            return
+    def _update_ui_from_sysex(self, addr, data):
+        """Update UI controls based on received SysEx data"""
+        try:
+            effect_type = addr[2]  # Effect type in third byte
+            param = addr[3]        # Parameter number
+            value = data[0]        # Parameter value
             
-        param = addr[3]
-        value = data[0]
-        
-        # Update appropriate controls based on parameter
-        self._update_parameter(param, value)
-        
+            # Update appropriate effect section
+            if effect_type == 0x00:  # Delay
+                self._update_delay_controls(param, value)
+            elif effect_type == 0x01:  # Reverb
+                self._update_reverb_controls(param, value)
+            # ... etc for other effects
+                
+        except Exception as e:
+            logging.error(f"Error updating effects UI: {str(e)}")
+
     def _create_ui(self):
         """Create the user interface"""
         # Create scroll area for main content
