@@ -63,6 +63,7 @@ class DigitalSynthEditor(BaseEditor):
         layout.addWidget(self._create_partial_amp_section())  # Add amp section
         layout.addWidget(self._create_partial_lfo_section())  # Add LFO section
         layout.addWidget(self._create_partial_mod_lfo_section())  # Add mod LFO section
+        layout.addWidget(self._create_partial_aftertouch_section())  # Add aftertouch section
         
         # Set the widget to scroll area
         scroll.setWidget(central)
@@ -631,7 +632,55 @@ class DigitalSynthEditor(BaseEditor):
         
         layout.addWidget(env_frame)
         
+        # Wave gain
+        gain = QComboBox()
+        gain.setObjectName("wave_gain_control")
+        gain.addItems(["-6dB", "0dB", "+6dB", "+12dB"])
+        gain.currentIndexChanged.connect(
+            lambda v: self._send_parameter(DigitalParameter.WAVE_GAIN.value, v))
+        wave_layout.addWidget(QLabel("Wave Gain"))
+        wave_layout.addWidget(gain)
+        
+        # Wave number (for PCM waves)
+        wave_num = Slider("Wave Number", 0, 16384,
+            lambda v: self._send_wave_number(v))
+        wave_num.setObjectName("wave_number_control")
+        wave_layout.addWidget(wave_num)
+        
+        # HPF cutoff
+        hpf = Slider("HPF Cutoff", 0, 127,
+            lambda v: self._send_parameter(DigitalParameter.HPF_CUTOFF.value, v))
+        hpf.setObjectName("hpf_cutoff_control")
+        wave_layout.addWidget(hpf)
+        
+        # Super saw detune
+        detune = Slider("Super Saw Detune", 0, 127,
+            lambda v: self._send_parameter(DigitalParameter.SUPER_SAW_DETUNE.value, v))
+        detune.setObjectName("super_saw_detune_control")
+        wave_layout.addWidget(detune)
+        
         return frame
+        
+    def _send_wave_number(self, value: int):
+        """Send wave number parameter split into multiple bytes"""
+        try:
+            # Split value into 4 nibbles according to format:
+            # 0000 aaaa 0000 bbbb 0000 cccc 0000 dddd
+            d = value & 0x0F           # Lowest 4 bits
+            c = (value >> 4) & 0x0F    # Next 4 bits
+            b = (value >> 8) & 0x0F    # Next 4 bits
+            a = (value >> 12) & 0x0F   # Highest 4 bits
+            
+            # Send each nibble as a separate parameter
+            self._send_parameter(DigitalParameter.WAVE_NUMBER.value, a)
+            self._send_parameter(DigitalParameter.WAVE_NUMBER.value + 1, b)
+            self._send_parameter(DigitalParameter.WAVE_NUMBER.value + 2, c)
+            self._send_parameter(DigitalParameter.WAVE_NUMBER.value + 3, d)
+            
+            logging.debug(f"Sent wave number {value} as bytes: {a:X} {b:X} {c:X} {d:X}")
+            
+        except Exception as e:
+            logging.error(f"Error sending wave number: {str(e)}")
         
     def _update_partial_osc_controls(self, param: int, value: int):
         """Update partial oscillator controls"""
@@ -645,7 +694,11 @@ class DigitalSynthEditor(BaseEditor):
                 0x06: "osc_pw",
                 0x07: "osc_pitch_atk",
                 0x08: "osc_pitch_dec",
-                0x09: "osc_pitch_depth"
+                0x09: "osc_pitch_depth",
+                0x34: "wave_gain",
+                0x35: "wave_number",
+                0x39: "hpf_cutoff",
+                0x3A: "super_saw_detune"
             }
             
             if param not in control_map:
@@ -657,10 +710,20 @@ class DigitalSynthEditor(BaseEditor):
             if not control:
                 return
             
-            if param in (0x00, 0x01):  # Combo boxes
+            if param == 0x34:  # Wave gain combo box
                 control.setCurrentIndex(value)
-            elif param in (0x03, 0x04, 0x09):  # Bipolar values
-                control.setValue(value - 64)
+            elif param == 0x35:  # Wave number (handle first byte only)
+                # Only update on first byte, reconstruct full value
+                if hasattr(self, '_wave_number_bytes'):
+                    self._wave_number_bytes[0] = value
+                else:
+                    self._wave_number_bytes = [value, 0, 0, 0]
+                # Calculate full value
+                full_value = (self._wave_number_bytes[0] << 12 |
+                             self._wave_number_bytes[1] << 8 |
+                             self._wave_number_bytes[2] << 4 |
+                             self._wave_number_bytes[3])
+                control.setValue(full_value)
             else:  # Direct values
                 control.setValue(value)
             
@@ -853,6 +916,13 @@ class DigitalSynthEditor(BaseEditor):
         pan.setObjectName("amp_pan_control")
         layout.addWidget(pan)
         
+        # Level keyfollow
+        keyfollow = Slider("Level Keyfollow", -100, 100,
+            lambda v: self._send_parameter(DigitalParameter.AMP_LEVEL_KEYFOLLOW.value, 
+                                         int((v + 100) * 20/200 + 54)))
+        keyfollow.setObjectName("amp_level_keyfollow_control")
+        layout.addWidget(keyfollow)
+        
         return frame
         
     def _update_partial_amp_controls(self, param: int, value: int):
@@ -865,7 +935,8 @@ class DigitalSynthEditor(BaseEditor):
                 0x18: "amp_env_decay",
                 0x19: "amp_env_sustain",
                 0x1A: "amp_env_release",
-                0x1B: "amp_pan"
+                0x1B: "amp_pan",
+                0x3C: "amp_level_keyfollow"
             }
             
             if param not in control_map:
@@ -881,6 +952,8 @@ class DigitalSynthEditor(BaseEditor):
                 control.setValue(value - 64)
             elif param == 0x1B:  # Pan (L64-63R)
                 control.setValue(value - 64)
+            elif param == 0x3C:  # Level keyfollow
+                control.setValue(((value - 54) * 200/20) - 100)  # Convert to -100/+100
             else:  # Direct values
                 control.setValue(value)
             
@@ -1134,3 +1207,55 @@ class DigitalSynthEditor(BaseEditor):
             
         except Exception as e:
             logging.error(f"Error updating mod LFO control: {str(e)}") 
+        
+    def _create_partial_aftertouch_section(self) -> QFrame:
+        """Create partial aftertouch section"""
+        frame = QFrame()
+        frame.setFrameStyle(QFrame.StyledPanel)
+        layout = QVBoxLayout(frame)
+        
+        # Add header
+        layout.addWidget(QLabel("Aftertouch"))
+        
+        # Sensitivity controls
+        sens_frame = QFrame()
+        sens_layout = QHBoxLayout(sens_frame)
+        
+        # Cutoff sensitivity
+        cutoff = Slider("Cutoff", -63, 63,
+            lambda v: self._send_parameter(DigitalParameter.CUTOFF_AFTERTOUCH.value, v + 64))
+        cutoff.setObjectName("cutoff_aftertouch_control")
+        sens_layout.addWidget(cutoff)
+        
+        # Level sensitivity
+        level = Slider("Level", -63, 63,
+            lambda v: self._send_parameter(DigitalParameter.LEVEL_AFTERTOUCH.value, v + 64))
+        level.setObjectName("level_aftertouch_control")
+        sens_layout.addWidget(level)
+        
+        layout.addWidget(sens_frame)
+        
+        return frame
+        
+    def _update_partial_aftertouch_controls(self, param: int, value: int):
+        """Update partial aftertouch controls"""
+        try:
+            control_map = {
+                0x30: "cutoff_aftertouch",
+                0x31: "level_aftertouch"
+            }
+            
+            if param not in control_map:
+                return
+            
+            control_name = control_map[param]
+            control = self.findChild(QWidget, f"{control_name}_control")
+            
+            if not control:
+                return
+            
+            control.setValue(value - 64)  # Convert to -63/+63
+            logging.debug(f"Updated aftertouch control {control_name}: {value}")
+            
+        except Exception as e:
+            logging.error(f"Error updating aftertouch control: {str(e)}") 
