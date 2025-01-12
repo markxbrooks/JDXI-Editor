@@ -8,29 +8,35 @@ from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen
 import logging
 from pathlib import Path
 
-from .editors import (
+from jdxi_manager.data.analog import AN_PRESETS
+from jdxi_manager.data.digital import DIGITAL_PRESETS
+from jdxi_manager.data.drums import DRUM_PRESETS
+from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
     DrumEditor,
     ArpeggioEditor,
     EffectsEditor
 )
-from .midi_config import MIDIConfigDialog
-from .patch_manager import PatchManager
-from .widgets import MIDIIndicator, LogViewer
-from ..midi import MIDIHelper, MIDIConnection
-from .midi_debugger import MIDIDebugger
-from .midi_message_debug import MIDIMessageDebug
-from ..midi.connection import MIDIConnection
-from .patch_name_editor import PatchNameEditor
+from jdxi_manager.ui.midi_config import MIDIConfigDialog
+from jdxi_manager.ui.patch_manager import PatchManager
+from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer
+from jdxi_manager.midi import MIDIHelper, MIDIConnection
+from jdxi_manager.ui.midi_debugger import MIDIDebugger
+from jdxi_manager.ui.midi_message_debug import MIDIMessageDebug
+from jdxi_manager.midi.connection import MIDIConnection
+from jdxi_manager.ui.patch_name_editor import PatchNameEditor
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
     DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
     EFFECTS_AREA
 )
-from .widgets.piano_keyboard import PianoKeyboard
-from ..midi.messages import IdentityRequest
+from jdxi_manager.ui.widgets.piano_keyboard import PianoKeyboard
+from jdxi_manager.ui.widgets.channel_button import ChannelButton
+from jdxi_manager.midi.messages import IdentityRequest
+from jdxi_manager.midi.messages import ParameterMessage
+from jdxi_manager.ui.editors.preset_editor import PresetEditor
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -82,9 +88,12 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     
     # Draw preset number and name
     preset_text = f"{preset_num:03d}:{preset_name}"
-    text_y = display_y + 25  # Position for preset text
+    # Truncate if too long for display
+    if len(preset_text) > 16:  # Adjust based on display width
+        preset_text = preset_text[:15] + "…"
+    text_y = display_y + 25
     painter.drawText(
-        display_x + 10,  # Add small margin
+        display_x + 10,
         text_y,
         preset_text
     )
@@ -326,8 +335,30 @@ class MainWindow(QMainWindow):
         self.current_preset_name = "INIT PATCH"
         
         # Add piano keyboard at bottom
-        keyboard = PianoKeyboard(parent=self)
-        self.statusBar().addPermanentWidget(keyboard)
+        self.piano_keyboard = PianoKeyboard(parent=self)
+        self.statusBar().addPermanentWidget(self.piano_keyboard)
+        
+        # Create display label
+        self.display_label = QLabel()
+        self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
+        
+        # Initial display
+        self._update_display_image()
+        
+        # Add display to layout
+        if hasattr(self, 'main_layout'):
+            self.main_layout.addWidget(self.display_label)
+        
+        # Create channel indicator
+        self.channel_button = ChannelButton()
+        
+        # Add to status bar before piano keyboard
+        self.statusBar().addPermanentWidget(self.channel_button)
+        self.statusBar().addPermanentWidget(self.piano_keyboard)
+        
+        # Load last used preset settings
+        self.settings = QSettings('JDXiManager', 'JDXiManager')
+        self._load_last_preset()
         
     def _create_central_widget(self):
         """Create the main dashboard"""
@@ -440,12 +471,18 @@ class MainWindow(QMainWindow):
         help_menu.addAction(log_viewer_action)
         
         # Add Edit menu
-        edit_menu = menubar.addMenu("Edit")
+        # edit_menu = menubar.addMenu("Edit")
         
         # Add Patch Name action
         edit_name_action = QAction("Edit Patch Name", self)
         edit_name_action.triggered.connect(self._edit_patch_name)
         edit_menu.addAction(edit_name_action)
+        
+        # Add Presets menu
+        # presets_menu = self.menuBar().addMenu("&Presets")
+        
+        presets_action = edit_menu.addAction("&Presets")
+        presets_action.triggered.connect(self._show_analog_presets)
         
     def _create_status_bar(self):
         status_bar = self.statusBar()
@@ -1625,11 +1662,7 @@ class MainWindow(QMainWindow):
         return indicator_widget 
 
     def _handle_octave_shift(self, direction: int):
-        """Handle octave shift button press
-        
-        Args:
-            direction: +1 for up, -1 for down
-        """
+        """Handle octave shift button press"""
         try:
             if self.midi_helper:
                 # Get current octave from UI (-3 to +3)
@@ -1641,14 +1674,15 @@ class MainWindow(QMainWindow):
                 # Convert to MIDI value (61-67 maps to -3 to +3)
                 midi_value = new_octave + 64  # Center at 64
                 
-                # Send parameter change
-                msg = JDXiSysEx.create_parameter_message(
+                # Send parameter change using new dataclass
+                msg = ParameterMessage(
                     area=ANALOG_SYNTH_AREA,
                     part=0x00,
                     group=0x00,
                     param=0x34,  # Octave Shift parameter address
                     value=midi_value
-                )
+                ).to_list()
+                
                 self.midi_helper.send_message(msg)
                 
                 # Update UI state
@@ -1659,3 +1693,118 @@ class MainWindow(QMainWindow):
                 
         except Exception as e:
             logging.error(f"Error shifting octave: {str(e)}") 
+
+    def _show_analog_presets(self):
+        """Show analog synth preset editor"""
+        if not hasattr(self, 'preset_editor'):
+            # Pass self as parent to PresetEditor
+            self.preset_editor = PresetEditor(midi_helper=self.midi_helper, parent=self)
+            # Connect preset change signal
+            self.preset_editor.preset_changed.connect(self._update_display_preset)
+        self.preset_editor.show()
+        self.preset_editor.raise_()
+        
+    def _update_display_preset(self, preset_num: int, preset_name: str, channel: int):
+        """Update digital display with preset information"""
+        try:
+            # Update display
+            self.update_preset_display(preset_num, preset_name[4:])
+            
+            # Update piano keyboard channel
+            if hasattr(self, 'piano_keyboard'):
+                self.piano_keyboard.set_midi_channel(channel)
+                
+            # Update channel indicator
+            if hasattr(self, 'channel_button'):
+                self.channel_button.set_channel(channel)
+            
+            logging.debug(f"Updated display: {preset_num:03d}:{preset_name} (channel {channel})")
+            
+        except Exception as e:
+            logging.error(f"Error updating display: {str(e)}") 
+
+    def _update_display_image(self, preset_num: int = 1, preset_name: str = "INIT PATCH"):
+        """Update the digital display image
+        
+        Args:
+            preset_num: Preset number to display (1-128)
+            preset_name: Name of preset to display
+        """
+        try:
+            # Create new image with updated preset info
+            image = get_jdxi_image(
+                digital_font_family=self.digital_font_family,
+                current_octave=self.current_octave,
+                preset_num=preset_num,
+                preset_name=preset_name
+            )
+            
+            # Update display label
+            if hasattr(self, 'display_label'):
+                self.display_label.setPixmap(image)
+            
+            logging.debug(f"Updated display: {preset_num:03d}:{preset_name}")
+            
+        except Exception as e:
+            logging.error(f"Error updating display image: {str(e)}") 
+
+    def _load_last_preset(self):
+        """Load the last used preset from settings"""
+        try:
+            # Get last preset info from settings
+            synth_type = self.settings.value('last_preset/synth_type', 'Analog')
+            preset_num = self.settings.value('last_preset/preset_num', 0, type=int)
+            channel = self.settings.value('last_preset/channel', 0, type=int)
+            
+            # Get preset list based on synth type
+            if synth_type == 'Analog':
+                presets = AN_PRESETS
+                bank_msb = 0
+                bank_lsb = preset_num // 7
+                program = preset_num % 7
+            elif synth_type == 'Digital 1':
+                presets = DIGITAL_PRESETS
+                bank_msb = 1
+                bank_lsb = preset_num // 16
+                program = preset_num % 16
+            elif synth_type == 'Digital 2':
+                presets = DIGITAL_PRESETS
+                bank_msb = 2
+                bank_lsb = preset_num // 16
+                program = preset_num % 16
+            else:  # Drums
+                presets = DRUM_PRESETS
+                bank_msb = 3
+                bank_lsb = preset_num // 16
+                program = preset_num % 16
+            
+            # Send MIDI messages to load preset
+            if hasattr(self, 'midi_helper') and self.midi_helper:
+                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
+                self.midi_helper.send_program_change(program, channel)
+                
+                # Update display and channel
+                preset_name = presets[preset_num]
+                self._update_display_preset(preset_num + 1, preset_name, channel)
+                
+                logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
+            
+        except Exception as e:
+            logging.error(f"Error loading last preset: {str(e)}")
+            
+    def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
+        """Save the last used preset to settings
+        
+        Args:
+            synth_type: Type of synth ('Analog', 'Digital 1', 'Digital 2', 'Drums')
+            preset_num: Preset number (0-based index)
+            channel: MIDI channel
+        """
+        try:
+            self.settings.setValue('last_preset/synth_type', synth_type)
+            self.settings.setValue('last_preset/preset_num', preset_num)
+            self.settings.setValue('last_preset/channel', channel)
+            logging.debug(f"Saved last preset: {synth_type} #{preset_num} on channel {channel}")
+            
+        except Exception as e:
+            logging.error(f"Error saving last preset: {str(e)}") 

@@ -2,7 +2,71 @@
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Dict, List
+from typing import Dict, List, ClassVar, Tuple
+
+from jdxi_manager.midi.messages import AnalogToneMessage
+from jdxi_manager.midi.constants import AnalogToneCC
+
+AN_PRESETS: Tuple[str, ...] = (
+    # Bank 1 (1-7)
+    '001: Toxic Bass 1',    '002: Sub Bass 1',    '003: Backwards 1',   '004: Fat as That1',
+    '005: Saw+Sub Bs 1',    '006: Saw Bass 1',    '007: Pulse Bass 1',
+    # Bank 2 (8-14)
+    '008: ResoSaw Bs 1',    '009: ResoSaw Bs 2',  '010: AcidSaw SEQ1',  '011: Psy Bass 1',
+    '012: Dist TB Bs 1',    '013: Sqr Bass 1',    '014: Tri Bass 1',
+    # Bank 3 (15-21)
+    '015: Snake Glide1',    '016: Soft Bass 1',   '017: Tear Drop 1',   '018: Slo worn 1',
+    '019: Dist LFO Bs1',    '020: ResoPulseBs1',  '021: Squelchy 1',
+    # Bank 4 (22-28)
+    '022: DnB Wobbler1',    '023: OffBeat Wob1',  '024: Chilled Wob',   '025: Bouncy Bass1',
+    '026: PulseOfLife1',    '027: PWM Base 1',    '028: Pumper Bass1',
+    # Bank 5 (29-35)
+    '029: ClickerBass1',    '030: Psy Bass 2',    '031: HooverSuprt1',  '032: Celoclip 1',
+    '033: Tri Fall Bs1',    '034: 808 Bass 1',    '035: House Bass 1',
+    # Bank 6 (36-42)
+    '036: Psy Bass 3',      '037: Reel 1',        '038: PortaSaw Ld1',  '039: Porta Lead 1',
+    '040: Analog Tp 1',     '041: Tri Lead 1',    '042: Sine Lead 1',
+    # Bank 7 (43-49)
+    '043: Saw Buzz 1',      '044: Buzz Saw Ld1',  '045: Laser Lead 1',  '046: Saw & Per 1',
+    '047: Insect 1',        '048: Sqr SEQ 1',     '049: ZipPhase 1',
+    # Bank 8 (50-56)
+    '050: Stinger 1',       '051: 3 Oh 3',        '052: Sus Zap 1',     '053: Bowouch 1',
+    '054: Resocut 1',       '055: LFO FX',        '056: Fall Synth 1',
+    # Bank 9 (57-63)
+    '057: Twister 1',       '058: Analog Kick1',  '059: Zippers 1',     '060: Zippers 2',
+    '061: Zippers 3',       '062: Siren Hell 1',  '063: SirenFX/Mod1'
+)
+
+# Analog preset categories
+AN_CATEGORIES = {
+    'BASS': [
+        '001: Toxic Bass 1', '002: Sub Bass 1', '005: Saw+Sub Bs 1', '006: Saw Bass 1',
+        '007: Pulse Bass 1', '008: ResoSaw Bs 1', '009: ResoSaw Bs 2', '011: Psy Bass 1',
+        '012: Dist TB Bs 1', '013: Sqr Bass 1', '014: Tri Bass 1', '025: Bouncy Bass1',
+        '030: Psy Bass 2', '034: 808 Bass 1', '035: House Bass 1', '036: Psy Bass 3'
+    ],
+    'LEAD': [
+        '038: PortaSaw Ld1', '039: Porta Lead 1', '040: Analog Tp 1', '041: Tri Lead 1',
+        '042: Sine Lead 1', '043: Saw Buzz 1', '044: Buzz Saw Ld1', '045: Laser Lead 1'
+    ],
+    'FX': [
+        '003: Backwards 1', '004: Fat as That1', '015: Snake Glide1', '017: Tear Drop 1',
+        '018: Slo worn 1', '019: Dist LFO Bs1', '052: Sus Zap 1', '055: LFO FX',
+        '059: Zippers 1', '060: Zippers 2', '061: Zippers 3', '062: Siren Hell 1',
+        '063: SirenFX/Mod1'
+    ],
+    'WOBBLE': [
+        '020: ResoPulseBs1', '021: Squelchy 1', '022: DnB Wobbler1', '023: OffBeat Wob1',
+        '024: Chilled Wob'
+    ],
+    'OTHER': [
+        '016: Soft Bass 1', '026: PulseOfLife1', '027: PWM Base 1', '028: Pumper Bass1',
+        '029: ClickerBass1', '031: HooverSuprt1', '032: Celoclip 1', '033: Tri Fall Bs1',
+        '037: Reel 1', '046: Saw & Per 1', '047: Insect 1', '048: Sqr SEQ 1',
+        '049: ZipPhase 1', '050: Stinger 1', '051: 3 Oh 3', '053: Bowouch 1',
+        '054: Resocut 1', '056: Fall Synth 1', '057: Twister 1', '058: Analog Kick1'
+    ]
+}
 
 class AnalogParameter(Enum):
     """Analog synth parameters"""
@@ -386,3 +450,167 @@ ANALOG_PRESETS = {
         0x13: 74      # Moderate filter mod
     }
 } 
+
+@dataclass
+class AnalogTone:
+    """Analog synth tone data structure"""
+    # Class constants
+    INIT_DATA: ClassVar[bytes] = bytes.fromhex(
+        "496E697420546F6E652020200000350000114040400100404000004000004000"
+        "017F4000400000007F0040407F404000007F00002800400202005040405200000000"
+    )
+    
+    # Tone name (12 characters)
+    name: str = "Init Tone"
+    
+    # ... (rest of the parameters remain the same)
+
+    @classmethod
+    def from_bytes(cls, data: bytes) -> 'AnalogTone':
+        """Create tone from binary data"""
+        if len(data) != 52:  # Check data length
+            raise ValueError(f"Invalid data length: {len(data)}")
+            
+        tone = cls()
+        
+        # Parse name (12 bytes)
+        tone.name = data[0:12].decode('ascii').rstrip()
+        
+        # Parse parameters
+        tone.osc_wave = data[12]
+        tone.osc_variation = data[13]
+        tone.osc_pitch = data[14] - 64  # Convert to -24/+24
+        tone.osc_detune = data[15] - 64  # Convert to -50/+50
+        tone.osc_pwm_depth = data[16]
+        tone.osc_pw = data[17]
+        
+        # ... Parse remaining parameters ...
+        
+        return tone
+
+    def to_bytes(self) -> bytes:
+        """Convert tone to binary data"""
+        data = bytearray(52)  # Create buffer
+        
+        # Write name (12 bytes)
+        name_bytes = self.name.encode('ascii')
+        data[0:len(name_bytes)] = name_bytes
+        
+        # Write parameters
+        data[12] = self.osc_wave
+        data[13] = self.osc_variation
+        data[14] = self.osc_pitch + 64  # Convert from -24/+24
+        data[15] = self.osc_detune + 64  # Convert from -50/+50
+        data[16] = self.osc_pwm_depth
+        data[17] = self.osc_pw
+        
+        # ... Write remaining parameters ...
+        
+        return bytes(data)
+
+    def to_messages(self) -> List[AnalogToneMessage]:
+        """Convert tone to MIDI messages"""
+        messages = []
+        
+        # Name messages (12 characters)
+        for i, char in enumerate(self.name.ljust(12)):
+            messages.append(AnalogToneMessage(
+                param=i,
+                value=ord(char)
+            ))
+        
+        # Oscillator parameters
+        messages.extend([
+            AnalogToneMessage(param=0x00, value=self.osc_wave),
+            AnalogToneMessage(param=0x01, value=self.osc_variation),
+            AnalogToneMessage(param=0x03, value=self.osc_pitch),
+            AnalogToneMessage(param=0x04, value=self.osc_detune),
+            AnalogToneMessage(param=0x05, value=self.osc_pwm_depth),
+            AnalogToneMessage(param=0x06, value=self.osc_pw),
+            AnalogToneMessage(param=0x2A, value=self.osc_pw_shift),
+        ])
+        
+        # Pitch envelope
+        messages.extend([
+            AnalogToneMessage(param=0x07, value=self.pitch_env_attack),
+            AnalogToneMessage(param=0x08, value=self.pitch_env_decay),
+            AnalogToneMessage(param=0x09, value=self.pitch_env_depth),
+        ])
+        
+        # Filter parameters
+        messages.extend([
+            AnalogToneMessage(param=0x0A, value=self.filter_mode),
+            AnalogToneMessage(param=0x0B, value=self.filter_slope),
+            AnalogToneMessage(param=0x0C, value=self.filter_cutoff),
+            AnalogToneMessage(param=0x0D, value=self.filter_keyfollow),
+            AnalogToneMessage(param=0x0E, value=self.filter_velocity),
+            AnalogToneMessage(param=0x0F, value=self.filter_resonance),
+            AnalogToneMessage(param=0x39, value=self.hpf_cutoff),
+        ])
+        
+        # ... Add remaining parameter messages ...
+        
+        return messages
+
+    @classmethod
+    def init_tone(cls) -> 'AnalogTone':
+        """Create an initialized tone"""
+        return cls.from_bytes(cls.INIT_DATA)
+
+    def get_cc_messages(self, channel: int = 0) -> List[bytes]:
+        """Get realtime control change messages"""
+        messages = []
+        
+        # Standard CC messages
+        messages.extend([
+            AnalogToneCCMessage(
+                channel=channel,
+                cc=AnalogToneCC.CUTOFF,
+                value=self.filter_cutoff
+            ).to_bytes(),
+            AnalogToneCCMessage(
+                channel=channel,
+                cc=AnalogToneCC.RESONANCE,
+                value=self.filter_resonance
+            ).to_bytes(),
+            AnalogToneCCMessage(
+                channel=channel,
+                cc=AnalogToneCC.LEVEL,
+                value=self.amp_level
+            ).to_bytes(),
+            AnalogToneCCMessage(
+                channel=channel,
+                cc=AnalogToneCC.LFO_RATE,
+                value=self.lfo_rate
+            ).to_bytes(),
+        ])
+        
+        # NRPN messages
+        messages.extend([
+            AnalogToneCCMessage(
+                channel=channel,
+                cc=AnalogToneCC.NRPN_ENV,
+                value=self.amp_env_attack,
+                is_nrpn=True
+            ).to_bytes(),
+            AnalogToneCCMessage(
+                channel=channel,
+                cc=AnalogToneCC.NRPN_LFO_SHAPE,
+                value=self.lfo_shape,
+                is_nrpn=True
+            ).to_bytes(),
+            # ... Add other NRPN messages ...
+        ])
+        
+        return messages 
+
+    @classmethod
+    def send_init_data(cls, connection) -> None:
+        """Send init data as MIDI messages"""
+        # Create init tone and convert to messages
+        init_tone = cls.init_tone()
+        messages = init_tone.to_messages()
+        
+        # Send each message
+        for msg in messages:
+            connection.send_message(msg.to_bytes()) 

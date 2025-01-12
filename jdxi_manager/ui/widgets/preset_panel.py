@@ -3,6 +3,9 @@ from PySide6.QtWidgets import (
     QLabel, QComboBox, QPushButton
 )
 from PySide6.QtCore import Signal
+import logging
+
+from jdxi_manager.ui.style import Style
 
 class PresetPanel(QWidget):
     """Panel for loading/saving presets"""

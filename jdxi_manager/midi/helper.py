@@ -205,3 +205,41 @@ class MIDIHelper:
         except Exception as e:
             logging.error(f"Error sending MIDI message: {str(e)}")
             return False
+
+    def send_bank_select(self, msb: int, lsb: int, channel: int = 0):
+        """Send bank select messages
+        
+        Args:
+            msb: Bank select MSB (0-127)
+            lsb: Bank select LSB (0-127)
+            channel: MIDI channel (0-15)
+        """
+        try:
+            # Bank Select MSB (CC 0)
+            self.send_message([0xB0 | channel, 0x00, msb])
+            
+            # Bank Select LSB (CC 32)
+            self.send_message([0xB0 | channel, 0x20, lsb])
+            
+            logging.debug(f"Sent bank select MSB:{msb} LSB:{lsb} on channel {channel}")
+            
+        except Exception as e:
+            logging.error(f"Error sending bank select: {str(e)}")
+            raise
+
+    def send_program_change(self, program: int, channel: int = 0):
+        """Send program change message
+        
+        Args:
+            program: Program number (0-127)
+            channel: MIDI channel (0-15)
+        """
+        try:
+            # Program Change
+            self.send_message([0xC0 | channel, program])
+            
+            logging.debug(f"Sent program change {program} on channel {channel}")
+            
+        except Exception as e:
+            logging.error(f"Error sending program change: {str(e)}")
+            raise
