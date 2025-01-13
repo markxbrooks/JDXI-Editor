@@ -2,6 +2,11 @@ from dataclasses import dataclass
 from enum import Enum, auto, IntEnum
 from typing import Dict, List, Tuple, Optional
 import logging
+from jdxi_manager.midi.constants import (
+    DIGITAL_SYNTH_AREA, PART_1, 
+    OSC_1_GROUP, OSC_WAVE_PARAM,
+    WAVE_SAW
+)
 
 class WaveGain(IntEnum):
     """Wave gain values in dB"""
@@ -349,3 +354,49 @@ def send_digital_parameter(midi_helper, param: DigitalParameter, value: int, par
     except Exception as e:
         logging.error(f"Error sending digital parameter: {str(e)}")
         raise
+
+def send_parameter(self, group: int, param: int, value: int) -> bool:
+    """Send parameter change to synth
+    
+    Args:
+        group: Parameter group (OSC, FILTER, etc)
+        param: Parameter number
+        value: Parameter value
+        
+    Returns:
+        True if successful
+    """
+    try:
+        if not self.midi_helper:
+            logging.error("No MIDI helper available")
+            return False
+            
+        return self.midi_helper.send_parameter(
+            area=DIGITAL_SYNTH_AREA,  # 0x19 for Digital Synth 1
+            part=PART_1,              # 0x01 for Part 1
+            group=group,              # e.g. OSC_PARAM_GROUP
+            param=param,              # Parameter number
+            value=value               # Parameter value
+        )
+        
+    except Exception as e:
+        logging.error(f"Error sending digital parameter: {str(e)}")
+        return False
+
+def set_osc1_waveform(self, waveform: int) -> bool:
+    """Set Oscillator 1 waveform
+    
+    Args:
+        waveform: Waveform value (0=Saw, 1=Square, etc)
+    """
+    try:
+        return self.midi_helper.send_parameter(
+            area=DIGITAL_SYNTH_AREA,  # 0x19
+            part=PART_1,              # 0x01
+            group=OSC_1_GROUP,        # 0x20 - OSC 1
+            param=OSC_WAVE_PARAM,     # 0x00 - Waveform
+            value=waveform            # e.g. WAVE_SAW (0x00)
+        )
+    except Exception as e:
+        logging.error(f"Error setting OSC1 waveform: {str(e)}")
+        return False

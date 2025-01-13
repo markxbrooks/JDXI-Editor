@@ -24,20 +24,20 @@ class AnalogSynthEditor(BaseEditor):
         self.setCentralWidget(main_widget)
         
         # Create sections
-        self._create_oscillator_section(main_layout)
+        self._create_osc_section(main_layout)
         self._create_filter_section(main_layout)
         self._create_amp_section(main_layout)
         self._create_lfo_section(main_layout)
         
         # Set window properties
-        self.setMinimumWidth(400)
-        self.setMinimumHeight(600)
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(700)
         
         # Send init data when window opens
         if self.connection:
             AnalogTone.send_init_data(self.connection)
 
-    def _create_oscillator_section(self, parent_layout):
+    def _create_osc_section(self, parent_layout):
         """Create oscillator controls"""
         group = QGroupBox("Oscillator")
         layout = QVBoxLayout(group)

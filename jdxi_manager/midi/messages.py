@@ -4,7 +4,20 @@ from typing import List, Optional
 from jdxi_manager.midi.base_messages import RolandSysEx
 from jdxi_manager.midi.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.device import DeviceInfo
-from jdxi_manager.midi.constants import DrumKitCC
+from jdxi_manager.midi.constants import (
+    DrumKitCC, 
+    START_OF_SYSEX, 
+    END_OF_SYSEX, 
+    ROLAND_ID, 
+    DEVICE_ID, 
+    MODEL_ID, 
+    DT1_COMMAND, 
+    DIGITAL_SYNTH_AREA, 
+    PART_1,
+    OSC_1_GROUP,        # Changed from OSC_PARAM_GROUP
+    OSC_WAVE_PARAM,     # Changed from PARAM_NUMBER
+    WAVE_SAW
+)
 
 @dataclass
 class JDXiSysEx(RolandSysEx):
@@ -83,38 +96,33 @@ class JDXiSysEx(RolandSysEx):
         return message
 
 @dataclass
-class IdentityRequest(JDXiSysEx):
-    """Identity Request message (Who am I?)"""
-    command: int = 0x7E    # Universal Non-realtime
-    area: int = 0x7F      # All channels
-    section: int = 0x06    # General Information
-    group: int = 0x01     # Identity Request
-    param: int = 0x00     # Sub ID#2
-    device_info: Optional[DeviceInfo] = None
-
-    def to_bytes(self) -> bytes:
-        """Convert to Identity Request SysEx message"""
-        msg = [
-            0xF0,           # Start of SysEx
-            0x7E,           # Universal Non-realtime
-            0x7F,           # All channels
-            0x06,           # General Information
-            0x01,           # Identity Request
-            0xF7            # End of SysEx
+class IdentityRequest:
+    """MIDI Identity Request message"""
+    device_id: int = 0x10  # Default device ID
+    
+    def to_list(self) -> List[int]:
+        """Convert to list of bytes for sending
+        
+        Returns:
+            List of integers representing the MIDI message
+        """
+        return [
+            START_OF_SYSEX,  # F0
+            ROLAND_ID,       # 41 - Roland ID
+            self.device_id,  # Device ID (default 10)
+            *MODEL_ID,       # 00 00 00 0E - JD-Xi model ID
+            0x11,           # 11 - Request command
+            0x7F,           # 7F - Identity Request
+            END_OF_SYSEX    # F7
         ]
-        return bytes(msg)
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Create from Identity Reply message"""
-        device_info = DeviceInfo.from_identity_reply(data)
-        if not device_info:
-            raise ValueError("Invalid Identity Reply message")
-            
-        return cls(
-            device_id=device_info.device_id,
-            device_info=device_info
-        )
+        
+    def to_bytes(self) -> bytes:
+        """Convert to bytes for sending
+        
+        Returns:
+            Bytes object containing the MIDI message
+        """
+        return bytes(self.to_list())
 
 def create_sysex_message(area: int, section: int, group: int, param: int, value: int) -> JDXiSysEx:
     """Create a JD-Xi SysEx message with the given parameters"""
@@ -709,5 +717,41 @@ class DrumKitCCMessage:
                 value=data[8]         # Parameter value
             )
         raise ValueError("Invalid CC message length")
+
+def create_parameter_message(area: int, part: int, group: int, param: int, value: int) -> bytes:
+    """Create parameter change SysEx message"""
+    message = [
+        START_OF_SYSEX,  # F0
+        ROLAND_ID,       # 41
+        DEVICE_ID,       # 10
+        *MODEL_ID,       # 00 00 00 0E
+        DT1_COMMAND,     # 12
+        area,            # 19 (Digital Synth)
+        part,            # 01 (Part 1)
+        group,           # 20 (OSC)
+        param,           # 00 (First parameter)
+        value,           # 00 (SAW)
+    ]
+    
+    # Calculate checksum (from area byte to value byte)
+    checksum = 0
+    for byte in message[8:]:  # Start from area byte
+        checksum += byte
+    checksum = (128 - (checksum % 128)) & 0x7F
+    
+    message.append(checksum)   # 46
+    message.append(END_OF_SYSEX)  # F7
+    
+    return bytes(message)
+
+# Usage example:
+msg = create_parameter_message(
+    area=DIGITAL_SYNTH_AREA,    # 0x19
+    part=PART_1,                # 0x01
+    group=OSC_1_GROUP,          # 0x20 - Changed from OSC_PARAM_GROUP
+    param=OSC_WAVE_PARAM,       # 0x00
+    value=WAVE_SAW             # 0x00
+)
+# Result: F0 41 10 00 00 00 0E 12 19 01 20 00 00 46 F7
 
 # etc... 
