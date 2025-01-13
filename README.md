@@ -4,15 +4,16 @@
 
 A Manager for the Roland JD-Xi instrument, written in Python and the Qt Framework 
 
-![./resources/jdxi_app.png](source **=600x400**)
-
-Current view of the Roland JD-Xi Manager App.
-
 Designed to implement as many features at possible of the Roldand MIDI implementation without menu diving :-)
 
 Not at all feature-complete or even complete, but have a go and let me know your feedback.
 
-Getting started:
+![image info](./resources/jdxi_app_600.png ) 
+
+Current view of the Roland JD-Xi Manager App.
+
+
+Getting started quick guide:
 
 There are no builds yet, so you'll have to run it from a Python shell.
 
