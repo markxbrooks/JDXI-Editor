@@ -600,7 +600,7 @@ class DigitalSynthEditor(BaseEditor):
                     value
                 )
                 logging.debug(f"Sent digital synth {self.synth_num} parameter {param.name}: {value}")
-                
+            
         except Exception as e:
             logging.error(f"Error sending digital parameter: {str(e)}")
 

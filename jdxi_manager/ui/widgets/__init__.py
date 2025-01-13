@@ -10,11 +10,12 @@ from .sequencer_square import SequencerSquare
 from .piano_key import PianoKey
 from .piano_keyboard import PianoKeyboard
 from .channel_button import ChannelButton
+from .led_indicator import LEDIndicator
 
 __all__ = [
     'Slider',
     'WaveformButton',
-    'PatternDisplay',
+    'PatternDisplay', 
     'MIDIIndicator',
     'ValueDisplay',
     'PatchName',
@@ -23,5 +24,6 @@ __all__ = [
     'SequencerSquare',
     'PianoKey',
     'PianoKeyboard',
-    'ChannelButton'
+    'ChannelButton',
+    'LEDIndicator'
 ] 
