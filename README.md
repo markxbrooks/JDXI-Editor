@@ -23,5 +23,5 @@ There are no builds yet, so you'll have to run it from a Python shell.
     $ cd JDXI-Manager
     $ python -m venv venv
     $ source venv/bin/activate
-    $ python -r requirements.txt
+    $ python -m pip install -r requirements.txt
     $ python -m jdxi_manager.main
