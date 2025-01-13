@@ -1,6 +1,4 @@
--e git+https://github.com/markxbrooks/JDXI-Manager.git@111332708989ed516be21e9c8629254b9b1f5e75#egg=jdxi_manager
 PySide6==6.8.1.1
 PySide6_Addons==6.8.1.1
 PySide6_Essentials==6.8.1.1
 python-rtmidi==1.5.8
-shiboken6==6.8.1.1
