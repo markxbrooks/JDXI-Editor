@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLabel
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient, QPalette
 from PySide6.QtCore import Signal
 import logging
+
 
 class PianoKeyboard(QWidget):
     """Widget containing a row of piano keys styled like JD-Xi"""
@@ -11,7 +12,7 @@ class PianoKeyboard(QWidget):
         super().__init__(parent)
         self.current_channel = 0  # Default to analog synth channel
         
-        # Set keyboard range and dimensions
+        # Set keyboard dimensions
         self.white_key_width = 35
         self.white_key_height = 160
         self.black_key_width = int(self.white_key_width * 0.6)
@@ -33,21 +34,59 @@ class PianoKeyboard(QWidget):
         
         # Calculate total width
         total_width = len(self.white_notes) * self.white_key_width
-        self.setFixedSize(total_width + 2, self.white_key_height + 2)
+        self.setFixedSize(total_width + 2, self.white_key_height + 30)  # Added height for labels
         
-        # Create layout
-        layout = QHBoxLayout(self)
-        layout.setSpacing(0)
-        layout.setContentsMargins(1, 1, 1, 1)
+        # Create main layout
+        main_layout = QVBoxLayout(self)
+        main_layout.setSpacing(0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         
-        # Move keyboard left
-        self.setContentsMargins(0, 0, 0, 0)
-        self.move(-340, 0)
+        # Add drum pad labels
+        labels_layout = QHBoxLayout()
+        labels_layout.setSpacing(0)
+        labels_layout.setContentsMargins(1, 1, 1, 1)
+        
+        # Drum pad names in order
+        drum_labels = [
+            'BD1', 'RIM', 'BD2', 'CLP', 'BD3', 'SD1', 'CHH',
+            'SD2', 'PHH', 'SD3', 'OHH', 'SD4', 'TM1', 'PC1',
+            'TM2', 'PC2', 'TM3', 'PC3', 'CY1', 'PC4',
+            'CY2', 'PC5', 'CY3', 'HIT', 'OT1', 'OT2',
+            '   ', '   ', '   ', '   ', '   ', '   ', '   ',
+            '   ', '   ', '   ', '  ', ' '
+        ]
+        
+        # Create and style labels
+        for text in drum_labels:
+            label = QLabel(text)
+            label.setAlignment(Qt.AlignCenter)
+            label.setStyleSheet("""
+                QLabel {
+                    color: #808080;
+                    font-size: 7px;
+                    font-family: monospace;
+                    padding: 2px;
+                    min-width: 30px;
+                }
+            """)
+            labels_layout.addWidget(label)
+            
+        labels_layout.addStretch()
+        main_layout.addLayout(labels_layout)
+        
+        # Create keyboard container widget
+        keyboard_widget = QWidget()
+        keyboard_widget.setFixedSize(total_width + 2, self.white_key_height + 2)
+        keyboard_layout = QHBoxLayout(keyboard_widget)
+        keyboard_layout.setSpacing(0)
+        keyboard_layout.setContentsMargins(1, 1, 1, 1)
         
         # Create keys
-        self._create_keys()
+        self._create_keys(keyboard_widget)
         
-    def _create_keys(self):
+        main_layout.addWidget(keyboard_widget)
+        
+    def _create_keys(self, keyboard_widget):
         """Create piano keys"""
         # First create all white keys
         for i, note in enumerate(self.white_notes):
@@ -57,7 +96,7 @@ class PianoKeyboard(QWidget):
                 width=self.white_key_width,
                 height=self.white_key_height
             )
-            self.layout().addWidget(key)
+            keyboard_widget.layout().addWidget(key)
             
             # Connect signals
             if hasattr(self.parent(), '_handle_piano_note_on'):
@@ -75,7 +114,7 @@ class PianoKeyboard(QWidget):
                 width=self.black_key_width,
                 height=self.black_key_height
             )
-            black_key.setParent(self)
+            black_key.setParent(keyboard_widget)
             
             # Position black key
             x_pos = (pos * self.white_key_width) + (self.white_key_width - self.black_key_width//2)

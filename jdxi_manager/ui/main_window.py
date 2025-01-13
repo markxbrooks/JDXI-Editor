@@ -1125,9 +1125,9 @@ class MainWindow(QMainWindow):
             84, 86, 88, 89              # C5 to F5
         ]
         
-        for i, note in enumerate(white_notes):
-            x_pos = keyboard_start + i * key_width
-            self._add_piano_key(widget, False, note, x_pos, keyboard_y, key_width, key_height)
+        #for i, note in enumerate(white_notes):
+        #    x_pos = keyboard_start + i * key_width
+        #    self._add_piano_key(widget, False, note, x_pos, keyboard_y, key_width, key_height)
             
         # Add black keys
         black_notes = [
@@ -1141,9 +1141,9 @@ class MainWindow(QMainWindow):
         black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19, 
                          21, 22, 24, 25, 26, 28, 29, 31, 32]  # Extended positions
         
-        for pos, note in zip(black_positions, [n for n in black_notes if n is not None]):
-            x_pos = keyboard_start + pos * key_width + key_width/2
-            self._add_piano_key(widget, True, note, x_pos, keyboard_y, key_width, key_height)
+        #for pos, note in zip(black_positions, [n for n in black_notes if n is not None]):
+        #    x_pos = keyboard_start + pos * key_width + key_width/2
+        #    self._add_piano_key(widget, True, note, x_pos, keyboard_y, key_width, key_height)
         
     def _add_piano_key(self, widget, is_black, note_number, x_pos, keyboard_y, key_width, key_height):
         """Helper to create a piano key button"""
@@ -1961,3 +1961,34 @@ class MainWindow(QMainWindow):
                 channel = self.settings.value(f'favorites/slot{button.slot_num}/channel', 0, type=int)
                 
                 button.save_preset(synth_type, preset_num, preset_name, channel) 
+
+    def load_preset(self, preset_data):
+        """Load preset data into synth"""
+        try:
+            if self.midi_helper:
+                # Send bank select for the preset
+                self.midi_helper.send_bank_select(
+                    msb=preset_data.bank_msb,
+                    lsb=preset_data.bank_lsb,
+                    program=preset_data.program_number
+                )
+                
+                # Store as last loaded preset
+                self.last_preset = preset_data
+                self.settings.setValue("last_preset", preset_data)
+                
+        except Exception as e:
+            logging.error(f"Error loading preset: {str(e)}")
+
+    def show_analog_editor(self):
+        """Show analog synth editor"""
+        try:
+            if not hasattr(self, 'analog_editor'):
+                self.analog_editor = AnalogSynthEditor(
+                    midi_helper=self.midi_helper
+                )
+            self.analog_editor.show()
+            self.analog_editor.raise_()
+            
+        except Exception as e:
+            logging.error(f"Error showing Analog Synth editor: {str(e)}")

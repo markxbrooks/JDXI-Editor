@@ -15,6 +15,15 @@ class BaseEditor(QMainWindow):
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
+        self.connection = None  # Initialize connection attribute
+        
+    def set_midi_helper(self, midi_helper: MIDIHelper):
+        """Set MIDI helper instance"""
+        self.midi_helper = midi_helper
+        
+    def set_connection(self, connection):
+        """Set MIDI connection"""
+        self.connection = connection
         
     def _request_patch_data(self):
         """Request current patch data from synth
