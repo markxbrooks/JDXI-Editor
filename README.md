@@ -4,7 +4,7 @@
 
 A Manager for the Roland JD-Xi instrument, written in Python and the Qt Framework 
 
-![image info](./resources/jdxi_app.png =100x100) 
+![image info](./resources/jdxi_app.png 100x100) 
 
 Current view of the Roland JD-Xi Manager App.
 
