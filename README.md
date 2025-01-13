@@ -2,9 +2,9 @@
 
 ![image info](./resources/jdxi.png)
 
-A Manager for the Roland JD-Xi instrument, written in Python and the Qt Framework 
+A Manager for the Roland JD-Xi instrument, written in Python and the Qt Framework and RtMidi 
 
-Designed to implement as many features at possible of the Roldand MIDI implementation without menu diving :-)
+Designed to implement as many features at possible of the Roland MIDI implementation without menu diving :-)
 
 Not at all feature-complete or even complete, but have a go and let me know your feedback.
 
