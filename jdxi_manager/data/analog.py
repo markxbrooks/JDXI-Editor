@@ -3,9 +3,10 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Dict, List, ClassVar, Tuple
+import logging
 
 from jdxi_manager.midi.messages import AnalogToneMessage
-from jdxi_manager.midi.constants import AnalogToneCC
+from jdxi_manager.midi.constants import AnalogToneCC, ANALOG_SYNTH_AREA, ANALOG_PART
 
 AN_PRESETS: Tuple[str, ...] = (
     # Bank 1 (1-7)
@@ -453,164 +454,81 @@ ANALOG_PRESETS = {
 
 @dataclass
 class AnalogTone:
-    """Analog synth tone data structure"""
-    # Class constants
-    INIT_DATA: ClassVar[bytes] = bytes.fromhex(
-        "496E697420546F6E652020200000350000114040400100404000004000004000"
-        "017F4000400000007F0040407F404000007F00002800400202005040405200000000"
-    )
+    """Analog synth tone data and methods"""
     
-    # Tone name (12 characters)
-    name: str = "Init Tone"
-    
-    # ... (rest of the parameters remain the same)
+    @staticmethod
+    def send_init_data(midi_helper):
+        """Send initialization data for analog synth parameters
+        
+        Args:
+            midi_helper: MIDI helper instance for sending messages
+        """
+        try:
+            # Send parameter request messages
+            for param_group in [
+                (0x00, 0x10),  # Common parameters
+                (0x10, 0x10),  # Oscillator parameters  
+                (0x20, 0x10),  # Filter parameters
+                (0x30, 0x10),  # Amplifier parameters
+                (0x40, 0x10)   # LFO parameters
+            ]:
+                start_addr, size = param_group
+                midi_helper.send_parameter(
+                    area=ANALOG_SYNTH_AREA,
+                    part=ANALOG_PART,
+                    group=0x00,  # Always 0 for analog synth
+                    param=start_addr,
+                    value=0  # Request current value
+                )
+                logging.debug(f"Requested analog params {start_addr:02X}-{start_addr+size-1:02X}")
+            
+        except Exception as e:
+            logging.error(f"Error sending analog init data: {str(e)}")
 
-    @classmethod
-    def from_bytes(cls, data: bytes) -> 'AnalogTone':
-        """Create tone from binary data"""
-        if len(data) != 52:  # Check data length
+    @staticmethod
+    def validate_data_length(data):
+        """Validate received data length
+        
+        Args:
+            data: Received MIDI data
+            
+        Returns:
+            bool: True if data length is valid
+        """
+        # Analog synth data should be 64 bytes
+        return len(data) == 64
+
+    @staticmethod
+    def parse_data(data):
+        """Parse received analog synth data
+        
+        Args:
+            data: Raw MIDI data bytes
+            
+        Returns:
+            dict: Parsed parameter values
+        """
+        if not AnalogTone.validate_data_length(data):
             raise ValueError(f"Invalid data length: {len(data)}")
             
-        tone = cls()
-        
-        # Parse name (12 bytes)
-        tone.name = data[0:12].decode('ascii').rstrip()
-        
-        # Parse parameters
-        tone.osc_wave = data[12]
-        tone.osc_variation = data[13]
-        tone.osc_pitch = data[14] - 64  # Convert to -24/+24
-        tone.osc_detune = data[15] - 64  # Convert to -50/+50
-        tone.osc_pwm_depth = data[16]
-        tone.osc_pw = data[17]
-        
-        # ... Parse remaining parameters ...
-        
-        return tone
-
-    def to_bytes(self) -> bytes:
-        """Convert tone to binary data"""
-        data = bytearray(52)  # Create buffer
-        
-        # Write name (12 bytes)
-        name_bytes = self.name.encode('ascii')
-        data[0:len(name_bytes)] = name_bytes
-        
-        # Write parameters
-        data[12] = self.osc_wave
-        data[13] = self.osc_variation
-        data[14] = self.osc_pitch + 64  # Convert from -24/+24
-        data[15] = self.osc_detune + 64  # Convert from -50/+50
-        data[16] = self.osc_pwm_depth
-        data[17] = self.osc_pw
-        
-        # ... Write remaining parameters ...
-        
-        return bytes(data)
-
-    def to_messages(self) -> List[AnalogToneMessage]:
-        """Convert tone to MIDI messages"""
-        messages = []
-        
-        # Name messages (12 characters)
-        for i, char in enumerate(self.name.ljust(12)):
-            messages.append(AnalogToneMessage(
-                param=i,
-                value=ord(char)
-            ))
-        
-        # Oscillator parameters
-        messages.extend([
-            AnalogToneMessage(param=0x00, value=self.osc_wave),
-            AnalogToneMessage(param=0x01, value=self.osc_variation),
-            AnalogToneMessage(param=0x03, value=self.osc_pitch),
-            AnalogToneMessage(param=0x04, value=self.osc_detune),
-            AnalogToneMessage(param=0x05, value=self.osc_pwm_depth),
-            AnalogToneMessage(param=0x06, value=self.osc_pw),
-            AnalogToneMessage(param=0x2A, value=self.osc_pw_shift),
-        ])
-        
-        # Pitch envelope
-        messages.extend([
-            AnalogToneMessage(param=0x07, value=self.pitch_env_attack),
-            AnalogToneMessage(param=0x08, value=self.pitch_env_decay),
-            AnalogToneMessage(param=0x09, value=self.pitch_env_depth),
-        ])
-        
-        # Filter parameters
-        messages.extend([
-            AnalogToneMessage(param=0x0A, value=self.filter_mode),
-            AnalogToneMessage(param=0x0B, value=self.filter_slope),
-            AnalogToneMessage(param=0x0C, value=self.filter_cutoff),
-            AnalogToneMessage(param=0x0D, value=self.filter_keyfollow),
-            AnalogToneMessage(param=0x0E, value=self.filter_velocity),
-            AnalogToneMessage(param=0x0F, value=self.filter_resonance),
-            AnalogToneMessage(param=0x39, value=self.hpf_cutoff),
-        ])
-        
-        # ... Add remaining parameter messages ...
-        
-        return messages
-
-    @classmethod
-    def init_tone(cls) -> 'AnalogTone':
-        """Create an initialized tone"""
-        return cls.from_bytes(cls.INIT_DATA)
-
-    def get_cc_messages(self, channel: int = 0) -> List[bytes]:
-        """Get realtime control change messages"""
-        messages = []
-        
-        # Standard CC messages
-        messages.extend([
-            AnalogToneCCMessage(
-                channel=channel,
-                cc=AnalogToneCC.CUTOFF,
-                value=self.filter_cutoff
-            ).to_bytes(),
-            AnalogToneCCMessage(
-                channel=channel,
-                cc=AnalogToneCC.RESONANCE,
-                value=self.filter_resonance
-            ).to_bytes(),
-            AnalogToneCCMessage(
-                channel=channel,
-                cc=AnalogToneCC.LEVEL,
-                value=self.amp_level
-            ).to_bytes(),
-            AnalogToneCCMessage(
-                channel=channel,
-                cc=AnalogToneCC.LFO_RATE,
-                value=self.lfo_rate
-            ).to_bytes(),
-        ])
-        
-        # NRPN messages
-        messages.extend([
-            AnalogToneCCMessage(
-                channel=channel,
-                cc=AnalogToneCC.NRPN_ENV,
-                value=self.amp_env_attack,
-                is_nrpn=True
-            ).to_bytes(),
-            AnalogToneCCMessage(
-                channel=channel,
-                cc=AnalogToneCC.NRPN_LFO_SHAPE,
-                value=self.lfo_shape,
-                is_nrpn=True
-            ).to_bytes(),
-            # ... Add other NRPN messages ...
-        ])
-        
-        return messages 
-
-    @classmethod
-    def send_init_data(cls, connection) -> None:
-        """Send init data as MIDI messages"""
-        # Create init tone and convert to messages
-        init_tone = cls.init_tone()
-        messages = init_tone.to_messages()
-        
-        # Send each message
-        for msg in messages:
-            connection.send_message(msg.to_bytes()) 
+        return {
+            'osc_wave': data[ANALOG_OSC_WAVE],
+            'osc_coarse': data[ANALOG_OSC_COARSE] - 64,  # Convert to -24/+24
+            'osc_fine': data[ANALOG_OSC_FINE] - 64,      # Convert to -50/+50
+            'osc_pw': data[ANALOG_OSC_PW],
+            'osc_pwm': data[ANALOG_OSC_PWM],
+            'osc_penv_velo': data[ANALOG_OSC_PENV_VELO] - 64,  # Convert to -63/+63
+            'osc_penv_a': data[ANALOG_OSC_PENV_A],
+            'osc_penv_d': data[ANALOG_OSC_PENV_D],
+            'osc_penv_depth': data[ANALOG_OSC_PENV_DEPTH] - 64,  # Convert to -63/+63
+            'sub_type': data[ANALOG_SUB_TYPE],
+            'lfo_shape': data[ANALOG_LFO_SHAPE],
+            'lfo_rate': data[ANALOG_LFO_RATE],
+            'lfo_fade': data[ANALOG_LFO_FADE],
+            'lfo_sync': data[ANALOG_LFO_SYNC],
+            'lfo_sync_note': data[ANALOG_LFO_SYNC_NOTE],
+            'lfo_pitch': data[ANALOG_LFO_PITCH] - 64,  # Convert to -63/+63
+            'lfo_filter': data[ANALOG_LFO_FILTER] - 64,  # Convert to -63/+63
+            'lfo_amp': data[ANALOG_LFO_AMP] - 64,  # Convert to -63/+63
+            'lfo_key_trig': data[ANALOG_LFO_KEY_TRIG]
+} 

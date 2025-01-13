@@ -20,7 +20,7 @@ from jdxi_manager.ui.editors import (
 )
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
 from jdxi_manager.ui.patch_manager import PatchManager
-from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer
+from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer, LEDIndicator
 from jdxi_manager.midi import MIDIHelper, MIDIConnection
 from jdxi_manager.ui.midi_debugger import MIDIDebugger
 from jdxi_manager.ui.midi_message_debug import MIDIMessageDebug
@@ -514,29 +514,21 @@ class MainWindow(QMainWindow):
         
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
-        # Create status bar
         status_bar = self.statusBar()
         
         # Create MIDI indicators
-        midi_in_label = QLabel("MIDI In:")
-        self.midi_in_indicator = MIDIIndicator()
-        midi_out_label = QLabel("MIDI Out:")
-        self.midi_out_indicator = MIDIIndicator()
+        self.midi_in_indicator = LEDIndicator()
+        self.midi_out_indicator = LEDIndicator()
         
-        # Add to status bar
-        status_bar.addPermanentWidget(midi_in_label)
+        # Add labels and indicators
+        status_bar.addPermanentWidget(QLabel("MIDI IN:"))
         status_bar.addPermanentWidget(self.midi_in_indicator)
-        status_bar.addPermanentWidget(midi_out_label)
+        status_bar.addPermanentWidget(QLabel("MIDI OUT:"))
         status_bar.addPermanentWidget(self.midi_out_indicator)
         
-        # Update initial connection state
-        if self.midi_helper:
-            self.midi_in_indicator.set_connected(
-                self.midi_helper.midi_in and self.midi_helper.midi_in.is_port_open()
-            )
-            self.midi_out_indicator.set_connected(
-                self.midi_helper.midi_out and self.midi_helper.midi_out.is_port_open()
-            )
+        # Set initial indicator states
+        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
@@ -1992,3 +1984,31 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error showing Analog Synth editor: {str(e)}")
+
+    def set_midi_ports(self, in_port: str, out_port: str) -> bool:
+        """Set MIDI input and output ports
+        
+        Args:
+            in_port: Input port name
+            out_port: Output port name
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Open ports
+            if not self.midi_helper.open_input_port(in_port):
+                return False
+                
+            if not self.midi_helper.open_output_port(out_port):
+                return False
+                
+            # Update indicators
+            self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+            self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error setting MIDI ports: {str(e)}")
+            return False

@@ -465,51 +465,44 @@ class DigitalTonePartialMessage(ParameterMessage):
         return super().convert_data(data)
 
 @dataclass
-class AnalogToneMessage(ParameterMessage):
-    """Analog Synth Tone parameter message"""
-    area: int = 0x19       # Temporary area
-    section: int = 0x02    # Analog section
+class AnalogToneMessage:
+    """Message for analog tone parameters"""
+    area: int
+    part: int
+    group: int
+    param: int
+    value: int
 
-    def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
-        # Parameters that need special conversion
-        if self.param == 0x17:  # OSC Coarse
-            return [value + 64]  # Convert -24/+24 to 40-88
-        elif self.param == 0x18:  # OSC Fine
-            return [value + 64]  # Convert -50/+50 to 14-114
-        elif self.param in [0x1B, 0x1E, 0x24, 0x29, 0x2C]:  # Bipolar parameters
-            return [value + 64]  # Convert -63/+63 to 1-127
-        elif self.param in [0x22, 0x2B]:  # Keyfollow
-            return [int((value + 100) * 20 / 200) + 54]  # Convert -100/+100 to 54-74
-        elif self.param == 0x34:  # Octave
-            return [value + 64]  # Convert -3/+3 to 61-67
-        elif self.param in [0x38, 0x39, 0x3A, 0x3B]:  # Modulation controls
-            return [value + 64]  # Convert -63/+63 to 1-127
-        
-        # Default handling for other parameters
-        return super().convert_value(value)
+    def to_sysex(self) -> List[int]:
+        """Convert to SysEx message bytes"""
+        return [
+            0xF0,  # Start of SysEx
+            0x41,  # Roland ID
+            0x10,  # Device ID
+            0x00, 0x00, 0x00, 0x0E,  # Model ID
+            0x12,  # DT1 Command
+            self.area,
+            self.part,
+            self.group,
+            self.param,
+            self.value,
+            0x00,  # Checksum placeholder
+            0xF7   # End of SysEx
+        ]
 
-    @classmethod
-    def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, 'param') else 0
+    def calculate_checksum(self, data: List[int]) -> int:
+        """Calculate Roland checksum
         
-        # Parameters that need special conversion
-        if param == 0x17:  # OSC Coarse
-            return data[0] - 64  # Convert 40-88 to -24/+24
-        elif param == 0x18:  # OSC Fine
-            return data[0] - 64  # Convert 14-114 to -50/+50
-        elif param in [0x1B, 0x1E, 0x24, 0x29, 0x2C]:  # Bipolar parameters
-            return data[0] - 64  # Convert 1-127 to -63/+63
-        elif param in [0x22, 0x2B]:  # Keyfollow
-            return int(((data[0] - 54) * 200 / 20) - 100)  # Convert 54-74 to -100/+100
-        elif param == 0x34:  # Octave
-            return data[0] - 64  # Convert 61-67 to -3/+3
-        elif param in [0x38, 0x39, 0x3A, 0x3B]:  # Modulation controls
-            return data[0] - 64  # Convert 1-127 to -63/+63
-        
-        # Default handling for other parameters
-        return super().convert_data(data)
+        Args:
+            data: List of bytes to checksum
+            
+        Returns:
+            Checksum value (0-127)
+        """
+        checksum = 0
+        for byte in data[8:-2]:  # Skip header and end bytes
+            checksum += byte
+        return (128 - (checksum % 128)) & 0x7F
 
 @dataclass
 class DrumKitCommonMessage(ParameterMessage):
