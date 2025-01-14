@@ -31,6 +31,34 @@ class OscWave(IntEnum):
     SUPER_SAW = 6
     PCM = 7
 
+    @property
+    def display_name(self) -> str:
+        """Get display name for the waveform"""
+        return {
+            self.SAW: "SAW",
+            self.SQUARE: "SQR",
+            self.PW_SQUARE: "PWM",
+            self.TRIANGLE: "TRI",
+            self.SINE: "SINE",
+            self.NOISE: "NOISE",
+            self.SUPER_SAW: "S-SAW",
+            self.PCM: "PCM"
+        }[self]
+
+    @property
+    def description(self) -> str:
+        """Get full description of the waveform"""
+        return {
+            self.SAW: "Sawtooth",
+            self.SQUARE: "Square",
+            self.PW_SQUARE: "Pulse Width Square",
+            self.TRIANGLE: "Triangle",
+            self.SINE: "Sine",
+            self.NOISE: "Noise",
+            self.SUPER_SAW: "Super Saw",
+            self.PCM: "PCM Wave"
+        }[self]
+
 class FilterMode(IntEnum):
     """Filter mode types"""
     BYPASS = 0
@@ -79,20 +107,88 @@ class TempoSyncNote(IntEnum):
     NOTE_1_24 = 18  # 1/24 (triplet sixteenth)
     NOTE_1_32 = 19  # 1/32 (thirty-second)
 
+class DigitalPartialOffset(IntEnum):
+    """Offsets for each partial's parameters"""
+    PARTIAL_1 = 0x00
+    PARTIAL_2 = 0x40  # 64 bytes offset
+    PARTIAL_3 = 0x80  # 128 bytes offset
+
 class DigitalParameter(Enum):
-    """Digital synth parameter addresses and valid ranges"""
+    """Digital synth parameter addresses and valid ranges.
+    
+    Note: These addresses are for Partial 1. For other partials, add the appropriate
+    offset from DigitalPartialOffset (0x40 for Partial 2, 0x80 for Partial 3).
+    """
     def __init__(self, address: int, min_val: int, max_val: int):
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
 
-    # Define enum values with their (address, min, max) tuples
-    OSC_WAVE = (0x00, 0, 7)          # SAW, SQR, PW-SQR, TRI, SINE, NOISE, SUPER-SAW, PCM
-    OSC_VARIATION = (0x01, 0, 2)      # A, B, C
-    OSC_PITCH = (0x03, 40, 88)        # -24 to +24 (64 = center)
-    OSC_DETUNE = (0x04, 14, 114)      # -50 to +50 (64 = center)
-    OSC_PW_MOD_DEPTH = (0x05, 0, 127) # Full range
-    OSC_PW = (0x06, 0, 127)          # Full range
+    # Oscillator parameters
+    OSC_WAVE = (0x00, 0, 7)          # SAW(0), SQR(1), PW-SQR(2), TRI(3), SINE(4), NOISE(5), SUPER-SAW(6), PCM(7)
+    OSC_COARSE = (0x03, 40, 88)      # -24 to +24 semitones (64 = center)
+    OSC_FINE = (0x04, 14, 114)       # -50 to +50 cents (64 = center)
+
+    # Filter parameters
+    FILTER_CUTOFF = (0x0C, 0, 127)   # Cutoff frequency
+    FILTER_RESONANCE = (0x0F, 0, 127) # Resonance/Q
+    FILTER_ENV_ATTACK = (0x10, 0, 127)  # Filter envelope attack
+    FILTER_ENV_DECAY = (0x11, 0, 127)   # Filter envelope decay
+    FILTER_ENV_SUSTAIN = (0x12, 0, 127) # Filter envelope sustain
+    FILTER_ENV_RELEASE = (0x13, 0, 127) # Filter envelope release
+
+    # Amplifier parameters
+    AMP_LEVEL = (0x15, 0, 127)       # Amplitude level
+    AMP_ENV_ATTACK = (0x17, 0, 127)  # Amplitude envelope attack
+    AMP_ENV_DECAY = (0x18, 0, 127)   # Amplitude envelope decay
+    AMP_ENV_SUSTAIN = (0x19, 0, 127) # Amplitude envelope sustain
+    AMP_ENV_RELEASE = (0x1A, 0, 127) # Amplitude envelope release
+
+    # LFO parameters
+    LFO_RATE = (0x1D, 0, 127)       # LFO speed
+    LFO_DEPTH = (0x22, 1, 127)      # LFO pitch depth (-63 to +63)
+
+    def get_display_value(self) -> Tuple[int, int]:
+        """Returns the display range for this parameter (min, max)"""
+        if self == self.OSC_COARSE:
+            return (-24, 24)  # Semitones
+        elif self == self.OSC_FINE:
+            return (-50, 50)  # Cents
+        elif self == self.LFO_DEPTH:
+            return (-63, 63)  # Bipolar depth
+        else:
+            return (self.min_val, self.max_val)
+
+    def convert_to_display(self, value: int) -> int:
+        """Convert MIDI value to display value"""
+        if self == self.OSC_COARSE:
+            return value - 64  # Center at 0
+        elif self == self.OSC_FINE:
+            return value - 64  # Center at 0
+        elif self == self.LFO_DEPTH:
+            return value - 64  # Convert to -63/+63 range
+        return value
+
+    def convert_from_display(self, value: int) -> int:
+        """Convert display value to MIDI value"""
+        if self == self.OSC_COARSE:
+            return value + 64  # Offset from center
+        elif self == self.OSC_FINE:
+            return value + 64  # Offset from center
+        elif self == self.LFO_DEPTH:
+            return value + 64  # Convert from -63/+63 range
+        return value
+
+    def get_address_for_partial(self, partial: int) -> int:
+        """Get the actual parameter address for a specific partial (1-3)"""
+        if partial not in [1, 2, 3]:
+            raise ValueError("Partial must be 1, 2, or 3")
+        offset = {
+            1: DigitalPartialOffset.PARTIAL_1,
+            2: DigitalPartialOffset.PARTIAL_2,
+            3: DigitalPartialOffset.PARTIAL_3
+        }[partial]
+        return self.address + offset
 
     def __new__(cls, *args):
         obj = object.__new__(cls)
@@ -102,13 +198,13 @@ class DigitalParameter(Enum):
     def __str__(self) -> str:
         return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
 
-class DigitalPartial:
-    """Digital synth partial parameters"""
-    # Partial offsets
-    PARTIAL_1 = 0x00
-    PARTIAL_2 = 0x20
-    PARTIAL_3 = 0x40
-    
+class DigitalPartial(IntEnum):
+    """Digital synth partial numbers and structure types"""
+    # Partial numbers
+    PARTIAL_1 = 1
+    PARTIAL_2 = 2
+    PARTIAL_3 = 3
+
     # Structure types
     SINGLE = 0x00
     LAYER_1_2 = 0x01
@@ -118,6 +214,51 @@ class DigitalPartial:
     SPLIT_1_2 = 0x05
     SPLIT_2_3 = 0x06
     SPLIT_1_3 = 0x07
+
+    @property
+    def switch_param(self) -> 'DigitalCommonParameter':
+        """Get the switch parameter for this partial"""
+        if self > 3:  # Structure types are > 3
+            raise ValueError("Structure types don't have switch parameters")
+        return {
+            self.PARTIAL_1: DigitalCommonParameter.PARTIAL1_SWITCH,
+            self.PARTIAL_2: DigitalCommonParameter.PARTIAL2_SWITCH,
+            self.PARTIAL_3: DigitalCommonParameter.PARTIAL3_SWITCH
+        }[self]
+
+    @property
+    def select_param(self) -> 'DigitalCommonParameter':
+        """Get the select parameter for this partial"""
+        if self > 3:  # Structure types are > 3
+            raise ValueError("Structure types don't have select parameters")
+        return {
+            self.PARTIAL_1: DigitalCommonParameter.PARTIAL1_SELECT,
+            self.PARTIAL_2: DigitalCommonParameter.PARTIAL2_SELECT,
+            self.PARTIAL_3: DigitalCommonParameter.PARTIAL3_SELECT
+        }[self]
+
+    @property
+    def is_partial(self) -> bool:
+        """Returns True if this is a partial number (not a structure type)"""
+        return 1 <= self <= 3
+
+    @property
+    def is_structure(self) -> bool:
+        """Returns True if this is a structure type (not a partial number)"""
+        return self <= 0x07 and not self.is_partial
+
+    @classmethod
+    def get_partials(cls) -> List['DigitalPartial']:
+        """Get list of partial numbers (not structure types)"""
+        return [cls.PARTIAL_1, cls.PARTIAL_2, cls.PARTIAL_3]
+
+    @classmethod
+    def get_structures(cls) -> List['DigitalPartial']:
+        """Get list of structure types (not partial numbers)"""
+        return [
+            cls.SINGLE, cls.LAYER_1_2, cls.LAYER_2_3, cls.LAYER_1_3,
+            cls.LAYER_ALL, cls.SPLIT_1_2, cls.SPLIT_2_3, cls.SPLIT_1_3
+        ]
 
 class DigitalSynth:
     """Digital synth constants and presets"""
@@ -405,3 +546,246 @@ def set_osc1_waveform(self, waveform: int) -> bool:
     except Exception as e:
         logging.error(f"Error setting OSC1 waveform: {str(e)}")
         return False
+
+class DigitalCommonParameter(Enum):
+    """Common parameters for Digital/SuperNATURAL synth tones.
+    These parameters are shared across all partials.
+    """
+    def __init__(self, address: int, min_val: int, max_val: int):
+        self.address = address
+        self.min_val = min_val
+        self.max_val = max_val
+
+    # Tone name parameters (12 ASCII characters)
+    TONE_NAME_1 = (0x00, 32, 127)   # ASCII character 1
+    TONE_NAME_2 = (0x01, 32, 127)   # ASCII character 2
+    TONE_NAME_3 = (0x02, 32, 127)   # ASCII character 3
+    TONE_NAME_4 = (0x03, 32, 127)   # ASCII character 4
+    TONE_NAME_5 = (0x04, 32, 127)   # ASCII character 5
+    TONE_NAME_6 = (0x05, 32, 127)   # ASCII character 6
+    TONE_NAME_7 = (0x06, 32, 127)   # ASCII character 7
+    TONE_NAME_8 = (0x07, 32, 127)   # ASCII character 8
+    TONE_NAME_9 = (0x08, 32, 127)   # ASCII character 9
+    TONE_NAME_10 = (0x09, 32, 127)  # ASCII character 10
+    TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
+    TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
+
+    # Tone level
+    TONE_LEVEL = (0x0C, 0, 127)     # Overall tone level
+
+    # Performance parameters
+    PORTAMENTO_SW = (0x12, 0, 1)     # Portamento Switch (OFF, ON)
+    PORTAMENTO_TIME = (0x13, 0, 127)  # Portamento Time (CC# 5)
+    MONO_SW = (0x14, 0, 1)           # Mono Switch (OFF, ON)
+    OCTAVE_SHIFT = (0x15, 61, 67)    # Octave Shift (-3 to +3)
+    PITCH_BEND_UP = (0x16, 0, 24)    # Pitch Bend Range Up (semitones)
+    PITCH_BEND_DOWN = (0x17, 0, 24)  # Pitch Bend Range Down (semitones)
+
+    # Partial switches
+    PARTIAL1_SWITCH = (0x19, 0, 1)   # Partial 1 Switch (OFF, ON)
+    PARTIAL1_SELECT = (0x1A, 0, 1)   # Partial 1 Select (OFF, ON)
+    PARTIAL2_SWITCH = (0x1B, 0, 1)   # Partial 2 Switch (OFF, ON)
+    PARTIAL2_SELECT = (0x1C, 0, 1)   # Partial 2 Select (OFF, ON)
+    PARTIAL3_SWITCH = (0x1D, 0, 1)   # Partial 3 Switch (OFF, ON)
+    PARTIAL3_SELECT = (0x1E, 0, 1)   # Partial 3 Select (OFF, ON)
+
+    # Additional parameters
+    RING_SWITCH = (0x1F, 0, 2)        # OFF(0), ---(1), ON(2)
+    UNISON_SWITCH = (0x2E, 0, 1)      # OFF, ON
+    PORTAMENTO_MODE = (0x31, 0, 1)    # NORMAL, LEGATO
+    LEGATO_SWITCH = (0x32, 0, 1)      # OFF, ON
+    ANALOG_FEEL = (0x34, 0, 127)      # Analog Feel amount
+    WAVE_SHAPE = (0x35, 0, 127)       # Wave Shape amount
+    TONE_CATEGORY = (0x36, 0, 127)    # Tone Category
+    UNISON_SIZE = (0x3C, 0, 3)        # Unison voice count (2-5 voices)
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter"""
+        return {
+            self.RING_SWITCH: "Ring Mod",
+            self.UNISON_SWITCH: "Unison",
+            self.PORTAMENTO_MODE: "Porto Mode",
+            self.LEGATO_SWITCH: "Legato",
+            self.ANALOG_FEEL: "Analog Feel",
+            self.WAVE_SHAPE: "Wave Shape",
+            self.TONE_CATEGORY: "Category",
+            self.UNISON_SIZE: "Uni Size"
+        }.get(self, self.name.replace("_", " ").title())
+
+    @property
+    def is_switch(self) -> bool:
+        """Returns True if parameter is a binary/enum switch"""
+        return self in [
+            self.PORTAMENTO_SW,
+            self.MONO_SW,
+            self.PARTIAL1_SWITCH,
+            self.PARTIAL1_SELECT,
+            self.PARTIAL2_SWITCH,
+            self.PARTIAL2_SELECT,
+            self.PARTIAL3_SWITCH,
+            self.PARTIAL3_SELECT,
+            self.RING_SWITCH,
+            self.UNISON_SWITCH,
+            self.PORTAMENTO_MODE,
+            self.LEGATO_SWITCH
+        ]
+
+    def get_switch_text(self, value: int) -> str:
+        """Get display text for switch values"""
+        if self == self.RING_SWITCH:
+            return ["OFF", "---", "ON"][value]
+        elif self == self.PORTAMENTO_MODE:
+            return ["NORMAL", "LEGATO"][value]
+        elif self == self.UNISON_SIZE:
+            return f"{value + 2} VOICE"  # 0=2 voices, 1=3 voices, etc.
+        elif self.is_switch:
+            return "ON" if value else "OFF"
+        return str(value)
+
+    def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be integer, got {type(value)}")
+
+        # Special handling for ring switch
+        if self == self.RING_SWITCH and value == 1:
+            # Skip over the "---" value
+            value = 2
+
+        # Regular range check
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} "
+                f"(valid range: {self.min_val}-{self.max_val})"
+            )
+
+        return value
+
+    def get_partial_number(self) -> Optional[int]:
+        """Returns the partial number (1-3) if this is a partial parameter, None otherwise"""
+        partial_params = {
+            self.PARTIAL1_SWITCH: 1,
+            self.PARTIAL1_SELECT: 1,
+            self.PARTIAL2_SWITCH: 2,
+            self.PARTIAL2_SELECT: 2,
+            self.PARTIAL3_SWITCH: 3,
+            self.PARTIAL3_SELECT: 3
+        }
+        return partial_params.get(self)
+
+def set_tone_name(midi_helper, name: str) -> bool:
+    """Set the tone name for a digital synth patch.
+    
+    Args:
+        midi_helper: MIDI helper instance
+        name: Name string (max 12 characters)
+        
+    Returns:
+        True if successful
+    """
+    if len(name) > 12:
+        logging.warning(f"Tone name '{name}' too long, truncating to 12 characters")
+        name = name[:12]
+    
+    # Pad with spaces if shorter than 12 chars
+    name = name.ljust(12)
+    
+    try:
+        # Send each character as ASCII value
+        for i, char in enumerate(name):
+            param = getattr(DigitalCommonParameter, f'TONE_NAME_{i+1}')
+            ascii_val = ord(char)
+            
+            # Validate ASCII range
+            if ascii_val < 32 or ascii_val > 127:
+                logging.warning(f"Invalid character '{char}' in tone name, using space")
+                ascii_val = 32  # Space
+                
+            midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_AREA,
+                part=PART_1,
+                group=0x00,
+                param=param.address,
+                value=ascii_val
+            )
+            
+        return True
+        
+    except Exception as e:
+        logging.error(f"Error setting tone name: {str(e)}")
+        return False
+
+def set_partial_state(midi_helper, partial: DigitalPartial, enabled: bool = True, selected: bool = True) -> bool:
+    """Set the state of a partial
+    
+    Args:
+        midi_helper: MIDI helper instance
+        partial: The partial to modify
+        enabled: Whether the partial is enabled (ON/OFF)
+        selected: Whether the partial is selected
+        
+    Returns:
+        True if successful
+    """
+    try:
+        # Send switch state
+        success = midi_helper.send_parameter(
+            area=DIGITAL_SYNTH_AREA,
+            part=PART_1,
+            group=0x00,
+            param=partial.switch_param.address,
+            value=1 if enabled else 0
+        )
+        if not success:
+            return False
+
+        # Send select state
+        return midi_helper.send_parameter(
+            area=DIGITAL_SYNTH_AREA,
+            part=PART_1,
+            group=0x00,
+            param=partial.select_param.address,
+            value=1 if selected else 0
+        )
+
+    except Exception as e:
+        logging.error(f"Error setting partial {partial.name} state: {str(e)}")
+        return False
+
+def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]:
+    """Get the current state of a partial
+    
+    Args:
+        midi_helper: MIDI helper instance
+        partial: The partial to query
+        
+    Returns:
+        Tuple of (enabled, selected)
+    """
+    try:
+        # Get switch state
+        switch_value = midi_helper.get_parameter(
+            area=DIGITAL_SYNTH_AREA,
+            part=PART_1,
+            group=0x00,
+            param=partial.switch_param.address
+        )
+        
+        # Get select state
+        select_value = midi_helper.get_parameter(
+            area=DIGITAL_SYNTH_AREA,
+            part=PART_1,
+            group=0x00,
+            param=partial.select_param.address
+        )
+        
+        # Handle None returns (communication error)
+        if switch_value is None or select_value is None:
+            return (False, False)
+            
+        return (switch_value == 1, select_value == 1)
+        
+    except Exception as e:
+        logging.error(f"Error getting partial {partial.name} state: {str(e)}")
+        return (False, False)
