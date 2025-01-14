@@ -9,7 +9,7 @@ import logging
 from jdxi_manager.data.vocal_fx import VFX
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi._const import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
     EFFECTS_AREA, SUBGROUP_ZERO, VoiceCutoffFilter
