@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QLabel,
-    QComboBox, QFrame, QGridLayout, QGroupBox
+    QComboBox, QFrame, QGridLayout, QGroupBox, 
+    QScrollArea, QWidget
 )
 from PySide6.QtCore import Qt
 import logging
@@ -16,26 +17,80 @@ from jdxi_manager.midi.constants import (
     DRUM_DELAY
 )
 
+class DrumPadEditor(QWidget):
+    def __init__(self, pad_number: int, parent=None):
+        super().__init__(parent)
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        
+        # Create pad label with string, not int
+        pad_label = QLabel(f"Pad {pad_number}")  # Convert int to string
+        layout.addWidget(pad_label)
+        
+        # Level control
+        self.level = Slider("Level", 0, 127)
+        layout.addWidget(self.level)
+        
+        # Pan control (-64 to +63)
+        self.pan = Slider("Pan", -64, 63)
+        layout.addWidget(self.pan)
+        
+        # Tune control (-24 to +24 semitones)
+        self.tune = Slider("Tune", -24, 24)
+        layout.addWidget(self.tune)
+        
+        # Decay control
+        self.decay = Slider("Decay", 0, 127)
+        layout.addWidget(self.decay)
+        
+        # Effects sends
+        self.reverb = Slider("Reverb", 0, 127)
+        self.delay = Slider("Delay", 0, 127)
+        layout.addWidget(self.reverb)
+        layout.addWidget(self.delay)
+
 class DrumEditor(BaseEditor):
     """Editor for JD-Xi Drum Kit parameters"""
     
     def __init__(self, midi_helper=None, parent=None):
         super().__init__(midi_helper, parent)
+        self.setWindowTitle("Drums")
         
-        # Set window properties
-        self.setWindowTitle("Drum Kit Editor")
-        self.resize(400, 600)
+        # Allow resizing
+        self.setMinimumSize(800, 400)
+        self.resize(1000, 600)
         
-        # Create main layout
+        # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         
-        # Create sections
-        self._create_drum_section(main_layout)
-        self._create_effects_section(main_layout)
+        # Create scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         
-        # Add stretch at bottom
-        main_layout.addStretch()
+        # Create container widget
+        container = QWidget()
+        container_layout = QGridLayout()
+        container.setLayout(container_layout)
+        
+        # Create pad editors in a grid
+        self.pad_editors = {}
+        row = 0
+        col = 0
+        for pad in range(10):  # 10 drum pads
+            editor = DrumPadEditor(pad)
+            self.pad_editors[pad] = editor
+            container_layout.addWidget(editor, row, col)
+            col += 1
+            if col > 4:  # 5 pads per row
+                col = 0
+                row += 1
+        
+        # Add container to scroll area
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
 
     def _create_drum_section(self, parent_layout):
         group = QGroupBox("Drums")

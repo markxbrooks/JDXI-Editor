@@ -67,15 +67,57 @@ class MIDIHelper:
         
         return (jdxi_in, jdxi_out)
 
+    def validate_sysex_message(self, message: List[int]) -> bool:
+        """Validate JD-Xi SysEx message format"""
+        try:
+            # Check length
+            if len(message) != 15:
+                logging.error(f"Invalid SysEx length: {len(message)}")
+                return False
+            
+            # Check header
+            if message[:7] != [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]:
+                logging.error("Invalid SysEx header")
+                return False
+            
+            # Check DT1 command
+            if message[7] != 0x12:
+                logging.error("Invalid command byte")
+                return False
+            
+            # Check end marker
+            if message[-1] != 0xF7:
+                logging.error("Invalid SysEx end marker")
+                return False
+            
+            # Verify checksum
+            data_sum = sum(message[8:-2]) & 0x7F  # Sum from area to value
+            checksum = (128 - data_sum) & 0x7F
+            if message[-2] != checksum:
+                logging.error(f"Invalid checksum: expected {checksum}, got {message[-2]}")
+                return False
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error validating SysEx message: {str(e)}")
+            return False
+
     def send_message(self, message: List[int]) -> bool:
-        """Send raw MIDI message"""
+        """Send raw MIDI message with validation"""
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
+            # Validate SysEx messages
+            if message[0] == 0xF0:
+                if not self.validate_sysex_message(message):
+                    return False
+                
             self.midi_out.send_message(message)
             return True
+            
         except Exception as e:
             logging.error(f"Error sending MIDI message: {str(e)}")
             return False
@@ -228,10 +270,21 @@ class MIDIHelper:
             return False
 
         try:
-            # Format: F0 41 10 00 00 3B {area} {part} {group} {param} {value} F7
-            sysex = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x3B, 
-                     area, part, group, param, value, 0xF7]
-            return self.send_message(sysex)
+            # Format: F0 41 10 00 00 00 0E 12 {area} {part} {group} {param} {value} {checksum} F7
+            msg = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
+                   area, part, group, param, value]
+            
+            # Calculate checksum (Roland format)
+            checksum = 0
+            for byte in msg[8:]:  # Start from area byte
+                checksum = (checksum + byte) & 0x7F
+            checksum = (128 - checksum) & 0x7F
+            
+            # Add checksum and end of SysEx
+            msg.append(checksum)
+            msg.append(0xF7)
+            
+            return self.send_message(msg)
         except Exception as e:
             logging.error(f"Error sending MIDI parameter: {str(e)}")
             return False

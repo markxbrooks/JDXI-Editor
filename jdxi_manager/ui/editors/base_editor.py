@@ -4,6 +4,7 @@ from typing import Optional
 import logging
 
 from jdxi_manager.midi.helper import MIDIHelper
+from jdxi_manager.ui.style import Style
 
 class BaseEditor(QWidget):
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
@@ -13,25 +14,8 @@ class BaseEditor(QWidget):
         # Set window flags for a tool window
         self.setWindowFlags(Qt.Tool)
         
-        # Set base styling
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #2D2D2D;
-                color: #CCCCCC;
-            }
-            QGroupBox {
-                border: 1px solid #444444;
-                border-radius: 3px;
-                margin-top: 1.5ex;
-                padding: 5px;
-                font-size: 12px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 0 3px;
-            }
-        """)
+        # Apply common style
+        self.setStyleSheet(Style.EDITOR_STYLE)
     
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""

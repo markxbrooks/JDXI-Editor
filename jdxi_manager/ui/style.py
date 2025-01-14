@@ -2,130 +2,98 @@ from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
 class Style:
-    """Application styling constants"""
+    """Central style definitions for JD-Xi Manager"""
     
-    # Main colors
-    DARK_RED = "#8B0000"      # Dark red base
-    RED = "#B22222"           # Standard red
-    LIGHT_RED = "#CD5C5C"     # Indian red
-    PALE_RED = "#E9967A"      # Dark salmon
-    ORANGE_RED = "#FF4500"    # Orange red
-    LIGHT_ORANGE = "#FFA07A"  # Light salmon
-
-    # Basic UI colors
-    DARK_BG = "#1E1E1E"
-    LIGHT_BG = "#2D2D2D"
-    HEADER_BG = RED
-    PRESET_BG = DARK_RED
-
-    # Section background colors
-    OSC_BG = DARK_RED        # Darkest for oscillators
-    MIX_BG = RED             # Mixer sections
-    VCF_BG = LIGHT_RED       # Filter sections
-    VCA_BG = PALE_RED        # Amplifier sections
-    LFO_BG = ORANGE_RED      # LFO sections
-    ENV_BG = LIGHT_ORANGE    # Envelope sections
+    # Colors
+    BACKGROUND = "#1A1A1A"
+    FOREGROUND = "#FFFFFF"
+    ACCENT = "#FF0000"
+    ACCENT_HOVER = "#FF8C00"
+    BORDER = "#333333"
+    SLIDER_HANDLE = "#FFFFFF"
+    SLIDER_GROOVE = "#FF0000"
     
-    # Envelope-specific backgrounds
-    PITCH_ENV_BG = DARK_RED
-    VCF_ENV_BG = RED
-    VCA_ENV_BG = LIGHT_RED
+    # Dimensions
+    HANDLE_SIZE = "4px"      # Square handle
+    HANDLE_RADIUS = "1px"    # Very slight rounding
+    GROOVE_WIDTH = "2px"     # Thinner groove
     
-    # Performance section
-    PERF_BG = ORANGE_RED
+    # Fonts
+    FONT_FAMILY = "Myriad Pro, Arial, sans-serif"
+    FONT_SIZE = "12px"
     
-    # Effects backgrounds
-    FX_BG = RED
-    DELAY_BG = LIGHT_RED
-    REVERB_BG = PALE_RED
-    
-    # Drum section
-    DRUM_BG = DARK_RED
-    DRUM_PAD_BG = LIGHT_RED
-    PATTERN_BG = PALE_RED
-    COMMON_BG = ORANGE_RED
-    
-    # Digital synth sections
-    DIG_OSC_BG = DARK_RED
-    DIG_FILTER_BG = RED
-    DIG_AMP_BG = LIGHT_RED
-    
-    # Additional sections
-    COM_BG = DARK_RED       # Common section
-    MOD_BG = RED           # Modulation section
-    ARP_BG = ORANGE_RED    # Arpeggiator section
-
-    # Main stylesheet
-    MAIN_STYLESHEET = """
-        * {
-            font-family: "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-        QMainWindow {
-            background-color: #1E1E1E;
-            color: #FFFFFF;
-        }
-        QLabel {
-            color: #FFFFFF;
-            font-size: 11px;
-        }
-        QFrame {
-            background-color: #2D2D2D;
-            border-radius: 5px;
-        }
-        QComboBox {
-            background-color: #3D3D3D;
-            color: #FFFFFF;
-            border: 1px solid #555555;
+    # Common style sheet for all editors
+    EDITOR_STYLE = f"""
+        QWidget {{
+            background-color: {BACKGROUND};
+            color: {FOREGROUND};
+            font-family: {FONT_FAMILY};
+            font-size: {FONT_SIZE};
+        }}
+        
+        QGroupBox {{
+            border: 1px solid {ACCENT};
+            border-radius: 3px;
+            margin-top: 1.5ex;
+            padding: 10px;
+        }}
+        
+        QGroupBox::title {{
+            subcontrol-origin: margin;
+            subcontrol-position: top center;
+            padding: 0 3px;
+            background-color: {BACKGROUND};
+            color: {ACCENT};
+        }}
+        
+        QLabel {{
+            color: {FOREGROUND};
+        }}
+        
+        QSlider::groove:vertical {{
+            background: {SLIDER_GROOVE};
+            width: {GROOVE_WIDTH};
+        }}
+        
+        QSlider::handle {{
+            background: {SLIDER_HANDLE};
+            border: 1px solid {ACCENT};
+            width: 4px;
+            height: 6px;
+            margin: -4px -5px;
+            border-radius: {HANDLE_RADIUS};
+            subcontrol-origin: margin;
+        }}
+        
+        QSlider::handle:vertical:hover,
+        QSlider::handle:horizontal:hover {{
+            background: {ACCENT_HOVER};
+            border-color: {ACCENT_HOVER};
+        }}
+        
+        QComboBox {{
+            background-color: {BACKGROUND};
+            border: 1px solid {ACCENT};
             border-radius: 3px;
             padding: 3px;
-            font-size: 11px;
-        }
-        QComboBox::drop-down {
+            color: {FOREGROUND};
+        }}
+        
+        QComboBox::drop-down {{
             border: none;
-        }
-        QComboBox::down-arrow {
-            image: url(resources/down_arrow.png);
-        }
-        QPushButton {
-            background-color: #3D3D3D;
-            color: #FFFFFF;
-            border: 1px solid #555555;
+        }}
+        
+        QComboBox::down-arrow {{
+            image: none;
+        }}
+        
+        QScrollBar {{
+            background: {BACKGROUND};
+            border: 1px solid {BORDER};
+        }}
+        
+        QScrollBar::handle {{
+            background: {ACCENT};
             border-radius: 3px;
-            padding: 5px;
-            font-size: 11px;
-        }
-        QPushButton:hover {
-            background-color: #4D4D4D;
-        }
-        QPushButton:pressed {
-            background-color: #2D2D2D;
-        }
-        QSlider::groove:horizontal {
-            border: 1px solid #555555;
-            height: 4px;
-            background: #3D3D3D;
-            margin: 2px 0;
-        }
-        QSlider::handle:horizontal {
-            background: #FFFFFF;
-            border: 1px solid #5A5A5A;
-            width: 18px;
-            margin: -8px 0;
-            border-radius: 3px;
-        }
-    """
-
-    @staticmethod
-    def section_header(bg_color):
-        """Create section header style"""
-        return f"""
-            QLabel {{
-                background-color: {bg_color};
-                color: white;
-                padding: 5px;
-                font-weight: bold;
-                font-size: 12px;
-                font-family: "Myriad Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                border-radius: 3px;
-            }}
-        """ 
+        }}
+    """ 

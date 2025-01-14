@@ -2012,3 +2012,28 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.error(f"Error setting MIDI ports: {str(e)}")
             return False
+
+    def _connect_midi(self):
+        """Connect to MIDI ports"""
+        try:
+            # Find JD-Xi ports
+            in_port, out_port = self.midi_helper.find_jdxi_ports()
+            
+            if in_port and out_port:
+                # Open ports
+                if self.midi_helper.open_ports(in_port, out_port):
+                    logging.info(f"Connected to JD-Xi ({in_port}, {out_port})")
+                    self.statusBar().showMessage(f"Connected to JD-Xi")
+                    
+                    # Remove or comment out any initialization messages
+                    # self.midi_helper.send_identity_request()  # Remove this
+                    return True
+                    
+            logging.warning("JD-Xi not found")
+            self.statusBar().showMessage("JD-Xi not found")
+            return False
+            
+        except Exception as e:
+            logging.error(f"Error connecting to MIDI: {str(e)}")
+            self.statusBar().showMessage("MIDI connection error")
+            return False
