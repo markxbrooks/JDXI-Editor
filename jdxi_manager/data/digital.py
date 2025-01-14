@@ -3,15 +3,25 @@ from enum import Enum, auto, IntEnum
 from typing import Dict, List, Tuple, Optional
 import logging
 from jdxi_manager.midi.constants import (
-    DIGITAL_SYNTH_AREA, PART_1, 
+    DIGITAL_SYNTH_AREA, PART_1, PART_2, 
     OSC_1_GROUP, OSC_WAVE_PARAM,
     WAVE_SAW
 )
 from jdxi_manager.midi.constants.digital import (
-    DIGITAL_SYNTH_AREA, PART_1, 
+    DIGITAL_SYNTH_AREA, PART_1, PART_2, 
     OSC_1_GROUP, OSC_WAVE_PARAM,
     WAVE_SAW
 )
+
+# MIDI Constants for Digital Synth
+DIGITAL_SYNTH_AREA = 0x19  # Digital Synth 1 area
+
+# Parameter Groups
+OSC_GROUP = 0x20       # Oscillator parameters
+FILTER_GROUP = 0x21    # Filter parameters
+AMP_GROUP = 0x22       # Amplifier parameters
+LFO_GROUP = 0x23       # LFO parameters
+MOD_LFO_GROUP = 0x24   # Modulation LFO parameters
 
 class WaveGain(IntEnum):
     """Wave gain values in dB"""
@@ -124,71 +134,184 @@ class DigitalParameter(Enum):
         self.min_val = min_val
         self.max_val = max_val
 
-    # Oscillator parameters
+    # Oscillator parameters (Group 0x20)
     OSC_WAVE = (0x00, 0, 7)          # SAW(0), SQR(1), PW-SQR(2), TRI(3), SINE(4), NOISE(5), SUPER-SAW(6), PCM(7)
-    OSC_COARSE = (0x03, 40, 88)      # -24 to +24 semitones (64 = center)
-    OSC_FINE = (0x04, 14, 114)       # -50 to +50 cents (64 = center)
+    OSC_WAVE_VAR = (0x01, 0, 2)      # Wave Variation (A, B, C)
+    OSC_PITCH = (0x03, 40, 88)       # -24 to +24 semitones (64 = center)
+    OSC_DETUNE = (0x04, 14, 114)     # -50 to +50 cents (64 = center)
+    OSC_PWM_DEPTH = (0x05, 0, 127)   # Pulse Width Modulation Depth
+    OSC_PW = (0x06, 0, 127)          # Pulse Width
+    OSC_PITCH_ATTACK = (0x07, 0, 127) # Pitch Envelope Attack Time
+    OSC_PITCH_DECAY = (0x08, 0, 127)  # Pitch Envelope Decay Time
+    OSC_PITCH_DEPTH = (0x09, 1, 127)  # Pitch Envelope Depth (-63 to +63)
 
-    # Filter parameters
-    FILTER_CUTOFF = (0x0C, 0, 127)   # Cutoff frequency
-    FILTER_RESONANCE = (0x0F, 0, 127) # Resonance/Q
-    FILTER_ENV_ATTACK = (0x10, 0, 127)  # Filter envelope attack
-    FILTER_ENV_DECAY = (0x11, 0, 127)   # Filter envelope decay
-    FILTER_ENV_SUSTAIN = (0x12, 0, 127) # Filter envelope sustain
-    FILTER_ENV_RELEASE = (0x13, 0, 127) # Filter envelope release
+    # Filter parameters (Group 0x21)
+    FILTER_MODE = (0x0A, 0, 7)        # BYPASS(0), LPF(1), HPF(2), BPF(3), PKG(4), LPF2(5), LPF3(6), LPF4(7)
+    FILTER_SLOPE = (0x0B, 0, 1)       # -12dB(0), -24dB(1)
+    FILTER_CUTOFF = (0x0C, 0, 127)    # Filter cutoff frequency
+    FILTER_KEYFOLLOW = (0x0D, 54, 74) # Filter keyfollow (-100 to +100)
+    FILTER_VELOCITY = (0x0E, 1, 127)  # Filter envelope velocity sensitivity (-63 to +63)
+    FILTER_RESONANCE = (0x0F, 0, 127) # Filter resonance
+    FILTER_ENV_ATTACK = (0x10, 0, 127)   # Filter envelope attack time
+    FILTER_ENV_DECAY = (0x11, 0, 127)    # Filter envelope decay time
+    FILTER_ENV_SUSTAIN = (0x12, 0, 127)  # Filter envelope sustain level
+    FILTER_ENV_RELEASE = (0x13, 0, 127)  # Filter envelope release time
+    FILTER_ENV_DEPTH = (0x14, 1, 127)    # Filter envelope depth (-63 to +63)
 
-    # Amplifier parameters
-    AMP_LEVEL = (0x15, 0, 127)       # Amplitude level
-    AMP_ENV_ATTACK = (0x17, 0, 127)  # Amplitude envelope attack
-    AMP_ENV_DECAY = (0x18, 0, 127)   # Amplitude envelope decay
-    AMP_ENV_SUSTAIN = (0x19, 0, 127) # Amplitude envelope sustain
-    AMP_ENV_RELEASE = (0x1A, 0, 127) # Amplitude envelope release
+    # Amplifier parameters (Group 0x22)
+    AMP_LEVEL = (0x15, 0, 127)          # Amplitude level
+    AMP_VELOCITY = (0x16, 1, 127)       # Velocity sensitivity (-63 to +63)
+    AMP_ENV_ATTACK = (0x17, 0, 127)     # Amplitude envelope attack
+    AMP_ENV_DECAY = (0x18, 0, 127)      # Amplitude envelope decay
+    AMP_ENV_SUSTAIN = (0x19, 0, 127)    # Amplitude envelope sustain
+    AMP_ENV_RELEASE = (0x1A, 0, 127)    # Amplitude envelope release
+    AMP_PAN = (0x1B, 0, 127)            # Pan position (L64 - 63R)
 
-    # LFO parameters
+    # LFO parameters (Group 0x23)
+    LFO_SHAPE = (0x1C, 0, 5)        # TRI(0), SIN(1), SAW(2), SQR(3), S&H(4), RND(5)
     LFO_RATE = (0x1D, 0, 127)       # LFO speed
-    LFO_DEPTH = (0x22, 1, 127)      # LFO pitch depth (-63 to +63)
+    LFO_SYNC = (0x1E, 0, 1)         # Tempo sync switch (OFF, ON)
+    LFO_NOTE = (0x1F, 0, 19)        # Tempo sync note value
+    LFO_FADE = (0x20, 0, 127)       # Fade time
+    LFO_TRIGGER = (0x21, 0, 1)      # Key trigger (OFF, ON)
+    LFO_PITCH = (0x22, 1, 127)      # Pitch modulation depth (-63 to +63)
+    LFO_FILTER = (0x23, 1, 127)     # Filter modulation depth (-63 to +63)
+    LFO_AMP = (0x24, 1, 127)        # Amplitude modulation depth (-63 to +63)
+    LFO_PAN = (0x25, 1, 127)        # Pan modulation depth (-63 to +63)
+
+    # Modulation LFO parameters (Group 0x24)
+    MOD_LFO_SHAPE = (0x26, 0, 5)        # TRI(0), SIN(1), SAW(2), SQR(3), S&H(4), RND(5)
+    MOD_LFO_RATE = (0x27, 0, 127)       # Modulation LFO speed
+    MOD_LFO_SYNC = (0x28, 0, 1)         # Tempo sync switch (OFF, ON)
+    MOD_LFO_NOTE = (0x29, 0, 19)        # Tempo sync note value
+    OSC_PW_SHIFT = (0x2A, 0, 127)       # OSC Pulse Width Shift
+    # 0x2B is reserved
+    MOD_LFO_PITCH = (0x2C, 1, 127)      # Pitch modulation depth (-63 to +63)
+    MOD_LFO_FILTER = (0x2D, 1, 127)     # Filter modulation depth (-63 to +63)
+    MOD_LFO_AMP = (0x2E, 1, 127)        # Amplitude modulation depth (-63 to +63)
+    MOD_LFO_PAN = (0x2F, 1, 127)        # Pan modulation depth (-63 to +63)
+
+    # Additional parameters
+    CUTOFF_AFTERTOUCH = (0x30, 1, 127)    # Cutoff aftertouch sensitivity (-63 to +63)
+    LEVEL_AFTERTOUCH = (0x31, 1, 127)     # Level aftertouch sensitivity (-63 to +63)
+    # 0x32-0x33 are reserved
+    WAVE_GAIN = (0x34, 0, 3)              # Wave gain (-6, 0, +6, +12 dB)
+    # 0x35-0x38 Wave Number (special handling needed)
+    HPF_CUTOFF = (0x39, 0, 127)           # High-pass filter cutoff
+    SUPER_SAW_DETUNE = (0x3A, 0, 127)     # Super Saw detune amount
+    MOD_LFO_RATE_CTRL = (0x3B, 1, 127)    # Modulation LFO rate control (-63 to +63)
+    AMP_KEYFOLLOW = (0x3C, 54, 74)        # Amp level keyfollow (-100 to +100)
+
+    # Wave Number (16-bit value split across 4 bytes)
+    WAVE_NUMBER_1 = (0x35, 0, 15)    # Most significant 4 bits
+    WAVE_NUMBER_2 = (0x36, 0, 15)    # Next 4 bits
+    WAVE_NUMBER_3 = (0x37, 0, 15)    # Next 4 bits
+    WAVE_NUMBER_4 = (0x38, 0, 15)    # Least significant 4 bits
 
     def get_display_value(self) -> Tuple[int, int]:
         """Returns the display range for this parameter (min, max)"""
-        if self == self.OSC_COARSE:
+        if self in [self.CUTOFF_AFTERTOUCH, self.LEVEL_AFTERTOUCH, 
+                   self.MOD_LFO_RATE_CTRL]:
+            return (-63, 63)  # Bipolar range
+        elif self == self.AMP_KEYFOLLOW:
+            return (-100, 100)  # Keyfollow range
+        elif self == self.WAVE_GAIN:
+            return (-6, 12)  # dB range
+        elif self == self.OSC_PITCH:
             return (-24, 24)  # Semitones
-        elif self == self.OSC_FINE:
+        elif self == self.OSC_DETUNE:
             return (-50, 50)  # Cents
-        elif self == self.LFO_DEPTH:
+        elif self == self.OSC_PITCH_DEPTH:
+            return (-63, 63)  # Bipolar depth
+        elif self in [self.FILTER_KEYFOLLOW, self.FILTER_ENV_DEPTH]:
+            return (-63, 63)    # Bipolar range
+        elif self in [self.MOD_LFO_PITCH, self.MOD_LFO_FILTER, 
+                   self.MOD_LFO_AMP, self.MOD_LFO_PAN]:
+            return (-63, 63)  # Bipolar depth
+        elif self in [self.AMP_VELOCITY, self.AMP_PAN]:
+            return (-63, 63)    # Bipolar range
+        elif self in [self.LFO_PITCH, self.LFO_FILTER, self.LFO_AMP, self.LFO_PAN]:
             return (-63, 63)  # Bipolar depth
         else:
             return (self.min_val, self.max_val)
 
     def convert_to_display(self, value: int) -> int:
         """Convert MIDI value to display value"""
-        if self == self.OSC_COARSE:
+        if self in [self.CUTOFF_AFTERTOUCH, self.LEVEL_AFTERTOUCH,
+                   self.MOD_LFO_RATE_CTRL]:
             return value - 64  # Center at 0
-        elif self == self.OSC_FINE:
+        elif self == self.AMP_KEYFOLLOW:
+            return (value - 64) * 100 // 10  # Scale to -100/+100
+        elif self == self.WAVE_GAIN:
+            return [-6, 0, 6, 12][value]  # Convert to dB values
+        elif self in [self.OSC_PITCH, self.OSC_DETUNE, self.OSC_PITCH_DEPTH]:
             return value - 64  # Center at 0
-        elif self == self.LFO_DEPTH:
-            return value - 64  # Convert to -63/+63 range
+        elif self == self.FILTER_KEYFOLLOW:
+            return (value - 64) * 100 // 10  # Scale to -100/+100
+        elif self in [self.FILTER_VELOCITY, self.FILTER_ENV_DEPTH]:
+            return value - 64  # Center at 0
+        elif self in [self.MOD_LFO_PITCH, self.MOD_LFO_FILTER, 
+                   self.MOD_LFO_AMP, self.MOD_LFO_PAN]:
+            return value - 64  # Center at 0
+        elif self in [self.AMP_VELOCITY, self.AMP_PAN]:
+            return value - 64  # Center at 0
+        elif self in [self.LFO_PITCH, self.LFO_FILTER, self.LFO_AMP, self.LFO_PAN]:
+            return value - 64  # Center at 0
         return value
 
     def convert_from_display(self, value: int) -> int:
         """Convert display value to MIDI value"""
-        if self == self.OSC_COARSE:
+        if self in [self.CUTOFF_AFTERTOUCH, self.LEVEL_AFTERTOUCH,
+                   self.MOD_LFO_RATE_CTRL]:
             return value + 64  # Offset from center
-        elif self == self.OSC_FINE:
+        elif self == self.AMP_KEYFOLLOW:
+            return value * 10 // 100 + 64  # Scale from -100/+100
+        elif self == self.WAVE_GAIN:
+            return {-6: 0, 0: 1, 6: 2, 12: 3}[value]  # Convert from dB values
+        elif self in [self.OSC_PITCH, self.OSC_DETUNE, self.OSC_PITCH_DEPTH]:
             return value + 64  # Offset from center
-        elif self == self.LFO_DEPTH:
-            return value + 64  # Convert from -63/+63 range
+        elif self == self.FILTER_KEYFOLLOW:
+            return value * 10 // 100 + 64  # Scale from -100/+100
+        elif self in [self.FILTER_VELOCITY, self.FILTER_ENV_DEPTH]:
+            return value + 64  # Offset from center
+        elif self in [self.MOD_LFO_PITCH, self.MOD_LFO_FILTER, 
+                   self.MOD_LFO_AMP, self.MOD_LFO_PAN]:
+            return value + 64  # Offset from center
+        elif self in [self.AMP_VELOCITY, self.AMP_PAN]:
+            return value + 64  # Offset from center
+        elif self in [self.LFO_PITCH, self.LFO_FILTER, self.LFO_AMP, self.LFO_PAN]:
+            return value + 64  # Offset from center
         return value
 
-    def get_address_for_partial(self, partial: int) -> int:
-        """Get the actual parameter address for a specific partial (1-3)"""
+    def get_address_for_partial(self, partial: int) -> Tuple[int, int]:
+        """Get the group and parameter address for a specific partial
+        
+        Returns:
+            Tuple of (group, parameter)
+        """
         if partial not in [1, 2, 3]:
             raise ValueError("Partial must be 1, 2, or 3")
-        offset = {
-            1: DigitalPartialOffset.PARTIAL_1,
-            2: DigitalPartialOffset.PARTIAL_2,
-            3: DigitalPartialOffset.PARTIAL_3
-        }[partial]
-        return self.address + offset
+            
+        # Get base group for parameter type
+        if self in [self.OSC_WAVE, self.OSC_WAVE_VAR, self.OSC_PITCH]:
+            group = OSC_GROUP
+        elif self in [self.FILTER_CUTOFF, self.FILTER_RESONANCE]:
+            group = FILTER_GROUP
+        elif self in [self.AMP_LEVEL, self.AMP_ENV_ATTACK]:
+            group = AMP_GROUP
+        elif self in [
+            self.LFO_SHAPE, self.LFO_RATE, self.LFO_SYNC, 
+            self.LFO_NOTE, self.LFO_FADE, self.LFO_TRIGGER,
+            self.LFO_PITCH, self.LFO_FILTER, self.LFO_AMP, self.LFO_PAN
+        ]:
+            group = LFO_GROUP
+        else:
+            group = MOD_LFO_GROUP
+            
+        # Add partial offset to group
+        group += (partial - 1) * 0x10
+        
+        return (group, self.address)
 
     def __new__(cls, *args):
         obj = object.__new__(cls)
@@ -197,6 +320,86 @@ class DigitalParameter(Enum):
 
     def __str__(self) -> str:
         return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter"""
+        return {
+            self.OSC_WAVE_VAR: "Variation"
+        }.get(self, self.name.replace("_", " ").title())
+
+    def get_switch_text(self, value: int) -> str:
+        """Get display text for switch values"""
+        if self == self.OSC_WAVE_VAR:
+            return ["A", "B", "C"][value]
+        elif self == self.FILTER_MODE:
+            return ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"][value]
+        elif self == self.FILTER_SLOPE:
+            return ["-12dB", "-24dB"][value]
+        elif self == self.MOD_LFO_SHAPE:
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
+        elif self == self.MOD_LFO_SYNC:
+            return "ON" if value else "OFF"
+        elif self == self.LFO_SHAPE:
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
+        elif self in [self.LFO_SYNC, self.LFO_TRIGGER]:
+            return "ON" if value else "OFF"
+        elif self == self.WAVE_GAIN:
+            return f"{[-6, 0, 6, 12][value]:+d}dB"
+        return str(value)
+
+    def get_wave_number(self, midi_helper) -> Optional[int]:
+        """Get the full 16-bit wave number value"""
+        try:
+            # Get all 4 bytes
+            b1 = midi_helper.get_parameter(self.WAVE_NUMBER_1)
+            b2 = midi_helper.get_parameter(self.WAVE_NUMBER_2)
+            b3 = midi_helper.get_parameter(self.WAVE_NUMBER_3)
+            b4 = midi_helper.get_parameter(self.WAVE_NUMBER_4)
+            
+            if None in (b1, b2, b3, b4):
+                return None
+                
+            # Combine into 16-bit value
+            return (b1 << 12) | (b2 << 8) | (b3 << 4) | b4
+            
+        except Exception as e:
+            logging.error(f"Error getting wave number: {str(e)}")
+            return None
+
+    def set_wave_number(self, midi_helper, value: int) -> bool:
+        """Set the 16-bit wave number value
+        
+        Args:
+            midi_helper: MIDI helper instance
+            value: Wave number (0-16384)
+            
+        Returns:
+            True if successful
+        """
+        try:
+            if not 0 <= value <= 16384:
+                raise ValueError(f"Wave number {value} out of range (0-16384)")
+                
+            # Split into 4-bit chunks
+            b1 = (value >> 12) & 0x0F  # Most significant 4 bits
+            b2 = (value >> 8) & 0x0F   # Next 4 bits
+            b3 = (value >> 4) & 0x0F   # Next 4 bits
+            b4 = value & 0x0F          # Least significant 4 bits
+            
+            # Send all 4 bytes
+            success = all([
+                midi_helper.send_parameter(self.WAVE_NUMBER_1, b1),
+                midi_helper.send_parameter(self.WAVE_NUMBER_2, b2),
+                midi_helper.send_parameter(self.WAVE_NUMBER_3, b3),
+                midi_helper.send_parameter(self.WAVE_NUMBER_4, b4)
+            ])
+            
+            return success
+            
+        except Exception as e:
+            logging.error(f"Error setting wave number: {str(e)}")
+            return False
 
 class DigitalPartial(IntEnum):
     """Digital synth partial numbers and structure types"""

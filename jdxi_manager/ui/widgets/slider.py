@@ -1,93 +1,63 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QSlider, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSlider
 from PySide6.QtCore import Qt, Signal
 
 class Slider(QWidget):
-    """Custom slider widget with label and value display"""
+    """Custom slider widget with value display"""
+    valueChanged = Signal(int)
     
-    # Define the value changed signal
-    valueChanged = Signal(int)  # Signal emitted when value changes
-    
-    def __init__(self, label: str, min_val: int, max_val: int, parent=None):
+    def __init__(self, label: str, min_val: int = 0, max_val: int = 127, parent=None):
         super().__init__(parent)
-        self.label = label
         self.min_val = min_val
         self.max_val = max_val
         
-        # Create layout
+        # Main layout
         layout = QVBoxLayout()
-        layout.setSpacing(2)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
         self.setLayout(layout)
         
-        # Create label
-        self.label_widget = QLabel(label)
-        self.label_widget.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.label_widget)
+        # Top row with label and value
+        top_row = QHBoxLayout()
+        top_row.setContentsMargins(0, 0, 0, 0)
         
-        # Create slider
-        self.slider = QSlider(Qt.Vertical)
+        # Label
+        self.label = QLabel(label)
+        self.label.setMinimumWidth(50)
+        top_row.addWidget(self.label)
+        
+        # Value display
+        self.value_label = QLabel(str(min_val))
+        self.value_label.setAlignment(Qt.AlignRight)
+        self.value_label.setMinimumWidth(30)
+        top_row.addWidget(self.value_label)
+        
+        layout.addLayout(top_row)
+        
+        # Slider
+        self.slider = QSlider(Qt.Horizontal)  # Changed to Horizontal
         self.slider.setMinimum(min_val)
         self.slider.setMaximum(max_val)
-        self.slider.setTickPosition(QSlider.TicksRight)
-        self.slider.valueChanged.connect(self._on_slider_changed)
+        self.slider.setValue(min_val)
+        self.slider.setMinimumWidth(150)  # Ensure minimum width for usability
+        self.slider.valueChanged.connect(self._on_value_changed)
         layout.addWidget(self.slider)
-        
-        # Create value display
-        self.value_label = QLabel("0")
-        self.value_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.value_label)
-        
-        # Set initial value
-        self.setValue((max_val + min_val) // 2)
-        
-        # Style
-        self.setStyleSheet("""
-            QLabel {
-                color: #CCCCCC;
-                font-size: 10px;
-            }
-            QSlider {
-                margin: 5px;
-            }
-            QSlider::groove:vertical {
-                background: #444444;
-                width: 4px;
-                border-radius: 2px;
-            }
-            QSlider::handle:vertical {
-                background: #CC3333;
-                border: none;
-                height: 10px;
-                width: 10px;
-                margin: 0 -3px;
-                border-radius: 5px;
-            }
-            QSlider::add-page:vertical {
-                background: #CC3333;
-                border-radius: 2px;
-            }
-            QSlider::sub-page:vertical {
-                background: #444444;
-                border-radius: 2px;
-            }
-        """)
 
-    def _on_slider_changed(self, value: int):
-        """Internal slot for slider value changes"""
+    def _on_value_changed(self, value: int):
+        """Handle slider value changes"""
         self.value_label.setText(str(value))
         self.valueChanged.emit(value)
-
+        
     def value(self) -> int:
-        """Get current slider value"""
+        """Get current value"""
         return self.slider.value()
-
+        
     def setValue(self, value: int):
-        """Set slider value"""
+        """Set current value"""
         self.slider.setValue(value)
-
+        
     def setEnabled(self, enabled: bool):
-        """Enable/disable the slider"""
+        """Set enabled state"""
         super().setEnabled(enabled)
         self.slider.setEnabled(enabled)
-        self.label_widget.setEnabled(enabled)
+        self.label.setEnabled(enabled)
         self.value_label.setEnabled(enabled) 

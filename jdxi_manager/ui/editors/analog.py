@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel
+    QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QScrollArea
 )
 from PySide6.QtCore import Qt
 
@@ -12,19 +12,36 @@ from jdxi_manager.midi.constants import (
     AnalogToneCC,
     Waveform
 )
+from jdxi_manager.midi.constants.analog import (
+    AnalogToneCC
+)
 
 class AnalogSynthEditor(BaseEditor):
     def __init__(self, midi_helper=None, parent=None):
         super().__init__(midi_helper, parent)
+        self.setWindowTitle("Analog Synth")
+        
+        # Allow resizing
+        self.setMinimumSize(400, 300)  # Set minimum size
+        self.resize(800, 600)  # Set default size
         
         # Main layout
-        main_layout = QHBoxLayout()  # Changed to horizontal layout
-        main_layout.setSpacing(10)
-        main_layout.setContentsMargins(10, 10, 10, 10)
+        main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         
+        # Create scroll area for resizable content
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        
+        # Create container widget for scroll area
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+        
         # Additional styling specific to analog editor
-        self.setStyleSheet("""
+        container.setStyleSheet("""
             QWidget {
                 background-color: #2D2D2D;
                 color: #CCCCCC;
@@ -64,13 +81,61 @@ class AnalogSynthEditor(BaseEditor):
         """)
         
         # Add sections side by side
-        main_layout.addWidget(self._create_oscillator_section())
-        main_layout.addWidget(self._create_filter_section())
-        main_layout.addWidget(self._create_amp_section())
-        main_layout.addWidget(self._create_lfo_section())
-
-        # Set fixed size
-        self.setFixedSize(800, 400)
+        container_layout.addWidget(self._create_oscillator_section())
+        container_layout.addWidget(self._create_filter_section())
+        container_layout.addWidget(self._create_amp_section())
+        container_layout.addWidget(self._create_lfo_section())
+        
+        # Add container to scroll area
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
+        
+        # Connect sliders to MIDI parameters
+        self.coarse.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PITCH, v + 64)  # Center at 0
+        )
+        self.fine.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_FINE, v + 64)   # Center at 0
+        )
+        
+        self.cutoff.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.FILTER_CUTOFF, v)
+        )
+        self.resonance.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.FILTER_RESO, v)
+        )
+        
+        # Connect envelope sliders
+        for name, cc in [
+            ('A', AnalogToneCC.FILTER_ENV_A),
+            ('D', AnalogToneCC.FILTER_ENV_D),
+            ('S', AnalogToneCC.FILTER_ENV_S),
+            ('R', AnalogToneCC.FILTER_ENV_R)
+        ]:
+            self.filter_env[name].valueChanged.connect(
+                lambda v, cc=cc: self._send_cc(cc, v)
+            )
+        
+        for name, cc in [
+            ('A', AnalogToneCC.AMP_ENV_A),
+            ('D', AnalogToneCC.AMP_ENV_D),
+            ('S', AnalogToneCC.AMP_ENV_S),
+            ('R', AnalogToneCC.AMP_ENV_R)
+        ]:
+            self.amp_env[name].valueChanged.connect(
+                lambda v, cc=cc: self._send_cc(cc, v)
+            )
+        
+        self.level.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.AMP_LEVEL, v)
+        )
+        
+        self.lfo_rate.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_RATE, v)
+        )
+        self.lfo_depth.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_DEPTH, v)
+        )
 
     def _create_oscillator_section(self):
         group = QGroupBox("Oscillator")
@@ -201,3 +266,8 @@ class AnalogSynthEditor(BaseEditor):
                 param=AnalogToneCC.OSC_WAVE,
                 value=waveform.midi_value
             ) 
+
+    def _send_cc(self, cc: AnalogToneCC, value: int):
+        """Send MIDI CC message"""
+        if self.midi_helper:
+            self.midi_helper.send_cc(cc, value, channel=ANALOG_PART) 
