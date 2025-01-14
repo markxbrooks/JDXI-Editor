@@ -8,15 +8,15 @@ class Style:
     BACKGROUND = "#1A1A1A"
     FOREGROUND = "#FFFFFF"
     ACCENT = "#FF0000"
-    ACCENT_HOVER = "#FF8C00"
+    ACCENT_HOVER = "#FF0000"  # Red for hover
     BORDER = "#333333"
-    SLIDER_HANDLE = "#FFFFFF"
-    SLIDER_GROOVE = "#FF0000"
+    SLIDER_HANDLE = "#000000"  # Black fill
+    SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
+    SLIDER_GROOVE = "#FF0000"  # Red groove
     
     # Dimensions
-    HANDLE_SIZE = "4px"      # Square handle
-    HANDLE_RADIUS = "1px"    # Very slight rounding
-    GROOVE_WIDTH = "2px"     # Thinner groove
+    HANDLE_SIZE = "6px"       # Circle diameter
+    GROOVE_WIDTH = "2px"      # Groove thickness
     
     # Fonts
     FONT_FAMILY = "Myriad Pro, Arial, sans-serif"
@@ -57,17 +57,14 @@ class Style:
         
         QSlider::handle {{
             background: {SLIDER_HANDLE};
-            border: 1px solid {ACCENT};
-            width: 4px;
-            height: 6px;
-            margin: -4px -5px;
-            border-radius: {HANDLE_RADIUS};
-            subcontrol-origin: margin;
+            border: 2px solid {SLIDER_HANDLE_BORDER};
+            width: {HANDLE_SIZE};
+            height: {HANDLE_SIZE};
+            margin: -4px -4px;
+            border-radius: 4px;  /* Half of width+border for circle */
         }}
         
-        QSlider::handle:vertical:hover,
-        QSlider::handle:horizontal:hover {{
-            background: {ACCENT_HOVER};
+        QSlider::handle:hover {{
             border-color: {ACCENT_HOVER};
         }}
         
