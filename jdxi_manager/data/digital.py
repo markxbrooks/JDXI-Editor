@@ -7,6 +7,11 @@ from jdxi_manager.midi.constants import (
     OSC_1_GROUP, OSC_WAVE_PARAM,
     WAVE_SAW
 )
+from jdxi_manager.midi.constants.digital import (
+    DIGITAL_SYNTH_AREA, PART_1, 
+    OSC_1_GROUP, OSC_WAVE_PARAM,
+    WAVE_SAW
+)
 
 class WaveGain(IntEnum):
     """Wave gain values in dB"""

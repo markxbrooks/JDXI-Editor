@@ -210,6 +210,10 @@ MODEL_ID_1 = 0x00
 MODEL_ID_2 = 0x00
 DT1_COMMAND = 0x12
 
+# Roland Commands
+DT1_COMMAND_12 = 0x12  # Data Set 1
+RQ1_COMMAND_11 = 0x11  # Data Request 1
+
 # Command constants
 RQ1_COMMAND_11 = 0x11  # Data Request 1
 
@@ -4815,9 +4819,9 @@ WAVE_PCM = 0x07
 
 # Memory Areas
 PROGRAM_AREA = 0x18
-DIGITAL_SYNTH_AREA = 0x02
+DIGITAL_SYNTH_AREA = 0x19
 DIGITAL_SYNTH_2_AREA = 0x1A
-ANALOG_SYNTH_AREA = 0x01
+ANALOG_SYNTH_AREA = 0x1B
 DRUM_KIT_AREA = 0x1C
 
 # Part Numbers

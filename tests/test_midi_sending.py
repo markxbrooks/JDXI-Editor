@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from jdxi_manager.midi.helper import MIDIHelper
 from jdxi_manager.midi.messages import JDXiSysEx
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi._const import (
     ARPEGGIO_AREA, SUBGROUP_ZERO,
     ArpParameters
 )
