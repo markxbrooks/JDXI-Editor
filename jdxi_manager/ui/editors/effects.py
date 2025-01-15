@@ -13,10 +13,6 @@ class EffectsEditor(BaseEditor):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Effects")
         
-        # Allow resizing
-        self.setMinimumSize(400, 300)
-        self.resize(800, 600)
-        
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)

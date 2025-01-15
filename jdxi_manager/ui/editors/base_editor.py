@@ -7,6 +7,7 @@ from jdxi_manager.midi.helper import MIDIHelper
 from jdxi_manager.ui.style import Style
 
 class BaseEditor(QWidget):
+    """Base class for all editor windows"""
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
@@ -16,6 +17,9 @@ class BaseEditor(QWidget):
         
         # Apply common style
         self.setStyleSheet(Style.EDITOR_STYLE)
+        
+        # Common minimum size for all editors
+        self.setMinimumSize(800, 400)
     
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""

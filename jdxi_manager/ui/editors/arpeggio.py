@@ -20,7 +20,7 @@ from jdxi_manager.ui.editors.base_editor import BaseEditor
 class ArpeggioEditor(BaseEditor):
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
         super().__init__(midi_helper, parent)
-        self.setWindowTitle("Arpeggiator")
+        self.setWindowTitle("Arpeggio")
         
         # Allow resizing
         self.setMinimumSize(400, 300)  # Set minimum size

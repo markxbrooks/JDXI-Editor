@@ -39,9 +39,10 @@ class AnalogSynthEditor(BaseEditor):
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-        
+
+        """
         # Additional styling specific to analog editor
-        container.setStyleSheet("""
+        #container.setStyleSheet(""
             QWidget {
                 background-color: #2D2D2D;
                 color: #CCCCCC;
@@ -78,7 +79,7 @@ class AnalogSynthEditor(BaseEditor):
             QSlider::handle:vertical:hover {
                 background: #FF4444;
             }
-        """)
+        "")"""
         
         # Add sections side by side
         container_layout.addWidget(self._create_oscillator_section())

@@ -1,47 +1,48 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSlider
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSlider, QSizePolicy
 from PySide6.QtCore import Qt, Signal
 
 class Slider(QWidget):
-    """Custom slider widget with value display"""
+    """Custom slider widget with label and value display"""
+    
     valueChanged = Signal(int)
     
-    def __init__(self, label: str, min_val: int = 0, max_val: int = 127, parent=None):
+    def __init__(self, label: str, min_val: int, max_val: int, vertical: bool = False, parent=None):
         super().__init__(parent)
         self.min_val = min_val
         self.max_val = max_val
         
         # Main layout
-        layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(2)
+        layout = QVBoxLayout() if vertical else QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)  # Reduce margins
         self.setLayout(layout)
         
-        # Top row with label and value
-        top_row = QHBoxLayout()
-        top_row.setContentsMargins(0, 0, 0, 0)
-        
-        # Label
+        # Create label
         self.label = QLabel(label)
-        self.label.setMinimumWidth(50)
-        top_row.addWidget(self.label)
+        layout.addWidget(self.label)
         
-        # Value display
-        self.value_label = QLabel(str(min_val))
-        self.value_label.setAlignment(Qt.AlignRight)
-        self.value_label.setMinimumWidth(30)
-        top_row.addWidget(self.value_label)
-        
-        layout.addLayout(top_row)
-        
-        # Slider
-        self.slider = QSlider(Qt.Horizontal)  # Changed to Horizontal
+        # Create slider
+        self.slider = QSlider(Qt.Vertical if vertical else Qt.Horizontal)
         self.slider.setMinimum(min_val)
         self.slider.setMaximum(max_val)
-        self.slider.setValue(min_val)
-        self.slider.setMinimumWidth(150)  # Ensure minimum width for usability
         self.slider.valueChanged.connect(self._on_value_changed)
+        
+        # Set size policy for vertical sliders
+        if vertical:
+            self.slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+            self.setMinimumHeight(125)  # 50% of 250px ADSR group height
+            layout.setAlignment(self.label, Qt.AlignHCenter)
+            layout.setAlignment(self.slider, Qt.AlignHCenter)
+        else:
+            self.slider.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            
         layout.addWidget(self.slider)
-
+        
+        # Create value display
+        self.value_label = QLabel(str(min_val))
+        self.value_label.setMinimumWidth(30)
+        self.value_label.setAlignment(Qt.AlignRight if vertical else Qt.AlignLeft)
+        layout.addWidget(self.value_label)
+        
     def _on_value_changed(self, value: int):
         """Handle slider value changes"""
         self.value_label.setText(str(value))
