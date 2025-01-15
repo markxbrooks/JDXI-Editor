@@ -2101,3 +2101,98 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error showing Vocal FX editor: {str(e)}")
+
+    def _create_global_controls(self):
+        """Create global controls section"""
+        group = QGroupBox("Global Controls")
+        layout = QHBoxLayout()
+        group.setLayout(layout)
+        
+        # Octave controls
+        octave_group = QGroupBox("Octave")
+        octave_layout = QHBoxLayout()
+        octave_group.setLayout(octave_layout)
+        
+        self.octave_down = QPushButton("Down")
+        self.octave_up = QPushButton("Up")
+        self.octave_display = QLabel("0")  # Display current octave
+        self.octave_display.setAlignment(Qt.AlignCenter)
+        
+        self.octave_down.clicked.connect(lambda: self._change_octave(-1))
+        self.octave_up.clicked.connect(lambda: self._change_octave(1))
+        
+        octave_layout.addWidget(self.octave_down)
+        octave_layout.addWidget(self.octave_display)
+        octave_layout.addWidget(self.octave_up)
+        
+        # Arpeggiator controls
+        arp_group = QGroupBox("Arpeggiator")
+        arp_layout = QHBoxLayout()
+        arp_group.setLayout(arp_layout)
+        
+        self.arp_switch = QPushButton("On")
+        self.arp_switch.setCheckable(True)
+        self.arp_switch.clicked.connect(self._toggle_arpeggiator)
+        
+        arp_layout.addWidget(self.arp_switch)
+        
+        # Add groups to main layout
+        layout.addWidget(octave_group)
+        layout.addWidget(arp_group)
+        
+        return group
+
+    def _change_octave(self, direction: int):
+        """Change octave up/down
+        
+        Args:
+            direction: +1 for up, -1 for down
+        """
+        if not self.midi_helper:
+            return
+            
+        try:
+            # Get current octave from display
+            current = int(self.octave_display.text())
+            
+            # Calculate new octave (-3 to +3 range)
+            new_octave = max(min(current + direction, 3), -3)
+            
+            # Convert to MIDI value (61-67 range)
+            midi_value = new_octave + 64
+            
+            # Send parameter change
+            self.midi_helper.send_parameter(
+                area=0x00,  # Program zone area
+                part=0x00,
+                group=0x00,
+                param=0x19,  # Zone Octave Shift parameter
+                value=midi_value
+            )
+            
+            # Update display
+            self.octave_display.setText(str(new_octave))
+            
+        except Exception as e:
+            logging.error(f"Error changing octave: {str(e)}")
+
+    def _toggle_arpeggiator(self, checked: bool):
+        """Toggle arpeggiator on/off"""
+        if not self.midi_helper:
+            return
+            
+        try:
+            # Send parameter change (0x00 = Program zone area, 0x03 = Arpeggio Switch)
+            self.midi_helper.send_parameter(
+                area=0x00,  # Program zone area
+                part=0x00,  # Common part
+                group=0x00, # Common group
+                param=0x03, # Arpeggio Switch parameter
+                value=1 if checked else 0  # 0 = OFF, 1 = ON
+            )
+            
+            # Update button text
+            self.arp_switch.setText("Off" if not checked else "On")
+            
+        except Exception as e:
+            logging.error(f"Error toggling arpeggiator: {str(e)}")

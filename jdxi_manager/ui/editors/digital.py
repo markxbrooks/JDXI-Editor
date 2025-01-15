@@ -327,7 +327,7 @@ class PartialEditor(QWidget):
         env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D"))
         env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S"))
         env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R"))
-        
+            
         layout.addWidget(env_group)
         
         # Keyfollow and aftertouch

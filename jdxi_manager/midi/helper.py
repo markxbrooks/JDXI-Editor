@@ -264,29 +264,55 @@ class MIDIHelper:
             return False
 
     def send_parameter(self, area: int, part: int, group: int, param: int, value: int) -> bool:
-        """Send parameter change via MIDI System Exclusive message"""
-        if not self.midi_out.is_port_open():
-            logging.error("MIDI output port not open")
-            return False
-
+        """Send parameter change message
+        
+        Args:
+            area: Parameter area (e.g., Program, Digital Synth)
+            part: Part number
+            group: Parameter group
+            param: Parameter number
+            value: Parameter value (0-127)
+            
+        Returns:
+            True if successful, False otherwise
+        """
         try:
-            # Format: F0 41 10 00 00 00 0E 12 {area} {part} {group} {param} {value} {checksum} F7
-            msg = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                   area, part, group, param, value]
+            if not self.is_output_open:
+                logging.warning("MIDI output not open")
+                return False
+                
+            # Ensure all values are integers and within valid ranges
+            area = int(area) & 0x7F
+            part = int(part) & 0x7F
+            group = int(group) & 0x7F
+            param = int(param) & 0x7F
+            value = int(value) & 0x7F
             
-            # Calculate checksum (Roland format)
-            checksum = 0
-            for byte in msg[8:]:  # Start from area byte
-                checksum = (checksum + byte) & 0x7F
-            checksum = (128 - checksum) & 0x7F
+            # Create parameter message
+            message = [
+                0xF0,           # Start of SysEx
+                0x41, 0x10,    # Roland ID
+                0x00, 0x00,    # Device ID
+                0x00, 0x0E,    # Model ID
+                0x12,          # DT1 Command
+                area,          # Parameter area
+                part,          # Part number
+                group,         # Parameter group
+                param,         # Parameter number
+                value,         # Parameter value
+                0x00,         # Checksum (placeholder)
+                0xF7          # End of SysEx
+            ]
             
-            # Add checksum and end of SysEx
-            msg.append(checksum)
-            msg.append(0xF7)
+            # Calculate checksum
+            checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
+            message[-2] = checksum
             
-            return self.send_message(msg)
+            # Send message directly instead of using output_port
+            return self.send_message(message)
+            
         except Exception as e:
-            logging.error(f"Error sending MIDI parameter: {str(e)}")
+            logging.error(f"Error sending parameter: {str(e)}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -385,4 +411,32 @@ class MIDIHelper:
             
         except Exception as e:
             logging.error(f"Error requesting parameter: {str(e)}")
+            return False
+
+    def send_cc(self, cc: int, value: int, channel: int = 0):
+        """Send Control Change message
+        
+        Args:
+            cc: Control Change number (0-127)
+            value: Control Change value (0-127)
+            channel: MIDI channel (0-15)
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not self.is_output_open:
+                logging.warning("MIDI output not open")
+                return False
+                
+            # Create Control Change message (Status byte: 0xB0 + channel)
+            message = [0xB0 + channel, cc, value]
+            
+            # Send message
+            self.output_port.send_message(message)
+            logging.debug(f"Sent CC {cc}={value} on ch{channel}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error sending CC message: {str(e)}")
             return False
