@@ -1,19 +1,17 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QScrollArea
+    QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QScrollArea, QComboBox
 )
 from PySide6.QtCore import Qt
 
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import WaveformButton
-from jdxi_manager.midi.constants import (
-    ANALOG_SYNTH_AREA,
-    ANALOG_PART,
-    AnalogToneCC,
-    Waveform
-)
+from jdxi_manager.ui.widgets.switch import Switch
 from jdxi_manager.midi.constants.analog import (
-    AnalogToneCC
+    AnalogToneCC,
+    Waveform,
+    ANALOG_SYNTH_AREA,
+    ANALOG_PART
 )
 
 class AnalogSynthEditor(BaseEditor):
@@ -91,14 +89,15 @@ class AnalogSynthEditor(BaseEditor):
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
         
-        # Connect sliders to MIDI parameters
+        # Connect oscillator controls
         self.coarse.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.OSC_PITCH, v + 64)  # Center at 0
+            lambda v: self._send_cc(AnalogToneCC.OSC_COARSE, v + 64)  # Center at 0
         )
         self.fine.valueChanged.connect(
             lambda v: self._send_cc(AnalogToneCC.OSC_FINE, v + 64)   # Center at 0
         )
         
+        # Connect filter controls
         self.cutoff.valueChanged.connect(
             lambda v: self._send_cc(AnalogToneCC.FILTER_CUTOFF, v)
         )
@@ -127,45 +126,109 @@ class AnalogSynthEditor(BaseEditor):
                 lambda v, cc=cc: self._send_cc(cc, v)
             )
         
+        # Connect amp level
         self.level.valueChanged.connect(
             lambda v: self._send_cc(AnalogToneCC.AMP_LEVEL, v)
-        )
-        
-        self.lfo_rate.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.LFO_RATE, v)
-        )
-        self.lfo_depth.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.LFO_DEPTH, v)
         )
 
     def _create_oscillator_section(self):
         group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
-        layout.setSpacing(5)
-        layout.setContentsMargins(5, 15, 5, 5)
         group.setLayout(layout)
         
         # Waveform buttons
         wave_layout = QHBoxLayout()
-        wave_layout.setSpacing(5)
         self.wave_buttons = {}
-        for waveform in [Waveform.SAW, Waveform.SQUARE, Waveform.TRIANGLE]:
+        for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
             btn = WaveformButton(waveform)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
             wave_layout.addWidget(btn)
         layout.addLayout(wave_layout)
         
-        # Add spacing
-        layout.addSpacing(10)
-        
         # Tuning controls
-        self.coarse = Slider("Coarse", -24, 24)
-        self.fine = Slider("Fine", -50, 50)
-        layout.addWidget(self.coarse)
-        layout.addWidget(self.fine)
+        tuning_group = QGroupBox("Tuning")
+        tuning_layout = QVBoxLayout()
+        tuning_group.setLayout(tuning_layout)
+        
+        self.coarse = Slider("Coarse", -24, 24)  # Will be mapped to 40-88
+        self.fine = Slider("Fine", -50, 50)      # Will be mapped to 14-114
+        tuning_layout.addWidget(self.coarse)
+        tuning_layout.addWidget(self.fine)
+        layout.addWidget(tuning_group)
+        
+        # Pulse Width controls
+        pw_group = QGroupBox("Pulse Width")
+        pw_layout = QVBoxLayout()
+        pw_group.setLayout(pw_layout)
+        
+        self.pw = Slider("Width", 0, 127)
+        self.pw.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PW, v)
+        )
+        
+        self.pw_mod = Slider("Mod Depth", 0, 127)
+        self.pw_mod.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PWM, v)
+        )
+        
+        pw_layout.addWidget(self.pw)
+        pw_layout.addWidget(self.pw_mod)
+        layout.addWidget(pw_group)
+        
+        # Pitch Envelope
+        pitch_env_group = QGroupBox("Pitch Envelope")
+        pitch_env_layout = QVBoxLayout()
+        pitch_env_group.setLayout(pitch_env_layout)
+        
+        self.pitch_env_velo = Slider("Velocity", -63, 63)
+        self.pitch_env_velo.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PENV_VELO, v + 64)
+        )
+        
+        self.pitch_env_attack = Slider("Attack", 0, 127)
+        self.pitch_env_attack.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PENV_A, v)
+        )
+        
+        self.pitch_env_decay = Slider("Decay", 0, 127)
+        self.pitch_env_decay.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PENV_D, v)
+        )
+        
+        self.pitch_env_depth = Slider("Depth", -63, 63)
+        self.pitch_env_depth.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.OSC_PENV_DEPTH, v + 64)
+        )
+        
+        pitch_env_layout.addWidget(self.pitch_env_velo)
+        pitch_env_layout.addWidget(self.pitch_env_attack)
+        pitch_env_layout.addWidget(self.pitch_env_decay)
+        pitch_env_layout.addWidget(self.pitch_env_depth)
+        layout.addWidget(pitch_env_group)
+        
+        # Sub Oscillator
+        sub_group = QGroupBox("Sub Oscillator")
+        sub_layout = QVBoxLayout()
+        sub_group.setLayout(sub_layout)
+        
+        self.sub_type = Switch("Type", ["OFF", "-1 OCT", "-2 OCT"])
+        self.sub_type.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.SUB_TYPE, v)
+        )
+        sub_layout.addWidget(self.sub_type)
+        layout.addWidget(sub_group)
+        
+        # Update PW controls enabled state based on current waveform
+        self._update_pw_controls_state(Waveform.SAW)  # Initial state
         
         return group
+
+    def _update_pw_controls_state(self, waveform):
+        """Enable/disable PW controls based on waveform"""
+        pw_enabled = (waveform == Waveform.PULSE)
+        self.pw.setEnabled(pw_enabled)
+        self.pw_mod.setEnabled(pw_enabled)
 
     def _create_filter_section(self):
         group = QGroupBox("Filter")
@@ -240,15 +303,79 @@ class AnalogSynthEditor(BaseEditor):
     def _create_lfo_section(self):
         group = QGroupBox("LFO")
         layout = QVBoxLayout()
-        layout.setSpacing(5)
-        layout.setContentsMargins(5, 15, 5, 5)
         group.setLayout(layout)
         
-        # LFO controls
+        # LFO Shape selector
+        shape_row = QHBoxLayout()
+        shape_row.addWidget(QLabel("Shape"))
+        self.lfo_shape = QComboBox()
+        self.lfo_shape.addItems(["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
+        self.lfo_shape.currentIndexChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_SHAPE, v)
+        )
+        shape_row.addWidget(self.lfo_shape)
+        layout.addLayout(shape_row)
+        
+        # Rate and Fade Time
         self.lfo_rate = Slider("Rate", 0, 127)
-        self.lfo_depth = Slider("Depth", 0, 127)
+        self.lfo_rate.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_RATE, v)
+        )
+        
+        self.lfo_fade = Slider("Fade Time", 0, 127)
+        self.lfo_fade.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_FADE, v)
+        )
+        
+        # Tempo Sync controls
+        sync_row = QHBoxLayout()
+        self.lfo_sync = Switch("Tempo Sync", ["OFF", "ON"])
+        self.lfo_sync.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_SYNC, v)
+        )
+        sync_row.addWidget(self.lfo_sync)
+        
+        self.sync_note = QComboBox()
+        self.sync_note.addItems([
+            "16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2",
+            "3/8", "1/3", "1/4", "3/16", "1/6", "1/8", "3/32",
+            "1/12", "1/16", "1/24", "1/32"
+        ])
+        self.sync_note.currentIndexChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_SYNC_NOTE, v)
+        )
+        sync_row.addWidget(self.sync_note)
+        
+        # Depth controls
+        self.lfo_pitch = Slider("Pitch Depth", -63, 63)
+        self.lfo_pitch.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_PITCH, v + 64)
+        )
+        
+        self.lfo_filter = Slider("Filter Depth", -63, 63)
+        self.lfo_filter.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_FILTER, v + 64)
+        )
+        
+        self.lfo_amp = Slider("Amp Depth", -63, 63)
+        self.lfo_amp.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_AMP, v + 64)
+        )
+        
+        # Key Trigger switch
+        self.key_trig = Switch("Key Trigger", ["OFF", "ON"])
+        self.key_trig.valueChanged.connect(
+            lambda v: self._send_cc(AnalogToneCC.LFO_KEY_TRIG, v)
+        )
+        
+        # Add all controls to layout
         layout.addWidget(self.lfo_rate)
-        layout.addWidget(self.lfo_depth)
+        layout.addWidget(self.lfo_fade)
+        layout.addLayout(sync_row)
+        layout.addWidget(self.lfo_pitch)
+        layout.addWidget(self.lfo_filter)
+        layout.addWidget(self.lfo_amp)
+        layout.addWidget(self.key_trig)
         
         return group
 

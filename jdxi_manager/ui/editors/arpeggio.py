@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QFrame, QLabel, QComboBox, QCheckBox, QPushButton,
-    QScrollArea
+    QScrollArea, QGroupBox
 )
 from PySide6.QtCore import Qt
 import logging
@@ -30,20 +30,38 @@ class ArpeggioEditor(BaseEditor):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         
-        # Create scroll area for resizable content
+        # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         
-        # Create container widget for scroll area
+        # Create container widget
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
         
-        # Add your existing sections to container_layout
+        # Add custom style for arpeggiator groups
+        container.setStyleSheet("""
+            QGroupBox {
+                border: 1px solid #FF0000;  /* Red border */
+                border-radius: 3px;
+                margin-top: 1.5ex;
+                padding: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top center;
+                padding: 0 3px;
+                color: #FFFFFF;
+                background-color: #1A1A1A;
+            }
+        """)
+        
+        # Add sections
         container_layout.addWidget(self._create_pattern_section())
-        container_layout.addWidget(self._create_settings_section())
+        container_layout.addWidget(self._create_timing_section())
+        container_layout.addWidget(self._create_velocity_section())
         
         # Add container to scroll area
         scroll.setWidget(container)
@@ -108,10 +126,9 @@ class ArpeggioEditor(BaseEditor):
         
         return group
 
-    def _create_settings_section(self):
-        """Create the arpeggio settings section"""
-        group = QFrame()
-        group.setFrameStyle(QFrame.StyledPanel)
+    def _create_timing_section(self):
+        """Create the arpeggio timing section"""
+        group = QGroupBox("Timing")
         layout = QVBoxLayout()
         group.setLayout(layout)
         
@@ -141,19 +158,23 @@ class ArpeggioEditor(BaseEditor):
         duration_row.addWidget(self.duration_combo)
         layout.addLayout(duration_row)
         
+        return group
+
+    def _create_velocity_section(self):
+        """Create the arpeggio velocity section"""
+        group = QGroupBox("Velocity")
+        layout = QVBoxLayout()
+        group.setLayout(layout)
+        
         # Velocity settings
-        velocity_row = QHBoxLayout()
         self.velocity_slider = Slider("Velocity", 0, 127)
         self.velocity_slider.valueChanged.connect(self._on_velocity_changed)
-        velocity_row.addWidget(self.velocity_slider)
-        layout.addLayout(velocity_row)
+        layout.addWidget(self.velocity_slider)
         
         # Swing settings
-        swing_row = QHBoxLayout()
         self.swing_slider = Slider("Swing", 0, 100)
         self.swing_slider.valueChanged.connect(self._on_swing_changed)
-        swing_row.addWidget(self.swing_slider)
-        layout.addLayout(swing_row)
+        layout.addWidget(self.swing_slider)
         
         return group
 

@@ -6,7 +6,7 @@ class Style:
     
     # Colors
     TITLE_TEXT = "#FFFFFF"
-    BACKGROUND = "#1A1A1A"
+    BACKGROUND = "#000000" # """"#1A1A1A"
     FOREGROUND = "#FFFFFF"
     ACCENT = "#FF0000"  # Red accent color
     ACCENT_HOVER = "#FF0000"  # Red for hover

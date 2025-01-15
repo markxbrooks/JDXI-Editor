@@ -1,6 +1,6 @@
 """Analog synth MIDI constants"""
 
-from enum import Enum
+from enum import Enum, IntEnum
 
 # Areas and Parts
 ANALOG_SYNTH_AREA = 0x01
@@ -46,8 +46,8 @@ ANALOG_LFO_FILTER = 0x13       # LFO Filter Depth (1-127: -63 to +63)
 ANALOG_LFO_AMP = 0x14          # LFO Amp Depth (1-127: -63 to +63)
 ANALOG_LFO_KEY_TRIG = 0x15     # LFO Key Trigger (0-1)
 
-class AnalogToneCC:
-    """Analog Synth Control Change parameters"""
+class AnalogToneCC(IntEnum):
+    """Analog synth CC parameters"""
     # Oscillator Parameters
     OSC_WAVE = 0x16        # Waveform (0-2: SAW,TRI,PW-SQR)
     OSC_COARSE = 0x17      # Pitch Coarse (40-88: -24 to +24)
@@ -58,6 +58,7 @@ class AnalogToneCC:
     OSC_PENV_A = 0x1C      # Pitch Env Attack (0-127)
     OSC_PENV_D = 0x1D      # Pitch Env Decay (0-127)
     OSC_PENV_DEPTH = 0x1E  # Pitch Env Depth (1-127: -63 to +63)
+    SUB_TYPE = 0x1F        # Sub Oscillator Type (0-2: OFF,OCT-1,OCT-2)
     
     # Filter parameters
     FILTER_CUTOFF = 0x21   # Filter cutoff frequency (0-127)
@@ -76,25 +77,36 @@ class AnalogToneCC:
     AMP_ENV_R = 0x2E       # Amplifier envelope release (0-127)
     
     # LFO parameters
-    LFO_SHAPE = 0x30       # LFO waveform shape (0-5)
-    LFO_RATE = 0x31        # LFO rate (0-127)
-    LFO_DEPTH = 0x32       # LFO depth (0-127)
+    LFO_SHAPE = 0x0D
+    LFO_RATE = 0x0E
+    LFO_FADE = 0x0F
+    LFO_SYNC = 0x10
+    LFO_SYNC_NOTE = 0x11
+    LFO_PITCH = 0x12
+    LFO_FILTER = 0x13
+    LFO_AMP = 0x14
+    LFO_KEY_TRIG = 0x15
 
-class AnalogOscWave(Enum):
+class Waveform(Enum):
     """Analog oscillator waveform types"""
     SAW = 0
     TRIANGLE = 1
-    PULSE = 2
+    PULSE = 2  # Changed from SQUARE to PULSE to match JD-Xi terminology
 
-    @staticmethod
-    def get_display_name(value: int) -> str:
+    @property
+    def midi_value(self) -> int:
+        """Get MIDI value for waveform"""
+        return self.value
+
+    @property
+    def display_name(self) -> str:
         """Get display name for waveform"""
         names = {
             0: "SAW",
             1: "TRI",
-            2: "P.W"
+            2: "P.W"  # Updated display name
         }
-        return names.get(value, "???")
+        return names.get(self.value, "???")
 
 # Sub oscillator types  
 class AnalogSubType(Enum):
