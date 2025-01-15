@@ -137,7 +137,7 @@ class DigitalParameter(Enum):
     OSC_PITCH_DECAY = (0x20, 0x08, 0, 127)   # Pitch Envelope Decay
     OSC_PITCH_DEPTH = (0x20, 0x09, -63, 63)  # Pitch Envelope Depth
     
-    # Filter parameters
+    # Filter parameters - Changed group from 0x01 to 0x21
     FILTER_MODE = (0x21, 0x00, 0, 7)        # Filter mode
     FILTER_SLOPE = (0x21, 0x01, 0, 1)       # Filter slope
     FILTER_CUTOFF = (0x21, 0x02, 0, 127)    # Cutoff frequency
@@ -150,15 +150,15 @@ class DigitalParameter(Enum):
     FILTER_ENV_RELEASE = (0x21, 0x09, 0, 127)   # Filter envelope release
     FILTER_ENV_DEPTH = (0x21, 0x0A, -63, 63)    # Filter envelope depth
     
-    # Amplifier parameters
-    AMP_LEVEL = (0x22, 0x00, 0, 127)       # Amplitude level
-    AMP_VELOCITY = (0x22, 0x01, -63, 63)   # Velocity sensitivity
-    AMP_ENV_ATTACK = (0x22, 0x02, 0, 127)  # Amplitude envelope attack
-    AMP_ENV_DECAY = (0x22, 0x03, 0, 127)   # Amplitude envelope decay
-    AMP_ENV_SUSTAIN = (0x22, 0x04, 0, 127) # Amplitude envelope sustain
-    AMP_ENV_RELEASE = (0x22, 0x05, 0, 127) # Amplitude envelope release
-    AMP_PAN = (0x22, 0x06, -64, 63)        # Pan position
-    AMP_KEYFOLLOW = (0x22, 0x07, -100, 100)  # Key follow
+    # Amplifier parameters - Changed group from 0x22 to 0x20
+    AMP_LEVEL = (0x20, 0x15, 0, 127)       # Amplitude level
+    AMP_VELOCITY = (0x20, 0x16, -63, 63)   # Velocity sensitivity
+    AMP_ENV_ATTACK = (0x20, 0x17, 0, 127)  # Amplitude envelope attack
+    AMP_ENV_DECAY = (0x20, 0x18, 0, 127)   # Amplitude envelope decay
+    AMP_ENV_SUSTAIN = (0x20, 0x19, 0, 127) # Amplitude envelope sustain
+    AMP_ENV_RELEASE = (0x20, 0x1A, 0, 127) # Amplitude envelope release
+    AMP_PAN = (0x20, 0x1B, -64, 63)        # Pan position
+    AMP_KEYFOLLOW = (0x20, 0x1C, -100, 100)  # Key follow (-100 to +100)
     
     # LFO parameters
     LFO_SHAPE = (0x23, 0x00, 0, 5)         # LFO waveform
@@ -210,11 +210,11 @@ class DigitalParameter(Enum):
         # Convert bipolar values to MIDI range
         if self in [
             # Oscillator parameters
-            self.OSC_PITCH, self.OSC_DETUNE,
+            self.OSC_PITCH, self.OSC_DETUNE, self.OSC_PITCH_DEPTH,
             # Filter parameters
             self.FILTER_KEYFOLLOW, self.FILTER_VELOCITY, self.FILTER_ENV_DEPTH,
             # Amplifier parameters
-            self.AMP_VELOCITY, self.AMP_PAN,
+            self.AMP_VELOCITY, self.AMP_PAN, self.AMP_KEYFOLLOW,
             # LFO parameters
             self.LFO_PITCH, self.LFO_FILTER, self.LFO_AMP, self.LFO_PAN,
             # Mod LFO parameters
@@ -224,12 +224,15 @@ class DigitalParameter(Enum):
             # Convert from display range to MIDI range
             if self == self.AMP_PAN:
                 value = value + 64  # -64 to +63 -> 0 to 127
-            elif self in [self.FILTER_KEYFOLLOW]:
+            elif self in [self.FILTER_KEYFOLLOW, self.AMP_KEYFOLLOW]:
                 value = value + 100  # -100 to +100 -> 0 to 200
+                value = (value * 127) // 200  # Scale to MIDI range
             elif self == self.OSC_PITCH:
                 value = value + 64  # -24 to +24 -> 40 to 88
             elif self == self.OSC_DETUNE:
                 value = value + 64  # -50 to +50 -> 14 to 114
+            elif self == self.OSC_PITCH_DEPTH:
+                value = value + 64  # -63 to +63 -> 0 to 127
             elif self in [
                 self.LFO_PITCH, self.LFO_FILTER, self.LFO_AMP, self.LFO_PAN,
                 self.MOD_LFO_PITCH, self.MOD_LFO_FILTER, self.MOD_LFO_AMP, self.MOD_LFO_PAN,
@@ -238,7 +241,7 @@ class DigitalParameter(Enum):
                 value = value + 64  # -63 to +63 -> 0 to 127
             else:
                 value = value + 63  # -63 to +63 -> 0 to 126
-                
+            
         # Ensure value is in valid MIDI range
         if value < 0 or value > 127:
             raise ValueError(

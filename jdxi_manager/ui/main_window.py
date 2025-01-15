@@ -16,7 +16,8 @@ from jdxi_manager.ui.editors import (
     DigitalSynthEditor,
     DrumEditor,
     ArpeggioEditor,
-    EffectsEditor
+    EffectsEditor,
+    VocalFXEditor
 )
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
 from jdxi_manager.ui.patch_manager import PatchManager
@@ -388,6 +389,58 @@ class MainWindow(QMainWindow):
         # Load saved favorites
         self._load_saved_favorites()
         
+        # Create editors menu
+        editors_menu = self.menuBar().addMenu("Editors")
+        
+        # Add menu items for each editor
+        digital1_action = editors_menu.addAction("Digital Synth 1")
+        digital1_action.triggered.connect(lambda: self.show_editor('digital1'))
+        
+        digital2_action = editors_menu.addAction("Digital Synth 2")
+        digital2_action.triggered.connect(lambda: self.show_editor('digital2'))
+        
+        analog_action = editors_menu.addAction("Analog Synth")
+        analog_action.triggered.connect(lambda: self.show_editor('analog'))
+        
+        drums_action = editors_menu.addAction("Drums")
+        drums_action.triggered.connect(lambda: self.show_editor('drums'))
+        
+        arp_action = editors_menu.addAction("Arpeggio")
+        arp_action.triggered.connect(lambda: self.show_editor('arpeggio'))
+        
+        effects_action = editors_menu.addAction("Effects")
+        effects_action.triggered.connect(lambda: self.show_editor('effects'))
+        
+        # Add Vocal FX menu item
+        vocal_fx_action = editors_menu.addAction("Vocal FX")
+        vocal_fx_action.triggered.connect(lambda: self.show_editor('vocal_fx'))
+
+    def show_editor(self, editor_type: str):
+        """Show the specified editor window"""
+        try:
+            if editor_type == 'vocal_fx':
+                if not hasattr(self, 'vocal_fx_editor'):
+                    self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
+                self.vocal_fx_editor.show()
+                self.vocal_fx_editor.raise_()
+            elif editor_type == 'digital1':
+                self._show_editor("Digital Synth 1", DigitalSynthEditor, synth_num=1)
+            elif editor_type == 'digital2':
+                self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
+            elif editor_type == 'analog':
+                self._show_editor("Analog Synth", AnalogSynthEditor)
+            elif editor_type == 'drums':
+                self._show_drums_editor()
+            elif editor_type == 'arpeggio':
+                self._open_arpeggiator()
+            elif editor_type == 'effects':
+                self._open_effects()
+            elif editor_type == 'vocal_fx':
+                self._open_vocal_fx()
+            
+        except Exception as e:
+            logging.error(f"Error showing {editor_type} editor: {str(e)}")
+
     def _create_main_layout(self):
         """Create the main dashboard"""
         central = QWidget()
@@ -2037,3 +2090,14 @@ class MainWindow(QMainWindow):
             logging.error(f"Error connecting to MIDI: {str(e)}")
             self.statusBar().showMessage("MIDI connection error")
             return False
+
+    def _open_vocal_fx(self):
+        """Show the vocal FX editor window"""
+        try:
+            if not hasattr(self, 'vocal_fx_editor'):
+                self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
+            self.vocal_fx_editor.show()
+            self.vocal_fx_editor.raise_()
+            
+        except Exception as e:
+            logging.error(f"Error showing Vocal FX editor: {str(e)}")

@@ -17,7 +17,7 @@ from jdxi_manager.midi.constants import (
     DRUM_DELAY
 )
 
-class DrumPadEditor(QWidget):
+class DrumPadEditor(BaseEditor):
     def __init__(self, pad_number: int, parent=None):
         super().__init__(parent)
         layout = QVBoxLayout()

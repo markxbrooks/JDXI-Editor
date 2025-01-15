@@ -5,9 +5,10 @@ class Style:
     """Central style definitions for JD-Xi Manager"""
     
     # Colors
+    TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#1A1A1A"
     FOREGROUND = "#FFFFFF"
-    ACCENT = "#FF0000"
+    ACCENT = "#FF0000"  # Red accent color
     ACCENT_HOVER = "#FF0000"  # Red for hover
     BORDER = "#333333"
     SLIDER_HANDLE = "#000000"  # Black fill
@@ -38,50 +39,42 @@ class Style:
             padding: 10px;
         }}
         
+        QGroupBox[adsr="true"] {{
+            min-height: 120px;  /* Reduced height for horizontal layout */
+        }}
+        
         QGroupBox::title {{
             subcontrol-origin: margin;
             subcontrol-position: top center;
             padding: 0 3px;
             background-color: {BACKGROUND};
-            color: {ACCENT};
+            color: {TITLE_TEXT};  /* Red text */
         }}
         
-        QLabel {{
+        QPushButton {{
+            background-color: {BACKGROUND};
+            border: 1px solid {ACCENT};  /* Red border */
+            border-radius: 3px;
+            padding: 5px;
             color: {FOREGROUND};
         }}
         
-        QSlider::groove:vertical {{
-            background: {SLIDER_GROOVE};
-            width: {GROOVE_WIDTH};
+        QPushButton:hover {{
+            background-color: {ACCENT};  /* Red background on hover */
+            color: {BACKGROUND};
         }}
         
-        QSlider::handle {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: {HANDLE_SIZE};
-            height: {HANDLE_SIZE};
-            margin: -4px -4px;
-            border-radius: 4px;  /* Half of width+border for circle */
-        }}
-        
-        QSlider::handle:hover {{
-            border-color: {ACCENT_HOVER};
+        QPushButton:checked {{
+            background-color: {ACCENT};  /* Red background when checked */
+            color: {BACKGROUND};
         }}
         
         QComboBox {{
             background-color: {BACKGROUND};
-            border: 1px solid {ACCENT};
+            border: 1px solid {ACCENT};  /* Red border */
             border-radius: 3px;
             padding: 3px;
             color: {FOREGROUND};
-        }}
-        
-        QComboBox::drop-down {{
-            border: none;
-        }}
-        
-        QComboBox::down-arrow {{
-            image: none;
         }}
         
         QScrollBar {{
@@ -90,7 +83,42 @@ class Style:
         }}
         
         QScrollBar::handle {{
-            background: {ACCENT};
+            background: {SLIDER_HANDLE_BORDER};  /* Grey scrollbar handle */
             border-radius: 3px;
+        }}
+        
+        QScrollBar::handle:hover {{
+            background: {ACCENT_HOVER};
+        }}
+        
+        QLabel {{
+            color: {FOREGROUND};
+        }}
+        
+        QSlider::groove:horizontal {{
+            background: {SLIDER_GROOVE};
+            height: {GROOVE_WIDTH};
+            border-radius: 1px;
+        }}
+        
+        QSlider::handle:horizontal {{
+            background: {SLIDER_HANDLE};
+            border: 2px solid {SLIDER_HANDLE_BORDER};
+            width: 18px;
+            height: 18px;
+            margin: -9px 0;
+            border-radius: 9px;
+        }}
+        
+        QSlider::handle:horizontal:hover {{
+            border-color: {ACCENT_HOVER};
+        }}
+        
+        QComboBox::drop-down {{
+            border: none;
+        }}
+        
+        QComboBox::down-arrow {{
+            image: none;
         }}
     """ 

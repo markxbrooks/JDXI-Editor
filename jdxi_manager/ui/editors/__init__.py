@@ -9,11 +9,14 @@ from jdxi_manager.ui.editors.digital import DigitalSynthEditor
 from jdxi_manager.ui.editors.drums import DrumEditor
 from jdxi_manager.ui.editors.arpeggio import ArpeggioEditor
 from jdxi_manager.ui.editors.effects import EffectsEditor
+from jdxi_manager.ui.editors.vocal_fx import VocalFXEditor
 
 __all__ = [
     'AnalogSynthEditor',
     'DigitalSynthEditor',
     'DrumEditor',
     'ArpeggioEditor',
-    'EffectsEditor'
-] 
+    'EffectsEditor',
+    'VocalFXEditor'
+]
+

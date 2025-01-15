@@ -67,6 +67,7 @@ class PartialEditor(QWidget):
         else:
             display_min, display_max = param.min_val, param.max_val
         
+        # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max)
         
         # Connect value changed signal
@@ -217,7 +218,7 @@ class PartialEditor(QWidget):
         # Filter mode switch
         self.filter_mode = Switch("Mode", ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"])
         self.filter_mode.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.FILTER_MODE, v)
+            lambda v: self._on_filter_mode_changed(v)
         )
         type_row.addWidget(self.filter_mode)
         
@@ -242,7 +243,8 @@ class PartialEditor(QWidget):
         
         # Filter envelope
         env_group = QGroupBox("Envelope")
-        env_layout = QVBoxLayout()
+        env_group.setProperty("adsr", True)  # Mark as ADSR group
+        env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
         
         # ADSR controls
@@ -267,10 +269,15 @@ class PartialEditor(QWidget):
             DigitalParameter.CUTOFF_AFTERTOUCH, "AT Sens"
         ))
         
-        # Update enabled states based on filter mode
-        self._update_filter_controls_state(0)  # Initial state BYPASS
-        
         return group
+
+    def _on_filter_mode_changed(self, mode: int):
+        """Handle filter mode changes"""
+        # Send MIDI message
+        self._on_parameter_changed(DigitalParameter.FILTER_MODE, mode)
+        
+        # Update control states
+        self._update_filter_controls_state(mode)
 
     def _update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
@@ -284,7 +291,8 @@ class PartialEditor(QWidget):
             DigitalParameter.FILTER_ENV_DECAY,
             DigitalParameter.FILTER_ENV_SUSTAIN,
             DigitalParameter.FILTER_ENV_RELEASE,
-            DigitalParameter.FILTER_ENV_DEPTH
+            DigitalParameter.FILTER_ENV_DEPTH,
+            DigitalParameter.FILTER_SLOPE
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
@@ -311,6 +319,7 @@ class PartialEditor(QWidget):
         
         # Amp envelope
         env_group = QGroupBox("Envelope")
+        env_group.setProperty("adsr", True)  # Mark as ADSR group
         env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
         
@@ -448,12 +457,13 @@ class PartialEditor(QWidget):
                 group = 0x00  # Common parameters group
                 param_address = param.address
 
+            # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
                 area=DIGITAL_SYNTH_AREA,
                 part=self.part,
                 group=group,
                 param=param_address,
-                value=value
+                value=value  # Make sure this value is being sent
             )
         except Exception as e:
             logging.error(f"MIDI error setting {param}: {str(e)}")
@@ -610,6 +620,7 @@ class DigitalSynthEditor(BaseEditor):
         else:
             display_min, display_max = param.min_val, param.max_val
         
+        # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max)
         
         # Connect value changed signal
@@ -659,3 +670,38 @@ class DigitalSynthEditor(BaseEditor):
             
         # Show first tab
         self.tabs.setCurrentIndex(0)
+
+    def send_midi_parameter(self, param: Union[DigitalParameter, DigitalCommonParameter], value: int) -> bool:
+        """Send MIDI parameter to synth
+        
+        Args:
+            param: Parameter to send
+            value: Parameter value
+            
+        Returns:
+            True if successful
+        """
+        try:
+            # Validate and convert value
+            midi_value = param.validate_value(value)
+            
+            # Common parameters use group 0x00
+            if isinstance(param, DigitalCommonParameter):
+                group = 0x00
+                address = param.address
+            else:
+                # Get group/address for partial parameters
+                group, address = param.get_address_for_partial(self.partial_num)
+            
+            # Send parameter via MIDI
+            return self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_AREA,
+                part=self.part,
+                group=group,
+                param=address,
+                value=midi_value
+            )
+            
+        except Exception as e:
+            logging.error(f"Error sending parameter {param.name}: {str(e)}")
+            return False
