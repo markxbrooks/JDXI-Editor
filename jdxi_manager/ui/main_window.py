@@ -432,7 +432,7 @@ class MainWindow(QMainWindow):
             elif editor_type == 'drums':
                 self._show_drums_editor()
             elif editor_type == 'arpeggio':
-                self._open_arpeggiator()
+                self._show_arpeggio_editor()
             elif editor_type == 'effects':
                 self._open_effects()
             elif editor_type == 'vocal_fx':
@@ -704,7 +704,10 @@ class MainWindow(QMainWindow):
         """Show the arpeggiator editor window"""
         try:
             if not hasattr(self, 'arpeggiator'):
-                self.arpeggiator = ArpeggioEditor(parent=self)
+                self.arpeggiator = ArpeggioEditor(
+                    midi_helper=self.midi_helper,  # Pass midi_helper instance
+                    parent=self
+                )
             self.arpeggiator.show()
             self.arpeggiator.raise_()
             
@@ -1549,7 +1552,8 @@ class MainWindow(QMainWindow):
         """Show the drum editor window"""
         try:
             if not hasattr(self, 'drums_editor'):
-                self.drums_editor = DrumEditor(parent=self)  # Only pass parent
+                self.drums_editor = DrumEditor(midi_helper=self.midi_helper, 
+                                               parent=self)  # Pass midi_helper instance
             self.drums_editor.show()
             self.drums_editor.raise_()
             
@@ -2095,7 +2099,10 @@ class MainWindow(QMainWindow):
         """Show the vocal FX editor window"""
         try:
             if not hasattr(self, 'vocal_fx_editor'):
-                self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
+                self.vocal_fx_editor = VocalFXEditor(
+                    midi_helper=self.midi_helper,
+                    parent=self
+                )
             self.vocal_fx_editor.show()
             self.vocal_fx_editor.raise_()
             
@@ -2196,3 +2203,14 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             logging.error(f"Error toggling arpeggiator: {str(e)}")
+
+    def _show_arpeggio_editor(self):
+        """Show the arpeggio editor window"""
+        try:
+            if not hasattr(self, 'arpeggio_editor'):
+                logging.debug("Creating new arpeggio editor")
+                self.arpeggio_editor = ArpeggioEditor(midi_helper=self.midi_helper)
+            logging.debug("Showing arpeggio editor")
+            self.arpeggio_editor.show()
+        except Exception as e:
+            logging.error(f"Error showing Arpeggiator editor: {str(e)}")
