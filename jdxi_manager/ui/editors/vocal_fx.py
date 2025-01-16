@@ -497,4 +497,10 @@ class VocalFXEditor(BaseEditor):
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(f"Sending auto pitch switch change: area={VOCAL_FX_AREA:02x}, part={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.AUTO_NOTE_SWITCH:02x}, value={switch.midi_value:02x}")
-            self.midi_helper.send_parameter(area=VOCAL_FX_AREA, part=VOCAL_FX_PART, group=VOCAL_FX_GROUP, param=VocalFXParameters.AUTO_NOTE_SWITCH, value=switch.midi_value)
+            self.midi_helper.send_parameter(
+                area=VOCAL_FX_AREA,
+                part=VOCAL_FX_PART,
+                group=VOCAL_FX_GROUP,
+                param=VocalFXParameters.AUTO_NOTE_SWITCH,
+                value=switch.midi_value
+            )
