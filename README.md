@@ -18,7 +18,6 @@ Getting started quick guide:
 There are no builds yet, so you'll have to run it from a Python shell.
 
 ```code 
-
     $ git clone https://github.com/markxbrooks/JDXI-Manager.git
     $ cd JDXI-Manager
     $ python -m venv venv
