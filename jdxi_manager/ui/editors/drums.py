@@ -21,6 +21,9 @@ class DrumPadEditor(BaseEditor):
     def __init__(self, pad_number: int, parent=None):
         super().__init__(parent)
         
+        # Set fixed width for the entire pad editor
+        self.setFixedWidth(250)
+        
         # Create main layout
         main_layout = QVBoxLayout()
         main_layout.setSpacing(0)  # Remove spacing between widgets
@@ -30,41 +33,43 @@ class DrumPadEditor(BaseEditor):
         # Create frame with red border
         frame = QFrame()
         frame.setFrameStyle(QFrame.Box | QFrame.Plain)
-        #frame.setStyleSheet("QFrame { border: 1px solid red; }")
         frame_layout = QVBoxLayout()
         frame_layout.setSpacing(0)  # Remove spacing between widgets
         frame_layout.setContentsMargins(5, 5, 5, 5)  # Small internal margins
         frame.setLayout(frame_layout)
         
         # Create pad label with string, not int
-        pad_label = QLabel(f"Pad {pad_number}")  # Convert int to string
+        pad_label = QLabel(f"Pad {pad_number}")
         frame_layout.addWidget(pad_label)
+        
+        # Set slider width to fit nicely in the 250px container
+        slider_width = 220  # Leave some margin for the frame
         
         # Level control
         self.level = Slider("Level", 0, 127)
-        self.level.setFixedWidth(150)  # Set fixed width to 150 pixels
+        self.level.setFixedWidth(slider_width)
         frame_layout.addWidget(self.level)
         
         # Pan control (-64 to +63)
         self.pan = Slider("Pan", -64, 63)
-        self.pan.setFixedWidth(150)
+        self.pan.setFixedWidth(slider_width)
         frame_layout.addWidget(self.pan)
         
         # Tune control (-24 to +24 semitones)
         self.tune = Slider("Tune", -24, 24)
-        self.tune.setFixedWidth(150)
+        self.tune.setFixedWidth(slider_width)
         frame_layout.addWidget(self.tune)
         
         # Decay control
         self.decay = Slider("Decay", 0, 127)
-        self.decay.setFixedWidth(150)
+        self.decay.setFixedWidth(slider_width)
         frame_layout.addWidget(self.decay)
         
         # Effects sends
         self.reverb = Slider("Reverb", 0, 127)
-        self.reverb.setFixedWidth(150)
+        self.reverb.setFixedWidth(slider_width)
         self.delay = Slider("Delay", 0, 127)
-        self.delay.setFixedWidth(150)
+        self.delay.setFixedWidth(slider_width)
         frame_layout.addWidget(self.reverb)
         frame_layout.addWidget(self.delay)
 
@@ -80,7 +85,7 @@ class DrumEditor(BaseEditor):
         
         # Allow resizing
         self.setMinimumSize(800, 400)
-        self.resize(1000, 600)
+        self.resize(800, 400)
         
         # Main layout
         main_layout = QVBoxLayout()
