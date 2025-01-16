@@ -9,27 +9,27 @@ class MIDIHelper:
     def __init__(self, parent=None):
         self.midi_in = rtmidi.MidiIn()
         self.midi_out = rtmidi.MidiOut()
-        self.input_port: Optional[int] = None
-        self.output_port: Optional[int] = None
+        self.input_port_number: Optional[int] = None
+        self.output_port_number: Optional[int] = None
         self.parent = parent
         self.callbacks: List[Callable] = []
 
     @property
     def current_in_port(self) -> Optional[str]:
         """Get current input port name"""
-        if self.input_port is not None and self.is_input_open:
+        if self.input_port_number is not None and self.is_input_open:
             ports = self.midi_in.get_ports()
-            if 0 <= self.input_port < len(ports):
-                return ports[self.input_port]
+            if 0 <= self.input_port_number < len(ports):
+                return ports[self.input_port_number]
         return None
 
     @property
     def current_out_port(self) -> Optional[str]:
         """Get current output port name"""
-        if self.output_port is not None and self.is_output_open:
+        if self.output_port_number is not None and self.is_output_open:
             ports = self.midi_out.get_ports()
-            if 0 <= self.output_port < len(ports):
-                return ports[self.output_port]
+            if 0 <= self.output_port_number < len(ports):
+                return ports[self.output_port_number]
         return None
 
     def register_callback(self, callback: Callable):
@@ -183,7 +183,7 @@ class MIDIHelper:
                 return False
                 
             self.midi_in.open_port(port_index)
-            self.input_port = port_index
+            self.input_port_number = port_index
             self.midi_in.set_callback(self._midi_callback)
             logging.info(f"Opened MIDI input port: {ports[port_index]}")
             return True
@@ -214,7 +214,7 @@ class MIDIHelper:
                 return False
                 
             self.midi_out.open_port(port_index)
-            self.output_port = port_index
+            self.output_port_number = port_index
             logging.info(f"Opened MIDI output port: {ports[port_index]}")
             return True
             
@@ -228,8 +228,8 @@ class MIDIHelper:
             self.midi_in.close_port()
         if self.midi_out.is_port_open():
             self.midi_out.close_port()
-        self.input_port = None
-        self.output_port = None
+        self.input_port_number = None
+        self.output_port_number = None
 
     @property
     def is_input_open(self) -> bool:
@@ -430,10 +430,10 @@ class MIDIHelper:
                 return False
                 
             # Create Control Change message (Status byte: 0xB0 + channel)
-            message = [0xB0 + channel, cc, value]
+            message = [0xB0 + channel, cc & 0x7F, value & 0x7F]
             
-            # Send message
-            self.output_port.send_message(message)
+            # Send message using midi_out instead of output_port
+            self.midi_out.send_message(message)
             logging.debug(f"Sent CC {cc}={value} on ch{channel}")
             return True
             

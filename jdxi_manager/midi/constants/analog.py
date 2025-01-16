@@ -1,7 +1,11 @@
 """Analog synth MIDI constants"""
 
 from enum import Enum, IntEnum
-from .sysex import ANALOG_SYNTH_AREA, ANALOG_PART  # Import from sysex.py
+from .sysex import ANALOG_SYNTH_AREA  # Remove this import
+
+# Areas and Parts
+ANALOG_SYNTH_AREA = 0x19    # Changed from 0x1B to 0x19
+ANALOG_PART = 0x42          # Changed from 0x00 to 0x42
 
 # Control Change Parameters
 class AnalogToneCC(IntEnum):
@@ -26,10 +30,10 @@ class AnalogToneCC(IntEnum):
     OSC_FINE = 0x18        # Pitch Fine (14-114: -50 to +50)
     OSC_PW = 0x19          # Pulse Width (0-127)
     OSC_PWM = 0x1A         # PW Mod Depth (0-127)
-    OSC_PENV_VELO = 0x1B   # Pitch Env Velocity (1-127: -63 to +63)
+    OSC_PENV_VELO = 0x1B   # Pitch Env Velocity (1-127: -63 to +63, 64=center)
     OSC_PENV_A = 0x1C      # Pitch Env Attack (0-127)
     OSC_PENV_D = 0x1D      # Pitch Env Decay (0-127)
-    OSC_PENV_DEPTH = 0x1E  # Pitch Env Depth (1-127: -63 to +63)
+    OSC_PENV_DEPTH = 0x1E  # Pitch Env Depth (1-127: -63 to +63, 64=center)
     SUB_TYPE = 0x1F        # Sub Oscillator Type (0-2: OFF,OCT-1,OCT-2)
     
     # Filter parameters
@@ -89,22 +93,32 @@ class Waveform(Enum):
             2: "P.W"  # Updated display name
         }
         return names.get(self.value, "???")
+        
+    @property
+    def midi_value(self) -> int:
+        """Get MIDI value for waveform"""
+        return self.value
 
 class SubOscType(Enum):
     """Analog sub oscillator types"""
-    OFF = 0
-    OCT_DOWN_1 = 1  # -1 octave
-    OCT_DOWN_2 = 2  # -2 octaves
+    OFF = 0x00        # Sub oscillator off
+    OCT_DOWN_1 = 0x01 # -1 octave
+    OCT_DOWN_2 = 0x02 # -2 octaves
 
     @property
     def display_name(self) -> str:
         """Get display name for sub oscillator type"""
         names = {
-            0: "OFF",
-            1: "-1 OCT",
-            2: "-2 OCT"
+            0x00: "OFF",
+            0x01: "-1 OCT",
+            0x02: "-2 OCT"
         }
         return names.get(self.value, "???")
+        
+    @property
+    def midi_value(self) -> int:
+        """Get MIDI value for sub oscillator type"""
+        return self.value
 
 class LFOShape(Enum):
     """Analog LFO waveform shapes"""
