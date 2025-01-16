@@ -6,6 +6,20 @@ from .sysex import ANALOG_SYNTH_AREA, ANALOG_PART  # Import from sysex.py
 # Control Change Parameters
 class AnalogToneCC(IntEnum):
     """Analog synth CC parameters"""
+    # Direct CC parameters
+    CUTOFF_CC = 102        # Cutoff (0-127)
+    RESONANCE_CC = 105     # Resonance (0-127)
+    LEVEL_CC = 117         # Level (0-127)
+    LFO_RATE_CC = 16       # LFO Rate (0-127)
+    
+    # NRPN parameters (MSB=0)
+    NRPN_ENV = 124      # Envelope (0-127)
+    NRPN_LFO_SHAPE = 3  # LFO Shape (0-5)
+    NRPN_LFO_PITCH = 15 # LFO Pitch Depth (0-127)
+    NRPN_LFO_FILTER = 18 # LFO Filter Depth (0-127)
+    NRPN_LFO_AMP = 21   # LFO Amp Depth (0-127)
+    NRPN_PW = 37        # Pulse Width (0-127)
+
     # Oscillator Parameters
     OSC_WAVE = 0x16        # Waveform (0-2: SAW,TRI,PW-SQR)
     OSC_COARSE = 0x17      # Pitch Coarse (40-88: -24 to +24)
@@ -45,6 +59,21 @@ class AnalogToneCC(IntEnum):
     LFO_AMP = 0x14         # LFO Amp Depth (1-127: -63 to +63)
     LFO_KEY_TRIG = 0x15    # LFO Key Trigger (0-1)
 
+    @staticmethod
+    def get_display_value(param: int, value: int) -> str:
+        """Convert raw value to display value"""
+        if param == 3:  # LFO Shape
+            shapes = ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND']
+            return shapes[value]
+        return str(value)
+
+# Parameter Groups
+ANALOG_OSC_GROUP = 0x00     # Oscillator parameters
+ANALOG_FILTER_GROUP = 0x01  # Filter parameters
+ANALOG_AMP_GROUP = 0x02     # Amplifier parameters
+ANALOG_LFO_GROUP = 0x03     # LFO parameters
+
+# Waveform
 class Waveform(Enum):
     """Analog oscillator waveform types"""
     SAW = 0
