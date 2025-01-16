@@ -8,7 +8,7 @@ Designed to implement as many features at possible of the Roland MIDI implementa
 
 Not at all feature-complete or even complete, but have a go and let me know your feedback.
 
-![image info](./resources/main_window_600.png ) 
+<a href="./resources/main_window.png" rel="Current view of the Roland JD-Xi Manager App">![image info](./resources/main_window_600.png ) </a>
 
 Current view of the Roland JD-Xi Manager App.
 
@@ -27,10 +27,10 @@ There are no builds yet, so you'll have to run it from a Python shell.
     $ python -m jdxi_manager.main
 ```
 
-![image info](./resources/digital_analog_synths_600.png ) 
+<a href="./resources/digital_analog_synths.png" rel="Digital & Analog Synths">![image info](./resources/digital_analog_synths_600.png ) </a>
 
 Digital & Analog Synths
 
-![image info](./resources/effects_600.png )
+<a href="./resources/effects.png" rel="Vocal, Effects and Arpeggiator Windows">![image info](./resources/effects_600.png )</a>
 
 Vocal, Effects and Arpeggiator Windows
