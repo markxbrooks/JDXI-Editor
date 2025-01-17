@@ -39,6 +39,7 @@ from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.ui.editors.preset_editor import PresetEditor
 from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
+from jdxi_manager.ui.editors.preset_editor import PresetType
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -1795,33 +1796,33 @@ class MainWindow(QMainWindow):
             logging.error(f"Error shifting octave: {str(e)}") 
 
     def _show_analog_presets(self):
-        """Show analog synth preset editor"""
-        if not hasattr(self, 'preset_editor'):
-            # Pass self as parent to PresetEditor
-            self.preset_editor = PresetEditor(midi_helper=self.midi_helper, parent=self)
-            # Connect preset change signal
-            self.preset_editor.preset_changed.connect(self._update_display_preset)
+        """Show the analog preset editor window"""
+        self.preset_editor = PresetEditor(
+            midi_helper=self.midi_helper,
+            parent=self,
+            preset_type=PresetType.ANALOG
+        )
+        self.preset_editor.preset_changed.connect(self._update_display_preset)
         self.preset_editor.show()
-        self.preset_editor.raise_()
-        
-    def _update_display_preset(self, preset_num: int, preset_name: str, channel: int):
-        """Update digital display with preset information"""
+
+    def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
+        """Update the display with the new preset information"""
         try:
             # Update display
-            self.update_preset_display(preset_num, preset_name[4:])
+            self.update_preset_display(preset_number, preset_name)
             
-            # Update piano keyboard channel
+            # Update piano keyboard channel if it exists
             if hasattr(self, 'piano_keyboard'):
                 self.piano_keyboard.set_midi_channel(channel)
                 
-            # Update channel indicator
+            # Update channel indicator if it exists
             if hasattr(self, 'channel_button'):
                 self.channel_button.set_channel(channel)
             
-            logging.debug(f"Updated display: {preset_num:03d}:{preset_name} (channel {channel})")
+            logging.debug(f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})")
             
         except Exception as e:
-            logging.error(f"Error updating display: {str(e)}") 
+            logging.error(f"Error updating display: {str(e)}")
 
     def _update_display_image(self, preset_num: int = 1, preset_name: str = "INIT PATCH"):
         """Update the digital display image

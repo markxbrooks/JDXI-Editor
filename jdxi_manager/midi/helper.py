@@ -71,7 +71,7 @@ class MIDIHelper:
         """Validate JD-Xi SysEx message format"""
         try:
             # Check length
-            if len(message) != 15:
+            if len(message) not in [15, 18]:
                 logging.error(f"Invalid SysEx length: {len(message)}")
                 return False
             
@@ -81,7 +81,7 @@ class MIDIHelper:
                 return False
             
             # Check DT1 command
-            if message[7] != 0x12:
+            if message[7] not in [0x12, 0x11]:
                 logging.error("Invalid command byte")
                 return False
             
