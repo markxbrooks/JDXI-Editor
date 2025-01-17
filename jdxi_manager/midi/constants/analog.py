@@ -178,3 +178,67 @@ LFO_SYNC_NOTES = [
     "1/24",  # 18
     "1/32"   # 19
 ]
+
+class AnalogParameters(IntEnum):
+    """Analog synth parameters"""
+    # Oscillator
+    OSC_WAVE = 0x00      # Oscillator waveform (0-3)
+    OSC_MOD = 0x01       # Oscillator mod (0-127)
+    OSC_PITCH = 0x02     # Oscillator pitch (-24 to +24)
+    OSC_DETUNE = 0x03    # Oscillator detune (-50 to +50)
+    OSC_LEVEL = 0x04     # Oscillator level (0-127)
+    
+    # Filter
+    FILTER_TYPE = 0x10   # Filter type (0-3)
+    FILTER_CUTOFF = 0x11 # Filter cutoff (0-127)
+    FILTER_RESO = 0x12   # Filter resonance (0-127)
+    FILTER_ENV = 0x13    # Filter envelope depth (-63 to +63)
+    FILTER_KEY = 0x14    # Filter keyboard follow (0-127)
+    
+    # Amplifier
+    AMP_LEVEL = 0x20     # Amplifier level (0-127)
+    AMP_PAN = 0x21       # Amplifier pan (0-127, 64=center)
+    
+    # Envelopes
+    FILTER_ATTACK = 0x30 # Filter envelope attack (0-127)
+    FILTER_DECAY = 0x31  # Filter envelope decay (0-127)
+    FILTER_SUSTAIN = 0x32# Filter envelope sustain (0-127)
+    FILTER_RELEASE = 0x33# Filter envelope release (0-127)
+    
+    AMP_ATTACK = 0x34    # Amplifier envelope attack (0-127)
+    AMP_DECAY = 0x35     # Amplifier envelope decay (0-127)
+    AMP_SUSTAIN = 0x36   # Amplifier envelope sustain (0-127)
+    AMP_RELEASE = 0x37   # Amplifier envelope release (0-127)
+    
+    # LFO
+    LFO_WAVE = 0x40      # LFO waveform (0-3)
+    LFO_RATE = 0x41      # LFO rate (0-127)
+    LFO_FADE = 0x42      # LFO fade time (0-127)
+    LFO_PITCH = 0x43     # LFO pitch depth (0-127)
+    LFO_FILTER = 0x44    # LFO filter depth (0-127)
+    LFO_AMP = 0x45       # LFO amplitude depth (0-127)
+    
+    # Effects sends
+    DELAY_SEND = 0x50    # Delay send level (0-127)
+    REVERB_SEND = 0x51   # Reverb send level (0-127)
+
+class OscillatorWave(IntEnum):
+    """Analog oscillator waveforms"""
+    SAW = 0
+    SQUARE = 1
+    TRIANGLE = 2
+    SINE = 3
+
+class FilterType(IntEnum):
+    """Analog filter types"""
+    LPF = 0  # Low Pass Filter
+    HPF = 1  # High Pass Filter
+    BPF = 2  # Band Pass Filter
+    PKG = 3  # Peaking Filter
+
+class LFOWave(IntEnum):
+    """Analog LFO waveforms"""
+    TRIANGLE = 0
+    SINE = 1
+    SAW = 2
+    SQUARE = 3

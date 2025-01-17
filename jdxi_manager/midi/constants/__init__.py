@@ -7,19 +7,41 @@ ANALOG_SYNTH_AREA = 0x01
 DIGITAL_SYNTH_AREA = 0x02
 DRUM_KIT_AREA = 0x03
 EFFECTS_AREA = 0x04
+VOCAL_FX_AREA = 0x05
 
+# Import specific classes from analog
+from .analog import (
+    AnalogToneCC,
+    #AnalogOscWave,
+    #AnalogSubType,
+    #AnalogLFOShape,
+    #AnalogLFO,
+    #AnalogLFOSync,
+    #AnalogOscWaveform,
+    #AnalogSubOscType,
+    #AnalogFilterType,
+    #ANALOG_LFO_SYNC_NOTES,
+    #ANALOG_LFO_RANGES
+)
+
+# Import other module constants as needed
+from .digital import *
+from .drums import *
+#from .effects import *
+from .vocal_fx import *
 # Part Numbers (Legacy names)
 PART_1 = 0x00  # Analog synth part
 PART_2 = 0x01  # Digital synth 1 part
 PART_3 = 0x02  # Digital synth 2 part
 PART_4 = 0x03  # Drum part
+PART_5 = 0x04  # Vocal FX part
 
 # Part Numbers (New names)
 ANALOG_PART = PART_1     # 0x00
 DIGITAL_1_PART = PART_2  # 0x01
 DIGITAL_2_PART = PART_3  # 0x02
 DRUM_PART = PART_4       # 0x03
-
+VOCAL_FX_PART = PART_5   # 0x04
 # Part Groups
 SUBGROUP_ZERO = 0x00  # Common parameters
 
