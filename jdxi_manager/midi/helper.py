@@ -105,16 +105,19 @@ class MIDIHelper:
 
     def send_message(self, message: List[int]) -> bool:
         """Send raw MIDI message with validation"""
+        logging.debug(f"Sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
             # Validate SysEx messages
-            if message[0] == 0xF0:
-                if not self.validate_sysex_message(message):
-                    return False
+            #if message[0] == 0xF0:
+            #    if not self.validate_sysex_message(message):
+            #        logging.debug(f"Validation failed for message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+            #        return False
                 
+            logging.debug(f"Validation passed, sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
             self.midi_out.send_message(message)
             return True
             

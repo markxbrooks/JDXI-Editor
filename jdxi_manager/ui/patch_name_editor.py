@@ -1,18 +1,24 @@
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, 
-    QLabel, QLineEdit, QPushButton
+    QDialog, QVBoxLayout, QHBoxLayout,
+    QLabel, QLineEdit, QPushButton, QGroupBox
 )
 from PySide6.QtCore import Qt
 import logging
+
+from jdxi_manager.ui.style import Style
+
 
 class PatchNameEditor(QDialog):
     def __init__(self, current_name="", parent=None):
         super().__init__(parent)
         self.setWindowTitle("Edit Patch Name")
         self.setModal(True)
-        
+
+        main_layout = QVBoxLayout(self)
+        group = QGroupBox("Patch Name")
+
         # Set up layout
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout(group)
         
         # Add name input
         name_layout = QHBoxLayout()
@@ -32,6 +38,9 @@ class PatchNameEditor(QDialog):
         button_layout.addWidget(save_button)
         button_layout.addWidget(cancel_button)
         layout.addLayout(button_layout)
+        group.setLayout(layout)
+        main_layout.addWidget(group)
+        self.setStyleSheet(Style.EDITOR_STYLE)
         
     def get_name(self):
         """Get the edited patch name"""

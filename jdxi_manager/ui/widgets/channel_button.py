@@ -6,10 +6,10 @@ class ChannelButton(QPushButton):
     """Channel indicator button with synth-specific styling"""
     
     CHANNEL_STYLES = {
-        0: ("ANALOG", "#FF8C00"),     # Orange for Analog
-        1: ("DIGI 1", "#00FF00"),     # Green for Digital 1
-        2: ("DIGI 2", "#00FFFF"),     # Cyan for Digital 2
-        9: ("DRUMS", "#FF00FF"),      # Magenta for Drums
+        0: ("ANALOG", "#00A3F0"),     # Blue for Analog
+        1: ("DIGI 1", "#FF0000"),     # Red for Digital 1
+        2: ("DIGI 2", "#FF0000"),     # Red for Digital 2
+        9: ("DRUMS", "#FF0000"),      # Red for Drums
     }
     
     def __init__(self, parent=None):
@@ -45,7 +45,8 @@ class ChannelButton(QPushButton):
         self.setStyleSheet(f"""
             QPushButton {{
                 {gradient}
-                border: 1px solid {color};
+                border: 1px solid red;
+                font-family: "Consolas", "Fixed";
                 border-radius: 3px;
                 color: {color};
                 font-size: 10px;

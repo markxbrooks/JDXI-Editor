@@ -763,54 +763,26 @@ class MainWindow(QMainWindow):
             logging.error(f"Error showing Effects editor: {str(e)}")
         
     def _load_patch(self):
-        """Show patch manager for loading"""
+        """Show load patch dialog"""
         try:
-            dialog = PatchManager(self)
-            if dialog.exec_():
-                # Get selected patch info
-                patch_num = dialog.selected_patch_number
-                patch_name = dialog.selected_patch_name
-                
-                # Update display
-                self.update_preset_display(patch_num, patch_name)
-                
-                # Send MIDI message to load patch
-                if self.midi_out:
-                    # Create patch load message
-                    msg = MIDIHelper.create_patch_load_message(patch_num)
-                    self.midi_out.send_message(msg)
-                    logging.debug(f"Loaded patch {patch_num}: {patch_name}")
-                    
-                    # Blink indicator
-                    if hasattr(self, 'midi_out_indicator'):
-                        self.midi_out_indicator.blink()
-                        
+            patch_manager = PatchManager(
+                midi_helper=self.midi_helper,
+                parent=self,
+                save_mode=False
+            )
+            patch_manager.show()
         except Exception as e:
             logging.error(f"Error loading patch: {str(e)}")
 
     def _save_patch(self):
-        """Show patch manager for saving"""
+        """Show save patch dialog"""
         try:
-            dialog = PatchManager(self, save_mode=True)
-            if dialog.exec_():
-                # Get target patch number and name
-                patch_num = dialog.selected_patch_number
-                patch_name = dialog.patch_name
-                
-                # Update display
-                self.update_preset_display(patch_num, patch_name)
-                
-                # Send MIDI message to save patch
-                if self.midi_out:
-                    # Create patch save message
-                    msg = MIDIHelper.create_patch_save_message(patch_num)
-                    self.midi_out.send_message(msg)
-                    logging.debug(f"Saved patch {patch_num} as: {patch_name}")
-                    
-                    # Blink indicator
-                    if hasattr(self, 'midi_out_indicator'):
-                        self.midi_out_indicator.blink()
-                        
+            patch_manager = PatchManager(
+                midi_helper=self.midi_helper,
+                parent=self,
+                save_mode=True
+            )
+            patch_manager.show()
         except Exception as e:
             logging.error(f"Error saving patch: {str(e)}")
 
@@ -2017,7 +1989,7 @@ class MainWindow(QMainWindow):
                 preset_name = DRUM_PRESETS[preset_num]
                 
             # Save to button
-            button.save_preset(synth_type, preset_num, preset_name, channel)
+            button.save_preset_as_favourite(synth_type, preset_num, preset_name, channel)
             
             # Save to settings
             self.settings.setValue(f'favorites/slot{button.slot_num}/synth_type', synth_type)
@@ -2043,7 +2015,7 @@ class MainWindow(QMainWindow):
                 preset_name = self.settings.value(f'favorites/slot{button.slot_num}/preset_name', '')
                 channel = self.settings.value(f'favorites/slot{button.slot_num}/channel', 0, type=int)
                 
-                button.save_preset(synth_type, preset_num, preset_name, channel) 
+                button.save_preset_as_favourite(synth_type, preset_num, preset_name, channel)
 
     def load_preset(self, preset_data):
         """Load preset data into synth"""
