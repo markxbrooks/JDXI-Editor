@@ -228,8 +228,13 @@ class PresetEditor(QMainWindow):
         preset_row = QHBoxLayout()
         preset_row.addWidget(QLabel("Preset:"))
         self.preset_selector = QComboBox()
-        self._update_preset_list()
         self.preset_selector.currentIndexChanged.connect(self._on_preset_changed)
+        self.preset_selector.setMinimumWidth(200)
+        
+        # Initialize with first preset selected
+        self._update_preset_list()
+        if self.preset_selector.count() > 0:
+            self.preset_selector.setCurrentIndex(0)
         preset_row.addWidget(self.preset_selector)
         preset_layout.addLayout(preset_row)
         
@@ -250,8 +255,10 @@ class PresetEditor(QMainWindow):
         # Set as central widget
         self.setCentralWidget(main_widget)
         
-        # Store the full preset list for filtering
+        # Store the full preset list and mapping
         self.full_preset_list = self._get_preset_list()
+        # Create mapping of display index to original index
+        self.index_mapping = list(range(len(self.full_preset_list)))
 
     def _get_preset_list(self) -> List[str]:
         """Get the appropriate preset list based on type"""
@@ -265,54 +272,93 @@ class PresetEditor(QMainWindow):
 
     def _filter_presets(self, search_text: str):
         """Filter presets based on search text"""
+        # Temporarily disconnect the signal
+        self.preset_selector.currentIndexChanged.disconnect(self._on_preset_changed)
+        
         if not search_text:
             # If search is empty, show all presets
             filtered_presets = self.full_preset_list
+            self.index_mapping = list(range(len(self.full_preset_list)))
         else:
             # Filter presets that contain the search text (case-insensitive)
             search_text = search_text.lower()
-            filtered_presets = [
-                preset for preset in self.full_preset_list
+            filtered_indices = [
+                i for i, preset in enumerate(self.full_preset_list)
                 if search_text in preset.lower()
             ]
+            filtered_presets = [self.full_preset_list[i] for i in filtered_indices]
+            self.index_mapping = filtered_indices
         
         # Update the preset selector with filtered items
         self.preset_selector.clear()
         self.preset_selector.addItems([
             preset.split(': ')[1] for preset in filtered_presets
         ])
+        
+        # Reconnect the signal and select first item if available
+        self.preset_selector.currentIndexChanged.connect(self._on_preset_changed)
+        if self.preset_selector.count() > 0:
+            self.preset_selector.setCurrentIndex(0)
 
     def _update_preset_list(self):
         """Update the preset selector with appropriate list"""
+        # Temporarily disconnect the signal to prevent -1 index
+        self.preset_selector.currentIndexChanged.disconnect(self._on_preset_changed)
+        
         self.full_preset_list = self._get_preset_list()
+        # Reset the index mapping when updating preset list
+        self.index_mapping = list(range(len(self.full_preset_list)))
+        
         self.preset_selector.clear()
         self.preset_selector.addItems([
             preset.split(': ')[1] for preset in self.full_preset_list
         ])
+        
+        # Reconnect the signal
+        self.preset_selector.currentIndexChanged.connect(self._on_preset_changed)
 
     def _on_type_changed(self, preset_type: str):
         """Handle preset type change"""
         logging.debug(f"Changing preset type to {preset_type}")
         self.preset_type = preset_type
         self.search_box.clear()  # Clear search when changing type
+        # Update preset list and reset mapping
         self._update_preset_list()
+        # Select first preset if available
+        if self.preset_selector.count() > 0:
+            self.preset_selector.setCurrentIndex(0)
 
     def _on_preset_changed(self, index: int):
         """Handle preset selection changes"""
-        if self.midi_helper:
-            # TODO: Add MIDI handling for preset changes
-            pass
+        try:
+            if index < 0 or index >= len(self.index_mapping):
+                logging.warning(f"Invalid preset index {index}, max is {len(self.index_mapping)-1}")
+                return
             
-        # Get the preset name without the number prefix
-        presets = self._get_preset_list()
-        preset_name = presets[index].split(': ')[1]
-        
-        # Emit signal with all required information
-        self.preset_changed.emit(
-            index + 1,  # preset number (1-based)
-            preset_name,
-            self.channel
-        )
+            if self.midi_helper:
+                # Get the original index from the mapping
+                original_index = self.index_mapping[index]
+                logging.debug(f"Selected preset index {index} maps to original index {original_index}")
+                
+                # TODO: Add MIDI handling for preset changes using original_index
+                pass
+                
+            # Get the preset name without the number prefix
+            presets = self._get_preset_list()
+            if original_index >= len(presets):
+                logging.error(f"Original index {original_index} out of range for presets list (max {len(presets)-1})")
+                return
+            
+            preset_name = presets[original_index].split(': ')[1]
+            
+            # Emit signal with all required information
+            self.preset_changed.emit(
+                original_index + 1,  # original preset number (1-based)
+                preset_name,
+                self.channel
+            )
+        except Exception as e:
+            logging.error(f"Error in preset change handler: {str(e)}", exc_info=True)
 
     def _get_area_for_type(self) -> int:
         """Get MIDI area based on preset type"""
