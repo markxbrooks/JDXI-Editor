@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt, QSettings, QByteArray, QTimer
 from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
 import logging
 from pathlib import Path
-
+import re
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.digital import DIGITAL_PRESETS
 from jdxi_manager.data.drums import DRUM_PRESETS
@@ -37,9 +37,12 @@ from jdxi_manager.ui.widgets.piano_keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.channel_button import ChannelButton
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
-from jdxi_manager.ui.editors.preset_editor import PresetEditor
+from jdxi_manager.ui.editors.preset_editor import PresetEditor, PresetType
 from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
-from jdxi_manager.ui.editors.preset_editor import PresetType
+from jdxi_manager.ui.widgets.channel_button import ChannelButton
+from jdxi_manager.midi.messages import IdentityRequest
+from jdxi_manager.midi.messages import ParameterMessage
+from jdxi_manager.ui.editors.preset_editor import PresetEditor, PresetType
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -89,8 +92,10 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     painter.setFont(display_font)
     painter.setPen(QPen(QColor("#FF8C00")))  # Orange color for text
     
-    # Draw preset number and name
-    preset_text = f"{preset_num:03d}:{preset_name}"
+    if re.match(r'^\d{3}: (.+)$', preset_name):
+        preset_text = preset_name
+    else:
+        preset_text = f"{preset_num:03d}: {preset_name}"
     # Truncate if too long for display
     if len(preset_text) > 16:  # Adjust based on display width
         preset_text = preset_text[:15] + "…"
@@ -345,6 +350,7 @@ class MainWindow(QMainWindow):
         # Create display label
         self.display_label = QLabel()
         self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
+        self.display_label.mouseDoubleClickEvent = self._on_display_double_click  # Add double click handler
         
         # Initial display
         self._update_display_image()
@@ -415,6 +421,33 @@ class MainWindow(QMainWindow):
         # Add Vocal FX menu item
         vocal_fx_action = editors_menu.addAction("Vocal FX")
         vocal_fx_action.triggered.connect(lambda: self.show_editor('vocal_fx'))
+
+    def _on_display_double_click(self, event):
+        """Handle double click on display label"""
+        logging.debug("Display label double clicked")
+        
+        # Get current preset type based on active editor
+        if hasattr(self, 'digital_synth_1_editor') and self.digital_synth_1_editor.isVisible():
+            preset_type = PresetType.DIGITAL
+        elif hasattr(self, 'digital_synth_2_editor') and self.digital_synth_2_editor.isVisible():
+            preset_type = PresetType.DIGITAL
+        elif hasattr(self, 'analog_synth_editor') and self.analog_synth_editor.isVisible():
+            preset_type = PresetType.ANALOG
+        elif hasattr(self, 'drums_editor') and self.drums_editor.isVisible():
+            preset_type = PresetType.DRUMS
+        else:
+            # Default to DIGITAL if no editor is open
+            preset_type = PresetType.DIGITAL
+            logging.debug("No editor active, defaulting to Digital preset type")
+
+        # Create and show preset editor
+        self.preset_editor = PresetEditor(
+            midi_helper=self.midi_helper,
+            parent=self,
+            preset_type=preset_type
+        )
+        self.preset_editor.preset_changed.connect(self._on_preset_changed)
+        self.preset_editor.show()
 
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""
