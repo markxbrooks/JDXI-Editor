@@ -1,7 +1,9 @@
 import logging
 import rtmidi
-from typing import Optional, List, Tuple, Callable
+from typing import Optional, List, Tuple, Callable, Dict, Any
 import time
+import json
+from pathlib import Path
 
 class MIDIHelper:
     """Helper class for MIDI communication with the JD-Xi"""
@@ -449,4 +451,298 @@ class MIDIHelper:
             
         except Exception as e:
             logging.error(f"Error sending CC message: {str(e)}")
+            return False
+
+    def save_patch(self, file_path: str) -> bool:
+        """Save current patch state to JSON file
+        
+        Args:
+            file_path: Path to save the .jdx file
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Ensure file has .jdx extension
+            if not file_path.endswith('.jdx'):
+                file_path += '.jdx'
+            
+            # Collect patch data
+            patch_data = {
+                'version': '1.0',
+                'name': 'Untitled Patch',  # TODO: Get actual patch name
+                'type': 'JD-Xi Patch',
+                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'parameters': {
+                    'digital': self._get_digital_parameters(),
+                    'analog': self._get_analog_parameters(),
+                    'drums': self._get_drum_parameters(),
+                    'effects': self._get_effects_parameters()
+                }
+            }
+            
+            # Save to file
+            with open(file_path, 'w') as f:
+                json.dump(patch_data, f, indent=2)
+            
+            logging.info(f"Patch saved to {file_path}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error saving patch: {str(e)}")
+            return False
+
+    def load_patch(self, file_path: str) -> bool:
+        """Load patch from JSON file
+        
+        Args:
+            file_path: Path to .jdx file to load
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Read patch file
+            with open(file_path, 'r') as f:
+                patch_data = json.load(f)
+            
+            # Validate patch data
+            if not self._validate_patch_data(patch_data):
+                logging.error("Invalid patch file format")
+                return False
+            
+            # Apply parameters
+            params = patch_data['parameters']
+            
+            # Send digital parameters
+            for area, value in params['digital'].items():
+                self._send_digital_parameter(area, value)
+            
+            # Send analog parameters
+            for area, value in params['analog'].items():
+                self._send_analog_parameter(area, value)
+            
+            # Send drum parameters
+            for area, value in params['drums'].items():
+                self._send_drum_parameter(area, value)
+            
+            # Send effects parameters
+            for area, value in params['effects'].items():
+                self._send_effect_parameter(area, value)
+            
+            logging.info(f"Patch loaded from {file_path}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error loading patch: {str(e)}")
+            return False
+
+    def _validate_patch_data(self, data: Dict[str, Any]) -> bool:
+        """Validate patch file format
+        
+        Args:
+            data: Loaded JSON data
+            
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        required_keys = ['version', 'name', 'type', 'parameters']
+        if not all(key in data for key in required_keys):
+            return False
+        
+        if data['type'] != 'JD-Xi Patch':
+            return False
+        
+        if 'parameters' not in data:
+            return False
+        
+        param_types = ['digital', 'analog', 'drums', 'effects']
+        if not all(key in data['parameters'] for key in param_types):
+            return False
+        
+        return True
+
+    def _get_digital_parameters(self) -> Dict[str, int]:
+        """Get current digital synth parameters"""
+        parameters = {}
+        
+        try:
+            # Digital synth parameter areas
+            areas = {
+                'common': 0x19,  # Digital Common
+                'partial': 0x1A  # Digital Partial
+            }
+            
+            # Common parameters (0x19)
+            common_params = {
+                'level': (0x01, 0x00, 0x00),  # (part, group, param)
+                'pan': (0x01, 0x00, 0x01),
+                'portamento': (0x01, 0x00, 0x02),
+                'mono_poly': (0x01, 0x00, 0x03),
+                'legato': (0x01, 0x00, 0x04),
+                'octave_shift': (0x01, 0x00, 0x05),
+                'pitch_bend_range': (0x01, 0x00, 0x06),
+                'partial_select': (0x01, 0x00, 0x07),
+                'mod_depth': (0x01, 0x00, 0x08)
+            }
+            
+            # Get common parameters
+            for name, (part, group, param) in common_params.items():
+                value = self.get_parameter(areas['common'], part, group, param)
+                if value is not None:
+                    parameters[f'common_{name}'] = value
+                    logging.debug(f"Got digital common parameter {name}: {value}")
+                time.sleep(0.01)  # Small delay between requests
+            
+            # Partial parameters (0x1A)
+            partial_params = {
+                'waveform': (0x01, 0x00, 0x00),
+                'pitch_coarse': (0x01, 0x00, 0x01),
+                'pitch_fine': (0x01, 0x00, 0x02),
+                'detune': (0x01, 0x00, 0x03),
+                'filter_type': (0x01, 0x01, 0x00),
+                'cutoff': (0x01, 0x01, 0x01),
+                'resonance': (0x01, 0x01, 0x02),
+                'env_depth': (0x01, 0x01, 0x03),
+                'attack': (0x01, 0x02, 0x00),
+                'decay': (0x01, 0x02, 0x01),
+                'sustain': (0x01, 0x02, 0x02),
+                'release': (0x01, 0x02, 0x03)
+            }
+            
+            # Get partial parameters
+            for name, (part, group, param) in partial_params.items():
+                value = self.get_parameter(areas['partial'], part, group, param)
+                if value is not None:
+                    parameters[f'partial_{name}'] = value
+                    logging.debug(f"Got digital partial parameter {name}: {value}")
+                time.sleep(0.01)  # Small delay between requests
+                
+            logging.info(f"Retrieved {len(parameters)} digital synth parameters")
+            return parameters
+            
+        except Exception as e:
+            logging.error(f"Error getting digital parameters: {str(e)}")
+            return {}
+
+    def _get_analog_parameters(self) -> Dict[str, int]:
+        """Get current analog synth parameters"""
+        # TODO: Implement getting actual parameters
+        return {}
+
+    def _get_drum_parameters(self) -> Dict[str, int]:
+        """Get current drum parameters"""
+        # TODO: Implement getting actual parameters
+        return {}
+
+    def _get_effects_parameters(self) -> Dict[str, int]:
+        """Get current effects parameters"""
+        # TODO: Implement getting actual parameters
+        return {}
+
+    def _send_digital_parameter(self, param_id: str, value: int) -> bool:
+        """Send parameter to digital synth
+        
+        Args:
+            param_id: Parameter identifier (e.g. 'common_level')
+            value: Parameter value (0-127)
+        """
+        try:
+            # Digital synth parameter areas
+            areas = {
+                'common': 0x19,  # Digital Common
+                'partial': 0x1A  # Digital Partial
+            }
+            
+            # Common parameters (0x19)
+            common_params = {
+                'level': (0x01, 0x00, 0x00),
+                'pan': (0x01, 0x00, 0x01),
+                'portamento': (0x01, 0x00, 0x02),
+                'mono_poly': (0x01, 0x00, 0x03),
+                'legato': (0x01, 0x00, 0x04),
+                'octave_shift': (0x01, 0x00, 0x05),
+                'pitch_bend_range': (0x01, 0x00, 0x06),
+                'partial_select': (0x01, 0x00, 0x07),
+                'mod_depth': (0x01, 0x00, 0x08)
+            }
+            
+            # Partial parameters (0x1A)
+            partial_params = {
+                'waveform': (0x01, 0x00, 0x00),
+                'pitch_coarse': (0x01, 0x00, 0x01),
+                'pitch_fine': (0x01, 0x00, 0x02),
+                'detune': (0x01, 0x00, 0x03),
+                'filter_type': (0x01, 0x01, 0x00),
+                'cutoff': (0x01, 0x01, 0x01),
+                'resonance': (0x01, 0x01, 0x02),
+                'env_depth': (0x01, 0x01, 0x03),
+                'attack': (0x01, 0x02, 0x00),
+                'decay': (0x01, 0x02, 0x01),
+                'sustain': (0x01, 0x02, 0x02),
+                'release': (0x01, 0x02, 0x03)
+            }
+            
+            # Split parameter ID into section and name
+            section, name = param_id.split('_', 1)
+            
+            # Get parameter details
+            if section == 'common':
+                if name not in common_params:
+                    logging.error(f"Unknown common parameter: {name}")
+                    return False
+                area = areas['common']
+                part, group, param = common_params[name]
+            elif section == 'partial':
+                if name not in partial_params:
+                    logging.error(f"Unknown partial parameter: {name}")
+                    return False
+                area = areas['partial']
+                part, group, param = partial_params[name]
+            else:
+                logging.error(f"Unknown parameter section: {section}")
+                return False
+            
+            # Send parameter
+            success = self.send_parameter(area, part, group, param, value)
+            if success:
+                logging.debug(f"Sent digital parameter {param_id}={value}")
+            else:
+                logging.error(f"Failed to send digital parameter {param_id}={value}")
+            
+            time.sleep(0.01)  # Small delay between sends
+            return success
+            
+        except Exception as e:
+            logging.error(f"Error sending digital parameter {param_id}: {str(e)}")
+            return False
+
+    def _send_analog_parameter(self, param_id: str, value: int) -> bool:
+        """Send parameter to analog synth"""
+        try:
+            # TODO: Implement analog parameter sending
+            logging.debug(f"Sending analog parameter {param_id}={value}")
+            return True
+        except Exception as e:
+            logging.error(f"Error sending analog parameter: {str(e)}")
+            return False
+
+    def _send_drum_parameter(self, param_id: str, value: int) -> bool:
+        """Send parameter to drum section"""
+        try:
+            # TODO: Implement drum parameter sending
+            logging.debug(f"Sending drum parameter {param_id}={value}")
+            return True
+        except Exception as e:
+            logging.error(f"Error sending drum parameter: {str(e)}")
+            return False
+
+    def _send_effect_parameter(self, param_id: str, value: int) -> bool:
+        """Send parameter to effects section"""
+        try:
+            # TODO: Implement effects parameter sending
+            logging.debug(f"Sending effect parameter {param_id}={value}")
+            return True
+        except Exception as e:
+            logging.error(f"Error sending effect parameter: {str(e)}")
             return False

@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 import logging
 
+
 class PatchManager(QMainWindow):
     def __init__(self, midi_helper=None, parent=None, save_mode=False):
         super().__init__(parent)
@@ -89,14 +90,14 @@ class PatchManager(QMainWindow):
                     self,
                     "Save Patch File",
                     "",
-                    "Patch Files (*.jdxipatch);;All Files (*.*)"
+                    "Patch Files (*.jdx);;All Files (*.*)"
                 )
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Load Patch File",
                     "",
-                    "Patch Files (*.jdxipatch);;All Files (*.*)"
+                    "Patch Files (*.jdx);;All Files (*.*)"
                 )
                 
             if file_path:
