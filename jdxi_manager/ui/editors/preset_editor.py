@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-    QComboBox, QLabel, QPushButton
+    QComboBox, QLabel, QPushButton, QLineEdit, QGroupBox
 )
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QFont
 from typing import Optional, List
 import logging
 import time
@@ -136,15 +137,73 @@ class PresetEditor(QMainWindow):
 
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None, preset_type: str = PresetType.ANALOG):
         super().__init__(parent)
-        self.setWindowTitle(f"{preset_type} Preset Editor")
+        self.setMinimumSize(400, 250)
+        self.setWindowTitle("Preset Editor")
         self.midi_helper = midi_helper
         self.channel = 1  # Default channel
         self.preset_type = preset_type
+        
+        # Set window style
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+            }
+            QLabel {
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QComboBox {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px;
+                font-family: 'Myriad Pro';
+            }
+            QComboBox:hover {
+                border: 1px solid #777777;
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #777777;
+            }
+            QLineEdit {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px;
+                font-family: 'Myriad Pro';
+            }
+            QGroupBox {
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                margin-top: 0.5em;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 3px 0 3px;
+            }
+        """)
         
         # Create central widget and main layout
         main_widget = QWidget()
         main_layout = QVBoxLayout()
         main_widget.setLayout(main_layout)
+        
+        # Create preset control group
+        preset_group = QGroupBox("Preset Controls")
+        preset_layout = QVBoxLayout()
+        preset_group.setLayout(preset_layout)
         
         # Create preset type selector
         type_row = QHBoxLayout()
@@ -154,7 +213,16 @@ class PresetEditor(QMainWindow):
         self.type_selector.setCurrentText(preset_type)
         self.type_selector.currentTextChanged.connect(self._on_type_changed)
         type_row.addWidget(self.type_selector)
-        main_layout.addLayout(type_row)
+        preset_layout.addLayout(type_row)
+        
+        # Create search box
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Search:"))
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search presets...")
+        self.search_box.textChanged.connect(self._filter_presets)
+        search_row.addWidget(self.search_box)
+        preset_layout.addLayout(search_row)
         
         # Create preset selector
         preset_row = QHBoxLayout()
@@ -163,14 +231,17 @@ class PresetEditor(QMainWindow):
         self._update_preset_list()
         self.preset_selector.currentIndexChanged.connect(self._on_preset_changed)
         preset_row.addWidget(self.preset_selector)
-        main_layout.addLayout(preset_row)
+        preset_layout.addLayout(preset_row)
         
         # Create button row
         button_row = QHBoxLayout()
         self.load_button = QPushButton("Load")
         self.load_button.clicked.connect(self._on_load_clicked)
         button_row.addWidget(self.load_button)
-        main_layout.addLayout(button_row)
+        preset_layout.addLayout(button_row)
+        
+        # Add preset group to main layout
+        main_layout.addWidget(preset_group)
         
         # Create editor widget
         self.editor = BaseEditor(midi_helper, self)
@@ -178,28 +249,52 @@ class PresetEditor(QMainWindow):
         
         # Set as central widget
         self.setCentralWidget(main_widget)
+        
+        # Store the full preset list for filtering
+        self.full_preset_list = self._get_preset_list()
 
     def _get_preset_list(self) -> List[str]:
         """Get the appropriate preset list based on type"""
+        logging.debug(f"Getting preset list for type: {self.preset_type}")
         if self.preset_type == PresetType.ANALOG:
             return ANALOG_PRESETS
         elif self.preset_type == PresetType.DIGITAL:
             return DIGITAL_PRESETS
-        else:
+        else:  # PresetType.DRUMS
             return DRUM_PRESETS
+
+    def _filter_presets(self, search_text: str):
+        """Filter presets based on search text"""
+        if not search_text:
+            # If search is empty, show all presets
+            filtered_presets = self.full_preset_list
+        else:
+            # Filter presets that contain the search text (case-insensitive)
+            search_text = search_text.lower()
+            filtered_presets = [
+                preset for preset in self.full_preset_list
+                if search_text in preset.lower()
+            ]
+        
+        # Update the preset selector with filtered items
+        self.preset_selector.clear()
+        self.preset_selector.addItems([
+            preset.split(': ')[1] for preset in filtered_presets
+        ])
 
     def _update_preset_list(self):
         """Update the preset selector with appropriate list"""
-        presets = self._get_preset_list()
+        self.full_preset_list = self._get_preset_list()
         self.preset_selector.clear()
-        # Remove the number prefix (e.g., "001: ") from each preset name
         self.preset_selector.addItems([
-            preset.split(': ')[1] for preset in presets
+            preset.split(': ')[1] for preset in self.full_preset_list
         ])
 
     def _on_type_changed(self, preset_type: str):
         """Handle preset type change"""
+        logging.debug(f"Changing preset type to {preset_type}")
         self.preset_type = preset_type
+        self.search_box.clear()  # Clear search when changing type
         self._update_preset_list()
 
     def _on_preset_changed(self, index: int):
@@ -230,13 +325,19 @@ class PresetEditor(QMainWindow):
 
     def _on_load_clicked(self):
         """Handle Load button click"""
-        if not self.midi_helper:
-            return
+        logging.debug(f"Load button clicked for {self.preset_type} preset")
+        
+        #if not self.midi_helper:
+        #    logging.error("No MIDI helper available")
+        #    return
+        
 
         try:
             current_index = self.preset_selector.currentIndex()
+            logging.debug(f"Loading {self.preset_type} preset index {current_index}")
 
             if self.preset_type == PresetType.DRUMS:
+                logging.debug("Sending Drum preset messages")
                 # First preset message (15 bytes)
                 # F0 41 10 00 00 00 0E 12 18 00 23 06 56 69 F7
                 data = [0x18, 0x00, 0x23, 0x06, 0x56]
@@ -287,54 +388,86 @@ class PresetEditor(QMainWindow):
                     time.sleep(0.02)
 
             elif self.preset_type == PresetType.ANALOG:
+                logging.debug("Sending Analog preset messages")
                 # First preset message (15 bytes)
                 # F0 41 10 00 00 00 0E 12 18 00 22 06 5E 62 F7
                 data = [0x18, 0x00, 0x22, 0x06, 0x5E]
                 checksum = self._calculate_checksum(data)
-                self.midi_helper.send_message([
-                    0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                    *data, checksum, 0xF7
-                ])
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12, *data, checksum, 0xF7]
+                logging.debug(f"Sending analog message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
 
                 # Second preset message (15 bytes)
                 # F0 41 10 00 00 00 0E 12 18 00 22 07 40 7F F7
+                
                 data = [0x18, 0x00, 0x22, 0x07, 0x40]
                 checksum = self._calculate_checksum(data)
-                self.midi_helper.send_message([
-                    0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                    *data, checksum, 0xF7
-                ])
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12, *data, checksum, 0xF7]
+                logging.debug(f"Sending analog message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
 
                 # Third preset message (15 bytes)
                 # F0 41 10 00 00 00 0E 12 18 00 22 08 xx yy F7
                 # where xx is the preset index
                 data = [0x18, 0x00, 0x22, 0x08, current_index]
                 checksum = self._calculate_checksum(data)
-                self.midi_helper.send_message([
-                    0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                    *data, checksum, 0xF7
-                ])
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12, *data, checksum, 0xF7]
+                logging.debug(f"Sending analog message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
 
                 # Parameter message (18 bytes)
                 # F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7
                 data = [0x19, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40]
                 checksum = self._calculate_checksum(data)
-                self.midi_helper.send_message([
-                    0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                    *data, checksum, 0xF7
-                ])
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11, *data, checksum, 0xF7]
+                logging.debug(f"Sending analog message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
 
             elif self.preset_type == PresetType.DIGITAL:
-                pass
-                # Digital preset messages...
-                # (existing digital preset code)
+                logging.debug("Sending Digital preset messages")
+                # First preset message (15 bytes)
+                # F0 41 10 00 00 00 0E 12 18 00 20 06 5F 63 F7
+                data = [0x18, 0x00, 0x20, 0x06, 0x5F]
+                checksum = self._calculate_checksum(data)
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12, *data, checksum, 0xF7]
+                logging.debug(f"Sending digital message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
 
-            logging.debug(f"Loaded {self.preset_type} preset {current_index + 1}")
+                # Second preset message (15 bytes)
+                # F0 41 10 00 00 00 0E 12 18 00 20 07 40 01 F7
+                data = [0x18, 0x00, 0x20, 0x07, 0x40]
+                checksum = self._calculate_checksum(data)
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12, *data, checksum, 0xF7]
+                logging.debug(f"Sending digital message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
 
+                # Third preset message (15 bytes)
+                # F0 41 10 00 00 00 0E 12 18 00 20 08 00 40 F7
+                data = [0x18, 0x00, 0x20, 0x08, current_index]
+                checksum = self._calculate_checksum(data)
+                message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12, *data, checksum, 0xF7]
+                logging.debug(f"Sending digital message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                self.midi_helper.send_message(message)
+
+                # Parameter messages (18 bytes each)
+                parameter_addresses = [0x00, 0x20, 0x21, 0x22, 0x50]
+                for addr in parameter_addresses:
+                    data = [0x19, 0x01, addr, 0x00, 0x00, 0x00, 0x00, 0x40]
+                    checksum = self._calculate_checksum(data)
+                    message = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11, *data, checksum, 0xF7]
+                    logging.debug(f"Sending digital message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+                    self.midi_helper.send_message(message)
+                    time.sleep(0.02)  # Small delay between messages
+
+                logging.debug(f"Successfully loaded {self.preset_type} preset {current_index + 1}")
+            else:
+                logging.error(f"Invalid preset type: {self.preset_type}")
         except Exception as e:
-            logging.error(f"Error loading preset: {str(e)}")
+            logging.error(f"Error loading {self.preset_type} preset: {str(e)}", exc_info=True)
 
     def _calculate_checksum(self, data: List[int]) -> int:
         """Calculate Roland checksum for parameter messages"""
         checksum = sum(data) & 0x7F
-        return (128 - checksum) & 0x7F
+        result = (128 - checksum) & 0x7F
+        logging.debug(f"Calculated checksum for data {[hex(x)[2:].upper().zfill(2) for x in data]}: {hex(result)[2:].upper().zfill(2)}")
+        return result
