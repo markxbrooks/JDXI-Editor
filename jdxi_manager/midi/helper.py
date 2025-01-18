@@ -276,6 +276,7 @@ class MIDIHelper:
         Returns:
             True if successful, False otherwise
         """
+        logging.debug(f"Sending parameter: area={area}, part={part}, group={group}, param={param}, value={value}")
         try:
             if not self.is_output_open:
                 logging.warning("MIDI output not open")
@@ -307,7 +308,8 @@ class MIDIHelper:
             # Calculate checksum
             checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
             message[-2] = checksum
-            
+
+            logging.debug(f"Sending parameter message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
             # Send message directly instead of using output_port
             return self.send_message(message)
             
@@ -322,12 +324,14 @@ class MIDIHelper:
             program: Program number (0-127)
             channel: MIDI channel (0-15)
         """
+        logging.debug(f"Sending program change: program={program}, channel={channel}")
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
             # Program Change status byte: 0xC0 + channel
+            logging.debug(f"Sending program change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xC0 + channel, program & 0x7F]])}")
             return self.send_message([0xC0 + channel, program & 0x7F])
         except Exception as e:
             logging.error(f"Error sending program change: {str(e)}")
@@ -347,6 +351,7 @@ class MIDIHelper:
 
         try:
             # Control Change status byte: 0xB0 + channel
+            logging.debug(f"Sending control change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xB0 + channel, controller & 0x7F, value & 0x7F]])}")
             return self.send_message([0xB0 + channel, controller & 0x7F, value & 0x7F])
         except Exception as e:
             logging.error(f"Error sending control change: {str(e)}")
@@ -364,6 +369,7 @@ class MIDIHelper:
         Returns:
             Parameter value (0-127) or None if error
         """
+        logging.debug(f"Requesting parameter: area={area}, part={part}, group={group}, param={param}")
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None
@@ -424,6 +430,7 @@ class MIDIHelper:
         Returns:
             True if successful, False otherwise
         """
+        logging.debug(f"Sending CC: cc={cc}, value={value}, channel={channel}")
         try:
             if not self.is_output_open:
                 logging.warning("MIDI output not open")
@@ -431,7 +438,7 @@ class MIDIHelper:
                 
             # Create Control Change message (Status byte: 0xB0 + channel)
             message = [0xB0 + channel, cc & 0x7F, value & 0x7F]
-            
+            logging.debug(f"Sending CC message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
             # Send message using midi_out instead of output_port
             self.midi_out.send_message(message)
             logging.debug(f"Sent CC {cc}={value} on ch{channel}")

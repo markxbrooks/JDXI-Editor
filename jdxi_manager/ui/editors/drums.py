@@ -31,16 +31,16 @@ class DrumPadEditor(BaseEditor):
         self.setLayout(main_layout)
         
         # Create frame with red border
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.Box | QFrame.Plain)
+        group = QGroupBox(f"Pad {pad_number}")
+        # frame.setFrameStyle(QFrame.Box | QFrame.Plain)
         frame_layout = QVBoxLayout()
         frame_layout.setSpacing(0)  # Remove spacing between widgets
         frame_layout.setContentsMargins(5, 5, 5, 5)  # Small internal margins
-        frame.setLayout(frame_layout)
+        group.setLayout(frame_layout)
         
         # Create pad label with string, not int
-        pad_label = QLabel(f"Pad {pad_number}")
-        frame_layout.addWidget(pad_label)
+        #pad_label = QLabel(f"Pad {pad_number}")
+        #frame_layout.addWidget(pad_label)
         
         # Set slider width to fit nicely in the 250px container
         slider_width = 220  # Leave some margin for the frame
@@ -74,7 +74,56 @@ class DrumPadEditor(BaseEditor):
         frame_layout.addWidget(self.delay)
 
         # Add frame to main layout
-        main_layout.addWidget(frame)
+        main_layout.addWidget(group)
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+            }
+            QLabel {
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QComboBox {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px;
+                font-family: 'Myriad Pro';
+            }
+            QComboBox:hover {
+                border: 1px solid #777777;
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #777777;
+            }
+            QLineEdit {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px;
+                font-family: 'Myriad Pro';
+            }
+            QFrame {
+                border-radius: 3px;
+                margin-top: 0.5em;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 3px 0 3px;
+            }
+        """)
 
 class DrumEditor(BaseEditor):
     """Editor for JD-Xi Drum Kit parameters"""
