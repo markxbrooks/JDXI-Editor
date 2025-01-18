@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt, Signal
 from dataclasses import dataclass
 import logging
 
+
 @dataclass
 class PresetFavorite:
     """Preset favorite data"""
@@ -10,6 +11,7 @@ class PresetFavorite:
     preset_num: int
     preset_name: str
     channel: int
+
 
 class FavoriteButton(QPushButton):
     """Favorite preset button with save/recall functionality"""
@@ -24,13 +26,13 @@ class FavoriteButton(QPushButton):
         self.setFlat(True)
         self._update_style()
         
-    def save_preset(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
+    def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
         """Save current preset to this favorite slot"""
         self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
         self._update_style()
         logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
         
-    def load_preset(self):
+    def load_preset_from_favourites(self):
         """Load saved preset"""
         if self.preset:
             self.preset_selected.emit(
@@ -45,19 +47,19 @@ class FavoriteButton(QPushButton):
         if self.preset:
             # Get color based on synth type
             if self.preset.synth_type == "Analog":
-                color = "#FF8C00"  # Orange
+                color = "#00A3F0"  # Analog blue
             elif self.preset.synth_type == "Digital 1":
-                color = "#00FF00"  # Green
+                color = "#FF0000"  # Red
             elif self.preset.synth_type == "Digital 2":
-                color = "#00FFFF"  # Cyan
+                color = "#FF0000"  # Red
             else:  # Drums
-                color = "#FF00FF"  # Magenta
+                color = "#FF0000"  # Red
                 
             # Set text to preset name
             text = f"FAV {self.slot_num + 1}\n{self.preset.preset_name[4:]}"
         else:
             color = "#666666"  # Gray for empty slot
-            text = f"FAV {self.slot_num + 1}"
+            text = f"Fav {self.slot_num + 1}"
             
         # Create gradient background
         gradient = f"""
@@ -73,7 +75,8 @@ class FavoriteButton(QPushButton):
         self.setStyleSheet(f"""
             QPushButton {{
                 {gradient}
-                border: 1px solid {color};
+                font-family: "Consolas", "Fixed";
+                border: 1px solid red;
                 border-radius: 3px;
                 color: {color};
                 font-size: 9px;

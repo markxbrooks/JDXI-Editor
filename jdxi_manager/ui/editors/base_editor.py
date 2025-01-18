@@ -6,6 +6,7 @@ import logging
 from jdxi_manager.midi.helper import MIDIHelper
 from jdxi_manager.ui.style import Style
 
+
 class BaseEditor(QWidget):
     """Base class for all editor windows"""
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
