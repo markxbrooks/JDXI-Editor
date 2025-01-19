@@ -238,12 +238,31 @@ class PresetEditor(QMainWindow):
         preset_row.addWidget(self.preset_selector)
         preset_layout.addLayout(preset_row)
         
-        # Create button row
+        # Add bank selector in the preset control group
+        bank_row = QHBoxLayout()
+        bank_row.addWidget(QLabel("Bank:"))
+        self.bank_selector = QComboBox()
+        self.bank_selector.addItems(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+        bank_row.addWidget(self.bank_selector)
+        preset_layout.addLayout(bank_row)
+        
+        # Modify button row to include both Load and Save buttons
         button_row = QHBoxLayout()
         self.load_button = QPushButton("Load")
         self.load_button.clicked.connect(self._on_load_clicked)
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self._on_save_clicked)
         button_row.addWidget(self.load_button)
+        button_row.addWidget(self.save_button)
         preset_layout.addLayout(button_row)
+        
+        # Add slot selector for saving
+        slot_row = QHBoxLayout()
+        slot_row.addWidget(QLabel("Save Slot:"))
+        self.slot_selector = QComboBox()
+        self.slot_selector.addItems([f"{i:02d}" for i in range(1, 65)])
+        slot_row.addWidget(self.slot_selector)
+        preset_layout.addLayout(slot_row)
         
         # Add preset group to main layout
         main_layout.addWidget(preset_group)
@@ -517,3 +536,61 @@ class PresetEditor(QMainWindow):
         result = (128 - checksum) & 0x7F
         logging.debug(f"Calculated checksum for data {[hex(x)[2:].upper().zfill(2) for x in data]}: {hex(result)[2:].upper().zfill(2)}")
         return result
+
+    def _on_save_clicked(self):
+        """Handle Save button click"""
+        if not self.midi_helper:
+            logging.error("No MIDI helper available")
+            return
+
+        try:
+            bank = self.bank_selector.currentText()
+            slot = int(self.slot_selector.currentText())
+            
+            # Only allow saving to user banks E-H
+            if bank not in ['E', 'F', 'G', 'H']:
+                logging.error("Can only save to user banks E-H")
+                return
+
+            logging.debug(f"Saving {self.preset_type} preset to bank {bank} slot {slot}")
+
+            # Convert bank letter to number (E=4, F=5, G=6, H=7)
+            bank_num = ord(bank) - ord('A')
+            
+            # Calculate the appropriate area based on preset type
+            if self.preset_type == PresetType.ANALOG:
+                area = 0x22
+            elif self.preset_type == PresetType.DIGITAL:
+                area = 0x20
+            else:  # PresetType.DRUMS
+                area = 0x23
+
+            # Send save command sequence
+            # First message - Set bank and slot
+            data = [0x18, 0x00, area, 0x06, bank_num]
+            checksum = self._calculate_checksum(data)
+            self.midi_helper.send_message([
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
+                *data, checksum, 0xF7
+            ])
+
+            # Second message - Set slot number
+            data = [0x18, 0x00, area, 0x07, slot - 1]  # Convert to 0-based index
+            checksum = self._calculate_checksum(data)
+            self.midi_helper.send_message([
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
+                *data, checksum, 0xF7
+            ])
+
+            # Third message - Send save command
+            data = [0x18, 0x00, area, 0x09, 0x00]  # 0x09 is save command
+            checksum = self._calculate_checksum(data)
+            self.midi_helper.send_message([
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
+                *data, checksum, 0xF7
+            ])
+
+            logging.debug(f"Successfully saved {self.preset_type} preset to bank {bank} slot {slot}")
+
+        except Exception as e:
+            logging.error(f"Error saving {self.preset_type} preset: {str(e)}", exc_info=True)
