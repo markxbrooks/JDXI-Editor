@@ -16,7 +16,7 @@ class PatchName(QWidget):
         self.label = QLabel("Name:")
         self.editor = QLineEdit()
         self.editor.setMaxLength(12)  # JD-Xi patch names are max 12 chars
-        self.editor.setFont(QFont("Consolas", 10))  # Monospace font
+        self.editor.setFont(QFont("Fixed", 10))  # Monospace font
         self.editor.textChanged.connect(self.nameChanged)
         
         layout.addWidget(self.label)
