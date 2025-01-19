@@ -3,6 +3,7 @@ import rtmidi
 from typing import Optional, List, Tuple, Callable
 import time
 
+
 class MIDIHelper:
     """Helper class for MIDI communication with the JD-Xi"""
     

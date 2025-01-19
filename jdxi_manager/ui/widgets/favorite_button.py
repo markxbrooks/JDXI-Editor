@@ -3,6 +3,9 @@ from PySide6.QtCore import Qt, Signal
 from dataclasses import dataclass
 import logging
 
+from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.preset_loader import PresetLoader
+
 
 @dataclass
 class PresetFavorite:
@@ -18,8 +21,9 @@ class FavoriteButton(QPushButton):
     
     preset_selected = Signal(str, int, int)  # synth_type, preset_num, channel
     
-    def __init__(self, slot_num: int, parent=None):
+    def __init__(self, slot_num: int, midi_helper: MIDIHelper, parent=None):
         super().__init__(parent)
+        self.midi_helper = midi_helper
         self.slot_num = slot_num
         self.preset = None
         self.setFixedSize(60, 30)
@@ -35,10 +39,10 @@ class FavoriteButton(QPushButton):
     def load_preset_from_favourites(self):
         """Load saved preset"""
         if self.preset:
-            self.preset_selected.emit(
+            PresetLoader.load_preset(
+                self.midi_helper,
                 self.preset.synth_type,
-                self.preset.preset_num,
-                self.preset.channel
+                self.preset.preset_num
             )
             logging.debug(f"Loading favorite {self.slot_num}: {self.preset.preset_name}")
             

@@ -373,7 +373,7 @@ class MainWindow(QMainWindow):
         # Create favorite buttons
         self.favorite_buttons = []
         for i in range(4):  # Create 4 favorite slots
-            button = FavoriteButton(i)
+            button = FavoriteButton(i, self.midi_helper)
             button.clicked.connect(lambda checked, b=button: self._load_favorite(b))
             button.setContextMenuPolicy(Qt.CustomContextMenu)
             button.customContextMenuRequested.connect(
