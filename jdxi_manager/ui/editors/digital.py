@@ -5,8 +5,9 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QTabWidget,
     QScrollArea, QSpinBox, QLabel
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 
+from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import WaveformButton
@@ -500,8 +501,12 @@ class PartialEditor(QWidget):
         self._update_pw_controls_state(waveform)
         self._update_pcm_controls_state(waveform)
 
+
 class DigitalSynthEditor(BaseEditor):
-    def __init__(self, midi_helper=None, synth_num=1, parent=None):
+    """ class for Digital Synth Editor containing 3 partials"""
+    preset_changed = Signal(int, str, int)
+
+    def __init__(self, midi_helper: Optional[MIDIHelper] = None, synth_num=1, parent=None):
         super().__init__(midi_helper, parent)
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
@@ -729,3 +734,41 @@ class DigitalSynthEditor(BaseEditor):
         except Exception as e:
             logging.error(f"Error sending parameter {param.name}: {str(e)}")
             return False
+
+    def _update_ui(self, parameters: Dict[str, int]):
+        """Update UI with new parameter values"""
+        try:
+            # Emit the signal to update the UI
+            self.ui_update_requested.emit(parameters)
+
+        except Exception as e:
+            logging.error(f"Error updating UI: {str(e)}", exc_info=True)
+
+    def handle_sysex_message(self, message):
+        """Handle incoming SysEx messages"""
+        try:
+            if len(message) < 8:  # Minimum length for JD-Xi SysEx
+                return
+
+            # Check if this is a data set message (DT1)
+            if message[7] == 0x12:  # DT1 command
+                self._handle_dt1_message(message[8:])
+                
+        except Exception as e:
+            logging.error(f"Error handling SysEx message: {str(e)}")
+
+    def _handle_dt1_message(self, data):
+        """Handle Data Set 1 (DT1) messages
+        
+        Format: aa bb cc dd ... where:
+        aa bb cc = Address
+        dd ... = Data
+        """
+        if len(data) < 4:  # Need at least address and one data byte
+            return
+            
+        address = data[0:3]
+        value = data[3]
+        
+        # Emit signal with parameter data
+        self.parameter_received.emit(address, value)

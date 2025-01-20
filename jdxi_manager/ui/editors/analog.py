@@ -1,8 +1,11 @@
+from typing import Optional
+
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QScrollArea, QComboBox
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 
+from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import WaveformButton
@@ -17,7 +20,10 @@ from jdxi_manager.midi.constants.analog import (
 )
 
 class AnalogSynthEditor(BaseEditor):
-    def __init__(self, midi_helper=None, parent=None):
+    """ Analog Synth"""
+    preset_changed = Signal(int, str, int)
+
+    def __init__(self, midi_helper: Optional[MIDIHelper], parent=None):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Analog Synth")
         

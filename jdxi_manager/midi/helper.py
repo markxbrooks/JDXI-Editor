@@ -3,11 +3,16 @@ import rtmidi
 from typing import Optional, List, Tuple, Callable
 import time
 
+from PySide6.QtCore import Signal, QObject
 
-class MIDIHelper:
+
+class MIDIHelper(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
+
+    parameter_received = Signal(list, int)  # address, value
     
     def __init__(self, parent=None):
+        super().__init__(parent)
         self.midi_in = rtmidi.MidiIn()
         self.midi_out = rtmidi.MidiOut()
         self.input_port_number: Optional[int] = None
@@ -451,3 +456,34 @@ class MIDIHelper:
         except Exception as e:
             logging.error(f"Error sending CC message: {str(e)}")
             return False
+
+    def handle_sysex_message(self, message):
+        """Handle incoming SysEx messages"""
+        try:
+            if len(message) < 8:  # Minimum length for JD-Xi SysEx
+                return
+
+            # Check if this is a data set message (DT1)
+            if message[7] == 0x12:  # DT1 command
+                self._handle_dt1_message(message[8:])
+
+        except Exception as e:
+            logging.error(f"Error handling SysEx message: {str(e)}")
+
+    def _handle_dt1_message(self, data):
+        """Handle Data Set 1 (DT1) messages
+
+        Format: aa bb cc dd ... where:
+        aa bb cc = Address
+        dd ... = Data
+        """
+        if len(data) < 4:  # Need at least address and one data byte
+            return
+
+        address = data[0:3]
+        value = data[3]
+
+        # Emit signal with parameter data
+        self.parameter_received.emit(address, value)
+        
+

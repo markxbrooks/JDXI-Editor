@@ -1,11 +1,14 @@
+from typing import Optional
+
 from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QLabel,
     QComboBox, QFrame, QGridLayout, QGroupBox, 
     QScrollArea, QWidget
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 import logging
 
+from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.midi.constants import (
@@ -17,7 +20,11 @@ from jdxi_manager.midi.constants import (
     DRUM_DELAY
 )
 
+
 class DrumPadEditor(BaseEditor):
+    """ Drum pad editor"""
+    preset_changed = Signal(int, str, int)
+
     def __init__(self, pad_number: int, parent=None):
         super().__init__(parent)
         
@@ -128,7 +135,7 @@ class DrumPadEditor(BaseEditor):
 class DrumEditor(BaseEditor):
     """Editor for JD-Xi Drum Kit parameters"""
     
-    def __init__(self, midi_helper=None, parent=None):
+    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Drums")
         
