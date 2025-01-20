@@ -79,4 +79,46 @@ class PresetLoader:
             logging.debug(f"Successfully loaded {preset_type} preset {preset_num}")
             
         except Exception as e:
-            logging.error(f"Error loading {preset_type} preset: {str(e)}", exc_info=True) 
+            logging.error(f"Error loading {preset_type} preset: {str(e)}", exc_info=True)
+
+    @staticmethod
+    def request_current_parameters(midi_helper: Optional[MIDIHelper], preset_type: str) -> None:
+        """Request current parameters from the synth
+        
+        Args:
+            midi_helper: MIDI helper instance
+            preset_type: Type of preset (Analog, Digital 1, etc)
+        """
+        if not midi_helper:
+            logging.error("No MIDI helper available")
+            return
+
+        try:
+            # Get the appropriate area code for the synth type
+            area = PresetType.get_area_code(preset_type)
+            if area is None:
+                logging.error(f"Unknown preset type: {preset_type}")
+                return
+
+            # Request current program number
+            data = [0x18, 0x00, area, 0x08]  # Address for current program number
+            checksum = PresetLoader.calculate_checksum(data)
+            midi_helper.send_message([
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
+                *data, checksum, 0xF7
+            ])
+
+            # For Digital synths, request additional parameters
+            if preset_type in [PresetType.DIGITAL_1, PresetType.DIGITAL_2]:
+                parameter_addresses = [0x00, 0x20, 0x21, 0x22, 0x50]
+                for addr in parameter_addresses:
+                    data = [0x19, 0x01, addr]  # Address for parameter data
+                    checksum = PresetLoader.calculate_checksum(data)
+                    midi_helper.send_message([
+                        0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
+                        *data, checksum, 0xF7
+                    ])
+                    time.sleep(0.02)  # Small delay between messages
+
+        except Exception as e:
+            logging.error(f"Error requesting parameters: {str(e)}", exc_info=True) 

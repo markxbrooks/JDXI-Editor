@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal, Qt, QSettings
 from PySide6.QtGui import QFont
-from typing import Optional, List
+from typing import Optional, List, Dict
 import logging
 import time
 
@@ -20,6 +20,7 @@ from jdxi_manager.midi.constants import (
 from jdxi_manager.ui.style import Style
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.preset_loader import PresetLoader
+from jdxi_manager.midi.parameter_handler import ParameterHandler
 
 # Preset lists
 ANALOG_PRESETS = [
@@ -141,6 +142,11 @@ class PresetEditor(QMainWindow):
         self.midi_helper = midi_helper
         self.channel = 1  # Default channel
         self.preset_type = preset_type
+        self.parameter_handler = ParameterHandler()
+        
+        if midi_helper:
+            midi_helper.parameter_received.connect(self.parameter_handler.update_parameter)
+            self.parameter_handler.parameters_updated.connect(self._update_ui)
         
         # Set window style
         self.setStyleSheet(Style.EDITOR_STYLE)
@@ -451,3 +457,28 @@ class PresetEditor(QMainWindow):
                 f"Error saving preset: {str(e)}"
             )
             logging.error(f"Error saving {self.preset_type} preset: {str(e)}", exc_info=True)
+
+    def request_current_parameters(self):
+        """Request current parameters from the synth"""
+        if self.midi_helper:
+            PresetLoader.request_current_parameters(
+                self.midi_helper,
+                self.preset_type
+            )
+            
+    def _update_ui(self, parameters: Dict[str, int]):
+        """Update UI with new parameter values"""
+        try:
+            # Example: Update a label or control with a specific parameter
+            # Assuming you have a QLabel or similar widget to display parameter values
+            if '0.0.8' in parameters:  # Example address for a parameter
+                value = parameters['0.0.8']
+                self.some_label.setText(f"Parameter 0.0.8: {value}")
+
+            # Update other UI elements as needed
+            # if '0.1.0' in parameters:
+            #     value = parameters['0.1.0']
+            #     self.another_control.setValue(value)
+
+        except Exception as e:
+            logging.error(f"Error updating UI: {str(e)}", exc_info=True)
