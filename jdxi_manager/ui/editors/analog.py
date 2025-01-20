@@ -4,11 +4,12 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, QScrollArea, QComboBox
 )
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon, QPixmap
 
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.waveform import WaveformButton
+from jdxi_manager.ui.widgets.waveform import WaveformButton, upsaw_png, triangle_png, pwsqu_png
 from jdxi_manager.ui.widgets.switch import Switch
 from jdxi_manager.midi.constants.analog import (
     AnalogToneCC,
@@ -18,6 +19,7 @@ from jdxi_manager.midi.constants.analog import (
     ANALOG_PART,
     ANALOG_OSC_GROUP
 )
+import base64
 
 class AnalogSynthEditor(BaseEditor):
     """ Analog Synth"""
@@ -46,46 +48,13 @@ class AnalogSynthEditor(BaseEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        """
+
         # Additional styling specific to analog editor
-        #container.setStyleSheet(""
-            QWidget {
-                background-color: #2D2D2D;
-                color: #CCCCCC;
-            }
+        container.setStyleSheet("""
             QGroupBox {
-                border: 1px solid #444444;
-                border-radius: 3px;
-                margin-top: 1.5ex;
-                padding: 10px;
-                font-size: 12px;
+                border: 1px solid #00A3F0;
             }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 0 3px;
-                background-color: #2D2D2D;
-            }
-            QLabel {
-                color: #CCCCCC;
-                font-size: 11px;
-            }
-            QSlider::groove:vertical {
-                background: #333333;
-                width: 4px;
-                border-radius: 2px;
-            }
-            QSlider::handle:vertical {
-                background: #B22222;
-                border: 1px solid #FF4444;
-                height: 10px;
-                margin: 0 -8px;
-                border-radius: 5px;
-            }
-            QSlider::handle:vertical:hover {
-                background: #FF4444;
-            }
-        "")"""
+        """)
         
         # Add sections side by side
         container_layout.addWidget(self._create_oscillator_section())
@@ -149,6 +118,21 @@ class AnalogSynthEditor(BaseEditor):
         self.wave_buttons = {}
         for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
             btn = WaveformButton(waveform)
+            
+            # Set icons for each waveform
+            if waveform == Waveform.SAW:
+                saw_icon_base64 = upsaw_png("#FFFFFF", 1.0)
+                saw_pixmap = self._base64_to_pixmap(saw_icon_base64)
+                btn.setIcon(QIcon(saw_pixmap))
+            elif waveform == Waveform.TRIANGLE:
+                tri_icon_base64 = triangle_png("#FFFFFF", 1.0)
+                tri_pixmap = self._base64_to_pixmap(tri_icon_base64)
+                btn.setIcon(QIcon(tri_pixmap))
+            elif waveform == Waveform.PULSE:
+                pulse_icon_base64 = pwsqu_png("#FFFFFF", 1.0)
+                pulse_pixmap = self._base64_to_pixmap(pulse_icon_base64)
+                btn.setIcon(QIcon(pulse_pixmap))
+            
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
             wave_layout.addWidget(btn)
@@ -691,3 +675,10 @@ class AnalogSynthEditor(BaseEditor):
                 param=AnalogToneCC.LFO_KEY_TRIG,
                 value=value
             )
+
+    def _base64_to_pixmap(self, base64_str):
+        """Convert base64 string to QPixmap"""
+        image_data = base64.b64decode(base64_str)
+        image = QPixmap()
+        image.loadFromData(image_data)
+        return image
