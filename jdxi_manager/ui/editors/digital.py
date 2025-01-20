@@ -9,12 +9,14 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
 import base64
 from io import BytesIO
-
+import qtawesome as qta
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
-    WaveformButton, pwsqu_png, triangle_png, upsaw_png, square_png, sine_png, noise_png, spsaw_png, pcm_png
+    WaveformButton, pwsqu_png, triangle_png, upsaw_png, square_png, sine_png, noise_png, spsaw_png, pcm_png,
+    adsr_waveform_icon
 )
 from jdxi_manager.data.digital import (
     DigitalParameter, 
@@ -88,7 +90,18 @@ class PartialEditor(QWidget):
         group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
         group.setLayout(layout)
-        
+
+        # prettify with icons
+        icons_hlayout = QHBoxLayout()
+        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
+
         # Top row: Waveform buttons and variation
         top_row = QHBoxLayout()
         
@@ -250,6 +263,17 @@ class PartialEditor(QWidget):
         group = QGroupBox("Filter")
         layout = QVBoxLayout()
         group.setLayout(layout)
+
+        # prettify with icons
+        icon_hlayout = QHBoxLayout()
+        for icon in ["mdi.sine-wave", "ri.filter-3-fill", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(30, 30)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_hlayout.addWidget(icon_label)
+        layout.addLayout(icon_hlayout)
         
         # Filter type controls
         type_row = QHBoxLayout()
@@ -285,6 +309,20 @@ class PartialEditor(QWidget):
         env_group.setProperty("adsr", True)  # Mark as ADSR group
         env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
+
+        # Generate the ADSR waveform icon
+        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
+
+        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
+        sub_layout = QVBoxLayout()
+
+        icon_label = QLabel()
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignHCenter)
+        icons_hlayout = QHBoxLayout()
+        icons_hlayout.addWidget(icon_label)
+        sub_layout.addLayout(icons_hlayout)
         
         # ADSR controls
         adsr_layout = QHBoxLayout()
@@ -296,8 +334,8 @@ class PartialEditor(QWidget):
         
         # Envelope depth
         env_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_ENV_DEPTH, "Depth"))
-        layout.addWidget(env_group)
-        
+        sub_layout.addWidget(env_group)
+        layout.addLayout(sub_layout)
         # HPF cutoff
         controls_layout.addWidget(self._create_parameter_slider(
             DigitalParameter.HPF_CUTOFF, "HPF Cutoff"
@@ -340,6 +378,16 @@ class PartialEditor(QWidget):
         group = QGroupBox("Amplifier")
         layout = QVBoxLayout()
         group.setLayout(layout)
+
+        icons_hlayout = QHBoxLayout()
+        for icon in ["mdi.volume-variant-off", "mdi6.volume-minus","mdi.amplifier", "mdi6.volume-plus", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         # Level and velocity controls
         controls_group = QGroupBox("Controls")
@@ -361,6 +409,17 @@ class PartialEditor(QWidget):
         env_group.setProperty("adsr", True)  # Mark as ADSR group
         env_layout = QHBoxLayout()
         env_group.setLayout(env_layout)
+
+        # Generate the ADSR waveform icon
+        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
+
+        icon_label = QLabel()
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignHCenter)
+        icons_hlayout = QHBoxLayout()
+        icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A"))
         env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D"))
@@ -383,6 +442,16 @@ class PartialEditor(QWidget):
         group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
+
+        icons_hlayout = QHBoxLayout()
+        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         # Shape and sync controls
         top_row = QHBoxLayout()
@@ -431,6 +500,16 @@ class PartialEditor(QWidget):
         group = QGroupBox("Mod LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
+
+        icons_hlayout = QHBoxLayout()
+        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         # Shape and sync controls
         top_row = QHBoxLayout()
@@ -629,6 +708,17 @@ class DigitalSynthEditor(BaseEditor):
         group = QGroupBox("Performance")
         layout = QVBoxLayout()
         group.setLayout(layout)
+        # prettify with icons
+
+        icons_hlayout = QHBoxLayout()
+        for icon in ["ph.bell-ringing-bold", "mdi.call-merge", "mdi.account-voice", "ri.voiceprint-fill", "mdi.piano"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         # Create two rows of controls
         top_row = QHBoxLayout()
