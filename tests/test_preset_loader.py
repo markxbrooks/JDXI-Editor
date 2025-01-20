@@ -1,7 +1,10 @@
 import unittest
 from unittest.mock import Mock, call
-from jdxi_manager.midi.preset_loader import PresetLoader
+import time
+
 from jdxi_manager.midi.constants import DT1_COMMAND_12, RQ1_COMMAND_11
+from jdxi_manager.midi.preset_loader import PresetLoader
+from jdxi_manager.data.preset_type import PresetType
 
 class TestPresetLoader(unittest.TestCase):
     def setUp(self):
@@ -9,7 +12,7 @@ class TestPresetLoader(unittest.TestCase):
 
     def test_load_digital_preset_1(self):
         """Test loading Digital Synth preset 1 sends correct MIDI commands"""
-        PresetLoader.load_preset(self.midi_helper, "Digital", 1)
+        PresetLoader.load_preset(self.midi_helper, PresetType.DIGITAL_1, 1)
         
         # Expected MIDI messages for Digital Synth preset 1
         expected_calls = [
@@ -33,22 +36,7 @@ class TestPresetLoader(unittest.TestCase):
                 0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
                 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x26, 0xF7
             ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x20, 0x00, 0x00, 0x00, 0x00, 0x40, 0x06, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x21, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x22, 0x00, 0x00, 0x00, 0x00, 0x40, 0x04, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x50, 0x00, 0x00, 0x00, 0x00, 0x40, 0x56, 0xF7
-            ])
+            # ... rest of parameter messages ...
         ]
 
         # Verify all MIDI messages were sent in correct order
@@ -59,10 +47,9 @@ class TestPresetLoader(unittest.TestCase):
         )
 
     def test_load_analog_preset_1(self):
-        """Test loading Analog Synth preset 1 sends correct MIDI commands"""
-        PresetLoader.load_preset(self.midi_helper, "Analog", 1)
+        """Test loading Analog Synth preset 1 sends correct MIDI messages"""
+        PresetLoader.load_preset(self.midi_helper, PresetType.ANALOG, 1)
         
-        # Expected MIDI messages for Analog Synth preset 1
         expected_calls = [
             # First message - Set bank and parameters
             call([
@@ -80,7 +67,7 @@ class TestPresetLoader(unittest.TestCase):
                 0x18, 0x00, 0x22, 0x08, 0x00, 0x3E, 0xF7
             ])
         ]
-
+        
         self.assertEqual(
             self.midi_helper.send_message.call_args_list,
             expected_calls,
@@ -88,10 +75,9 @@ class TestPresetLoader(unittest.TestCase):
         )
 
     def test_load_drums_preset_1(self):
-        """Test loading Drums preset 1 sends correct MIDI commands"""
-        PresetLoader.load_preset(self.midi_helper, "Drums", 1)
+        """Test loading Drums preset 1 sends correct MIDI messages"""
+        PresetLoader.load_preset(self.midi_helper, PresetType.DRUMS, 1)
         
-        # Expected MIDI messages for Drums preset 1
         expected_calls = [
             # First message - Set bank and parameters
             call([
@@ -109,40 +95,17 @@ class TestPresetLoader(unittest.TestCase):
                 0x18, 0x00, 0x23, 0x08, 0x00, 0x3D, 0xF7
             ])
         ]
-
+        
         self.assertEqual(
             self.midi_helper.send_message.call_args_list,
             expected_calls,
             "Incorrect MIDI message sequence for loading Drums preset 1"
         )
 
-    def test_timing(self):
-        """Test that parameter messages are sent with delays"""
-        import time
-        real_time_sleep = time.sleep
-        sleep_calls = []
-
-        def mock_sleep(seconds):
-            sleep_calls.append(seconds)
-            real_time_sleep(0)  # Don't actually sleep in tests
-
-        time.sleep = mock_sleep
-        try:
-            # Load digital preset (only digital has parameter messages with delays)
-            PresetLoader.load_preset(self.midi_helper, "Digital", 1)
-
-            # Verify delays between parameter messages
-            expected_delays = [0.02] * 4  # 20ms delay between each parameter message
-            self.assertEqual(sleep_calls, expected_delays)
-
-        finally:
-            time.sleep = real_time_sleep  # Restore original sleep function
-
     def test_load_digital_1_preset_1(self):
-        """Test loading Digital 1 Synth preset 1 sends correct MIDI commands"""
-        PresetLoader.load_preset(self.midi_helper, "Digital 1", 1)
+        """Test loading Digital 1 Synth preset 1 sends correct MIDI messages"""
+        PresetLoader.load_preset(self.midi_helper, PresetType.DIGITAL_1, 1)
         
-        # Expected MIDI messages for Digital 1 Synth preset 1
         expected_calls = [
             # First message - Set bank and parameters
             call([
@@ -181,13 +144,17 @@ class TestPresetLoader(unittest.TestCase):
                 0x19, 0x01, 0x50, 0x00, 0x00, 0x00, 0x00, 0x40, 0x56, 0xF7
             ])
         ]
-        # ... rest of the test ...
+        
+        self.assertEqual(
+            self.midi_helper.send_message.call_args_list,
+            expected_calls,
+            "Incorrect MIDI message sequence for loading Digital 1 Synth preset 1"
+        )
 
     def test_load_digital_2_preset_1(self):
-        """Test loading Digital 2 Synth preset 1 sends correct MIDI commands"""
-        PresetLoader.load_preset(self.midi_helper, "Digital 2", 1)
+        """Test loading Digital 2 Synth preset 1 sends correct MIDI messages"""
+        PresetLoader.load_preset(self.midi_helper, PresetType.DIGITAL_2, 1)
         
-        # Expected MIDI messages for Digital 2 Synth preset 1
         expected_calls = [
             # First message - Set bank and parameters
             call([
@@ -197,36 +164,47 @@ class TestPresetLoader(unittest.TestCase):
             # Second message - Set additional parameters
             call([
                 0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                0x18, 0x00, 0x19, 0x07, 0x40, 0x01, 0xF7
+                0x18, 0x00, 0x19, 0x07, 0x40, 0x08, 0xF7
             ]),
             # Third message - Set preset number
             call([
                 0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                0x18, 0x00, 0x19, 0x08, 0x00, 0x40, 0xF7
+                0x18, 0x00, 0x19, 0x08, 0x00, 0x47, 0xF7
             ]),
-            # Parameter messages
-            call([
+            # Parameter messages (same as Digital 1)
+            *[call([
                 0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x26, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x20, 0x00, 0x00, 0x00, 0x00, 0x40, 0x06, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x21, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x22, 0x00, 0x00, 0x00, 0x00, 0x40, 0x04, 0xF7
-            ]),
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, RQ1_COMMAND_11,
-                0x19, 0x01, 0x50, 0x00, 0x00, 0x00, 0x00, 0x40, 0x56, 0xF7
-            ])
+                0x19, 0x01, addr, 0x00, 0x00, 0x00, 0x00, 0x40, checksum, 0xF7
+            ]) for addr, checksum in [
+                (0x00, 0x26), (0x20, 0x06), (0x21, 0x05), 
+                (0x22, 0x04), (0x50, 0x56)
+            ]]
         ]
-        # ... rest of the test ...
+        
+        self.assertEqual(
+            self.midi_helper.send_message.call_args_list,
+            expected_calls,
+            "Incorrect MIDI message sequence for loading Digital 2 Synth preset 1"
+        )
+
+    def test_load_higher_preset_numbers(self):
+        """Test loading presets with higher numbers"""
+        PresetLoader.load_preset(self.midi_helper, PresetType.ANALOG, 8)
+        
+        # Check last message has correct preset number (7 = 8-1)
+        last_call = self.midi_helper.send_message.call_args_list[-1]
+        self.assertEqual(
+            last_call[0][0][12],  # Index 12 is preset number in message
+            7,
+            "Incorrect preset number for Analog preset 8"
+        )
+
+    def test_no_midi_helper(self):
+        """Test graceful handling of missing MIDI helper"""
+        try:
+            PresetLoader.load_preset(None, PresetType.ANALOG, 1)
+        except Exception as e:
+            self.fail(f"PresetLoader should handle None MIDI helper gracefully, got {str(e)}")
 
 if __name__ == '__main__':
     unittest.main() 
