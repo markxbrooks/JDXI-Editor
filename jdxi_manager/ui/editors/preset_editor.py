@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QComboBox, QLabel, QPushButton, QLineEdit, QGroupBox, QMessageBox
 )
-from PySide6.QtCore import Signal, Qt
+from PySide6.QtCore import Signal, Qt, QSettings
 from PySide6.QtGui import QFont
 from typing import Optional, List
 import logging
@@ -18,6 +18,7 @@ from jdxi_manager.midi.constants import (
     RQ1_COMMAND_11
 )
 from jdxi_manager.ui.style import Style
+from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.preset_loader import PresetLoader
 
 # Preset lists
@@ -129,11 +130,6 @@ DRUM_PRESETS = [
     '029: Pop Kit 1', '030: Pop Kit 2', '031: Rock Kit', '032: Jazz Kit', '033: Latin Kit'
 ]
 
-class PresetType:
-    ANALOG = "Analog"
-    DIGITAL = "Digital"
-    DRUMS = "Drums"
-
 
 class PresetEditor(QMainWindow):
     preset_changed = Signal(int, str, int)
@@ -165,7 +161,13 @@ class PresetEditor(QMainWindow):
         type_row = QHBoxLayout()
         type_row.addWidget(QLabel("Type:"))
         self.type_selector = QComboBox()
-        self.type_selector.addItems([PresetType.ANALOG, PresetType.DIGITAL, PresetType.DRUMS])
+        self.type_selector.addItems([
+            PresetType.ANALOG,
+            PresetType.DIGITAL_1,
+            PresetType.DIGITAL_2,
+            PresetType.DRUMS
+        ])
+        self.settings = QSettings("jdxi_manager", "settings")
         self.type_selector.setCurrentText(preset_type)
         self.type_selector.currentTextChanged.connect(self._on_type_changed)
         type_row.addWidget(self.type_selector)
@@ -254,7 +256,7 @@ class PresetEditor(QMainWindow):
         logging.debug(f"Getting preset list for type: {self.preset_type}")
         if self.preset_type == PresetType.ANALOG:
             return ANALOG_PRESETS
-        elif self.preset_type == PresetType.DIGITAL:
+        elif self.preset_type == PresetType.DIGITAL_1:
             return DIGITAL_PRESETS
         else:  # PresetType.DRUMS
             return DRUM_PRESETS
@@ -353,7 +355,7 @@ class PresetEditor(QMainWindow):
         """Get MIDI area based on preset type"""
         if self.preset_type == PresetType.ANALOG:
             return ANALOG_SYNTH_AREA
-        elif self.preset_type == PresetType.DIGITAL:
+        elif self.preset_type == PresetType.DIGITAL_1:
             return DIGITAL_SYNTH_AREA
         else:
             return DRUM_KIT_AREA
@@ -366,6 +368,9 @@ class PresetEditor(QMainWindow):
             self.preset_type,
             current_index + 1  # Convert to 1-based index
         )
+        self.settings.setValue('last_preset/synth_type', self.preset_type)
+        self.settings.setValue('last_preset/preset_num', current_index + 1)
+        # self.settings.setValue('last_preset/channel', self.channel)
 
     def _toggle_save_frame(self):
         """Toggle visibility of save settings"""
@@ -403,12 +408,7 @@ class PresetEditor(QMainWindow):
             bank_num = ord(bank) - ord('A')
             
             # Calculate the appropriate area based on preset type
-            if self.preset_type == PresetType.ANALOG:
-                area = 0x22
-            elif self.preset_type == PresetType.DIGITAL:
-                area = 0x20
-            else:  # PresetType.DRUMS
-                area = 0x23
+            area = PresetType.get_area_code(self.preset_type)
 
             # Send save command sequence
             # First message - Set bank and slot

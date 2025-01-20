@@ -6,6 +6,9 @@ from PySide6.QtCore import Signal
 import logging
 
 from jdxi_manager.ui.style import Style
+from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.ui.editors.preset_editor import PresetEditor
+from jdxi_manager.data.preset_type import PresetType
 
 class PresetPanel(QWidget):
     """Panel for loading/saving presets"""
@@ -14,7 +17,7 @@ class PresetPanel(QWidget):
     load_clicked = Signal(int)  # Emits preset number when load clicked
     save_clicked = Signal(int)  # Emits preset number when save clicked
     
-    def __init__(self, parent=None):
+    def __init__(self, midi_helper: MIDIHelper, parent=None):
         super().__init__(parent)
         
         layout = QHBoxLayout(self)
@@ -32,6 +35,12 @@ class PresetPanel(QWidget):
         save_btn = QPushButton("Save")
         save_btn.clicked.connect(self._on_save)
         layout.addWidget(save_btn)
+        
+        # Create preset editors for each type
+        self.analog_editor = PresetEditor(midi_helper, self, PresetType.ANALOG)
+        self.digital_1_editor = PresetEditor(midi_helper, self, PresetType.DIGITAL_1)
+        self.digital_2_editor = PresetEditor(midi_helper, self, PresetType.DIGITAL_2)
+        self.drums_editor = PresetEditor(midi_helper, self, PresetType.DRUMS)
         
     def _on_load(self):
         """Handle load button click"""

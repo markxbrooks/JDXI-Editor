@@ -39,7 +39,8 @@ from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.ui.editors.preset_editor import PresetEditor
 from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
-from jdxi_manager.ui.editors.preset_editor import PresetType
+from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.midi.preset_loader import PresetLoader
 
 
 def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
@@ -1857,8 +1858,8 @@ class MainWindow(QMainWindow):
                 self.midi_helper.send_program_change(program, channel)
                 
                 # Update display and channel
-                preset_name = presets[preset_num]
-                self._update_display_preset(preset_num + 1, preset_name, channel)
+                preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
+                self._update_display_preset(preset_num, preset_name, channel)
                 
                 logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
             
@@ -1892,15 +1893,15 @@ class MainWindow(QMainWindow):
                 channel = button.preset.channel
                 
                 # Send MIDI messages
-                if synth_type == "Analog":
+                if synth_type == PresetType.ANALOG:
                     bank_msb = 0
                     bank_lsb = preset_num // 7
                     program = preset_num % 7
-                elif synth_type == "Digital 1":
+                elif synth_type == PresetType.DIGITAL_1:
                     bank_msb = 1
                     bank_lsb = preset_num // 16
                     program = preset_num % 16
-                elif synth_type == "Digital 2":
+                elif synth_type == PresetType.DIGITAL_2:
                     bank_msb = 2
                     bank_lsb = preset_num // 16
                     program = preset_num % 16
@@ -1912,9 +1913,9 @@ class MainWindow(QMainWindow):
                 self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
                 self.midi_helper.send_program_change(program, channel)
                 
-                # Update display
+                # Update display - REMOVED the preset_num + 1
                 self._update_display_preset(
-                    preset_num + 1,
+                    preset_num,  # Already 1-based
                     button.preset.preset_name,
                     channel
                 )
@@ -1943,35 +1944,32 @@ class MainWindow(QMainWindow):
         """Save current preset to favorite slot"""
         if hasattr(self, 'current_preset_num'):
             # Get current preset info from settings
-            synth_type = self.settings.value('last_preset/synth_type', 'Analog')
+            synth_type = self.settings.value('last_preset/synth_type', PresetType.ANALOG)
             preset_num = self.settings.value('last_preset/preset_num', 0, type=int)
             channel = self.settings.value('last_preset/channel', 0, type=int)
             
-            # Get preset name
-            if synth_type == 'Analog':
-                preset_name = AN_PRESETS[preset_num]
-            elif synth_type.startswith('Digital'):
-                preset_name = DIGITAL_PRESETS[preset_num]
-            else:
-                preset_name = DRUM_PRESETS[preset_num]
+            try:
+                # Get the current preset name
+                preset_name = self._get_current_preset_name()
                 
-            # Save to button
-            button.save_preset_as_favourite(synth_type, preset_num, preset_name, channel)
-            
-            # Save to settings
-            self.settings.setValue(f'favorites/slot{button.slot_num}/synth_type', synth_type)
-            self.settings.setValue(f'favorites/slot{button.slot_num}/preset_num', preset_num)
-            self.settings.setValue(f'favorites/slot{button.slot_num}/preset_name', preset_name)
-            self.settings.setValue(f'favorites/slot{button.slot_num}/channel', channel)
-            
+                # Save to button (which will also save to settings)
+                button.save_preset_as_favourite(synth_type, preset_num, preset_name, channel)
+                
+                # Update display to show the saved preset
+                self._update_display_preset(preset_num, preset_name, channel)
+                
+            except Exception as e:
+                logging.error(f"Error saving to favorite: {str(e)}")
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Error saving preset: {str(e)}"
+                )
+
     def _clear_favorite(self, button: FavoriteButton):
         """Clear favorite slot"""
-        button.preset = None
-        button._update_style()
-        
-        # Clear from settings
-        self.settings.remove(f'favorites/slot{button.slot_num}')
-        
+        button.clear_preset()
+
     def _load_saved_favorites(self):
         """Load saved favorites from settings"""
         for button in self.favorite_buttons:
@@ -1988,11 +1986,11 @@ class MainWindow(QMainWindow):
         """Load preset data into synth"""
         try:
             if self.midi_helper:
-                # Send bank select for the preset
-                self.midi_helper.send_bank_select(
-                    msb=preset_data.bank_msb,
-                    lsb=preset_data.bank_lsb,
-                    program=preset_data.program_number
+                # Use PresetLoader for consistent preset loading
+                PresetLoader.load_preset(
+                    self.midi_helper,
+                    preset_data.synth_type,
+                    preset_data.preset_num
                 )
                 
                 # Store as last loaded preset
@@ -2187,3 +2185,21 @@ class MainWindow(QMainWindow):
             self.arpeggio_editor.show()
         except Exception as e:
             logging.error(f"Error showing Arpeggiator editor: {str(e)}")
+
+    def _get_current_preset_name(self):
+        """Get the name of the currently selected preset"""
+        try:
+            synth_type = self.settings.value('last_preset/synth_type', PresetType.ANALOG)
+            preset_num = self.settings.value('last_preset/preset_num', 0, type=int)
+            
+            # Get preset name - adjust index to be 0-based
+            if synth_type == PresetType.ANALOG:
+                return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
+            elif synth_type == PresetType.DIGITAL_1:
+                return DIGITAL_PRESETS[preset_num - 1]
+            elif synth_type == PresetType.DIGITAL_2:
+                return DIGITAL_PRESETS[preset_num - 1]
+            else:
+                return DRUM_PRESETS[preset_num - 1]
+        except IndexError:
+            return "INIT PATCH"
