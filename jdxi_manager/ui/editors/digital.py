@@ -6,11 +6,16 @@ from PySide6.QtWidgets import (
     QScrollArea, QSpinBox, QLabel
 )
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QIcon, QPixmap
+import base64
+from io import BytesIO
 
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.waveform import WaveformButton
+from jdxi_manager.ui.widgets.waveform import (
+    WaveformButton, pwsqu_png, triangle_png, upsaw_png, square_png, sine_png, noise_png, spsaw_png, pcm_png
+)
 from jdxi_manager.data.digital import (
     DigitalParameter, 
     DigitalCommonParameter,
@@ -101,6 +106,38 @@ class PartialEditor(QWidget):
             OscWave.PCM
         ]:
             btn = WaveformButton(wave)
+            if wave == OscWave.SAW:
+                saw_wave_icon_base64 = upsaw_png("#FFFFFF", 1.0)
+                saw_wave_pixmap = base64_to_pixmap(saw_wave_icon_base64)
+                btn.setIcon(QIcon(saw_wave_pixmap))
+            elif wave == OscWave.SQUARE:
+                square_wave_icon_base64 = square_png("#FFFFFF", 1.0)
+                square_wave_pixmap = base64_to_pixmap(square_wave_icon_base64)
+                btn.setIcon(QIcon(square_wave_pixmap))
+            elif wave == OscWave.SINE:
+                sine_wave_icon_base64 = sine_png("#FFFFFF", 1.0)
+                sine_wave_pixmap = base64_to_pixmap(sine_wave_icon_base64)
+                btn.setIcon(QIcon(sine_wave_pixmap))
+            elif wave == OscWave.NOISE:
+                noise_wave_icon_base64 = noise_png("#FFFFFF", 1.0)
+                noise_wave_pixmap = base64_to_pixmap(noise_wave_icon_base64)
+                btn.setIcon(QIcon(noise_wave_pixmap))
+            elif wave == OscWave.SUPER_SAW:
+                super_saw_wave_icon_base64 = spsaw_png("#FFFFFF", 1.0)
+                super_saw_wave_pixmap = base64_to_pixmap(super_saw_wave_icon_base64)
+                btn.setIcon(QIcon(super_saw_wave_pixmap))
+            elif wave == OscWave.PCM:
+                pcm_wave_icon_base64 = pcm_png("#FFFFFF", 1.0)
+                pcm_wave_pixmap = base64_to_pixmap(pcm_wave_icon_base64)
+                btn.setIcon(QIcon(pcm_wave_pixmap))
+            elif wave == OscWave.PW_SQUARE:
+                pw_square_wave_icon_base64 = pwsqu_png("#FFFFFF", 1.0)
+                pw_square_wave_pixmap = base64_to_pixmap(pw_square_wave_icon_base64)
+                btn.setIcon(QIcon(pw_square_wave_pixmap))
+            elif wave == OscWave.TRIANGLE:
+                triangle_wave_icon_base64 = triangle_png("#FFFFFF", 1.0)
+                triangle_wave_pixmap = base64_to_pixmap(triangle_wave_icon_base64)
+                btn.setIcon(QIcon(triangle_wave_pixmap))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
             self.wave_buttons[wave] = btn
             wave_layout.addWidget(btn)
@@ -772,3 +809,10 @@ class DigitalSynthEditor(BaseEditor):
         
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
+
+def base64_to_pixmap(base64_str):
+    """Convert base64 string to QPixmap"""
+    image_data = base64.b64decode(base64_str)
+    image = QPixmap()
+    image.loadFromData(image_data)
+    return image
