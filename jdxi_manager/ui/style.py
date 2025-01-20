@@ -13,8 +13,9 @@ class Style:
     BORDER = "#333333"
     SLIDER_HANDLE = "#000000"  # Black fill
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
-    SLIDER_GROOVE = "#FF0000"  # Red groove
-    
+    SLIDER_GROOVE = "#666666"  # grey groove
+
+    ICON_SIZE = 20 # Size of icons in Editor Group boxes
     # Dimensions
     HANDLE_SIZE = "6px"       # Circle diameter
     GROOVE_WIDTH = "2px"      # Groove thickness

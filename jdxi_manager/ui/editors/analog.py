@@ -5,11 +5,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
-
+import qtawesome as qta
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.ui.editors.digital import base64_to_pixmap
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.waveform import WaveformButton, upsaw_png, triangle_png, pwsqu_png
+from jdxi_manager.ui.widgets.waveform import WaveformButton, upsaw_png, triangle_png, pwsqu_png, adsr_waveform_icon
 from jdxi_manager.ui.widgets.switch import Switch
 from jdxi_manager.midi.constants.analog import (
     AnalogToneCC,
@@ -50,10 +52,14 @@ class AnalogSynthEditor(BaseEditor):
 
 
         # Additional styling specific to analog editor
-        container.setStyleSheet("""
-            QGroupBox {
-                border: 1px solid #00A3F0;
-            }
+        ACCENT = "#00A3F0"
+        container.setStyleSheet(f"""
+            QGroupBox {{
+                border: 1px solid {ACCENT};
+            }}
+            QComboBox {{
+                border: 1px solid {ACCENT};  /* Blue border */
+        }}
         """)
         
         # Add sections side by side
@@ -112,7 +118,17 @@ class AnalogSynthEditor(BaseEditor):
         group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
         group.setLayout(layout)
-        
+
+        oscillator_hlayout = QHBoxLayout()
+        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+            oscillator_triangle_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(30, 30)  # Set the desired size
+            oscillator_triangle_label.setPixmap(pixmap)
+            oscillator_triangle_label.setAlignment(Qt.AlignHCenter)
+            oscillator_hlayout.addWidget(oscillator_triangle_label)
+        layout.addLayout(oscillator_hlayout)
+
         # Waveform buttons
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
@@ -247,6 +263,17 @@ class AnalogSynthEditor(BaseEditor):
         layout.setSpacing(5)
         layout.setContentsMargins(5, 15, 5, 5)
         group.setLayout(layout)
+
+        # prettify with icons
+        icon_hlayout = QHBoxLayout()
+        for icon in ["mdi.sine-wave", "ri.filter-3-fill", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(30, 30)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_hlayout.addWidget(icon_label)
+        layout.addLayout(icon_hlayout)
         
         # Filter controls
         self.cutoff = Slider("Cutoff", 0, 127)
@@ -258,6 +285,20 @@ class AnalogSynthEditor(BaseEditor):
         
         # Add spacing
         layout.addSpacing(10)
+
+        # Generate the ADSR waveform icon
+        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
+
+        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
+        sub_layout = QVBoxLayout()
+
+        icon_label = QLabel()
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignHCenter)
+        icons_hlayout = QHBoxLayout()
+        icons_hlayout.addWidget(icon_label)
+        sub_layout.addLayout(icons_hlayout)
         
         # Filter envelope
         env_group = QGroupBox("Envelope")
@@ -285,8 +326,8 @@ class AnalogSynthEditor(BaseEditor):
         
         for slider in self.filter_env.values():
             env_layout.addWidget(slider)
-            
-        layout.addWidget(env_group)
+        sub_layout.addWidget(env_group)
+        layout.addLayout(sub_layout)
         return group
 
     def _on_filter_env_changed(self, stage: str, value: int):
@@ -314,6 +355,16 @@ class AnalogSynthEditor(BaseEditor):
         layout.setSpacing(5)
         layout.setContentsMargins(5, 15, 5, 5)
         group.setLayout(layout)
+
+        icons_hlayout = QHBoxLayout()
+        for icon in ["mdi.volume-variant-off", "mdi6.volume-minus","mdi.amplifier", "mdi6.volume-plus", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         # Level control
         self.level = Slider("Level", 0, 127)
@@ -329,6 +380,20 @@ class AnalogSynthEditor(BaseEditor):
         env_layout.setSpacing(5)
         env_layout.setContentsMargins(5, 15, 5, 5)
         env_group.setLayout(env_layout)
+
+        # Generate the ADSR waveform icon
+        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
+
+        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
+        sub_layout = QVBoxLayout()
+
+        icon_label = QLabel()
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignHCenter)
+        icons_hlayout = QHBoxLayout()
+        icons_hlayout.addWidget(icon_label)
+        sub_layout.addLayout(icons_hlayout)
         
         self.amp_env = {
             'A': Slider("A", 0, 127),
@@ -349,8 +414,8 @@ class AnalogSynthEditor(BaseEditor):
         
         for slider in self.amp_env.values():
             env_layout.addWidget(slider)
-            
-        layout.addWidget(env_group)
+        sub_layout.addWidget(env_group)
+        layout.addLayout(sub_layout)
         return group
 
     def _on_amp_env_changed(self, stage: str, value: int):
@@ -376,6 +441,16 @@ class AnalogSynthEditor(BaseEditor):
         group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
+
+        icons_hlayout = QHBoxLayout()
+        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+            icon_label = QLabel()
+            icon = qta.icon(icon)
+            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            icon_label.setPixmap(pixmap)
+            icon_label.setAlignment(Qt.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
         
         # LFO Shape selector
         shape_row = QHBoxLayout()

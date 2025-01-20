@@ -294,13 +294,44 @@ def pcm_png(btnfcol, rz):
     
     # Define line positions and heights with reduced spacing
     line_positions = [
-        (2, 6), (4, 4), (6, 8), (8, 6), (10, 10), (12, 8), (14, 6),
-        (16, 4), (18, 10), (20, 8), (22, 6), (24, 4)
+        (0.1*width, 0.6*height), (0.2*width, 0.4*height), (0.3*width, 0.8*height), (0.4*width, 0.6*height), (0.5*width, 1.0*height), (0.6*width, 0.8*height), (0.7*width, 0.6*height),
+        (0.8*width, 0.4*height), (0.9*width, 1.0*height), (1.0*width, 0.8*height), (1.1*width, 0.6*height), (1.2*width, 0.4*height)
     ]
     
     # Draw lines
     for x, h in line_positions:
         draw.line([(x, height), (x, height - h)], fill=line_color, width=th)
+    
+    # Save image to a bytes buffer
+    buffer = BytesIO()
+    im.save(buffer, format="PNG")
+    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    
+    return img_str
+
+
+def adsr_waveform_icon(btnfcol, rz: float = 1.0):
+    # Create an image with a transparent background
+    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
+    width = int(17 * rz)
+    height = int(9 * rz)
+    th = int(rz + 0.49)
+    line_color = btnfcol
+    im = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+
+    draw = ImageDraw.Draw(im)
+    
+    # Define the ADSR shape
+    points = [
+        (0.2*width, height*1),  # Start
+        (0.3*width, height*0),  # Attack
+        (0.5*width, height*0.4),  # Decay
+        (0.7*width, height*0.4),  # Sustain
+        (0.9*width, height*1)   # Release
+    ]
+    
+    # Draw the ADSR shape
+    draw.line(points, fill=line_color, width=3)
     
     # Save image to a bytes buffer
     buffer = BytesIO()
