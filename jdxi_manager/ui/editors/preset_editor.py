@@ -203,44 +203,44 @@ class PresetEditor(QMainWindow):
         preset_layout.addLayout(preset_row)
         
         # Create bank and slot frame that's only visible when saving
-        self.save_frame = QGroupBox("Save Settings")
-        save_layout = QVBoxLayout()
-        self.save_frame.setLayout(save_layout)
+        #self.save_frame = QGroupBox("Save Settings")
+        #save_layout = QVBoxLayout()
+        #self.save_frame.setLayout(save_layout)
         # self.save_frame.setVisible(False)  # Hidden by default
         
         # Add bank selector to save frame
-        bank_row = QHBoxLayout()
-        bank_row.addWidget(QLabel("Bank:"))
-        self.bank_selector = QComboBox()
-        self.bank_selector.addItems(['E', 'F', 'G', 'H'])  # Only show user banks
-        bank_row.addWidget(self.bank_selector)
-        save_layout.addLayout(bank_row)
+        #bank_row = QHBoxLayout()
+        #bank_row.addWidget(QLabel("Bank:"))
+        #self.bank_selector = QComboBox()
+        #self.bank_selector.addItems(['E', 'F', 'G', 'H'])  # Only show user banks
+        #bank_row.addWidget(self.bank_selector)
+        #save_layout.addLayout(bank_row)
         
         # Add slot selector to save frame
-        slot_row = QHBoxLayout()
-        slot_row.addWidget(QLabel("Slot:"))
-        self.slot_selector = QComboBox()
-        self.slot_selector.addItems([f"{i:02d}" for i in range(1, 65)])
-        slot_row.addWidget(self.slot_selector)
-        save_layout.addLayout(slot_row)
+        #slot_row = QHBoxLayout()
+        #slot_row.addWidget(QLabel("Slot:"))
+        #self.slot_selector = QComboBox()
+        #self.slot_selector.addItems([f"{i:02d}" for i in range(1, 65)])
+        #slot_row.addWidget(self.slot_selector)
+        #save_layout.addLayout(slot_row)
         
         # Create button row
         button_row = QHBoxLayout()
         self.load_button = QPushButton("Load")
         self.load_button.clicked.connect(self._on_load_clicked)
-        self.save_button = QPushButton("Save...")
-        self.save_button.clicked.connect(self._toggle_save_frame)
-        self.confirm_save_button = QPushButton("Confirm Save")
-        self.confirm_save_button.clicked.connect(self._on_save_clicked)
+        #self.save_button = QPushButton("Save...")
+        #self.save_button.clicked.connect(self._toggle_save_frame)
+        #self.confirm_save_button = QPushButton("Confirm Save")
+        #self.confirm_save_button.clicked.connect(self._on_save_clicked)
         button_row.addWidget(self.load_button)
-        button_row.addWidget(self.save_button)
+        #button_row.addWidget(self.save_button)
         
         # Add buttons to layouts
         preset_layout.addLayout(button_row)
-        save_layout.addWidget(self.confirm_save_button)
+        #save_layout.addWidget(self.confirm_save_button)
         
         # Add save frame to preset layout
-        preset_layout.addWidget(self.save_frame)
+        #preset_layout.addWidget(self.save_frame)
         
         # Add preset group to main layout
         main_layout.addWidget(preset_group)

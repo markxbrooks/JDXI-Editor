@@ -8,6 +8,7 @@ from jdxi_manager.midi.constants import (
 )
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.constants.sysex import DEVICE_ID
+from jdxi_manager.midi.sysex import XI_HEADER
 
 
 class PresetLoader:
@@ -42,7 +43,7 @@ class PresetLoader:
 
             addr_bytes = bytes.fromhex(addr)
             chksum = self.calculate_checksum(addr_bytes + data)
-            sysex = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]) + addr_bytes + data + bytes([chksum, 0xF7])
+            sysex = XI_HEADER + bytes([DT1_COMMAND_12]) + addr_bytes + data + bytes([chksum, 0xF7])
 
             # Enforce 2 ms gap since last parameter change message sent
             midinow = time.time()
@@ -91,11 +92,44 @@ class PresetLoader:
             if not isinstance(address, str):
                 raise ValueError("Address must be a string.")
 
+            # Send the correct SysEx messages
             self.send_pa_ch_msg(address, msb, 1)
             self.send_pa_ch_msg(f"{int(address, 16) + 1:08X}", lsb, 1)
             self.send_pa_ch_msg(f"{int(address, 16) + 2:08X}", preset_number - 1, 1)
-            # TODO:
-            self.sysex_pat_receive(preset_data)
+
+            # Additional SysEx messages for loading the preset
+            self.send_sysex_message('19', '01', '00', '00', '00', '00', '00', '40')
+            self.send_sysex_message('19', '01', '20', '00', '00', '00', '00', '3D')
+            self.send_sysex_message('19', '01', '21', '00', '00', '00', '00', '3D')
+            self.send_sysex_message('19', '01', '22', '00', '00', '00', '00', '3D')
+            self.send_sysex_message('19', '01', '50', '00', '00', '00', '00', '25')
+
+    def send_sysex_message(self, addr1, addr2, addr3, addr4, data1, data2, data3, data4):
+        # Construct the SysEx message
+        sysex_msg = [
+            0xF0,  # Start of SysEx
+            0x41,  # Roland ID
+            0x10,  # Device ID
+            0x00, 0x00, 0x00, 0x0E,  # Model ID
+            0x11,  # Command ID (for additional messages)
+            int(addr1, 16),  # Address 1
+            int(addr2, 16),  # Address 2
+            int(addr3, 16),  # Address 3
+            int(addr4, 16),  # Address 4
+            int(data1, 16),  # Data 1
+            int(data2, 16),  # Data 2
+            int(data3, 16),  # Data 3
+            int(data4, 16),  # Data 4
+            0xF7   # End of SysEx
+        ]
+
+        # Calculate checksum
+        checksum = (0x80 - (sum(sysex_msg[8:-1]) & 0x7F)) & 0x7F
+        sysex_msg.insert(-1, checksum)
+
+        # Send the SysEx message
+        self.midi_helper.send_message(sysex_msg)
+        logging.debug(f"Sent SysEx message: {sysex_msg}")
 
     def unsaved_changes(self, window, message):
         # Implement the logic to handle unsaved changes

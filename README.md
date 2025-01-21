@@ -30,6 +30,44 @@ There are no builds yet, so you'll have to run it from a Python shell.
 
 Digital & Analog Synths
 
-<a href="./resources/effects.png" rel="Vocal, Effects and Arpeggiator Windows">![image info](./resources/effects_600.png )</a>
+<a href="./resources/effects.png" rel="Effects and Arpeggiator Windows">![image info](./resources/effects_600.png )</a>
 
-Vocal, Effects and Arpeggiator Windows
+Effects and Arpeggiator Windows
+
+<a href="./resources/vocal_effects.png" rel="Effects and Arpeggiator Windows">![image info](./resources/vocal_effects_600.png )</a>
+
+Vocal Effects Window
+
+<a href="./resources/logs_and_midi.png" rel="Effects and Arpeggiator Windows">![image info](./resources/logs_and_midi_600.png )</a>
+
+Log Viewer and MIDI Debugger Windows
+
+<a href="./resources/midi_config.png" rel="Effects and Arpeggiator Windows">![image info](./resources/midi_config.png )</a>
+
+MIDI Config Windows
+
+## Features:
+
+1. Keyboard
+2. Preset list selection, including search
+3. Octave Key
+4. 'LCD' Display
+5. Digital Synth Parts 1 & 2, including 3 partials per synth
+6. Analog synth
+7. Effects: Reverb, Delay, Vocoder
+8. Arpeggiator 
+
+### TODO List
+1. Drums
+2. Sequencer if feasible
+
+## Credits
+
+1) Qt Library
+2) RTmidi
+3) Cursor.ai
+4) qtawesome
+5) Various awesome JDXI Manager Programs already existing but somehow could be improved.
+6) Roland for a cool little instrument with lots of capability
+
+
