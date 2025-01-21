@@ -1,6 +1,6 @@
 # JDXI-Manager
 
-![image info](./resources/jdxi.png)
+![image info](./resources/jdxi_cartoon_600.png)
 
 A Manager for the Roland JD-Xi instrument, written in Python and the Qt Framework and RtMidi 
 
