@@ -30,6 +30,10 @@ class LEDIndicator(QWidget):
         self._on_color = QColor(0, 255, 0)  # Green
         self._off_color = QColor(50, 50, 50)  # Dark gray
         self._blink_color = QColor(255, 165, 0)  # Orange
+
+    def set_active(self, active):
+        self._state = True
+        self.update()
         
     def sizeHint(self) -> QSize:
         """Get recommended size"""
