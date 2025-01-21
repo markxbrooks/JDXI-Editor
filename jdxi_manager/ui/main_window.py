@@ -1228,7 +1228,7 @@ class MainWindow(QMainWindow):
         
     def _send_octave(self, direction):
         """Send octave change MIDI message"""
-        if self.midi_out:
+        if self.midi_helper:
             # Update octave tracking
             self.current_octave = max(-3, min(3, self.current_octave + direction))
             
@@ -1263,7 +1263,7 @@ class MainWindow(QMainWindow):
                 0xF7    # End of SysEx
             ]
             
-            self.midi_out.send_message(sysex_msg)
+            self.midi_helper.send_message(sysex_msg)
             logging.debug(f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})")
 
     def _create_other(self):
@@ -2080,6 +2080,46 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.error(f"Error showing Vocal FX editor: {str(e)}")
 
+    def _send_octave_bak(self, direction):
+        """Send octave change MIDI message"""
+        if self.midi_out:
+            # Update octave tracking
+            self.current_octave = max(-3, min(3, self.current_octave + direction))
+
+            # Update button states
+            self.octave_down.setChecked(self.current_octave < 0)
+            self.octave_up.setChecked(self.current_octave > 0)
+
+            # Update display
+            self._update_display()
+
+            # Map octave value to correct SysEx value
+            # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
+            octave_value = 0x40 + self.current_octave  # 0x40 is center octave
+
+            # Calculate checksum
+            checksum = (0x19 + 0x01 + 0x00 + 0x15 + octave_value)
+            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
+
+            # Create SysEx message
+            sysex_msg = [
+                0xF0,  # Start of SysEx
+                0x41,  # Roland ID
+                0x10,  # Device ID
+                0x00, 0x00, 0x00, 0x0E,  # Model ID
+                0x12,  # Command ID (DT1)
+                0x19,  # Address 1
+                0x01,  # Address 2
+                0x00,  # Address 3
+                0x15,  # Address 4
+                octave_value,  # Parameter value
+                checksum,  # Checksum
+                0xF7  # End of SysEx
+            ]
+
+            self.midi_helper.send_message(sysex_msg)
+            logging.debug(f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})")
+
     def _create_global_controls(self):
         """Create global controls section"""
         group = QGroupBox("Global Controls")
@@ -2096,9 +2136,26 @@ class MainWindow(QMainWindow):
         self.octave_display = QLabel("0")  # Display current octave
         self.octave_display.setAlignment(Qt.AlignCenter)
         
-        self.octave_down.clicked.connect(lambda: self._change_octave(-1))
-        self.octave_up.clicked.connect(lambda: self._change_octave(1))
-        
+        self.octave_down.clicked.connect(lambda: self._send_octave(-1))
+        self.octave_up.clicked.connect(lambda: self._send_octave(1))
+        octave_button_stylesheet = """
+            QPushButton {
+                background-color: black;
+                border: 4px solid #d51e35;
+                border-radius: 15px;
+            }
+            QPushButton:hover {
+                background-color: #1A1A1A;
+                border-color: #ff4d4d;
+            }
+            QPushButton:pressed, QPushButton:checked {
+                background-color: #333333;
+                border-color: #ff6666;
+            }
+        """
+        self.octave_up.setStyleSheet(octave_button_stylesheet)
+        self.octave_down.setStyleSheet(octave_button_stylesheet)
+
         octave_layout.addWidget(self.octave_down)
         octave_layout.addWidget(self.octave_display)
         octave_layout.addWidget(self.octave_up)
