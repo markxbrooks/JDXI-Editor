@@ -30,21 +30,29 @@ There are no builds yet, so you'll have to run it from a Python shell.
 
 Digital & Analog Synths
 
+
+
 <a href="./resources/effects.png" rel="Effects and Arpeggiator Windows">![image info](./resources/effects_600.png )</a>
 
 Effects and Arpeggiator Windows
+
+
 
 <a href="./resources/vocal_effects.png" rel="Effects and Arpeggiator Windows">![image info](./resources/vocal_effects_600.png )</a>
 
 Vocal Effects Window
 
+
+
 <a href="./resources/logs_and_midi.png" rel="Effects and Arpeggiator Windows">![image info](./resources/logs_and_midi_600.png )</a>
 
 Log Viewer and MIDI Debugger Windows
 
-<a href="./resources/midi_config.png" rel="Effects and Arpeggiator Windows">![image info](./resources/midi_config.png )</a>
+<a href="./resources/midi_config.png" rel="Effects and Arpeggiator Windows">![image info](./resources/midi_config_200.png )</a>
 
 MIDI Config Windows
+
+
 
 ## Features:
 
