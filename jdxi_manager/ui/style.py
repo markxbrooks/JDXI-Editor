@@ -5,6 +5,7 @@ class Style:
     """Central style definitions for JD-Xi Manager"""
     
     # Colors
+    COM_BG = "#000000"
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000" # """"#1A1A1A"
     FOREGROUND = "#FFFFFF"

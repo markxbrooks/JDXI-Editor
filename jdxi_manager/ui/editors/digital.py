@@ -679,7 +679,7 @@ class DigitalSynthEditor(BaseEditor):
         
         # Initialize with default states
         self.initialize_partial_states()
-                    # Parameter request messages based on captured format
+        # Parameter request messages based on captured format
         messages = [
                 # Common parameters (0x00)
                 [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x26, 0xF7],

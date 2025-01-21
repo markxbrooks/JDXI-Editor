@@ -10,6 +10,8 @@ from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
     EFFECTS_AREA
 )
+from jdxi_manager.ui.style import Style
+
 
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
@@ -54,6 +56,48 @@ class MIDIDebugger(QMainWindow):
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
+        # self.setStyleSheet(Style.EDITOR_STYLE)
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #2E2E2E;
+            }
+            QWidget {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QPlainTextEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QTextEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #FF3333;
+            }
+            QPushButton:pressed {
+                background-color: #2D2D2D;
+            }
+        """)
         
         # Create central widget
         central = QWidget()
@@ -152,20 +196,21 @@ class MIDIDebugger(QMainWindow):
             # Get value
             value = message[12]
             
+            # Format the output
             decoded = (
-                f"Command: {command_str}\n"
-                f"Area: {area_str}\n"
-                f"Synth: {synth_str}\n"
-                f"Section: {section_str}\n"
-                f"Parameter: {param_str}\n"
-                f"Value: {value} ({hex(value)})\n"
-                "\nRaw Structure:\n"
-                f"|  |  |  |  |  |  |  {command_str}\n"
-                f"|  |  |  |  |  |  |  |  {area_str}\n"
-                f"|  |  |  |  |  |  |  |  |  {synth_str}\n"
-                f"|  |  |  |  |  |  |  |  |  |  {section_str}\n"
-                f"|  |  |  |  |  |  |  |  |  |  |  {param_str}\n"
-                f"|  |  |  |  |  |  |  |  |  |  |  |  Value ({hex(value)[2:].zfill(2)})"
+                "| Byte | Description                | Value  | Notes                        |\n"
+                "|------|----------------------------|--------|------------------------------|\n"
+                f"| 0    | Start of SysEx             | {hex(message[0])}     |                              |\n"
+                f"| 1    | Manufacturer ID            | {hex(message[1])}     | Roland                       |\n"
+                f"| 2    | Device ID                  | {hex(message[2])}     |                              |\n"
+                f"| 3-6  | Model ID                   | {' '.join(hex(x) for x in message[3:7])} |                          |\n"
+                f"| 7    | Command ID                 | {hex(command)}     | {command_str}           |\n"
+                f"| 8    | Area                       | {hex(area)}     | {area_str}           |\n"
+                f"| 9    | Synth                      | {hex(synth)}     | {synth_str}              |\n"
+                f"| 10-13| Section                    | {' '.join(hex(x) for x in message[10:14])} | {section_str}          |\n"
+                f"| 14-15| Parameter                  | {' '.join(hex(x) for x in message[14:16])}  | {param_str}                    |\n"
+                f"| 16   | Value                      | {hex(value)}     | {value} ({hex(value)})                         |\n"
+                f"| 17   | End of SysEx               | {hex(message[-1])}     |                              |\n"
             )
             
             return decoded
