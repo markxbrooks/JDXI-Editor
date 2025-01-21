@@ -369,11 +369,13 @@ class PresetEditor(QMainWindow):
     def _on_load_clicked(self):
         """Handle Load button click"""
         current_index = self.preset_selector.currentIndex()
-        PresetLoader.load_preset(
-            self.midi_helper,
-            self.preset_type,
-            current_index + 1  # Convert to 1-based index
-        )
+        preset_loader = PresetLoader(self.midi_helper)
+        preset_data = {
+            'type': self.preset_type,  # Ensure this is a valid type like 'SN1', 'SN2', etc.
+            'selpreset': current_index + 1,  # Convert to 1-based index
+            'modified': 0  # or 1, depending on your logic
+        }
+        preset_loader.load_preset(preset_data)
         self.settings.setValue('last_preset/synth_type', self.preset_type)
         self.settings.setValue('last_preset/preset_num', current_index + 1)
         # self.settings.setValue('last_preset/channel', self.channel)
