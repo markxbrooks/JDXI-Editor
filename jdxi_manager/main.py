@@ -74,8 +74,8 @@ def main():
         
         # Set application icon
         icon_locations = [
-            Path(__file__).parent / "assets" / "jdxi_128.png",  # Package location
-            Path(__file__).parent.parent / "assets" / "jdxi_128.png",  # Development location
+            Path(__file__).parent / "resources" / "jdxi_icon.png",  # Package location
+            Path(__file__).parent.parent / "resources" / "jdxi_icon.png",  # Development location
         ]
         
         icon_found = False
