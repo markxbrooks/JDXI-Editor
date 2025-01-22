@@ -69,6 +69,7 @@ class PartialEditor(QWidget):
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
+
     def _create_parameter_slider(self, param: Union[DigitalParameter, DigitalCommonParameter], label: str) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
         if hasattr(param, 'get_display_value'):
@@ -623,7 +624,8 @@ class DigitalSynthEditor(BaseEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, synth_num=1, parent=None):
-        super().__init__(midi_helper, parent)
+        super().__init__(parent)
+        self.midi_helper = midi_helper
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
         self.setWindowTitle(f"Digital Synth {synth_num}")
@@ -702,6 +704,23 @@ class DigitalSynthEditor(BaseEditor):
             self.midi_helper.send_message(msg)
             time.sleep(0.02)  # Small delay between messages
             logging.debug(f"Sent parameter request: {' '.join([hex(x)[2:].upper().zfill(2) for x in msg])}")
+        
+        # Register the callback for incoming MIDI messages
+        if self.midi_helper:
+            self.midi_helper.set_callback(self.handle_midi_message)
+
+        self.data_request()
+
+        # Register the callback for incoming MIDI messages
+        if self.midi_helper:
+            print("MIDI helper initialized")
+            if hasattr(self.midi_helper, 'set_callback'):
+                self.midi_helper.set_callback(self.handle_midi_message)
+                print("MIDI callback set")
+            else:
+                logging.error("MIDI set_callback method not found")
+        else:
+            logging.error("MIDI helper not initialized")
 
     def _create_performance_section(self):
         """Create performance controls section"""
@@ -871,18 +890,14 @@ class DigitalSynthEditor(BaseEditor):
         except Exception as e:
             logging.error(f"Error updating UI: {str(e)}", exc_info=True)
 
-    def handle_sysex_message(self, message):
-        """Handle incoming SysEx messages"""
+    def handle_midi_message(self, message):
+        """Callback for handling incoming MIDI messages"""
         try:
-            if len(message) < 8:  # Minimum length for JD-Xi SysEx
-                return
-
-            # Check if this is a data set message (DT1)
+            print(f"SysEx message: {message}")
             if message[7] == 0x12:  # DT1 command
                 self._handle_dt1_message(message[8:])
-                
         except Exception as e:
-            logging.error(f"Error handling SysEx message: {str(e)}")
+            logging.error(f"Error handling MIDI message: {str(e)}", exc_info=True)
 
     def _handle_dt1_message(self, data):
         """Handle Data Set 1 (DT1) messages
@@ -895,10 +910,34 @@ class DigitalSynthEditor(BaseEditor):
             return
             
         address = data[0:3]
+        print(f"DT1 message Address: {address}")
         value = data[3]
-        
+        print(f"DT1 message Value: {value}")
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
+
+    def data_request(self):
+        """Send data request SysEx messages to the JD-Xi"""
+        # Define SysEx messages as byte arrays
+        wave_type_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7")
+        oscillator_1_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7")
+        oscillator_2_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7")
+        oscillator_3_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7")
+        effects_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7")
+
+        # Send each SysEx message
+        self.send_message(wave_type_request)
+        self.send_message(oscillator_1_request)
+        self.send_message(oscillator_2_request)
+        self.send_message(oscillator_3_request)
+        self.send_message(effects_request)
+
+    def send_message(self, message):
+        """Send a SysEx message using the MIDI helper"""
+        if self.midi_helper:
+            self.midi_helper.send_message(message)
+        else:
+            logging.error("MIDI helper not initialized")
 
 def base64_to_pixmap(base64_str):
     """Convert base64 string to QPixmap"""

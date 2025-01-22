@@ -22,7 +22,18 @@ class BaseEditor(QWidget):
         
         # Common minimum size for all editors
         self.setMinimumSize(800, 400)
+
+        # Register the callback for incoming MIDI messages
+        if self.midi_helper and hasattr(self.midi_helper, 'set_callback'):
+            self.midi_helper.set_callback(self.handle_midi_message)
+        else:
+            logging.error("MIDI helper not initialized or set_callback method not found")
     
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""
-        self.midi_helper = midi_helper 
+        self.midi_helper = midi_helper
+
+    def handle_midi_message(self, message: bytes):
+        """Handle incoming MIDI message"""
+        logging.debug(f"Received MIDI message: {message}")
+        # Implement in subclass
