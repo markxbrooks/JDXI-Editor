@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from enum import Enum
 
+
 class SynthType(Enum):
     ANALOG = "AN"
     DIGITAL1 = "SN1"
@@ -12,6 +13,7 @@ class SynthType(Enum):
     EFFECTS = "FX"
     ARPEGGIO = "AR"
     VOCAL_FX = "VC"
+
 
 @dataclass
 class SynthPart:

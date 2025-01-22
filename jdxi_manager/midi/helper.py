@@ -46,8 +46,9 @@ class MIDIHelper(QObject):
     def _midi_callback(self, message, timestamp):
         """Internal callback for MIDI messages"""
         try:
-            for callback in self.callbacks:
-                callback(message, timestamp)
+            print(f"MIDI message: {message} timestamp: {timestamp}")
+            #for callback in self.callbacks:
+            #    callback(message, timestamp)
         except Exception as e:
             logging.error(f"Error in MIDI callback: {str(e)}")
 
@@ -481,9 +482,13 @@ class MIDIHelper(QObject):
             return
 
         address = data[0:3]
+        print(f"Address: {address}")
         value = data[3]
-
+        print(f"Value: {value}")
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
+
+    def set_callback(self, callback):
+        self.midi_in.set_callback(callback)
         
 

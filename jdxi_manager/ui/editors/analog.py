@@ -113,7 +113,8 @@ class AnalogSynthEditor(BaseEditor):
         self.level.valueChanged.connect(
             lambda v: self._send_cc(AnalogToneCC.AMP_LEVEL, v)
         )
-
+        self.data_request()
+    
     def _create_oscillator_section(self):
         group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
@@ -750,6 +751,20 @@ class AnalogSynthEditor(BaseEditor):
                 param=AnalogToneCC.LFO_KEY_TRIG,
                 value=value
             )
+
+    def data_request(self):
+        """Send data request SysEx messages to the JD-Xi"""
+        # Define SysEx messages as byte arrays
+        wave_type_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7")
+        # Send each SysEx message
+        self.send_message(wave_type_request)
+
+    def send_message(self, message):
+        """Send a SysEx message using the MIDI helper"""
+        if self.midi_helper:
+            self.midi_helper.send_message(message)
+        else:
+            logging.error("MIDI helper not initialized")        
 
     def _base64_to_pixmap(self, base64_str):
         """Convert base64 string to QPixmap"""
