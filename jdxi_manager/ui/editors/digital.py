@@ -32,6 +32,7 @@ from jdxi_manager.midi.constants import (
 from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
 from jdxi_manager.ui.widgets.switch import Switch
 
+
 class PartialEditor(QWidget):
     """Editor for a single partial"""
     def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
@@ -68,7 +69,6 @@ class PartialEditor(QWidget):
         # Add container to scroll area
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
-
 
     def _create_parameter_slider(self, param: Union[DigitalParameter, DigitalCommonParameter], label: str) -> Slider:
         """Create a slider for a parameter with proper display conversion"""

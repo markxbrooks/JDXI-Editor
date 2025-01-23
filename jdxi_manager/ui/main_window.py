@@ -1,3 +1,4 @@
+import pubsub.pub
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QMenuBar, QMenu, QMessageBox, QLabel, QPushButton,
@@ -7,7 +8,7 @@ from PySide6.QtCore import Qt, QSettings, QByteArray, QTimer
 from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
 import logging
 from pathlib import Path
-
+from pubsub import pub
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.digital import DIGITAL_PRESETS
 from jdxi_manager.data.drums import DRUM_PRESETS
@@ -266,6 +267,8 @@ class MainWindow(QMainWindow):
         # Initialize MIDI indicators
         self.midi_in_indicator = MIDIIndicator()
         self.midi_out_indicator = MIDIIndicator()
+
+        pub.subscribe(self._update_display_preset, "update_display_preset")
         
         # Set black background for entire application
         self.setStyleSheet("""
@@ -419,6 +422,7 @@ class MainWindow(QMainWindow):
 
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""
+        # self.midi_helper = MIDIHelper(parent=self)
         try:
             if editor_type == 'vocal_fx':
                 if not hasattr(self, 'vocal_fx_editor'):
@@ -1449,7 +1453,7 @@ class MainWindow(QMainWindow):
                 self.midi_in.delete()  # Use delete() instead of close()
             if self.midi_out:
                 self.midi_out.delete()  # Use delete() instead of close()
-            
+
             # Open new ports
             self.midi_in = MIDIHelper.open_input(in_port, self)
             self.midi_out = MIDIHelper.open_output(out_port, self)
@@ -1776,10 +1780,12 @@ class MainWindow(QMainWindow):
             preset_type=PresetType.ANALOG
         )
         self.preset_editor.preset_changed.connect(self._update_display_preset)
+        self.midi_helper.preset_changed.connect(self._update_display_preset)
         self.preset_editor.show()
 
     def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
         """Update the display with the new preset information"""
+        print(f"Updating display preset: {preset_number}, {preset_name}, {channel}")
         try:
             # Update display
             self.update_preset_display(preset_number, preset_name)
