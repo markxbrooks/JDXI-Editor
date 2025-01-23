@@ -5,6 +5,28 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPixmap, QColor
+import mido
+import threading
+from pubsub import pub
+
+
+def midi_callback(msg):
+    """
+    Your custom callback function to handle MIDI messages.
+    """
+    logging.debug(f"Callback received message: {msg}")
+    pub.sendMessage("incoming_midi_message", message=msg)  # Publish the message to subscribers
+
+
+def listen_midi(port_name, callback):
+    """
+    Function to listen for MIDI messages and call a callback.
+    """
+    with mido.open_input(port_name) as inport:
+        print(f"Listening on port: {port_name}")
+        for msg in inport:
+            callback(msg)  # Call the provided callback function
+
 
 def setup_logging():
     """Set up logging configuration"""
@@ -110,6 +132,23 @@ def main():
         raise
 
 if __name__ == "__main__":
+    # List available MIDI input ports
+    input_ports = mido.get_input_names()
+    if not input_ports:
+        print("No MIDI input ports available!")
+        exit()
+
+    print("Available MIDI input ports:")
+    for i, port in enumerate(input_ports):
+        print(f"{i}: {port}")
+
+    # Choose the first available port
+    port_name = input_ports[0]
+    print(f"Using port: {port_name}")
+
+    # Start the listener in a separate thread
+    listener_thread = threading.Thread(target=listen_midi, args=(port_name, midi_callback), daemon=True)
+    listener_thread.start()
     try:
         sys.exit(main())
     except Exception as e:

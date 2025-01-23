@@ -1,8 +1,11 @@
 import logging
+import re
+
+from pubsub import pub
 import rtmidi
 from typing import Optional, List, Tuple, Callable
 import time
-
+from jdxi_manager.data.presets import DIGITAL_PRESETS
 from PySide6.QtCore import Signal, QObject
 
 
@@ -10,6 +13,7 @@ class MIDIHelper(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
     parameter_received = Signal(list, int)  # address, value
+    preset_changed = Signal(int, str, int)
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -19,6 +23,8 @@ class MIDIHelper(QObject):
         self.output_port_number: Optional[int] = None
         self.parent = parent
         self.callbacks: List[Callable] = []
+        self.channel = 1
+        pub.subscribe(self._handle_incoming_midi_message, "incoming_midi_message")
 
     @property
     def current_in_port(self) -> Optional[str]:
@@ -38,19 +44,63 @@ class MIDIHelper(QObject):
                 return ports[self.output_port_number]
         return None
 
+    def _handle_incoming_midi_message(self, message):
+        """Handle incoming MIDI message from pubsub"""
+        try:
+            print(f"Received MIDI message: {message}")
+            # if isinstance(message, tuple) and len(message) == 2:
+            #    self._midi_callback(message[0], message[1])
+            preset = "JP8 Strings1"
+            if not message.is_cc():
+                if preset_group := re.search(r"program=(\d{2})", str(message), re.I):
+                    preset_number = int(preset_group.group(1))
+                    pub.sendMessage("update_display_preset", preset_number=preset_number, preset_name=DIGITAL_PRESETS[preset_number], channel=1)
+                    print(f"preset changed to {DIGITAL_PRESETS[preset_number]}")
+            self.preset_changed.emit(
+                1,
+                preset,
+                1
+            )
+
+        except Exception as e:
+            logging.error(f"Error handling incoming MIDI message: {str(e)}")
+
     def register_callback(self, callback: Callable):
         """Register a callback for MIDI messages"""
         if callback not in self.callbacks:
             self.callbacks.append(callback)
 
-    def _midi_callback(self, message, timestamp):
+    def _midi_callback(self, message, timestamp=None):
         """Internal callback for MIDI messages"""
         try:
-            print(f"MIDI message: {message} timestamp: {timestamp}")
-            #for callback in self.callbacks:
-            #    callback(message, timestamp)
+            print(f"MIDI message: {message}")
+            # Invoke all registered callbacks
+            for callback in self.callbacks:
+                callback(message, timestamp)
+
+            # Handle SysEx messages separately if needed
+            if message[0] == 0xF0:  # SysEx start
+                self.handle_sysex_message(message)
+
         except Exception as e:
             logging.error(f"Error in MIDI callback: {str(e)}")
+
+    def _handle_dt1_message(self, data):
+        """Handle Data Set 1 (DT1) messages
+
+        Format: aa bb cc dd ... where:
+        aa bb cc = Address
+        dd ... = Data
+        """
+        if len(data) < 4:  # Need at least address and one data byte
+            return
+
+        address = data[0:3]
+        print(f"Address: {address}")
+        value = data[3]
+        print(f"Value: {value}")
+        # Emit signal with parameter data
+        self.parameter_received.emit(address, value)        
 
     def get_input_ports(self) -> List[str]:
         """Get available MIDI input ports"""
@@ -178,7 +228,6 @@ class MIDIHelper(QObject):
             port_index = port_name_or_index
             
             if isinstance(port_name_or_index, str):
-                # Find port index by name
                 for i, name in enumerate(ports):
                     if port_name_or_index.lower() in name.lower():
                         port_index = i
@@ -187,7 +236,6 @@ class MIDIHelper(QObject):
                     logging.error(f"MIDI input port not found: {port_name_or_index}")
                     return False
             
-            # Validate port index
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
                 logging.error(f"Invalid MIDI input port index: {port_index}")
                 return False
@@ -470,23 +518,6 @@ class MIDIHelper(QObject):
 
         except Exception as e:
             logging.error(f"Error handling SysEx message: {str(e)}")
-
-    def _handle_dt1_message(self, data):
-        """Handle Data Set 1 (DT1) messages
-
-        Format: aa bb cc dd ... where:
-        aa bb cc = Address
-        dd ... = Data
-        """
-        if len(data) < 4:  # Need at least address and one data byte
-            return
-
-        address = data[0:3]
-        print(f"Address: {address}")
-        value = data[3]
-        print(f"Value: {value}")
-        # Emit signal with parameter data
-        self.parameter_received.emit(address, value)
 
     def set_callback(self, callback):
         self.midi_in.set_callback(callback)
