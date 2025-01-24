@@ -1,4 +1,8 @@
-import pubsub.pub
+import logging
+import re
+from pathlib import Path
+from pubsub import pub
+
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QMenuBar, QMenu, QMessageBox, QLabel, QPushButton,
@@ -6,12 +10,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QSettings, QByteArray, QTimer
 from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
-import logging
-from pathlib import Path
-from pubsub import pub
+
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.digital import DIGITAL_PRESETS
 from jdxi_manager.data.drums import DRUM_PRESETS
+from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -20,27 +23,27 @@ from jdxi_manager.ui.editors import (
     EffectsEditor,
     VocalFXEditor
 )
+from jdxi_manager.ui.editors.preset_editor import PresetEditor
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
-from jdxi_manager.ui.patch_manager import PatchManager
-from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer, LEDIndicator
-from jdxi_manager.midi import MIDIHelper, MIDIConnection
 from jdxi_manager.ui.midi_debugger import MIDIDebugger
 from jdxi_manager.ui.midi_message_debug import MIDIMessageDebug
-from jdxi_manager.midi.connection import MIDIConnection
 from jdxi_manager.ui.patch_name_editor import PatchNameEditor
+from jdxi_manager.ui.patch_manager import PatchManager
+from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets.piano_keyboard import PianoKeyboard
+from jdxi_manager.ui.widgets.channel_button import ChannelButton
+from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer, LEDIndicator
+from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
+from jdxi_manager.midi.connection import MIDIConnection
+from jdxi_manager.midi import MIDIHelper, MIDIConnection
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
     DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
     EFFECTS_AREA
 )
-from jdxi_manager.ui.widgets.piano_keyboard import PianoKeyboard
-from jdxi_manager.ui.widgets.channel_button import ChannelButton
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
-from jdxi_manager.ui.editors.preset_editor import PresetEditor
-from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
-from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.preset_loader import PresetLoader
 
 
@@ -271,39 +274,7 @@ class MainWindow(QMainWindow):
         pub.subscribe(self._update_display_preset, "update_display_preset")
         
         # Set black background for entire application
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: black;
-            }
-            QWidget {
-                background-color: black;
-                color: white;
-            }
-            QMenuBar {
-                background-color: black;
-                color: white;
-            }
-            QMenuBar::item:selected {
-                background-color: #333333;
-            }
-            QMenu {
-                background-color: black;
-                color: white;
-            }
-            QMenu::item:selected {
-                background-color: #333333;
-            }
-            QGroupBox {
-                border: 1px solid #333333;
-            }
-            QLabel {
-                background-color: transparent;
-            }
-            QStatusBar {
-                background-color: black;
-                color: white;
-            }
-        """)
+        self.setStyleSheet(Style.JDXI_STYLE)
         
         # Load custom font
         self._load_digital_font()
@@ -420,6 +391,50 @@ class MainWindow(QMainWindow):
         vocal_fx_action = editors_menu.addAction("Vocal FX")
         vocal_fx_action.triggered.connect(lambda: self.show_editor('vocal_fx'))
 
+        # Create Tone navigation buttons
+        self.tone_down_button = QPushButton("-")
+        self.tone_up_button = QPushButton("+")
+
+        # Connect buttons to functions
+        self.tone_down_button.clicked.connect(self._decrease_tone)
+        self.tone_up_button.clicked.connect(self._increase_tone)
+
+        # Button layout
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        button_layout.addWidget(self.tone_down_button)
+        button_layout.addWidget(self.tone_up_button)
+        button_layout.addStretch()
+
+        # Add button layout to main layout
+        #main_layout.addStretch()
+        #main_layout.addLayout(button_layout)
+        #main_layout.addStretch()
+
+        # Initialize current preset index
+        self.current_preset_index = 0
+
+        # Initialize current preset index
+        self.current_preset_index = 0
+
+    def _decrease_tone(self):
+        """Decrease the tone index and update the display."""
+        if self.current_preset_index > 0:
+            self.current_preset_index -= 1
+            self._update_display_preset()
+
+    def _increase_tone(self):
+        """Increase the tone index and update the display."""
+        if self.current_preset_index < len(DIGITAL_PRESETS) - 1:
+            self.current_preset_index += 1
+            self._update_display_preset()
+
+    #def _update_display_preset(self):
+    #    """Update the display with the current preset."""
+    #    preset_name = DIGITAL_PRESETS[self.current_preset_index]
+    #    print(f"Current Preset: {self.current_preset_index}: {preset_name}")
+
+
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""
         # self.midi_helper = MIDIHelper(parent=self)
@@ -475,6 +490,29 @@ class MainWindow(QMainWindow):
         self._add_overlaid_controls(container)
         
         layout.addWidget(container)
+
+        # Create Tone navigation buttons
+        self.tone_down_button = QPushButton("-")
+        self.tone_up_button = QPushButton("+")
+
+        # Connect buttons to functions
+        self.tone_down_button.clicked.connect(self._decrease_tone)
+        self.tone_up_button.clicked.connect(self._increase_tone)
+
+        # Button layout
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        button_layout.addWidget(self.tone_down_button)
+        button_layout.addWidget(self.tone_up_button)
+        button_layout.addStretch()
+
+        # Add button layout to main layout
+        layout.addStretch()
+        layout.addLayout(button_layout)
+        layout.addStretch()
+
+        # Initialize current preset index
+        self.current_preset_index = 0
         
     def _create_section(self, title):
         """Create a section frame with title"""
@@ -1785,7 +1823,13 @@ class MainWindow(QMainWindow):
 
     def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
         """Update the display with the new preset information"""
-        print(f"Updating display preset: {preset_number}, {preset_name}, {channel}")
+        print(f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}")
+        self.current_preset_index = preset_number
+        self.preset_name = preset_name
+        self.channel = channel
+        if re.search(r"^\d{3}:", preset_name):
+            preset_number = int(preset_name[:3])
+            preset_name = preset_name[4:]
         try:
             # Update display
             self.update_preset_display(preset_number, preset_name)
