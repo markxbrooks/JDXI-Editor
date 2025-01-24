@@ -11,9 +11,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSettings, QByteArray, QTimer
 from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
 
-from jdxi_manager.data.analog import AN_PRESETS
-from jdxi_manager.data.digital import DIGITAL_PRESETS
-from jdxi_manager.data.drums import DRUM_PRESETS
+from jdxi_manager.data.preset_data import ANALOG_PRESETS
+from jdxi_manager.data.preset_data import DIGITAL_PRESETS
+from jdxi_manager.data.preset_data import DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
@@ -228,6 +228,7 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
         self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
         self.setMinimumSize(1000, 400)
@@ -254,6 +255,7 @@ class MainWindow(QMainWindow):
         
         # Initialize MIDI helper
         self.midi_helper = MIDIHelper(parent=self)
+        #self.preset_loader = PresetLoader(self.midi_helper)
         
         # Initialize windows to None
         self.log_viewer = None
@@ -421,13 +423,13 @@ class MainWindow(QMainWindow):
         """Decrease the tone index and update the display."""
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
-            self._update_display_preset()
+            self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
 
     def _increase_tone(self):
         """Increase the tone index and update the display."""
         if self.current_preset_index < len(DIGITAL_PRESETS) - 1:
             self.current_preset_index += 1
-            self._update_display_preset()
+            self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
 
     #def _update_display_preset(self):
     #    """Update the display with the current preset."""
@@ -2035,12 +2037,14 @@ class MainWindow(QMainWindow):
     def load_preset(self, preset_data):
         """Load preset data into synth"""
         try:
+            self.preset_type = PresetType.DIGITAL_1
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                PresetLoader.load_preset(
+                self.preset_loader = PresetLoader(self.midi_helper)
+                self.preset_loader.load_preset(
                     self.midi_helper,
-                    preset_data.synth_type,
-                    preset_data.preset_num
+                    preset_data,
+                    self.preset_type
                 )
                 
                 # Store as last loaded preset

@@ -1,6 +1,9 @@
 import logging
 import time
 from typing import Optional
+
+from pubsub import pub
+
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.constants import (
     DT1_COMMAND_12,
@@ -23,6 +26,7 @@ class PresetLoader:
         self.midi_lock = 0
         self.midi_last = time.time()
         self.pdm_val = {}
+        pub.subscribe(self.load_preset, 'load_preset')
 
     def send_pa_ch_msg(self, addr, value, nr):
         if self.midi_outdev:
