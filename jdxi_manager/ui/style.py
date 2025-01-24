@@ -124,3 +124,36 @@ class Style:
             image: none;
         }}
     """ 
+    JDXI_STYLE = """
+            QMainWindow {
+                background-color: black;
+            }
+            QWidget {
+                background-color: black;
+                color: white;
+            }
+            QMenuBar {
+                background-color: black;
+                color: white;
+            }
+            QMenuBar::item:selected {
+                background-color: #333333;
+            }
+            QMenu {
+                background-color: black;
+                color: white;
+            }
+            QMenu::item:selected {
+                background-color: #333333;
+            }
+            QGroupBox {
+                border: 1px solid #333333;
+            }
+            QLabel {
+                background-color: transparent;
+            }
+            QStatusBar {
+                background-color: black;
+                color: white;
+            }
+        """

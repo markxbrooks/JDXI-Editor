@@ -5,7 +5,7 @@ from pubsub import pub
 import rtmidi
 from typing import Optional, List, Tuple, Callable
 import time
-from jdxi_manager.data.presets import DIGITAL_PRESETS
+from jdxi_manager.data.preset_data import DIGITAL_PRESETS, DRUM_PRESETS, ANALOG_PRESETS
 from PySide6.QtCore import Signal, QObject
 
 
@@ -24,6 +24,9 @@ class MIDIHelper(QObject):
         self.parent = parent
         self.callbacks: List[Callable] = []
         self.channel = 1
+        self.preset_number = 0
+        self.cc_number = 0
+        self.cc_lsb_value = 0
         pub.subscribe(self._handle_incoming_midi_message, "incoming_midi_message")
 
     @property
@@ -50,17 +53,38 @@ class MIDIHelper(QObject):
             print(f"Received MIDI message: {message}")
             # if isinstance(message, tuple) and len(message) == 2:
             #    self._midi_callback(message[0], message[1])
-            preset = "JP8 Strings1"
-            if not message.is_cc():
-                if preset_group := re.search(r"program=(\d{2})", str(message), re.I):
-                    preset_number = int(preset_group.group(1))
-                    pub.sendMessage("update_display_preset", preset_number=preset_number, preset_name=DIGITAL_PRESETS[preset_number], channel=1)
-                    print(f"preset changed to {DIGITAL_PRESETS[preset_number]}")
-            self.preset_changed.emit(
-                1,
-                preset,
-                1
-            )
+            if message.is_cc():
+                if preset_matches := re.search(r"channel=(\d{1,2}) control=(\d{1,2}) value=(\d{1,3})", str(message), re.I):
+                    self.channel = int(preset_matches.group(1))
+                    cc_control_number = int(preset_matches.group(2))
+                    cc_control_value = int(preset_matches.group(3))
+                    if cc_control_number == 0:
+                        self.cc_msb_value = int(cc_control_value)
+                    elif cc_control_number == 32:
+                        self.cc_lsb_value = int(cc_control_value)
+            else:
+                if preset_matches := re.search(r"program=(\d{1,3})", str(message), re.I):
+                    print(f"msb: {self.cc_msb_value}, lsb: {self.cc_lsb_value}")
+                    self.program_number = int(preset_matches.group(1))
+                    if self.cc_msb_value == 95:
+                        presets = DIGITAL_PRESETS
+                        if self.cc_lsb_value == 64:
+                            self.preset_number = self.program_number
+                        elif self.cc_lsb_value == 65:
+                            self.preset_number = self.program_number + 128
+                    if self.cc_msb_value == 94:
+                        presets = ANALOG_PRESETS
+                        self.preset_number = self.program_number
+                    if self.cc_msb_value == 86:
+                        presets = DRUM_PRESETS
+                        self.preset_number = self.program_number
+                    pub.sendMessage("update_display_preset", preset_number=self.preset_number, preset_name=presets[self.preset_number], channel=self.channel)
+                    print(f"preset changed to: {self.preset_number}: {presets[self.preset_number]}")
+                    self.preset_changed.emit(
+                        self.preset_number,
+                        DIGITAL_PRESETS[self.preset_number],
+                        self.channel
+                    )
 
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")
