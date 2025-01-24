@@ -8,6 +8,8 @@ import time
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS, DRUM_PRESETS, ANALOG_PRESETS
 from PySide6.QtCore import Signal, QObject
 
+from jdxi_manager.data.preset_type import PresetType
+
 
 class MIDIHelper(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
@@ -49,6 +51,7 @@ class MIDIHelper(QObject):
 
     def _handle_incoming_midi_message(self, message):
         """Handle incoming MIDI message from pubsub"""
+        preset_data = {'modified': 0}
         try:
             print(f"Received MIDI message: {message}")
             # if isinstance(message, tuple) and len(message) == 2:
@@ -66,8 +69,9 @@ class MIDIHelper(QObject):
                 if preset_matches := re.search(r"program=(\d{1,3})", str(message), re.I):
                     print(f"msb: {self.cc_msb_value}, lsb: {self.cc_lsb_value}")
                     self.program_number = int(preset_matches.group(1))
+                    presets = DIGITAL_PRESETS
                     if self.cc_msb_value == 95:
-                        presets = DIGITAL_PRESETS
+                        preset_data['type'] = PresetType.DIGITAL_1
                         if self.cc_lsb_value == 64:
                             self.preset_number = self.program_number
                         elif self.cc_lsb_value == 65:
@@ -75,16 +79,22 @@ class MIDIHelper(QObject):
                     if self.cc_msb_value == 94:
                         presets = ANALOG_PRESETS
                         self.preset_number = self.program_number
+                        preset_data['type'] = PresetType.ANALOG
                     if self.cc_msb_value == 86:
                         presets = DRUM_PRESETS
                         self.preset_number = self.program_number
+                        preset_data['type'] = PresetType.DRUMS
                     pub.sendMessage("update_display_preset", preset_number=self.preset_number, preset_name=presets[self.preset_number], channel=self.channel)
+                    preset_data['selpreset'] = self.preset_number
+
                     print(f"preset changed to: {self.preset_number}: {presets[self.preset_number]}")
-                    self.preset_changed.emit(
+                    """self.preset_changed.emit(
                         self.preset_number,
                         DIGITAL_PRESETS[self.preset_number],
                         self.channel
-                    )
+                    )"""
+                    print(f"preset_data {preset_data}")
+                    pub.sendMessage("load_preset", preset_data=preset_data)
 
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")
