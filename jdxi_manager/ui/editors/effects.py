@@ -8,9 +8,10 @@ import logging
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.midi.constants import EFFECTS_AREA
+from jdxi_manager.midi.helper import MIDIHelper
 
 class EffectsEditor(BaseEditor):
-    def __init__(self, midi_helper=None, parent=None):
+    def __init__(self, midi_helper: MIDIHelper, parent=None):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Effects")
         
@@ -69,9 +70,7 @@ class EffectsEditor(BaseEditor):
         self.efx1_type.addItems([
             "OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER"
         ])
-        self.efx1_type.currentIndexChanged.connect(
-            lambda v: self._send_parameter(0x00, v)  # EFX1 Type
-        )
+        self.efx1_type.currentIndexChanged.connect(self._on_efx1_type_changed)
         type_row.addWidget(self.efx1_type)
         layout.addLayout(type_row)
         
@@ -291,13 +290,53 @@ class EffectsEditor(BaseEditor):
                 if i in common_params:
                     param.setLabel(common_params[i])
 
-    def _send_parameter(self, param: int, value: int):
-        """Send parameter change to synth"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=EFFECTS_AREA,
-                part=0x00,
-                group=0x00,
-                param=param,
-                value=value
-            )
+    def _on_efx1_type_changed(self, index):
+        """Handle changes to the EFX1 type."""
+        self._send_parameter(0x00, index)
+
+    def _send_parameter(self, address, value):
+        """Send the SysEx message for the selected EFX1 type."""
+        # Construct the SysEx message
+        sysex_message = [
+            0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,  # Header
+            0x18, 0x00, 0x02, 0x00,  # Address for EFX1
+            value,  # EFX1 Type
+            0x7F,  # EFX1 Level (example value)
+            0x32,  # EFX1 Delay Send Level (example value)
+            0x32,  # EFX1 Reverb Send Level (example value)
+            0x01,  # EFX1 Output Assign (example value)
+            # Additional parameters can be added here
+            # ...
+            0x50,  # Checksum (example, calculate based on your data)
+            0xF7   # End of SysEx
+        ]
+
+        # Calculate the checksum
+        sysex_message[-2] = self.calculate_checksum(sysex_message[8:-2])
+
+        # Send the SysEx message using the MIDI helper
+        self.midi_helper.send_message(sysex_message)
+
+    def calculate_checksum(self, data):
+        """Calculate Roland checksum for parameter messages."""
+        checksum = 128 - (sum(data) & 0x7F)
+        return checksum & 0x7F
+
+    def send_distortion_effect(self):
+        # Construct the SysEx message for the "Distortion" effect
+        sysex_message = [
+            0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,  # Header
+            0x18, 0x00, 0x02, 0x00,  # Address for EFX1
+            0x01,  # EFX1 Type (Distortion)
+            0x7F,  # EFX1 Level
+            0x32,  # EFX1 Delay Send Level
+            0x32,  # EFX1 Reverb Send Level
+            0x01,  # EFX1 Output Assign
+            # Additional parameters can be added here
+            # ...
+            0x50,  # Checksum (example, calculate based on your data)
+            0xF7   # End of SysEx
+        ]
+
+        # Send the SysEx message using the MIDI helper
+        self.midi_helper.send_message(sysex_message)

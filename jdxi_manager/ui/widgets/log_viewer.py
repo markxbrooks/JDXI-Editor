@@ -79,7 +79,7 @@ class LogHandler(logging.Handler):
         super().__init__()
         self.text_widget = text_widget
         self.setFormatter(logging.Formatter(
-            '%(asctime)s - %(levelname)s - %(message)s'
+            '%(asctime)s - %(levelname)s - %(message)s %(filename)s:%(lineno)d'
         ))
         
     def emit(self, record):
