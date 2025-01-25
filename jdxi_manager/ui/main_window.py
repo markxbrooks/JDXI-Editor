@@ -65,7 +65,7 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     # Define display position and size first
     display_x = margin + 20
     display_y = margin + 20
-    display_width = 180
+    display_width = 220
     display_height = 45
     
     # Title above display (moved down)
@@ -78,7 +78,7 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     # LED display area (enlarged for 2 rows)
     display_x = margin + 20
     display_y = title_y + 30
-    display_width = 180
+    display_width = 215
     display_height = 70
     
     # Draw dark grey background for display
@@ -88,9 +88,9 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     
     # Set up font for digital display
     if digital_font_family:
-        display_font = QFont(digital_font_family, 16)
+        display_font = QFont(digital_font_family, 14)
     else:
-        display_font = QFont("Consolas", 16)
+        display_font = QFont("Consolas", 14)
     painter.setFont(display_font)
     painter.setPen(QPen(QColor("#FF8C00")))  # Orange color for text
     
@@ -237,7 +237,7 @@ class MainWindow(QMainWindow):
         self.width = 1000
         self.height = 400
         self.margin = 15
-        
+        self.preset_type = PresetType.DIGITAL_1
         # Store display coordinates as class variables
         self.display_x = 35  # margin + 20
         self.display_y = 50  # margin + 20 + title height
@@ -424,12 +424,26 @@ class MainWindow(QMainWindow):
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
             self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
+            preset_loader = PresetLoader(self.midi_helper)
+            preset_data = {
+                'type': self.preset_type,  # Ensure this is a valid type
+                'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
+                'modified': 0  # or 1, depending on your logic
+            }
+            preset_loader.load_preset(preset_data)
 
     def _increase_tone(self):
         """Increase the tone index and update the display."""
         if self.current_preset_index < len(DIGITAL_PRESETS) - 1:
             self.current_preset_index += 1
             self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
+            preset_loader = PresetLoader(self.midi_helper)
+            preset_data = {
+                'type': self.preset_type,  # Ensure this is a valid type
+                'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
+                'modified': 0  # or 1, depending on your logic
+            }
+            preset_loader.load_preset(preset_data)
 
     #def _update_display_preset(self):
     #    """Update the display with the current preset."""
@@ -448,12 +462,16 @@ class MainWindow(QMainWindow):
                 self.vocal_fx_editor.raise_()
             elif editor_type == 'digital1':
                 self._show_editor("Digital Synth 1", DigitalSynthEditor, synth_num=1)
+                self.preset_type = PresetType.DIGITAL_1
             elif editor_type == 'digital2':
                 self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
+                self.preset_type = PresetType.DIGITAL_2
             elif editor_type == 'analog':
                 self._show_editor("Analog Synth", AnalogSynthEditor)
+                self.preset_type = PresetType.ANALOG
             elif editor_type == 'drums':
                 self._show_drums_editor()
+                self.preset_type = PresetType.DRUMS
             elif editor_type == 'arpeggio':
                 self._show_arpeggio_editor()
             elif editor_type == 'effects':
