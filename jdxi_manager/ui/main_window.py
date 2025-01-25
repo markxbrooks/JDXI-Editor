@@ -422,7 +422,16 @@ class MainWindow(QMainWindow):
         """Decrease the tone index and update the display."""
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
-            self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
+            presets = DIGITAL_PRESETS
+            if self.preset_type == PresetType.ANALOG:
+                presets = AN_PRESETS
+            elif self.preset_type == PresetType.DIGITAL_1:
+                presets = DIGITAL_PRESETS
+            elif self.preset_type == PresetType.DIGITAL_2:
+                presets = DIGITAL_PRESETS
+            elif self.preset_type == PresetType.DRUMS:
+                presets = DRUM_PRESETS
+            self._update_display_preset(self.current_preset_index, presets[self.current_preset_index], self.channel)
             preset_data = {
                 'type': self.preset_type,  # Ensure this is a valid type
                 'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
@@ -434,7 +443,16 @@ class MainWindow(QMainWindow):
         """Increase the tone index and update the display."""
         if self.current_preset_index < len(DIGITAL_PRESETS) - 1:
             self.current_preset_index += 1
-            self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index],
+            presets = DIGITAL_PRESETS
+            if self.preset_type == PresetType.ANALOG:
+                presets = AN_PRESETS
+            elif self.preset_type == PresetType.DIGITAL_1:
+                presets = DIGITAL_PRESETS
+            elif self.preset_type == PresetType.DIGITAL_2:
+                presets = DIGITAL_PRESETS
+            elif self.preset_type == PresetType.DRUMS:
+                presets = DRUM_PRESETS
+            self._update_display_preset(self.current_preset_index, presets[self.current_preset_index],
                                         self.channel)
             preset_data = {
                 'type': self.preset_type,  # Ensure this is a valid type
@@ -752,15 +770,19 @@ class MainWindow(QMainWindow):
         
     def _open_analog_synth(self):
         self._show_editor("Analog Synth", AnalogSynthEditor)
+        self.preset_type = PresetType.ANALOG
         
     def _open_digital_synth1(self):
         self._show_editor("Digital Synth 1", DigitalSynthEditor, synth_num=1)
+        self.preset_type = PresetType.DIGITAL_1
         
     def _open_digital_synth2(self):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
+        self.preset_type = PresetType.DIGITAL_2
         
     def _open_drums(self):
         self._show_drums_editor()
+        self.preset_type = PresetType.DRUMS
         
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
