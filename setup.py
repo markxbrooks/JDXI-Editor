@@ -2,15 +2,20 @@
 from setuptools import setup, find_packages
 
 APP = ['jdxi_manager/main.py']  # Path to your main script
-DATA_FILES = ["resources/jdxi_icon.png", "resources/fonts/JdLCD.ttf"]  # Include any additional files your app needs
+DATA_FILES = ['jdxi_manager.icns', "resources/jdxi_icon.png", "resources/fonts/JdLCD.ttf"]  # Include any additional files your app needs
 OPTIONS = {
     'argv_emulation': False,
-    'packages': ['PySide6', "pubsub",
+    'packages': [
+        "PySide6",
+        "pubsub",
         "qtpy",
         "mido",
-        "qtawesome",],  # List any packages your app uses
-    'iconfile': 'resources/jdxi_manager.icns',  # Path to your app icon file (optional)
+        "qtawesome",
+        "mido"]
+    ,  # List any packages your app uses
+    'iconfile': 'jdxi_manager.icns',  # Path to your app icon file (optional)
     'excludes': ['Carbon'],
+    'plist': {'CFBundleShortVersionString': '0.1.0', }
 }
 
 setup(

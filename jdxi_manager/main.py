@@ -61,7 +61,7 @@ def setup_logging():
         # Configure console logging
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(logging.INFO)
-        console_formatter = logging.Formatter('%(levelname)s: %(message)s')
+        console_formatter = logging.Formatter('%(filename)s:%(lineno)d %(levelname)s: %(message)s')
         console_handler.setFormatter(console_formatter)
         
         # Configure root logger
@@ -78,6 +78,7 @@ def setup_logging():
         print(f"Error setting up logging: {str(e)}")
         raise
 
+
 def main():
     try:
         # Set up logging first
@@ -87,10 +88,10 @@ def main():
         app = QApplication(sys.argv)
         
         # Set application metadata
-        app.setApplicationName("JDXi Manager")
+        app.setApplicationName("JD-Xi Manager")
         app.setApplicationVersion("0.30")
-        app.setOrganizationName("LinuxTECH.NET")
-        app.setOrganizationDomain("jdxi-manager.linuxtech.net")
+        app.setOrganizationName("jdximanager")
+        app.setOrganizationDomain("com.mabinc")
         
         logging.debug("Application initialized")
         

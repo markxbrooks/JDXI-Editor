@@ -24,20 +24,22 @@ class FavoriteButton(QPushButton):
     
     def __init__(self, slot_num: int, midi_helper: MIDIHelper, parent=None):
         super().__init__(parent)
+        self.last_preset = None
+        self.preset_loader = None
         self.midi_helper = midi_helper
         self.slot_num = slot_num
         self.preset = None
         self.setFixedSize(60, 30)
         self.setFlat(True)
-        self.settings = QSettings("jdxi_manager", "settings")
-        self._load_from_settings()
+        #self.settings = QSettings("jdxi_manager2", "settings")
+        #self._load_from_settings()
         self._update_style()
         
     def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
         """Save current preset to this favorite slot"""
         self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
         self._update_style()
-        self._save_to_settings()
+        #self._save_to_settings()
         logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
         
     def load_preset_from_favourites(self):
@@ -45,20 +47,37 @@ class FavoriteButton(QPushButton):
         if not self.preset:
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
-        
-        PresetLoader.load_preset(
-            self.midi_helper,
-            self.preset.synth_type,
-            self.preset.preset_num
+        preset_data = {
+            'type': self.preset.synth_type,  # Ensure this is a valid type
+            'selpreset': self.preset.preset_num + 1,  # Convert to 1-based index
+            'modified': 0  # or 1 if modified
+        }
+        self.load_preset(
+            preset_data
         )
-        
+        self._update_style()
         # Save as last loaded preset
-        self.settings.setValue('last_preset/synth_type', self.preset.synth_type)
-        self.settings.setValue('last_preset/preset_num', self.preset.preset_num)
-        self.settings.setValue('last_preset/channel', self.preset.channel)
-        self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
+        # self.settings.setValue('last_preset/synth_type', self.preset.synth_type)
+        # self.settings.setValue('last_preset/preset_num', self.preset.preset_num)
+        # self.settings.setValue('last_preset/channel', self.preset.channel)
+        # self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
         # Update the display
         logging.debug(f"Loading favorite {self.slot_num}: {self.preset.preset_name}")
+
+    def load_preset(self, preset_data):
+        """Load preset data into synth"""
+        try:
+            if self.midi_helper:
+                # Use PresetLoader for consistent preset loading
+                self.preset_loader = PresetLoader(self.midi_helper)
+                self.preset_loader.load_preset(
+                    preset_data,
+                )
+                # Store as last loaded preset
+                self.last_preset = preset_data
+                #self.settings.setValue("last_preset", preset_data)
+        except Exception as e:
+            logging.error(f"Error loading preset: {e}")
             
     def _save_to_settings(self):
         """Save preset data to settings"""
@@ -83,7 +102,7 @@ class FavoriteButton(QPushButton):
     def clear_preset(self):
         """Clear the saved preset"""
         self.preset = None
-        self._save_to_settings()
+        # self._save_to_settings()
         self._update_style()
         
     def _update_style(self):

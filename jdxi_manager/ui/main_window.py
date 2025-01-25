@@ -8,12 +8,11 @@ from PySide6.QtWidgets import (
     QMenuBar, QMenu, QMessageBox, QLabel, QPushButton,
     QFrame, QGridLayout, QGroupBox
 )
-from PySide6.QtCore import Qt, QSettings, QByteArray, QTimer
-from PySide6.QtGui import QIcon, QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
+from PySide6.QtCore import Qt, QSettings
+from PySide6.QtGui import QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
 
-from jdxi_manager.data.preset_data import ANALOG_PRESETS
-from jdxi_manager.data.preset_data import DIGITAL_PRESETS
-from jdxi_manager.data.preset_data import DRUM_PRESETS
+from jdxi_manager.data.analog import AN_PRESETS
+from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS, DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
@@ -33,21 +32,19 @@ from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.piano_keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.channel_button import ChannelButton
 from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer, LEDIndicator
-from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
-from jdxi_manager.midi.connection import MIDIConnection
+from jdxi_manager.ui.widgets.favorite_button import FavoriteButton, PresetFavorite
 from jdxi_manager.midi import MIDIHelper, MIDIConnection
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
-    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
-    DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, DRUM_KIT_AREA,
-    EFFECTS_AREA
+    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX, ANALOG_SYNTH_AREA
 )
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.midi.preset_loader import PresetLoader
+#from jdxi_manager.data.preset_favorite import PresetFavorite
 
 
-def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
+def draw_jdxi(digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"):
     """Create a QPixmap of the JD-Xi"""
     # Create a black background image with correct aspect ratio
     width = 1000
@@ -88,17 +85,17 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     
     # Set up font for digital display
     if digital_font_family:
-        display_font = QFont(digital_font_family, 14)
+        display_font = QFont(digital_font_family, 16)
     else:
-        display_font = QFont("Consolas", 14)
+        display_font = QFont("Consolas", 12)
     painter.setFont(display_font)
     painter.setPen(QPen(QColor("#FF8C00")))  # Orange color for text
     
     # Draw preset number and name
     preset_text = f"{preset_num:03d}:{preset_name}"
     # Truncate if too long for display
-    if len(preset_text) > 16:  # Adjust based on display width
-        preset_text = preset_text[:15] + "…"
+    if len(preset_text) > 20:  # Adjust based on display width
+        preset_text = preset_text[:19] + "…"
     text_y = display_y + 25
     painter.drawText(
         display_x + 10,
@@ -130,7 +127,7 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
     load_x = display_x + button_margin
     painter.setPen(QPen(QColor("#FF8C00")))
     if digital_font_family:
-        painter.setFont(QFont(digital_font_family, 18))
+        painter.setFont(QFont(digital_font_family, 22))
     else:
         painter.setFont(QFont("Consolas", 22))  # Fallback font
  
@@ -228,7 +225,10 @@ def get_jdxi_image(digital_font_family=None, current_octave=0, preset_num=1, pre
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-
+        self.channel = 1
+        self.analog_editor = None
+        self.last_preset = None
+        self.preset_loader = None
         self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
         self.setMinimumSize(1000, 400)
@@ -287,7 +287,7 @@ class MainWindow(QMainWindow):
         self._create_main_layout()
         
         # Load settings
-        self.settings = QSettings("jdxi_manager", "settings")
+        self.settings = QSettings("jdxi_manager2", "settings")
         self._load_settings()
         
         # Show window
@@ -338,7 +338,6 @@ class MainWindow(QMainWindow):
         self.statusBar().addPermanentWidget(self.piano_keyboard)
         
         # Load last used preset settings
-        self.settings = QSettings('JDXiManager', 'JDXiManager')
         self._load_last_preset()
         
         # Create favorite buttons container
@@ -424,26 +423,25 @@ class MainWindow(QMainWindow):
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
             self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
-            preset_loader = PresetLoader(self.midi_helper)
             preset_data = {
                 'type': self.preset_type,  # Ensure this is a valid type
                 'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
                 'modified': 0  # or 1, depending on your logic
             }
-            preset_loader.load_preset(preset_data)
+            self.load_preset(preset_data)
 
     def _increase_tone(self):
         """Increase the tone index and update the display."""
         if self.current_preset_index < len(DIGITAL_PRESETS) - 1:
             self.current_preset_index += 1
-            self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index], self.channel)
-            preset_loader = PresetLoader(self.midi_helper)
+            self._update_display_preset(self.current_preset_index, DIGITAL_PRESETS[self.current_preset_index],
+                                        self.channel)
             preset_data = {
                 'type': self.preset_type,  # Ensure this is a valid type
                 'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
                 'modified': 0  # or 1, depending on your logic
             }
-            preset_loader.load_preset(preset_data)
+            self.load_preset(preset_data)
 
     #def _update_display_preset(self):
     #    """Update the display with the current preset."""
@@ -499,7 +497,7 @@ class MainWindow(QMainWindow):
         
         # Store reference to image label
         self.image_label = QLabel()
-        self.image_label.setPixmap(get_jdxi_image(
+        self.image_label.setPixmap(draw_jdxi(
             self.digital_font_family if hasattr(self, 'digital_font_family') else None,
             self.current_octave
         ))
@@ -1365,7 +1363,7 @@ class MainWindow(QMainWindow):
 
     def _update_display(self):
         """Update the JD-Xi display image"""
-        pixmap = get_jdxi_image(
+        pixmap = draw_jdxi(
             digital_font_family=self.digital_font_family if hasattr(self, 'digital_font_family') else None,
             current_octave=self.current_octave,
             preset_num=self.current_preset_num,
@@ -1876,7 +1874,7 @@ class MainWindow(QMainWindow):
         """
         try:
             # Create new image with updated preset info
-            image = get_jdxi_image(
+            image = draw_jdxi(
                 digital_font_family=self.digital_font_family,
                 current_octave=self.current_octave,
                 preset_num=preset_num,
@@ -1896,22 +1894,22 @@ class MainWindow(QMainWindow):
         """Load the last used preset from settings"""
         try:
             # Get last preset info from settings
-            synth_type = self.settings.value('last_preset/synth_type', 'Analog')
+            synth_type = self.settings.value('last_preset/synth_type', PresetType.DIGITAL_1)
             preset_num = self.settings.value('last_preset/preset_num', 0, type=int)
             channel = self.settings.value('last_preset/channel', 0, type=int)
             
             # Get preset list based on synth type
-            if synth_type == 'Analog':
+            if synth_type == PresetType.ANALOG:
                 presets = AN_PRESETS
                 bank_msb = 0
                 bank_lsb = preset_num // 7
                 program = preset_num % 7
-            elif synth_type == 'Digital 1':
+            elif synth_type == PresetType.DIGITAL_1:
                 presets = DIGITAL_PRESETS
                 bank_msb = 1
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
-            elif synth_type == 'Digital 2':
+            elif synth_type == PresetType.DIGITAL_2:
                 presets = DIGITAL_PRESETS
                 bank_msb = 2
                 bank_lsb = preset_num // 16
@@ -1957,38 +1955,23 @@ class MainWindow(QMainWindow):
         """Load preset from favorite button"""
         if button.preset:
             if self.midi_helper:
-                # Get preset info
-                synth_type = button.preset.synth_type
-                preset_num = button.preset.preset_num
-                channel = button.preset.channel
-                
-                # Send MIDI messages
-                if synth_type == PresetType.ANALOG:
-                    bank_msb = 0
-                    bank_lsb = preset_num // 7
-                    program = preset_num % 7
-                elif synth_type == PresetType.DIGITAL_1:
-                    bank_msb = 1
-                    bank_lsb = preset_num // 16
-                    program = preset_num % 16
-                elif synth_type == PresetType.DIGITAL_2:
-                    bank_msb = 2
-                    bank_lsb = preset_num // 16
-                    program = preset_num % 16
-                else:  # Drums
-                    bank_msb = 3
-                    bank_lsb = preset_num // 16
-                    program = preset_num % 16
-                    
-                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
-                self.midi_helper.send_program_change(program, channel)
-                
+                # Get preset info from button
+                self.preset_type = button.preset.synth_type
+                self.current_preset_index = button.preset.preset_num
+                self.channel = button.preset.channel
                 # Update display - REMOVED the preset_num + 1
                 self._update_display_preset(
-                    preset_num,  # Already 1-based
+                    self.current_preset_index + 1, # Convert to 1-based index
                     button.preset.preset_name,
-                    channel
+                    self.channel
                 )
+                preset_data = {
+                    'type': self.preset_type,  # Ensure this is a valid type
+                    'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
+                    'modified': 0  # or 1, depending on your logic
+                }
+                # Send MIDI messages to load preset
+                self.load_preset(preset_data)
                 
     def _show_favorite_context_menu(self, pos, button: FavoriteButton):
         """Show context menu for favorite button"""
@@ -2055,19 +2038,16 @@ class MainWindow(QMainWindow):
     def load_preset(self, preset_data):
         """Load preset data into synth"""
         try:
-            self.preset_type = PresetType.DIGITAL_1
+            # self.preset_type = PresetType.DIGITAL_1
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
                 self.preset_loader = PresetLoader(self.midi_helper)
                 self.preset_loader.load_preset(
-                    self.midi_helper,
                     preset_data,
-                    self.preset_type
                 )
-                
                 # Store as last loaded preset
                 self.last_preset = preset_data
-                self.settings.setValue("last_preset", preset_data)
+                # self.settings.setValue("last_preset", preset_data)
                 
         except Exception as e:
             logging.error(f"Error loading preset: {str(e)}")
@@ -2332,3 +2312,26 @@ class MainWindow(QMainWindow):
                 return DRUM_PRESETS[preset_num - 1]
         except IndexError:
             return "INIT PATCH"
+
+    def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
+        """Save current preset to this favorite slot"""
+        logging.debug(f"Saving preset: {synth_type}, {preset_num}, {preset_name}, {channel}")
+        self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
+        # self._update_style()
+        # self._save_to_settings()
+        logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
+
+    def load_preset_from_favourites(self):
+        """Load saved preset"""
+        if not self.preset:
+            logging.warning(f"No preset saved in favorite slot {self.slot_num}")
+            return
+        logging.debug(f"Loading preset: {self.preset.synth_type}, {self.preset.preset_num}, {self.preset.preset_name}, {self.preset.channel}")
+        preset_data = {
+            'type': self.preset.synth_type,
+            'selpreset': self.preset.preset_num + 1,
+            'modified': 0
+        }
+        self.load_preset(preset_data)
+        # self._update_style()
+        logging.debug(f"Loaded favorite {self.slot_num}: {self.preset.preset_name}")
