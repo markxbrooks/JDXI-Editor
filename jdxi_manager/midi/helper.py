@@ -85,16 +85,14 @@ class MIDIHelper(QObject):
                         self.preset_number = self.program_number
                         preset_data['type'] = PresetType.DRUMS
                     pub.sendMessage("update_display_preset", preset_number=self.preset_number, preset_name=presets[self.preset_number], channel=self.channel)
-                    preset_data['selpreset'] = self.preset_number
-
                     print(f"preset changed to: {self.preset_number}: {presets[self.preset_number]}")
                     """self.preset_changed.emit(
                         self.preset_number,
                         DIGITAL_PRESETS[self.preset_number],
                         self.channel
                     )"""
-                    print(f"preset_data {preset_data}")
-                    pub.sendMessage("load_preset", preset_data=preset_data)
+
+
 
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")

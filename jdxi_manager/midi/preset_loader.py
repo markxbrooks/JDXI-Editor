@@ -1,9 +1,7 @@
 import logging
 import time
-from typing import Optional
-
 from pubsub import pub
-
+from typing import Optional
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.constants import (
     DT1_COMMAND_12,
@@ -26,7 +24,9 @@ class PresetLoader:
         self.midi_lock = 0
         self.midi_last = time.time()
         self.pdm_val = {}
-        pub.subscribe(self.load_preset, 'load_preset')
+        
+        # Subscribe to the request_load_preset topic
+        pub.subscribe(self.load_preset, 'request_load_preset')
 
     def send_pa_ch_msg(self, addr, value, nr):
         if self.midi_outdev:
@@ -66,7 +66,9 @@ class PresetLoader:
         result = (128 - checksum) & 0x7F
         return result
 
-    def load_preset(self, preset_data, type=None):
+    def load_preset(self, preset_data):
+        """Load the preset based on the provided data"""
+        print(f"Loading preset with data: {preset_data}")
         response = 'Yes'
         if response == 'Yes' or preset_data['modified'] == 0:
             address = ''
