@@ -1,6 +1,5 @@
 import logging
 import re
-from pathlib import Path
 from pubsub import pub
 
 from PySide6.QtWidgets import (
@@ -8,13 +7,11 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QMenuBar,
     QMenu,
     QMessageBox,
     QLabel,
     QPushButton,
     QFrame,
-    QGridLayout,
     QGroupBox,
     QButtonGroup,
 )
@@ -22,11 +19,6 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import (
     QAction,
     QFont,
-    QPixmap,
-    QImage,
-    QPainter,
-    QPen,
-    QColor,
     QFontDatabase,
 )
 
@@ -42,6 +34,7 @@ from jdxi_manager.ui.editors import (
     VocalFXEditor,
 )
 from jdxi_manager.ui.editors.preset_editor import PresetEditor
+from jdxi_manager.ui.instrument_pixmap import draw_instrument_pixmap
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
 from jdxi_manager.ui.midi_debugger import MIDIDebugger
 from jdxi_manager.ui.midi_message_debug import MIDIMessageDebug
@@ -65,181 +58,9 @@ from jdxi_manager.midi.constants import (
     END_OF_SYSEX,
     ANALOG_SYNTH_AREA,
 )
-from jdxi_manager.midi.messages import IdentityRequest, SystemMessage
+from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.midi.preset_loader import PresetLoader
-
-# from jdxi_manager.data.preset_favorite import PresetFavorite
-
-
-def draw_jdxi(
-    digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"
-):
-    """Create a QPixmap of the JD-Xi"""
-    # Create a black background image with correct aspect ratio
-    width = 1000
-    height = 400
-    image = QImage(width, height, QImage.Format_RGB32)
-    image.fill(Qt.black)
-
-    pixmap = QPixmap.fromImage(image)
-    painter = QPainter(pixmap)
-    painter.setRenderHint(QPainter.Antialiasing)
-
-    # Use smaller margins without border
-    margin = 15
-
-    # Define display position and size first
-    display_x = margin + 20
-    display_y = margin + 20
-    display_width = 220
-    display_height = 45
-
-    # Title above display (moved down)
-    title_x = display_x
-    title_y = margin + 15
-    painter.setPen(QPen(Qt.white))
-    painter.setFont(QFont("Myriad Pro, Arial", 28, QFont.Bold))
-    painter.drawText(title_x, title_y, "JD-Xi Manager")
-
-    # LED display area (enlarged for 2 rows)
-    display_x = margin + 20
-    display_y = title_y + 30
-    display_width = 215
-    display_height = 70
-
-    # Draw dark grey background for display
-    painter.setBrush(QColor("#1A1A1A"))
-    painter.setPen(QPen(QColor("#FF8C00"), 1))
-    painter.drawRect(display_x, display_y, display_width, display_height)
-
-    # Set up font for digital display
-    if digital_font_family:
-        display_font = QFont(digital_font_family, 16)
-    else:
-        display_font = QFont("Consolas", 12)
-    painter.setFont(display_font)
-    painter.setPen(QPen(QColor("#FF8C00")))  # Orange color for text
-
-    # Draw preset number and name
-    preset_text = f"{preset_num:03d}:{preset_name}"
-    # Truncate if too long for display
-    if len(preset_text) > 20:  # Adjust based on display width
-        preset_text = preset_text[:19] + "…"
-    text_y = display_y + 25
-    painter.drawText(display_x + 10, text_y, preset_text)
-
-    # Draw octave display below preset name
-    oct_x = display_x + display_width - 60  # Position from right edge
-    oct_y = text_y + 25  # Position below preset text
-
-    # Format octave text
-    if current_octave == 0:
-        oct_text = "Octave 0"
-    elif current_octave > 0:
-        oct_text = f"Octave +{current_octave}"
-    else:
-        oct_text = f"Octave {current_octave}"
-
-    painter.drawText(oct_x, oct_y, oct_text)
-
-    # Load/Save buttons in display (without boxes)
-    button_width = 70
-    button_height = 25
-    button_margin = 10
-    button_y = display_y + (display_height - button_height * 2 - button_margin) / 2
-
-    # Load button (text only)
-    load_x = display_x + button_margin
-    painter.setPen(QPen(QColor("#FF8C00")))
-    if digital_font_family:
-        painter.setFont(QFont(digital_font_family, 22))
-    else:
-        painter.setFont(QFont("Consolas", 22))  # Fallback font
-
-    # Save button (text only)
-    save_x = display_x + button_margin
-
-    # Keyboard section (moved up and taller)
-    keyboard_width = 800
-    keyboard_start = width - keyboard_width - margin - 20
-    key_width = keyboard_width / 32  # Increased from 25 to 32 keys
-    white_keys = 32  # Increased total white keys
-    black_key_width = key_width * 0.6
-    black_key_height = 80
-    white_key_height = 127
-    keyboard_y = height - white_key_height - (height * 0.1) + (white_key_height * 0.3)
-
-    # Draw control sections
-    section_margin = 40
-    section_width = (keyboard_start - margin - section_margin) / 2
-    section_height = 200
-    section_y = margin + 100
-
-    # Remove the red box borders for effects sections
-    # (Delete or comment out these lines)
-    """
-    # Draw horizontal Effects section above keyboard
-    effects_y = keyboard_y - 60  # Position above keyboard
-    effects_width = 120  # Width for each section
-    effects_height = 40
-    effects_spacing = 20
-    
-    # Arpeggiator section
-    arp_x = keyboard_start + (keyboard_width - (effects_width * 2 + effects_spacing)) / 2
-    painter.drawRect(arp_x, effects_y, effects_width, effects_height)
-    
-    # Effects section
-    fx_x = arp_x + effects_width + effects_spacing
-    painter.drawRect(fx_x, effects_y, effects_width, effects_height)
-    """
-
-    # Draw sequencer section
-    seq_y = keyboard_y - 50  # Keep same distance above keyboard
-    seq_height = 30
-    seq_width = keyboard_width * 0.5  # Use roughly half keyboard width
-    seq_x = width - margin - 20 - seq_width  # Align with right edge of keyboard
-
-    # Calculate step dimensions
-    step_count = 16
-    step_size = 20  # Smaller square size
-    total_spacing = seq_width - (step_count * step_size)
-    step_spacing = total_spacing / (step_count - 1)
-
-    # Draw horizontal measure lines (white)
-    painter.setPen(QPen(Qt.white, 1))
-    line_y = seq_y - 10  # Move lines above buttons
-    measure_width = (step_size + step_spacing) * 4  # Width of 4 steps
-    line_spacing = step_size / 3  # Space between lines
-
-    beats_list = [2, 3, 4]
-    # Draw 4 separate measure lines
-    for beats in beats_list:
-        for measure in range(beats):
-            measure_x = seq_x + measure * measure_width
-            for i in range(beats):  # 2, 3 or 4 horizontal lines per measure
-                y = line_y - 25 + i * line_spacing
-                painter.drawLine(
-                    int(measure_x),
-                    int(y),
-                    int(
-                        measure_x + measure_width - step_spacing
-                    ),  # Stop before next measure
-                    int(y),
-                )
-
-    # Draw sequence steps
-    for i in range(step_count):
-        x = seq_x + i * (step_size + step_spacing)
-
-        # Draw step squares with double grey border
-        painter.setPen(QPen(QColor("#666666"), 2))  # Mid-grey, doubled width
-        painter.setBrush(Qt.black)  # All steps unlit
-
-        painter.drawRect(int(x), seq_y, step_size, step_size)
-
-    painter.end()
-    return pixmap
 
 
 class MainWindow(QMainWindow):
@@ -381,7 +202,7 @@ class MainWindow(QMainWindow):
         for i in range(4):  # Create 4 favorite slots
             button = FavoriteButton(i, self.midi_helper)
             button.clicked.connect(lambda checked, b=button: self._load_favorite(b))
-            button.setContextMenuPolicy(Qt.CustomContextMenu)
+            button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             button.customContextMenuRequested.connect(
                 lambda pos, b=button: self._show_favorite_context_menu(pos, b)
             )
@@ -422,39 +243,11 @@ class MainWindow(QMainWindow):
         vocal_fx_action = editors_menu.addAction("Vocal FX")
         vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
 
-        # Create Tone navigation buttons
-        self.tone_down_button = QPushButton("-")
-        self.tone_up_button = QPushButton("+")
-
-        # Connect buttons to functions
-        self.tone_down_button.clicked.connect(self._decrease_tone)
-        self.tone_up_button.clicked.connect(self._increase_tone)
-
-        # Button layout
-        button_layout = QHBoxLayout()
-        button_layout.addStretch()
-        button_layout.addWidget(self.tone_down_button)
-        button_layout.addWidget(self.tone_up_button)
-        button_layout.addStretch()
-
-        # Add button layout to main layout
-        # main_layout.addStretch()
-        # main_layout.addLayout(button_layout)
-        # main_layout.addStretch()
-
         # Initialize current preset index
         self.current_preset_index = 0
 
         # Initialize current preset index
         self.current_preset_index = 0
-
-        # Example size for the arpeggiator button
-
-        # Add buttons to layout
-        # layout = QVBoxLayout()
-        # layout.addWidget(self.tone_up_button)
-        # layout.addWidget(self.tone_down_button)
-        # self.setLayout(layout)
 
     def _select_synth(self, synth_type):
         """Select a synth and update button styles."""
@@ -545,14 +338,8 @@ class MainWindow(QMainWindow):
             }
             self.load_preset(preset_data)
 
-    # def _update_display_preset(self):
-    #    """Update the display with the current preset."""
-    #    preset_name = DIGITAL_PRESETS[self.current_preset_index]
-    #    print(f"Current Preset: {self.current_preset_index}: {preset_name}")
-
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""
-        # self.midi_helper = MIDIHelper(parent=self)
         try:
             if editor_type == "vocal_fx":
                 if not hasattr(self, "vocal_fx_editor"):
@@ -602,7 +389,7 @@ class MainWindow(QMainWindow):
         # Store reference to image label
         self.image_label = QLabel()
         self.image_label.setPixmap(
-            draw_jdxi(
+            draw_instrument_pixmap(
                 (
                     self.digital_font_family
                     if hasattr(self, "digital_font_family")
@@ -634,46 +421,11 @@ class MainWindow(QMainWindow):
 
         # Create tone up button
         self.tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_up_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #333333;  /* Dark grey */
-                border-radius: %dpx;  /* Half of the diameter for circular shape */
-                color: white;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #444444;  /* Slightly lighter grey on hover */
-            }
-            QPushButton:pressed {
-                background-color: #555555;  /* Even lighter grey when pressed */
-            }
-        """
-            % (tone_button_diameter // 2)
-        )
+        self.tone_up_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
 
         # Create tone down button
-        # self.tone_down_button = QPushButton("-", self)
         self.tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_down_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #333333;  /* Dark grey */
-                border-radius: %dpx;  /* Half of the diameter for circular shape */
-                color: white;
-                font-size: 12px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #444444;  /* Slightly lighter grey on hover */
-            }
-            QPushButton:pressed {
-                background-color: #555555;  /* Even lighter grey when pressed */
-            }
-        """
-            % (tone_button_diameter // 2)
-        )
+        self.tone_down_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
 
         # Connect buttons to functions
         self.tone_down_button.clicked.connect(self._decrease_tone)
@@ -690,12 +442,6 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(self.spacer)
         button_layout.addWidget(self.tone_up_button)
         button_layout.addStretch()
-
-        # Add button layout to main layout
-        # layout.addStretch()
-        # layout.addLayout(button_label_layout)
-        # layout.addLayout(button_layout)
-        # layout.addStretch()
         return button_layout
 
     def _create_section(self, title):
@@ -932,9 +678,24 @@ class MainWindow(QMainWindow):
 
             # Send the SysEx message
             sysex_msg = [
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11,
-                0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40,
-                0x26, 0xF7
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x00,
+                0x0E,
+                0x11,
+                0x19,
+                0x01,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x40,
+                0x26,
+                0xF7,
             ]
             self.midi_helper.send_message(sysex_msg)
             logging.debug("Sent SysEx message for Digital Synth 1")
@@ -1044,23 +805,9 @@ class MainWindow(QMainWindow):
         # Add label with color based on text
         label = QLabel(text)
         if text == "Analog Synth":
-            label.setStyleSheet(
-                """
-                font-family: "Myriad Pro", Arial;
-                font-size: 13px;
-                color: #00A0E9;  /* Blue for Analog */
-                font-weight: bold;
-            """
-            )
+            label.setStyleSheet(Style.ANALOG_SYNTH_PART_LABEL_STYLE)
         else:
-            label.setStyleSheet(
-                """
-                font-family: "Myriad Pro", Arial;
-                font-size: 13px;
-                color: #d51e35;  /* Base red */
-                font-weight: bold;
-            """
-            )
+            label.setStyleSheet(Style.SYNTH_PART_LABEL_STYLE)
         row.addWidget(label)
 
         # Add spacer to push button to right
@@ -1073,30 +820,7 @@ class MainWindow(QMainWindow):
         button.clicked.connect(slot)
 
         # Style the button with brighter hover/pressed/selected  states
-        button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #666666;
-                border-radius: 15px;
-                padding: 0px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-            QPushButton:checked {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-                padding: 0px;
-            }
-        """
-        )
+        button.setStyleSheet(Style.BUTTON_STYLE)
 
         row.addWidget(button)
         return row, button
@@ -1710,7 +1434,7 @@ class MainWindow(QMainWindow):
 
     def _update_display(self):
         """Update the JD-Xi display image"""
-        pixmap = draw_jdxi(
+        pixmap = draw_instrument_pixmap(
             digital_font_family=(
                 self.digital_font_family
                 if hasattr(self, "digital_font_family")
@@ -2251,7 +1975,7 @@ class MainWindow(QMainWindow):
         """
         try:
             # Create new image with updated preset info
-            image = draw_jdxi(
+            image = draw_instrument_pixmap(
                 digital_font_family=self.digital_font_family,
                 current_octave=self.current_octave,
                 preset_num=preset_num,

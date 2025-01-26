@@ -1,13 +1,14 @@
 from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
+
 class Style:
     """Central style definitions for JD-Xi Manager"""
-    
+
     # Colors
     COM_BG = "#000000"
     TITLE_TEXT = "#FFFFFF"
-    BACKGROUND = "#000000" # """"#1A1A1A"
+    BACKGROUND = "#000000"  # """"#1A1A1A"
     FOREGROUND = "#FFFFFF"
     ACCENT = "#FF0000"  # Red accent color
     ACCENT_HOVER = "#FF0000"  # Red for hover
@@ -16,15 +17,65 @@ class Style:
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
     SLIDER_GROOVE = "#666666"  # grey groove
 
-    ICON_SIZE = 20 # Size of icons in Editor Group boxes
+    ICON_SIZE = 20  # Size of icons in Editor Group boxes
     # Dimensions
-    HANDLE_SIZE = "6px"       # Circle diameter
-    GROOVE_WIDTH = "2px"      # Groove thickness
-    
+    HANDLE_SIZE = "6px"  # Circle diameter
+    GROOVE_WIDTH = "2px"  # Groove thickness
+
     # Fonts
     FONT_FAMILY = "Myriad Pro, Arial, sans-serif"
     FONT_SIZE = "12px"
-    
+
+    # Common style sheet for all buttons
+    BUTTON_STYLE = f"""
+            QPushButton {{
+                background-color: black;
+                border: 4px solid #666666;
+                border-radius: 15px;
+                padding: 0px;
+            }}
+            QPushButton:hover {{
+                background-color: #1A1A1A;
+                border-color: #ff4d4d;
+            }}
+            QPushButton:pressed {{
+                background-color: #333333;
+                border-color: #ff6666;
+            }}
+            QPushButton:checked {{
+                background-color: black;
+                border: 4px solid #d51e35;
+                border-radius: 15px;
+                padding: 0px;
+            }}
+        """
+    SYNTH_PART_LABEL_STYLE = """
+                font-family: "Myriad Pro", Arial;
+                font-size: 13px;
+                color: #d51e35;  /* Base red */
+                font-weight: bold;
+            """
+    ANALOG_SYNTH_PART_LABEL_STYLE = """
+                font-family: "Myriad Pro", Arial;
+                font-size: 13px;
+                color: #00A0E9;  /* Blue for Analog */
+                font-weight: bold;
+            """
+    TONE_BUTTON_STYLE = f"""
+            QPushButton {{
+                background-color: #333333;  /* Dark grey */
+                border-radius: 12px;  /* Half of the diameter for circular shape */
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{
+                background-color: #444444;  /* Slightly lighter grey on hover */
+            }}
+            QPushButton:pressed {{
+                background-color: #555555;  /* Even lighter grey when pressed */
+            }}
+        """
     # Common style sheet for all editors
     EDITOR_STYLE = f"""
         QWidget {{
@@ -123,7 +174,7 @@ class Style:
         QComboBox::down-arrow {{
             image: none;
         }}
-    """ 
+    """
     JDXI_STYLE = """
             QMainWindow {
                 background-color: black;
