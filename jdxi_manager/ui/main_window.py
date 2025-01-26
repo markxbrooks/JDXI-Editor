@@ -407,6 +407,8 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(self.tone_up_button)
         button_layout.addStretch()
 
+
+
         # Add button layout to main layout
         #main_layout.addStretch()
         #main_layout.addLayout(button_layout)
@@ -417,6 +419,15 @@ class MainWindow(QMainWindow):
 
         # Initialize current preset index
         self.current_preset_index = 0
+
+        # Example size for the arpeggiator button
+
+
+        # Add buttons to layout
+        #layout = QVBoxLayout()
+        #layout.addWidget(self.tone_up_button)
+        #layout.addWidget(self.tone_down_button)
+        #self.setLayout(layout)
 
     def _decrease_tone(self):
         """Decrease the tone index and update the display."""
@@ -519,7 +530,7 @@ class MainWindow(QMainWindow):
             self.digital_font_family if hasattr(self, 'digital_font_family') else None,
             self.current_octave
         ))
-        self.image_label.setAlignment(Qt.AlignCenter)
+        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         container.layout().addWidget(self.image_label)
         
         # Add overlaid controls
@@ -527,29 +538,80 @@ class MainWindow(QMainWindow):
         
         layout.addWidget(container)
 
+        # Initialize current preset index
+        self.current_preset_index = 0
+
+    def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
+        self.tone_label = QLabel("Tone")
         self.tone_down_button = QPushButton("-")
+        self.spacer = QLabel(" ")
         self.tone_up_button = QPushButton("+")
+
+        # Calculate size for tone buttons
+        tone_button_diameter = 25
+
+        # Create tone up button
+        self.tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
+        self.tone_up_button.setStyleSheet("""
+            QPushButton {
+                background-color: #333333;  /* Dark grey */
+                border-radius: %dpx;  /* Half of the diameter for circular shape */
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #444444;  /* Slightly lighter grey on hover */
+            }
+            QPushButton:pressed {
+                background-color: #555555;  /* Even lighter grey when pressed */
+            }
+        """ % (tone_button_diameter // 2))
+
+        # Create tone down button
+        # self.tone_down_button = QPushButton("-", self)
+        self.tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
+        self.tone_down_button.setStyleSheet("""
+            QPushButton {
+                background-color: #333333;  /* Dark grey */
+                border-radius: %dpx;  /* Half of the diameter for circular shape */
+                color: white;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #444444;  /* Slightly lighter grey on hover */
+            }
+            QPushButton:pressed {
+                background-color: #555555;  /* Even lighter grey when pressed */
+            }
+        """ % (tone_button_diameter // 2))
 
         # Connect buttons to functions
         self.tone_down_button.clicked.connect(self._decrease_tone)
         self.tone_up_button.clicked.connect(self._increase_tone)
 
+        button_label_layout = QHBoxLayout()
+        button_label_layout.addStretch()
+        button_label_layout.addWidget(self.tone_label)
+        button_label_layout.addStretch()
         # Button layout
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.tone_down_button)
+        button_layout.addWidget(self.spacer)
         button_layout.addWidget(self.tone_up_button)
         button_layout.addStretch()
 
         # Add button layout to main layout
-        layout.addStretch()
-        layout.addLayout(button_layout)
-        layout.addStretch()
+        #layout.addStretch()
+        #layout.addLayout(button_label_layout)
+        #layout.addLayout(button_layout)
+        #layout.addStretch()
+        return button_layout
 
-        # Initialize current preset index
-        self.current_preset_index = 0
-        
+
     def _create_section(self, title):
         """Create a section frame with title"""
         frame = QFrame()
@@ -1209,6 +1271,28 @@ class MainWindow(QMainWindow):
         
         effects_row = self._create_button_row("Effects", self._open_effects)
         fx_layout.addLayout(effects_row)
+
+        ###### For tone buttons ######
+        # Effects button in top row
+        tone_container = QWidget(widget)
+        tone_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
+        tone_container_layout = QVBoxLayout(tone_container)
+        tone_label_layout = QHBoxLayout()
+        tone_label = QLabel("Tone")
+        tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        tone_label.setStyleSheet("""
+            font-family: "Myriad Pro", Arial;
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+        """)
+        tone_label_layout.addWidget(tone_label)
+        tone_container_layout.addLayout(tone_label_layout)
+        tone_layout = QHBoxLayout()
+        tone_row = self._create_tone_buttons_row()
+        tone_layout.addLayout(tone_row)
+        tone_container_layout.addLayout(tone_layout)
         
         # Make containers transparent
         parts_container.setStyleSheet("background: transparent;")
@@ -1372,7 +1456,7 @@ class MainWindow(QMainWindow):
         # Arpeggiator button
         arp_btn = QPushButton("Arpeggio")
         arp_btn.setFixedHeight(40)
-        arp_btn.clicked.connect(self._open_arpeggio)
+        arp_btn.clicked.connect(self._open_arpeggiator)
         arp_row.addWidget(arp_btn)
         
         # Add the horizontal row to the main layout
@@ -1784,7 +1868,7 @@ class MainWindow(QMainWindow):
             # Note off message: 0x80 (Note Off, channel 1), note number, velocity 0
             msg = [0x80, note_num, 0]
             self.midi_helper.send_message(msg)
-            logging.debug(f"Sent Note Off: {note_num}") 
+            logging.debug(f"Sent Note Off: {note_num}")
 
     def _create_midi_indicators(self):
         """Create MIDI activity indicators"""
