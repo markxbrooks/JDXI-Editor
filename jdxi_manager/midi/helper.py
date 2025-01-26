@@ -11,12 +11,43 @@ from PySide6.QtCore import Signal, QObject
 from jdxi_manager.data.preset_type import PresetType
 
 
+def find_preset_number(preset_name, presets):
+    """
+    Find the 1-based index of a preset name in a list of presets, ignoring numerical prefixes.
+
+    Args:
+        preset_name (str): The name of the preset to find.
+        presets (list of str): The list of preset names with numerical prefixes.
+
+    Returns:
+        int or None: The 1-based index of the preset, or None if not found.
+    """
+    if not isinstance(presets, list) or not isinstance(preset_name, str):
+        raise ValueError(
+            "Invalid input: 'presets' must be a list and 'preset_name' must be a string."
+        )
+
+    # Strip and lower the incoming preset name for comparison
+    preset_name_clean = preset_name.strip().lower()
+
+    for index, preset in enumerate(presets):
+        # Split the numerical prefix from the preset name
+        _, name = preset.split(": ", 1)
+
+        # Compare the stripped and lowercased names
+        if name.strip().lower() == preset_name_clean:
+            return index + 1  # Convert to 1-based index
+
+    # Return None if no match is found
+    return None
+
+
 class MIDIHelper(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
     parameter_received = Signal(list, int)  # address, value
     preset_changed = Signal(int, str, int)
-    
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.midi_in = rtmidi.MidiIn()
@@ -51,13 +82,49 @@ class MIDIHelper(QObject):
 
     def _handle_incoming_midi_message(self, message):
         """Handle incoming MIDI message from pubsub"""
-        preset_data = {'modified': 0}
+        preset_data = {"modified": 0}
         try:
-            print(f"Received MIDI message: {message}")
+            print(f"Received MIDI message: {message.hex()}")
             # if isinstance(message, tuple) and len(message) == 2:
             #    self._midi_callback(message[0], message[1])
-            if message.is_cc():
-                if preset_matches := re.search(r"channel=(\d{1,2}) control=(\d{1,2}) value=(\d{1,3})", str(message), re.I):
+            message_data = message.hex()
+            try:
+                # Convert message to hex string
+                hex_message = message.hex()
+                hex_data = message.data
+                print(f"Received SysEx message: {hex_message}")
+                print(f"With SysEx data: {hex_data}")
+                # Check if it's a JD-Xi message
+                # if hex_message.startswith("F0411000000E12"):
+                print("JD-Xi SysEx message detected")
+                # Extract patch name (bytes 12 to 24)
+                patch_name_bytes = hex_data[11:23]
+                patch_name = "".join(chr(b) for b in patch_name_bytes).strip()
+                print(f"Patch name: {patch_name}")
+                preset_number = find_preset_number(patch_name, DIGITAL_PRESETS)
+                print(f"Preset number: {preset_number}")
+                # Update UI with the patch name
+                presets = DIGITAL_PRESETS
+                if preset_number:
+                    pub.sendMessage(
+                        "update_display_preset",
+                        preset_number=preset_number,
+                        preset_name=presets[
+                            preset_number - 1
+                        ],  # Convert to 0-based index
+                        channel=self.channel,
+                    )
+
+            except Exception as e:
+                print(f"Error handling SysEx message: {str(e)}")
+                logging.error(f"Error handling SysEx message: {str(e)}")
+
+            if message_data.is_cc():
+                if preset_matches := re.search(
+                    r"channel=(\d{1,2}) control=(\d{1,2}) value=(\d{1,3})",
+                    str(message_data),
+                    re.I,
+                ):
                     self.channel = int(preset_matches.group(1))
                     cc_control_number = int(preset_matches.group(2))
                     cc_control_value = int(preset_matches.group(3))
@@ -66,12 +133,14 @@ class MIDIHelper(QObject):
                     elif cc_control_number == 32:
                         self.cc_lsb_value = int(cc_control_value)
             else:
-                if preset_matches := re.search(r"program=(\d{1,3})", str(message), re.I):
+                if preset_matches := re.search(
+                    r"program=(\d{1,3})", str(message_data), re.I
+                ):
                     print(f"msb: {self.cc_msb_value}, lsb: {self.cc_lsb_value}")
                     self.program_number = int(preset_matches.group(1))
                     presets = DIGITAL_PRESETS
                     if self.cc_msb_value == 95:
-                        preset_data['type'] = PresetType.DIGITAL_1
+                        preset_data["type"] = PresetType.DIGITAL_1
                         if self.cc_lsb_value == 64:
                             self.preset_number = self.program_number
                         elif self.cc_lsb_value == 65:
@@ -79,20 +148,25 @@ class MIDIHelper(QObject):
                     if self.cc_msb_value == 94:
                         presets = ANALOG_PRESETS
                         self.preset_number = self.program_number
-                        preset_data['type'] = PresetType.ANALOG
+                        preset_data["type"] = PresetType.ANALOG
                     if self.cc_msb_value == 86:
                         presets = DRUM_PRESETS
                         self.preset_number = self.program_number
-                        preset_data['type'] = PresetType.DRUMS
-                    pub.sendMessage("update_display_preset", preset_number=self.preset_number, preset_name=presets[self.preset_number], channel=self.channel)
-                    print(f"preset changed to: {self.preset_number}: {presets[self.preset_number]}")
+                        preset_data["type"] = PresetType.DRUMS
+                    pub.sendMessage(
+                        "update_display_preset",
+                        preset_number=self.preset_number,
+                        preset_name=presets[self.preset_number],
+                        channel=self.channel,
+                    )
+                    print(
+                        f"preset changed to: {self.preset_number}: {presets[self.preset_number]}"
+                    )
                     """self.preset_changed.emit(
                         self.preset_number,
                         DIGITAL_PRESETS[self.preset_number],
                         self.channel
                     )"""
-
-
 
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")
@@ -132,7 +206,7 @@ class MIDIHelper(QObject):
         value = data[3]
         print(f"Value: {value}")
         # Emit signal with parameter data
-        self.parameter_received.emit(address, value)        
+        self.parameter_received.emit(address, value)
 
     def get_input_ports(self) -> List[str]:
         """Get available MIDI input ports"""
@@ -150,10 +224,10 @@ class MIDIHelper(QObject):
         """Find JD-Xi input and output ports"""
         in_ports = self.get_input_ports()
         out_ports = self.get_output_ports()
-        
+
         jdxi_in = next((p for p in in_ports if "jd-xi" in p.lower()), None)
         jdxi_out = next((p for p in out_ports if "jd-xi" in p.lower()), None)
-        
+
         return (jdxi_in, jdxi_out)
 
     def validate_sysex_message(self, message: List[int]) -> bool:
@@ -163,60 +237,66 @@ class MIDIHelper(QObject):
             if len(message) not in [15, 18]:
                 logging.error(f"Invalid SysEx length: {len(message)}")
                 return False
-            
+
             # Check header
             if message[:7] != [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]:
                 logging.error("Invalid SysEx header")
                 return False
-            
+
             # Check DT1 command
             if message[7] not in [0x12, 0x11]:
                 logging.error("Invalid command byte")
                 return False
-            
+
             # Check end marker
             if message[-1] != 0xF7:
                 logging.error("Invalid SysEx end marker")
                 return False
-            
+
             # Verify checksum
             data_sum = sum(message[8:-2]) & 0x7F  # Sum from area to value
             checksum = (128 - data_sum) & 0x7F
             if message[-2] != checksum:
-                logging.error(f"Invalid checksum: expected {checksum}, got {message[-2]}")
+                logging.error(
+                    f"Invalid checksum: expected {checksum}, got {message[-2]}"
+                )
                 return False
-            
+
             return True
-            
+
         except Exception as e:
             logging.error(f"Error validating SysEx message: {str(e)}")
             return False
 
     def send_message(self, message: List[int]) -> bool:
         """Send raw MIDI message with validation"""
-        logging.debug(f"Sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+        logging.debug(
+            f"Sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
+        )
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
             # Validate SysEx messages
-            #if message[0] == 0xF0:
+            # if message[0] == 0xF0:
             #    if not self.validate_sysex_message(message):
             #        logging.debug(f"Validation failed for message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
             #        return False
-                
-            logging.debug(f"Validation passed, sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+
+            logging.debug(
+                f"Validation passed, sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
+            )
             self.midi_out.send_message(message)
             return True
-            
+
         except Exception as e:
             logging.error(f"Error sending MIDI message: {str(e)}")
             return False
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
         """Send bank select messages
-        
+
         Args:
             msb: Bank Select MSB value (0-127)
             lsb: Bank Select LSB value (0-127)
@@ -258,7 +338,7 @@ class MIDIHelper(QObject):
         try:
             ports = self.get_input_ports()
             port_index = port_name_or_index
-            
+
             if isinstance(port_name_or_index, str):
                 for i, name in enumerate(ports):
                     if port_name_or_index.lower() in name.lower():
@@ -267,17 +347,17 @@ class MIDIHelper(QObject):
                 else:
                     logging.error(f"MIDI input port not found: {port_name_or_index}")
                     return False
-            
+
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
                 logging.error(f"Invalid MIDI input port index: {port_index}")
                 return False
-                
+
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
             self.midi_in.set_callback(self._midi_callback)
             logging.info(f"Opened MIDI input port: {ports[port_index]}")
             return True
-            
+
         except Exception as e:
             logging.error(f"Error opening MIDI input port: {str(e)}")
             return False
@@ -287,7 +367,7 @@ class MIDIHelper(QObject):
         try:
             ports = self.get_output_ports()
             port_index = port_name_or_index
-            
+
             if isinstance(port_name_or_index, str):
                 # Find port index by name
                 for i, name in enumerate(ports):
@@ -297,17 +377,17 @@ class MIDIHelper(QObject):
                 else:
                     logging.error(f"MIDI output port not found: {port_name_or_index}")
                     return False
-            
+
             # Validate port index
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
                 logging.error(f"Invalid MIDI output port index: {port_index}")
                 return False
-                
+
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
             logging.info(f"Opened MIDI output port: {ports[port_index]}")
             return True
-            
+
         except Exception as e:
             logging.error(f"Error opening MIDI output port: {str(e)}")
             return False
@@ -333,7 +413,7 @@ class MIDIHelper(QObject):
 
     def open_ports(self, in_port: str, out_port: str) -> bool:
         """Open both input and output ports by name
-        
+
         Args:
             in_port: Input port name or None
             out_port: Output port name or None
@@ -341,75 +421,84 @@ class MIDIHelper(QObject):
         try:
             input_success = True
             output_success = True
-            
+
             if in_port:
                 input_success = self.open_input_port(in_port)
             if out_port:
                 output_success = self.open_output_port(out_port)
-                
+
             return input_success and output_success
-            
+
         except Exception as e:
             logging.error(f"Error opening MIDI ports: {str(e)}")
             return False
 
-    def send_parameter(self, area: int, part: int, group: int, param: int, value: int) -> bool:
+    def send_parameter(
+        self, area: int, part: int, group: int, param: int, value: int
+    ) -> bool:
         """Send parameter change message
-        
+
         Args:
             area: Parameter area (e.g., Program, Digital Synth)
             part: Part number
             group: Parameter group
             param: Parameter number
             value: Parameter value (0-127)
-            
+
         Returns:
             True if successful, False otherwise
         """
-        logging.debug(f"Sending parameter: area={area}, part={part}, group={group}, param={param}, value={value}")
+        logging.debug(
+            f"Sending parameter: area={area}, part={part}, group={group}, param={param}, value={value}"
+        )
         try:
             if not self.is_output_open:
                 logging.warning("MIDI output not open")
                 return False
-                
+
             # Ensure all values are integers and within valid ranges
             area = int(area) & 0x7F
             part = int(part) & 0x7F
             group = int(group) & 0x7F
             param = int(param) & 0x7F
             value = int(value) & 0x7F
-            
+
             # Create parameter message
             message = [
-                0xF0,           # Start of SysEx
-                0x41, 0x10,    # Roland ID
-                0x00, 0x00,    # Device ID
-                0x00, 0x0E,    # Model ID
-                0x12,          # DT1 Command
-                area,          # Parameter area
-                part,          # Part number
-                group,         # Parameter group
-                param,         # Parameter number
-                value,         # Parameter value
-                0x00,         # Checksum (placeholder)
-                0xF7          # End of SysEx
+                0xF0,  # Start of SysEx
+                0x41,
+                0x10,  # Roland ID
+                0x00,
+                0x00,  # Device ID
+                0x00,
+                0x0E,  # Model ID
+                0x12,  # DT1 Command
+                area,  # Parameter area
+                part,  # Part number
+                group,  # Parameter group
+                param,  # Parameter number
+                value,  # Parameter value
+                0x00,  # Checksum (placeholder)
+                0xF7,  # End of SysEx
             ]
-            
+
             # Calculate checksum
             checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
             message[-2] = checksum
 
-            logging.debug(f"Sending parameter message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+            logging.debug(
+                f"Sending parameter message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
+            )
             # Send message directly instead of using output_port
             return self.send_message(message)
-            
+
         except Exception as e:
             logging.error(f"Error sending parameter: {str(e)}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
         """Send program change message
-        
+
         Args:
             program: Program number (0-127)
             channel: MIDI channel (0-15)
@@ -421,15 +510,19 @@ class MIDIHelper(QObject):
 
         try:
             # Program Change status byte: 0xC0 + channel
-            logging.debug(f"Sending program change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xC0 + channel, program & 0x7F]])}")
+            logging.debug(
+                f"Sending program change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xC0 + channel, program & 0x7F]])}"
+            )
             return self.send_message([0xC0 + channel, program & 0x7F])
         except Exception as e:
             logging.error(f"Error sending program change: {str(e)}")
             return False
 
-    def send_control_change(self, controller: int, value: int, channel: int = 0) -> bool:
+    def send_control_change(
+        self, controller: int, value: int, channel: int = 0
+    ) -> bool:
         """Send control change message
-        
+
         Args:
             controller: Controller number (0-127)
             value: Controller value (0-127)
@@ -441,37 +534,54 @@ class MIDIHelper(QObject):
 
         try:
             # Control Change status byte: 0xB0 + channel
-            logging.debug(f"Sending control change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xB0 + channel, controller & 0x7F, value & 0x7F]])}")
+            logging.debug(
+                f"Sending control change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xB0 + channel, controller & 0x7F, value & 0x7F]])}"
+            )
             return self.send_message([0xB0 + channel, controller & 0x7F, value & 0x7F])
         except Exception as e:
             logging.error(f"Error sending control change: {str(e)}")
             return False
 
-    def get_parameter(self, area: int, part: int, group: int, param: int) -> Optional[int]:
+    def get_parameter(
+        self, area: int, part: int, group: int, param: int
+    ) -> Optional[int]:
         """Get parameter value via MIDI System Exclusive message
-        
+
         Args:
             area: Parameter area (e.g., Digital Synth 1)
             part: Part number
             group: Parameter group
             param: Parameter number
-            
+
         Returns:
             Parameter value (0-127) or None if error
         """
-        logging.debug(f"Requesting parameter: area={area}, part={part}, group={group}, param={param}")
+        logging.debug(
+            f"Requesting parameter: area={area}, part={part}, group={group}, param={param}"
+        )
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None
 
         try:
             # Format: F0 41 10 00 00 3B {area} {part} {group} {param} F7
-            request = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x3B, 
-                      area, part, group, param, 0xF7]
-            
+            request = [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x3B,
+                area,
+                part,
+                group,
+                param,
+                0xF7,
+            ]
+
             # Send parameter request
             self.midi_out.send_message(request)
-            
+
             # Wait for response (with timeout)
             start_time = time.time()
             while time.time() - start_time < 0.1:  # 100ms timeout
@@ -481,17 +591,17 @@ class MIDIHelper(QObject):
                         # Response format: F0 41 10 00 00 3B {area} {part} {group} {param} {value} F7
                         return msg[10]  # Value is at index 10
                 time.sleep(0.001)
-                
+
             logging.warning("Timeout waiting for parameter response")
             return None
-            
+
         except Exception as e:
             logging.error(f"Error getting parameter: {str(e)}")
             return None
 
     def request_parameter(self, area: int, part: int, group: int, param: int) -> bool:
         """Send parameter request message
-        
+
         This is a non-blocking version that just sends the request without waiting for response.
         The response will be handled by the callback if registered.
         """
@@ -501,22 +611,33 @@ class MIDIHelper(QObject):
 
         try:
             # Format: F0 41 10 00 00 3B {area} {part} {group} {param} F7
-            request = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x3B, 
-                      area, part, group, param, 0xF7]
+            request = [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x3B,
+                area,
+                part,
+                group,
+                param,
+                0xF7,
+            ]
             return self.send_message(request)
-            
+
         except Exception as e:
             logging.error(f"Error requesting parameter: {str(e)}")
             return False
 
     def send_cc(self, cc: int, value: int, channel: int = 0):
         """Send Control Change message
-        
+
         Args:
             cc: Control Change number (0-127)
             value: Control Change value (0-127)
             channel: MIDI channel (0-15)
-        
+
         Returns:
             True if successful, False otherwise
         """
@@ -525,15 +646,17 @@ class MIDIHelper(QObject):
             if not self.is_output_open:
                 logging.warning("MIDI output not open")
                 return False
-                
+
             # Create Control Change message (Status byte: 0xB0 + channel)
             message = [0xB0 + channel, cc & 0x7F, value & 0x7F]
-            logging.debug(f"Sending CC message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
+            logging.debug(
+                f"Sending CC message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
+            )
             # Send message using midi_out instead of output_port
             self.midi_out.send_message(message)
             logging.debug(f"Sent CC {cc}={value} on ch{channel}")
             return True
-            
+
         except Exception as e:
             logging.error(f"Error sending CC message: {str(e)}")
             return False
@@ -553,5 +676,3 @@ class MIDIHelper(QObject):
 
     def set_callback(self, callback):
         self.midi_in.set_callback(callback)
-        
-
