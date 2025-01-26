@@ -6,7 +6,7 @@ from pubsub import pub
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QMenuBar, QMenu, QMessageBox, QLabel, QPushButton,
-    QFrame, QGridLayout, QGroupBox
+    QFrame, QGridLayout, QGroupBox, QButtonGroup
 )
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QAction, QFont, QPixmap, QImage, QPainter, QPen, QColor, QFontDatabase
@@ -245,6 +245,7 @@ class MainWindow(QMainWindow):
         self.display_height = 70
         
         # Initialize state variables
+        self.current_synth_type = PresetType.DIGITAL_1
         self.current_octave = 0  # Initialize octave tracking first
         self.current_preset_num = 1  # Initialize preset number
         self.current_preset_name = "JD Xi"  # Initialize preset name
@@ -339,6 +340,12 @@ class MainWindow(QMainWindow):
         
         # Load last used preset settings
         self._load_last_preset()
+
+        # Initialize synth type
+        self.current_synth_type = PresetType.DIGITAL_1
+
+        # Set default styles
+        self._update_synth_button_styles()
         
         # Create favorite buttons container
         favorites_widget = QWidget()
@@ -429,22 +436,57 @@ class MainWindow(QMainWindow):
         #layout.addWidget(self.tone_down_button)
         #self.setLayout(layout)
 
+    def _select_synth(self, synth_type):
+        """Select a synth and update button styles."""
+        print(f"Selected synth: {synth_type}")
+        self.current_synth_type = synth_type
+        self._update_synth_button_styles()
+
+    def _update_synth_button_styles(self):
+        """Update styles for synth buttons based on selection."""
+        buttons = {
+            PresetType.ANALOG: self.analog_button,
+            PresetType.DIGITAL_1: self.digital1_button,
+            PresetType.DIGITAL_2: self.digital2_button,
+            PresetType.DRUMS: self.drums_button
+        }
+
+        for synth_type, button in buttons.items():
+            if synth_type == self.current_synth_type:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #333333;
+                        border: 4px solid #d51e35;
+                        border-radius: 15px;
+                        padding: 0px;
+                    }
+                """)
+            else:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #000000;
+                        border: 4px solid #666666;
+                        border-radius: 15px;
+                        padding: 0px;
+                    }
+                """)
+
     def _decrease_tone(self):
         """Decrease the tone index and update the display."""
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
             presets = DIGITAL_PRESETS
-            if self.preset_type == PresetType.ANALOG:
+            if self.current_synth_type == PresetType.ANALOG:
                 presets = AN_PRESETS
-            elif self.preset_type == PresetType.DIGITAL_1:
+            elif self.current_synth_type == PresetType.DIGITAL_1:
                 presets = DIGITAL_PRESETS
-            elif self.preset_type == PresetType.DIGITAL_2:
+            elif self.current_synth_type == PresetType.DIGITAL_2:
                 presets = DIGITAL_PRESETS
-            elif self.preset_type == PresetType.DRUMS:
+            elif self.current_synth_type == PresetType.DRUMS:
                 presets = DRUM_PRESETS
             self._update_display_preset(self.current_preset_index, presets[self.current_preset_index], self.channel)
             preset_data = {
-                'type': self.preset_type,  # Ensure this is a valid type
+                'type': self.current_synth_type,  # Ensure this is a valid type
                 'selpreset': self.current_preset_index + 1,  # Convert to 1-based index
                 'modified': 0  # or 1, depending on your logic
             }
@@ -965,13 +1007,14 @@ class MainWindow(QMainWindow):
         # Add button
         button = QPushButton()
         button.setFixedSize(30, 30)
+        button.setCheckable(True)
         button.clicked.connect(slot)
         
-        # Style the button with brighter hover/pressed states
+        # Style the button with brighter hover/pressed/selected  states
         button.setStyleSheet("""
             QPushButton {
                 background-color: black;
-                border: 4px solid #d51e35;
+                border: 4px solid #666666;
                 border-radius: 15px;
                 padding: 0px;
             }
@@ -983,10 +1026,16 @@ class MainWindow(QMainWindow):
                 background-color: #333333;
                 border-color: #ff6666;
             }
+            QPushButton:checked {
+                background-color: black;
+                border: 4px solid #d51e35;
+                border-radius: 15px;
+                padding: 0px;
+            }
         """)
         
         row.addWidget(button)
-        return row
+        return row, button
 
     def add_arpeggiator_buttons(self, widget):
         """Add arpeggiator up/down buttons to the interface"""
@@ -1018,7 +1067,7 @@ class MainWindow(QMainWindow):
             font-weight: bold;
             background: transparent;
         """)
-        arpeggiator_label.setAlignment(Qt.AlignCenter)
+        arpeggiator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         arpeggiator_layout.addWidget(arpeggiator_label)
 
         # Create horizontal layout for Down/Up labels
@@ -1208,10 +1257,6 @@ class MainWindow(QMainWindow):
                 background-color: #1A1A1A;
                 border-color: #ff4d4d;
             }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
         """)
         buttons_row.addWidget(self.octave_up)
 
@@ -1249,12 +1294,27 @@ class MainWindow(QMainWindow):
         parts_layout.addWidget(parts_label)
         
         # Parts buttons
-        digital1_row = self._create_button_row("Digital Synth 1", self._open_digital_synth1)
-        digital2_row = self._create_button_row("Digital Synth 2", self._open_digital_synth2)
-        drums_row = self._create_button_row("Drums", self._open_drums)
-        analog_row = self._create_button_row("Analog Synth", self._open_analog_synth)
-        arp_row = self._create_button_row("Arpeggiator", self._open_arpeggiator)
-        
+        digital1_row, self.digital1_button = self._create_button_row("Digital Synth 1", self._open_digital_synth1)
+        digital2_row, self.digital2_button  = self._create_button_row("Digital Synth 2", self._open_digital_synth2)
+        drums_row, self.drums_button = self._create_button_row("Drums", self._open_drums)
+        analog_row, self.analog_button = self._create_button_row("Analog Synth", self._open_analog_synth)
+        arp_row, self.arp_button = self._create_button_row("Arpeggiator", self._open_arpeggiator)
+
+        self.analog_button.clicked.connect(lambda: self._select_synth(PresetType.ANALOG))
+        self.digital1_button.clicked.connect(lambda: self._select_synth(PresetType.DIGITAL_1))
+        self.digital2_button.clicked.connect(lambda: self._select_synth(PresetType.DIGITAL_2))
+        self.drums_button.clicked.connect(lambda: self._select_synth(PresetType.DRUMS))
+
+        # Create a button group
+        button_group = QButtonGroup()
+        button_group.addButton(self.digital1_button)
+        button_group.addButton(self.digital2_button)
+        button_group.addButton(self.analog_button)
+        button_group.addButton(self.drums_button)
+
+        # Ensure only one button can be checked at a time
+        button_group.setExclusive(True)
+
         parts_layout.addLayout(digital1_row)
         parts_layout.addLayout(digital2_row)
         parts_layout.addLayout(drums_row)
@@ -1269,7 +1329,7 @@ class MainWindow(QMainWindow):
         fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
         fx_layout = QHBoxLayout(fx_container)
         
-        effects_row = self._create_button_row("Effects", self._open_effects)
+        effects_row, self.effects_button = self._create_button_row("Effects", self._open_effects)
         fx_layout.addLayout(effects_row)
 
         ###### For tone buttons ######
@@ -2292,7 +2352,7 @@ class MainWindow(QMainWindow):
         self.octave_down = QPushButton("Down")
         self.octave_up = QPushButton("Up")
         self.octave_display = QLabel("0")  # Display current octave
-        self.octave_display.setAlignment(Qt.AlignCenter)
+        self.octave_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         self.octave_down.clicked.connect(lambda: self._send_octave(-1))
         self.octave_up.clicked.connect(lambda: self._send_octave(1))
