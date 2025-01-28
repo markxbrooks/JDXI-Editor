@@ -2,8 +2,14 @@ import logging
 import time
 from typing import Dict, Optional, Union
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QTabWidget,
-    QScrollArea, QSpinBox, QLabel
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+    QTabWidget,
+    QScrollArea,
+    QSpinBox,
+    QLabel,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
@@ -15,74 +21,85 @@ from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
-    WaveformButton, pwsqu_png, triangle_png, upsaw_png, square_png, sine_png, noise_png, spsaw_png, pcm_png,
-    adsr_waveform_icon
+    WaveformButton,
+    pwsqu_png,
+    triangle_png,
+    upsaw_png,
+    square_png,
+    sine_png,
+    noise_png,
+    spsaw_png,
+    pcm_png,
+    adsr_waveform_icon,
 )
 from jdxi_manager.data.digital import (
-    DigitalParameter, 
+    DigitalParameter,
     DigitalCommonParameter,
-    OscWave, 
-    DigitalPartial, 
-    set_partial_state, 
-    get_partial_state
+    OscWave,
+    DigitalPartial,
+    set_partial_state,
+    get_partial_state,
 )
-from jdxi_manager.midi.constants import (
-    DIGITAL_SYNTH_AREA, PART_1, PART_2
-)
+from jdxi_manager.midi.constants import DIGITAL_SYNTH_AREA, PART_1, PART_2
 from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
 from jdxi_manager.ui.widgets.switch import Switch
 
 
 class PartialEditor(QWidget):
     """Editor for a single partial"""
+
     def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.partial_num = partial_num
         self.part = part
-        
+
         # Store parameter controls for easy access
-        self.controls: Dict[Union[DigitalParameter, DigitalCommonParameter], QWidget] = {}
-        
+        self.controls: Dict[
+            Union[DigitalParameter, DigitalCommonParameter], QWidget
+        ] = {}
+
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-        
+
         # Create vertical scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        
+
         # Create container widget
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-        
+
         # Add sections in a vertical layout
         container_layout.addWidget(self._create_oscillator_section())
         container_layout.addWidget(self._create_filter_section())
         container_layout.addWidget(self._create_amp_section())
         container_layout.addWidget(self._create_lfo_section())
         container_layout.addWidget(self._create_mod_lfo_section())
-        
+
         # Add container to scroll area
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
-    def _create_parameter_slider(self, param: Union[DigitalParameter, DigitalCommonParameter], label: str) -> Slider:
+    def _create_parameter_slider(
+        self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
+    ) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
-        if hasattr(param, 'get_display_value'):
+        if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-        
+
         # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max)
-        
+
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        
+
         # Store control reference
         self.controls[param] = slider
         return slider
@@ -94,10 +111,19 @@ class PartialEditor(QWidget):
 
         # prettify with icons
         icons_hlayout = QHBoxLayout()
-        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
+        ]:
             icon_label = QLabel()
             icon = qta.icon(icon)
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            pixmap = icon.pixmap(
+                Style.ICON_SIZE, Style.ICON_SIZE
+            )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
@@ -105,19 +131,19 @@ class PartialEditor(QWidget):
 
         # Top row: Waveform buttons and variation
         top_row = QHBoxLayout()
-        
+
         # Waveform buttons
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
         for wave in [
-            OscWave.SAW, 
-            OscWave.SQUARE, 
-            OscWave.PW_SQUARE, 
-            OscWave.TRIANGLE, 
+            OscWave.SAW,
+            OscWave.SQUARE,
+            OscWave.PW_SQUARE,
+            OscWave.TRIANGLE,
             OscWave.SINE,
             OscWave.NOISE,
             OscWave.SUPER_SAW,
-            OscWave.PCM
+            OscWave.PCM,
         ]:
             btn = WaveformButton(wave)
             if wave == OscWave.SAW:
@@ -156,7 +182,7 @@ class PartialEditor(QWidget):
             self.wave_buttons[wave] = btn
             wave_layout.addWidget(btn)
         top_row.addLayout(wave_layout)
-        
+
         # Wave variation switch
         self.wave_var = Switch("Var", ["A", "B", "C"])
         self.wave_var.valueChanged.connect(
@@ -164,37 +190,49 @@ class PartialEditor(QWidget):
         )
         top_row.addWidget(self.wave_var)
         layout.addLayout(top_row)
-        
+
         # Tuning controls
         tuning_group = QGroupBox("Tuning")
         tuning_layout = QVBoxLayout()
         tuning_group.setLayout(tuning_layout)
-        
-        tuning_layout.addWidget(self._create_parameter_slider(DigitalParameter.OSC_PITCH, "Pitch"))
-        tuning_layout.addWidget(self._create_parameter_slider(DigitalParameter.OSC_DETUNE, "Detune"))
+
+        tuning_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH, "Pitch")
+        )
+        tuning_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.OSC_DETUNE, "Detune")
+        )
         layout.addWidget(tuning_group)
-        
+
         # Pulse Width controls (only enabled for PW-SQUARE wave)
         pw_group = QGroupBox("Pulse Width")
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
-        
+
         self.pw_slider = self._create_parameter_slider(DigitalParameter.OSC_PW, "Width")
-        self.pwm_slider = self._create_parameter_slider(DigitalParameter.OSC_PWM_DEPTH, "Mod")
+        self.pwm_slider = self._create_parameter_slider(
+            DigitalParameter.OSC_PWM_DEPTH, "Mod"
+        )
         pw_layout.addWidget(self.pw_slider)
         pw_layout.addWidget(self.pwm_slider)
         layout.addWidget(pw_group)
-        
+
         # Pitch Envelope
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
-        
-        pitch_env_layout.addWidget(self._create_parameter_slider(DigitalParameter.OSC_PITCH_ATTACK, "Attack"))
-        pitch_env_layout.addWidget(self._create_parameter_slider(DigitalParameter.OSC_PITCH_DECAY, "Decay"))
-        pitch_env_layout.addWidget(self._create_parameter_slider(DigitalParameter.OSC_PITCH_DEPTH, "Depth"))
+
+        pitch_env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ATTACK, "Attack")
+        )
+        pitch_env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH_DECAY, "Decay")
+        )
+        pitch_env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH_DEPTH, "Depth")
+        )
         layout.addWidget(pitch_env_group)
-        
+
         # Wave gain control
         self.wave_gain = Switch("Gain", ["-6dB", "0dB", "+6dB", "+12dB"])
         self.wave_gain.valueChanged.connect(
@@ -207,15 +245,15 @@ class PartialEditor(QWidget):
             DigitalParameter.SUPER_SAW_DETUNE, "S-Saw Detune"
         )
         layout.addWidget(self.super_saw_detune)
-        
+
         # Update PW controls enabled state when waveform changes
         self._update_pw_controls_state(OscWave.SAW)  # Initial state
-        
+
         # PCM Wave number selector (only for PCM wave)
         pcm_group = QGroupBox("PCM Wave")
         pcm_layout = QVBoxLayout()
         pcm_group.setLayout(pcm_layout)
-        
+
         # Wave number spinner/selector
         wave_row = QHBoxLayout()
         self.wave_number = QSpinBox()
@@ -225,16 +263,16 @@ class PartialEditor(QWidget):
         wave_row.addWidget(QLabel("Number:"))
         wave_row.addWidget(self.wave_number)
         pcm_layout.addLayout(wave_row)
-        
+
         layout.addWidget(pcm_group)
         pcm_group.setVisible(False)  # Hide initially
         self.pcm_group = pcm_group  # Store reference for visibility control
-        
+
         return group
 
     def _update_pw_controls_state(self, waveform: OscWave):
         """Update pulse width controls enabled state based on waveform"""
-        pw_enabled = (waveform == OscWave.PW_SQUARE)
+        pw_enabled = waveform == OscWave.PW_SQUARE
         self.pw_slider.setEnabled(pw_enabled)
         self.pwm_slider.setEnabled(pw_enabled)
 
@@ -247,16 +285,16 @@ class PartialEditor(QWidget):
         try:
             # Send wave number in 4-bit chunks
             b1 = (value >> 12) & 0x0F  # Most significant 4 bits
-            b2 = (value >> 8) & 0x0F   # Next 4 bits
-            b3 = (value >> 4) & 0x0F   # Next 4 bits
-            b4 = value & 0x0F          # Least significant 4 bits
-            
+            b2 = (value >> 8) & 0x0F  # Next 4 bits
+            b3 = (value >> 4) & 0x0F  # Next 4 bits
+            b4 = value & 0x0F  # Least significant 4 bits
+
             # Send each byte
             self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_1, b1)
             self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_2, b2)
             self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_3, b3)
             self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_4, b4)
-            
+
         except Exception as e:
             logging.error(f"Error setting wave number: {str(e)}")
 
@@ -275,17 +313,17 @@ class PartialEditor(QWidget):
             icon_label.setAlignment(Qt.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
         layout.addLayout(icon_hlayout)
-        
+
         # Filter type controls
         type_row = QHBoxLayout()
-        
+
         # Filter mode switch
-        self.filter_mode = Switch("Mode", ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"])
-        self.filter_mode.valueChanged.connect(
-            lambda v: self._on_filter_mode_changed(v)
+        self.filter_mode = Switch(
+            "Mode", ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"]
         )
+        self.filter_mode.valueChanged.connect(lambda v: self._on_filter_mode_changed(v))
         type_row.addWidget(self.filter_mode)
-        
+
         # Filter slope switch
         self.filter_slope = Switch("Slope", ["-12dB", "-24dB"])
         self.filter_slope.valueChanged.connect(
@@ -293,18 +331,30 @@ class PartialEditor(QWidget):
         )
         type_row.addWidget(self.filter_slope)
         layout.addLayout(type_row)
-        
+
         # Main filter controls
         controls_group = QGroupBox("Controls")
         controls_layout = QVBoxLayout()
         controls_group.setLayout(controls_layout)
-        
-        controls_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_CUTOFF, "Cutoff"))
-        controls_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_RESONANCE, "Resonance"))
-        controls_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_KEYFOLLOW, "KeyFollow"))
-        controls_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_VELOCITY, "Velocity"))
+
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_CUTOFF, "Cutoff")
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_RESONANCE, "Resonance"
+            )
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_KEYFOLLOW, "KeyFollow"
+            )
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_VELOCITY, "Velocity")
+        )
         layout.addWidget(controls_group)
-        
+
         # Filter envelope
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)  # Mark as ADSR group
@@ -324,42 +374,52 @@ class PartialEditor(QWidget):
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         sub_layout.addLayout(icons_hlayout)
-        
+
         # ADSR controls
         adsr_layout = QHBoxLayout()
-        adsr_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_ENV_ATTACK, "A"))
-        adsr_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_ENV_DECAY, "D"))
-        adsr_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_ENV_SUSTAIN, "S"))
-        adsr_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_ENV_RELEASE, "R"))
+        adsr_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_ATTACK, "A")
+        )
+        adsr_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_DECAY, "D")
+        )
+        adsr_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_SUSTAIN, "S")
+        )
+        adsr_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_RELEASE, "R")
+        )
         env_layout.addLayout(adsr_layout)
-        
+
         # Envelope depth
-        env_layout.addWidget(self._create_parameter_slider(DigitalParameter.FILTER_ENV_DEPTH, "Depth"))
+        env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_DEPTH, "Depth")
+        )
         sub_layout.addWidget(env_group)
         layout.addLayout(sub_layout)
         # HPF cutoff
-        controls_layout.addWidget(self._create_parameter_slider(
-            DigitalParameter.HPF_CUTOFF, "HPF Cutoff"
-        ))
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.HPF_CUTOFF, "HPF Cutoff")
+        )
 
         # Aftertouch sensitivity
-        controls_layout.addWidget(self._create_parameter_slider(
-            DigitalParameter.CUTOFF_AFTERTOUCH, "AT Sens"
-        ))
-        
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.CUTOFF_AFTERTOUCH, "AT Sens")
+        )
+
         return group
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
         # Send MIDI message
         self._on_parameter_changed(DigitalParameter.FILTER_MODE, mode)
-        
+
         # Update control states
         self._update_filter_controls_state(mode)
 
     def _update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
-        enabled = (mode != 0)  # Enable if not BYPASS
+        enabled = mode != 0  # Enable if not BYPASS
         for param in [
             DigitalParameter.FILTER_CUTOFF,
             DigitalParameter.FILTER_RESONANCE,
@@ -370,7 +430,7 @@ class PartialEditor(QWidget):
             DigitalParameter.FILTER_ENV_SUSTAIN,
             DigitalParameter.FILTER_ENV_RELEASE,
             DigitalParameter.FILTER_ENV_DEPTH,
-            DigitalParameter.FILTER_SLOPE
+            DigitalParameter.FILTER_SLOPE,
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
@@ -381,30 +441,42 @@ class PartialEditor(QWidget):
         group.setLayout(layout)
 
         icons_hlayout = QHBoxLayout()
-        for icon in ["mdi.volume-variant-off", "mdi6.volume-minus","mdi.amplifier", "mdi6.volume-plus", "mdi.waveform"]:
+        for icon in [
+            "mdi.volume-variant-off",
+            "mdi6.volume-minus",
+            "mdi.amplifier",
+            "mdi6.volume-plus",
+            "mdi.waveform",
+        ]:
             icon_label = QLabel()
             icon = qta.icon(icon)
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            pixmap = icon.pixmap(
+                Style.ICON_SIZE, Style.ICON_SIZE
+            )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
-        
+
         # Level and velocity controls
         controls_group = QGroupBox("Controls")
         controls_layout = QVBoxLayout()
         controls_group.setLayout(controls_layout)
-        
-        controls_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_LEVEL, "Level"))
-        controls_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_VELOCITY, "Velocity"))
-        
+
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_LEVEL, "Level")
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_VELOCITY, "Velocity")
+        )
+
         # Create and center the pan slider
         pan_slider = self._create_parameter_slider(DigitalParameter.AMP_PAN, "Pan")
         pan_slider.setValue(0)  # Center the pan slider
         controls_layout.addWidget(pan_slider)
-        
+
         layout.addWidget(controls_group)
-        
+
         # Amp envelope
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)  # Mark as ADSR group
@@ -421,22 +493,30 @@ class PartialEditor(QWidget):
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
-        
-        env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A"))
-        env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D"))
-        env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S"))
-        env_layout.addWidget(self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R"))
-            
+
+        env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A")
+        )
+        env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D")
+        )
+        env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S")
+        )
+        env_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R")
+        )
+
         layout.addWidget(env_group)
-        
+
         # Keyfollow and aftertouch
-        controls_layout.addWidget(self._create_parameter_slider(
-            DigitalParameter.AMP_KEYFOLLOW, "KeyFollow"
-        ))
-        controls_layout.addWidget(self._create_parameter_slider(
-            DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens"
-        ))
-        
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.AMP_KEYFOLLOW, "KeyFollow")
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens")
+        )
+
         return group
 
     def _create_lfo_section(self):
@@ -445,25 +525,34 @@ class PartialEditor(QWidget):
         group.setLayout(layout)
 
         icons_hlayout = QHBoxLayout()
-        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
+        ]:
             icon_label = QLabel()
             icon = qta.icon(icon)
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            pixmap = icon.pixmap(
+                Style.ICON_SIZE, Style.ICON_SIZE
+            )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
-        
+
         # Shape and sync controls
         top_row = QHBoxLayout()
-        
+
         # Shape switch
         self.lfo_shape = Switch("Shape", ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
         self.lfo_shape.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.LFO_SHAPE, v)
         )
         top_row.addWidget(self.lfo_shape)
-        
+
         # Sync switch
         self.lfo_sync = Switch("Sync", ["OFF", "ON"])
         self.lfo_sync.valueChanged.connect(
@@ -471,29 +560,41 @@ class PartialEditor(QWidget):
         )
         top_row.addWidget(self.lfo_sync)
         layout.addLayout(top_row)
-        
+
         # Rate and fade controls
-        layout.addWidget(self._create_parameter_slider(DigitalParameter.LFO_RATE, "Rate"))
-        layout.addWidget(self._create_parameter_slider(DigitalParameter.LFO_FADE, "Fade"))
-        
+        layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LFO_RATE, "Rate")
+        )
+        layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LFO_FADE, "Fade")
+        )
+
         # Key trigger switch
         self.lfo_trigger = Switch("Key Trigger", ["OFF", "ON"])
         self.lfo_trigger.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.LFO_TRIGGER, v)
         )
         layout.addWidget(self.lfo_trigger)
-        
+
         # Modulation depths
         depths_group = QGroupBox("Depths")
         depths_layout = QVBoxLayout()
         depths_group.setLayout(depths_layout)
-        
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.LFO_PITCH, "Pitch"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.LFO_FILTER, "Filter"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.LFO_AMP, "Amp"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.LFO_PAN, "Pan"))
+
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LFO_PITCH, "Pitch")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LFO_FILTER, "Filter")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LFO_AMP, "Amp")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.LFO_PAN, "Pan")
+        )
         layout.addWidget(depths_group)
-        
+
         return group
 
     def _create_mod_lfo_section(self):
@@ -503,25 +604,34 @@ class PartialEditor(QWidget):
         group.setLayout(layout)
 
         icons_hlayout = QHBoxLayout()
-        for icon in ["mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square", "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"]:
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
+        ]:
             icon_label = QLabel()
             icon = qta.icon(icon)
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            pixmap = icon.pixmap(
+                Style.ICON_SIZE, Style.ICON_SIZE
+            )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
-        
+
         # Shape and sync controls
         top_row = QHBoxLayout()
-        
+
         # Shape switch
         self.mod_lfo_shape = Switch("Shape", ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
         self.mod_lfo_shape.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_SHAPE, v)
         )
         top_row.addWidget(self.mod_lfo_shape)
-        
+
         # Sync switch
         self.mod_lfo_sync = Switch("Sync", ["OFF", "ON"])
         self.mod_lfo_sync.valueChanged.connect(
@@ -529,37 +639,71 @@ class PartialEditor(QWidget):
         )
         top_row.addWidget(self.mod_lfo_sync)
         layout.addLayout(top_row)
-        
+
         # Rate and note controls
         rate_row = QHBoxLayout()
-        rate_row.addWidget(self._create_parameter_slider(DigitalParameter.MOD_LFO_RATE, "Rate"))
-        
+        rate_row.addWidget(
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_RATE, "Rate")
+        )
+
         # Note selection (only visible when sync is ON)
-        self.mod_lfo_note = Switch("Note", ["16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2",
-                                          "3/8", "1/3", "1/4", "3/16", "1/6", "1/8", "3/32",
-                                          "1/12", "1/16", "1/24", "1/32"])
+        self.mod_lfo_note = Switch(
+            "Note",
+            [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ],
+        )
         self.mod_lfo_note.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_NOTE, v)
         )
         rate_row.addWidget(self.mod_lfo_note)
         layout.addLayout(rate_row)
-        
+
         # Modulation depths
         depths_group = QGroupBox("Depths")
         depths_layout = QVBoxLayout()
         depths_group.setLayout(depths_layout)
-        
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.MOD_LFO_PITCH, "Pitch"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.MOD_LFO_FILTER, "Filter"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.MOD_LFO_AMP, "Amp"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalParameter.MOD_LFO_PAN, "Pan"))
+
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_PITCH, "Pitch")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_FILTER, "Filter")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_AMP, "Amp")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_PAN, "Pan")
+        )
         layout.addWidget(depths_group)
-        
+
         # Rate control
-        layout.addWidget(self._create_parameter_slider(
-            DigitalParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
-        ))
-        
+        layout.addWidget(
+            self._create_parameter_slider(
+                DigitalParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
+            )
+        )
+
         return group
 
     def send_midi_parameter(self, param, value) -> bool:
@@ -567,7 +711,7 @@ class PartialEditor(QWidget):
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
             return False
-            
+
         try:
             # Get parameter group and address with partial offset
             if isinstance(param, DigitalParameter):
@@ -582,25 +726,27 @@ class PartialEditor(QWidget):
                 part=self.part,
                 group=group,
                 param=param_address,
-                value=value  # Make sure this value is being sent
+                value=value,  # Make sure this value is being sent
             )
         except Exception as e:
             logging.error(f"MIDI error setting {param}: {str(e)}")
             return False
 
-    def _on_parameter_changed(self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int):
+    def _on_parameter_changed(
+        self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
+    ):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value if needed
-            if hasattr(param, 'convert_from_display'):
+            if hasattr(param, "convert_from_display"):
                 midi_value = param.convert_from_display(display_value)
             else:
                 midi_value = param.validate_value(display_value)
-            
+
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
-            
+
         except Exception as e:
             logging.error(f"Error handling parameter {param.name}: {str(e)}")
 
@@ -609,102 +755,200 @@ class PartialEditor(QWidget):
         # Update button states
         for wave, btn in self.wave_buttons.items():
             btn.setChecked(wave == waveform)
-            
+
         # Send MIDI message
         if not self.send_midi_parameter(DigitalParameter.OSC_WAVE, waveform.value):
             logging.warning(f"Failed to set waveform to {waveform.name}")
-        
+
         # Update control visibility
         self._update_pw_controls_state(waveform)
         self._update_pcm_controls_state(waveform)
 
 
 class DigitalSynthEditor(BaseEditor):
-    """ class for Digital Synth Editor containing 3 partials"""
+    """class for Digital Synth Editor containing 3 partials"""
+
     preset_changed = Signal(int, str, int)
 
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, synth_num=1, parent=None):
+    def __init__(
+        self, midi_helper: Optional[MIDIHelper] = None, synth_num=1, parent=None
+    ):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
         self.setWindowTitle(f"Digital Synth {synth_num}")
-        
+
         # Store parameter controls for easy access
-        self.controls: Dict[Union[DigitalParameter, DigitalCommonParameter], QWidget] = {}
-        
+        self.controls: Dict[
+            Union[DigitalParameter, DigitalCommonParameter], QWidget
+        ] = {}
+
         # Allow resizing
         self.setMinimumSize(800, 400)
         self.resize(1000, 600)
-        
+
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-        
+
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        
+
         # Create container widget
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-        
+
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
         container_layout.addWidget(self.partials_panel)
-        
+
         # Add performance section
         container_layout.addWidget(self._create_performance_section())
-        
+
         # Create tab widget for partials
         self.tabs = QTabWidget()
         self.partial_editors = {}
-        
+
         # Create editor for each partial
         for i in range(1, 4):
             editor = PartialEditor(midi_helper, i, self.part)
             self.partial_editors[i] = editor
             self.tabs.addTab(editor, f"Partial {i}")
-        
+
         container_layout.addWidget(self.tabs)
-        
+
         # Add container to scroll area
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
-        
+
         # Connect partial switches to enable/disable tabs
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
-        
+
         # Initialize with default states
         self.initialize_partial_states()
         # Parameter request messages based on captured format
         messages = [
-                # Common parameters (0x00)
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, 0x19, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x26, 0xF7],
-                
-                # OSC1 parameters (0x20)
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, 0x19, 0x01, 0x20, 0x00, 0x00, 0x00, 0x00, 0x3D, 0x09, 0xF7],
-                
-                # OSC2 parameters (0x21)
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, 0x19, 0x01, 0x21, 0x00, 0x00, 0x00, 0x00, 0x3D, 0x08, 0xF7],
-                
-                # OSC3 parameters (0x22)
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, 0x19, 0x01, 0x22, 0x00, 0x00, 0x00, 0x00, 0x3D, 0x07, 0xF7],
-                
-                # Effects parameters (0x50)
-                [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x11, 0x19, 0x01, 0x50, 0x00, 0x00, 0x00, 0x00, 0x25, 0x71, 0xF7]
-            ]
-            
+            # Common parameters (0x00)
+            [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x00,
+                0x0E,
+                0x11,
+                0x19,
+                0x01,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x40,
+                0x26,
+                0xF7,
+            ],
+            # OSC1 parameters (0x20)
+            [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x00,
+                0x0E,
+                0x11,
+                0x19,
+                0x01,
+                0x20,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x3D,
+                0x09,
+                0xF7,
+            ],
+            # OSC2 parameters (0x21)
+            [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x00,
+                0x0E,
+                0x11,
+                0x19,
+                0x01,
+                0x21,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x3D,
+                0x08,
+                0xF7,
+            ],
+            # OSC3 parameters (0x22)
+            [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x00,
+                0x0E,
+                0x11,
+                0x19,
+                0x01,
+                0x22,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x3D,
+                0x07,
+                0xF7,
+            ],
+            # Effects parameters (0x50)
+            [
+                0xF0,
+                0x41,
+                0x10,
+                0x00,
+                0x00,
+                0x00,
+                0x0E,
+                0x11,
+                0x19,
+                0x01,
+                0x50,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x25,
+                0x71,
+                0xF7,
+            ],
+        ]
+
         # Send each message with a small delay
         for msg in messages:
             self.midi_helper.send_message(msg)
             time.sleep(0.02)  # Small delay between messages
-            logging.debug(f"Sent parameter request: {' '.join([hex(x)[2:].upper().zfill(2) for x in msg])}")
-        
+            logging.debug(
+                f"Sent parameter request: {' '.join([hex(x)[2:].upper().zfill(2) for x in msg])}"
+            )
+
         # Register the callback for incoming MIDI messages
         if self.midi_helper:
             self.midi_helper.set_callback(self.handle_midi_message)
@@ -714,7 +958,7 @@ class DigitalSynthEditor(BaseEditor):
         # Register the callback for incoming MIDI messages
         if self.midi_helper:
             print("MIDI helper initialized")
-            if hasattr(self.midi_helper, 'set_callback'):
+            if hasattr(self.midi_helper, "set_callback"):
                 self.midi_helper.set_callback(self.handle_midi_message)
                 print("MIDI callback set")
             else:
@@ -730,106 +974,130 @@ class DigitalSynthEditor(BaseEditor):
         # prettify with icons
 
         icons_hlayout = QHBoxLayout()
-        for icon in ["ph.bell-ringing-bold", "mdi.call-merge", "mdi.account-voice", "ri.voiceprint-fill", "mdi.piano"]:
+        for icon in [
+            "ph.bell-ringing-bold",
+            "mdi.call-merge",
+            "mdi.account-voice",
+            "ri.voiceprint-fill",
+            "mdi.piano",
+        ]:
             icon_label = QLabel()
             icon = qta.icon(icon)
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            pixmap = icon.pixmap(
+                Style.ICON_SIZE, Style.ICON_SIZE
+            )  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
-        
+
         # Create two rows of controls
         top_row = QHBoxLayout()
         bottom_row = QHBoxLayout()
-        
+
         # Ring Modulator switch
         self.ring_switch = Switch("Ring", ["OFF", "---", "ON"])
         self.ring_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalCommonParameter.RING_SWITCH, v)
         )
         top_row.addWidget(self.ring_switch)
-        
+
         # Unison switch and size
         self.unison_switch = Switch("Unison", ["OFF", "ON"])
         self.unison_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.UNISON_SWITCH, v)
+            lambda v: self._on_parameter_changed(
+                DigitalCommonParameter.UNISON_SWITCH, v
+            )
         )
         top_row.addWidget(self.unison_switch)
-        
+
         self.unison_size = Switch("Size", ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"])
         self.unison_size.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalCommonParameter.UNISON_SIZE, v)
         )
         top_row.addWidget(self.unison_size)
-        
+
         # Portamento mode and legato
         self.porto_mode = Switch("Porto", ["NORMAL", "LEGATO"])
         self.porto_mode.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.PORTAMENTO_MODE, v)
+            lambda v: self._on_parameter_changed(
+                DigitalCommonParameter.PORTAMENTO_MODE, v
+            )
         )
         bottom_row.addWidget(self.porto_mode)
-        
+
         self.legato_switch = Switch("Legato", ["OFF", "ON"])
         self.legato_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.LEGATO_SWITCH, v)
+            lambda v: self._on_parameter_changed(
+                DigitalCommonParameter.LEGATO_SWITCH, v
+            )
         )
         bottom_row.addWidget(self.legato_switch)
-        
+
         # Analog Feel and Wave Shape
-        analog_feel = self._create_parameter_slider(DigitalCommonParameter.ANALOG_FEEL, "Analog")
-        wave_shape = self._create_parameter_slider(DigitalCommonParameter.WAVE_SHAPE, "Shape")
-        
+        analog_feel = self._create_parameter_slider(
+            DigitalCommonParameter.ANALOG_FEEL, "Analog"
+        )
+        wave_shape = self._create_parameter_slider(
+            DigitalCommonParameter.WAVE_SHAPE, "Shape"
+        )
+
         # Add all controls to layout
         layout.addLayout(top_row)
         layout.addLayout(bottom_row)
         layout.addWidget(analog_feel)
         layout.addWidget(wave_shape)
-        
+
         return group
 
-    def _create_parameter_slider(self, param: Union[DigitalParameter, DigitalCommonParameter], label: str) -> Slider:
+    def _create_parameter_slider(
+        self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
+    ) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
-        if hasattr(param, 'get_display_value'):
+        if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-        
+
         # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max)
-        
+
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        
+
         # Store control reference
         self.controls[param] = slider
         return slider
 
-    def _on_parameter_changed(self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int):
+    def _on_parameter_changed(
+        self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
+    ):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value if needed
-            if hasattr(param, 'convert_from_display'):
+            if hasattr(param, "convert_from_display"):
                 midi_value = param.convert_from_display(display_value)
             else:
                 midi_value = param.validate_value(display_value)
-            
+
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
-            
+
         except Exception as e:
             logging.error(f"Error handling parameter {param.name}: {str(e)}")
 
-    def _on_partial_state_changed(self, partial: DigitalPartial, enabled: bool, selected: bool):
+    def _on_partial_state_changed(
+        self, partial: DigitalPartial, enabled: bool, selected: bool
+    ):
         """Handle partial state changes"""
         if self.midi_helper:
             set_partial_state(self.midi_helper, partial, enabled, selected)
-            
+
         # Enable/disable corresponding tab
         partial_num = partial.value
         self.tabs.setTabEnabled(partial_num - 1, enabled)
-        
+
         # Switch to selected partial's tab
         if selected:
             self.tabs.setCurrentIndex(partial_num - 1)
@@ -838,28 +1106,30 @@ class DigitalSynthEditor(BaseEditor):
         """Initialize partial states with defaults"""
         # Default: Partial 1 enabled and selected, others disabled
         for partial in DigitalPartial.get_partials():
-            enabled = (partial == DigitalPartial.PARTIAL_1)
+            enabled = partial == DigitalPartial.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
             self.tabs.setTabEnabled(partial.value - 1, enabled)
-            
+
         # Show first tab
         self.tabs.setCurrentIndex(0)
 
-    def send_midi_parameter(self, param: Union[DigitalParameter, DigitalCommonParameter], value: int) -> bool:
+    def send_midi_parameter(
+        self, param: Union[DigitalParameter, DigitalCommonParameter], value: int
+    ) -> bool:
         """Send MIDI parameter to synth
-        
+
         Args:
             param: Parameter to send
             value: Parameter value
-            
+
         Returns:
             True if successful
         """
         try:
             # Validate and convert value
             midi_value = param.validate_value(value)
-            
+
             # Common parameters use group 0x00
             if isinstance(param, DigitalCommonParameter):
                 group = 0x00
@@ -867,16 +1137,16 @@ class DigitalSynthEditor(BaseEditor):
             else:
                 # Get group/address for partial parameters
                 group, address = param.get_address_for_partial(self.partial_num)
-            
+
             # Send parameter via MIDI
             return self.midi_helper.send_parameter(
                 area=DIGITAL_SYNTH_AREA,
                 part=self.part,
                 group=group,
                 param=address,
-                value=midi_value
+                value=midi_value,
             )
-            
+
         except Exception as e:
             logging.error(f"Error sending parameter {param.name}: {str(e)}")
             return False
@@ -901,14 +1171,14 @@ class DigitalSynthEditor(BaseEditor):
 
     def _handle_dt1_message(self, data):
         """Handle Data Set 1 (DT1) messages
-        
+
         Format: aa bb cc dd ... where:
         aa bb cc = Address
         dd ... = Data
         """
         if len(data) < 4:  # Need at least address and one data byte
             return
-            
+
         address = data[0:3]
         print(f"DT1 message Address: {address}")
         value = data[3]
@@ -919,11 +1189,21 @@ class DigitalSynthEditor(BaseEditor):
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
-        wave_type_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7")
-        oscillator_1_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7")
-        oscillator_2_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7")
-        oscillator_3_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7")
-        effects_request = bytes.fromhex("F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7")
+        wave_type_request = bytes.fromhex(
+            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7"
+        )
+        oscillator_1_request = bytes.fromhex(
+            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7"
+        )
+        oscillator_2_request = bytes.fromhex(
+            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7"
+        )
+        oscillator_3_request = bytes.fromhex(
+            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7"
+        )
+        effects_request = bytes.fromhex(
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7"
+        )
 
         # Send each SysEx message
         self.send_message(wave_type_request)
@@ -938,6 +1218,7 @@ class DigitalSynthEditor(BaseEditor):
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
+
 
 def base64_to_pixmap(base64_str):
     """Convert base64 string to QPixmap"""

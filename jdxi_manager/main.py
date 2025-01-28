@@ -147,7 +147,7 @@ if __name__ == "__main__":
     input_ports = mido.get_input_names()
     if not input_ports:
         print("No MIDI input ports available!")
-        # exit()
+        exit()
 
     print("Available MIDI input ports:")
     for i, port in enumerate(input_ports):

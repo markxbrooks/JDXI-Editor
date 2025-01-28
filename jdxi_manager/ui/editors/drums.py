@@ -22,7 +22,10 @@ from PySide6.QtCore import Qt, Signal
 import logging
 
 from jdxi_manager.data.preset_data import DRUM_PRESETS
+from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets import preset
 from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.ui.editors.base_editor import BaseEditor
@@ -33,6 +36,27 @@ from jdxi_manager.midi.constants import (
     DRUM_PAN,
     DRUM_REVERB,
     DRUM_DELAY,
+)
+from jdxi_manager.midi.constants.sysex import (
+    START_OF_SYSEX,
+    END_OF_SYSEX,
+    ROLAND_ID,
+    DEVICE_ID,
+    MODEL_ID,
+    DT1_COMMAND,
+    DIGITAL_SYNTH_1_AREA,
+    DIGITAL_SYNTH_2_AREA,
+    ANALOG_SYNTH_AREA,
+    DRUM_KIT_AREA,
+    EFFECTS_AREA,
+    ARPEGGIO_AREA,
+    VOCAL_FX_AREA,
+    SYSTEM_AREA,
+    JD_XI_ID,
+    MODEL_ID_1,
+    MODEL_ID_2,
+    MODEL_ID_3,
+    MODEL_ID_4,
 )
 
 
@@ -108,6 +132,8 @@ class DrumEditor(BaseEditor):
         super().__init__(midi_helper, parent)
 
         # Main layout
+        self.preset_type = PresetType.DRUMS
+        self.preset_loader = None
         main_layout = QVBoxLayout(self)
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
@@ -142,6 +168,7 @@ class DrumEditor(BaseEditor):
         self.drum_kit_combo.setEditable(True)  # Allow text search
         self.drum_kit_combo.currentIndexChanged.connect(self.update_drum_image)
         self.drum_kit_combo.currentIndexChanged.connect(self.update_drum_kit_title)
+        self.drum_kit_combo.currentIndexChanged.connect(self.update_drum_kit_preset)
         drum_group_layout.addWidget(self.drum_kit_combo)
         upper_layout.addWidget(drum_group)
 
@@ -167,12 +194,16 @@ class DrumEditor(BaseEditor):
         # Kit Level control
         self.kit_level_slider = QSlider(Qt.Orientation.Horizontal)
         self.kit_level_slider.setRange(0, 127)
+        self.kit_level_slider.valueChanged.connect(self.on_kit_level_changed)
         common_layout.addRow("Kit Level", self.kit_level_slider)
 
         # Partial Pitch Bend Range
-        self.pitch_bend_range_spin = QSpinBox()
-        self.pitch_bend_range_spin.setRange(0, 48)
-        common_layout.addRow("Pitch Bend Range", self.pitch_bend_range_spin)
+        self.pitch_bend_range_slider = QSlider(Qt.Orientation.Horizontal)
+        self.pitch_bend_range_slider.setRange(0, 48)
+        self.pitch_bend_range_slider.valueChanged.connect(
+            self.on_pitch_bend_range_changed
+        )
+        common_layout.addRow("Pitch Bend Range", self.pitch_bend_range_slider)
 
         # Partial Receive Expression
         self.receive_expression_combo = QComboBox()
@@ -190,7 +221,7 @@ class DrumEditor(BaseEditor):
         common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
 
         common_group.setLayout(common_layout)
-        upper_layout.addWidget(common_group)
+        main_layout.addWidget(common_group)
 
         # Tabbed widget for partials
         scroll = QScrollArea()
@@ -942,12 +973,34 @@ class DrumEditor(BaseEditor):
             tab.layout().addWidget(scroll_area)
             self.tab_widget.addTab(tab, partial)
 
-        # main_layout.addWidget(self.tab_widget)
         self.update_drum_image()
 
     def update_drum_kit_title(self):
         selected_kit_text = self.drum_kit_combo.currentText()
         self.title_label.setText(f"Drum Kit:\n {selected_kit_text}")
+
+    def update_drum_kit_preset(self):
+        selected_kit_text = self.drum_kit_combo.currentText()
+        if drum_kit_matches := re.search(
+            r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
+        ):
+            selected_kit_padded_number = (
+                drum_kit_matches.group(1).lower().replace("&", "_").split("_")[0]
+            )
+            preset_index = int(selected_kit_padded_number)
+            print(f"preset_index: {preset_index}")
+            self.load_preset(preset_index)
+
+    def load_preset(self, preset_index):
+        preset_data = {
+            "type": self.preset_type,  # Ensure this is a valid type
+            "selpreset": preset_index,  # Convert to 1-based index
+            "modified": 0,  # or 1, depending on your logic
+        }
+        if not self.preset_loader:
+            self.preset_loader = PresetLoader(self.midi_helper)
+        if self.preset_loader:
+            self.preset_loader.load_preset(preset_data)
 
     def update_drum_image(self):
         def load_and_set_image(image_path):
@@ -983,194 +1036,58 @@ class DrumEditor(BaseEditor):
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
-
-class DrumEditorOld(BaseEditor):
-    """Editor for JD-Xi Drum Kit parameters"""
-
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
-        super().__init__(midi_helper, parent)
-        self.setWindowTitle("Drums")
-
-        # Allow resizing
-        self.setMinimumSize(800, 400)
-        self.resize(800, 400)
-
-        # Main layout
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
-
-        # Create scroll area
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
-        # Create container widget
-        container = QWidget()
-        container_layout = QGridLayout()
-        container.setLayout(container_layout)
-
-        # Create pad editors in a grid
-        self.pad_editors = {}
-        row = 0
-        col = 0
-        for pad in range(10):  # 10 drum pads
-            editor = DrumPadEditor(pad)
-            self.pad_editors[pad] = editor
-            container_layout.addWidget(editor, row, col)
-            col += 1
-            if col > 4:  # 5 pads per row
-                col = 0
-                row += 1
-
-        # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
-
-    def _create_drum_section(self, parent_layout):
-        group = QGroupBox("Drums")
-        layout = QGridLayout()
-        group.setLayout(layout)
-
-        row = 0
-
-        # Level (0-127)
-        layout.addWidget(QLabel("Level"), row, 0)
-        self.level_slider = Slider(0, 127, 100)
-        self.level_slider.valueChanged.connect(self._on_level_changed)
-        layout.addWidget(self.level_slider, row, 1)
-
-        row += 1
-
-        # Pan (L64-R63)
-        layout.addWidget(QLabel("Pan"), row, 0)
-        self.pan_slider = Slider(-64, 63, 0)
-        self.pan_slider.valueChanged.connect(self._on_pan_changed)
-        layout.addWidget(self.pan_slider, row, 1)
-
-        parent_layout.addWidget(group)
-
-    def _create_effects_section(self, parent_layout):
-        group = QGroupBox("Effects")
-        layout = QGridLayout()
-        group.setLayout(layout)
-
-        row = 0
-
-        # Reverb Send (0-127)
-        layout.addWidget(QLabel("Reverb"), row, 0)
-        self.reverb_slider = Slider(0, 127, 0)
-        self.reverb_slider.valueChanged.connect(self._on_reverb_changed)
-        layout.addWidget(self.reverb_slider, row, 1)
-
-        row += 1
-
-        # Delay Send (0-127)
-        layout.addWidget(QLabel("Delay"), row, 0)
-        self.delay_slider = Slider(0, 127, 0)
-        self.delay_slider.valueChanged.connect(self._on_delay_changed)
-        layout.addWidget(self.delay_slider, row, 1)
-
-        parent_layout.addWidget(group)
-
-    def _on_level_changed(self, value):
-        """Handle level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=0x00,
-                param=DRUM_LEVEL,
-                value=value,
-            )
-            logging.debug(f"Set drum level to {value}")
-
-    def _on_pan_changed(self, value):
-        """Handle pan change"""
-        if self.midi_helper:
-            midi_value = value + 64  # Convert to 0-127
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=0x00,
-                param=DRUM_PAN,
-                value=midi_value,
-            )
-            logging.debug(f"Set drum pan to {value}")
-
-    def _on_reverb_changed(self, value):
-        """Handle reverb send level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=0x00,
-                param=DRUM_REVERB,
-                value=value,
-            )
-            logging.debug(f"Set drum reverb send to {value}")
-
-    def _on_delay_changed(self, value):
-        """Handle delay send level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=0x00,
-                param=DRUM_DELAY,
-                value=value,
-            )
-            logging.debug(f"Set drum delay send to {value}")
-
-    def _on_pad_level_changed(self, pad, value):
-        """Handle individual pad level change
-
-        Args:
-            pad: Pad number constant (e.g. KICK, SNARE)
-            value: New level value (0-127)
+    def send_sysex_message(self, address: int, value: int):
+        """Helper function to send a SysEx message with a given address and value."""
+        # 0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, 0x6C, 0xF7
         """
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=pad,
-                param=DRUM_PAD_LEVEL,
-                value=value,
-            )
-            logging.debug(f"Set pad {pad} level to {value}")
-
-    def _on_pad_pan_changed(self, pad, value):
-        """Handle individual pad pan change
-
-        Args:
-            pad: Pad number constant (e.g. KICK, SNARE)
-            value: New pan value (-64 to +63)
+        sysex_message = [
+            START_OF_SYSEX,
+            ROLAND_ID,
+            DEVICE_ID,
+            MODEL_ID_1,
+            MODEL_ID_2,
+            MODEL_ID_3,
+            MODEL_ID_4,
+            DT1_COMMAND,
+            DIGITAL_SYNTH_1_AREA,  # Assuming this is a fixed part of the message
+            0x70,  # Assuming this is a fixed part of the message
+            address,
+            value,
+            0x6C,  # Assuming this is a fixed part of the message
+        ]
         """
-        if self.midi_helper:
-            midi_value = value + 64  # Convert to 0-127
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=pad,
-                param=DRUM_PAD_PAN,
-                value=midi_value,
-            )
-            logging.debug(f"Set pad {pad} pan to {value}")
+        # sysex_message = [
+        #    0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, checksum, 0xF7
+        # ]
+        return self.midi_helper.send_parameter(
+            area=DRUM_KIT_AREA,
+            part=0x70,
+            group=group,
+            param=address,
+            value=value,  # Make sure this value is being sent
+        )
+        # self.midi_helper.send_message(checksum_message)
 
-    def _on_pad_tune_changed(self, pad, value):
-        """Handle individual pad tuning change
+    def on_kit_level_changed(self, value):
+        """Handle kit level slider value change"""
+        # Use the helper function to send the SysEx message
+        # self.send_sysex_message(0x0C, value)
+        return self.midi_helper.send_parameter(
+            area=DIGITAL_SYNTH_1_AREA,
+            part=0x70,
+            group=0x00,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
+            param=0x0C,
+            value=value,  # Make sure this value is being sent
+        )
 
-        Args:
-            pad: Pad number constant (e.g. KICK, SNARE)
-            value: New tuning value (-24 to +24)
-        """
-        if self.midi_helper:
-            midi_value = value + 64  # Convert to 0-127
-            self.midi_helper.send_parameter(
-                area=DRUM_KIT_AREA,
-                part=DRUM_PART,
-                group=pad,
-                param=DRUM_PAD_TUNE,
-                value=midi_value,
-            )
-            logging.debug(f"Set pad {pad} tune to {value}")
+    def on_pitch_bend_range_changed(self, value):
+        """Handle pitch bend range value change"""
+        # Use the helper function to send the SysEx message
+        # self.send_sysex_message(0x2E, value)
+        return self.midi_helper.send_parameter(
+            area=DIGITAL_SYNTH_1_AREA,
+            part=0x70,
+            group=0x2E,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
+            param=0x1C,
+            value=value,  # Make sure this value is being sent
+        )
