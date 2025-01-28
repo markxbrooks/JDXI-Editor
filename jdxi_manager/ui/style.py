@@ -175,6 +175,56 @@ class Style:
             image: none;
         }}
     """
+    DRUMS_STYLE = """
+            QMainWindow {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+            }
+            QLabel {
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QComboBox {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px;
+                font-family: 'Myriad Pro';
+            }
+            QComboBox:hover {
+                border: 1px solid #777777;
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #777777;
+            }
+            QLineEdit {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+                padding: 5px;
+                font-family: 'Myriad Pro';
+            }
+            QFrame {
+                border-radius: 3px;
+                margin-top: 0.5em;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 3px 0 3px;
+            }
+        """
+
     JDXI_STYLE = """
             QMainWindow {
                 background-color: black;
