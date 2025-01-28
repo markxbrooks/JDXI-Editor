@@ -84,89 +84,88 @@ class MIDIHelper(QObject):
         """Handle incoming MIDI message from pubsub"""
         preset_data = {"modified": 0}
         try:
-            print(f"Received MIDI message: {message.hex()}")
-            # if isinstance(message, tuple) and len(message) == 2:
-            #    self._midi_callback(message[0], message[1])
-            message_data = message.hex()
-            try:
-                # Convert message to hex string
-                hex_message = message.hex()
-                hex_data = message.data
-                print(f"Received SysEx message: {hex_message}")
-                print(f"With SysEx data: {hex_data}")
-                # Check if it's a JD-Xi message
-                # if hex_message.startswith("F0411000000E12"):
-                print("JD-Xi SysEx message detected")
-                # Extract patch name (bytes 12 to 24)
-                patch_name_bytes = hex_data[11:23]
-                patch_name = "".join(chr(b) for b in patch_name_bytes).strip()
-                print(f"Patch name: {patch_name}")
-                preset_number = find_preset_number(patch_name, DIGITAL_PRESETS)
-                print(f"Preset number: {preset_number}")
-                # Update UI with the patch name
-                presets = DIGITAL_PRESETS
-                if preset_number:
-                    pub.sendMessage(
-                        "update_display_preset",
-                        preset_number=preset_number,
-                        preset_name=presets[
-                            preset_number - 1
-                        ],  # Convert to 0-based index
-                        channel=self.channel,
-                    )
+            # Print the full message
+            print(f"Received MIDI message: {message}")
 
-            except Exception as e:
-                print(f"Error handling SysEx message: {str(e)}")
-                logging.error(f"Error handling SysEx message: {str(e)}")
+            # Check the type of message (SysEx, Control Change, Program Change, etc.)
+            if message.type == "sysex":
+                try:
+                    # Access SysEx data
+                    manufacturer_id = message.data[0]  # First byte of SysEx data
+                    device_family_id = message.data[2:6]  # Extract family/model ID
+                    if manufacturer_id != 0x41 or device_family_id != [
+                        0x10,
+                        0x00,
+                        0x00,
+                        0x0E,
+                    ]:
+                        print("Received SysEx message is not from a Roland JD-Xi.")
+                        return  # Ignore non-JD-Xi SysEx messages
 
-            if message_data.is_cc():
-                if preset_matches := re.search(
-                    r"channel=(\d{1,2}) control=(\d{1,2}) value=(\d{1,3})",
-                    str(message_data),
-                    re.I,
-                ):
-                    self.channel = int(preset_matches.group(1))
-                    cc_control_number = int(preset_matches.group(2))
-                    cc_control_value = int(preset_matches.group(3))
-                    if cc_control_number == 0:
-                        self.cc_msb_value = int(cc_control_value)
-                    elif cc_control_number == 32:
-                        self.cc_lsb_value = int(cc_control_value)
-            else:
-                if preset_matches := re.search(
-                    r"program=(\d{1,3})", str(message_data), re.I
-                ):
-                    print(f"msb: {self.cc_msb_value}, lsb: {self.cc_lsb_value}")
-                    self.program_number = int(preset_matches.group(1))
-                    presets = DIGITAL_PRESETS
-                    if self.cc_msb_value == 95:
-                        preset_data["type"] = PresetType.DIGITAL_1
-                        if self.cc_lsb_value == 64:
-                            self.preset_number = self.program_number
-                        elif self.cc_lsb_value == 65:
-                            self.preset_number = self.program_number + 128
-                    if self.cc_msb_value == 94:
-                        presets = ANALOG_PRESETS
-                        self.preset_number = self.program_number
-                        preset_data["type"] = PresetType.ANALOG
-                    if self.cc_msb_value == 86:
-                        presets = DRUM_PRESETS
-                        self.preset_number = self.program_number
-                        preset_data["type"] = PresetType.DRUMS
-                    pub.sendMessage(
-                        "update_display_preset",
-                        preset_number=self.preset_number,
-                        preset_name=presets[self.preset_number],
-                        channel=self.channel,
+                    print("Valid Roland JD-Xi SysEx message detected.")
+
+                    # Command type and parameter offset
+                    command_type = message.data[6]
+                    address_offset = message.data[7:11]
+                    address_offset_hex = "".join(
+                        f"{byte:02X}" for byte in address_offset
                     )
-                    print(
-                        f"preset changed to: {self.preset_number}: {presets[self.preset_number]}"
+                    print(f"Command Type: {command_type:#02X}")
+                    print(f"Address/Parameter Offset: {address_offset_hex}")
+
+                    # Extract ASCII patch name
+                    ascii_start = 11
+                    ascii_end = ascii_start + 16
+                    patch_name_bytes = message.data[ascii_start:ascii_end]
+                    patch_name = "".join(
+                        chr(b) for b in patch_name_bytes if 32 <= b <= 127
+                    ).strip()
+                    print(f"Patch name extracted: {patch_name}")
+
+                except Exception as e:
+                    print(f"Error handling SysEx message: {str(e)}")
+                    logging.error(f"Error handling SysEx message: {str(e)}")
+
+            elif message.type == "control_change":
+                # Handle Control Change (CC) messages
+                channel = message.channel + 1  # Convert 0-based to 1-based
+                cc_control_number = message.control
+                cc_control_value = message.value
+                print(
+                    f"Control Change - Channel: {channel}, Control: {cc_control_number}, Value: {cc_control_value}"
+                )
+
+                if cc_control_number == 0:
+                    self.cc_msb_value = cc_control_value
+                elif cc_control_number == 32:
+                    self.cc_lsb_value = cc_control_value
+
+            elif message.type == "program_change":
+                # Handle Program Change (PC) messages
+                channel = message.channel + 1  # Convert 0-based to 1-based
+                program_number = message.program
+                print(f"Program Change - Channel: {channel}, Program: {program_number}")
+
+                if self.cc_msb_value == 95:  # Digital Presets
+                    preset_data["type"] = PresetType.DIGITAL_1
+                    self.preset_number = program_number + (
+                        128 if self.cc_lsb_value == 65 else 0
                     )
-                    """self.preset_changed.emit(
-                        self.preset_number,
-                        DIGITAL_PRESETS[self.preset_number],
-                        self.channel
-                    )"""
+                elif self.cc_msb_value == 94:  # Analog Presets
+                    preset_data["type"] = PresetType.ANALOG
+                    self.preset_number = program_number
+                elif self.cc_msb_value == 86:  # Drum Presets
+                    preset_data["type"] = PresetType.DRUMS
+                    self.preset_number = program_number
+
+                # Update UI or perform additional actions
+                pub.sendMessage(
+                    "update_display_preset",
+                    preset_number=self.preset_number,
+                    preset_name=DIGITAL_PRESETS[self.preset_number],
+                    channel=channel,
+                )
+                print(f"Preset changed to: {self.preset_number}")
 
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")
