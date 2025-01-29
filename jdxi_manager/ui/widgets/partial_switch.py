@@ -1,5 +1,12 @@
 from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QCheckBox, QGroupBox, QLabel
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QCheckBox,
+    QGroupBox,
+    QLabel,
+)
 from PySide6.QtCore import Signal
 import qtawesome as qta
 from jdxi_manager.data.digital import DigitalPartial
@@ -8,30 +15,31 @@ from jdxi_manager.ui.style import Style
 
 class PartialSwitch(QWidget):
     """Widget for controlling a single partial's state"""
-    
+
     stateChanged = Signal(DigitalPartial, bool, bool)  # partial, enabled, selected
-    
+
     def __init__(self, partial: DigitalPartial, parent=None):
         super().__init__(parent)
         self.partial = partial
-        
+
         layout = QHBoxLayout()
         layout.setSpacing(5)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
-        
+
         # Enable switch
         self.enable_check = QCheckBox("ON")
         self.enable_check.stateChanged.connect(self._on_state_changed)
         layout.addWidget(self.enable_check)
-        
+
         # Select switch
         self.select_check = QCheckBox("SEL")
         self.select_check.stateChanged.connect(self._on_state_changed)
         layout.addWidget(self.select_check)
-        
+
         # Style
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QCheckBox {
                 color: #CCCCCC;
                 font-size: 10px;
@@ -47,14 +55,13 @@ class PartialSwitch(QWidget):
                 background: #CC3333;
                 border-color: #FF4444;
             }
-        """)
+        """
+        )
 
     def _on_state_changed(self, _):
         """Handle checkbox state changes"""
         self.stateChanged.emit(
-            self.partial,
-            self.enable_check.isChecked(),
-            self.select_check.isChecked()
+            self.partial, self.enable_check.isChecked(), self.select_check.isChecked()
         )
 
     def setState(self, enabled: bool, selected: bool):
@@ -62,9 +69,10 @@ class PartialSwitch(QWidget):
         self.enable_check.setChecked(enabled)
         self.select_check.setChecked(selected)
 
+
 class PartialsPanel(QGroupBox):
     """Panel containing all partial switches"""
-    
+
     def __init__(self, parent=None):
         super().__init__("Partials", parent)
 
@@ -77,15 +85,23 @@ class PartialsPanel(QGroupBox):
         self.setLayout(partial_layout)
 
         oscillator_hlayout = QHBoxLayout()
-        for icon in ["mdi.directions-fork", "mdi.numeric-1-circle-outline", "mdi.numeric-2-circle-outline", "mdi.numeric-3-circle-outline", "mdi.call-merge"]:
+        for icon in [
+            "mdi.directions-fork",
+            "mdi.numeric-1-circle-outline",
+            "mdi.numeric-2-circle-outline",
+            "mdi.numeric-3-circle-outline",
+            "mdi.call-merge",
+        ]:
             oscillator_triangle_label = QLabel()
             icon = qta.icon(icon)
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            pixmap = icon.pixmap(
+                Style.ICON_SIZE, Style.ICON_SIZE
+            )  # Set the desired size
             oscillator_triangle_label.setPixmap(pixmap)
             oscillator_triangle_label.setAlignment(Qt.AlignHCenter)
             oscillator_hlayout.addWidget(oscillator_triangle_label)
         layout.addLayout(oscillator_hlayout)
-        
+
         # Create switches for each partial (not structure types)
         self.switches = {}
         for partial in DigitalPartial.get_partials():  # Only get actual partials
@@ -95,7 +111,8 @@ class PartialsPanel(QGroupBox):
 
         layout.addLayout(partial_layout)
         # Style
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QGroupBox {
                 color: #CCCCCC;
                 font-size: 12px;
@@ -110,4 +127,5 @@ class PartialsPanel(QGroupBox):
                 padding: 0 3px;
                 background-color: #2D2D2D;
             }
-        """) 
+        """
+        )

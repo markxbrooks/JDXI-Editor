@@ -9,6 +9,12 @@ from jdxi_manager.data.preset_data import DIGITAL_PRESETS, DRUM_PRESETS, ANALOG_
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.midi.constants.sysex import (
+    DIGITAL_SYNTH_1_AREA,
+    DIGITAL_SYNTH_2_AREA,
+    ANALOG_SYNTH_AREA,
+    DRUM_KIT_AREA,
+)
 
 
 def find_preset_number(preset_name, presets):
@@ -122,14 +128,17 @@ class MIDIHelper(QObject):
                 f"Address/Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
             )
 
-            patch_name = self._extract_patch_name(message.data[11:27])
-            pub.sendMessage(
-                "update_display_preset",
-                preset_number=self.preset_number,
-                preset_name=patch_name,
-                channel=self.channel,
-            )
-            print(f"Patch name extracted: {patch_name}")
+            # Determine which editor to send the message to based on the address
+            area_code = address_offset[0]
+            if area_code == DIGITAL_SYNTH_1_AREA:
+                self.parameter_received.emit(address_offset, message.data[11])
+            elif area_code == DIGITAL_SYNTH_2_AREA:
+                self.parameter_received.emit(address_offset, message.data[11])
+            elif area_code == ANALOG_SYNTH_AREA:
+                self.parameter_received.emit(address_offset, message.data[11])
+            elif area_code == DRUM_KIT_AREA:
+                self.parameter_received.emit(address_offset, message.data[11])
+
         except Exception as e:
             logging.error(f"Error handling SysEx message: {str(e)}")
 

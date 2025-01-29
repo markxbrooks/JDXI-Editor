@@ -74,12 +74,6 @@ class PartialEditor(QWidget):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
-        # Create vertical scroll area
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-
         # Create container widget
         container = QWidget()
         container_layout = QVBoxLayout()
@@ -93,8 +87,7 @@ class PartialEditor(QWidget):
         container_layout.addWidget(self._create_mod_lfo_section())
 
         # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        main_layout.addWidget(container)
 
     def _create_parameter_slider(
         self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
@@ -825,7 +818,10 @@ class DigitalSynthEditor(BaseEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
         upper_layout = QHBoxLayout()
-        main_layout.addLayout(upper_layout)
+        container_layout.addLayout(upper_layout)
+
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
 
         # Title and instrument selection
         instrument_preset_group = QGroupBox("Digital Synth")
@@ -867,7 +863,7 @@ class DigitalSynthEditor(BaseEditor):
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         upper_layout.addWidget(instrument_preset_group)
         upper_layout.addWidget(self.image_label)
-        container_layout.addLayout(upper_layout)
+        # container_layout.addLayout(upper_layout)
 
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
@@ -877,16 +873,16 @@ class DigitalSynthEditor(BaseEditor):
         container_layout.addWidget(self._create_performance_section())
 
         # Create tab widget for partials
-        self.tabs = QTabWidget()
+        self.partial_tab_widget = QTabWidget()
         self.partial_editors = {}
 
         # Create editor for each partial
         for i in range(1, 4):
             editor = PartialEditor(midi_helper, i, self.part)
             self.partial_editors[i] = editor
-            self.tabs.addTab(editor, f"Partial {i}")
+            self.partial_tab_widget.addTab(editor, f"Partial {i}")
 
-        container_layout.addWidget(self.tabs)
+        container_layout.addWidget(self.partial_tab_widget)
 
         # Add container to scroll area
         scroll.setWidget(container)
@@ -1031,6 +1027,8 @@ class DigitalSynthEditor(BaseEditor):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
+
+        self.midi_helper.parameter_received.connect(self._on_parameter_received)
 
     def _create_performance_section(self):
         """Create performance controls section"""
@@ -1240,11 +1238,11 @@ class DigitalSynthEditor(BaseEditor):
 
         # Enable/disable corresponding tab
         partial_num = partial.value
-        self.tabs.setTabEnabled(partial_num - 1, enabled)
+        self.partial_tab_widget.setTabEnabled(partial_num - 1, enabled)
 
         # Switch to selected partial's tab
         if selected:
-            self.tabs.setCurrentIndex(partial_num - 1)
+            self.partial_tab_widget.setCurrentIndex(partial_num - 1)
 
     def initialize_partial_states(self):
         """Initialize partial states with defaults"""
@@ -1253,10 +1251,10 @@ class DigitalSynthEditor(BaseEditor):
             enabled = partial == DigitalPartial.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
-            self.tabs.setTabEnabled(partial.value - 1, enabled)
+            self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
 
         # Show first tab
-        self.tabs.setCurrentIndex(0)
+        self.partial_tab_widget.setCurrentIndex(0)
 
     def send_midi_parameter(
         self, param: Union[DigitalParameter, DigitalCommonParameter], value: int
@@ -1362,6 +1360,13 @@ class DigitalSynthEditor(BaseEditor):
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
+
+    def _on_parameter_received(self, address, value):
+        """Handle parameter updates from MIDI messages."""
+        # Check if the address corresponds to this editor's area
+        if address[0] == DIGITAL_SYNTH_1_AREA:
+            # Update the UI or internal state based on the address and value
+            print(f"Received parameter update: Address={address}, Value={value}")
 
 
 def base64_to_pixmap(base64_str):
