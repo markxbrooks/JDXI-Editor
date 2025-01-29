@@ -59,6 +59,8 @@ from jdxi_manager.midi.constants.sysex import (
     MODEL_ID_4,
 )
 
+instrument_icon_folder = "drum_kits"
+
 
 class DrumPadEditor(BaseEditor):
     """Drum pad editor"""
@@ -130,7 +132,7 @@ class DrumEditor(BaseEditor):
 
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
         super().__init__(midi_helper, parent)
-
+        self.image_label = None
         # Main layout
         self.preset_type = PresetType.DRUMS
         self.preset_loader = None
@@ -163,18 +165,22 @@ class DrumEditor(BaseEditor):
         self.selection_label = QLabel("Select a drum kit:")
         drum_group_layout.addWidget(self.selection_label)
         # Drum kit selection
-        self.drum_kit_combo = QComboBox()
-        self.drum_kit_combo.addItems(DRUM_PRESETS)
-        self.drum_kit_combo.setEditable(True)  # Allow text search
-        self.drum_kit_combo.currentIndexChanged.connect(self.update_drum_image)
-        self.drum_kit_combo.currentIndexChanged.connect(self.update_drum_kit_title)
-        self.drum_kit_combo.currentIndexChanged.connect(self.update_drum_kit_preset)
-        drum_group_layout.addWidget(self.drum_kit_combo)
+        self.digital_synth_combo = QComboBox()
+        self.digital_synth_combo.addItems(DRUM_PRESETS)
+        self.digital_synth_combo.setEditable(True)  # Allow text search
+        self.digital_synth_combo.currentIndexChanged.connect(self.update_drum_image)
+        self.digital_synth_combo.currentIndexChanged.connect(self.update_drum_kit_title)
+        self.digital_synth_combo.currentIndexChanged.connect(
+            self.update_drum_kit_preset
+        )
+        drum_group_layout.addWidget(self.digital_synth_combo)
         upper_layout.addWidget(drum_group)
 
         # Image display
         self.image_label = QLabel()
-        self.image_label.setAlignment(Qt.AlignCenter)  # Center align the image
+        self.image_label.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )  # Center align the image
         upper_layout.addWidget(self.image_label)
 
         # Common controls
@@ -976,18 +982,18 @@ class DrumEditor(BaseEditor):
         self.update_drum_image()
 
     def update_drum_kit_title(self):
-        selected_kit_text = self.drum_kit_combo.currentText()
+        selected_kit_text = self.digital_synth_combo.currentText()
         self.title_label.setText(f"Drum Kit:\n {selected_kit_text}")
 
     def update_drum_kit_preset(self):
-        selected_kit_text = self.drum_kit_combo.currentText()
-        if drum_kit_matches := re.search(
+        selected_kit_text = self.digital_synth_combo.currentText()
+        if digital_synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
         ):
-            selected_kit_padded_number = (
-                drum_kit_matches.group(1).lower().replace("&", "_").split("_")[0]
+            selected_synth_padded_number = (
+                digital_synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
-            preset_index = int(selected_kit_padded_number)
+            preset_index = int(selected_synth_padded_number)
             print(f"preset_index: {preset_index}")
             self.load_preset(preset_index)
 
@@ -1016,7 +1022,7 @@ class DrumEditor(BaseEditor):
 
         # Define paths
         default_image_path = os.path.join("resources", "drum_kits", "drums.png")
-        selected_kit_text = self.drum_kit_combo.currentText()
+        selected_kit_text = self.digital_synth_combo.currentText()
 
         # Try to extract drum kit name from the selected text
         image_loaded = False
