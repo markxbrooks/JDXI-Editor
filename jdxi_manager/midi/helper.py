@@ -59,6 +59,7 @@ class MIDIHelper(QObject):
         self.channel = 1
         self.preset_number = 0
         self.cc_number = 0
+        self.cc_msb_value = 0
         self.cc_lsb_value = 0
         pub.subscribe(self._handle_incoming_midi_message, "incoming_midi_message")
 
@@ -81,94 +82,102 @@ class MIDIHelper(QObject):
         return None
 
     def _handle_incoming_midi_message(self, message):
-        """Handle incoming MIDI message from pubsub"""
+        """Handle incoming MIDI message from pubsub."""
         preset_data = {"modified": 0}
         try:
-            # Print the full message
             print(f"Received MIDI message: {message}")
 
-            # Check the type of message (SysEx, Control Change, Program Change, etc.)
-            if message.type == "sysex":
-                try:
-                    # Access SysEx data
-                    manufacturer_id = message.data[0]  # First byte of SysEx data
-                    device_family_id = message.data[2:6]  # Extract family/model ID
-                    if manufacturer_id != 0x41 or device_family_id != [
-                        0x10,
-                        0x00,
-                        0x00,
-                        0x0E,
-                    ]:
-                        print("Received SysEx message is not from a Roland JD-Xi.")
-                        return  # Ignore non-JD-Xi SysEx messages
+            message_handlers = {
+                "sysex": self._handle_sysex_message,
+                "control_change": self._handle_control_change,
+                "program_change": self._handle_program_change,
+                "note_on": self._handle_note_change,
+                "note_off": self._handle_note_change,
+            }
 
-                    print("Valid Roland JD-Xi SysEx message detected.")
-
-                    # Command type and parameter offset
-                    command_type = message.data[6]
-                    address_offset = message.data[7:11]
-                    address_offset_hex = "".join(
-                        f"{byte:02X}" for byte in address_offset
-                    )
-                    print(f"Command Type: {command_type:#02X}")
-                    print(f"Address/Parameter Offset: {address_offset_hex}")
-
-                    # Extract ASCII patch name
-                    ascii_start = 11
-                    ascii_end = ascii_start + 16
-                    patch_name_bytes = message.data[ascii_start:ascii_end]
-                    patch_name = "".join(
-                        chr(b) for b in patch_name_bytes if 32 <= b <= 127
-                    ).strip()
-                    print(f"Patch name extracted: {patch_name}")
-
-                except Exception as e:
-                    print(f"Error handling SysEx message: {str(e)}")
-                    logging.error(f"Error handling SysEx message: {str(e)}")
-
-            elif message.type == "control_change":
-                # Handle Control Change (CC) messages
-                channel = message.channel + 1  # Convert 0-based to 1-based
-                cc_control_number = message.control
-                cc_control_value = message.value
-                print(
-                    f"Control Change - Channel: {channel}, Control: {cc_control_number}, Value: {cc_control_value}"
-                )
-
-                if cc_control_number == 0:
-                    self.cc_msb_value = cc_control_value
-                elif cc_control_number == 32:
-                    self.cc_lsb_value = cc_control_value
-
-            elif message.type == "program_change":
-                # Handle Program Change (PC) messages
-                channel = message.channel + 1  # Convert 0-based to 1-based
-                program_number = message.program
-                print(f"Program Change - Channel: {channel}, Program: {program_number}")
-
-                if self.cc_msb_value == 95:  # Digital Presets
-                    preset_data["type"] = PresetType.DIGITAL_1
-                    self.preset_number = program_number + (
-                        128 if self.cc_lsb_value == 65 else 0
-                    )
-                elif self.cc_msb_value == 94:  # Analog Presets
-                    preset_data["type"] = PresetType.ANALOG
-                    self.preset_number = program_number
-                elif self.cc_msb_value == 86:  # Drum Presets
-                    preset_data["type"] = PresetType.DRUMS
-                    self.preset_number = program_number
-
-                # Update UI or perform additional actions
-                pub.sendMessage(
-                    "update_display_preset",
-                    preset_number=self.preset_number,
-                    preset_name=DIGITAL_PRESETS[self.preset_number],
-                    channel=channel,
-                )
-                print(f"Preset changed to: {self.preset_number}")
+            handler = message_handlers[message.type]
+            if handler:
+                handler(message, preset_data)
+            else:
+                print(f"Unhandled MIDI message type: {message.type}")
 
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")
+
+    def _handle_note_change(self, message, preset_data):
+        print(f"MIDI message type: {message.type} as {message}")
+
+    def _handle_sysex_message(self, message, preset_data):
+        """Handle SysEx MIDI messages."""
+        try:
+            manufacturer_id, device_family_id = message.data[0], message.data[2:6]
+            if manufacturer_id != 0x41 or device_family_id != [0x10, 0x00, 0x00, 0x0E]:
+                print("Received SysEx message is not from a Roland JD-Xi.")
+                return
+
+            print("Valid Roland JD-Xi SysEx message detected.")
+            command_type, address_offset = message.data[6], message.data[7:11]
+            print(f"Command Type: {command_type:#02X}")
+            print(
+                f"Address/Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
+            )
+
+            patch_name = self._extract_patch_name(message.data[11:27])
+            pub.sendMessage(
+                "update_display_preset",
+                preset_number=self.preset_number,
+                preset_name=patch_name,
+                channel=self.channel,
+            )
+            print(f"Patch name extracted: {patch_name}")
+        except Exception as e:
+            logging.error(f"Error handling SysEx message: {str(e)}")
+
+    def _handle_control_change(self, message, preset_data):
+        """Handle Control Change (CC) MIDI messages."""
+        channel, control, value = message.channel + 1, message.control, message.value
+        print(
+            f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
+        )
+
+        if control == 0:
+            self.cc_msb_value = value
+        elif control == 32:
+            self.cc_lsb_value = value
+
+    def _handle_program_change(self, message, preset_data):
+        """Handle Program Change (PC) MIDI messages."""
+        channel, program_number = message.channel + 1, message.program
+        print(f"Program Change - Channel: {channel}, Program: {program_number}")
+
+        preset_mapping = {
+            95: PresetType.DIGITAL_1,
+            94: PresetType.ANALOG,
+            86: PresetType.DRUMS,
+        }
+
+        if self.cc_msb_value in preset_mapping:
+            preset_data["type"] = preset_mapping[self.cc_msb_value]
+            self.preset_number = program_number + (
+                128 if self.cc_lsb_value == 65 else 0
+            )
+
+            pub.sendMessage(
+                "update_display_preset",
+                preset_number=self.preset_number,
+                preset_name=(
+                    DIGITAL_PRESETS[self.preset_number]
+                    if self.preset_number < len(DIGITAL_PRESETS)
+                    else "Unknown Preset"
+                ),
+                channel=channel,
+            )
+            print(f"Preset changed to: {self.preset_number}")
+
+    @staticmethod
+    def _extract_patch_name(patch_name_bytes):
+        """Extract ASCII patch name from SysEx message data."""
+        return "".join(chr(b) for b in patch_name_bytes if 32 <= b <= 127).strip()
 
     def register_callback(self, callback: Callable):
         """Register a callback for MIDI messages"""
