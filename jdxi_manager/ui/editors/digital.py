@@ -10,13 +10,19 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QSpinBox,
     QLabel,
+    QComboBox,
+    QFormLayout,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
 import base64
 from io import BytesIO
 import qtawesome as qta
+
+from jdxi_manager.data.preset_data import DIGITAL_PRESETS
+from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
@@ -43,6 +49,11 @@ from jdxi_manager.data.digital import (
 from jdxi_manager.midi.constants import DIGITAL_SYNTH_AREA, PART_1, PART_2
 from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
 from jdxi_manager.ui.widgets.switch import Switch
+import os
+import re
+
+
+instrument_icon_folder = "digital_synths"
 
 
 class PartialEditor(QWidget):
@@ -774,6 +785,17 @@ class DigitalSynthEditor(BaseEditor):
         self, midi_helper: Optional[MIDIHelper] = None, synth_num=1, parent=None
     ):
         super().__init__(parent)
+        # Image display
+        self.preset_loader = None
+        self.preset_type = (
+            PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
+        )
+        self.presets = DIGITAL_PRESETS
+        self.image_label = QLabel()
+        self.image_label.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )  # Center align the image
+
         self.midi_helper = midi_helper
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
@@ -795,13 +817,57 @@ class DigitalSynthEditor(BaseEditor):
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         # Create container widget
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
+        upper_layout = QHBoxLayout()
+        main_layout.addLayout(upper_layout)
+
+        # Title and instrument selection
+        instrument_preset_group = QGroupBox("Digital Synth")
+        self.instrument_title_label = QLabel(
+            f"Digital Synth:\n {self.presets[0]}" if self.presets else "Digital Synth"
+        )
+        instrument_preset_group.setStyleSheet(
+            """
+            QGroupBox {
+            width: 300px;
+            }
+        """
+        )
+        self.instrument_title_label.setStyleSheet(
+            """
+            font-size: 16px;
+            font-weight: bold;
+        """
+        )
+        instrument_title_group_layout = QVBoxLayout()
+        instrument_preset_group.setLayout(instrument_title_group_layout)
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+
+        self.instrument_selection_label = QLabel("Select a digital synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+        # Synth selection
+        self.instrument_selection_combo = QComboBox()
+        self.instrument_selection_combo.addItems(self.presets)
+        self.instrument_selection_combo.setEditable(True)  # Allow text search
+        self.instrument_selection_combo.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.currentIndexChanged.connect(
+            self.update_instrument_preset
+        )
+        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+        upper_layout.addWidget(instrument_preset_group)
+        upper_layout.addWidget(self.image_label)
+        container_layout.addLayout(upper_layout)
 
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
@@ -1047,7 +1113,7 @@ class DigitalSynthEditor(BaseEditor):
         layout.addLayout(bottom_row)
         layout.addWidget(analog_feel)
         layout.addWidget(wave_shape)
-
+        self.update_instrument_image()
         return group
 
     def _create_parameter_slider(
@@ -1068,6 +1134,84 @@ class DigitalSynthEditor(BaseEditor):
         # Store control reference
         self.controls[param] = slider
         return slider
+
+    def update_instrument_title(self):
+        selected_synth_text = self.instrument_selection_combo.currentText()
+        print(f"selected_synth_text: {selected_synth_text}")
+        self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
+
+    def update_instrument_preset(self):
+        selected_synth_text = self.instrument_selection_combo.currentText()
+        if synth_matches := re.search(
+            r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
+        ):
+            selected_synth_padded_number = (
+                synth_matches.group(1).lower().replace("&", "_").split("_")[0]
+            )
+            preset_index = int(selected_synth_padded_number)
+            print(f"preset_index: {preset_index}")
+            self.load_preset(preset_index)
+
+    def update_instrument_image(self):
+        def load_and_set_image(image_path, secondary_image_path):
+            """Helper function to load and set the image on the label."""
+            file_to_load = ""
+            if os.path.exists(image_path):
+                file_to_load = image_path
+            elif os.path.exists(secondary_image_path):
+                file_to_load = secondary_image_path
+            else:
+                file_to_load = os.path.join(
+                    "resources", instrument_icon_folder, "jdxi_vector.png"
+                )
+            pixmap = QPixmap(file_to_load)
+            scaled_pixmap = pixmap.scaledToHeight(
+                250, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 250px height
+            self.image_label.setPixmap(scaled_pixmap)
+            return True
+
+        selected_instrument_text = self.instrument_selection_combo.currentText()
+
+        # Try to extract synth name from the selected text
+        image_loaded = False
+        if instrument_matches := re.search(
+            r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+        ):
+            selected_instrument_name = (
+                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
+            )
+            selected_instrument_type = (
+                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
+            )
+            print(f"selected_instrument_type: {selected_instrument_type}")
+            specific_image_path = os.path.join(
+                "resources",
+                instrument_icon_folder,
+                f"{selected_instrument_name}.png",
+            )
+            generic_image_path = os.path.join(
+                "resources",
+                instrument_icon_folder,
+                f"{selected_instrument_type}.png",
+            )
+            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
+
+        # Fallback to default image if no specific image is found
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
+
+    def load_preset(self, preset_index):
+        preset_data = {
+            "type": self.preset_type,  # Ensure this is a valid type
+            "selpreset": preset_index,  # Convert to 1-based index
+            "modified": 0,  # or 1, depending on your logic
+        }
+        if not self.preset_loader:
+            self.preset_loader = PresetLoader(self.midi_helper)
+        if self.preset_loader:
+            self.preset_loader.load_preset(preset_data)
 
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
