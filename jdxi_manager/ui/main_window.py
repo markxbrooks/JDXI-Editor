@@ -14,8 +14,10 @@ from PySide6.QtWidgets import (
     QFrame,
     QGroupBox,
     QButtonGroup,
+    QComboBox,
+    QLineEdit,
 )
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import (
     QAction,
     QFont,
@@ -33,7 +35,7 @@ from jdxi_manager.ui.editors import (
     EffectsEditor,
     VocalFXEditor,
 )
-from jdxi_manager.ui.editors.preset_editor import PresetEditor
+from jdxi_manager.ui.editors.preset import PresetEditor
 from jdxi_manager.ui.instrument_pixmap import draw_instrument_pixmap
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
 from jdxi_manager.ui.midi_debugger import MIDIDebugger
@@ -61,6 +63,33 @@ from jdxi_manager.midi.constants import (
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.midi.preset_loader import PresetLoader
+
+# from jdxi_manager.ui.preset_handler import PresetHandler
+
+
+class PresetHandler:
+    def __init__(self, presets, channel=1):
+        self.presets = presets
+        self.channel = channel
+        self.current_preset_index = 0
+
+    def increase_tone(self):
+        """Increase the tone index and return the new preset."""
+        if self.current_preset_index < len(self.presets) - 1:
+            self.current_preset_index += 1
+        return self.get_current_preset()
+
+    def get_current_preset(self):
+        """Get the current preset details."""
+        return {
+            "index": self.current_preset_index,
+            "preset": self.presets[self.current_preset_index],
+            "channel": self.channel,
+        }
+
+    def set_channel(self, channel):
+        """Set the MIDI channel."""
+        self.channel = channel
 
 
 class MainWindow(QMainWindow):
@@ -249,6 +278,9 @@ class MainWindow(QMainWindow):
         # Initialize current preset index
         self.current_preset_index = 0
 
+        # Initialize PresetHandler with the desired preset list
+        self.preset_handler = PresetHandler(DIGITAL_PRESETS)
+
     def _select_synth(self, synth_type):
         """Select a synth and update button styles."""
         print(f"Selected synth: {synth_type}")
@@ -315,28 +347,19 @@ class MainWindow(QMainWindow):
 
     def _increase_tone(self):
         """Increase the tone index and update the display."""
-        if self.current_preset_index < len(DIGITAL_PRESETS) - 1:
-            self.current_preset_index += 1
-            presets = DIGITAL_PRESETS
-            if self.preset_type == PresetType.ANALOG:
-                presets = AN_PRESETS
-            elif self.preset_type == PresetType.DIGITAL_1:
-                presets = DIGITAL_PRESETS
-            elif self.preset_type == PresetType.DIGITAL_2:
-                presets = DIGITAL_PRESETS
-            elif self.preset_type == PresetType.DRUMS:
-                presets = DRUM_PRESETS
-            self._update_display_preset(
-                self.current_preset_index,
-                presets[self.current_preset_index],
-                self.channel,
-            )
-            preset_data = {
-                "type": self.preset_type,  # Ensure this is a valid type
-                "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
-                "modified": 0,  # or 1, depending on your logic
+        preset_data = self.preset_handler.increase_tone()
+        self._update_display_preset(
+            preset_data["index"],
+            preset_data["preset"],
+            preset_data["channel"],
+        )
+        self.load_preset(
+            {
+                "type": self.preset_type,
+                "selpreset": preset_data["index"] + 1,
+                "modified": 0,
             }
-            self.load_preset(preset_data)
+        )
 
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""
@@ -2457,3 +2480,68 @@ class MainWindow(QMainWindow):
         self.load_preset(preset_data)
         # self._update_style()
         logging.debug(f"Loaded favorite {self.slot_num}: {self.preset.preset_name}")
+
+
+class PresetComboBox(QWidget):
+    preset_selected = Signal(int)  # Signal to emit when a preset is selected
+    preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
+
+    def __init__(self, presets, parent=None):
+        super().__init__(parent)
+        self.full_presets = presets
+        self.index_mapping = []
+
+        # Layout
+        layout = QVBoxLayout(self)
+
+        # Search Box
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Search:"))
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search presets...")
+        self.search_box.textChanged.connect(self._filter_presets)
+        search_row.addWidget(self.search_box)
+        layout.addLayout(search_row)
+
+        # ComboBox
+        self.combo_box = QComboBox()
+        self.combo_box.setEditable(True)  # Allow text search
+        self.combo_box.currentIndexChanged.connect(self._on_preset_selected)
+        layout.addWidget(self.combo_box)
+
+        self.set_presets(presets)
+
+    def _on_preset_selected(self, index):
+        self.preset_selected.emit(index)
+
+    def _on_load_clicked(self):
+        current_index = self.combo_box.currentIndex()
+        if current_index >= 0 and current_index < len(self.index_mapping):
+            original_index = self.index_mapping[current_index]
+            self.preset_loaded.emit(original_index)
+
+    def _filter_presets(self, search_text: str):
+        filtered_presets = []
+        self.index_mapping = []
+
+        if isinstance(self.full_presets, dict):
+            for category, presets in self.full_presets.items():
+                for i, preset in enumerate(presets):
+                    if search_text.lower() in preset.lower():
+                        filtered_presets.append(f"{category}: {preset}")
+                        self.index_mapping.append((category, i))
+        else:
+            for i, preset in enumerate(self.full_presets):
+                if search_text.lower() in preset.lower():
+                    filtered_presets.append(preset)
+                    self.index_mapping.append(i)
+
+        self.combo_box.clear()
+        self.combo_box.addItems(filtered_presets)
+
+    def set_presets(self, presets):
+        self.full_presets = presets
+        self._filter_presets(self.search_box.text())
+
+    def current_preset(self):
+        return self.combo_box.currentText()

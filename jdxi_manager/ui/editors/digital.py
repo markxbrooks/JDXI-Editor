@@ -19,12 +19,13 @@ import base64
 from io import BytesIO
 import qtawesome as qta
 
-from jdxi_manager.data.preset_data import DIGITAL_PRESETS
+from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
     WaveformButton,
@@ -848,21 +849,66 @@ class DigitalSynthEditor(BaseEditor):
         self.instrument_selection_label = QLabel("Select a digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        self.instrument_selection_combo = QComboBox()
-        self.instrument_selection_combo.addItems(self.presets)
-        self.instrument_selection_combo.setEditable(True)  # Allow text search
-        self.instrument_selection_combo.currentIndexChanged.connect(
+        upper_layout = QHBoxLayout()
+        container_layout.addLayout(upper_layout)
+
+        # Title and drum kit selection
+        instrument_preset_group = QGroupBox("Digital Synth")
+        self.instrument_title_label = QLabel(
+            f"Digital Synth:\n {self.presets[0]}" if self.presets else "Digital Synth"
+        )
+        instrument_preset_group.setStyleSheet(
+            """
+            QGroupBox {
+            width: 300px;
+            }
+        """
+        )
+        self.instrument_title_label.setStyleSheet(
+            """
+            font-size: 16px;
+            font-weight: bold;
+        """
+        )
+        instrument_title_group_layout = QVBoxLayout()
+        instrument_preset_group.setLayout(instrument_title_group_layout)
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+
+        self.instrument_selection_label = QLabel("Select a Digital synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+        # Synth selection
+        # Preset ComboBox
+        self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS)
+        self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
-        self.instrument_selection_combo.currentIndexChanged.connect(
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo.currentIndexChanged.connect(
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_preset
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         upper_layout.addWidget(instrument_preset_group)
         upper_layout.addWidget(self.image_label)
+        container_layout.addLayout(upper_layout)
+        self.update_instrument_image()
+        # self.instrument_selection_combo = QComboBox()
+        # self.instrument_selection_combo.addItems(self.presets)
+        # self.instrument_selection_combo.setEditable(True)  # Allow text search
+        # self.instrument_selection_combo.currentIndexChanged.connect(
+        #    self.update_instrument_image
+        # )
+        # self.instrument_selection_combo.currentIndexChanged.connect(
+        #    self.update_instrument_title
+        # )
+        # self.instrument_selection_combo.currentIndexChanged.connect(
+        #    self.update_instrument_preset
+        # )
+        # instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+        # upper_layout.addWidget(instrument_preset_group)
+        # upper_layout.addWidget(self.image_label)
         # container_layout.addLayout(upper_layout)
 
         # Add partials panel at the top
@@ -1134,12 +1180,12 @@ class DigitalSynthEditor(BaseEditor):
         return slider
 
     def update_instrument_title(self):
-        selected_synth_text = self.instrument_selection_combo.currentText()
+        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         print(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
-        selected_synth_text = self.instrument_selection_combo.currentText()
+        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
         ):
@@ -1169,7 +1215,9 @@ class DigitalSynthEditor(BaseEditor):
             self.image_label.setPixmap(scaled_pixmap)
             return True
 
-        selected_instrument_text = self.instrument_selection_combo.currentText()
+        selected_instrument_text = (
+            self.instrument_selection_combo.combo_box.currentText()
+        )
 
         # Try to extract synth name from the selected text
         image_loaded = False

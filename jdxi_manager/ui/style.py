@@ -12,6 +12,8 @@ class Style:
     FOREGROUND = "#FFFFFF"
     ACCENT = "#FF0000"  # Red accent color
     ACCENT_HOVER = "#FF0000"  # Red for hover
+    ANALOG_ACCENT = "#00A0E9"
+    ANALOG_ACCENT_HOVER = "00A0E9"
     BORDER = "#333333"
     SLIDER_HANDLE = "#000000"  # Black fill
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
@@ -55,12 +57,89 @@ class Style:
                 color: #d51e35;  /* Base red */
                 font-weight: bold;
             """
-    ANALOG_SYNTH_PART_LABEL_STYLE = """
+    ANALOG_SYNTH_PART_LABEL_STYLE = f"""
                 font-family: "Myriad Pro", Arial;
                 font-size: 13px;
-                color: #00A0E9;  /* Blue for Analog */
+                color: {ANALOG_ACCENT};  /* Blue for Analog */
                 font-weight: bold;
             """
+    ANALOG_EDITOR_STYLE = f"""
+        QWidget {{
+            background-color: {BACKGROUND};
+            color: {FOREGROUND};
+            font-family: {FONT_FAMILY};
+            font-size: {FONT_SIZE};
+        }}
+        QGroupBox {{
+            border: 1px solid {ANALOG_ACCENT};
+            border-radius: 3px;
+            margin-top: 1.5ex;
+            padding: 10px;
+        }}
+        
+        QGroupBox[adsr="true"] {{
+            min-height: 120px;  /* Reduced height for horizontal layout */
+        }}
+        
+        QGroupBox::title {{
+            subcontrol-origin: margin;
+            subcontrol-position: top center;
+            padding: 0 3px;
+            background-color: {BACKGROUND};
+            color: {TITLE_TEXT};  /* Red text */
+        }}
+        
+        QPushButton {{
+            background-color: {BACKGROUND};
+            border: 1px solid {ANALOG_ACCENT};  /* Red border */
+            border-radius: 3px;
+            padding: 5px;
+            color: {FOREGROUND};
+        }}
+        
+        QPushButton:hover {{
+            background-color: {ANALOG_ACCENT};  /* Red background on hover */
+            color: {BACKGROUND};
+        }}
+        
+        QPushButton:checked {{
+            background-color: {ANALOG_ACCENT};  /* Red background when checked */
+            color: {BACKGROUND};
+        }}
+        QScrollBar {{
+            background: {BACKGROUND};
+            border: 1px solid {BORDER};
+        }}
+        QScrollBar::handle {{
+            background: {SLIDER_HANDLE_BORDER};  /* Grey scrollbar handle */
+            border-radius: 3px;
+        }}
+        QScrollBar::handle:hover {{
+            background: {ANALOG_ACCENT_HOVER};
+        }}
+        GroupBox {{
+                border: 1px solid {ANALOG_ACCENT};
+        }}
+        QPushButton {{
+                border: 1px solid {ANALOG_ACCENT};
+        }}
+        QComboBox {{
+                border: 1px solid {ANALOG_ACCENT};  /* Blue border */
+        }}
+        QGroupBox {{
+            border: 1px solid {ANALOG_ACCENT};
+        }}
+        QPushButton {{
+            border: 1px solid {ANALOG_ACCENT};
+        }}
+        QComboBox {{
+            border: 1px solid {ANALOG_ACCENT};  /* Blue border */
+        }}
+        QScrollBar::handle:hover {{
+            background: {ANALOG_ACCENT};
+        }}
+    """
+
     TONE_BUTTON_STYLE = f"""
             QPushButton {{
                 background-color: #333333;  /* Dark grey */
