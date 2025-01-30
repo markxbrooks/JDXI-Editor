@@ -15,13 +15,14 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
 import qtawesome as qta
 
-from jdxi_manager.data.preset_data import ANALOG_PRESETS
+from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.editors.digital import base64_to_pixmap
 from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
     WaveformButton,
@@ -79,17 +80,7 @@ class AnalogSynthEditor(BaseEditor):
         container.setLayout(container_layout)
 
         # Additional styling specific to analog editor
-        accent = "#00A3F0"
-        container.setStyleSheet(
-            f"""
-            QGroupBox {{
-                border: 1px solid {accent};
-            }}
-            QComboBox {{
-                border: 1px solid {accent};  /* Blue border */
-        }}
-        """
-        )
+        self.setStyleSheet(Style.ANALOG_EDITOR_STYLE)
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 
@@ -115,19 +106,19 @@ class AnalogSynthEditor(BaseEditor):
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
 
-        self.instrument_selection_label = QLabel("Select a digital synth:")
+        self.instrument_selection_label = QLabel("Select an Analog synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        self.instrument_selection_combo = QComboBox()
-        self.instrument_selection_combo.addItems(self.presets)
-        self.instrument_selection_combo.setEditable(True)  # Allow text search
-        self.instrument_selection_combo.currentIndexChanged.connect(
+        # Preset ComboBox
+        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESETS)
+        self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
-        self.instrument_selection_combo.currentIndexChanged.connect(
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo.currentIndexChanged.connect(
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_preset
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
@@ -313,12 +304,12 @@ class AnalogSynthEditor(BaseEditor):
         return group
 
     def update_instrument_title(self):
-        selected_synth_text = self.instrument_selection_combo.currentText()
+        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         print(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
-        selected_synth_text = self.instrument_selection_combo.currentText()
+        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
         ):
@@ -348,7 +339,9 @@ class AnalogSynthEditor(BaseEditor):
             self.image_label.setPixmap(scaled_pixmap)
             return True
 
-        selected_instrument_text = self.instrument_selection_combo.currentText()
+        selected_instrument_text = (
+            self.instrument_selection_combo.combo_box.currentText()
+        )
 
         # Try to extract synth name from the selected text
         image_loaded = False

@@ -1,14 +1,24 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QLineEdit, QPushButton
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QComboBox,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+)
 from PySide6.QtCore import Signal
+
 
 class PresetComboBox(QWidget):
     preset_selected = Signal(int)  # Signal to emit when a preset is selected
-    preset_loaded = Signal(int)    # Signal to emit when a preset is loaded
+    preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
 
     def __init__(self, presets, parent=None):
         super().__init__(parent)
         self.full_presets = presets
-        self.index_mapping = list(range(len(presets)))
+        self.index_mapping = []
+        self.category_mapping = {}
 
         # Layout
         layout = QVBoxLayout(self)
@@ -24,15 +34,11 @@ class PresetComboBox(QWidget):
 
         # ComboBox
         self.combo_box = QComboBox()
-        self.combo_box.addItems(self.full_presets)
         self.combo_box.setEditable(True)  # Allow text search
         self.combo_box.currentIndexChanged.connect(self._on_preset_selected)
         layout.addWidget(self.combo_box)
 
-        # Load Button
-        self.load_button = QPushButton("Load")
-        self.load_button.clicked.connect(self._on_load_clicked)
-        layout.addWidget(self.load_button)
+        self.set_presets(presets)
 
     def _on_preset_selected(self, index):
         self.preset_selected.emit(index)
@@ -44,17 +50,20 @@ class PresetComboBox(QWidget):
             self.preset_loaded.emit(original_index)
 
     def _filter_presets(self, search_text: str):
-        if not search_text:
-            filtered_presets = self.full_presets
-            self.index_mapping = list(range(len(self.full_presets)))
+        filtered_presets = []
+        self.index_mapping = []
+
+        if isinstance(self.full_presets, dict):
+            for category, presets in self.full_presets.items():
+                for i, preset in enumerate(presets):
+                    if search_text.lower() in preset.lower():
+                        filtered_presets.append(f"{category}: {preset}")
+                        self.index_mapping.append((category, i))
         else:
-            search_text = search_text.lower()
-            filtered_presets = [
-                preset for preset in self.full_presets if search_text in preset.lower()
-            ]
-            self.index_mapping = [
-                i for i, preset in enumerate(self.full_presets) if search_text in preset.lower()
-            ]
+            for i, preset in enumerate(self.full_presets):
+                if search_text.lower() in preset.lower():
+                    filtered_presets.append(preset)
+                    self.index_mapping.append(i)
 
         self.combo_box.clear()
         self.combo_box.addItems(filtered_presets)
@@ -64,4 +73,4 @@ class PresetComboBox(QWidget):
         self._filter_presets(self.search_box.text())
 
     def current_preset(self):
-        return self.combo_box.currentText() 
+        return self.combo_box.currentText()
