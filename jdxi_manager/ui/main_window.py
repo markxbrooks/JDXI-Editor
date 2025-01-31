@@ -67,16 +67,38 @@ from jdxi_manager.midi.preset_loader import PresetLoader
 # from jdxi_manager.ui.preset_handler import PresetHandler
 
 
-class PresetHandler:
-    def __init__(self, presets, channel=1):
+from PySide6.QtCore import QObject, Signal
+
+
+class PresetHandler(QObject):
+    preset_changed = Signal(int)  # Signal emitted when preset changes
+    update_display = Signal(int, int, int)
+
+    def __init__(self, presets, channel=1, type=PresetType.DIGITAL_1):
+        super().__init__()
         self.presets = presets
         self.channel = channel
+        self.type = type
         self.current_preset_index = 0
 
-    def increase_tone(self):
+    def next_tone(self):
         """Increase the tone index and return the new preset."""
         if self.current_preset_index < len(self.presets) - 1:
             self.current_preset_index += 1
+            self.preset_changed.emit(self.current_preset_index)  # Emit signal
+            self.update_display.emit(
+                self.type, self.current_preset_index, self.channel
+            )  # Emit signal
+        return self.get_current_preset()
+
+    def previous_tone(self):
+        """Decrease the tone index and return the new preset."""
+        if self.current_preset_index < len(self.presets) - 1:
+            self.current_preset_index -= 1
+            self.preset_changed.emit(self.current_preset_index)  # Emit signal
+            self.update_display.emit(
+                self.type, self.current_preset_index, self.channel
+            )  # Emit signal
         return self.get_current_preset()
 
     def get_current_preset(self):
@@ -90,6 +112,15 @@ class PresetHandler:
     def set_channel(self, channel):
         """Set the MIDI channel."""
         self.channel = channel
+
+    def set_preset(self, index):
+        """Set the preset manually and emit the signal."""
+        if 0 <= index < len(self.presets):
+            self.current_preset_index = index
+            self.preset_changed.emit(self.current_preset_index)
+            self.update_display.emit(
+                self.type, self.current_preset_index, self.channel
+            )  # Emit signal
 
 
 class MainWindow(QMainWindow):
@@ -279,7 +310,13 @@ class MainWindow(QMainWindow):
         self.current_preset_index = 0
 
         # Initialize PresetHandler with the desired preset list
-        self.preset_handler = PresetHandler(DIGITAL_PRESETS)
+        self.digital_preset_handler = PresetHandler(DIGITAL_PRESETS)
+        self.analog_preset_handler = PresetHandler(ANALOG_PRESETS)
+        self.drums_preset_handler = PresetHandler(DRUM_PRESETS)
+
+        self.digital_preset_handler.update_display.connect(self.update_display_callback)
+        self.analog_preset_handler.update_display.connect(self.update_display_callback)
+        self.drums_preset_handler.update_display.connect(self.update_display_callback)
 
     def _select_synth(self, synth_type):
         """Select a synth and update button styles."""
@@ -320,19 +357,22 @@ class MainWindow(QMainWindow):
                 """
                 )
 
-    def _decrease_tone(self):
-        """Decrease the tone index and update the display."""
+    def _get_presets_for_current_synth(self):
+        """Return the appropriate preset list based on the current synth type."""
+        if self.current_synth_type == PresetType.ANALOG:
+            return AN_PRESETS
+        elif self.current_synth_type in [PresetType.DIGITAL_1, PresetType.DIGITAL_2]:
+            return DIGITAL_PRESETS
+        elif self.current_synth_type == PresetType.DRUMS:
+            return DRUM_PRESETS
+        return DIGITAL_PRESETS  # Default to DIGITAL_PRESETS if none match
+
+    def _previous_tone(self):
+        """Decrement the tone index and update the display."""
+        preset_data = self.digital_preset_handler.previous_tone()
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
-            presets = DIGITAL_PRESETS
-            if self.current_synth_type == PresetType.ANALOG:
-                presets = AN_PRESETS
-            elif self.current_synth_type == PresetType.DIGITAL_1:
-                presets = DIGITAL_PRESETS
-            elif self.current_synth_type == PresetType.DIGITAL_2:
-                presets = DIGITAL_PRESETS
-            elif self.current_synth_type == PresetType.DRUMS:
-                presets = DRUM_PRESETS
+            presets = self._get_presets_for_current_synth()
             self._update_display_preset(
                 self.current_preset_index,
                 presets[self.current_preset_index],
@@ -345,20 +385,46 @@ class MainWindow(QMainWindow):
             }
             self.load_preset(preset_data)
 
-    def _increase_tone(self):
-        """Increase the tone index and update the display."""
-        preset_data = self.preset_handler.increase_tone()
-        self._update_display_preset(
-            preset_data["index"],
-            preset_data["preset"],
-            preset_data["channel"],
-        )
-        self.load_preset(
-            {
-                "type": self.preset_type,
-                "selpreset": preset_data["index"] + 1,
-                "modified": 0,
+    def _next_tone(self):
+        """Increment the tone index and update the display."""
+        preset_data = self.digital_preset_handler.next_tone()
+        if self.current_preset_index < len(self._get_presets_for_current_synth()) - 1:
+            self.current_preset_index += 1
+            presets = self._get_presets_for_current_synth()
+            self._update_display_preset(
+                self.current_preset_index,
+                presets[self.current_preset_index],
+                self.channel,
+            )
+            preset_data = {
+                "type": self.current_synth_type,  # Ensure this is a valid type
+                "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
+                "modified": 0,  # or 1, depending on your logic
             }
+            self.load_preset(preset_data)
+
+    def update_display_callback(self, synth_type, preset_index, channel):
+        """Update the display for the given synth type and preset index."""
+        print(
+            "update_display_callback: synth_type, preset_index, channel",
+            synth_type,
+            preset_index,
+            channel,
+        )
+        preset_map = {
+            PresetType.ANALOG: ANALOG_PRESETS,
+            PresetType.DIGITAL_1: DIGITAL_PRESETS,
+            PresetType.DIGITAL_2: DIGITAL_PRESETS,
+            PresetType.DRUMS: DRUM_PRESETS,
+        }
+
+        # Default to DIGITAL_PRESETS if the synth_type is not found in the map
+        presets = preset_map.get(synth_type, DIGITAL_PRESETS)
+
+        self._update_display_preset(
+            preset_index,
+            presets[preset_index],
+            channel,
         )
 
     def show_editor(self, editor_type: str):
@@ -451,8 +517,8 @@ class MainWindow(QMainWindow):
         self.tone_down_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
 
         # Connect buttons to functions
-        self.tone_down_button.clicked.connect(self._decrease_tone)
-        self.tone_up_button.clicked.connect(self._increase_tone)
+        self.tone_down_button.clicked.connect(self._previous_tone)
+        self.tone_up_button.clicked.connect(self._next_tone)
 
         button_label_layout = QHBoxLayout()
         button_label_layout.addStretch()
@@ -688,9 +754,11 @@ class MainWindow(QMainWindow):
     def _open_analog_synth(self):
         self._show_editor("Analog Synth", AnalogSynthEditor)
         self.preset_type = PresetType.ANALOG
+        self.current_synth_type = PresetType.ANALOG
 
     def _open_digital_synth1(self):
         """Open the Digital Synth 1 editor and send SysEx message."""
+        self.current_synth_type = PresetType.DIGITAL_1
         try:
             if not hasattr(self, "digital_synth1_editor"):
                 self.digital_synth1_editor = DigitalSynthEditor(
@@ -729,10 +797,12 @@ class MainWindow(QMainWindow):
     def _open_digital_synth2(self):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
         self.preset_type = PresetType.DIGITAL_2
+        self.current_synth_type = PresetType.DIGITAL_2
 
     def _open_drums(self):
         self._show_drums_editor()
         self.preset_type = PresetType.DRUMS
+        self.current_synth_type = PresetType.DRUMS
 
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
@@ -2480,68 +2550,3 @@ class MainWindow(QMainWindow):
         self.load_preset(preset_data)
         # self._update_style()
         logging.debug(f"Loaded favorite {self.slot_num}: {self.preset.preset_name}")
-
-
-class PresetComboBox(QWidget):
-    preset_selected = Signal(int)  # Signal to emit when a preset is selected
-    preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
-
-    def __init__(self, presets, parent=None):
-        super().__init__(parent)
-        self.full_presets = presets
-        self.index_mapping = []
-
-        # Layout
-        layout = QVBoxLayout(self)
-
-        # Search Box
-        search_row = QHBoxLayout()
-        search_row.addWidget(QLabel("Search:"))
-        self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Search presets...")
-        self.search_box.textChanged.connect(self._filter_presets)
-        search_row.addWidget(self.search_box)
-        layout.addLayout(search_row)
-
-        # ComboBox
-        self.combo_box = QComboBox()
-        self.combo_box.setEditable(True)  # Allow text search
-        self.combo_box.currentIndexChanged.connect(self._on_preset_selected)
-        layout.addWidget(self.combo_box)
-
-        self.set_presets(presets)
-
-    def _on_preset_selected(self, index):
-        self.preset_selected.emit(index)
-
-    def _on_load_clicked(self):
-        current_index = self.combo_box.currentIndex()
-        if current_index >= 0 and current_index < len(self.index_mapping):
-            original_index = self.index_mapping[current_index]
-            self.preset_loaded.emit(original_index)
-
-    def _filter_presets(self, search_text: str):
-        filtered_presets = []
-        self.index_mapping = []
-
-        if isinstance(self.full_presets, dict):
-            for category, presets in self.full_presets.items():
-                for i, preset in enumerate(presets):
-                    if search_text.lower() in preset.lower():
-                        filtered_presets.append(f"{category}: {preset}")
-                        self.index_mapping.append((category, i))
-        else:
-            for i, preset in enumerate(self.full_presets):
-                if search_text.lower() in preset.lower():
-                    filtered_presets.append(preset)
-                    self.index_mapping.append(i)
-
-        self.combo_box.clear()
-        self.combo_box.addItems(filtered_presets)
-
-    def set_presets(self, presets):
-        self.full_presets = presets
-        self._filter_presets(self.search_box.text())
-
-    def current_preset(self):
-        return self.combo_box.currentText()

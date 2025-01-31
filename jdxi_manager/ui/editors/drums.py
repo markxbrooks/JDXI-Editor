@@ -58,6 +58,7 @@ from jdxi_manager.midi.constants.sysex import (
     MODEL_ID_3,
     MODEL_ID_4,
 )
+from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 
 instrument_icon_folder = "drum_kits"
 
@@ -135,7 +136,8 @@ class DrumEditor(BaseEditor):
         self.image_label = None
         # Main layout
         self.preset_type = PresetType.DRUMS
-        self.preset_loader = None
+        self.preset_loader = PresetLoader(self.midi_helper)
+        self.main_window = parent
         main_layout = QVBoxLayout(self)
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
@@ -165,15 +167,30 @@ class DrumEditor(BaseEditor):
         self.selection_label = QLabel("Select a drum kit:")
         drum_group_layout.addWidget(self.selection_label)
         # Drum kit selection
-        self.digital_synth_combo = QComboBox()
-        self.digital_synth_combo.addItems(DRUM_PRESETS)
-        self.digital_synth_combo.setEditable(True)  # Allow text search
-        self.digital_synth_combo.currentIndexChanged.connect(self.update_drum_image)
-        self.digital_synth_combo.currentIndexChanged.connect(self.update_drum_kit_title)
-        self.digital_synth_combo.currentIndexChanged.connect(
-            self.update_drum_kit_preset
+
+        self.instrument_selection_combo = PresetComboBox(DRUM_PRESETS)
+        self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
+        self.instrument_selection_combo.combo_box.setCurrentIndex(
+            self.preset_loader.preset_number
         )
-        drum_group_layout.addWidget(self.digital_synth_combo)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        # Connect QComboBox signal to PresetHandler
+        self.main_window.drums_preset_handler.preset_changed.connect(
+            self.update_combo_box_index
+        )
+
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_preset
+        )
+        drum_group_layout.addWidget(self.instrument_selection_combo)
         upper_layout.addWidget(drum_group)
 
         # Image display
@@ -979,14 +996,14 @@ class DrumEditor(BaseEditor):
             tab.layout().addWidget(scroll_area)
             self.tab_widget.addTab(tab, partial)
 
-        self.update_drum_image()
+        self.update_instrument_image()
 
-    def update_drum_kit_title(self):
-        selected_kit_text = self.digital_synth_combo.currentText()
+    def update_instrument_title(self):
+        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
         self.title_label.setText(f"Drum Kit:\n {selected_kit_text}")
 
-    def update_drum_kit_preset(self):
-        selected_kit_text = self.digital_synth_combo.currentText()
+    def update_instrument_preset(self):
+        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
         if digital_synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
         ):
@@ -1008,7 +1025,12 @@ class DrumEditor(BaseEditor):
         if self.preset_loader:
             self.preset_loader.load_preset(preset_data)
 
-    def update_drum_image(self):
+    def update_combo_box_index(self, preset_number):
+        """Updates the QComboBox to reflect the loaded preset."""
+        print(f"Updating combo to preset {preset_number}")
+        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
+
+    def update_instrument_image(self):
         def load_and_set_image(image_path):
             """Helper function to load and set the image on the label."""
             if os.path.exists(image_path):
@@ -1022,7 +1044,7 @@ class DrumEditor(BaseEditor):
 
         # Define paths
         default_image_path = os.path.join("resources", "drum_kits", "drums.png")
-        selected_kit_text = self.digital_synth_combo.currentText()
+        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
 
         # Try to extract drum kit name from the selected text
         image_loaded = False

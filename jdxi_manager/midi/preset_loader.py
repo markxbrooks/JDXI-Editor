@@ -1,5 +1,7 @@
 import logging
 import time
+
+from PySide6.QtCore import Signal, QObject
 from pubsub import pub
 from typing import Optional
 from jdxi_manager.midi import MIDIHelper
@@ -16,14 +18,21 @@ def calculate_checksum(data):
     return result
 
 
-class PresetLoader:
+class PresetLoader(QObject):
     """Utility class for loading presets via MIDI"""
 
-    def __init__(self, midi_helper, dev_nr=DEVICE_ID, debug=False):  # , midi_indev):
+    preset_selected = Signal(int)  # Signal to emit when a preset is selected
+    preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
+
+    def __init__(
+        self, midi_helper, device_number=DEVICE_ID, debug=False
+    ):  # , midi_indev):
+        super().__init__()
+        self.preset_number = 1  # Default preset
         self.midi_helper = midi_helper
-        self.midi_outdev = midi_helper
-        self.midi_indev = midi_helper
-        self.dev_nr = dev_nr
+        self.midi_out_device = midi_helper  # FIXME: Looks incorrect,
+        self.midi_in_device = midi_helper  # but still works, so is this needed?
+        self.device_number = device_number
         self.debug = debug
         self.midi_lock = 0
         self.midi_last = time.time()
@@ -33,7 +42,7 @@ class PresetLoader:
         pub.subscribe(self.load_preset, "request_load_preset")
 
     def send_pa_ch_msg(self, addr, value, nr):
-        if self.midi_outdev:
+        if self.midi_out_device:
             while self.midi_lock != 0:
                 time.sleep(0.001)  # wait until preceding parameter changes are done
             self.midi_lock = 1  # lock out other parameter change attempts
@@ -50,23 +59,23 @@ class PresetLoader:
                 data = bytes([value])
 
             addr_bytes = bytes.fromhex(addr)
-            chksum = calculate_checksum(addr_bytes + data)
+            checksum = calculate_checksum(addr_bytes + data)
             sysex = (
                 XI_HEADER
                 + bytes([DT1_COMMAND_12])
                 + addr_bytes
                 + data
-                + bytes([chksum, 0xF7])
+                + bytes([checksum, 0xF7])
             )
 
             # Enforce 2 ms gap since last parameter change message sent
-            midinow = time.time()
-            gap = midinow - self.midi_last
+            midi_now = time.time()
+            gap = midi_now - self.midi_last
             if gap < 0.002:
                 time.sleep(0.002 - gap)
 
             # Send the MIDI data to the synth
-            self.midi_outdev.send_message(sysex)
+            self.midi_out_device.send_message(sysex)
             self.midi_last = time.time()  # store timestamp
             self.midi_lock = 0  # allow other parameter changes to proceed
 
@@ -78,19 +87,20 @@ class PresetLoader:
             address = ""
             msb = 0
             lsb = 64
-            preset_number = int(preset_data["selpreset"])
+            self.preset_number = int(preset_data["selpreset"])
+            # self.preset_loaded.emit(self.preset_number)
             if preset_data["type"] == PresetType.DIGITAL_1:
                 address = "18002006"
                 msb = 95
-                if preset_number > 128:
+                if self.preset_number > 128:
                     lsb = 65
-                    preset_number -= 128
+                    self.preset_number -= 128
             elif preset_data["type"] == PresetType.DIGITAL_2:
                 address = "18002106"
                 msb = 95
-                if preset_number > 128:
+                if self.preset_number > 128:
                     lsb = 65
-                    preset_number -= 128
+                    self.preset_number -= 128
             elif preset_data["type"] == PresetType.ANALOG:
                 address = "18002206"
                 msb = 94
@@ -105,7 +115,9 @@ class PresetLoader:
             # Send the correct SysEx messages
             self.send_pa_ch_msg(address, msb, 1)
             self.send_pa_ch_msg(f"{int(address, 16) + 1:08X}", lsb, 1)
-            self.send_pa_ch_msg(f"{int(address, 16) + 2:08X}", preset_number - 1, 1)
+            self.send_pa_ch_msg(
+                f"{int(address, 16) + 2:08X}", self.preset_number - 1, 1
+            )
 
             # Additional SysEx messages for loading the preset
             self.send_sysex_message("19", "01", "00", "00", "00", "00", "00", "40")
@@ -149,7 +161,7 @@ class PresetLoader:
     def unsaved_changes(self, window, message):
         # Implement the logic to handle unsaved changes
         # Return 'Yes' or 'No' based on user input
-        if self.midi_outdev:
+        if self.midi_out_device:
             while self.midi_lock != 0:
                 time.sleep(0.001)  # wait until preceding parameter changes are done
             self.midi_lock = 1  # lock out other parameter change attempts
@@ -175,13 +187,13 @@ class PresetLoader:
             )
 
             # Enforce 2 ms gap since last parameter change message sent
-            midinow = time.time()
-            gap = midinow - self.midi_last
+            midi_now = time.time()
+            gap = midi_now - self.midi_last
             if gap < 0.002:
                 time.sleep(0.002 - gap)
 
             # Send the MIDI data to the synth
-            self.midi_outdev.send_message(sysex)
+            self.midi_out_device.send_message(sysex)
             self.midi_last = time.time()  # store timestamp
             self.midi_lock = 0  # al
 
@@ -243,20 +255,20 @@ class PresetLoader:
     def syx_receive(self, req_sysex, exp_len, window):
         tmp_dump = b""
 
-        if self.midi_outdev and self.midi_indev:
-            self.midi_outdev.send_message(req_sysex)
+        if self.midi_out_device and self.midi_in_device:
+            self.midi_out_device.send_message(req_sysex)
             midinow = time.time()
 
             while time.time() < (midinow + 2):
-                if self.midi_indev.poll():
-                    alsa_event = self.midi_indev.read(1)
+                if self.midi_in_device.poll():
+                    alsa_event = self.midi_in_device.read(1)
                     if alsa_event:
                         event_type, data = alsa_event[0]
 
                         if event_type == "PORT_UNSUBSCRIBED":
                             self.error(
                                 window,
-                                f"Error: MIDI connection '{self.midi_indev}' dropped.",
+                                f"Error: MIDI connection '{self.midi_in_device}' dropped.",
                             )
                             return b""
 

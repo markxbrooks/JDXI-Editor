@@ -62,7 +62,7 @@ class AnalogSynthEditor(BaseEditor):
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-
+        self.main_window = parent
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
@@ -114,6 +114,10 @@ class AnalogSynthEditor(BaseEditor):
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
+        )
+        # Connect QComboBox signal to PresetHandler
+        self.main_window.analog_preset_handler.preset_changed.connect(
+            self.update_combo_box_index
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
@@ -302,6 +306,11 @@ class AnalogSynthEditor(BaseEditor):
         self._update_pw_controls_state(Waveform.SAW)  # Initial state
 
         return group
+
+    def update_combo_box_index(self, preset_number):
+        """Updates the QComboBox to reflect the loaded preset."""
+        print(f"Updating combo to preset {preset_number}")
+        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()

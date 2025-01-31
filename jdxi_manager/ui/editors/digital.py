@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
 )
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QObject
 from PySide6.QtGui import QIcon, QPixmap
 import base64
 from io import BytesIO
@@ -780,7 +780,6 @@ class DigitalSynthEditor(BaseEditor):
     ):
         super().__init__(parent)
         # Image display
-        self.preset_loader = None
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
         )
@@ -791,9 +790,11 @@ class DigitalSynthEditor(BaseEditor):
         )  # Center align the image
 
         self.midi_helper = midi_helper
+        self.preset_loader = PresetLoader(self.midi_helper)
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
         self.setWindowTitle(f"Digital Synth {synth_num}")
+        self.main_window = parent
 
         # Store parameter controls for easy access
         self.controls: Dict[
@@ -880,8 +881,15 @@ class DigitalSynthEditor(BaseEditor):
         # Preset ComboBox
         self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
+        self.instrument_selection_combo.combo_box.setCurrentIndex(
+            self.preset_loader.preset_number
+        )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
+        )
+        # Connect QComboBox signal to PresetHandler
+        self.main_window.digital_preset_handler.preset_changed.connect(
+            self.update_combo_box_index
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
@@ -894,22 +902,6 @@ class DigitalSynthEditor(BaseEditor):
         upper_layout.addWidget(self.image_label)
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
-        # self.instrument_selection_combo = QComboBox()
-        # self.instrument_selection_combo.addItems(self.presets)
-        # self.instrument_selection_combo.setEditable(True)  # Allow text search
-        # self.instrument_selection_combo.currentIndexChanged.connect(
-        #    self.update_instrument_image
-        # )
-        # self.instrument_selection_combo.currentIndexChanged.connect(
-        #    self.update_instrument_title
-        # )
-        # self.instrument_selection_combo.currentIndexChanged.connect(
-        #    self.update_instrument_preset
-        # )
-        # instrument_title_group_layout.addWidget(self.instrument_selection_combo)
-        # upper_layout.addWidget(instrument_preset_group)
-        # upper_layout.addWidget(self.image_label)
-        # container_layout.addLayout(upper_layout)
 
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
@@ -1076,6 +1068,11 @@ class DigitalSynthEditor(BaseEditor):
 
         self.midi_helper.parameter_received.connect(self._on_parameter_received)
 
+    def update_combo_box_index(self, preset_number):
+        """Updates the QComboBox to reflect the loaded preset."""
+        print(f"Updating combo to preset {preset_number}")
+        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
+
     def _create_performance_section(self):
         """Create performance controls section"""
         group = QGroupBox("Performance")
@@ -1215,6 +1212,9 @@ class DigitalSynthEditor(BaseEditor):
             self.image_label.setPixmap(scaled_pixmap)
             return True
 
+        default_image_path = os.path.join(
+            "resources", instrument_icon_folder, "jdxi_vector.png"
+        )
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
