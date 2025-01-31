@@ -776,7 +776,11 @@ class DigitalSynthEditor(BaseEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper] = None, synth_num=1, parent=None
+        self,
+        midi_helper: Optional[MIDIHelper] = None,
+        synth_num=1,
+        parent=None,
+        preset_handler=None,
     ):
         super().__init__(parent)
         # Image display
@@ -791,6 +795,10 @@ class DigitalSynthEditor(BaseEditor):
 
         self.midi_helper = midi_helper
         self.preset_loader = PresetLoader(self.midi_helper)
+        if preset_handler:
+            self.preset_handler = preset_handler
+        else:
+            self.preset_handler = parent.digital_preset_handler
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
         self.setWindowTitle(f"Digital Synth {synth_num}")
@@ -882,15 +890,13 @@ class DigitalSynthEditor(BaseEditor):
         self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_loader.preset_number
+            self.preset_handler.current_preset_index
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
         # Connect QComboBox signal to PresetHandler
-        self.main_window.digital_preset_handler.preset_changed.connect(
-            self.update_combo_box_index
-        )
+        self.preset_handler.preset_changed.connect(self.update_combo_box_index)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
@@ -1254,6 +1260,8 @@ class DigitalSynthEditor(BaseEditor):
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
+        # if self.preset_handler:
+        #    self.preset_handler.set_preset(preset_index)
         if not self.preset_loader:
             self.preset_loader = PresetLoader(self.midi_helper)
         if self.preset_loader:

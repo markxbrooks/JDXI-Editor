@@ -21,8 +21,8 @@ def calculate_checksum(data):
 class PresetLoader(QObject):
     """Utility class for loading presets via MIDI"""
 
-    preset_selected = Signal(int)  # Signal to emit when a preset is selected
-    preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
+    # preset_selected = Signal(int)  # Signal to emit when a preset is selected
+    # preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
 
     def __init__(
         self, midi_helper, device_number=DEVICE_ID, debug=False
