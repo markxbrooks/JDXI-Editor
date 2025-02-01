@@ -1,38 +1,7 @@
 """
 ADSR Widget
-===========
-
-This module defines the `ADSRWidget` class, which provides a graphical user interface for editing
-and visualizing ADSR (Attack, Decay, Sustain, Release) envelope parameters. It allows users to
-adjust the following envelope parameters:
-
-- Attack time
-- Decay time
-- Release time
-- Initial amplitude
-- Peak amplitude
-- Sustain amplitude
-
-The widget includes spinboxes for numeric inputs and a plot that visualizes the envelope. The
-widget also emits a `Signal` (`envelopeChanged`) whenever any of the parameter values are
-modified, allowing other components to respond to the changes.
-
-Classes:
---------
-- `ADSRWidget`: A QWidget subclass that allows users to edit and visualize ADSR parameters.
-
-Signals:
---------
-- `envelopeChanged`: Emitted when the envelope parameters change, passing the updated values.
-
-Methods:
---------
-- `__init__(self)`: Initializes the widget and sets up the user interface.
-- `create_spinbox(self, min_value, max_value, suffix, value)`: Creates a QSpinBox for integer values.
-- `create_double_spinbox(self, min_value, max_value, step, value)`: Creates a QDoubleSpinBox for float values.
-- `valueChanged(self)`: Updates the envelope parameters and triggers the `envelopeChanged` signal.
+Editing ADSR parameters
 """
-
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QLabel, QSpinBox, QDoubleSpinBox, QGridLayout
