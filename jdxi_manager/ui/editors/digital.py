@@ -104,6 +104,7 @@ class PartialEditor(QWidget):
 
         # Add container to scroll area
         main_layout.addWidget(container)
+        self.updating_from_spinbox = False
 
     def _create_parameter_slider(
         self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
@@ -381,17 +382,37 @@ class PartialEditor(QWidget):
         env_layout = QVBoxLayout()
         env_group.setLayout(env_layout)
 
+        # Generate the ADSR waveform icon
+        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
+
+        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
+        sub_layout = QVBoxLayout()
+
+        icon_label = QLabel()
+        icon_label.setPixmap(pixmap)
+        icon_label.setAlignment(Qt.AlignHCenter)
+        icons_hlayout = QHBoxLayout()
+        icons_hlayout.addWidget(icon_label)
+        sub_layout.addLayout(icons_hlayout)
+
         # Create ADSRWidget
         self.filter_adsr_widget = ADSRWidget()
         self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
-
-        # Add ADSRWidget to the layout
+        self.filter_adsr_widget.attackSB.valueChanged.connect(self.valueChanged)
+        self.filter_adsr_widget.decaySB.valueChanged.connect(self.valueChanged)
+        self.filter_adsr_widget.releaseSB.valueChanged.connect(self.valueChanged)
+        self.filter_adsr_widget.initialSB.valueChanged.connect(self.valueChanged)
+        self.filter_adsr_widget.peakSB.valueChanged.connect(self.valueChanged)
+        self.filter_adsr_widget.sustainSB.valueChanged.connect(self.valueChanged)
+        adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
+        #adsr_vlayout.addWidget(self.filter_adsr_widget)
         env_layout.setStretchFactor(self.filter_adsr_widget, 5)
 
         # ADSR controls
         adsr_layout = QHBoxLayout()
-        env_layout.addLayout(adsr_layout)
+        adsr_vlayout.addLayout(adsr_layout)
 
         adsr_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.FILTER_ENV_ATTACK, "A")
@@ -405,23 +426,17 @@ class PartialEditor(QWidget):
         adsr_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.FILTER_ENV_RELEASE, "R")
         )
+        env_layout.addLayout(adsr_vlayout)
 
         # Envelope depth
         env_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.FILTER_ENV_DEPTH, "Depth")
         )
-
-        # Add the layout to the group
-        env_group = QGroupBox("Envelope")
-        env_group.setLayout(env_layout)
+        sub_layout.addWidget(env_group)
+        layout.addLayout(sub_layout)
         env_group.setStyleSheet("QGroupBox { margin-top: 10px; }")
         self.filter_adsr_widget.updateGeometry()
         env_group.updateGeometry()
-
-        # Add to main layout
-        sub_layout = QVBoxLayout()
-        sub_layout.addWidget(env_group)
-        layout.addLayout(sub_layout)
 
         # HPF cutoff
         controls_layout.addWidget(
@@ -436,11 +451,44 @@ class PartialEditor(QWidget):
         return group
 
     def on_adsr_envelope_changed(self, envelope):
-        """Update ADSR sliders based on the envelope data."""
-        self.controls[DigitalParameter.FILTER_ENV_ATTACK].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
-        self.controls[DigitalParameter.FILTER_ENV_DECAY].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
-        self.controls[DigitalParameter.FILTER_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
-        self.controls[DigitalParameter.FILTER_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 3000))
+        if not self.updating_from_spinbox:
+            self.controls[DigitalParameter.FILTER_ENV_ATTACK].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
+            self.controls[DigitalParameter.FILTER_ENV_DECAY].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
+            self.controls[DigitalParameter.FILTER_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
+            self.controls[DigitalParameter.FILTER_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
+
+
+    def valueChanged(self):
+        self.updating_from_spinbox = True
+        self.filter_adsr_widget.envelope["attackTime"] = self.filter_adsr_widget.attackSB.value()
+        self.filter_adsr_widget.envelope["decayTime"] = self.filter_adsr_widget.decaySB.value()
+        self.filter_adsr_widget.envelope["releaseTime"] = self.filter_adsr_widget.releaseSB.value()
+        self.filter_adsr_widget.envelope["initialAmpl"] = self.filter_adsr_widget.initialSB.value()
+        self.filter_adsr_widget.envelope["peakAmpl"] = self.filter_adsr_widget.peakSB.value()
+        self.filter_adsr_widget.envelope["sustainAmpl"] = self.filter_adsr_widget.sustainSB.value()
+        self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
+        self.filter_adsr_widget.envelopeChanged.emit(self.filter_adsr_widget.envelope)
+        self.updating_from_spinbox = False
+
+    def on_amp_env_adsr_envelope_changed(self, envelope):
+        if not self.updating_from_spinbox:
+            self.controls[DigitalParameter.AMP_ENV_ATTACK].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
+            self.controls[DigitalParameter.AMP_ENV_DECAY].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
+            self.controls[DigitalParameter.AMP_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
+            self.controls[DigitalParameter.AMP_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
+
+
+    def ampEnvAdsrValueChanged(self):
+        self.updating_from_spinbox = True
+        self.amp_env_adsr_widget.envelope["attackTime"] = self.amp_env_adsr_widget.attackSB.value()
+        self.amp_env_adsr_widget.envelope["decayTime"] = self.amp_env_adsr_widget.decaySB.value()
+        self.amp_env_adsr_widget.envelope["releaseTime"] = self.amp_env_adsr_widget.releaseSB.value()
+        self.amp_env_adsr_widget.envelope["initialAmpl"] = self.amp_env_adsr_widget.initialSB.value()
+        self.amp_env_adsr_widget.envelope["peakAmpl"] = self.amp_env_adsr_widget.peakSB.value()
+        self.amp_env_adsr_widget.envelope["sustainAmpl"] = self.amp_env_adsr_widget.sustainSB.value()
+        self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
+        self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
+        self.updating_from_spinbox = False
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
@@ -514,7 +562,8 @@ class PartialEditor(QWidget):
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)  # Mark as ADSR group
         env_layout = QHBoxLayout()
-        env_group.setLayout(env_layout)
+        amp_env_adsr_vlayout = QVBoxLayout()
+        env_group.setLayout(amp_env_adsr_vlayout)
 
         # Generate the ADSR waveform icon
         icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
@@ -527,6 +576,20 @@ class PartialEditor(QWidget):
         icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
+        # Create ADSRWidget
+        self.amp_env_adsr_widget = ADSRWidget()
+        self.amp_env_adsr_widget.envelopeChanged.connect(self.on_amp_env_adsr_envelope_changed)
+        self.amp_env_adsr_widget.attackSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.decaySB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.releaseSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.initialSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.peakSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.sustainSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+
+        env_layout.addLayout(amp_env_adsr_vlayout)
+        amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
+        amp_env_adsr_vlayout.setStretchFactor(self.filter_adsr_widget, 5)
+        amp_env_adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A")
         )
