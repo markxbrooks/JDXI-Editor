@@ -1,40 +1,50 @@
 """
 ADSR Widget
-Editing ADSR parameters
+===========
+
+This module defines the `ADSRWidget` class, which provides a graphical user interface for editing
+and visualizing ADSR (Attack, Decay, Sustain, Release) envelope parameters. It allows users to
+adjust the following envelope parameters:
+
+- Attack time
+- Decay time
+- Release time
+- Initial amplitude
+- Peak amplitude
+- Sustain amplitude
+
+The widget includes spinboxes for numeric inputs and a plot that visualizes the envelope. The
+widget also emits a `Signal` (`envelopeChanged`) whenever any of the parameter values are
+modified, allowing other components to respond to the changes.
+
+Classes:
+--------
+- `ADSRWidget`: A QWidget subclass that allows users to edit and visualize ADSR parameters.
+
+Signals:
+--------
+- `envelopeChanged`: Emitted when the envelope parameters change, passing the updated values.
+
+Methods:
+--------
+- `__init__(self)`: Initializes the widget and sets up the user interface.
+- `create_spinbox(self, min_value, max_value, suffix, value)`: Creates a QSpinBox for integer values.
+- `create_double_spinbox(self, min_value, max_value, step, value)`: Creates a QDoubleSpinBox for float values.
+- `valueChanged(self)`: Updates the envelope parameters and triggers the `envelopeChanged` signal.
 """
 
-from PySide6.QtCore import Qt, Signal
+
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QLabel, QSpinBox, QDoubleSpinBox, QGridLayout
 
 from jdxi_manager.ui.widgets.adsr_plot import ADSRPlot
 
 
-# from .ADSRPlot import ADSRPlot  # Assuming ADSRPlot is a separate module
-
-
 class ADSRWidget(QWidget):
-    """A widget for controlling and displaying an ADSR envelope.
-
-    This widget allows users to adjust the attack, decay, sustain, and release
-    parameters of an ADSR envelope through spin boxes and displays the envelope
-    graphically using an ADSRPlot.
-
-    Attributes:
-        envelope (dict): A dictionary containing the ADSR envelope parameters.
-        attackSB (QSpinBox): Spin box for adjusting the attack time.
-        decaySB (QSpinBox): Spin box for adjusting the decay time.
-        releaseSB (QSpinBox): Spin box for adjusting the release time.
-        initialSB (QDoubleSpinBox): Spin box for adjusting the initial amplitude.
-        peakSB (QDoubleSpinBox): Spin box for adjusting the peak amplitude.
-        sustainSB (QDoubleSpinBox): Spin box for adjusting the sustain amplitude.
-        plot (ADSRPlot): Widget for displaying the ADSR envelope graphically.
-    """
-
     envelopeChanged = Signal(dict)
 
-    def __init__(self, parent=None):
-        """Initialize the ADSRWidget with default envelope parameters."""
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         self.envelope = {
             "attackTime": 100,
             "decayTime": 400,
@@ -43,106 +53,71 @@ class ADSRWidget(QWidget):
             "peakAmpl": 1,
             "sustainAmpl": 0.8,
         }
-
-        # Create labels
-        attackLabel = QLabel("Attack:")
-        decayLabel = QLabel("Decay:")
-        releaseLabel = QLabel("Release:")
-        initialLabel = QLabel("  Initial:")
-        peakLabel = QLabel("  Peak:")
-        sustainLabel = QLabel("  Sustain:")
-
-        # Create spin boxes
-        self.attackSB = QSpinBox()
-        self.attackSB.setRange(0, 1000)
-        self.attackSB.setSuffix(" ms")
-        self.attackSB.setValue(self.envelope["attackTime"])
-
-        self.decaySB = QSpinBox()
-        self.decaySB.setRange(0, 1000)
-        self.decaySB.setSuffix(" ms")
-        self.decaySB.setValue(self.envelope["decayTime"])
-
-        self.releaseSB = QSpinBox()
-        self.releaseSB.setRange(0, 1000)
-        self.releaseSB.setSuffix(" ms")
-        self.releaseSB.setValue(self.envelope["releaseTime"])
-
-        self.initialSB = QDoubleSpinBox()
-        self.initialSB.setRange(0, 1)
-        self.initialSB.setSingleStep(0.01)
-        self.initialSB.setValue(self.envelope["initialAmpl"])
-
-        self.peakSB = QDoubleSpinBox()
-        self.peakSB.setRange(0, 1)
-        self.peakSB.setSingleStep(0.01)
-        self.peakSB.setValue(self.envelope["peakAmpl"])
-
-        self.sustainSB = QDoubleSpinBox()
-        self.sustainSB.setRange(0, 1)
-        self.sustainSB.setSingleStep(0.01)
-        self.sustainSB.setValue(self.envelope["sustainAmpl"])
-
-        # Create layout
-        self.gridLayout = QGridLayout(self)
-        self.gridLayout.addWidget(attackLabel, 0, 0)
-        self.gridLayout.addWidget(self.attackSB, 0, 1)
-        self.gridLayout.addWidget(decayLabel, 1, 0)
-        self.gridLayout.addWidget(self.decaySB, 1, 1)
-        self.gridLayout.addWidget(releaseLabel, 2, 0)
-        self.gridLayout.addWidget(self.releaseSB, 2, 1)
-        self.gridLayout.addWidget(initialLabel, 0, 2)
-        self.gridLayout.addWidget(self.initialSB, 0, 3)
-        self.gridLayout.addWidget(peakLabel, 1, 2)
-        self.gridLayout.addWidget(self.peakSB, 1, 3)
-        self.gridLayout.addWidget(sustainLabel, 2, 2)
-        self.gridLayout.addWidget(self.sustainSB, 2, 3)
-
-        # Create and add plot
+        self.setMinimumHeight(150)  # Adjust height as needed
+        self.attackSB = self.create_spinbox(0, 1000, " ms", self.envelope["attackTime"])
+        self.decaySB = self.create_spinbox(0, 1000, " ms", self.envelope["decayTime"])
+        self.releaseSB = self.create_spinbox(0, 1000, " ms", self.envelope["releaseTime"])
+        self.initialSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["initialAmpl"])
+        self.peakSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["peakAmpl"])
+        self.sustainSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["sustainAmpl"])
+        self.setStyleSheet("""
+                    QSpinBox {
+                           font-family: Myriad Pro, sans-serif;
+                           font-size: 10px;
+                    }
+                           QDoubleSpinBox {
+                           font-family: Myriad Pro, sans-serif;
+                           font-size: 10px;
+                    }
+                """)
         self.plot = ADSRPlot()
-        self.gridLayout.addWidget(self.plot, 0, 4, 4, 1)
-        self.gridLayout.setColumnMinimumWidth(4, 150)
 
-        # Connect signals
-        self.attackSB.valueChanged.connect(self.valueChangedInt)
-        self.decaySB.valueChanged.connect(self.valueChangedInt)
-        self.releaseSB.valueChanged.connect(self.valueChangedInt)
-        self.initialSB.valueChanged.connect(self.valueChangedDouble)
-        self.peakSB.valueChanged.connect(self.valueChangedDouble)
-        self.sustainSB.valueChanged.connect(self.valueChangedDouble)
+        self.layout = QGridLayout(self)
+        self.layout.addWidget(QLabel("Attack:"), 0, 0)
+        self.layout.addWidget(self.attackSB, 0, 1)
+        self.layout.addWidget(QLabel("Decay:"), 1, 0)
+        self.layout.addWidget(self.decaySB, 1, 1)
+        self.layout.addWidget(QLabel("Release:"), 2, 0)
+        self.layout.addWidget(self.releaseSB, 2, 1)
+        self.layout.addWidget(QLabel("Initial:"), 0, 2)
+        self.layout.addWidget(self.initialSB, 0, 3)
+        self.layout.addWidget(QLabel("Peak:"), 1, 2)
+        self.layout.addWidget(self.peakSB, 1, 3)
+        self.layout.addWidget(QLabel("Sustain:"), 2, 2)
+        self.layout.addWidget(self.sustainSB, 2, 3)
+        self.layout.addWidget(self.plot, 0, 4, 4, 1)
+        self.layout.setColumnMinimumWidth(4, 150)
 
-        # Initialize plot with current envelope values
-        self.plot.setValues(self.envelope)
+        self.attackSB.valueChanged.connect(self.valueChanged)
+        self.decaySB.valueChanged.connect(self.valueChanged)
+        self.releaseSB.valueChanged.connect(self.valueChanged)
+        self.initialSB.valueChanged.connect(self.valueChanged)
+        self.peakSB.valueChanged.connect(self.valueChanged)
+        self.sustainSB.valueChanged.connect(self.valueChanged)
 
-    def valueChangedInt(self, val):
-        """Update envelope parameters and emit signal when integer values change."""
+        self.setLayout(self.layout)
+        self.plot.set_values(self.envelope)
+
+    def create_spinbox(self, min_value, max_value, suffix, value):
+        sb = QSpinBox()
+        sb.setRange(min_value, max_value)
+        sb.setSuffix(suffix)
+        sb.setValue(value)
+        return sb
+
+    def create_double_spinbox(self, min_value, max_value, step, value):
+        sb = QDoubleSpinBox()
+        sb.setRange(min_value, max_value)
+        sb.setSingleStep(step)
+        sb.setValue(value)
+        return sb
+
+    def valueChanged(self):
         self.envelope["attackTime"] = self.attackSB.value()
         self.envelope["decayTime"] = self.decaySB.value()
         self.envelope["releaseTime"] = self.releaseSB.value()
         self.envelope["initialAmpl"] = self.initialSB.value()
         self.envelope["peakAmpl"] = self.peakSB.value()
         self.envelope["sustainAmpl"] = self.sustainSB.value()
-        self.plot.setValues(self.envelope)
+        self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
-
-    def valueChangedDouble(self, val):
-        """Update envelope parameters and emit signal when double values change."""
-        self.valueChangedInt(0)
-
-    def on_adsr_envelope_changed(self, envelope):
-        """Handle changes to the ADSR envelope."""
-        print(f"ADSR Envelope changed: {envelope}")
-
-        # Example: Convert envelope parameters to MIDI messages
-        attack_midi_value = int(
-            envelope["attackTime"] / 1000 * 127
-        )  # Convert to MIDI range
-        decay_midi_value = int(envelope["decayTime"] / 1000 * 127)
-        sustain_midi_value = int(envelope["sustainAmpl"] * 127)
-        release_midi_value = int(envelope["releaseTime"] / 1000 * 127)
-
-        # Send MIDI messages (assuming midi_helper is available)
-        self.midi_helper.send_control_change(attack_midi_value, channel=0)
-        self.midi_helper.send_control_change(decay_midi_value, channel=0)
-        self.midi_helper.send_control_change(sustain_midi_value, channel=0)
-        self.midi_helper.send_control_change(release_midi_value, channel=0)
