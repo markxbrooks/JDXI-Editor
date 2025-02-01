@@ -28,6 +28,7 @@ class BaseEditor(QWidget):
             self.midi_helper.set_callback(self.handle_midi_message)
         else:
             logging.error("MIDI helper not initialized or set_callback method not found")
+
     
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""

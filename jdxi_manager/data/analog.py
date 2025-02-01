@@ -70,34 +70,108 @@ AN_CATEGORIES = {
 }
 
 class AnalogParameter(Enum):
-    """Analog synth parameters"""
-    # Common parameters
-    VOLUME = 0x00
-    PAN = 0x01
-    PORTAMENTO = 0x02
-    
-    # Oscillator parameters
-    OSC_WAVE = 0x10
-    OSC_PITCH = 0x11
-    OSC_FINE = 0x12
-    OSC_PWM = 0x13
-    
-    # Filter parameters
-    FILTER_TYPE = 0x20
-    FILTER_CUTOFF = 0x21
-    FILTER_RESONANCE = 0x22
-    FILTER_ENV_DEPTH = 0x23
-    FILTER_KEY_FOLLOW = 0x24
-    
-    # Amplifier parameters
-    AMP_LEVEL = 0x30
-    AMP_PAN = 0x31
-    
-    # LFO parameters
-    LFO_WAVE = 0x40
-    LFO_RATE = 0x41
-    LFO_DEPTH = 0x42
-    LFO_RANDOM_PITCH = 0x43
+    """Analog synth parameters with group, address, and value range."""
+
+    # LFO Parameters
+    LFO_SHAPE = (0x0D, 0, 5)
+    LFO_RATE = (0x0E, 0, 127)
+    LFO_FADE_TIME = (0x0F, 0, 127)
+    LFO_TEMPO_SYNC_SWITCH = (0x10, 0, 1)
+    LFO_TEMPO_SYNC_NOTE = (0x11, 0, 19)
+    LFO_PITCH_DEPTH = (0x12, 1, 127)
+    LFO_FILTER_DEPTH = (0x13, 1, 127)
+    LFO_AMP_DEPTH = (0x14, 1, 127)
+    LFO_KEY_TRIGGER = (0x15, 0, 1)
+
+    # Oscillator Parameters
+    OSC_WAVEFORM = (0x16, 0, 2)
+    OSC_PITCH_COARSE = (0x17, 40, 88)
+    OSC_PITCH_FINE = (0x18, 14, 114)
+    OSC_PULSE_WIDTH = (0x19, 0, 127)
+    OSC_PULSE_WIDTH_MOD_DEPTH = (0x1A, 0, 127)
+    OSC_PITCH_ENV_VELOCITY_SENS = (0x1B, 1, 127)
+    OSC_PITCH_ENV_ATTACK_TIME = (0x1C, 0, 127)
+    OSC_PITCH_ENV_DECAY = (0x1D, 0, 127)
+    OSC_PITCH_ENV_DEPTH = (0x1E, 1, 127)
+    SUB_OSCILLATOR_TYPE = (0x1F, 0, 2)
+
+    # Filter Parameters
+    FILTER_SWITCH = (0x20, 0, 1)
+    FILTER_CUTOFF = (0x21, 0, 127)
+    FILTER_CUTOFF_KEYFOLLOW = (0x22, 54, 74)
+    FILTER_RESONANCE = (0x23, 0, 127)
+    FILTER_ENV_VELOCITY_SENS = (0x24, 1, 127)
+    FILTER_ENV_ATTACK_TIME = (0x25, 0, 127)
+    FILTER_ENV_DECAY_TIME = (0x26, 0, 127)
+    FILTER_ENV_SUSTAIN_LEVEL = (0x27, 0, 127)
+    FILTER_ENV_RELEASE_TIME = (0x28, 0, 127)
+    FILTER_ENV_DEPTH = (0x29, 1, 127)
+
+    # Amplifier Parameters
+    AMP_LEVEL = (0x2A, 0, 127)
+    AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74)
+    AMP_LEVEL_VELOCITY_SENS = (0x2C, 1, 127)
+    AMP_ENV_ATTACK_TIME = (0x2D, 0, 127)
+    AMP_ENV_DECAY_TIME = (0x2E, 0, 127)
+    AMP_ENV_SUSTAIN_LEVEL = (0x2F, 0, 127)
+    AMP_ENV_RELEASE_TIME = (0x30, 0, 127)
+
+    # Portamento and Other Parameters
+    PORTAMENTO_SWITCH = (0x31, 0, 1)
+    PORTAMENTO_TIME = (0x32, 0, 127)
+    LEGATO_SWITCH = (0x33, 0, 1)
+    OCTAVE_SHIFT = (0x34, 61, 67)
+    PITCH_BEND_RANGE_UP = (0x35, 0, 24)
+    PITCH_BEND_RANGE_DOWN = (0x36, 0, 24)
+
+    # LFO Modulation Control
+    LFO_PITCH_MODULATION_CONTROL = (0x38, 1, 127)
+    LFO_FILTER_MODULATION_CONTROL = (0x39, 1, 127)
+    LFO_AMP_MODULATION_CONTROL = (0x3A, 1, 127)
+    LFO_RATE_MODULATION_CONTROL = (0x3B, 1, 127)
+
+    # Reserve
+    RESERVE_1 = (0x37, 0, 0)
+    RESERVE_2 = (0x3C, 0, 0)
+
+    def __init__(self, address: int, min_val: int, max_val: int):
+        self.address = address
+        self.min_val = min_val
+        self.max_val = max_val
+
+    def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value to MIDI range (0-127)"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be integer, got {type(value)}")
+
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} "
+                f"(valid range: {self.min_val}-{self.max_val})"
+            )
+
+        return value
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter"""
+        return self.name.replace("_", " ").title()
+
+    @property
+    def is_switch(self) -> bool:
+        """Returns True if parameter is a binary/enum switch"""
+        return self in [
+            self.LFO_TEMPO_SYNC_SWITCH,
+            self.LFO_KEY_TRIGGER,
+            self.PORTAMENTO_SWITCH,
+            self.LEGATO_SWITCH,
+        ]
+
+    def get_switch_text(self, value: int) -> str:
+        """Get display text for switch values"""
+        if self.is_switch:
+            return "ON" if value else "OFF"
+        return str(value)
 
 @dataclass
 class AnalogOscillator:
@@ -531,4 +605,114 @@ class AnalogTone:
             'lfo_filter': data[ANALOG_LFO_FILTER] - 64,  # Convert to -63/+63
             'lfo_amp': data[ANALOG_LFO_AMP] - 64,  # Convert to -63/+63
             'lfo_key_trig': data[ANALOG_LFO_KEY_TRIG]
-} 
+}
+
+
+class AnalogCommonParameter(Enum):
+    """Common parameters for Digital/SuperNATURAL synth tones.
+    These parameters are shared across all partials.
+    """
+
+    # LFO Parameters
+    LFO_SHAPE = (0x0D, 0, 5)  # TRI, SIN, SAW, SQR, S&H, RND
+    LFO_RATE = (0x0E, 0, 127)
+    LFO_FADE_TIME = (0x0F, 0, 127)
+    LFO_TEMPO_SYNC_SWITCH = (0x10, 0, 1)  # OFF, ON
+    LFO_TEMPO_SYNC_NOTE = (0x11, 0, 19)  # 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, etc.
+    LFO_PITCH_DEPTH = (0x12, 1, 127)  # -63 to +63
+    LFO_FILTER_DEPTH = (0x13, 1, 127)  # -63 to +63
+    LFO_AMP_DEPTH = (0x14, 1, 127)  # -63 to +63
+    LFO_KEY_TRIGGER = (0x15, 0, 1)  # OFF, ON
+
+    # Oscillator Parameters
+    OSC_WAVEFORM = (0x16, 0, 2)  # SAW, TRI, PW-SQR
+    OSC_PITCH_COARSE = (0x17, 40, 88)  # -24 to +24
+    OSC_PITCH_FINE = (0x18, 14, 114)  # -50 to +50
+    OSC_PULSE_WIDTH = (0x19, 0, 127)
+    OSC_PULSE_WIDTH_MOD_DEPTH = (0x1A, 0, 127)
+    OSC_PITCH_ENV_VELOCITY_SENS = (0x1B, 1, 127)  # -63 to +63
+    OSC_PITCH_ENV_ATTACK_TIME = (0x1C, 0, 127)
+    OSC_PITCH_ENV_DECAY = (0x1D, 0, 127)
+    OSC_PITCH_ENV_DEPTH = (0x1E, 1, 127)  # -63 to +63
+    SUB_OSCILLATOR_TYPE = (0x1F, 0, 2)  # OFF, OCT-1, OCT-2
+
+    # Filter Parameters
+    FILTER_SWITCH = (0x20, 0, 1)  # BYPASS, LPF
+    FILTER_CUTOFF = (0x21, 0, 127)
+    FILTER_CUTOFF_KEYFOLLOW = (0x22, 54, 74)  # -100 to +100
+    FILTER_RESONANCE = (0x23, 0, 127)
+    FILTER_ENV_VELOCITY_SENS = (0x24, 1, 127)  # -63 to +63
+    FILTER_ENV_ATTACK_TIME = (0x25, 0, 127)
+    FILTER_ENV_DECAY_TIME = (0x26, 0, 127)
+    FILTER_ENV_SUSTAIN_LEVEL = (0x27, 0, 127)
+    FILTER_ENV_RELEASE_TIME = (0x28, 0, 127)
+    FILTER_ENV_DEPTH = (0x29, 1, 127)  # -63 to +63
+
+    # Amplifier Parameters
+    AMP_LEVEL = (0x2A, 0, 127)
+    AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74)  # -100 to +100
+    AMP_LEVEL_VELOCITY_SENS = (0x2C, 1, 127)  # -63 to +63
+    AMP_ENV_ATTACK_TIME = (0x2D, 0, 127)
+    AMP_ENV_DECAY_TIME = (0x2E, 0, 127)
+    AMP_ENV_SUSTAIN_LEVEL = (0x2F, 0, 127)
+    AMP_ENV_RELEASE_TIME = (0x30, 0, 127)
+
+    # Portamento and Other Parameters
+    PORTAMENTO_SWITCH = (0x31, 0, 1)  # OFF, ON
+    PORTAMENTO_TIME = (0x32, 0, 127)  # CC# 5
+    LEGATO_SWITCH = (0x33, 0, 1)  # OFF, ON
+    OCTAVE_SHIFT = (0x34, 61, 67)  # -3 to +3
+    PITCH_BEND_RANGE_UP = (0x35, 0, 24)
+    PITCH_BEND_RANGE_DOWN = (0x36, 0, 24)
+
+    # LFO Modulation Control
+    LFO_PITCH_MODULATION_CONTROL = (0x38, 1, 127)  # -63 to +63
+    LFO_FILTER_MODULATION_CONTROL = (0x39, 1, 127)  # -63 to +63
+    LFO_AMP_MODULATION_CONTROL = (0x3A, 1, 127)  # -63 to +63
+    LFO_RATE_MODULATION_CONTROL = (0x3B, 1, 127)  # -63 to +63
+
+    # Reserve
+    RESERVE_1 = (0x37, 0, 0)  # Reserve
+    RESERVE_2 = (0x3C, 0, 0)  # Reserve
+
+    def __init__(self, address: int, min_val: int, max_val: int):
+        self.address = address
+        self.min_val = min_val
+        self.max_val = max_val
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter"""
+        return self.name.replace("_", " ").title()
+
+    @property
+    def is_switch(self) -> bool:
+        """Returns True if parameter is a binary/enum switch"""
+        return self in [
+            self.LFO_TEMPO_SYNC_SWITCH,
+            self.LFO_KEY_TRIGGER,
+            self.PORTAMENTO_SWITCH,
+            self.LEGATO_SWITCH,
+        ]
+
+    def get_switch_text(self, value: int) -> str:
+        """Get display text for switch values"""
+        if self.is_switch:
+            return "ON" if value else "OFF"
+        return str(value)
+
+    def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be integer, got {type(value)}")
+
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} "
+                f"(valid range: {self.min_val}-{self.max_val})"
+            )
+
+        return value
+
+
+

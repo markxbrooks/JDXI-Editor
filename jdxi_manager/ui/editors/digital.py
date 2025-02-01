@@ -108,7 +108,7 @@ class PartialEditor(QWidget):
 
     def _create_parameter_slider(
         self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
-    ) -> Slider:
+    , vertical=False) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
@@ -116,7 +116,7 @@ class PartialEditor(QWidget):
             display_min, display_max = param.min_val, param.max_val
 
         # Create horizontal slider (removed vertical ADSR check)
-        slider = Slider(label, display_min, display_max)
+        slider = Slider(label, display_min, display_max, vertical)
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
@@ -399,15 +399,15 @@ class PartialEditor(QWidget):
         # Create ADSRWidget
         self.filter_adsr_widget = ADSRWidget()
         self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
-        self.filter_adsr_widget.attackSB.valueChanged.connect(self.valueChanged)
-        self.filter_adsr_widget.decaySB.valueChanged.connect(self.valueChanged)
-        self.filter_adsr_widget.releaseSB.valueChanged.connect(self.valueChanged)
-        self.filter_adsr_widget.initialSB.valueChanged.connect(self.valueChanged)
-        self.filter_adsr_widget.peakSB.valueChanged.connect(self.valueChanged)
-        self.filter_adsr_widget.sustainSB.valueChanged.connect(self.valueChanged)
+        self.filter_adsr_widget.attackSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.decaySB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.releaseSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.initialSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.peakSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.sustainSB.valueChanged.connect(self.filterAdsrValueChanged)
         adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
-        #adsr_vlayout.addWidget(self.filter_adsr_widget)
+        # adsr_vlayout.addWidget(self.filter_adsr_widget)
         env_layout.setStretchFactor(self.filter_adsr_widget, 5)
 
         # ADSR controls
@@ -415,16 +415,16 @@ class PartialEditor(QWidget):
         adsr_vlayout.addLayout(adsr_layout)
 
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_ATTACK, "A")
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_ATTACK, "A", vertical=True)
         )
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_DECAY, "D")
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_DECAY, "D", vertical=True)
         )
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_SUSTAIN, "S")
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_SUSTAIN, "S", vertical=True)
         )
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_RELEASE, "R")
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_RELEASE, "R", vertical=True)
         )
         env_layout.addLayout(adsr_vlayout)
 
@@ -457,8 +457,7 @@ class PartialEditor(QWidget):
             self.controls[DigitalParameter.FILTER_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
             self.controls[DigitalParameter.FILTER_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
 
-
-    def valueChanged(self):
+    def filterAdsrValueChanged(self):
         self.updating_from_spinbox = True
         self.filter_adsr_widget.envelope["attackTime"] = self.filter_adsr_widget.attackSB.value()
         self.filter_adsr_widget.envelope["decayTime"] = self.filter_adsr_widget.decaySB.value()
@@ -588,19 +587,19 @@ class PartialEditor(QWidget):
 
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        amp_env_adsr_vlayout.setStretchFactor(self.filter_adsr_widget, 5)
+        amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
         amp_env_adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A")
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A", vertical=True)
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D")
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D", vertical=True)
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S")
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S", vertical=True)
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R")
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R, vertical=True")
         )
 
         layout.addWidget(env_group)

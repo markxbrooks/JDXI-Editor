@@ -47,7 +47,7 @@ class AnalogToneCC(IntEnum):
     
     # Amplifier parameters
     AMP_LEVEL = 0x2A       # Amplifier level (0-127)
-    AMP_ENV_A = 0x2B       # Amplifier envelope attack (0-127)
+    AMP_ENV_A = 0x2B       # Amplifier envelope attack (0-127) !!! Incorrect -> 2D
     AMP_ENV_D = 0x2C       # Amplifier envelope decay (0-127)
     AMP_ENV_S = 0x2D       # Amplifier envelope sustain (0-127)
     AMP_ENV_R = 0x2E       # Amplifier envelope release (0-127)
