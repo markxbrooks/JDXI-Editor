@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSlider, QSizePolicy
 from PySide6.QtCore import Qt, Signal
 
+
 class Slider(QWidget):
     """Custom slider widget with label and value display"""
     
@@ -21,19 +22,19 @@ class Slider(QWidget):
         layout.addWidget(self.label)
         
         # Create slider
-        self.slider = QSlider(Qt.Vertical if vertical else Qt.Horizontal)
+        self.slider = QSlider(Qt.Orientation.Vertical if vertical else Qt.Orientation.Horizontal)
         self.slider.setMinimum(min_val)
         self.slider.setMaximum(max_val)
         self.slider.valueChanged.connect(self._on_value_changed)
         
         # Set size policy for vertical sliders
         if vertical:
-            self.slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+            self.slider.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
             self.setMinimumHeight(125)  # 50% of 250px ADSR group height
-            layout.setAlignment(self.label, Qt.AlignHCenter)
-            layout.setAlignment(self.slider, Qt.AlignHCenter)
+            layout.setAlignment(self.label, Qt.AlignmentFlag.AlignHCenter)
+            layout.setAlignment(self.slider, Qt.AlignmentFlag.AlignHCenter)
         else:
-            self.slider.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            self.slider.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
             
         layout.addWidget(self.slider)
         

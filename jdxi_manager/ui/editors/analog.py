@@ -1,6 +1,7 @@
+import logging
 import os
 import re
-from typing import Optional
+from typing import Optional, Dict, Union
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -15,13 +16,18 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
 import qtawesome as qta
 
+from jdxi_manager.data.digital import DigitalCommonParameter
 from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.analog import (
+    AnalogParameter, AnalogCommonParameter
+)
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
-from jdxi_manager.ui.editors.digital import base64_to_pixmap
+from jdxi_manager.ui.editors.digital import base64_to_pixmap, ms_to_midi_cc
 from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
@@ -52,6 +58,7 @@ class AnalogSynthEditor(BaseEditor):
 
     def __init__(self, midi_helper: Optional[MIDIHelper], parent=None):
         super().__init__(midi_helper, parent)
+        self.part = ANALOG_PART
         self.preset_loader = None
         self.setWindowTitle("Analog Synth")
 
@@ -73,7 +80,11 @@ class AnalogSynthEditor(BaseEditor):
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
+        # Store parameter controls for easy access
+        self.controls: Dict[
+            Union[AnalogParameter, AnalogCommonParameter], QWidget
+        ] = {}
+        self.updating_from_spinbox = False
         # Create container widget for scroll area
         container = QWidget()
         container_layout = QVBoxLayout()
@@ -154,32 +165,6 @@ class AnalogSynthEditor(BaseEditor):
         )
         self.resonance.valueChanged.connect(
             lambda v: self._send_cc(AnalogToneCC.FILTER_RESO, v)
-        )
-
-        # Connect envelope sliders
-        for name, cc in [
-            ("A", AnalogToneCC.FILTER_ENV_A),
-            ("D", AnalogToneCC.FILTER_ENV_D),
-            ("S", AnalogToneCC.FILTER_ENV_S),
-            ("R", AnalogToneCC.FILTER_ENV_R),
-        ]:
-            self.filter_env[name].valueChanged.connect(
-                lambda v, cc=cc: self._send_cc(cc, v)
-            )
-
-        for name, cc in [
-            ("A", AnalogToneCC.AMP_ENV_A),
-            ("D", AnalogToneCC.AMP_ENV_D),
-            ("S", AnalogToneCC.AMP_ENV_S),
-            ("R", AnalogToneCC.AMP_ENV_R),
-        ]:
-            self.amp_env[name].valueChanged.connect(
-                lambda v, cc=cc: self._send_cc(cc, v)
-            )
-
-        # Connect amp level
-        self.level.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.AMP_LEVEL, v)
         )
         self.data_request()
 
@@ -427,6 +412,88 @@ class AnalogSynthEditor(BaseEditor):
                 value=value,
             )
 
+    def send_midi_parameter(self, param, value) -> bool:
+        """Send MIDI parameter with error handling"""
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
+
+        try:
+            # Get parameter group and address with partial offset
+            #if isinstance(param, AnalogParameter):
+            #    group, param_address = param.get_address_for_partial(self.partial_num)
+            #else:
+            group = ANALOG_OSC_GROUP  # Common parameters group
+            param_address = param.address
+
+            # Ensure value is included in the MIDI message
+            return self.midi_helper.send_parameter(
+                area=ANALOG_SYNTH_AREA,
+                part=self.part,
+                group=group,
+                param=param_address,
+                value=value,  # Make sure this value is being sent
+            )
+        except Exception as e:
+            logging.error(f"MIDI error setting {param}: {str(e)}")
+            return False
+
+    def _on_parameter_changed(
+        self, param: Union[AnalogParameter, AnalogCommonParameter], display_value: int
+    ):
+        """Handle parameter value changes from UI controls"""
+        try:
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
+
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+
+        except Exception as e:
+            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+
+    def _create_parameter_slider(
+        self, param: Union[AnalogParameter, AnalogCommonParameter], label: str
+    , vertical=False) -> Slider:
+        """Create a slider for a parameter with proper display conversion"""
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+
+        # Create horizontal slider (removed vertical ADSR check)
+        slider = Slider(label, display_min, display_max, vertical)
+
+        # Connect value changed signal
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+
+        # Store control reference
+        self.controls[param] = slider
+        return slider
+
+    def on_amp_env_adsr_envelope_changed(self, envelope):
+        if not self.updating_from_spinbox:
+            self.controls[AnalogParameter.AMP_ENV_ATTACK_TIME].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
+            self.controls[AnalogParameter.AMP_ENV_DECAY_TIME].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
+            self.controls[AnalogParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
+            self.controls[AnalogParameter.AMP_ENV_RELEASE_TIME].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
+
+    def ampEnvAdsrValueChanged(self):
+        self.updating_from_spinbox = True
+        self.amp_env_adsr_widget.envelope["attackTime"] = self.amp_env_adsr_widget.attackSB.value()
+        self.amp_env_adsr_widget.envelope["decayTime"] = self.amp_env_adsr_widget.decaySB.value()
+        self.amp_env_adsr_widget.envelope["releaseTime"] = self.amp_env_adsr_widget.releaseSB.value()
+        self.amp_env_adsr_widget.envelope["initialAmpl"] = self.amp_env_adsr_widget.initialSB.value()
+        self.amp_env_adsr_widget.envelope["peakAmpl"] = self.amp_env_adsr_widget.peakSB.value()
+        self.amp_env_adsr_widget.envelope["sustainAmpl"] = self.amp_env_adsr_widget.sustainSB.value()
+        self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
+        self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
+        self.updating_from_spinbox = False
+
     def _create_filter_section(self):
         group = QGroupBox("Filter")
         layout = QVBoxLayout()
@@ -472,56 +539,63 @@ class AnalogSynthEditor(BaseEditor):
 
         # Filter envelope
         env_group = QGroupBox("Envelope")
+        env_group.setProperty("adsr", True)  # Mark as ADSR group
         env_layout = QHBoxLayout()
         env_layout.setSpacing(5)
-        env_layout.setContentsMargins(5, 15, 5, 5)
-        env_group.setLayout(env_layout)
 
-        self.filter_env = {
-            "A": Slider("A", 0, 127),
-            "D": Slider("D", 0, 127),
-            "S": Slider("S", 0, 127),
-            "R": Slider("R", 0, 127),
-        }
+        # Create ADSRWidget
+        self.filter_adsr_widget = ADSRWidget()
+        self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
+        self.filter_adsr_widget.attackSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.decaySB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.releaseSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.initialSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.peakSB.valueChanged.connect(self.filterAdsrValueChanged)
+        self.filter_adsr_widget.sustainSB.valueChanged.connect(self.filterAdsrValueChanged)
+        adsr_vlayout = QVBoxLayout()
+        adsr_vlayout.addLayout(env_layout)
+        env_layout.addWidget(self.filter_adsr_widget)
+        env_layout.setStretchFactor(self.filter_adsr_widget, 5)
 
-        # Connect each slider to its specific parameter
-        self.filter_env["A"].valueChanged.connect(
-            lambda v: self._on_filter_env_changed("A", v)
-        )
-        self.filter_env["D"].valueChanged.connect(
-            lambda v: self._on_filter_env_changed("D", v)
-        )
-        self.filter_env["S"].valueChanged.connect(
-            lambda v: self._on_filter_env_changed("S", v)
-        )
-        self.filter_env["R"].valueChanged.connect(
-            lambda v: self._on_filter_env_changed("R", v)
-        )
+        # ADSR controls
+        adsr_layout = QHBoxLayout()
+        adsr_vlayout.addLayout(adsr_layout)
 
-        for slider in self.filter_env.values():
-            env_layout.addWidget(slider)
+        adsr_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True)
+        )
+        adsr_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True)
+        )
+        adsr_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True)
+        )
+        adsr_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True)
+        )
         sub_layout.addWidget(env_group)
+        env_group.setLayout(adsr_vlayout)
         layout.addLayout(sub_layout)
         return group
 
-    def _on_filter_env_changed(self, stage: str, value: int):
-        """Handle filter envelope change"""
-        if self.midi_helper:
-            # Map stage to correct parameter
-            param_map = {
-                "A": AnalogToneCC.FILTER_ENV_A,
-                "D": AnalogToneCC.FILTER_ENV_D,
-                "S": AnalogToneCC.FILTER_ENV_S,
-                "R": AnalogToneCC.FILTER_ENV_R,
-            }
+    def on_adsr_envelope_changed(self, envelope):
+        if not self.updating_from_spinbox:
+            self.controls[AnalogParameter.FILTER_ENV_ATTACK_TIME].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
+            self.controls[AnalogParameter.FILTER_ENV_DECAY_TIME].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
+            self.controls[AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
+            self.controls[AnalogParameter.FILTER_ENV_RELEASE_TIME].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
 
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=param_map[stage],
-                value=value,
-            )
+    def filterAdsrValueChanged(self):
+        self.updating_from_spinbox = True
+        self.filter_adsr_widget.envelope["attackTime"] = self.filter_adsr_widget.attackSB.value()
+        self.filter_adsr_widget.envelope["decayTime"] = self.filter_adsr_widget.decaySB.value()
+        self.filter_adsr_widget.envelope["releaseTime"] = self.filter_adsr_widget.releaseSB.value()
+        self.filter_adsr_widget.envelope["initialAmpl"] = self.filter_adsr_widget.initialSB.value()
+        self.filter_adsr_widget.envelope["peakAmpl"] = self.filter_adsr_widget.peakSB.value()
+        self.filter_adsr_widget.envelope["sustainAmpl"] = self.filter_adsr_widget.sustainSB.value()
+        self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
+        self.filter_adsr_widget.envelopeChanged.emit(self.filter_adsr_widget.envelope)
+        self.updating_from_spinbox = False
 
     def _create_amp_section(self):
         group = QGroupBox("Amplifier")
@@ -558,10 +632,12 @@ class AnalogSynthEditor(BaseEditor):
 
         # Amp envelope
         env_group = QGroupBox("Envelope")
+        env_group.setProperty("adsr", True)  # Mark as ADSR group
+        amp_env_adsr_vlayout = QVBoxLayout()
         env_layout = QHBoxLayout()
         env_layout.setSpacing(5)
         env_layout.setContentsMargins(5, 15, 5, 5)
-        env_group.setLayout(env_layout)
+        env_group.setLayout(amp_env_adsr_vlayout)
 
         # Generate the ADSR waveform icon
         icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
@@ -572,34 +648,34 @@ class AnalogSynthEditor(BaseEditor):
 
         icon_label = QLabel()
         icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignHCenter)
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         sub_layout.addLayout(icons_hlayout)
 
-        self.amp_env = {
-            "A": Slider("A", 0, 127),
-            "D": Slider("D", 0, 127),
-            "S": Slider("S", 0, 127),
-            "R": Slider("R", 0, 127),
-        }
-
-        # Connect each slider to its specific parameter
-        self.amp_env["A"].valueChanged.connect(
-            lambda v: self._on_amp_env_changed("A", v)
+        env_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True)
         )
-        self.amp_env["D"].valueChanged.connect(
-            lambda v: self._on_amp_env_changed("D", v)
+        env_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.AMP_ENV_DECAY_TIME, "D", vertical=True)
         )
-        self.amp_env["S"].valueChanged.connect(
-            lambda v: self._on_amp_env_changed("S", v)
+        env_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True)
         )
-        self.amp_env["R"].valueChanged.connect(
-            lambda v: self._on_amp_env_changed("R", v)
+        env_layout.addWidget(
+            self._create_parameter_slider(AnalogParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True)
         )
 
-        for slider in self.amp_env.values():
-            env_layout.addWidget(slider)
+        self.amp_env_adsr_widget = ADSRWidget()
+        self.amp_env_adsr_widget.envelopeChanged.connect(self.on_amp_env_adsr_envelope_changed)
+        self.amp_env_adsr_widget.attackSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.decaySB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.releaseSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.initialSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.peakSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        self.amp_env_adsr_widget.sustainSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
+        amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
+        amp_env_adsr_vlayout.addLayout(env_layout)
         sub_layout.addWidget(env_group)
         layout.addLayout(sub_layout)
         return group
