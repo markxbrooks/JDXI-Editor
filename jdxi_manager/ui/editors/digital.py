@@ -25,6 +25,7 @@ from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
@@ -379,6 +380,11 @@ class PartialEditor(QWidget):
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         sub_layout.addLayout(icons_hlayout)
+
+        # Create ADSRWidget
+        self.adsr_widget = ADSRWidget()
+        # self.adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
+        # sub_layout.addWidget(self.adsr_widget)
 
         # ADSR controls
         adsr_layout = QHBoxLayout()
@@ -900,7 +906,7 @@ class DigitalSynthEditor(BaseEditor):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo._on_load_clicked.connect(
+        self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)

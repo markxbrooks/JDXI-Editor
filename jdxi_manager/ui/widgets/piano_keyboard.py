@@ -327,22 +327,6 @@ class JDXiKey(QPushButton):
 
         self.release_animation = QPropertyAnimation(self, b"geometry")
         self.release_animation.setDuration(100)
-        self.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #222;
-                border: 1px solid #555;
-                border-radius: 5px;
-                color: white;
-                font-weight: bold;
-                padding: 5px;
-                }
-            QPushButton:pressed {
-                background-color: #444;
-                border: 1px solid #777;
-                }
-        """
-        )
 
     def paintEvent(self, event):
         """Custom paint for JD-Xi style keys"""

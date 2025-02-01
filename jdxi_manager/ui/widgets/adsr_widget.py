@@ -5,7 +5,11 @@ Editing ADSR parameters
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QWidget, QLabel, QSpinBox, QDoubleSpinBox, QGridLayout
-from .ADSRPlot import ADSRPlot  # Assuming ADSRPlot is a separate module
+
+from jdxi_manager.ui.widgets.adsr_plot import ADSRPlot
+
+
+# from .ADSRPlot import ADSRPlot  # Assuming ADSRPlot is a separate module
 
 
 class ADSRWidget(QWidget):
@@ -128,9 +132,11 @@ class ADSRWidget(QWidget):
     def on_adsr_envelope_changed(self, envelope):
         """Handle changes to the ADSR envelope."""
         print(f"ADSR Envelope changed: {envelope}")
-        
+
         # Example: Convert envelope parameters to MIDI messages
-        attack_midi_value = int(envelope["attackTime"] / 1000 * 127)  # Convert to MIDI range
+        attack_midi_value = int(
+            envelope["attackTime"] / 1000 * 127
+        )  # Convert to MIDI range
         decay_midi_value = int(envelope["decayTime"] / 1000 * 127)
         sustain_midi_value = int(envelope["sustainAmpl"] * 127)
         release_midi_value = int(envelope["releaseTime"] / 1000 * 127)
