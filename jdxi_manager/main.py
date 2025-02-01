@@ -54,9 +54,8 @@ def setup_logging():
             encoding="utf-8",
         )
         file_handler.setLevel(logging.DEBUG)
-        log_format = "[%(asctime)s] [%(levelname)-8s] [%(filename)-15s:%(lineno)-4s] %(message)-8s "
         file_formatter = logging.Formatter(
-            log_format,
+            "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         file_handler.setFormatter(file_formatter)
@@ -64,7 +63,9 @@ def setup_logging():
         # Configure console logging
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(logging.INFO)
-        console_formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
+        console_formatter = logging.Formatter(
+            "%(filename)s:%(lineno)d %(levelname)s: %(message)s"
+        )
         console_handler.setFormatter(console_formatter)
 
         # Configure root logger
