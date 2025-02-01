@@ -2,76 +2,8 @@ from PySide6.QtCore import Qt, QRect
 from PySide6.QtGui import QPainter, QPen, QColor, QPixmap
 from PySide6.QtWidgets import QWidget
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
-from PySide6.QtWidgets import QWidget
 
-
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QPen, QColor, QPixmap
-from PySide6.QtWidgets import QWidget
-
-
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QPen, QColor, QPixmap
-from PySide6.QtWidgets import QWidget
-
-
-class ADSRPlot2(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.envelope = {
-            "attackTime": 100,
-            "decayTime": 400,
-            "releaseTime": 100,
-            "initialAmpl": 0,
-            "peakAmpl": 1,
-            "sustainAmpl": 0.8,
-        }
-        self.figure, self.ax = plt.subplots()
-        self.canvas = FigureCanvas(self.figure)
-        self.layout = QVBoxLayout(self)
-        self.layout.addWidget(self.canvas)
-        self.setLayout(self.layout)
-        self.plot_envelope()
-
-    def plot_envelope(self):
-        attack_time = self.envelope["attackTime"] / 1000
-        decay_time = self.envelope["decayTime"] / 1000
-        release_time = self.envelope["releaseTime"] / 1000
-        sustain_amplitude = self.envelope["sustainAmpl"]
-        peak_amplitude = self.envelope["peakAmpl"]
-        initial_amplitude = self.envelope["initialAmpl"]
-
-        attack_samples = int(attack_time * 44100)
-        decay_samples = int(decay_time * 44100)
-        sustain_samples = int(44100 * 2)  # Sustain for 2 seconds
-        release_samples = int(release_time * 44100)
-
-        envelope = np.concatenate(
-            [
-                np.linspace(initial_amplitude, peak_amplitude, attack_samples),
-                np.linspace(peak_amplitude, sustain_amplitude, decay_samples),
-                np.full(sustain_samples, sustain_amplitude),
-                np.linspace(sustain_amplitude, 0, release_samples),
-            ]
-        )
-
-        time = np.linspace(0, len(envelope) / 44100, len(envelope))
-
-        self.ax.clear()
-        self.ax.plot(time, envelope)
-        self.ax.set_xlabel("Time [s]")
-        self.ax.set_ylabel("Amplitude")
-        self.ax.set_title("ADSR Envelope")
-        self.canvas.draw()
-
-    def set_values(self, envelope):
-        self.envelope = envelope
-        self.plot_envelope()
-
-
-class ADSRPlotOld(QWidget):
+class ADSRPlot(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.border = 15
