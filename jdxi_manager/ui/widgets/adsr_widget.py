@@ -127,6 +127,16 @@ class ADSRWidget(QWidget):
 
     def on_adsr_envelope_changed(self, envelope):
         """Handle changes to the ADSR envelope."""
-        # Example: Send MIDI messages to update the synth's ADSR parameters
         print(f"ADSR Envelope changed: {envelope}")
-        # You can send MIDI messages here to update the synth's parameters
+        
+        # Example: Convert envelope parameters to MIDI messages
+        attack_midi_value = int(envelope["attackTime"] / 1000 * 127)  # Convert to MIDI range
+        decay_midi_value = int(envelope["decayTime"] / 1000 * 127)
+        sustain_midi_value = int(envelope["sustainAmpl"] * 127)
+        release_midi_value = int(envelope["releaseTime"] / 1000 * 127)
+
+        # Send MIDI messages (assuming midi_helper is available)
+        self.midi_helper.send_control_change(attack_midi_value, channel=0)
+        self.midi_helper.send_control_change(decay_midi_value, channel=0)
+        self.midi_helper.send_control_change(sustain_midi_value, channel=0)
+        self.midi_helper.send_control_change(release_midi_value, channel=0)
