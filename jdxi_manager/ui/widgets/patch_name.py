@@ -5,26 +5,27 @@ from PySide6.QtGui import QFont
 
 class PatchName(QWidget):
     nameChanged = Signal(str)
-    
+
     def __init__(self, parent=None):
         super().__init__(parent)
         main_layout = QHBoxLayout(self)
         group = QGroupBox("Patch Name")
         layout = QHBoxLayout(group)
         layout.setContentsMargins(4, 4, 4, 4)
-        
+
         self.label = QLabel("Name:")
         self.editor = QLineEdit()
         self.editor.setMaxLength(12)  # JD-Xi patch names are max 12 chars
-        self.editor.setFont(QFont("Fixed", 10))  # Monospace font
+        self.editor.setFont(QFont("Courier New", 10))  # Monospace font
         self.editor.textChanged.connect(self.nameChanged)
-        
+
         layout.addWidget(self.label)
 
         layout.addWidget(self.editor)
         group.addLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QMainWindow {
                 background-color: #2E2E2E;
             }
@@ -57,10 +58,11 @@ class PatchName(QWidget):
             QPushButton:pressed {
                 background-color: #2D2D2D;
             }
-        """)
-        
+        """
+        )
+
     def setText(self, text):
         self.editor.setText(text)
-        
+
     def text(self):
-        return self.editor.text() 
+        return self.editor.text()
