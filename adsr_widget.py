@@ -2,9 +2,17 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QSpinBox, QDoubleSpinBox, QGridLayout, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import (
+    QApplication,
+    QWidget,
+    QLabel,
+    QSpinBox,
+    QDoubleSpinBox,
+    QGridLayout,
+    QVBoxLayout,
+    QPushButton,
+)
 from matplotlib.backends.backend_qtagg import FigureCanvas
-
 
 
 class ADSRPlot(QWidget):
@@ -19,6 +27,7 @@ class ADSRPlot(QWidget):
             "sustainAmpl": 0.8,
         }
         self.figure, self.ax = plt.subplots()
+        plt.style.use("dark_background")
         self.canvas = FigureCanvas(self.figure)
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.canvas)
@@ -38,25 +47,28 @@ class ADSRPlot(QWidget):
         sustain_samples = int(44100 * 2)  # Sustain for 2 seconds
         release_samples = int(release_time * 44100)
 
-        envelope = np.concatenate([
-            np.linspace(initial_amplitude, peak_amplitude, attack_samples),
-            np.linspace(peak_amplitude, sustain_amplitude, decay_samples),
-            np.full(sustain_samples, sustain_amplitude),
-            np.linspace(sustain_amplitude, 0, release_samples)
-        ])
+        envelope = np.concatenate(
+            [
+                np.linspace(initial_amplitude, peak_amplitude, attack_samples),
+                np.linspace(peak_amplitude, sustain_amplitude, decay_samples),
+                np.full(sustain_samples, sustain_amplitude),
+                np.linspace(sustain_amplitude, 0, release_samples),
+            ]
+        )
 
         time = np.linspace(0, len(envelope) / 44100, len(envelope))
 
         self.ax.clear()
         self.ax.plot(time, envelope)
-        self.ax.set_xlabel('Time [s]')
-        self.ax.set_ylabel('Amplitude')
-        self.ax.set_title('ADSR Envelope')
+        self.ax.set_xlabel("Time [s]")
+        self.ax.set_ylabel("Amplitude")
+        self.ax.set_title("ADSR Envelope")
         self.canvas.draw()
 
     def set_values(self, envelope):
         self.envelope = envelope
         self.plot_envelope()
+
 
 class ADSRWidget(QWidget):
     envelopeChanged = Signal(dict)
@@ -73,10 +85,16 @@ class ADSRWidget(QWidget):
         }
         self.attackSB = self.create_spinbox(0, 1000, " ms", self.envelope["attackTime"])
         self.decaySB = self.create_spinbox(0, 1000, " ms", self.envelope["decayTime"])
-        self.releaseSB = self.create_spinbox(0, 1000, " ms", self.envelope["releaseTime"])
-        self.initialSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["initialAmpl"])
+        self.releaseSB = self.create_spinbox(
+            0, 1000, " ms", self.envelope["releaseTime"]
+        )
+        self.initialSB = self.create_double_spinbox(
+            0, 1, 0.01, self.envelope["initialAmpl"]
+        )
         self.peakSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["peakAmpl"])
-        self.sustainSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["sustainAmpl"])
+        self.sustainSB = self.create_double_spinbox(
+            0, 1, 0.01, self.envelope["sustainAmpl"]
+        )
 
         self.plot = ADSRPlot()
 
@@ -130,10 +148,10 @@ class ADSRWidget(QWidget):
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ADSRWidget()
     window.setWindowTitle("ADSR Envelope Editor")
     window.show()
     sys.exit(app.exec())
-

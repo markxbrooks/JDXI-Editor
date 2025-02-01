@@ -900,7 +900,7 @@ class DigitalSynthEditor(BaseEditor):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo.load_button.clicked.connect(
+        self.instrument_selection_combo._on_load_clicked.connect(
             self.update_instrument_preset
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
