@@ -243,7 +243,7 @@ class MainWindow(QMainWindow):
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load last used preset settings
-        self._load_last_preset()
+        # self._load_last_preset()
 
         # Initialize synth type
         self.current_synth_type = PresetType.DIGITAL_1
@@ -429,36 +429,59 @@ class MainWindow(QMainWindow):
 
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""
-        try:
-            if editor_type == "vocal_fx":
-                if not hasattr(self, "vocal_fx_editor"):
-                    self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
-                self.vocal_fx_editor.show()
-                self.vocal_fx_editor.raise_()
-            elif editor_type == "digital1":
-                self._show_editor("Digital Synth 1", DigitalSynthEditor, synth_num=1)
-                self.preset_type = PresetType.DIGITAL_1
-                self._send_midi_message(
-                    "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7"
-                )
-            elif editor_type == "digital2":
-                self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
-                self.preset_type = PresetType.DIGITAL_2
-            elif editor_type == "analog":
-                self._show_editor("Analog Synth", AnalogSynthEditor)
-                self.preset_type = PresetType.ANALOG
-            elif editor_type == "drums":
-                self._show_drums_editor()
-                self.preset_type = PresetType.DRUMS
-            elif editor_type == "arpeggio":
-                self._show_arpeggio_editor()
-            elif editor_type == "effects":
-                self._open_effects()
-            elif editor_type == "vocal_fx":
-                self._open_vocal_fx()
+        editor_map = {
+            "vocal_fx": self._show_vocal_fx,
+            "digital1": self._show_digital_synth_editor,
+            "digital2": self._show_digital_synth_editor,
+            "analog": self._show_analog_synth_editor,
+            "drums": self._show_drums_editor,
+            "arpeggio": self._show_arpeggio_editor,
+            "effects": self._open_effects,
+        }
 
-        except Exception as e:
-            logging.error(f"Error showing {editor_type} editor: {str(e)}")
+        if editor_type in editor_map:
+            editor_map[editor_type](editor_type)
+        else:
+            print(f"Unknown editor type: {editor_type}")
+
+    def _show_vocal_fx(self, editor_type: str):
+        if not hasattr(self, "vocal_fx_editor"):
+            self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
+        self.vocal_fx_editor.show()
+        self.vocal_fx_editor.raise_()
+
+    def _show_digital_synth_editor(self, editor_type: str):
+        synth_num = 1 if editor_type == "digital1" else 2
+        self._show_editor(
+            f"Digital Synth {synth_num}", DigitalSynthEditor, synth_num=synth_num
+        )
+        self.preset_type = (
+            PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
+        )
+        if synth_num == 1:
+            messages = [
+                "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",
+                "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",
+                "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",
+                "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",
+                "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",
+            ]
+            for message in messages:
+                self._send_midi_message(message)
+
+    def _show_analog_synth_editor(self, editor_type: str):
+        self._show_editor("Analog Synth", AnalogSynthEditor)
+        self.preset_type = PresetType.ANALOG
+
+    def _show_drums_editor(self, editor_type: str):
+        self._show_drums_editor()
+        self.preset_type = PresetType.DRUMS
+
+    def _show_arpeggio_editor(self, editor_type: str):
+        self._show_arpeggio_editor()
+
+    def _open_effects(self, editor_type: str):
+        self._open_effects()
 
     def _create_main_layout(self):
         """Create the main dashboard"""

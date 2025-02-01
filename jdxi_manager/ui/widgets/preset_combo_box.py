@@ -35,8 +35,13 @@ class PresetComboBox(QWidget):
         # ComboBox
         self.combo_box = QComboBox()
         self.combo_box.setEditable(True)  # Allow text search
-        self.combo_box.currentIndexChanged.connect(self._on_preset_selected)
+        # self.combo_box.currentIndexChanged.connect(self._on_preset_selected)
         layout.addWidget(self.combo_box)
+
+        # Load Button
+        self.load_button = QPushButton("Load")
+        self.load_button.clicked.connect(self._on_load_clicked)
+        layout.addWidget(self.load_button)
 
         self.set_presets(presets)
 

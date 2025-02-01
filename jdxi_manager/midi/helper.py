@@ -319,6 +319,9 @@ class MIDIHelper(QObject):
             lsb: Bank Select LSB value (0-127)
             channel: MIDI channel (0-15)
         """
+        logging.debug(
+            f"Sending bank select: {msb} {lsb} {channel}"
+        )
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
@@ -335,6 +338,9 @@ class MIDIHelper(QObject):
 
     def send_identity_request(self) -> bool:
         """Send identity request message (Universal System Exclusive)"""
+        logging.debug(
+            f"Sending identity request"
+        )
         try:
             # F0 7E 7F 06 01 F7
             return self.send_message([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
