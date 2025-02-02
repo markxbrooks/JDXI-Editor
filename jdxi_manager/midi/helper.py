@@ -53,6 +53,7 @@ class MIDIHelper(QObject):
 
     parameter_received = Signal(list, int)  # address, value
     preset_changed = Signal(int, str, int)
+    midi_note_received = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)

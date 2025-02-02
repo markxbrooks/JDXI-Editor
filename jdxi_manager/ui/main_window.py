@@ -35,6 +35,7 @@ from jdxi_manager.ui.editors import (
     EffectsEditor,
     VocalFXEditor,
 )
+from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
 from jdxi_manager.ui.instrument_pixmap import draw_instrument_pixmap
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
@@ -437,6 +438,7 @@ class MainWindow(QMainWindow):
             "drums": self._show_drums_editor,
             "arpeggio": self._show_arpeggio_editor,
             "effects": self._open_effects,
+            "pattern": self._open_pattern,
         }
 
         if editor_type in editor_map:
@@ -474,14 +476,17 @@ class MainWindow(QMainWindow):
         self.preset_type = PresetType.ANALOG
 
     def _show_drums_editor(self, editor_type: str):
-        self._show_drums_editor()
+        self._show_editor("Drums", DrumEditor)
         self.preset_type = PresetType.DRUMS
 
     def _show_arpeggio_editor(self, editor_type: str):
-        self._show_arpeggio_editor()
+        self._show_editor("Arpeggio", ArpeggioEditor)
 
     def _open_effects(self, editor_type: str):
-        self._open_effects()
+        self._show_editor("Effects", EffectsEditor)
+
+    def _open_pattern(self, editor_type: str):
+        self._show_editor("Patterns", PatternSequencer)
 
     def _create_main_layout(self):
         """Create the main dashboard"""
@@ -619,6 +624,10 @@ class MainWindow(QMainWindow):
         analog_action.triggered.connect(self._open_analog_synth)
         synth_menu.addAction(analog_action)
 
+        pattern_action = QAction("Pattern Sequencer", self)
+        pattern_action.triggered.connect(self._open_pattern)
+        synth_menu.addAction(pattern_action)
+
         # Effects menu
         fx_menu = menubar.addMenu("Effects")
 
@@ -740,7 +749,7 @@ class MainWindow(QMainWindow):
         """Show editor window"""
         try:
             # Create editor with proper initialization
-            if editor_class in [DigitalSynthEditor, DrumEditor, AnalogSynthEditor]:
+            if editor_class in [DigitalSynthEditor, DrumEditor, AnalogSynthEditor, PatternSequencer]:
                 editor = editor_class(
                     midi_helper=self.midi_helper, parent=self, **kwargs
                 )

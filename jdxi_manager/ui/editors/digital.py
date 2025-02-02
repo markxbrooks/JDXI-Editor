@@ -515,7 +515,6 @@ class PartialEditor(QWidget):
             self.controls[DigitalParameter.AMP_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
             self.controls[DigitalParameter.AMP_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
 
-
     def ampEnvAdsrValueChanged(self):
         self.updating_from_spinbox = True
         self.amp_env_adsr_widget.envelope["attackTime"] = self.amp_env_adsr_widget.attackSB.value()
