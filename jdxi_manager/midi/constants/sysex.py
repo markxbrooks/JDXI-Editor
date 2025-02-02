@@ -23,7 +23,7 @@ DT1_COMMAND = 0x12  # Data Set 1
 RQ1_COMMAND = 0x11  # Data Request 1
 
 # Memory Areas
-PROGRAM_AREA = 0x18           # Program area
+PROGRAM_AREA = 0x18           # Temporary Program area
 DIGITAL_SYNTH_1_AREA = 0x19   # Digital synth 1 area
 DIGITAL_SYNTH_2_AREA = 0x1A   # Digital synth 2 area
 ANALOG_SYNTH_AREA = 0x1B      # Analog synth area

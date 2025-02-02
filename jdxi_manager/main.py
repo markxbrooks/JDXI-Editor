@@ -14,7 +14,7 @@ def midi_callback(msg):
     """
     Your custom callback function to handle MIDI messages.
     """
-    logging.debug(f"Callback received message: {msg}")
+    # logging.debug(f"Callback received message: {msg}")
     pub.sendMessage(
         "incoming_midi_message", message=msg
     )  # Publish the message to subscribers
