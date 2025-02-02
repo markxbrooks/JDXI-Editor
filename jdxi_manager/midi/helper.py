@@ -92,7 +92,7 @@ class MIDIHelper(QObject):
         """Handle incoming MIDI message from pubsub."""
         preset_data = {"modified": 0}
         try:
-            print(f"Received MIDI message: {message}")
+            # print(f"Received MIDI message: {message}")
 
             message_handlers = {
                 "sysex": self._handle_sysex_message,
@@ -100,6 +100,7 @@ class MIDIHelper(QObject):
                 "program_change": self._handle_program_change,
                 "note_on": self._handle_note_change,
                 "note_off": self._handle_note_change,
+                "clock": self._handle_clock,
             }
 
             handler = message_handlers[message.type]
@@ -113,6 +114,13 @@ class MIDIHelper(QObject):
 
     def _handle_note_change(self, message, preset_data):
         print(f"MIDI message type: {message.type} as {message}")
+
+    def _handle_clock(self, message, preset_data):
+        # keep the midi clock quiet!
+        if not message.type == "clock":
+            print(f"MIDI clock: {message.type} as {message}")
+        #else:
+        #    print(f"MIDI clock: {message.type} as {message}")
 
     def _handle_sysex_message(self, message, preset_data):
         """Handle SysEx MIDI messages."""

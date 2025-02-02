@@ -24,10 +24,10 @@ from jdxi_manager.data.analog import (
     AnalogParameter, AnalogCommonParameter
 )
 from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.conversions import midi_cc_to_ms, midi_cc_to_frac, frac_to_midi_cc, ms_to_midi_cc
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
-from jdxi_manager.ui.editors.digital import base64_to_pixmap, ms_to_midi_cc, midi_cc_to_ms, frac_to_midi_cc, \
-    midi_cc_to_frac
+from jdxi_manager.ui.editors.digital import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
@@ -122,7 +122,6 @@ class AnalogSynthEditor(BaseEditor):
         self.instrument_selection_label = QLabel("Select an Analog synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        # Preset ComboBox
         self.instrument_selection_combo = PresetComboBox(ANALOG_PRESETS)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
@@ -239,11 +238,8 @@ class AnalogSynthEditor(BaseEditor):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        self.pw = Slider("Width", 0, 127)
-        self.pw.valueChanged.connect(self._on_pw_changed)
-
-        self.pw_mod = Slider("Mod Depth", 0, 127)
-        self.pw_mod.valueChanged.connect(self._on_pw_mod_changed)
+        self.pw = self._create_parameter_slider(AnalogParameter.OSC_PULSE_WIDTH, "Width", )
+        self.pw_mod = self._create_parameter_slider(AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth", )
 
         pw_layout.addWidget(self.pw)
         pw_layout.addWidget(self.pw_mod)
@@ -254,17 +250,12 @@ class AnalogSynthEditor(BaseEditor):
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
 
-        self.pitch_env_velo = Slider("Velocity", -63, 63)
-        self.pitch_env_velo.valueChanged.connect(self._on_pitch_env_velo_changed)
+        self.pitch_env_velo = self._create_parameter_slider(AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENS, "Mod Depth")
 
-        self.pitch_env_attack = Slider("Attack", 0, 127)
-        self.pitch_env_attack.valueChanged.connect(self._on_pitch_env_attack_changed)
+        self.pitch_env_attack = self._create_parameter_slider(AnalogParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack")
+        self.pitch_env_decay = self._create_parameter_slider(AnalogParameter.OSC_PITCH_ENV_DECAY, "Attack")
 
-        self.pitch_env_decay = Slider("Decay", 0, 127)
-        self.pitch_env_decay.valueChanged.connect(self._on_pitch_env_decay_changed)
-
-        self.pitch_env_depth = Slider("Depth", -63, 63)
-        self.pitch_env_depth.valueChanged.connect(self._on_pitch_env_depth_changed)
+        self.pitch_env_depth = self._create_parameter_slider(AnalogParameter.OSC_PITCH_ENV_DEPTH, "Depth")
 
         pitch_env_layout.addWidget(self.pitch_env_velo)
         pitch_env_layout.addWidget(self.pitch_env_attack)
@@ -381,7 +372,7 @@ class AnalogSynthEditor(BaseEditor):
 
     def _update_pw_controls_state(self, waveform: Waveform):
         """Enable/disable PW controls based on waveform"""
-        pw_enabled = True  # (waveform == Waveform.PULSE)
+        pw_enabled = waveform == Waveform.PULSE
         self.pw.setEnabled(pw_enabled)
         self.pw_mod.setEnabled(pw_enabled)
         # Update the visual state
@@ -391,28 +382,6 @@ class AnalogSynthEditor(BaseEditor):
         self.pw_mod.setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #222222; }"
         )
-
-    def _on_pw_changed(self, value: int):
-        """Handle pulse width change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_PW,
-                value=value,
-            )
-
-    def _on_pw_mod_changed(self, value: int):
-        """Handle pulse width modulation depth change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_PWM,
-                value=value,
-            )
 
     def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""
@@ -547,13 +516,6 @@ class AnalogSynthEditor(BaseEditor):
 
         # Create ADSRWidget
         self.filter_adsr_widget = ADSRWidget()
-        # self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
-        # self.filter_adsr_widget.attackSB.valueChanged.connect(self.filterAdsrValueChanged)
-        # self.filter_adsr_widget.decaySB.valueChanged.connect(self.filterAdsrValueChanged)
-        # self.filter_adsr_widget.releaseSB.valueChanged.connect(self.filterAdsrValueChanged)
-        # self.filter_adsr_widget.initialSB.valueChanged.connect(self.filterAdsrValueChanged)
-        # self.filter_adsr_widget.peakSB.valueChanged.connect(self.filterAdsrValueChanged)
-        # self.filter_adsr_widget.sustainSB.valueChanged.connect(self.filterAdsrValueChanged)
 
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
@@ -634,7 +596,7 @@ class AnalogSynthEditor(BaseEditor):
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
@@ -766,14 +728,13 @@ class AnalogSynthEditor(BaseEditor):
         layout.addLayout(shape_row)
 
         # Rate and Fade Time
-        self.lfo_rate = Slider("Rate", 0, 127)
-        self.lfo_rate.valueChanged.connect(self._on_lfo_rate_changed)
+        self.lfo_rate = self._create_parameter_slider(AnalogParameter.LFO_RATE, "Rate")
 
-        self.lfo_fade = Slider("Fade Time", 0, 127)
-        self.lfo_fade.valueChanged.connect(self._on_lfo_fade_changed)
+        self.lfo_fade = self._create_parameter_slider(AnalogParameter.LFO_FADE_TIME, "Fade Time")
 
         # Tempo Sync controls
         sync_row = QHBoxLayout()
+        # self.lfo_sync = self._create_parameter_slider(AnalogParameter.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync")
         self.lfo_sync = Switch("Tempo Sync", ["OFF", "ON"])
         self.lfo_sync.valueChanged.connect(self._on_lfo_sync_changed)
         sync_row.addWidget(self.lfo_sync)
@@ -807,14 +768,16 @@ class AnalogSynthEditor(BaseEditor):
         sync_row.addWidget(self.sync_note)
 
         # Depth controls
-        self.lfo_pitch = Slider("Pitch Depth", -63, 63)
-        self.lfo_pitch.valueChanged.connect(self._on_lfo_pitch_changed)
+        self.lfo_pitch = self._create_parameter_slider(AnalogParameter.LFO_PITCH_DEPTH, "Pitch Depth")
+        # self.lfo_pitch = Slider("Pitch Depth", -63, 63)
+        # self.lfo_pitch.valueChanged.connect(self._on_lfo_pitch_changed)
 
-        self.lfo_filter = Slider("Filter Depth", -63, 63)
-        self.lfo_filter.valueChanged.connect(self._on_lfo_filter_changed)
+        self.lfo_filter = self._create_parameter_slider(AnalogParameter.LFO_FILTER_DEPTH, "Filter Depth",)
+        # self.lfo_filter = Slider("Filter Depth", -63, 63)
+        # self.lfo_filter.valueChanged.connect(self._on_lfo_filter_changed)
 
-        self.lfo_amp = Slider("Amp Depth", -63, 63)
-        self.lfo_amp.valueChanged.connect(self._on_lfo_amp_changed)
+        self.lfo_amp = self._create_parameter_slider(AnalogParameter.LFO_AMP_DEPTH, "Amp Depth")
+        # self.lfo_amp.valueChanged.connect(self._on_lfo_amp_changed)
 
         # Key Trigger switch
         self.key_trig = Switch("Key Trigger", ["OFF", "ON"])
@@ -841,6 +804,7 @@ class AnalogSynthEditor(BaseEditor):
                 param=AnalogToneCC.OSC_WAVE,
                 value=waveform.midi_value,
             )
+            self._update_pw_controls_state(waveform)
 
     def _send_cc(self, cc: AnalogToneCC, value: int):
         """Send MIDI CC message"""

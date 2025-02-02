@@ -23,6 +23,7 @@ import qtawesome as qta
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.conversions import midi_cc_to_frac, midi_cc_to_ms, frac_to_midi_cc, ms_to_midi_cc
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.style import Style
@@ -57,34 +58,6 @@ import re
 
 
 instrument_icon_folder = "digital_synths"
-
-
-def midi_cc_to_ms(cc_value, min_time=10, max_time=1000):
-    time_range = max_time - min_time
-    cc_range = 127
-    conversion_factor = time_range / cc_range
-    return min_time + (cc_value * conversion_factor)
-
-
-def ms_to_midi_cc(ms_value, min_time=10, max_time=1000):
-    time_range = max_time - min_time
-    cc_range = 127
-    conversion_factor = time_range / cc_range
-    return (ms_value / conversion_factor) - min_time
-
-
-def frac_to_midi_cc(frac_value, min=0, max=1):
-    range = max - min
-    cc_range = 127
-    conversion_factor = range / cc_range
-    return int((frac_value / conversion_factor) - min)
-
-
-def midi_cc_to_frac(midi_cc_value, min=0, max=1):
-    range = max - min
-    cc_range = 127
-    conversion_factor = range / cc_range
-    return float((midi_cc_value * conversion_factor) + min)
 
 
 class PartialEditor(QWidget):
