@@ -14,8 +14,54 @@ class EffectType(Enum):
     RING_MOD = 0x07
     SLICER = 0x08
 
+
+class EffectsCommonParameter(Enum):
+    """Common parameters for Effects."""
+    PROGRAM_EFFECT_1 = 0x02
+    PROGRAM_EFFECT_2 = 0x04
+    PROGRAM_DELAY = 0x06
+    PROGRAM_REVERB = 0x08
+
+    @property
+    def address(self):
+        return self.value  # Access Enum value correctly
+
+
 class EffectParameter(Enum):
-    """Effect parameters"""
+    """Effect parameters with address and value range"""
+    
+    # EFX1 Parameters
+    EFX1_TYPE = (0x00, 0, 4)  # EFX1 Type (0 - 4)
+    EFX1_LEVEL = (0x01, 0, 127)  # EFX1 Level (0 - 127)
+    EFX1_DELAY_SEND_LEVEL = (0x02, 0, 127)  # EFX1 Delay Send Level (0 - 127)
+    EFX1_REVERB_SEND_LEVEL = (0x03, 0, 127)  # EFX1 Reverb Send Level (0 - 127)
+    EFX1_OUTPUT_ASSIGN = (0x04, 0, 1)  # EFX1 Output Assign (0 - 1)
+    EFX1_PARAM_1 = (0x11, 12768, 52768)  # EFX1 Parameter 1 (-20000 - +20000)
+    EFX1_PARAM_2 = (0x15, 12768, 52768)  # EFX1 Parameter 2 (-20000 - +20000)
+    # Add more EFX1 parameters as needed
+
+    # EFX2 Parameters
+    EFX2_TYPE = (0x00, 0, 8)  # EFX2 Type (0, 5 - 8)
+    EFX2_LEVEL = (0x01, 0, 127)  # EFX2 Level (0 - 127)
+    EFX2_DELAY_SEND_LEVEL = (0x02, 0, 127)  # EFX2 Delay Send Level (0 - 127)
+    EFX2_REVERB_SEND_LEVEL = (0x03, 0, 127)  # EFX2 Reverb Send Level (0 - 127)
+    EFX2_PARAM_1 = (0x11, 12768, 52768)  # EFX2 Parameter 1 (-20000 - +20000)
+    EFX2_PARAM_2 = (0x15, 12768, 52768)  # EFX2 Parameter 2 (-20000 - +20000)
+    # Add more EFX2 parameters as needed
+
+    # Delay Parameters
+    DELAY_LEVEL = (0x01, 0, 127)  # Delay Level (0 - 127)
+    DELAY_REVERB_SEND_LEVEL = (0x03, 0, 127)  # Delay Reverb Send Level (0 - 127)
+    DELAY_PARAM_1 = (0x04, 12768, 52768)  # Delay Parameter 1 (-20000 - +20000)
+    DELAY_PARAM_2 = (0x08, 12768, 52768)  # Delay Parameter 2 (-20000 - +20000)
+    # Add more Delay parameters as needed
+
+    # Reverb Parameters
+    REVERB_LEVEL = (0x01, 0, 127)  # Reverb Level (0 - 127)
+    REVERB_PARAM_1 = (0x03, 12768, 52768)  # Reverb Parameter 1 (-20000 - +20000)
+    REVERB_PARAM_2 = (0x07, 12768, 52768)  # Reverb Parameter 2 (-20000 - +20000)
+    # Add more Reverb parameters as needed
+
     # Common parameters
     TYPE = 0x00
     LEVEL = 0x01
@@ -28,6 +74,7 @@ class EffectParameter(Enum):
     REVERB_SEND = 0x04
     DELAY_SEND = 0x05
     CHORUS_SEND = 0x06
+
 
 class FX:
     """Effect parameter ranges and defaults"""
