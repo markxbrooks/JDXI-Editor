@@ -547,13 +547,14 @@ class AnalogSynthEditor(BaseEditor):
 
         # Create ADSRWidget
         self.filter_adsr_widget = ADSRWidget()
-        self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
-        self.filter_adsr_widget.attackSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.decaySB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.releaseSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.initialSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.peakSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.sustainSB.valueChanged.connect(self.filterAdsrValueChanged)
+        # self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
+        # self.filter_adsr_widget.attackSB.valueChanged.connect(self.filterAdsrValueChanged)
+        # self.filter_adsr_widget.decaySB.valueChanged.connect(self.filterAdsrValueChanged)
+        # self.filter_adsr_widget.releaseSB.valueChanged.connect(self.filterAdsrValueChanged)
+        # self.filter_adsr_widget.initialSB.valueChanged.connect(self.filterAdsrValueChanged)
+        # self.filter_adsr_widget.peakSB.valueChanged.connect(self.filterAdsrValueChanged)
+        # self.filter_adsr_widget.sustainSB.valueChanged.connect(self.filterAdsrValueChanged)
+
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(self.filter_adsr_widget)
@@ -578,26 +579,39 @@ class AnalogSynthEditor(BaseEditor):
         sub_layout.addWidget(env_group)
         env_group.setLayout(adsr_vlayout)
         layout.addLayout(sub_layout)
+
+        # Mapping ADSR parameters to their corresponding spinboxes
+        self.filter_adsr_control_map = {
+            AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attackSB,
+            AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decaySB,
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustainSB,
+            AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.releaseSB,
+        }
+
+        # 🔹 Connect ADSR spinboxes to external controls dynamically
+        for param, spinbox in self.filter_adsr_control_map.items():
+            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
+
+        # 🔹 Connect external controls to ADSR spinboxes dynamically
+        for param, spinbox in self.filter_adsr_control_map.items():
+            self.controls[param].valueChanged.connect(partial(self.update_filter_adsr_spinbox_from_param,
+                                                              self.filter_adsr_control_map,
+                                                              param))
+
         return group
 
-    def on_adsr_envelope_changed(self, envelope):
-        if not self.updating_from_spinbox:
-            self.controls[AnalogParameter.FILTER_ENV_ATTACK_TIME].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
-            self.controls[AnalogParameter.FILTER_ENV_DECAY_TIME].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
-            self.controls[AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
-            self.controls[AnalogParameter.FILTER_ENV_RELEASE_TIME].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
-
-    def filterAdsrValueChanged(self):
-        self.updating_from_spinbox = True
-        self.filter_adsr_widget.envelope["attackTime"] = self.filter_adsr_widget.attackSB.value()
-        self.filter_adsr_widget.envelope["decayTime"] = self.filter_adsr_widget.decaySB.value()
-        self.filter_adsr_widget.envelope["releaseTime"] = self.filter_adsr_widget.releaseSB.value()
-        self.filter_adsr_widget.envelope["initialAmpl"] = self.filter_adsr_widget.initialSB.value()
-        self.filter_adsr_widget.envelope["peakAmpl"] = self.filter_adsr_widget.peakSB.value()
-        self.filter_adsr_widget.envelope["sustainAmpl"] = self.filter_adsr_widget.sustainSB.value()
-        self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
-        self.filter_adsr_widget.envelopeChanged.emit(self.filter_adsr_widget.envelope)
-        self.updating_from_spinbox = False
+    def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
+        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
+        spinbox = control_map[param]
+        if param in [AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL]:
+            new_value = midi_cc_to_frac(value)
+        else:
+            new_value = midi_cc_to_ms(value)
+        if spinbox.value() != new_value:
+            spinbox.blockSignals(True)
+            spinbox.setValue(new_value)
+            spinbox.blockSignals(False)
+            self.filter_adsr_widget.valueChanged()
 
     def _create_amp_section(self):
         group = QGroupBox("Amplifier")
@@ -687,14 +701,15 @@ class AnalogSynthEditor(BaseEditor):
 
         # 🔹 Connect external controls to ADSR spinboxes dynamically
         for param, spinbox in self.adsr_control_map.items():
-            self.controls[param].valueChanged.connect(partial(self.update_adsr_spinbox_from_param, param))
+            self.controls[param].valueChanged.connect(partial(self.update_adsr_spinbox_from_param,
+                                                              self.adsr_control_map, param))
 
         return group
 
-    def update_adsr_spinbox_from_param(self, param, value):
+    def update_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
-        spinbox = self.adsr_control_map[param]
-        if param == AnalogParameter.AMP_ENV_SUSTAIN_LEVEL:
+        spinbox = control_map[param]
+        if param in [AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL]:
             new_value = midi_cc_to_frac(value)
         else:
             new_value = midi_cc_to_ms(value)
@@ -707,7 +722,7 @@ class AnalogSynthEditor(BaseEditor):
     def update_slider_from_adsr(self, param, value):
         """Updates external control from ADSR widget, avoiding infinite loops."""
         control = self.controls[param]
-        if param == AnalogParameter.AMP_ENV_SUSTAIN_LEVEL:
+        if param in [AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL]:
             new_value = frac_to_midi_cc(value)
         else:
             new_value = ms_to_midi_cc(value)

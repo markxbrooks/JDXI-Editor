@@ -170,6 +170,19 @@ class Style:
             border-color: {ACCENT_HOVER};
         }}
         
+        QSlider::handle:vertical {{
+            background: {SLIDER_HANDLE};
+            border: 2px solid {SLIDER_HANDLE_BORDER};
+            width: 18px;
+            height: 18px;
+            margin: -9px 0;
+            border-radius: 9px;
+        }}
+        
+        QSlider::handle:vertical:hover {{
+            border-color: {ACCENT_HOVER};
+        }}
+        
         QComboBox::drop-down {{
             border: none;
         }}
@@ -245,7 +258,18 @@ class Style:
         QScrollBar::handle:hover {{
             background: {ANALOG_ACCENT};
         }}
-
+        QSlider::handle:vertical {{
+            background: {SLIDER_HANDLE};
+            border: 2px solid {SLIDER_HANDLE_BORDER};
+            width: 18px;
+            height: 18px;
+            margin: -9px 0;
+            border-radius: 11px;
+        }}
+        
+        QSlider::handle:vertical:hover {{
+            border-color: {ANALOG_ACCENT};
+        }}
         QLabel {{
             color: {FOREGROUND};
         }}
