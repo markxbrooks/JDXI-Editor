@@ -10,6 +10,7 @@ from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.midi.constants import EFFECTS_AREA
 from jdxi_manager.midi.helper import MIDIHelper
 
+
 class EffectsEditor(BaseEditor):
     def __init__(self, midi_helper: MIDIHelper, parent=None):
         super().__init__(midi_helper, parent)
@@ -22,8 +23,8 @@ class EffectsEditor(BaseEditor):
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         
         # Create container widget
         container = QWidget()
