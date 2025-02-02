@@ -1,6 +1,7 @@
 import logging
 import time
 from typing import Dict, Optional, Union
+from functools import partial
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -412,13 +413,6 @@ class PartialEditor(QWidget):
 
         # Create ADSRWidget
         self.filter_adsr_widget = ADSRWidget()
-        self.filter_adsr_widget.envelopeChanged.connect(self.on_adsr_envelope_changed)
-        self.filter_adsr_widget.attackSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.decaySB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.releaseSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.initialSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.peakSB.valueChanged.connect(self.filterAdsrValueChanged)
-        self.filter_adsr_widget.sustainSB.valueChanged.connect(self.filterAdsrValueChanged)
         adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
         # adsr_vlayout.addWidget(self.filter_adsr_widget)
@@ -452,6 +446,7 @@ class PartialEditor(QWidget):
         self.filter_adsr_widget.updateGeometry()
         env_group.updateGeometry()
 
+
         # HPF cutoff
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.HPF_CUTOFF, "HPF Cutoff")
@@ -461,8 +456,38 @@ class PartialEditor(QWidget):
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.CUTOFF_AFTERTOUCH, "AT Sens")
         )
+        # Mapping ADSR parameters to their corresponding spinboxes
+        self.filter_adsr_control_map = {
+            DigitalParameter.FILTER_ENV_ATTACK: self.filter_adsr_widget.attackSB,
+            DigitalParameter.FILTER_ENV_DECAY: self.filter_adsr_widget.decaySB,
+            DigitalParameter.FILTER_ENV_SUSTAIN: self.filter_adsr_widget.sustainSB,
+            DigitalParameter.FILTER_ENV_RELEASE: self.filter_adsr_widget.releaseSB,
+        }
+
+        # 🔹 Connect ADSR spinboxes to external controls dynamically
+        for param, spinbox in self.filter_adsr_control_map.items():
+            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
+
+        # 🔹 Connect external controls to ADSR spinboxes dynamically
+        for param, spinbox in self.filter_adsr_control_map.items():
+            self.controls[param].valueChanged.connect(partial(self.update_filter_adsr_spinbox_from_param,
+                                                              self.filter_adsr_control_map,
+                                                              param))
 
         return group
+
+    def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
+        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
+        spinbox = control_map[param]
+        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.FILTER_ENV_SUSTAIN]:
+            new_value = midi_cc_to_frac(value)
+        else:
+            new_value = midi_cc_to_ms(value)
+        if spinbox.value() != new_value:
+            spinbox.blockSignals(True)
+            spinbox.setValue(new_value)
+            spinbox.blockSignals(False)
+            self.filter_adsr_widget.valueChanged()
 
     def on_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
@@ -591,13 +616,6 @@ class PartialEditor(QWidget):
 
         # Create ADSRWidget
         self.amp_env_adsr_widget = ADSRWidget()
-        self.amp_env_adsr_widget.envelopeChanged.connect(self.on_amp_env_adsr_envelope_changed)
-        self.amp_env_adsr_widget.attackSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.decaySB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.releaseSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.initialSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.peakSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.sustainSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
 
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
@@ -613,7 +631,7 @@ class PartialEditor(QWidget):
             self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S", vertical=True)
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R, vertical=True")
+            self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R", vertical=True)
         )
 
         layout.addWidget(env_group)
@@ -625,8 +643,48 @@ class PartialEditor(QWidget):
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens")
         )
+        # Mapping ADSR parameters to their corresponding spinboxes
+        self.adsr_control_map = {
+            DigitalParameter.AMP_ENV_ATTACK: self.amp_env_adsr_widget.attackSB,
+            DigitalParameter.AMP_ENV_DECAY: self.amp_env_adsr_widget.decaySB,
+            DigitalParameter.AMP_ENV_SUSTAIN: self.amp_env_adsr_widget.sustainSB,
+            DigitalParameter.AMP_ENV_RELEASE: self.amp_env_adsr_widget.releaseSB,
+        }
 
+        # 🔹 Connect ADSR spinboxes to external controls dynamically
+        for param, spinbox in self.adsr_control_map.items():
+            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
+
+        # 🔹 Connect external controls to ADSR spinboxes dynamically
+        for param, spinbox in self.adsr_control_map.items():
+            self.controls[param].valueChanged.connect(partial(self.update_adsr_spinbox_from_param,
+                                                              self.adsr_control_map, param))
         return group
+
+    def update_adsr_spinbox_from_param(self, control_map, param, value):
+        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
+        spinbox = control_map[param]
+        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.AMP_ENV_SUSTAIN]:
+            new_value = midi_cc_to_frac(value)
+        else:
+            new_value = midi_cc_to_ms(value)
+        if spinbox.value() != new_value:
+            spinbox.blockSignals(True)
+            spinbox.setValue(new_value)
+            spinbox.blockSignals(False)
+            self.amp_env_adsr_widget.valueChanged()
+
+    def update_slider_from_adsr(self, param, value):
+        """Updates external control from ADSR widget, avoiding infinite loops."""
+        control = self.controls[param]
+        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.AMP_ENV_SUSTAIN]:
+            new_value = frac_to_midi_cc(value)
+        else:
+            new_value = ms_to_midi_cc(value)
+        if control.value() != new_value:
+            control.blockSignals(True)
+            control.setValue(new_value)
+            control.blockSignals(False)
 
     def _create_lfo_section(self):
         group = QGroupBox("LFO")
@@ -705,6 +763,18 @@ class PartialEditor(QWidget):
         layout.addWidget(depths_group)
 
         return group
+
+    def update_slider_from_adsr(self, param, value):
+        """Updates external control from ADSR widget, avoiding infinite loops."""
+        control = self.controls[param]
+        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.FILTER_ENV_SUSTAIN]:
+            new_value = frac_to_midi_cc(value)
+        else:
+            new_value = ms_to_midi_cc(value)
+        if control.value() != new_value:
+            control.blockSignals(True)
+            control.setValue(new_value)
+            control.blockSignals(False)
 
     def _create_mod_lfo_section(self):
         """Create modulation LFO section"""
