@@ -72,6 +72,20 @@ def ms_to_midi_cc(ms_value, min_time=10, max_time=1000):
     return (ms_value / conversion_factor) - min_time
 
 
+def frac_to_midi_cc(frac_value, min=0, max=1):
+    range = max - min
+    cc_range = 127
+    conversion_factor = range / cc_range
+    return int((frac_value / conversion_factor) - min)
+
+
+def midi_cc_to_frac(midi_cc_value, min=0, max=1):
+    range = max - min
+    cc_range = 127
+    conversion_factor = range / cc_range
+    return float((midi_cc_value * conversion_factor) + min)
+
+
 class PartialEditor(QWidget):
     """Editor for a single partial"""
 

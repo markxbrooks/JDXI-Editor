@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+from functools import partial
 from typing import Optional, Dict, Union
 
 from PySide6.QtWidgets import (
@@ -25,7 +26,8 @@ from jdxi_manager.data.analog import (
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
-from jdxi_manager.ui.editors.digital import base64_to_pixmap, ms_to_midi_cc
+from jdxi_manager.ui.editors.digital import base64_to_pixmap, ms_to_midi_cc, midi_cc_to_ms, frac_to_midi_cc, \
+    midi_cc_to_frac
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
@@ -665,45 +667,61 @@ class AnalogSynthEditor(BaseEditor):
         env_layout.addWidget(
             self._create_parameter_slider(AnalogParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True)
         )
-
         self.amp_env_adsr_widget = ADSRWidget()
-        self.amp_env_adsr_widget.envelopeChanged.connect(self.on_amp_env_adsr_envelope_changed)
-        self.amp_env_adsr_widget.attackSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.decaySB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.releaseSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.initialSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.peakSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
-        self.amp_env_adsr_widget.sustainSB.valueChanged.connect(self.ampEnvAdsrValueChanged)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.addLayout(env_layout)
         sub_layout.addWidget(env_group)
         layout.addLayout(sub_layout)
+
+        # Mapping ADSR parameters to their corresponding spinboxes
+        self.adsr_control_map = {
+            AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attackSB,
+            AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decaySB,
+            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustainSB,
+            AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.releaseSB,
+        }
+
+        # 🔹 Connect ADSR spinboxes to external controls dynamically
+        for param, spinbox in self.adsr_control_map.items():
+            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
+
+        # 🔹 Connect external controls to ADSR spinboxes dynamically
+        for param, spinbox in self.adsr_control_map.items():
+            self.controls[param].valueChanged.connect(partial(self.update_adsr_spinbox_from_param, param))
+
         return group
 
-    def _on_amp_env_changed(self, stage: str, value: int):
-        """Handle amp envelope change"""
-        if self.midi_helper:
-            # Map stage to correct parameter
-            param_map = {
-                "A": AnalogToneCC.AMP_ENV_A,
-                "D": AnalogToneCC.AMP_ENV_D,
-                "S": AnalogToneCC.AMP_ENV_S,
-                "R": AnalogToneCC.AMP_ENV_R,
-            }
+    def update_adsr_spinbox_from_param(self, param, value):
+        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
+        spinbox = self.adsr_control_map[param]
+        if param == AnalogParameter.AMP_ENV_SUSTAIN_LEVEL:
+            new_value = midi_cc_to_frac(value)
+        else:
+            new_value = midi_cc_to_ms(value)
+        if spinbox.value() != new_value:
+            spinbox.blockSignals(True)
+            spinbox.setValue(new_value)
+            spinbox.blockSignals(False)
+            self.amp_env_adsr_widget.valueChanged()
 
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=param_map[stage],
-                value=value,
-            )
+    def update_slider_from_adsr(self, param, value):
+        """Updates external control from ADSR widget, avoiding infinite loops."""
+        control = self.controls[param]
+        if param == AnalogParameter.AMP_ENV_SUSTAIN_LEVEL:
+            new_value = frac_to_midi_cc(value)
+        else:
+            new_value = ms_to_midi_cc(value)
+        if control.value() != new_value:
+            control.blockSignals(True)
+            control.setValue(new_value)
+            control.blockSignals(False)
 
     def _create_lfo_section(self):
         group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
+        # pimp up the section with some icons
         icons_hlayout = QHBoxLayout()
         for icon in [
             "mdi.triangle-wave",
