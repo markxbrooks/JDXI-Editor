@@ -10,17 +10,16 @@ from typing import Optional
 from jdxi_manager.midi.constants.sysex import ARPEGGIO_AREA
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
-from jdxi_manager.data.arpeggio import ArpeggioParameter
+from jdxi_manager.data.arpeggio import ArpeggioParameter, arp_style, arp_grid, arp_duration
 from jdxi_manager.midi.messages import JDXiSysEx
 from jdxi_manager.midi.constants.arpeggio import (
     ArpGrid,
     ArpDuration,
-    ArpOctaveRange,
     ArpSwitch,
     ARP_AREA,
     ARP_PART,
     ARP_GROUP,
-    ArpParameters
+    ArpParameters, ArpOctaveRange,
 )
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
@@ -48,21 +47,73 @@ class ArpeggioEditor(BaseEditor):
 
         # Create a combo box for Arpeggio Style
         self.style_combo = QComboBox()
-        self.style_combo.addItems([f"Style {i + 1}" for i in range(128)])  # Assuming 128 styles
+        # Add style combo box
+        style_row = QHBoxLayout()
+        style_label = QLabel("Style:")
+        self.style_combo.addItems(arp_style)  # Use arp_style list
         self.style_combo.currentIndexChanged.connect(self._on_style_changed)
-        layout.addWidget(self.style_combo)
+        style_row.addWidget(style_label)
+        style_row.addWidget(self.style_combo)
+        layout.addLayout(style_row)
 
         # Create a combo box for Arpeggio Grid
+        # Add grid combo box
+        grid_row = QHBoxLayout()
+        grid_label = QLabel("Grid:")
         self.grid_combo = QComboBox()
-        self.grid_combo.addItems([f"Grid {i}" for i in range(9)])  # Assuming 9 grid options
+        self.grid_combo.addItems(arp_grid)  # Use arp_grid list
         self.grid_combo.currentIndexChanged.connect(self._on_grid_changed)
-        layout.addWidget(self.grid_combo)
+        grid_row.addWidget(grid_label)
+        grid_row.addWidget(self.grid_combo)
+        layout.addLayout(grid_row)
 
+        # Add grid combo box
+        duration_row = QHBoxLayout()
+        duration_label = QLabel("Duration:")
         # Create a combo box for Arpeggio Duration
         self.duration_combo = QComboBox()
-        self.duration_combo.addItems([f"Duration {i}" for i in range(10)])  # Assuming 10 duration options
+        self.duration_combo.addItems(arp_duration)  # Use arp_duration list
         self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
-        layout.addWidget(self.duration_combo)
+        duration_row.addWidget(duration_label)
+        duration_row.addWidget(self.duration_combo)
+        layout.addLayout(duration_row)
+
+        # Add sliders
+        self.velocity_slider = Slider("Velocity", 0, 127)
+        self.velocity_slider.valueChanged.connect(self._on_velocity_changed)
+        layout.addWidget(self.velocity_slider)
+
+        self.accent_slider = Slider("Accent", 0, 127)
+        self.accent_slider.valueChanged.connect(self._on_accent_changed)
+        layout.addWidget(self.accent_slider)
+
+        # Add octave range combo box
+        octave_row = QHBoxLayout()
+        octave_label = QLabel("Octave Range:")
+        self.octave_combo = QComboBox()
+        self.octave_combo.addItems([
+            octave.display_name for octave in ArpOctaveRange
+        ])
+        # Set default to 0
+        self.octave_combo.setCurrentIndex(3)  # Index 3 is OCT_ZERO
+        self.octave_combo.currentIndexChanged.connect(self._on_octave_changed)
+        octave_row.addWidget(octave_label)
+        octave_row.addWidget(self.octave_combo)
+        layout.addLayout(octave_row)
+
+        # Add motif combo box
+        motif_row = QHBoxLayout()
+        motif_label = QLabel("Motif:")
+        self.motif_combo = QComboBox()
+        self.motif_combo.addItems([
+            "UP/L", "UP/H", "UP/_", "dn/L", "dn/H", 
+            "dn/_", "Ud/L", "Ud/H", "Ud/_", "rn/L", 
+            "rn/_", "PHRASE"
+        ])
+        self.motif_combo.currentIndexChanged.connect(self._on_motif_changed)
+        motif_row.addWidget(motif_label)
+        motif_row.addWidget(self.motif_combo)
+        layout.addLayout(motif_row)
 
     def _on_switch_changed(self, checked: bool):
         """Handle arpeggiator switch change"""
@@ -79,12 +130,6 @@ class ArpeggioEditor(BaseEditor):
                 value=switch_is_on
             )
 
-    # def _on_switch_changed(self):
-    #    """Handle arpeggiator switch change"""
-    #is_on = self.switch_button.isChecked()
-    #self.switch_button.setText("ON" if is_on else "OFF")
-    #self._send_parameter_change(ArpeggioParameter.SWITCH, 1 if is_on else 0)
-
     def _on_style_changed(self, index):
         """Handle changes to the Arpeggio Style."""
         self._send_parameter_change(ArpeggioParameter.STYLE, index)
@@ -97,14 +142,54 @@ class ArpeggioEditor(BaseEditor):
         """Handle changes to the Arpeggio Duration."""
         self._send_parameter_change(ArpeggioParameter.DURATION, index)
 
+    def _on_pattern_changed(self, index):
+        """Handle changes to the Pattern Type."""
+        self._send_parameter_change(ArpeggioParameter.PATTERN_1, index)  # Replace with actual parameter if different
+
+    def _on_velocity_changed(self, value):
+        """Handle changes to the Velocity."""
+        self._send_parameter_change(ArpeggioParameter.VELOCITY, value)
+
+    def _on_accent_changed(self, value):
+        """Handle changes to the Accent."""
+        self._send_parameter_change(ArpeggioParameter.ACCENT_RATE, value)
+
+    def _on_swing_changed(self, value):
+        """Handle changes to the Swing."""
+        # Assuming a parameter for swing exists
+        self._send_parameter_change(ArpeggioParameter.SWING, value)  # Replace with actual parameter if different
+
+    #def _on_octave_changed(self, index):
+    #    """Handle changes to the Octave Range."""
+    #    self._send_parameter_change(ArpeggioParameter.OCTAVE, index)
+
+    def _on_octave_changed(self, index: int):
+        """Handle octave range change"""
+        if self.midi_helper:
+            param = ArpeggioParameter.OCTAVE.value[0]
+            octave = index + 61  # Convert index to -3 to +3 range
+            print(f"octave value: {octave}")
+            # logging.debug(f"Sending arp octave change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
+            self.midi_helper.send_parameter(
+                area=ARP_AREA,
+                part=ARP_PART,
+                group=ARP_GROUP,
+                param=param,
+                value=octave
+            )
+
+    def _on_motif_changed(self, index):
+        """Handle changes to the Motif."""
+        self._send_parameter_change(ArpeggioParameter.MOTIF, index)
+
     def _send_parameter_change(self, param, value):
         """Send parameter change to MIDI device."""
         address, min_val, max_val = param.value
         if min_val <= value <= max_val:
             self.midi_helper.send_parameter(
-                area=0x18,  # Example area, replace with actual
-                part=0x00,  # Example part, replace with actual
-                group=0x00,  # Example group, replace with actual
+                area=ARP_AREA,
+                part=ARP_PART,
+                group=ARP_GROUP,
                 param=address,
                 value=value
             )
