@@ -962,7 +962,7 @@ class DigitalSynthEditor(BaseEditor):
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-
+        self.setStyleSheet(Style.JDXI_TABS_STYLE + Style.EDITOR_STYLE)
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)

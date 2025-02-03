@@ -13,6 +13,7 @@ from jdxi_manager.midi.constants.analog import ANALOG_SYNTH_AREA
 from jdxi_manager.midi.constants.sysex import PROGRAM_AREA
 from jdxi_manager.midi.sysex import PROGRAM_COMMON
 from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.midi.constants import EFFECTS_AREA
 from jdxi_manager.midi.helper import MIDIHelper
@@ -30,43 +31,17 @@ class EffectsEditor(BaseEditor):
         self.controls: Dict[
             Union[EffectParameter, EffectsCommonParameter], QWidget
         ] = {}
-        # Create scroll area
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         
-        # Create container widget
-        container = QWidget()
-        container_layout = QVBoxLayout()
-        container.setLayout(container_layout)
+        # Create a tab widget
+        self.tabs = QTabWidget()
+        self.tabs.setStyleSheet(Style.JDXI_TABS_STYLE)
+        main_layout.addWidget(self.tabs)
         
-        # Add custom style for effects groups
-        container.setStyleSheet("""
-            QGroupBox {
-                border: 1px solid #FF0000;  /* Red border */
-                border-radius: 3px;
-                margin-top: 1.5ex;
-                padding: 10px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 0 3px;
-                color: #FFFFFF;
-                background-color: #1A1A1A;
-            }
-        """)
-        
-        # Add sections
-        container_layout.addWidget(self._create_effect1_section())
-        container_layout.addWidget(self._create_effect2_section())
-        container_layout.addWidget(self._create_delay_tab())
-        container_layout.addWidget(self._create_reverb_section())  # Add Reverb section
-        
-        # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        # Add tabs
+        self.tabs.addTab(self._create_effect1_section(), "Effect 1")
+        self.tabs.addTab(self._create_effect2_section(), "Effect 2")
+        self.tabs.addTab(self._create_delay_tab(), "Delay")
+        self.tabs.addTab(self._create_reverb_section(), "Reverb")
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect type"""
@@ -132,13 +107,13 @@ class EffectsEditor(BaseEditor):
 
     def _create_effect1_section(self):
         """Create Effect 1 section"""
-        group = QGroupBox("Effect 1")
+        widget = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        widget.setLayout(layout)
         
         # Create a combo box for EFX1 type
         self.efx1_type = QComboBox()
-        self.efx1_type.addItems(["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER", "FLANGER"])  # Added FLANGER
+        self.efx1_type.addItems(["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER", "FLANGER"])
         self.efx1_type.currentIndexChanged.connect(self._on_efx1_type_changed)
         layout.addWidget(self.efx1_type)
         
@@ -164,13 +139,13 @@ class EffectsEditor(BaseEditor):
         layout.addWidget(self.flanger_manual)
         layout.addWidget(self.flanger_balance)
         
-        return group
+        return widget
 
     def _create_effect2_section(self):
         """Create Effect 2 section"""
-        group = QGroupBox("Effect 2")
+        widget = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        widget.setLayout(layout)
         
         # Create a combo box for EFX2 type
         self.efx2_type = QComboBox()
@@ -195,7 +170,7 @@ class EffectsEditor(BaseEditor):
         self._on_efx2_reverb_send_level.valueChanged.connect(self._on_efx2_reverb_send_level_changed)
         layout.addWidget(self._on_efx2_reverb_send_level)
 
-        return group
+        return widget
 
     def _on_efx2_level_changed(self, value: int):
         """Handle pulse width modulation depth change"""
@@ -238,9 +213,9 @@ class EffectsEditor(BaseEditor):
 
     def _create_delay_tab(self):
         """Create Delay tab with parameters"""
-        group = QGroupBox("Delay")
+        widget = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        widget.setLayout(layout)
 
         # Create a combo box for Delay Type
         delay_type_combo = QComboBox()
@@ -256,19 +231,14 @@ class EffectsEditor(BaseEditor):
         layout.addWidget(self._create_parameter_slider("DELAY_LEVEL", "Level (0-127)"))
         layout.addWidget(self._create_parameter_slider("DELAY_REV_SEND_LEVEL", "Delay to Reverb Send Level (0-127)"))
 
-        return group
+        return widget
 
     def _create_reverb_section(self):
         """Create Reverb section"""
-        group = QGroupBox("Reverb")
+        widget = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        widget.setLayout(layout)
 
-        reverb_off_on_combo = QComboBox()
-        reverb_off_on_combo.addItems(["OFF", "ON"])
-        reverb_off_on_combo.currentIndexChanged.connect(self._on_delay_type_changed)
-        layout.addWidget(reverb_off_on_combo)
-        
         # Create a combo box for Reverb Type
         reverb_type_combo = QComboBox()
         reverb_type_combo.addItems(["ROOM1", "ROOM2", "STAGE1", "STAGE2", "HALL1", "HALL2"])
@@ -280,7 +250,7 @@ class EffectsEditor(BaseEditor):
         layout.addWidget(self._create_parameter_slider("REVERB_HF_DAMP", "HF Damp (Hz)"))
         layout.addWidget(self._create_parameter_slider("REVERB_LEVEL", "Level (0-127)"))
         
-        return group
+        return widget
 
     def _on_parameter_changed(self, param_name: str, value: int):
         """Handle parameter change"""

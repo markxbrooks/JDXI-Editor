@@ -127,6 +127,8 @@ class PresetHandler(QObject):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+
         self.channel = 1
         self.analog_editor = None
         self.last_preset = None
@@ -318,6 +320,21 @@ class MainWindow(QMainWindow):
         self.digital_preset_handler.update_display.connect(self.update_display_callback)
         self.analog_preset_handler.update_display.connect(self.update_display_callback)
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
+        self.oldPos = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.oldPos = event.globalPos()
+
+    def mouseMoveEvent(self, event):
+        if self.oldPos is not None:
+            delta = event.globalPos() - self.oldPos
+            self.move(self.x() + delta.x(), self.y() + delta.y())
+            self.oldPos = event.globalPos()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.oldPos = None
 
     def _select_synth(self, synth_type):
         """Select a synth and update button styles."""

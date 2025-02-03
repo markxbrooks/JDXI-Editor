@@ -352,6 +352,30 @@ class Style:
             }
         """
 
+    JDXI_TABS_STYLE = """
+            QTabBar::tab {
+                background: #000000;       /* Default tab background */
+                color: white;           /* Default text color */
+                padding: 8px 12px;      /* Padding for tab spacing */
+                margin: 2px;
+                border: 2px solid #666; /* Default border */
+                border-radius: 4px;
+                font-family: "Myriad Pro", "sans serif"
+            }
+
+            QTabBar::tab:selected {
+                background: #222222;    /* Selected tab background */
+                color: white;           /* Selected text color */
+                border: 2px solid #ff6666; /* Border for selected tab */
+                font-family: "Myriad Pro", "sans serif"
+            }
+
+            QTabBar::tab:hover {
+                background: #222222;       /* Hover effect */
+                border: 2px solid #ff9999;
+                font-family: "Myriad Pro", "sans serif"
+            }
+        """
     JDXI_STYLE = """
             QMainWindow {
                 background-color: black;
