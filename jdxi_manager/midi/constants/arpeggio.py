@@ -9,7 +9,7 @@ ARP_GROUP = 0x40
 
 class ArpParameters(IntEnum):
     """Arpeggiator parameters"""
-    SWITCH = 0x00      # Arpeggio on/off (0-1)
+    SWITCH = 0x03      # Arpeggio on/off (0-1)
     GRID = 0x01        # Grid/timing value (0-6)
     DURATION = 0x02    # Note duration (0-8: 30%-120%)
     PATTERN = 0x03     # Arpeggio pattern (0-6)

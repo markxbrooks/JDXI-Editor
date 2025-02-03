@@ -5,12 +5,13 @@ from PIL import Image, ImageDraw
 import base64
 from io import BytesIO
 
+
 class WaveformButton(QPushButton):
     """Button for selecting oscillator waveform"""
     
     waveform_selected = Signal(Waveform)  # Emits selected waveform
     
-    def __init__(self, waveform: Waveform, parent=None):
+    def __init__(self, waveform: Waveform, style="digital", parent=None):
         """Initialize waveform button
         
         Args:
@@ -27,14 +28,14 @@ class WaveformButton(QPushButton):
         self.setMinimumWidth(60)
         self.setStyleSheet("""
             QPushButton {
-                background-color: #333333;
+                background-color: #222222;
                 color: #CCCCCC;
                 border: 1px solid #666666;
                 border-radius: 3px;
                 padding: 5px;
             }
             QPushButton:checked {
-                background-color: #B22222;
+                background-color: #333333;
                 color: white;
                 border: 1px solid #FF4444;
             }
