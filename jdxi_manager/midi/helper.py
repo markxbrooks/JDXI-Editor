@@ -117,10 +117,8 @@ class MIDIHelper(QObject):
 
     def _handle_clock(self, message, preset_data):
         # keep the midi clock quiet!
-        if not message.type == "clock":
-            print(f"MIDI clock: {message.type} as {message}")
-        #else:
-        #    print(f"MIDI clock: {message.type} as {message}")
+        if message.type == "clock":
+            return
 
     def _handle_sysex_message(self, message, preset_data):
         """Handle SysEx MIDI messages."""

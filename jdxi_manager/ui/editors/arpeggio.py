@@ -10,6 +10,7 @@ from typing import Optional
 from jdxi_manager.midi.constants.sysex import ARPEGGIO_AREA
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
+from jdxi_manager.data.arpeggio import ArpeggioParameter
 from jdxi_manager.midi.messages import JDXiSysEx
 from jdxi_manager.midi.constants.arpeggio import (
     ArpGrid,
@@ -26,6 +27,92 @@ from jdxi_manager.ui.editors.base_editor import BaseEditor
 
 
 class ArpeggioEditor(BaseEditor):
+    def __init__(self, midi_helper: MIDIHelper, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Arpeggio Editor")
+        self.midi_helper = midi_helper
+
+        # Main layout
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        # Add on-off switch
+        switch_row = QHBoxLayout()
+        switch_label = QLabel("Arpeggiator:")
+        self.switch_button = QPushButton("OFF")
+        self.switch_button.setCheckable(True)
+        self.switch_button.clicked.connect(self._on_switch_changed)
+        switch_row.addWidget(switch_label)
+        switch_row.addWidget(self.switch_button)
+        layout.addLayout(switch_row)
+
+        # Create a combo box for Arpeggio Style
+        self.style_combo = QComboBox()
+        self.style_combo.addItems([f"Style {i + 1}" for i in range(128)])  # Assuming 128 styles
+        self.style_combo.currentIndexChanged.connect(self._on_style_changed)
+        layout.addWidget(self.style_combo)
+
+        # Create a combo box for Arpeggio Grid
+        self.grid_combo = QComboBox()
+        self.grid_combo.addItems([f"Grid {i}" for i in range(9)])  # Assuming 9 grid options
+        self.grid_combo.currentIndexChanged.connect(self._on_grid_changed)
+        layout.addWidget(self.grid_combo)
+
+        # Create a combo box for Arpeggio Duration
+        self.duration_combo = QComboBox()
+        self.duration_combo.addItems([f"Duration {i}" for i in range(10)])  # Assuming 10 duration options
+        self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
+        layout.addWidget(self.duration_combo)
+
+    def _on_switch_changed(self, checked: bool):
+        """Handle arpeggiator switch change"""
+        if self.midi_helper:
+            switch_address = ArpeggioParameter.SWITCH.value[0]
+            switch_is_on = self.switch_button.isChecked()
+            self.switch_button.setText("ON" if switch_is_on else "OFF")
+            logging.debug(f"Sending arp switch change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={switch_address:02x}, value={switch_is_on}")
+            self.midi_helper.send_parameter(
+                area=ARP_AREA,
+                part=ARP_PART,
+                group=ARP_GROUP,
+                param=switch_address,
+                value=switch_is_on
+            )
+
+    # def _on_switch_changed(self):
+    #    """Handle arpeggiator switch change"""
+    #is_on = self.switch_button.isChecked()
+    #self.switch_button.setText("ON" if is_on else "OFF")
+    #self._send_parameter_change(ArpeggioParameter.SWITCH, 1 if is_on else 0)
+
+    def _on_style_changed(self, index):
+        """Handle changes to the Arpeggio Style."""
+        self._send_parameter_change(ArpeggioParameter.STYLE, index)
+
+    def _on_grid_changed(self, index):
+        """Handle changes to the Arpeggio Grid."""
+        self._send_parameter_change(ArpeggioParameter.GRID, index)
+
+    def _on_duration_changed(self, index):
+        """Handle changes to the Arpeggio Duration."""
+        self._send_parameter_change(ArpeggioParameter.DURATION, index)
+
+    def _send_parameter_change(self, param, value):
+        """Send parameter change to MIDI device."""
+        address, min_val, max_val = param.value
+        if min_val <= value <= max_val:
+            self.midi_helper.send_parameter(
+                area=0x18,  # Example area, replace with actual
+                part=0x00,  # Example part, replace with actual
+                group=0x00,  # Example group, replace with actual
+                param=address,
+                value=value
+            )
+            print(f"Parameter {param.name} changed to {value}")
+        else:
+            print(f"Value {value} out of range for parameter {param.name}")
+
+class ArpeggioEditorOld(BaseEditor):
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Arpeggio")
