@@ -1,6 +1,8 @@
+from functools import partial
+
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel, 
-    QComboBox, QScrollArea
+    QComboBox, QScrollArea, QTabWidget
 )
 from PySide6.QtCore import Qt
 import logging
@@ -59,7 +61,7 @@ class EffectsEditor(BaseEditor):
         # Add sections
         container_layout.addWidget(self._create_effect1_section())
         container_layout.addWidget(self._create_effect2_section())
-        container_layout.addWidget(self._create_delay_section())  # Add Delay section
+        container_layout.addWidget(self._create_delay_tab())
         container_layout.addWidget(self._create_reverb_section())  # Add Reverb section
         
         # Add container to scroll area
@@ -109,13 +111,23 @@ class EffectsEditor(BaseEditor):
                 if i in common_params:
                     param.setLabel(common_params[i])
 
+    from functools import partial
 
-    def _create_parameter_slider(self, param: EffectParameter, label: str, vertical=False) -> Slider:
+    def _create_parameter_slider(self, param_name: str, label: str, vertical=False) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
+        param = EffectParameter.get_by_name(param_name)
+        if param is None:
+            logging.error(f"Parameter {param_name} not found.")
+            return None
+
         address, min_val, max_val = param.value
         slider = Slider(label, min_val, max_val, vertical)
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+
+        # Use functools.partial to avoid lambda scoping issues
+        slider.valueChanged.connect(partial(self._on_parameter_changed, param_name))
+
         self.controls[param] = slider
+        logging.debug(f"Slider created for {param.name} with address {address}")
         return slider
 
     def _create_effect1_section(self):
@@ -126,20 +138,31 @@ class EffectsEditor(BaseEditor):
         
         # Create a combo box for EFX1 type
         self.efx1_type = QComboBox()
-        self.efx1_type.addItems(["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER"])  # Types 0, 1, 2, 3, 4
+        self.efx1_type.addItems(["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER", "FLANGER"])  # Added FLANGER
         self.efx1_type.currentIndexChanged.connect(self._on_efx1_type_changed)
         layout.addWidget(self.efx1_type)
         
         # Create sliders for EFX1 parameters
-        layout.addWidget(self._create_parameter_slider(EffectParameter.EFX1_LEVEL, "EFX1 Level"))
-        layout.addWidget(self._create_parameter_slider(EffectParameter.EFX1_DELAY_SEND_LEVEL, "EFX1 Delay Send Level"))
-        layout.addWidget(self._create_parameter_slider(EffectParameter.EFX1_REVERB_SEND_LEVEL, "EFX1 Reverb Send Level"))
+        self.efx1_level = self._create_parameter_slider("EFX1_LEVEL", "EFX1 Level (0-127)")
+        self.efx1_delay_send_level = self._create_parameter_slider("EFX1_DELAY_SEND_LEVEL", "EFX1 Delay Send Level (0-127)")
+        self.efx1_reverb_send_level = self._create_parameter_slider("EFX1_REVERB_SEND_LEVEL", "EFX1 Reverb Send Level (0-127)")
         
-        # Create a combo box for EFX1 output assign
-        self.efx1_output = QComboBox()
-        self.efx1_output.addItems(["DIR", "EFX2"])  # Output options
-        self.efx1_output.currentIndexChanged.connect(self._on_efx1_output_changed)
-        layout.addWidget(self.efx1_output)
+        # Flanger-specific sliders
+        self.flanger_rate = self._create_parameter_slider("FLANGER_RATE", "Rate (0-127)")
+        self.flanger_depth = self._create_parameter_slider("FLANGER_DEPTH", "Depth (0-127)")
+        self.flanger_feedback = self._create_parameter_slider("FLANGER_FEEDBACK", "Feedback (0-127)")
+        self.flanger_manual = self._create_parameter_slider("FLANGER_MANUAL", "Manual (0-127)")
+        self.flanger_balance = self._create_parameter_slider("FLANGER_BALANCE", "Balance (D100:0W - D0:100W)")
+        
+        # Add all sliders to layout
+        layout.addWidget(self.efx1_level)
+        layout.addWidget(self.efx1_delay_send_level)
+        layout.addWidget(self.efx1_reverb_send_level)
+        layout.addWidget(self.flanger_rate)
+        layout.addWidget(self.flanger_depth)
+        layout.addWidget(self.flanger_feedback)
+        layout.addWidget(self.flanger_manual)
+        layout.addWidget(self.flanger_balance)
         
         return group
 
@@ -156,22 +179,83 @@ class EffectsEditor(BaseEditor):
         layout.addWidget(self.efx2_type)
         
         # Create sliders for EFX2 parameters
-        layout.addWidget(self._create_parameter_slider(EffectParameter.EFX2_LEVEL, "EFX2 Level"))
-        layout.addWidget(self._create_parameter_slider(EffectParameter.EFX2_DELAY_SEND_LEVEL, "EFX2 Delay Send Level"))
-        layout.addWidget(self._create_parameter_slider(EffectParameter.EFX2_REVERB_SEND_LEVEL, "EFX2 Reverb Send Level"))
-        
+
+        # layout.addWidget(self._create_parameter_slider("EFX2_LEVEL", "EFX2 Level"))
+        self.efx2_level = Slider("EFX2 Level (0-127)", 0, 127)
+        self.efx2_level.valueChanged.connect(self._on_efx2_level_changed)
+        layout.addWidget(self.efx2_level)
+
+        # layout.addWidget(self._create_parameter_slider("EFX2_DELAY_SEND_LEVEL", "EFX2 Delay Send Level"))
+        self._on_efx2_delay_send_level = Slider("EFX2 Delay Send Level (0-127)", 0, 127)
+        self._on_efx2_delay_send_level.valueChanged.connect(self._on_efx2_delay_send_level_changed)
+        layout.addWidget(self._on_efx2_delay_send_level)
+
+        # layout.addWidget(self._create_parameter_slider("EFX2_REVERB_SEND_LEVEL", "EFX2 Reverb Send Level"))
+        self._on_efx2_reverb_send_level = Slider("EFX2 Delay Send Level (0-127)", 0, 127)
+        self._on_efx2_reverb_send_level.valueChanged.connect(self._on_efx2_reverb_send_level_changed)
+        layout.addWidget(self._on_efx2_reverb_send_level)
+
         return group
 
-    def _create_delay_section(self):
-        """Create Delay section"""
+    def _on_efx2_level_changed(self, value: int):
+        """Handle pulse width modulation depth change"""
+        common_param = EffectParameter.get_common_param_by_name("EFX2_LEVEL")
+        address_offset = EffectParameter.get_address_by_name("EFX2_LEVEL")
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=PROGRAM_AREA,  # 0x18
+                part=PROGRAM_COMMON,
+                group=common_param.address,
+                param=address_offset,
+                value=value
+            )
+
+    def _on_efx2_delay_send_level_changed(self, value: int):
+        """Handle pulse width modulation depth change"""
+        common_param = EffectParameter.get_common_param_by_name("EFX2_DELAY_SEND_LEVEL")
+        address_offset = EffectParameter.get_address_by_name("EFX2_DELAY_SEND_LEVEL")
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=PROGRAM_AREA,  # 0x18
+                part=PROGRAM_COMMON,
+                group=common_param.address,
+                param=address_offset,
+                value=value
+            )
+
+    def _on_efx2_reverb_send_level_changed(self, value: int):
+        """Handle pulse width modulation depth change"""
+        common_param = EffectParameter.get_common_param_by_name("EFX2_REVERB_SEND_LEVEL")
+        address_offset = EffectParameter.get_address_by_name("EFX2_REVERB_SEND_LEVEL")
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=PROGRAM_AREA,  # 0x18
+                part=PROGRAM_COMMON,
+                group=common_param.address,
+                param=address_offset,
+                value=value
+            )
+
+    def _create_delay_tab(self):
+        """Create Delay tab with parameters"""
         group = QGroupBox("Delay")
         layout = QVBoxLayout()
         group.setLayout(layout)
-        
-        # Create sliders for Delay parameters
-        layout.addWidget(self._create_parameter_slider(EffectParameter.DELAY_LEVEL, "Delay Level"))
-        layout.addWidget(self._create_parameter_slider(EffectParameter.DELAY_REVERB_SEND_LEVEL, "Delay Reverb Send Level"))
-        
+
+        # Create a combo box for Delay Type
+        delay_type_combo = QComboBox()
+        delay_type_combo.addItems(["OFF", "ON"])
+        delay_type_combo.currentIndexChanged.connect(self._on_delay_type_changed)
+        layout.addWidget(delay_type_combo)
+
+        # Add Delay parameters
+        layout.addWidget(self._create_parameter_slider("DELAY_TIME", "Time (ms)"))
+        layout.addWidget(self._create_parameter_slider("DELAY_TAP_TIME", "Tap Time (%)"))
+        layout.addWidget(self._create_parameter_slider("DELAY_FEEDBACK", "Feedback (%)"))
+        layout.addWidget(self._create_parameter_slider("DELAY_HF_DAMP", "HF Damp (Hz)"))
+        layout.addWidget(self._create_parameter_slider("DELAY_LEVEL", "Level (0-127)"))
+        layout.addWidget(self._create_parameter_slider("DELAY_REV_SEND_LEVEL", "Delay to Reverb Send Level (0-127)"))
+
         return group
 
     def _create_reverb_section(self):
@@ -179,53 +263,52 @@ class EffectsEditor(BaseEditor):
         group = QGroupBox("Reverb")
         layout = QVBoxLayout()
         group.setLayout(layout)
+
+        reverb_off_on_combo = QComboBox()
+        reverb_off_on_combo.addItems(["OFF", "ON"])
+        reverb_off_on_combo.currentIndexChanged.connect(self._on_delay_type_changed)
+        layout.addWidget(reverb_off_on_combo)
+        
+        # Create a combo box for Reverb Type
+        reverb_type_combo = QComboBox()
+        reverb_type_combo.addItems(["ROOM1", "ROOM2", "STAGE1", "STAGE2", "HALL1", "HALL2"])
+        reverb_type_combo.currentIndexChanged.connect(self._on_reverb_type_changed)
+        layout.addWidget(reverb_type_combo)
         
         # Create sliders for Reverb parameters
-        layout.addWidget(self._create_parameter_slider(EffectParameter.REVERB_LEVEL, "Reverb Level"))
+        layout.addWidget(self._create_parameter_slider("REVERB_TIME", "Time (0-127)"))
+        layout.addWidget(self._create_parameter_slider("REVERB_HF_DAMP", "HF Damp (Hz)"))
+        layout.addWidget(self._create_parameter_slider("REVERB_LEVEL", "Level (0-127)"))
         
         return group
 
-    def _on_parameter_changed(self, param: EffectParameter, value: int):
+    def _on_parameter_changed(self, param_name: str, value: int):
         """Handle parameter change"""
-        if self.midi_helper:
-            # Extract the address and value range from the parameter
-            address_offset, _, _ = param.value  # Ensure value is a tuple of at least 3 elements
+        param = EffectParameter.get_by_name(param_name)
+        if param is None:
+            logging.error(f"Unknown parameter: {param_name}")
+            return
 
-            # Determine the base address for the effect type
-            if param in {
-                EffectParameter.EFX1_TYPE, EffectParameter.EFX1_LEVEL,
-                EffectParameter.EFX1_DELAY_SEND_LEVEL, EffectParameter.EFX1_REVERB_SEND_LEVEL,
-                EffectParameter.EFX1_OUTPUT_ASSIGN
-            }:
-                base_address = EffectsCommonParameter.PROGRAM_EFFECT_1.address
-            elif param in {
-                EffectParameter.EFX2_TYPE, EffectParameter.EFX2_LEVEL,
-                EffectParameter.EFX2_DELAY_SEND_LEVEL, EffectParameter.EFX2_REVERB_SEND_LEVEL
-            }:
-                base_address = EffectsCommonParameter.PROGRAM_EFFECT_2.address
-            elif param in {EffectParameter.DELAY_LEVEL, EffectParameter.DELAY_REVERB_SEND_LEVEL}:
-                base_address = EffectsCommonParameter.PROGRAM_DELAY.address
-            elif param in {EffectParameter.REVERB_LEVEL, EffectParameter.REVERB_PARAM_1,
-                           EffectParameter.REVERB_PARAM_2}:
-                base_address = EffectsCommonParameter.PROGRAM_REVERB.address
-            else:
-                logging.error("Unknown parameter type: %s", param)
-                return
+        address_offset, _, _ = param.value
 
-            # Calculate the full address
-            full_address = [0x18, 0x00, base_address, address_offset]
+        # Ensure we get a valid common parameter
+        common_param = EffectParameter.get_common_param_by_name(param_name)
+        if common_param is None:
+            logging.error(f"Unknown common parameter type for: {param_name}")
+            return
 
-            # Debug output
-            logging.debug(f"Full address calculated: {full_address}")
+        base_address = common_param.address
 
-            # Send the parameter using the MIDI helper
-            self.midi_helper.send_parameter(
-                area=PROGRAM_AREA, # 0x18
-                part=PROGRAM_COMMON,  # Common Program area 0x00
-                group=full_address[2],
-                param=full_address[3],
-                value=value
-            )
+        full_address = [0x18, 0x00, base_address, address_offset]
+        logging.debug(f"Full address calculated for {param.name}: {full_address}")
+
+        self.midi_helper.send_parameter(
+            area=PROGRAM_AREA,  # 0x18
+            part=PROGRAM_COMMON,
+            group=common_param.address,
+            param=address_offset,
+            value=value
+        )
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect type"""
@@ -273,11 +356,19 @@ class EffectsEditor(BaseEditor):
     def _on_efx1_type_changed(self, index):
         """Handle changes to the EFX1 type."""
         # Map the combo box index to the effect type value
-        effect_type_map = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+        effect_type_map = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}  # FLANGER = 5
         effect_type_value = effect_type_map.get(index, 0)
         
         # Update the effect type parameter
-        self._on_parameter_changed(EffectParameter.EFX1_TYPE, effect_type_value)
+        self._on_parameter_changed("EFX1_TYPE", effect_type_value)
+        
+        # Show/hide sliders based on the selected effect type
+        is_flanger = (effect_type_value == 5)
+        self.flanger_rate.setVisible(is_flanger)
+        self.flanger_depth.setVisible(is_flanger)
+        self.flanger_feedback.setVisible(is_flanger)
+        self.flanger_manual.setVisible(is_flanger)
+        self.flanger_balance.setVisible(is_flanger)
 
     def _on_efx2_type_changed(self, index):
         """Handle changes to the EFX2 type."""
@@ -286,7 +377,7 @@ class EffectsEditor(BaseEditor):
         effect_type_value = effect_type_map.get(index, 0)
         
         # Update the effect type parameter
-        self._on_parameter_changed(EffectParameter.EFX2_TYPE, effect_type_value)
+        self._on_parameter_changed("EFX2_TYPE", effect_type_value)
 
     def _on_efx1_output_changed(self, index):
         """Handle changes to the EFX1 output assignment."""
@@ -295,4 +386,31 @@ class EffectsEditor(BaseEditor):
         output_value = output_map.get(index, 0)
         
         # Update the output assignment parameter
-        self._on_parameter_changed(EffectParameter.EFX1_OUTPUT_ASSIGN, output_value)
+        self._on_parameter_changed("EFX1_OUTPUT_ASSIGN", output_value)
+
+    def _on_reverb_type_changed(self, index):
+        """Handle changes to the Reverb type."""
+        # Map the combo box index to the reverb type value
+        reverb_type_map = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+        reverb_type_value = reverb_type_map.get(index, 0)
+        
+        # Update the reverb type parameter
+        self._on_parameter_changed("REVERB_TYPE", reverb_type_value)
+
+    def _on_delay_type_changed(self, index):
+        """Handle changes to the Delay type."""
+        # Map the combo box index to the delay type value
+        delay_type_map = {0: 0, 1: 1}  # SINGLE = 0, PAN = 1
+        delay_type_value = delay_type_map.get(index, 0)
+        
+        # Update the delay type parameter
+        self._on_parameter_changed("DELAY_TYPE", delay_type_value)
+
+    def _on_reverb_off_on_changed(self, index):
+        """Handle changes to the Delay type."""
+        # Map the combo box index to the delay type value
+        reverb_off_on_map = {0: 0, 1: 1}  # SINGLE = 0, PAN = 1
+        reverb_off_on_value = reverb_off_on_map.get(index, 0)
+
+        # Update the delay type parameter
+        self._on_parameter_changed("REVERB_OFF_ON", reverb_off_on_value)

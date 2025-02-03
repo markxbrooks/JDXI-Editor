@@ -41,7 +41,7 @@ class Slider(QWidget):
         # Create value display
         self.value_label = QLabel(str(min_val))
         self.value_label.setMinimumWidth(30)
-        self.value_label.setAlignment(Qt.AlignRight if vertical else Qt.AlignLeft)
+        self.value_label.setAlignment(Qt.AlignmentFlag.AlignRight if vertical else Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(self.value_label)
         
     def _on_value_changed(self, value: int):
