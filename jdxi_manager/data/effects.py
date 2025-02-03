@@ -47,7 +47,7 @@ class EffectParameter(Enum):
     EFX2_PARAM_1 = (0x11, 12768, 52768)
     EFX2_PARAM_2 = (0x15, 12768, 52768)
 
-    FLANGER_RATE = (0x00, 0, 8)
+    FLANGER_RATE = (0x00, 0, 8) # Fixme: These Flanger values are placeholders
     FLANGER_DEPTH = (0x00, 0, 8)
     FLANGER_FEEDBACK = (0x00, 0, 8)
     FLANGER_MANUAL = (0x00, 0, 8)

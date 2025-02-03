@@ -73,6 +73,7 @@ class ADSRPlot(QWidget):
         self.ax.xaxis.label.set_color("orange")
         self.ax.yaxis.label.set_color("orange")
         self.ax.title.set_color("orange")
+        self.ax.set_xlim(0, 5)
 
         # Extract envelope parameters
         attack_time = self.envelope["attackTime"] / 1000

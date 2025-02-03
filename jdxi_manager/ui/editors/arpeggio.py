@@ -24,6 +24,7 @@ from jdxi_manager.midi.constants.arpeggio import (
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 
+
 class ArpeggioEditor(BaseEditor):
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
         super().__init__(midi_helper, parent)
@@ -43,8 +44,8 @@ class ArpeggioEditor(BaseEditor):
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         
         # Create container widget
         container = QWidget()
