@@ -89,7 +89,9 @@ DRUM_ADDRESSES = (
 
 def get_address_for_partial(partial_num: int) -> Tuple[int, int]:
     """Get parameter group and address adjusted for partial number"""
-    LO = DRUM_ADDRESSES[partial_num][2]  # Extract the 3rd byte (zero-based index)
+    LO = DRUM_ADDRESSES[partial_num + 1][
+        2
+    ]  # Skip the first row (common area), then extract the 3rd byte (zero-based index)
     HI = LO + 1
     return int(f"{LO:02X}", 16), int(f"{HI:02X}", 16)
 
@@ -638,13 +640,13 @@ class Note(Enum):
 
 class DrumPad:
     """Represents a single drum pad's settings"""
-    
+
     # Parameter offsets within each pad
     PARAM_OFFSET = 0x10  # Each pad takes 16 bytes of parameter space
-    
+
     # Parameter addresses within pad
     WAVE = 0x00
-    LEVEL = 0x01 
+    LEVEL = 0x01
     PAN = 0x02
     MUTE_GROUP = 0x03
     TUNE = 0x04
@@ -661,7 +663,7 @@ class DrumPad:
         self.tune = 0
         self.decay = 64
         self.reverb_send = 0
-        self.delay_send = 0 
+        self.delay_send = 0
         self.fx_send = 0
 
 
@@ -690,14 +692,14 @@ class DrumKitPatch:
     reverb_send: int = 0
     delay_send: int = 0
     fx_send: int = 0
-    
+
     # Individual pad settings
     pads: Dict[int, DrumPadSettings] = None
-    
+
     def __post_init__(self):
         """Initialize pad settings"""
         if self.pads is None:
-            self.pads = {i: DrumPadSettings() for i in range(16)} 
+            self.pads = {i: DrumPadSettings() for i in range(16)}
 
 
 # SuperNATURAL drum kit presets
@@ -732,7 +734,7 @@ SN_PRESETS = [
     "028: User Kit 2",
     "029: User Kit 3",
     "030: User Kit 4",
-] 
+]
 
 # Drum kit presets
 DRUM_PRESETS: Tuple[str, ...] = (

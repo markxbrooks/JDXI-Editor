@@ -125,11 +125,34 @@ class MIDIHelper(QObject):
     def _handle_sysex_message(self, message, preset_data):
         """Handle SysEx MIDI messages."""
         try:
-            print(f"message {message.hex}")
+            # print(f"message {message.hex}")
+            # Print the message in hex format
+            hex_string = " ".join(f"{byte:02X}" for byte in message.data)
+            print("Converted SysEx Message:", hex_string)
             manufacturer_id, device_family_id = message.data[1], message.data[2:6]
             # if manufacturer_id != 0x41 or device_family_id != [0x10, 0x00, 0x00, 0x0E]:
             #    print("Received SysEx message is not from a Roland JD-Xi.")
             #    return
+
+            sysex_bytes = [int(byte, 16) for byte in hex_string.split()]
+            print(sysex_bytes)
+            parsed_data = self.parse_sysex(sysex_bytes)
+            print(f"parsed_data: {parsed_data}")
+
+            parsed_data_hex_string = " ".join(
+                f"{byte:02X}" for byte in parsed_data["data"]
+            )
+            print("Converted SysEx data:", parsed_data_hex_string)
+
+            sysex_data = [int(byte, 16) for byte in parsed_data_hex_string.split()]
+            print(sysex_data)
+
+            parsed_data = self.parse_sysex_data(sysex_data)
+            print(parsed_data)
+
+            parsed_data_hex_string = " ".join(
+                f"{byte:02X}" for byte in parsed_data["data"]
+            )
 
             print("Valid Roland JD-Xi SysEx message detected.")
             command_type_address, address_offset = message.data[6], message.data[7:11]
@@ -157,6 +180,48 @@ class MIDIHelper(QObject):
             logging.error(
                 f"Error handling SysEx message: {str(e)} for message: {message}"
             )
+
+    def parse_sysex_data(self, data):
+        parsed = {}
+
+        # Example breakdown (adjust based on JD-Xi SysEx spec):
+        parsed["Parameter_1"] = data[0]  # Single byte
+        parsed["Parameter_2"] = data[1]  # Single byte
+        parsed["Parameter_3"] = (data[2] << 7) | data[3]  # 14-bit value (MSB/LSB)
+        parsed["Parameter_4"] = data[4]  # Single byte
+        parsed["Parameter_5"] = (data[5] << 7) | data[6]  # Another 14-bit value
+
+        # Parsing more based on structure...
+        parsed["Parameter_6"] = data[7:11]  # Four-byte value
+        parsed["Parameter_7"] = data[11]  # Single byte
+        parsed["Parameter_8"] = data[12]  # Single byte
+
+        # Example of extracting a series of single-byte values
+        parsed["Flags"] = data[13:19]
+
+        return parsed
+
+    def parse_sysex(self, sysex_bytes):
+        if sysex_bytes[0] != 0x41:
+            raise ValueError("Invalid Roland SysEx message")
+
+        manufacturer_id = sysex_bytes[0]
+        device_id = sysex_bytes[1]
+        model_id = sysex_bytes[2:6]
+        command_type = sysex_bytes[6]
+        address = sysex_bytes[7:11]  # 4-byte address
+        data = sysex_bytes[11:-1]  # Data (excluding checksum)
+        checksum = sysex_bytes[-1]  # Last byte is checksum
+
+        return {
+            "manufacturer_id": manufacturer_id,
+            "device_id": device_id,
+            "model_id": model_id,
+            "command_type": command_type,
+            "address": address,
+            "data": data[:-1],  # Exclude last byte which is the checksum
+            "checksum": checksum,
+        }
 
     def _handle_control_change(self, message, preset_data):
         """Handle Control Change (CC) MIDI messages."""
