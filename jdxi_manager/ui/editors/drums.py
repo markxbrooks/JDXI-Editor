@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Optional
+from typing import Optional, Union, Dict
 
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
@@ -21,6 +21,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 import logging
 
+from jdxi_manager.data.drums import (
+    DrumParameter,
+    get_address_for_partial,
+    DRUM_PARTIAL_NAMES,
+    DRUM_ADDRESSES,
+)
 from jdxi_manager.data.preset_data import DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.data.presets import preset
@@ -36,6 +42,8 @@ from jdxi_manager.midi.constants import (
     DRUM_PAN,
     DRUM_REVERB,
     DRUM_DELAY,
+    DRUM_GROUP,
+    DIGITAL_SYNTH_AREA,
 )
 from jdxi_manager.midi.constants.sysex import (
     START_OF_SYSEX,
@@ -133,14 +141,19 @@ class DrumEditor(BaseEditor):
 
     def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
         super().__init__(midi_helper, parent)
+        self.partial_num = 1  # Initialize partial_num
+        self.group = 0x00
+        self.address = 0x00
         self.image_label = None
         # Main layout
+        self.controls: Dict[DrumParameter, QWidget] = {}
         self.preset_type = PresetType.DRUMS
         self.preset_loader = PresetLoader(self.midi_helper)
         self.main_window = parent
         main_layout = QVBoxLayout(self)
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
+        self.setMinimumSize(1000, 500)
 
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
@@ -187,7 +200,7 @@ class DrumEditor(BaseEditor):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+        self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
         drum_group_layout.addWidget(self.instrument_selection_combo)
@@ -244,7 +257,7 @@ class DrumEditor(BaseEditor):
         common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
 
         common_group.setLayout(common_layout)
-        main_layout.addWidget(common_group)
+        upper_layout.addWidget(common_group)
 
         # Tabbed widget for partials
         scroll = QScrollArea()
@@ -253,6 +266,7 @@ class DrumEditor(BaseEditor):
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         main_layout.addWidget(scroll)
         self.tab_widget = QTabWidget()
+        self.tab_widget.setStyleSheet(Style.JDXI_DRUM_TABS_STYLE)
         scroll.setWidget(self.tab_widget)
         partials = [
             "BD1",
@@ -434,57 +448,71 @@ class DrumEditor(BaseEditor):
             tvf_group = QGroupBox("TVF")
             tvf_layout = QFormLayout()
             tvf_group.setLayout(tvf_layout)
-            grid_layout.addWidget(tvf_group, 1, 1)
+            grid_layout.addWidget(tvf_group, 2, 2)
 
             # Add TVF parameters
             tvf_filter_type_combo = QComboBox()
             tvf_filter_type_combo.addItems(
                 ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"]
             )
+            tvf_filter_type_combo.currentIndexChanged.connect(
+                self._on_tvf_filter_type_combo_changed
+            )
             tvf_layout.addRow("TVF Filter Type", tvf_filter_type_combo)
 
             tvf_cutoff_frequency_slider = QSlider(Qt.Orientation.Horizontal)
             tvf_cutoff_frequency_slider.setRange(0, 127)
+            tvf_cutoff_frequency_slider.valueChanged.connect(
+                self._on_tvf_cutoff_frequency_slider_changed
+            )
             tvf_layout.addRow("TVF Cutoff Frequency", tvf_cutoff_frequency_slider)
 
             tvf_cutoff_velocity_curve_spin = QSpinBox()
             tvf_cutoff_velocity_curve_spin.setRange(0, 7)
+            tvf_cutoff_velocity_curve_spin.valueChanged.connect(
+                self._on_tvf_cutoff_velocity_curve_spin_changed
+            )
             tvf_layout.addRow(
                 "TVF Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin
             )
 
             tvf_cutoff_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
             tvf_cutoff_velocity_sens_slider.setRange(1, 127)
+            tvf_cutoff_velocity_sens_slider.valueChanged.connect(
+                self._on_tvf_cutoff_velocity_sens_slider_changed
+            )
             tvf_layout.addRow(
                 "TVF Cutoff Velocity Sens", tvf_cutoff_velocity_sens_slider
             )
 
-            tvf_resonance_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_resonance_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Resonance", tvf_resonance_slider)
-
-            tvf_resonance_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_resonance_velocity_sens_slider.setRange(1, 127)
-            tvf_layout.addRow(
-                "TVF Resonance Velocity Sens", tvf_resonance_velocity_sens_slider
-            )
-
             tvf_env_depth_slider = QSlider(Qt.Orientation.Horizontal)
             tvf_env_depth_slider.setRange(1, 127)
+            tvf_env_depth_slider.valueChanged.connect(
+                self._on_tvf_env_depth_slider_changed
+            )
             tvf_layout.addRow("TVF Env Depth", tvf_env_depth_slider)
 
             tvf_env_velocity_curve_type_spin = QSpinBox()
             tvf_env_velocity_curve_type_spin.setRange(0, 7)
+            tvf_env_velocity_curve_type_spin.valueChanged.connect(
+                self._on_tvf_env_velocity_curve_type_spin_changed
+            )
             tvf_layout.addRow(
                 "TVF Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
             )
 
             tvf_env_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
             tvf_env_velocity_sens_slider.setRange(1, 127)
+            tvf_env_velocity_sens_slider.valueChanged.connect(
+                self._on_tvf_env_velocity_sens_slider_changed
+            )
             tvf_layout.addRow("TVF Env Velocity Sens", tvf_env_velocity_sens_slider)
 
             tvf_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
             tvf_env_time1_velocity_sens_slider.setRange(1, 127)
+            tvf_env_time1_velocity_sens_slider.valueChanged.connect(
+                self._on_tvf_env_time1_velocity_sens_slider_changed
+            )
             tvf_layout.addRow(
                 "TVF Env Time 1 Velocity Sens", tvf_env_time1_velocity_sens_slider
             )
@@ -507,8 +535,11 @@ class DrumEditor(BaseEditor):
             tvf_env_time3_slider.setRange(0, 127)
             tvf_layout.addRow("TVF Env Time 3", tvf_env_time3_slider)
 
-            tvf_env_time4_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_time4_slider.setRange(0, 127)
+            tvf_env_time4_slider = self._create_parameter_slider(
+                DrumParameter.TVF_ENV_TIME_4
+            )
+            # tvf_env_time4_slider = QSlider(Qt.Orientation.Horizontal)
+            # tvf_env_time4_slider.setRange(0, 127)
             tvf_layout.addRow("TVF Env Time 4", tvf_env_time4_slider)
 
             tvf_env_level0_slider = QSlider(Qt.Orientation.Horizontal)
@@ -659,46 +690,69 @@ class DrumEditor(BaseEditor):
 
             tva_level_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
             tva_level_velocity_sens_slider.setRange(1, 127)
+            tva_level_velocity_sens_slider.valueChanged.connect(
+                self._on_tva_level_velocity_sens_slider_changed
+            )
             tva_layout.addRow("TVA Level Velocity Sens", tva_level_velocity_sens_slider)
 
             tva_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_time1_velocity_sens_slider.setRange(1, 127)
+            tva_env_time1_velocity_sens_slider.valueChanged.connect(
+                self._on_tva_env_time1_velocity_sens_slider_changed
+            )
             tva_layout.addRow(
                 "TVA Env Time 1 Velocity Sens", tva_env_time1_velocity_sens_slider
             )
 
             tva_env_time4_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_time4_velocity_sens_slider.setRange(1, 127)
+            tva_env_time4_velocity_sens_slider.valueChanged.connect(
+                self._on_tva_env_time4_velocity_sens_slider_changed
+            )
             tva_layout.addRow(
                 "TVA Env Time 4 Velocity Sens", tva_env_time4_velocity_sens_slider
             )
 
             tva_env_time1_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_time1_slider.setRange(0, 127)
+            tva_env_time1_slider.valueChanged.connect(
+                self._on_tva_env_time1_slider_changed
+            )
             tva_layout.addRow("TVA Env Time 1", tva_env_time1_slider)
 
             tva_env_time2_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_time2_slider.setRange(0, 127)
+            tva_env_time2_slider.valueChanged.connect(
+                self._on_tva_env_time2_slider_changed
+            )
             tva_layout.addRow("TVA Env Time 2", tva_env_time2_slider)
 
             tva_env_time3_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_time3_slider.setRange(0, 127)
+            tva_env_time3_slider.valueChanged.connect(
+                self._on_tva_env_time3_slider_changed
+            )
             tva_layout.addRow("TVA Env Time 3", tva_env_time3_slider)
-
-            tva_env_time4_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_time4_slider.setRange(0, 127)
-            tva_layout.addRow("TVA Env Time 4", tva_env_time4_slider)
 
             tva_env_level1_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_level1_slider.setRange(0, 127)
+            tva_env_level1_slider.valueChanged.connect(
+                self._on_tva_env_level1_slider_changed
+            )
             tva_layout.addRow("TVA Env Level 1", tva_env_level1_slider)
 
             tva_env_level2_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_level2_slider.setRange(0, 127)
+            tva_env_level2_slider.valueChanged.connect(
+                self._on_tva_env_level2_slider_changed
+            )
             tva_layout.addRow("TVA Env Level 2", tva_env_level2_slider)
 
             tva_env_level3_slider = QSlider(Qt.Orientation.Horizontal)
             tva_env_level3_slider.setRange(0, 127)
+            tva_env_level3_slider.valueChanged.connect(
+                self._on_tva_env_level3_slider_changed
+            )
             tva_layout.addRow("TVA Env Level 3", tva_env_level3_slider)
 
             # Add controls to WMT2 tab
@@ -997,6 +1051,7 @@ class DrumEditor(BaseEditor):
             self.tab_widget.addTab(tab, partial)
 
         self.update_instrument_image()
+        self.tab_widget.currentChanged.connect(self.update_partial_num)
 
     def update_instrument_title(self):
         selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
@@ -1085,7 +1140,7 @@ class DrumEditor(BaseEditor):
         ]
         """
         # sysex_message = [
-        #    0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, checksum, 0xF7
+        #     0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, checksum, 0xF7
         # ]
         return self.midi_helper.send_parameter(
             area=DRUM_KIT_AREA,
@@ -1119,3 +1174,300 @@ class DrumEditor(BaseEditor):
             param=0x1C,
             value=value,  # Make sure this value is being sent
         )
+
+    def _on_tva_level_velocity_sens_slider_changed(self, value: int):
+        """Handle TVA Level Velocity Sens change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_LEVEL_VELOCITY_SENS.value[0],
+                value=value,
+            )
+            print(f"TVA Level Velocity Sens changed to {value}")
+
+    def _on_tva_env_time1_velocity_sens_slider_changed(self, value: int):
+        """Handle TVA Env Time 1 Velocity Sens change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS.value[0],
+                value=value,
+            )
+            print(f"TVA Env Time 1 Velocity Sens changed to {value}")
+
+    def _on_tva_env_time4_velocity_sens_slider_changed(self, value: int):
+        """Handle TVA Env Time 4 Velocity Sens change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS.value[0],
+                value=value,
+            )
+            print(f"TVA Env Time 4 Velocity Sens changed to {value}")
+
+    def _on_tva_env_time1_slider_changed(self, value: int):
+        """Handle TVA Env Time 1 change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_TIME_1.value[0],
+                value=value,
+            )
+            print(f"TVA Env Time 1 changed to {value}")
+
+    def _on_tva_env_time2_slider_changed(self, value: int):
+        """Handle TVA Env Time 2 change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_TIME_2.value[0],
+                value=value,
+            )
+            print(f"TVA Env Time 2 changed to {value}")
+
+    def _on_tva_env_time3_slider_changed(self, value: int):
+        """Handle TVA Env Time 3 change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_TIME_3.value[0],
+                value=value,
+            )
+            print(f"TVA Env Time 3 changed to {value}")
+
+    def _on_tva_env_level1_slider_changed(self, value: int):
+        """Handle TVA Env Level 1 change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_LEVEL_1.value[0],
+                value=value,
+            )
+            print(f"TVA Env Level 1 changed to {value}")
+
+    def _on_tva_env_level2_slider_changed(self, value: int):
+        """Handle TVA Env Level 2 change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_LEVEL_2.value[0],
+                value=value,
+            )
+            print(f"TVA Env Level 2 changed to {value}")
+
+    def _on_tva_env_level3_slider_changed(self, value: int):
+        """Handle TVA Env Level 3 change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVA_ENV_LEVEL_3.value[0],
+                value=value,
+            )
+            print(f"TVA Env Level 3 changed to {value}")
+
+    def _on_tvf_filter_type_combo_changed(self, index: int):
+        """Handle TVF Filter Type change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_FILTER_TYPE.value[0],
+                value=index,
+            )
+            print(f"TVF Filter Type changed to {index}")
+
+    def _on_tvf_cutoff_frequency_slider_changed(self, value: int):
+        """Handle TVF Cutoff Frequency change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_CUTOFF_FREQUENCY.value[0],
+                value=value,
+            )
+            print(f"TVF Cutoff Frequency changed to {value}")
+
+    def _on_tvf_cutoff_velocity_curve_spin_changed(self, value: int):
+        """Handle TVF Cutoff Velocity Curve change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_CUTOFF_VELOCITY_CURVE.value[0],
+                value=value,
+            )
+            print(f"TVF Cutoff Velocity Curve changed to {value}")
+
+    def _on_tvf_cutoff_velocity_sens_slider_changed(self, value: int):
+        """Handle TVF Cutoff Velocity Sens change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_CUTOFF_VELOCITY_SENS.value[0],
+                value=value,
+            )
+            print(f"TVF Cutoff Velocity Sens changed to {value}")
+
+    def _on_tvf_env_depth_slider_changed(self, value: int):
+        """Handle TVF Env Depth change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_ENV_DEPTH.value[0],
+                value=value,
+            )
+            print(f"TVF Env Depth changed to {value}")
+
+    def _on_tvf_env_velocity_curve_type_spin_changed(self, value: int):
+        """Handle TVF Env Velocity Curve Type change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE.value[0],
+                value=value,
+            )
+            print(f"TVF Env Velocity Curve Type changed to {value}")
+
+    def _on_tvf_env_velocity_sens_slider_changed(self, value: int):
+        """Handle TVF Env Velocity Sens change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_ENV_VELOCITY_SENS.value[0],
+                value=value,
+            )
+            print(f"TVF Env Velocity Sens changed to {value}")
+
+    def _on_tvf_env_time1_velocity_sens_slider_changed(self, value: int):
+        """Handle TVF Env Time 1 Velocity Sens change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value,
+                group=DrumParameter.DRUM_GROUP.value,
+                param=DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS.value[0],
+                value=value,
+            )
+            print(f"TVF Env Time 1 Velocity Sens changed to {value}")
+
+    def _create_parameter_slider(
+        self, param: DrumParameter, label: str = None
+    ) -> Slider:
+        """Create a slider for a parameter with proper display conversion"""
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+
+        # Create horizontal slider (removed vertical ADSR check)
+        slider = Slider(label, display_min, display_max)
+
+        # Connect value changed signal
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+
+        # Store control reference
+        self.controls[param] = slider
+        return slider
+
+    def send_midi_parameter(self, param, value) -> bool:
+        """Send MIDI parameter with error handling"""
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
+
+        try:
+            # Get parameter group and address with partial offset
+            if isinstance(param, DrumParameter):
+                partial_group, partial_address = get_address_for_partial(
+                    self.partial_num
+                )
+            else:
+                partial_group = 0x00  # Common parameters group
+                partial_address = param.address
+
+            # Ensure value is included in the MIDI message
+            return self.midi_helper.send_parameter(
+                area=DIGITAL_SYNTH_1_AREA,
+                part=DrumParameter.DRUM_PART.value[0],
+                group=partial_group,
+                param=param.address,
+                value=value,  # Make sure this value is being sent
+            )
+        except Exception as e:
+            logging.error(f"MIDI error setting {param}: {str(e)}")
+            return False
+
+    def _on_parameter_changed(self, param: DrumParameter, display_value: int):
+        """Handle parameter value changes from UI controls"""
+        try:
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
+
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+
+        except Exception as e:
+            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+
+    def set_partial_num(self, partial_num: int):
+        """Set the current partial number"""
+        if 0 <= partial_num < len(DRUM_ADDRESSES):
+            self.partial_num = partial_num
+        else:
+            raise ValueError(f"Invalid partial number: {partial_num}")
+
+    def update_partial_num(self, index: int):
+        """Update the partial number based on the current tab index"""
+        self.set_partial_num(index)
+
+        # Validate partial_num
+        if self.partial_num < 0 or self.partial_num >= len(DRUM_ADDRESSES):
+            logging.error(f"Invalid partial number: {self.partial_num}")
+            return
+
+        # Get the address for the current partial
+        try:
+            self.group, self.address = get_address_for_partial(self.partial_num)
+            logging.info(
+                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.address)}"
+            )
+            print(
+                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.address)}"
+            )
+        except Exception as e:
+            logging.error(
+                f"Error getting address for partial {self.partial_num}: {str(e)}"
+            )
