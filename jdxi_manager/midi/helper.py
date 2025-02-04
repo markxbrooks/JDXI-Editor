@@ -1,6 +1,7 @@
 import logging
 import re
 
+import mido
 from pubsub import pub
 import rtmidi
 from typing import Optional, List, Tuple, Callable
@@ -15,6 +16,7 @@ from jdxi_manager.midi.constants.sysex import (
     ANALOG_SYNTH_AREA,
     DRUM_KIT_AREA,
 )
+from jdxi_manager.midi.sysex import SysexParameter
 
 
 def find_preset_number(preset_name, presets):
@@ -123,14 +125,19 @@ class MIDIHelper(QObject):
     def _handle_sysex_message(self, message, preset_data):
         """Handle SysEx MIDI messages."""
         try:
-            manufacturer_id, device_family_id = message.data[0], message.data[2:6]
-            if manufacturer_id != 0x41 or device_family_id != [0x10, 0x00, 0x00, 0x0E]:
-                print("Received SysEx message is not from a Roland JD-Xi.")
-                return
+            print(f"message {message.hex}")
+            manufacturer_id, device_family_id = message.data[1], message.data[2:6]
+            # if manufacturer_id != 0x41 or device_family_id != [0x10, 0x00, 0x00, 0x0E]:
+            #    print("Received SysEx message is not from a Roland JD-Xi.")
+            #    return
 
             print("Valid Roland JD-Xi SysEx message detected.")
-            command_type, address_offset = message.data[6], message.data[7:11]
-            print(f"Command Type: {command_type:#02X}")
+            command_type_address, address_offset = message.data[6], message.data[7:11]
+            print(f"command_type_address: {command_type_address}")
+            command_name = SysexParameter.get_command_name(command_type_address)
+            print(
+                f"Command Type: {command_type_address:#02X}, command_name: {command_name}"
+            )
             print(
                 f"Address/Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
             )
@@ -147,7 +154,9 @@ class MIDIHelper(QObject):
                 self.parameter_received.emit(address_offset, message.data[11])
 
         except Exception as e:
-            logging.error(f"Error handling SysEx message: {str(e)}")
+            logging.error(
+                f"Error handling SysEx message: {str(e)} for message: {message}"
+            )
 
     def _handle_control_change(self, message, preset_data):
         """Handle Control Change (CC) MIDI messages."""
@@ -326,9 +335,7 @@ class MIDIHelper(QObject):
             lsb: Bank Select LSB value (0-127)
             channel: MIDI channel (0-15)
         """
-        logging.debug(
-            f"Sending bank select: {msb} {lsb} {channel}"
-        )
+        logging.debug(f"Sending bank select: {msb} {lsb} {channel}")
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
@@ -345,9 +352,7 @@ class MIDIHelper(QObject):
 
     def send_identity_request(self) -> bool:
         """Send identity request message (Universal System Exclusive)"""
-        logging.debug(
-            f"Sending identity request"
-        )
+        logging.debug(f"Sending identity request")
         try:
             # F0 7E 7F 06 01 F7
             return self.send_message([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
@@ -706,3 +711,31 @@ class MIDIHelper(QObject):
 
     def set_callback(self, callback):
         self.midi_in.set_callback(callback)
+
+    def send_sysex_rq1(self, device_id, address, size):
+        """
+        This message requests the other device to transmit data. The address
+        and size indicate the type and amount of data that is requested.
+
+        Parameters
+        ----------
+        device_id : list
+            List of data for a specific device - [0x41, 0x10, 0x00, 0x00, 0x00, 0x0e] for Roland JD-Xi.
+        address : list
+            Base address where to save data (the last byte is defined in the instrument).
+        size : list
+            List of four bytes - [MSB, 2nd, 3rd, LSB].
+        timeout : int, optional
+            Maximum number of attempts to wait for a response (default is 100).
+
+        Returns
+        -------
+        list or str
+            If a valid SysEx response is received, returns the data (excluding header).
+            Otherwise, returns 'unknown'.
+        """
+        # Create the SysEx message
+        sysex_data = device_id + [0x11] + address + size + [0]
+        logging.debug(f"Sending SysEx message: {sysex_data}")
+        self.midi_out.send_message(sysex_data)
+        return

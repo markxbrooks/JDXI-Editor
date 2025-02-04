@@ -80,6 +80,7 @@ class ArpDuration(Enum):
         """Get MIDI value for duration"""
         return self.value 
 
+
 class ArpOctaveRange(Enum):
     """Arpeggiator octave range values"""
     OCT_MINUS_3 = -3

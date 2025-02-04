@@ -17,7 +17,8 @@ import logging
 import time
 
 from jdxi_manager.midi import MIDIHelper
-from jdxi_manager.ui.editors.base_editor import BaseEditor
+
+# from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
     ANALOG_SYNTH_AREA,

@@ -1,37 +1,45 @@
-import base64
-
-from PIL.ImageQt import QPixmap
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
-from typing import Optional, Type
+from typing import Optional, Union
 import logging
 
+from jdxi_manager.data.analog import AnalogCommonParameter
+from jdxi_manager.midi.constants import DIGITAL_1_PART, AnalogParameter
+from jdxi_manager.midi.conversions import midi_cc_to_frac, midi_cc_to_ms
 from jdxi_manager.midi.helper import MIDIHelper
-from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets import Slider
 
 
 class BaseEditor(QWidget):
     """Base class for all editor windows"""
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None):
+
+    def __init__(
+        self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
+    ):
         super().__init__(parent)
         self.midi_helper = midi_helper
-        logging.debug(f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}")
-        
+        logging.debug(
+            f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
+        )
+
         # Set window flags for a tool window
         self.setWindowFlags(Qt.Tool)
-        
+
         # Apply common style
         self.setStyleSheet(Style.EDITOR_STYLE)
-        
+
         # Common minimum size for all editors
         self.setMinimumSize(800, 400)
 
         # Register the callback for incoming MIDI messages
-        if self.midi_helper and hasattr(self.midi_helper, 'set_callback'):
+        if self.midi_helper and hasattr(self.midi_helper, "set_callback"):
             self.midi_helper.set_callback(self.handle_midi_message)
         else:
-            logging.error("MIDI helper not initialized or set_callback method not found")
+            logging.error(
+                "MIDI helper not initialized or set_callback method not found"
+            )
 
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""
@@ -44,16 +52,77 @@ class BaseEditor(QWidget):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        return NotImplementedError
+        print(f"Updating combo to preset {preset_number}")
+        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
-        return NotImplementedError
+        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
+        print(f"selected_synth_text: {selected_synth_text}")
+        self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
-        return NotImplementedError
+        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
+        if synth_matches := re.search(
+            r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
+        ):
+            selected_synth_padded_number = (
+                synth_matches.group(1).lower().replace("&", "_").split("_")[0]
+            )
+            preset_index = int(selected_synth_padded_number)
+            print(f"preset_index: {preset_index}")
+            self.load_preset(preset_index)
 
     def update_instrument_image(self):
-        return NotImplementedError
+        def load_and_set_image(image_path, secondary_image_path):
+            """Helper function to load and set the image on the label."""
+            file_to_load = ""
+            if os.path.exists(image_path):
+                file_to_load = image_path
+            elif os.path.exists(secondary_image_path):
+                file_to_load = secondary_image_path
+            else:
+                file_to_load = os.path.join(
+                    "resources", instrument_icon_folder, "analog.png"
+                )
+            pixmap = QPixmap(file_to_load)
+            scaled_pixmap = pixmap.scaledToHeight(
+                250, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 250px height
+            self.image_label.setPixmap(scaled_pixmap)
+            return True
+
+        selected_instrument_text = (
+            self.instrument_selection_combo.combo_box.currentText()
+        )
+
+        # Try to extract synth name from the selected text
+        image_loaded = False
+        if instrument_matches := re.search(
+            r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+        ):
+            selected_instrument_name = (
+                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
+            )
+            selected_instrument_type = (
+                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
+            )
+            print(f"selected_instrument_type: {selected_instrument_type}")
+            specific_image_path = os.path.join(
+                "resources",
+                instrument_icon_folder,
+                f"{selected_instrument_name}.png",
+            )
+            generic_image_path = os.path.join(
+                "resources",
+                instrument_icon_folder,
+                f"{selected_instrument_type}.png",
+            )
+            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
+
+        # Fallback to default image if no specific image is found
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
 
     def load_preset(self, preset_index):
         preset_data = {
@@ -66,14 +135,58 @@ class BaseEditor(QWidget):
         if self.preset_loader:
             self.preset_loader.load_preset(preset_data)
 
-    def send_midi_parameter(self, param, value) -> Type[NotImplementedError]:
+    def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""
-        return NotImplementedError
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
+
+        try:
+            # Get parameter group and address with partial offset
+            # if isinstance(param, AnalogParameter):
+            #    group, param_address = param.get_address_for_partial(self.partial_num)
+            # else:
+            group = ANALOG_OSC_GROUP  # Common parameters group
+            param_address = param.address
+
+            # Ensure value is included in the MIDI message
+            return self.midi_helper.send_parameter(
+                area=ANALOG_SYNTH_AREA,
+                part=self.part,
+                group=group,
+                param=param_address,
+                value=value,  # Make sure this value is being sent
+            )
+        except Exception as e:
+            logging.error(f"MIDI error setting {param}: {str(e)}")
+            return False
+
+    def _on_parameter_changed(
+        self, param: Union[AnalogParameter, AnalogCommonParameter], display_value: int
+    ):
+        """Handle parameter value changes from UI controls"""
+        try:
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
+
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+
+        except Exception as e:
+            logging.error(f"Error handling parameter {param.name}: {str(e)}")
 
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
-        return NotImplementedError
+        wave_type_request = bytes.fromhex(
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
+        )
+        # Send each SysEx message
+        self.send_message(wave_type_request)
 
     def send_message(self, message):
         """Send a SysEx message using the MIDI helper"""

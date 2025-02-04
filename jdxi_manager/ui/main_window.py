@@ -127,7 +127,28 @@ class PresetHandler(QObject):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.slot_num = None
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+
+        # Initialize attributes and SysEx settings
+        self.attributes = {
+            "ProgramBSMSB": [40, 4, 1],
+            "ProgramBSLSB": [127, 5, 1],
+            "ProgramPC": [15, 6, 1],
+        }
+        self.base_address = [0x01, 0x00, 0x00]
+        self.offset = [0x00, 0x00]
+        self.address = [
+            self.base_address[0],
+            self.base_address[1] + self.offset[0],
+            self.base_address[2] + self.offset[1],
+        ]
+        self.data_length = [0x00, 0x00, 0x00, 0x3B]
+        jd_xi_device = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]
+        self.device_id = jd_xi_device  # Ensure JDXi_device is defined elsewhere
+        self.sysex_setlist = self.device_id + [0x12] + self.address
+        self.sysex_getlist = self.device_id + [0x11]
+        self.device_status = "unknown"
 
         self.channel = 1
         self.analog_editor = None
@@ -321,6 +342,7 @@ class MainWindow(QMainWindow):
         self.analog_preset_handler.update_display.connect(self.update_display_callback)
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.oldPos = None
+        self.get_data()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -766,7 +788,12 @@ class MainWindow(QMainWindow):
         """Show editor window"""
         try:
             # Create editor with proper initialization
-            if editor_class in [DigitalSynthEditor, DrumEditor, AnalogSynthEditor, PatternSequencer]:
+            if editor_class in [
+                DigitalSynthEditor,
+                DrumEditor,
+                AnalogSynthEditor,
+                PatternSequencer,
+            ]:
                 editor = editor_class(
                     midi_helper=self.midi_helper, parent=self, **kwargs
                 )
@@ -2599,3 +2626,9 @@ class MainWindow(QMainWindow):
         self.load_preset(preset_data)
         # self._update_style()
         logging.debug(f"Loaded favorite {self.slot_num}: {self.preset.preset_name}")
+
+    def get_data(self):
+        """Retrieve data using SysEx request"""
+        data = self.midi_helper.send_sysex_rq1(
+            self.device_id, self.address + [0x00], self.data_length
+        )
