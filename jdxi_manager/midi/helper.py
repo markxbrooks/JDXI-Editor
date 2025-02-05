@@ -148,12 +148,15 @@ class MIDIHelper(QObject):
             print(sysex_data)
 
             parsed_data = self.parse_sysex_data(sysex_data)
-            print(parsed_data)
+            print(f"parsed_data: {parsed_data}")
 
-            parsed_data_hex_string = " ".join(
-                f"{byte:02X}" for byte in parsed_data["data"]
-            )
+            parsed_mido_data = self.parse_sysex_data(message.data)
+            print(f"parsed_mido_data: {parsed_mido_data}")
 
+            # parsed_data_hex_string = " ".join(
+            #    f"{byte:02X}" for byte in parsed_data["data"]
+            # )
+            # print(f"parsed_data_hex_string: {parsed_data_hex_string}")
             print("Valid Roland JD-Xi SysEx message detected.")
             command_type_address, address_offset = message.data[6], message.data[7:11]
             print(f"command_type_address: {command_type_address}")
