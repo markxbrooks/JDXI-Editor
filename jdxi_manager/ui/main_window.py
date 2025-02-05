@@ -71,6 +71,39 @@ from jdxi_manager.midi.preset_loader import PresetLoader
 from PySide6.QtCore import QObject, Signal
 
 
+def get_button_styles(active):
+    """Returns the appropriate style for active/inactive states"""
+    if active:
+        return """
+            QPushButton {
+                background-color: #333333;
+                border: 4px solid #ff6666;
+                border-radius: 15px;
+            }
+        """
+    else:
+        return """
+            QPushButton {
+                background-color: #222222;
+                border: 4px solid #666666;
+                border-radius: 15px;
+            }
+            QPushButton:hover {
+                background-color: #1A1A1A;
+                border: 4px solid #ff4d4d;
+            }
+            QPushButton:pressed {
+                background-color: #333333;
+                border: 4px solid #ff6666;
+            }
+        """
+
+
+def update_button_style(button, checked):
+    """Toggle the button style based on the state"""
+    button.setStyleSheet(get_button_styles(checked))
+
+
 class PresetHandler(QObject):
     preset_changed = Signal(int)  # Signal emitted when preset changes
     update_display = Signal(int, int, int)
@@ -565,6 +598,34 @@ class MainWindow(QMainWindow):
         # Initialize current preset index
         self.current_preset_index = 0
 
+    def _create_sequencer(self, seq_x, seq_y, seq_width) -> QWidget:
+        step_count = 16
+        step_size = 40  # Smaller square size
+        total_spacing = seq_width - (step_count * step_size)
+        step_spacing = total_spacing / (step_count - 1)
+
+        sequencer_widget = QWidget()
+        sequencer_layout = QHBoxLayout()
+        sequencer_layout.setSpacing(step_spacing)
+        sequencer_layout.setContentsMargins(seq_x, seq_y, 0, 0)
+
+        self.buttons = []
+
+        for i in range(step_count):
+            button = QPushButton("")
+            button.setFixedSize(step_size, step_size)
+            button.setCheckable(True)
+            button.setStyleSheet(get_button_styles(False))
+            button.toggled.connect(
+                lambda checked, btn=button: update_button_style(btn, checked)
+            )
+
+            self.buttons.append(button)
+            sequencer_layout.addWidget(button)
+
+        sequencer_widget.setLayout(sequencer_layout)
+        return sequencer_widget
+
     def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
         self.tone_label = QLabel("Tone")
@@ -599,7 +660,37 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(self.tone_up_button)
         button_layout.addStretch()
         return button_layout
-        
+
+    def _create_sequencer_buttons_row(self):
+        # Create sequencer navigation buttons
+        seq_x = 100
+        seq_y = 300
+        seq_width = 400
+        step_count = 16
+        step_size = 40  # Smaller square size
+        total_spacing = seq_width - (step_count * step_size)
+        step_spacing = total_spacing / (step_count - 1)
+
+        sequencer_layout = QHBoxLayout()
+        sequencer_layout.setSpacing(int(step_spacing))
+        sequencer_layout.setContentsMargins(seq_x, seq_y, 0, 0)
+
+        self.buttons = []
+
+        for i in range(step_count):
+            button = QPushButton("")
+            button.setFixedSize(step_size, step_size)
+            button.setCheckable(True)
+            # button.setStyleSheet(get_button_styles(False))
+            # button.toggled.connect(
+            #    lambda checked, btn=button: update_button_style(btn, checked)
+            # )
+
+            self.buttons.append(button)
+            sequencer_layout.addStretch()
+            sequencer_layout.addWidget(button)
+        return sequencer_layout
+
     def _create_section(self, title):
         """Create a section frame with title"""
         frame = QFrame()
@@ -1240,13 +1331,13 @@ class MainWindow(QMainWindow):
         # Make container transparent
         octave_buttons_container.setStyleSheet("background: transparent;")
 
-    def _add_overlaid_controls(self, widget):
+    def _add_overlaid_controls(self, central_widget):
         """Add interactive controls overlaid on the JD-Xi image"""
         # Create absolute positioning layout
-        widget.setLayout(QVBoxLayout())
+        central_widget.setLayout(QVBoxLayout())
         
         # Parts Select section with Arpeggiator
-        parts_container = QWidget(widget)
+        parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 30
         parts_y = self.display_y - (
             self.height * 0.15
@@ -1268,7 +1359,7 @@ class MainWindow(QMainWindow):
             padding-bottom: 10px;
         """
         )
-        parts_label.setAlignment(Qt.AlignCenter)
+        parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         parts_layout.addWidget(parts_label)
         
         # Parts buttons
@@ -1315,11 +1406,11 @@ class MainWindow(QMainWindow):
         parts_layout.addLayout(analog_row)
         parts_layout.addLayout(arp_row)
 
-        self.add_octave_buttons(widget)
-        self.add_arpeggiator_buttons(widget)
+        self.add_octave_buttons(central_widget)
+        self.add_arpeggiator_buttons(central_widget)
 
         # Effects button in top row
-        fx_container = QWidget(widget)
+        fx_container = QWidget(central_widget)
         fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
         fx_layout = QHBoxLayout(fx_container)
         
@@ -1330,7 +1421,7 @@ class MainWindow(QMainWindow):
 
         ###### For tone buttons ######
         # Effects button in top row
-        tone_container = QWidget(widget)
+        tone_container = QWidget(central_widget)
         tone_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
         tone_container_layout = QVBoxLayout(tone_container)
         tone_label_layout = QHBoxLayout()
@@ -1351,6 +1442,31 @@ class MainWindow(QMainWindow):
         tone_row = self._create_tone_buttons_row()
         tone_layout.addLayout(tone_row)
         tone_container_layout.addLayout(tone_layout)
+
+        # Beginning of sequencer section
+        sequencer_container = QWidget(central_widget)
+        sequencer_container.setGeometry(self.width - 325, self.margin + 90, 150, 100)
+        sequencer_container_layout = QVBoxLayout(sequencer_container)
+        sequencer_label_layout = QHBoxLayout()
+        sequencer_label = QLabel("Sequencer")
+        sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        sequencer_label.setStyleSheet(
+            """
+            font-family: "Myriad Pro", Arial;
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+        """
+        )
+        sequencer_label_layout.addWidget(sequencer_label)
+        sequencer_container_layout.addLayout(sequencer_label_layout)
+        sequencer_layout = QHBoxLayout()
+        seq_width = 400  # Approximate width for sequencer
+        sequencer = self._create_sequencer_buttons_row()
+        sequencer_layout.addLayout(sequencer)
+        sequencer_container_layout.addLayout(sequencer_layout)
+        # End of sequencer section
         
         # Make containers transparent
         parts_container.setStyleSheet("background: transparent;")
