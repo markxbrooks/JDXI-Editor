@@ -31,6 +31,25 @@ from jdxi_manager.ui.editors.base_editor import BaseEditor
 instrument_icon_folder = "patterns"
 
 
+def sequencer_button_style(active):
+    return f"""
+        QPushButton {{
+            background-color: {'#ff6666' if active else 'black'};
+            border: 4px solid #666666;
+            border-radius: 2px;
+            padding: 0px;
+        }}
+        QPushButton:hover {{
+            background-color: #1A1A1A;
+            border-color: #ff4d4d;
+        }}
+        QPushButton:pressed {{
+            background-color: #333333;
+            border-color: #ff6666;
+        }}
+    """
+
+
 class PatternSequencer(BaseEditor):
     """Pattern Sequencer with MIDI Integration"""
 
@@ -41,7 +60,9 @@ class PatternSequencer(BaseEditor):
         self.timer = None
         self.current_step = 0
         self.sequence = None
-        self.button_notes = [[None for _ in range(16)] for _ in range(4)]  # Store notes per button
+        self.button_notes = [
+            [None for _ in range(16)] for _ in range(4)
+        ]  # Store notes per button
         self._setup_ui()
         if self.midi_helper:
             self.midi_helper.midi_note_received.connect(self._handle_midi_note)
@@ -62,12 +83,14 @@ class PatternSequencer(BaseEditor):
                 button = QPushButton()
                 button.setCheckable(True)
                 button.setFixedSize(40, 40)
-                button.setStyleSheet(self._button_style(False))
+                button.setStyleSheet(sequencer_button_style(False))
                 button.clicked.connect(partial(self.toggle_button, row_idx, i))
                 self.buttons[row_idx].append(button)
                 button_layout.addWidget(button)
 
-                self.button_notes[row_idx][i] = 60 + row_idx * 16 + i  # Assign MIDI note
+                self.button_notes[row_idx][i] = (
+                    60 + row_idx * 16 + i
+                )  # Assign MIDI note
 
             row_layout.addLayout(button_layout)
             layout.addLayout(row_layout)
@@ -84,28 +107,10 @@ class PatternSequencer(BaseEditor):
 
         self.setLayout(layout)
 
-    def _button_style(self, active):
-        return f'''
-            QPushButton {{
-                background-color: {'#ff6666' if active else 'black'};
-                border: 4px solid #666666;
-                border-radius: 15px;
-                padding: 0px;
-            }}
-            QPushButton:hover {{
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }}
-            QPushButton:pressed {{
-                background-color: #333333;
-                border-color: #ff6666;
-            }}
-        '''
-
     def toggle_button(self, row, index):
         button = self.buttons[row][index]
         button.setChecked(not button.isChecked())
-        button.setStyleSheet(self._button_style(button.isChecked()))
+        button.setStyleSheet(sequencer_button_style(button.isChecked()))
 
     def select_buttons(self, indices):
         for row, index in indices:
@@ -115,7 +120,9 @@ class PatternSequencer(BaseEditor):
     def _handle_midi_note(self, note, velocity):
         for row in range(4):
             for index in range(16):
-                if self.button_notes[row][index] == note and velocity > 0:  # Note-on event
+                if (
+                    self.button_notes[row][index] == note and velocity > 0
+                ):  # Note-on event
                     self.toggle_button(row, index)
 
     def _send_message(self, message):

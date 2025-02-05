@@ -23,13 +23,13 @@ class BaseEditor(QWidget):
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
-        
+
         # Set window flags for a tool window
         self.setWindowFlags(Qt.Tool)
-        
+
         # Apply common style
         self.setStyleSheet(Style.EDITOR_STYLE)
-        
+
         # Common minimum size for all editors
         self.setMinimumSize(800, 400)
 
