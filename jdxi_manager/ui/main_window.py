@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
         self.display_y = 50  # margin + 20 + title height
         self.display_width = 180
         self.display_height = 70
-
+        
         # Initialize state variables
         self.current_synth_type = PresetType.DIGITAL_1
         self.current_octave = 0  # Initialize octave tracking first
@@ -178,94 +178,94 @@ class MainWindow(QMainWindow):
         self.midi_out = None
         self.midi_in_port_name = ""  # Store input port name
         self.midi_out_port_name = ""  # Store output port name
-
+        
         # Initialize MIDI helper
         self.midi_helper = MIDIHelper(parent=self)
         # self.preset_loader = PresetLoader(self.midi_helper)
-
+        
         # Initialize windows to None
         self.log_viewer = None
         self.midi_debugger = None
         self.midi_message_debug = None
-
+        
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
-
+        
         # Show MIDI config if auto-connect failed
         if (
             not self.midi_helper.current_in_port
             or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
-
+        
         # Initialize MIDI indicators
         self.midi_in_indicator = MIDIIndicator()
         self.midi_out_indicator = MIDIIndicator()
 
         pub.subscribe(self._update_display_preset, "update_display_preset")
-
+        
         # Set black background for entire application
         self.setStyleSheet(Style.JDXI_STYLE)
-
+        
         # Load custom font
         self._load_digital_font()
-
+        
         # Create UI
         self._create_menu_bar()
         self._create_status_bar()
         self._create_main_layout()
-
+        
         # Load settings
         self.settings = QSettings("jdxi_manager2", "settings")
         self._load_settings()
-
+        
         # Show window
         self.show()
-
+        
         # Add debug menu
         debug_menu = self.menuBar().addMenu("Debug")
-
+        
         # Add MIDI debugger action (SysEx decoder)
         midi_debugger_action = QAction("MIDI SysEx Debugger", self)
         midi_debugger_action.triggered.connect(self._open_midi_debugger)
         debug_menu.addAction(midi_debugger_action)
-
+        
         # Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
         midi_monitor_action.triggered.connect(self._open_midi_message_debug)
         debug_menu.addAction(midi_monitor_action)
-
+        
         # Add log viewer action
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
         debug_menu.addAction(log_viewer_action)
-
+        
         # Add preset tracking
         self.current_preset_num = 1
         self.current_preset_name = "INIT PATCH"
-
+        
         # Add piano keyboard at bottom
         self.piano_keyboard = PianoKeyboard(parent=self)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
-
+        
         # Create display label
         self.display_label = QLabel()
         self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
-
+        
         # Initial display
         self._update_display_image()
-
+        
         # Add display to layout
         if hasattr(self, "main_layout"):
             self.main_layout.addWidget(self.display_label)
-
+        
         # Create channel indicator
         self.channel_button = ChannelButton()
-
+        
         # Add to status bar before piano keyboard
         self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
-
+        
         # Load last used preset settings
         # self._load_last_preset()
 
@@ -274,13 +274,13 @@ class MainWindow(QMainWindow):
 
         # Set default styles
         self._update_synth_button_styles()
-
+        
         # Create favorite buttons container
         favorites_widget = QWidget()
         favorites_layout = QVBoxLayout(favorites_widget)
         favorites_layout.setSpacing(4)
         favorites_layout.setContentsMargins(0, 0, 0, 0)
-
+        
         # Create favorite buttons
         self.favorite_buttons = []
         for i in range(4):  # Create 4 favorite slots
@@ -292,37 +292,37 @@ class MainWindow(QMainWindow):
             )
             favorites_layout.addWidget(button)
             self.favorite_buttons.append(button)
-
+            
         # Add to status bar
         self.statusBar().addPermanentWidget(favorites_widget)
         self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
-
+        
         # Load saved favorites
         self._load_saved_favorites()
-
+        
         # Create editors menu
         editors_menu = self.menuBar().addMenu("Editors")
-
+        
         # Add menu items for each editor
         digital1_action = editors_menu.addAction("Digital Synth 1")
         digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
-
+        
         digital2_action = editors_menu.addAction("Digital Synth 2")
         digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
-
+        
         analog_action = editors_menu.addAction("Analog Synth")
         analog_action.triggered.connect(lambda: self.show_editor("analog"))
-
+        
         drums_action = editors_menu.addAction("Drums")
         drums_action.triggered.connect(lambda: self.show_editor("drums"))
-
+        
         arp_action = editors_menu.addAction("Arpeggio")
         arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
-
+        
         effects_action = editors_menu.addAction("Effects")
         effects_action.triggered.connect(lambda: self.show_editor("effects"))
-
+        
         # Add Vocal FX menu item
         vocal_fx_action = editors_menu.addAction("Vocal FX")
         vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
@@ -487,9 +487,9 @@ class MainWindow(QMainWindow):
 
     def _show_vocal_fx(self, editor_type: str):
         if not hasattr(self, "vocal_fx_editor"):
-            self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
-        self.vocal_fx_editor.show()
-        self.vocal_fx_editor.raise_()
+                    self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
+                self.vocal_fx_editor.show()
+                self.vocal_fx_editor.raise_()
 
     def _show_digital_synth_editor(self, editor_type: str):
         synth_num = 1 if editor_type == "digital1" else 2
@@ -511,7 +511,7 @@ class MainWindow(QMainWindow):
                 self._send_midi_message(message)
 
     def _show_analog_synth_editor(self, editor_type: str):
-        self._show_editor("Analog Synth", AnalogSynthEditor)
+                self._show_editor("Analog Synth", AnalogSynthEditor)
         self.preset_type = PresetType.ANALOG
 
     def _show_drums_editor(self, editor_type: str):
@@ -531,17 +531,17 @@ class MainWindow(QMainWindow):
         """Create the main dashboard"""
         central = QWidget()
         self.setCentralWidget(central)
-
+        
         # Single layout to hold the image and overlays
         layout = QVBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-
+        
         # Create container for image and overlays
         container = QWidget()
         container.setLayout(QVBoxLayout())
         container.layout().setContentsMargins(0, 0, 0, 0)
-
+        
         # Store reference to image label
         self.image_label = QLabel()
         self.image_label.setPixmap(
@@ -556,12 +556,12 @@ class MainWindow(QMainWindow):
         )
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         container.layout().addWidget(self.image_label)
-
+        
         # Add overlaid controls
         self._add_overlaid_controls(container)
-
+        
         layout.addWidget(container)
-
+        
         # Initialize current preset index
         self.current_preset_index = 0
 
@@ -605,60 +605,60 @@ class MainWindow(QMainWindow):
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         frame.setMinimumHeight(150)
-
+        
         layout = QVBoxLayout(frame)
         layout.setSpacing(10)
         layout.setContentsMargins(10, 10, 10, 10)
-
+        
         # Title
         title_label = QLabel(title)
         title_label.setFont(QFont(self.font().family(), 12, QFont.Bold))
         layout.addWidget(title_label)
-
+        
         return frame
 
     def _create_menu_bar(self):
         menubar = self.menuBar()
-
+        
         # File menu
         file_menu = menubar.addMenu("File")
-
+        
         load_action = QAction("Load Patch...", self)
         load_action.triggered.connect(self._load_patch)
         file_menu.addAction(load_action)
-
+        
         save_action = QAction("Save Patch...", self)
         save_action.triggered.connect(self._save_patch)
         file_menu.addAction(save_action)
-
+        
         file_menu.addSeparator()
-
+        
         quit_action = QAction("Quit", self)
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
-
+        
         # Edit menu
         edit_menu = menubar.addMenu("Edit")
-
+        
         midi_config_action = QAction("MIDI Configuration...", self)
         midi_config_action.triggered.connect(self._show_midi_config)
         edit_menu.addAction(midi_config_action)
-
+        
         # Synth menu - reordered to match buttons
         synth_menu = menubar.addMenu("Synth")
-
+        
         digital1_action = QAction("Digital Synth 1", self)
         digital1_action.triggered.connect(self._open_digital_synth1)
         synth_menu.addAction(digital1_action)
-
+        
         digital2_action = QAction("Digital Synth 2", self)
         digital2_action.triggered.connect(self._open_digital_synth2)
         synth_menu.addAction(digital2_action)
-
+        
         drums_action = QAction("Drums", self)
         drums_action.triggered.connect(self._open_drums)
         synth_menu.addAction(drums_action)
-
+        
         analog_action = QAction("Analog Synth", self)
         analog_action.triggered.connect(self._open_analog_synth)
         synth_menu.addAction(analog_action)
@@ -666,64 +666,64 @@ class MainWindow(QMainWindow):
         pattern_action = QAction("Pattern Sequencer", self)
         pattern_action.triggered.connect(self._open_pattern)
         synth_menu.addAction(pattern_action)
-
+        
         # Effects menu
         fx_menu = menubar.addMenu("Effects")
-
+        
         arp_action = QAction("Arpeggiator", self)
         arp_action.triggered.connect(self._open_arpeggiator)
         fx_menu.addAction(arp_action)
-
+        
         effects_action = QAction("Effects", self)
         effects_action.triggered.connect(self._open_effects)
         fx_menu.addAction(effects_action)
-
+        
         # Help menu
         help_menu = menubar.addMenu("Help")
-
+        
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
         help_menu.addAction(log_viewer_action)
-
+        
         # Add Edit menu
         # edit_menu = menubar.addMenu("Edit")
-
+        
         # Add Patch Name action
         edit_name_action = QAction("Edit Patch Name", self)
         edit_name_action.triggered.connect(self._edit_patch_name)
         edit_menu.addAction(edit_name_action)
-
+        
         # Add Presets menu
         # presets_menu = self.menuBar().addMenu("&Presets")
-
+        
         presets_action = edit_menu.addAction("&Presets")
         presets_action.triggered.connect(self._show_analog_presets)
-
+        
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-
+        
         # Create MIDI indicators
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
-
+        
         # Add labels and indicators
         status_bar.addPermanentWidget(QLabel("MIDI IN:"))
         status_bar.addPermanentWidget(self.midi_in_indicator)
         status_bar.addPermanentWidget(QLabel("MIDI OUT:"))
         status_bar.addPermanentWidget(self.midi_out_indicator)
-
+        
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-
+        
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
         try:
             # Get available ports using instance method
             input_ports = self.midi_helper.get_input_ports()  # Use instance method
             output_ports = self.midi_helper.get_output_ports()  # Use instance method
-
+            
             dialog = MIDIConfigDialog(
                 input_ports,
                 output_ports,
@@ -731,31 +731,31 @@ class MainWindow(QMainWindow):
                 self.midi_helper.current_out_port,
                 parent=self,
             )
-
+            
             if dialog.exec():
                 in_port = dialog.get_input_port()
                 out_port = dialog.get_output_port()
-
+                
                 # Open selected ports using instance methods
                 if in_port:
                     self.midi_helper.open_input_port(in_port)
                 if out_port:
                     self.midi_helper.open_output_port(out_port)
-
+                    
         except Exception as e:
             logging.error(f"Error showing MIDI configuration: {str(e)}")
             self.show_error("MIDI Configuration Error", str(e))
-
+        
     def _update_midi_ports(self, midi_in, midi_out):
         """Update MIDI port connections"""
         self.midi_in = midi_in
         self.midi_out = midi_out
-
+        
         # Save settings
         if midi_in and midi_out:
             self.settings.setValue("midi/input_port", midi_in.port_name)
             self.settings.setValue("midi/output_port", midi_out.port_name)
-
+            
     def _load_settings(self):
         """Load application settings"""
         try:
@@ -763,24 +763,24 @@ class MainWindow(QMainWindow):
                 # Load MIDI port settings
                 input_port = self.settings.value("midi_in", "")
                 output_port = self.settings.value("midi_out", "")
-
+                
                 # Load window geometry
                 geometry = self.settings.value("geometry")
                 if geometry:
                     self.restoreGeometry(geometry)
-
+                    
                 # Load preset info
                 self.current_preset_num = int(self.settings.value("preset_num", 1))
                 self.current_preset_name = self.settings.value(
                     "preset_name", "INIT PATCH"
                 )
-
+                
                 # Try to open MIDI ports if they were saved
                 if input_port and output_port:
                     self._set_midi_ports(input_port, output_port)
-
+                    
                 logging.debug("Settings loaded successfully")
-
+                
         except Exception as e:
             logging.error(f"Error loading settings: {str(e)}")
 
@@ -800,10 +800,10 @@ class MainWindow(QMainWindow):
             else:
                 # For other editors, use existing initialization
                 editor = editor_class(midi_out=self.midi_out, **kwargs)
-
+                
             # Set window title
             editor.setWindowTitle(title)
-
+            
             # Store reference and show
             if title == "Digital Synth 1":
                 self.digital_synth1 = editor
@@ -815,23 +815,23 @@ class MainWindow(QMainWindow):
                 self.drum_kit = editor
             elif title == "Effects":
                 self.effects = editor
-
+                
             # Show editor
             editor.show()
             editor.raise_()
-
+            
         except Exception as e:
             logging.error(f"Error showing {title} editor: {str(e)}")
-
+        
     def _handle_midi_input(self, message, timestamp):
         """Handle incoming MIDI messages and flash indicator"""
         self.midi_in_indicator.flash()
-
+        
     def _open_analog_synth(self):
         self._show_editor("Analog Synth", AnalogSynthEditor)
         self.preset_type = PresetType.ANALOG
         self.current_synth_type = PresetType.ANALOG
-
+        
     def _open_digital_synth1(self):
         """Open the Digital Synth 1 editor and send SysEx message."""
         self.current_synth_type = PresetType.DIGITAL_1
@@ -869,17 +869,17 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             logging.error(f"Error opening Digital Synth 1 editor: {str(e)}")
-
+        
     def _open_digital_synth2(self):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
         self.preset_type = PresetType.DIGITAL_2
         self.current_synth_type = PresetType.DIGITAL_2
-
+        
     def _open_drums(self):
         self._show_drums_editor()
         self.preset_type = PresetType.DRUMS
         self.current_synth_type = PresetType.DRUMS
-
+        
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
         try:
@@ -890,10 +890,10 @@ class MainWindow(QMainWindow):
                 )
             self.arpeggiator.show()
             self.arpeggiator.raise_()
-
+            
         except Exception as e:
             logging.error(f"Error showing Arpeggiator editor: {str(e)}")
-
+        
     def _open_effects(self):
         """Show the effects editor window"""
         try:
@@ -904,10 +904,10 @@ class MainWindow(QMainWindow):
                 )
             self.effects_editor.show()
             self.effects_editor.raise_()
-
+            
         except Exception as e:
             logging.error(f"Error showing Effects editor: {str(e)}")
-
+        
     def _load_patch(self):
         """Show load patch dialog"""
         try:
@@ -932,7 +932,7 @@ class MainWindow(QMainWindow):
         """Apply loaded patch data"""
         # TODO: Implement patch loading
         pass
-
+        
     def closeEvent(self, event):
         """Handle window close event"""
         try:
@@ -941,13 +941,13 @@ class MainWindow(QMainWindow):
                 self.midi_in.delete()  # Use delete() instead of close()
             if self.midi_out:
                 self.midi_out.delete()  # Use delete() instead of close()
-
+            
             # Save settings
             self._save_settings()
-
+            
             # Accept the event
             event.accept()
-
+            
         except Exception as e:
             logging.error(f"Error during close event: {str(e)}")
             event.ignore()
@@ -965,12 +965,12 @@ class MainWindow(QMainWindow):
         self.log_viewer.show()
         self.log_viewer.raise_()
         logging.debug("Showing LogViewer window")
-
+        
     def _create_button_row(self, text, slot):
         """Create a row with label and circular button"""
         row = QHBoxLayout()
         row.setSpacing(10)
-
+        
         # Add label with color based on text
         label = QLabel(text)
         if text == "Analog Synth":
@@ -978,19 +978,19 @@ class MainWindow(QMainWindow):
         else:
             label.setStyleSheet(Style.SYNTH_PART_LABEL_STYLE)
         row.addWidget(label)
-
+        
         # Add spacer to push button to right
         row.addStretch()
-
+        
         # Add button
         button = QPushButton()
         button.setFixedSize(30, 30)
         button.setCheckable(True)
         button.clicked.connect(slot)
-
+        
         # Style the button with brighter hover/pressed/selected  states
         button.setStyleSheet(Style.BUTTON_STYLE)
-
+        
         row.addWidget(button)
         return row, button
 
@@ -1124,20 +1124,20 @@ class MainWindow(QMainWindow):
         """Add octave up/down buttons to the interface"""
         # Create container
         octave_buttons_container = QWidget(widget)
-
+        
         # Position to align with sequencer but 25% higher (increased from 20%)
         seq_y = self.height - 50 - self.height * 0.1  # Base sequencer Y position
         offset_y = self.height * 0.25  # 25% of window height (increased from 0.2)
         octave_x = self.width - self.width * 0.8 - 150  # Position left of sequencer
-
+        
         # Apply the height offset to the Y position
         octave_buttons_container.setGeometry(
-            octave_x,
+            octave_x, 
             seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
-            100,
+            100, 
             100,
         )
-
+        
         octave_layout = QVBoxLayout(octave_buttons_container)
         octave_layout.setSpacing(5)
 
@@ -1158,7 +1158,7 @@ class MainWindow(QMainWindow):
         )
         octave_label.setAlignment(Qt.AlignCenter)
         octave_layout.addWidget(octave_label)
-
+        
         # Down label
         down_label = QLabel("Down")
         down_label.setStyleSheet(
@@ -1182,14 +1182,14 @@ class MainWindow(QMainWindow):
         """
         )
         labels_row.addWidget(up_label)
-
+        
         # Add labels row
         octave_layout.addLayout(labels_row)
 
         # Create horizontal layout for buttons
         buttons_row = QHBoxLayout()
         buttons_row.setSpacing(20)  # Space between buttons
-
+        
         # Create and store octave down button
         self.octave_down = QPushButton()
         self.octave_down.setFixedSize(30, 30)
@@ -1213,7 +1213,7 @@ class MainWindow(QMainWindow):
         """
         )
         buttons_row.addWidget(self.octave_down)
-
+        
         # Create and store octave up button
         self.octave_up = QPushButton()
         self.octave_up.setFixedSize(30, 30)
@@ -1244,18 +1244,18 @@ class MainWindow(QMainWindow):
         """Add interactive controls overlaid on the JD-Xi image"""
         # Create absolute positioning layout
         widget.setLayout(QVBoxLayout())
-
+        
         # Parts Select section with Arpeggiator
         parts_container = QWidget(widget)
         parts_x = self.display_x + self.display_width + 30
         parts_y = self.display_y - (
             self.height * 0.15
         )  # Move up by 20% of window height
-
+        
         parts_container.setGeometry(parts_x, parts_y, 220, 250)
         parts_layout = QVBoxLayout(parts_container)
         parts_layout.setSpacing(15)  # Increased from 5 to 15 for more vertical spacing
-
+        
         # Add Parts Select label
         parts_label = QLabel("Parts Select")
         parts_label.setStyleSheet(
@@ -1270,7 +1270,7 @@ class MainWindow(QMainWindow):
         )
         parts_label.setAlignment(Qt.AlignCenter)
         parts_layout.addWidget(parts_label)
-
+        
         # Parts buttons
         digital1_row, self.digital1_button = self._create_button_row(
             "Digital Synth 1", self._open_digital_synth1
@@ -1308,7 +1308,7 @@ class MainWindow(QMainWindow):
 
         # Ensure only one button can be checked at a time
         button_group.setExclusive(True)
-
+        
         parts_layout.addLayout(digital1_row)
         parts_layout.addLayout(digital2_row)
         parts_layout.addLayout(drums_row)
@@ -1322,7 +1322,7 @@ class MainWindow(QMainWindow):
         fx_container = QWidget(widget)
         fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
         fx_layout = QHBoxLayout(fx_container)
-
+        
         effects_row, self.effects_button = self._create_button_row(
             "Effects", self._open_effects
         )
@@ -1351,17 +1351,17 @@ class MainWindow(QMainWindow):
         tone_row = self._create_tone_buttons_row()
         tone_layout.addLayout(tone_row)
         tone_container_layout.addLayout(tone_layout)
-
+        
         # Make containers transparent
         parts_container.setStyleSheet("background: transparent;")
-        fx_container.setStyleSheet("background: transparent;")
-
+        fx_container.setStyleSheet("background: transparent;") 
+        
         # Calculate keyboard dimensions
         key_width = self.width * 0.8 / 25  # keyboard_width/25
         key_height = 127  # white_key_height
         keyboard_y = self.height - key_height - (self.height * 0.1) + (key_height * 0.3)
         keyboard_start = self.width - (self.width * 0.8) - self.margin - 20
-
+        
         # Add white keys C1 to F5
         white_notes = [
             36,
@@ -1401,7 +1401,7 @@ class MainWindow(QMainWindow):
         # for i, note in enumerate(white_notes):
         #    x_pos = keyboard_start + i * key_width
         #    self._add_piano_key(widget, False, note, x_pos, keyboard_y, key_width, key_height)
-
+            
         # Add black keys
         black_notes = [
             37,
@@ -1464,13 +1464,13 @@ class MainWindow(QMainWindow):
         # for pos, note in zip(black_positions, [n for n in black_notes if n is not None]):
         #    x_pos = keyboard_start + pos * key_width + key_width/2
         #    self._add_piano_key(widget, True, note, x_pos, keyboard_y, key_width, key_height)
-
+        
     def _add_piano_key(
         self, widget, is_black, note_number, x_pos, keyboard_y, key_width, key_height
     ):
         """Helper to create a piano key button"""
         button = QPushButton(widget)
-
+        
         if is_black:
             width = key_width * 0.6
             height = 80
@@ -1503,45 +1503,45 @@ class MainWindow(QMainWindow):
                     background-color: #e0e0e0;
                 }
             """
-
+            
         button.setGeometry(int(x_pos), int(keyboard_y), int(width), int(height))
         button.setStyleSheet(style)
-
+        
         def key_pressed():
             if self.midi_out:
                 self.midi_out.send_message([0x90, note_number, 1])  # Note On
                 logging.debug(f"Sent MIDI Note On {note_number} velocity 1")
-
+        
         def key_released():
             if self.midi_out:
                 self.midi_out.send_message([0x80, note_number, 5])  # Note Off
                 logging.debug(f"Sent MIDI Note Off {note_number} velocity 5")
-
+        
         # Connect to mouse events instead of clicked
         button.pressed.connect(key_pressed)
-        button.released.connect(key_released)
-
+        button.released.connect(key_released) 
+        
     def _send_octave(self, direction):
         """Send octave change MIDI message"""
         if self.midi_helper:
             # Update octave tracking
             self.current_octave = max(-3, min(3, self.current_octave + direction))
-
+            
             # Update button states
             self.octave_down.setChecked(self.current_octave < 0)
             self.octave_up.setChecked(self.current_octave > 0)
-
+            
             # Update display
             self._update_display()
-
+            
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
-
+            
             # Calculate checksum
             checksum = 0x19 + 0x01 + 0x00 + 0x15 + octave_value
             checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-
+            
             # Create SysEx message
             sysex_msg = [
                 0xF0,  # Start of SysEx
@@ -1571,35 +1571,35 @@ class MainWindow(QMainWindow):
         frame = QFrame()
         layout = QVBoxLayout(frame)
         layout.setSpacing(10)
-
+        
         # Create buttons for Effects and Vocal FX
         others = [
             ("Effects", self._open_effects),
             ("Vocal FX", self._open_vocal_fx),
         ]
-
+        
         for text, slot in others:
             btn = QPushButton(text)
             btn.setFixedHeight(40)
             btn.clicked.connect(slot)
             layout.addWidget(btn)
-
+        
         # Create horizontal layout for Arpeggiator
         arp_row = QHBoxLayout()
-
+        
         # Arpeggiator button
         arp_btn = QPushButton("Arpeggio")
         arp_btn.setFixedHeight(40)
         arp_btn.clicked.connect(self._open_arpeggiator)
         arp_row.addWidget(arp_btn)
-
+        
         # Add the horizontal row to the main layout
         layout.addLayout(arp_row)
-
+        
         # Add stretch at the bottom
         layout.addStretch()
-
-        return frame
+        
+        return frame 
 
     def _update_display(self):
         """Update the JD-Xi display image"""
@@ -1614,7 +1614,7 @@ class MainWindow(QMainWindow):
             preset_name=self.current_preset_name,
         )
         if hasattr(self, "image_label"):
-            self.image_label.setPixmap(pixmap)
+            self.image_label.setPixmap(pixmap) 
 
     def _load_digital_font(self):
         """Load the digital LCD font for the display"""
@@ -1643,7 +1643,7 @@ class MainWindow(QMainWindow):
                     f"Error loading {font_name} font from {font_path}: {e}"
                 )
         else:
-            logging.debug(f"File not found: {font_path}")
+            logging.debug(f"File not found: {font_path}") 
 
     def _send_arp_key_hold(self, state):
         """Send arpeggiator key hold (latch) command"""
@@ -1651,7 +1651,7 @@ class MainWindow(QMainWindow):
             if self.midi_helper:
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-
+                
                 # Create SysEx message using constants
                 sysex_msg = [
                     START_OF_SYSEX,
@@ -1668,18 +1668,18 @@ class MainWindow(QMainWindow):
                     0x02,  # Key Hold parameter
                     value,  # Parameter value
                 ]
-
+                
                 # Calculate checksum (sum all data bytes)
                 checksum = sum(sysex_msg[8:-1]) & 0x7F  # From address to value
                 checksum = (128 - checksum) & 0x7F
-
+                
                 # Add checksum and end of sysex
                 sysex_msg.extend([checksum, END_OF_SYSEX])
-
+                
                 # Send message
                 self.midi_helper.send_message(bytes(sysex_msg))
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
-
+                
         except Exception as e:
             logging.error(f"Error sending arp key hold: {str(e)}")
 
@@ -1689,7 +1689,7 @@ class MainWindow(QMainWindow):
             if self.midi_helper:
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-
+                
                 # Create SysEx message using constants
                 sysex_msg = [
                     START_OF_SYSEX,
@@ -1706,18 +1706,18 @@ class MainWindow(QMainWindow):
                     0x00,  # On/Off parameter
                     value,  # Parameter value
                 ]
-
+                
                 # Calculate checksum (sum all data bytes)
                 checksum = sum(sysex_msg[8:-1]) & 0x7F  # From address to value
                 checksum = (128 - checksum) & 0x7F
-
+                
                 # Add checksum and end of sysex
                 sysex_msg.extend([checksum, END_OF_SYSEX])
-
+                
                 # Send message
                 self.midi_helper.send_message(bytes(sysex_msg))
                 logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
-
+                
         except Exception as e:
             logging.error(f"Error sending arp on/off: {str(e)}")
 
@@ -1732,7 +1732,7 @@ class MainWindow(QMainWindow):
             # Show MIDI config dialog
             self._show_midi_config()
             return
-        """
+        """    
         if not self.midi_debugger:
             self.midi_debugger = MIDIDebugger(self.midi_helper)
             # Clean up reference when window is closed
@@ -1741,11 +1741,11 @@ class MainWindow(QMainWindow):
             logging.debug("Created new MIDI debugger window")
         self.midi_debugger.show()
         self.midi_debugger.raise_()
-
+        
     def _midi_debugger_closed(self):
         """Handle MIDI debugger window closure"""
         self.midi_debugger = None
-
+        
     def _open_log_viewer(self):
         """Show log viewer window"""
         if not self.log_viewer:
@@ -1753,10 +1753,10 @@ class MainWindow(QMainWindow):
         self.log_viewer.show()
         self.log_viewer.raise_()
         logging.debug("Showing LogViewer window")
-
+        
     def _log_viewer_closed(self):
         """Handle log viewer window closure"""
-        self.log_viewer = None
+        self.log_viewer = None 
 
     def _set_midi_ports(self, in_port, out_port):
         """Set MIDI input and output ports"""
@@ -1766,30 +1766,30 @@ class MainWindow(QMainWindow):
                 self.midi_in.delete()  # Use delete() instead of close()
             if self.midi_out:
                 self.midi_out.delete()  # Use delete() instead of close()
-
+            
             # Open new ports
             self.midi_in = MIDIHelper.open_input(in_port, self)
             self.midi_out = MIDIHelper.open_output(out_port, self)
-
+            
             # Store port names
             self.midi_in_port_name = in_port
             self.midi_out_port_name = out_port
-
+            
             # Initialize singleton connection
             MIDIConnection().initialize(self.midi_in, self.midi_out, self)
-
+            
             # Update MIDI helper
             self.midi_helper.midi_in = self.midi_in
             self.midi_helper.midi_out = self.midi_out
-
+            
             # Set up MIDI input callback
             if self.midi_in:
                 self.midi_in.set_callback(self._handle_midi_message)
-
+            
             # Update indicators
             self.midi_in_indicator.set_active(self.midi_in is not None)
             self.midi_out_indicator.set_active(self.midi_out is not None)
-
+            
             # Save settings
             if self.midi_in and self.midi_out:
                 self.settings.setValue("midi_in", in_port)
@@ -1797,7 +1797,7 @@ class MainWindow(QMainWindow):
                 logging.info(f"MIDI ports configured - In: {in_port}, Out: {out_port}")
             else:
                 logging.warning("Failed to configure MIDI ports")
-
+                
         except Exception as e:
             logging.error(f"Error setting MIDI ports: {str(e)}")
 
@@ -1809,15 +1809,15 @@ class MainWindow(QMainWindow):
             self.midi_message_debug.destroyed.connect(self._midi_message_debug_closed)
         self.midi_message_debug.show()
         self.midi_message_debug.raise_()
-
+        
     def _midi_message_debug_closed(self):
         """Handle MIDI message debug window closure"""
-        self.midi_message_debug = None
+        self.midi_message_debug = None 
 
     def _handle_midi_message(self, message, timestamp):
         """Handle incoming MIDI message"""
         data = message[0]  # Get the raw MIDI data
-
+        
         # Check if it's a SysEx message
         if data[0] == START_OF_SYSEX and len(data) > 8:
             # Verify it's a Roland message for JD-Xi
@@ -1827,7 +1827,7 @@ class MainWindow(QMainWindow):
                 # Blink the input indicator
                 if hasattr(self, "midi_in_indicator"):
                     self.midi_in_indicator.blink()
-
+                
                 # Forward to MIDI helper
                 if hasattr(self, "midi_helper"):
                     self.midi_helper.handle_midi_message(message, timestamp)
@@ -1838,7 +1838,7 @@ class MainWindow(QMainWindow):
             self.midi_out.send_message(message)
             # Blink the output indicator
             if hasattr(self, "midi_out_indicator"):
-                self.midi_out_indicator.blink()
+                self.midi_out_indicator.blink() 
 
     def _show_drums_editor(self):
         """Show the drum editor window"""
@@ -1849,15 +1849,15 @@ class MainWindow(QMainWindow):
                 )  # Pass midi_helper instance
             self.drums_editor.show()
             self.drums_editor.raise_()
-
+            
         except Exception as e:
-            logging.error(f"Error showing Drums editor: {str(e)}")
+            logging.error(f"Error showing Drums editor: {str(e)}") 
 
     def update_preset_display(self, preset_num, preset_name):
         """Update the current preset display"""
         self.current_preset_num = preset_num
         self.current_preset_name = preset_name
-        self._update_display()
+        self._update_display() 
 
     def _edit_patch_name(self):
         """Edit current patch name"""
@@ -1865,10 +1865,10 @@ class MainWindow(QMainWindow):
             dialog = PatchNameEditor(self.current_preset_name, self)
             if dialog.exec_():
                 new_name = dialog.get_name()
-
+                
                 # Update display
                 self.update_preset_display(self.current_preset_num, new_name)
-
+                
                 # Send MIDI message to update patch name
                 if self.midi_out:
                     msg = MIDIHelper.create_patch_name_message(
@@ -1878,13 +1878,13 @@ class MainWindow(QMainWindow):
                     logging.debug(
                         f"Updated patch {self.current_preset_num} name to: {new_name}"
                     )
-
+                    
                     # Blink indicator
                     if hasattr(self, "midi_out_indicator"):
                         self.midi_out_indicator.blink()
-
+                        
         except Exception as e:
-            logging.error(f"Error editing patch name: {str(e)}")
+            logging.error(f"Error editing patch name: {str(e)}") 
 
     def _save_settings(self):
         """Save application settings"""
@@ -1893,22 +1893,22 @@ class MainWindow(QMainWindow):
             if hasattr(self, "settings"):
                 self.settings.setValue("midi_in", self.midi_in_port_name)
                 self.settings.setValue("midi_out", self.midi_out_port_name)
-
+                
                 # Save window geometry
                 self.settings.setValue("geometry", self.saveGeometry())
-
+                
                 # Save current preset info
                 self.settings.setValue("preset_num", self.current_preset_num)
                 self.settings.setValue("preset_name", self.current_preset_name)
-
+                
                 logging.debug("Settings saved successfully")
-
+                
         except Exception as e:
-            logging.error(f"Error saving settings: {str(e)}")
+            logging.error(f"Error saving settings: {str(e)}") 
 
     def show_error(self, title: str, message: str):
         """Show error message dialog
-
+        
         Args:
             title: Dialog title
             message: Error message
@@ -1917,7 +1917,7 @@ class MainWindow(QMainWindow):
 
     def show_warning(self, title: str, message: str):
         """Show warning message dialog
-
+        
         Args:
             title: Dialog title
             message: Warning message
@@ -1926,12 +1926,12 @@ class MainWindow(QMainWindow):
 
     def show_info(self, title: str, message: str):
         """Show info message dialog
-
+        
         Args:
             title: Dialog title
             message: Info message
         """
-        QMessageBox.information(self, title, message)
+        QMessageBox.information(self, title, message) 
 
     def _auto_connect_jdxi(self):
         """Attempt to automatically connect to JD-Xi MIDI ports"""
@@ -1939,33 +1939,33 @@ class MainWindow(QMainWindow):
             # Get available ports
             input_ports = self.midi_helper.get_input_ports()
             output_ports = self.midi_helper.get_output_ports()
-
+            
             # Look for JD-Xi in port names (case insensitive)
             jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
-
+            
             # Find input port
             for port in input_ports:
                 if any(name in port.lower() for name in jdxi_names):
                     self.midi_helper.open_input_port(port)
                     logging.info(f"Auto-connected to JD-Xi input: {port}")
                     break
-
+                
             # Find output port
             for port in output_ports:
                 if any(name in port.lower() for name in jdxi_names):
                     self.midi_helper.open_output_port(port)
                     logging.info(f"Auto-connected to JD-Xi output: {port}")
                     break
-
+                
             # Verify connection
             if self.midi_helper.current_in_port and self.midi_helper.current_out_port:
                 # Send identity request to confirm it's a JD-Xi
                 self._verify_jdxi_connection()
                 return True
-
+                
         except Exception as e:
             logging.error(f"Error auto-connecting to JD-Xi: {str(e)}")
-
+            
         return False
 
     def _verify_jdxi_connection(self):
@@ -1973,14 +1973,14 @@ class MainWindow(QMainWindow):
         try:
             # Create identity request message using dataclass
             identity_request = IdentityRequest()
-
+            
             # Send request
             if self.midi_helper:
                 self.midi_helper.send_message(identity_request.to_list())
                 logging.debug("Sent JD-Xi identity request")
-
+                
         except Exception as e:
-            logging.error(f"Error sending identity request: {str(e)}")
+            logging.error(f"Error sending identity request: {str(e)}") 
 
     def show_digital_synth_editor(self, synth_num=1):
         """Show digital synth editor window"""
@@ -1991,20 +1991,20 @@ class MainWindow(QMainWindow):
                     synth_num=synth_num, midi_helper=self.midi_helper, parent=self
                 )
                 setattr(self, f"digital_synth_{synth_num}_editor", editor)
-
+            
             # Get editor instance
             editor = getattr(self, f"digital_synth_{synth_num}_editor")
-
+            
             # Show editor window
             editor.show()
             editor.raise_()
             editor.activateWindow()
-
+            
             logging.debug(f"Showing Digital Synth {synth_num} editor")
-
+            
         except Exception as e:
             logging.error(f"Error showing Digital Synth {synth_num} editor: {str(e)}")
-            self.show_error("Editor Error", str(e))
+            self.show_error("Editor Error", str(e)) 
 
     def _handle_piano_note_on(self, note_num):
         """Handle piano key press"""
@@ -2020,26 +2020,26 @@ class MainWindow(QMainWindow):
             # Note off message: 0x80 (Note Off, channel 1), note number, velocity 0
             msg = [0x80, note_num, 0]
             self.midi_helper.send_message(msg)
-            logging.debug(f"Sent Note Off: {note_num}")
+            logging.debug(f"Sent Note Off: {note_num}") 
 
     def _create_midi_indicators(self):
         """Create MIDI activity indicators"""
         # Create indicators
         self.midi_in_indicator = MIDIIndicator()
         self.midi_out_indicator = MIDIIndicator()
-
+        
         # Create labels
         in_label = QLabel("MIDI IN")
         out_label = QLabel("MIDI OUT")
         in_label.setStyleSheet("color: white; font-size: 10px;")
         out_label.setStyleSheet("color: white; font-size: 10px;")
-
+        
         # Create container widget
         indicator_widget = QWidget(self)
         indicator_layout = QVBoxLayout(indicator_widget)
         indicator_layout.setSpacing(4)
         indicator_layout.setContentsMargins(0, 0, 0, 0)
-
+        
         # Add indicators with labels
         for label, indicator in [
             (in_label, self.midi_in_indicator),
@@ -2049,13 +2049,13 @@ class MainWindow(QMainWindow):
             row.addWidget(label)
             row.addWidget(indicator)
             indicator_layout.addLayout(row)
-
+        
         # Position the container - moved right by 20px and down by 50px from original position
         indicator_widget.move(
             self.width() - 80, 120
         )  # Original was (self.width() - 100, 70)
-
-        return indicator_widget
+        
+        return indicator_widget 
 
     def _handle_octave_shift(self, direction: int):
         """Handle octave shift button press"""
@@ -2063,13 +2063,13 @@ class MainWindow(QMainWindow):
             if self.midi_helper:
                 # Get current octave from UI (-3 to +3)
                 current = self.current_octave
-
+                
                 # Calculate new octave value
                 new_octave = max(min(current + direction, 3), -3)
-
+                
                 # Convert to MIDI value (61-67 maps to -3 to +3)
                 midi_value = new_octave + 64  # Center at 64
-
+                
                 # Send parameter change using new dataclass
                 msg = ParameterMessage(
                     area=ANALOG_SYNTH_AREA,
@@ -2078,19 +2078,19 @@ class MainWindow(QMainWindow):
                     param=0x34,  # Octave Shift parameter address
                     value=midi_value,
                 ).to_list()
-
+                
                 self.midi_helper.send_message(msg)
-
+                
                 # Update UI state
                 self.current_octave = new_octave
                 self._update_octave_display()
-
+                
                 logging.debug(
                     f"Octave shifted to {new_octave} (MIDI value: {midi_value})"
                 )
-
+                
         except Exception as e:
-            logging.error(f"Error shifting octave: {str(e)}")
+            logging.error(f"Error shifting octave: {str(e)}") 
 
     def _show_analog_presets(self):
         """Show the analog preset editor window"""
@@ -2117,19 +2117,19 @@ class MainWindow(QMainWindow):
         try:
             # Update display
             self.update_preset_display(preset_number, preset_name)
-
+            
             # Update piano keyboard channel if it exists
             if hasattr(self, "piano_keyboard"):
                 self.piano_keyboard.set_midi_channel(channel)
-
+                
             # Update channel indicator if it exists
             if hasattr(self, "channel_button"):
                 self.channel_button.set_channel(channel)
-
+            
             logging.debug(
                 f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})"
             )
-
+            
         except Exception as e:
             logging.error(f"Error updating display: {str(e)}")
 
@@ -2137,7 +2137,7 @@ class MainWindow(QMainWindow):
         self, preset_num: int = 1, preset_name: str = "INIT PATCH"
     ):
         """Update the digital display image
-
+        
         Args:
             preset_num: Preset number to display (1-128)
             preset_name: Name of preset to display
@@ -2150,15 +2150,15 @@ class MainWindow(QMainWindow):
                 preset_num=preset_num,
                 preset_name=preset_name,
             )
-
+            
             # Update display label
             if hasattr(self, "display_label"):
                 self.display_label.setPixmap(image)
-
+            
             logging.debug(f"Updated display: {preset_num:03d}:{preset_name}")
-
+            
         except Exception as e:
-            logging.error(f"Error updating display image: {str(e)}")
+            logging.error(f"Error updating display image: {str(e)}") 
 
     def _load_last_preset(self):
         """Load the last used preset from settings"""
@@ -2169,7 +2169,7 @@ class MainWindow(QMainWindow):
             )
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
             channel = self.settings.value("last_preset/channel", 0, type=int)
-
+            
             # Get preset list based on synth type
             if synth_type == PresetType.ANALOG:
                 presets = AN_PRESETS
@@ -2191,24 +2191,24 @@ class MainWindow(QMainWindow):
                 bank_msb = 3
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
-
+            
             # Send MIDI messages to load preset
             if hasattr(self, "midi_helper") and self.midi_helper:
                 self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
                 self.midi_helper.send_program_change(program, channel)
-
+                
                 # Update display and channel
                 preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
                 self._update_display_preset(preset_num, preset_name, channel)
-
+                
                 logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
-
+            
         except Exception as e:
             logging.error(f"Error loading last preset: {str(e)}")
-
+            
     def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
         """Save the last used preset to settings
-
+        
         Args:
             synth_type: Type of synth ('Analog', 'Digital 1', 'Digital 2', 'Drums')
             preset_num: Preset number (0-based index)
@@ -2221,9 +2221,9 @@ class MainWindow(QMainWindow):
             logging.debug(
                 f"Saved last preset: {synth_type} #{preset_num} on channel {channel}"
             )
-
+            
         except Exception as e:
-            logging.error(f"Error saving last preset: {str(e)}")
+            logging.error(f"Error saving last preset: {str(e)}") 
 
     def _load_favorite(self, button: FavoriteButton):
         """Load preset from favorite button"""
@@ -2247,23 +2247,23 @@ class MainWindow(QMainWindow):
                 }
                 # Send MIDI messages to load preset
                 self.load_preset(preset_data)
-
+                
     def _show_favorite_context_menu(self, pos, button: FavoriteButton):
         """Show context menu for favorite button"""
         menu = QMenu()
-
+        
         # Add save action if we have a current preset
         if hasattr(self, "current_preset_num"):
             save_action = menu.addAction("Save Current Preset")
             save_action.triggered.connect(lambda: self._save_to_favorite(button))
-
+            
         # Add clear action if slot has a preset
         if button.preset:
             clear_action = menu.addAction("Clear Slot")
             clear_action.triggered.connect(lambda: self._clear_favorite(button))
-
+            
         menu.exec_(button.mapToGlobal(pos))
-
+        
     def _save_to_favorite(self, button: FavoriteButton):
         """Save current preset to favorite slot"""
         if hasattr(self, "current_preset_num"):
@@ -2289,11 +2289,11 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 logging.error(f"Error saving to favorite: {str(e)}")
                 QMessageBox.warning(self, "Error", f"Error saving preset: {str(e)}")
-
+            
     def _clear_favorite(self, button: FavoriteButton):
         """Clear favorite slot"""
         button.clear_preset()
-
+        
     def _load_saved_favorites(self):
         """Load saved favorites from settings"""
         for button in self.favorite_buttons:
@@ -2329,7 +2329,7 @@ class MainWindow(QMainWindow):
                 # Store as last loaded preset
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
-
+                
         except Exception as e:
             logging.error(f"Error loading preset: {str(e)}")
 
@@ -2340,17 +2340,17 @@ class MainWindow(QMainWindow):
                 self.analog_editor = AnalogSynthEditor(midi_helper=self.midi_helper)
             self.analog_editor.show()
             self.analog_editor.raise_()
-
+            
         except Exception as e:
             logging.error(f"Error showing Analog Synth editor: {str(e)}")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """Set MIDI input and output ports
-
+        
         Args:
             in_port: Input port name
             out_port: Output port name
-
+            
         Returns:
             True if successful, False otherwise
         """
@@ -2358,16 +2358,16 @@ class MainWindow(QMainWindow):
             # Open ports
             if not self.midi_helper.open_input_port(in_port):
                 return False
-
+                
             if not self.midi_helper.open_output_port(out_port):
                 return False
-
+                
             # Update indicators
             self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
             self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-
+            
             return True
-
+            
         except Exception as e:
             logging.error(f"Error setting MIDI ports: {str(e)}")
             return False
@@ -2377,21 +2377,21 @@ class MainWindow(QMainWindow):
         try:
             # Find JD-Xi ports
             in_port, out_port = self.midi_helper.find_jdxi_ports()
-
+            
             if in_port and out_port:
                 # Open ports
                 if self.midi_helper.open_ports(in_port, out_port):
                     logging.info(f"Connected to JD-Xi ({in_port}, {out_port})")
                     self.statusBar().showMessage(f"Connected to JD-Xi")
-
+                    
                     # Remove or comment out any initialization messages
                     # self.midi_helper.send_identity_request()  # Remove this
                     return True
-
+                    
             logging.warning("JD-Xi not found")
             self.statusBar().showMessage("JD-Xi not found")
             return False
-
+            
         except Exception as e:
             logging.error(f"Error connecting to MIDI: {str(e)}")
             self.statusBar().showMessage("MIDI connection error")
@@ -2406,7 +2406,7 @@ class MainWindow(QMainWindow):
                 )
             self.vocal_fx_editor.show()
             self.vocal_fx_editor.raise_()
-
+            
         except Exception as e:
             logging.error(f"Error showing Vocal FX editor: {str(e)}")
 
@@ -2460,12 +2460,12 @@ class MainWindow(QMainWindow):
         group = QGroupBox("Global Controls")
         layout = QHBoxLayout()
         group.setLayout(layout)
-
+        
         # Octave controls
         octave_group = QGroupBox("Octave")
         octave_layout = QHBoxLayout()
         octave_group.setLayout(octave_layout)
-
+        
         self.octave_down = QPushButton("Down")
         self.octave_up = QPushButton("Up")
         self.octave_display = QLabel("0")  # Display current octave
@@ -2490,47 +2490,47 @@ class MainWindow(QMainWindow):
         """
         self.octave_up.setStyleSheet(octave_button_stylesheet)
         self.octave_down.setStyleSheet(octave_button_stylesheet)
-
+        
         octave_layout.addWidget(self.octave_down)
         octave_layout.addWidget(self.octave_display)
         octave_layout.addWidget(self.octave_up)
-
+        
         # Arpeggiator controls
         arp_group = QGroupBox("Arpeggiator")
         arp_layout = QHBoxLayout()
         arp_group.setLayout(arp_layout)
-
+        
         self.arp_switch = QPushButton("On")
         self.arp_switch.setCheckable(True)
         self.arp_switch.clicked.connect(self._toggle_arpeggiator)
-
+        
         arp_layout.addWidget(self.arp_switch)
-
+        
         # Add groups to main layout
         layout.addWidget(octave_group)
         layout.addWidget(arp_group)
-
+        
         return group
 
     def _change_octave(self, direction: int):
         """Change octave up/down
-
+        
         Args:
             direction: +1 for up, -1 for down
         """
         if not self.midi_helper:
             return
-
+            
         try:
             # Get current octave from display
             current = int(self.octave_display.text())
-
+            
             # Calculate new octave (-3 to +3 range)
             new_octave = max(min(current + direction, 3), -3)
-
+            
             # Convert to MIDI value (61-67 range)
             midi_value = new_octave + 64
-
+            
             # Send parameter change
             self.midi_helper.send_parameter(
                 area=0x00,  # Program zone area
@@ -2539,10 +2539,10 @@ class MainWindow(QMainWindow):
                 param=0x19,  # Zone Octave Shift parameter
                 value=midi_value,
             )
-
+            
             # Update display
             self.octave_display.setText(str(new_octave))
-
+            
         except Exception as e:
             logging.error(f"Error changing octave: {str(e)}")
 
@@ -2550,7 +2550,7 @@ class MainWindow(QMainWindow):
         """Toggle arpeggiator on/off"""
         if not self.midi_helper:
             return
-
+            
         try:
             # Send parameter change (0x00 = Program zone area, 0x03 = Arpeggio Switch)
             self.midi_helper.send_parameter(
@@ -2560,10 +2560,10 @@ class MainWindow(QMainWindow):
                 param=0x03,  # Arpeggio Switch parameter
                 value=1 if checked else 0,  # 0 = OFF, 1 = ON
             )
-
+            
             # Update button text
             self.arp_switch.setText("Off" if not checked else "On")
-
+            
         except Exception as e:
             logging.error(f"Error toggling arpeggiator: {str(e)}")
 
