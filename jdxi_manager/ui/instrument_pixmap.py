@@ -34,11 +34,7 @@ from PySide6.QtGui import (
 def draw_instrument_pixmap(
     digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"
 ):
-    """Create a QPixmap of the JD-Xi with sequencer buttons"""
-    # Create a QWidget to hold the layout
-    widget = QWidget()
-    layout = QVBoxLayout(widget)
-
+    """Create a QPixmap of the JD-Xi"""
     # Create a black background image with correct aspect ratio
     width = 1000
     height = 400
@@ -126,6 +122,28 @@ def draw_instrument_pixmap(
     white_key_height = 127
     keyboard_y = height - white_key_height - (height * 0.1) + (white_key_height * 0.3)
 
+    # Draw control sections
+    """
+    # Remove the red box borders for effects sections
+    # (Delete or comment out these lines)
+
+    # Draw horizontal Effects section above keyboard
+    effects_y = keyboard_y - 60  # Position above keyboard
+    effects_width = 120  # Width for each section
+    effects_height = 40
+    effects_spacing = 20
+
+    # Arpeggiator section
+    arp_x = (
+        keyboard_start + (keyboard_width - (effects_width * 2 + effects_spacing)) / 2
+    )
+    painter.drawRect(arp_x, effects_y, effects_width, effects_height)
+
+    # Effects section
+    fx_x = arp_x + effects_width + effects_spacing
+    painter.drawRect(fx_x, effects_y, effects_width, effects_height)
+    """
+
     # Draw sequencer section
     seq_y = keyboard_y - 50  # Keep same distance above keyboard
     seq_width = keyboard_width * 0.5  # Use roughly half keyboard width
@@ -137,17 +155,37 @@ def draw_instrument_pixmap(
     total_spacing = seq_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
 
-    # Create sequence step buttons
-    step_buttons = []
+    # Draw horizontal measure lines (white)
+    painter.setPen(QPen(Qt.white, 1))
+    line_y = seq_y - 10  # Move lines above buttons
+    measure_width = (step_size + step_spacing) * 4  # Width of 4 steps
+    line_spacing = step_size / 3  # Space between lines
+
+    beats_list = [2, 3, 4]
+    # Draw 4 separate measure lines
+    for beats in beats_list:
+        for measure in range(beats):
+            measure_x = seq_x + measure * measure_width
+            for i in range(beats):  # 2, 3 or 4 horizontal lines per measure
+                y = line_y - 25 + i * line_spacing
+                painter.drawLine(
+                    int(measure_x),
+                    int(y),
+                    int(
+                        measure_x + measure_width - step_spacing
+                    ),  # Stop before next measure
+                    int(y),
+                )
+
+    # Draw sequence steps
     for i in range(step_count):
         x = seq_x + i * (step_size + step_spacing)
 
-        # Create QPushButton for each step
-        button = QPushButton(widget)
-        button.setFixedSize(step_size, step_size)
-        button.setStyleSheet("background-color: black; border: 2px solid #666666;")
-        layout.addWidget(button)
-        step_buttons.append(button)
+        # Draw step squares with double grey border
+        painter.setPen(QPen(QColor("#666666"), 2))  # Mid-grey, doubled width
+        painter.setBrush(Qt.black)  # All steps unlit
+
+        painter.drawRect(int(x), seq_y, step_size, step_size)
 
     painter.end()
     return pixmap
