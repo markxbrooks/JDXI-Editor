@@ -1,4 +1,5 @@
 """
+
 Module: Pattern Sequencer with MIDI Integration
 
 This module implements a Pattern Sequencer using PySide6, allowing users to toggle
@@ -12,6 +13,7 @@ Features:
 - Styled buttons with illumination effects.
 - Each button stores an associated MIDI note and its on/off state.
 - Start/Stop playback buttons for sequence control.
+
 """
 
 import logging
@@ -27,27 +29,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QTimer
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base_editor import BaseEditor
+from jdxi_manager.ui.style import sequencer_button_style, toggle_button_style
 
 instrument_icon_folder = "patterns"
-
-
-def sequencer_button_style(active):
-    return f"""
-        QPushButton {{
-            background-color: {'#ff6666' if active else 'black'};
-            border: 4px solid #666666;
-            border-radius: 2px;
-            padding: 0px;
-        }}
-        QPushButton:hover {{
-            background-color: #1A1A1A;
-            border-color: #ff4d4d;
-        }}
-        QPushButton:pressed {{
-            background-color: #333333;
-            border-color: #ff6666;
-        }}
-    """
 
 
 class PatternSequencer(BaseEditor):
@@ -84,7 +68,10 @@ class PatternSequencer(BaseEditor):
                 button.setCheckable(True)
                 button.setFixedSize(40, 40)
                 button.setStyleSheet(sequencer_button_style(False))
-                button.clicked.connect(partial(self.toggle_button, row_idx, i))
+                # button.clicked.connect(partial(self.toggle_button, row_idx, i))
+                button.toggled.connect(
+                    lambda checked, btn=button: toggle_button_style(btn, checked)
+                )
                 self.buttons[row_idx].append(button)
                 button_layout.addWidget(button)
 

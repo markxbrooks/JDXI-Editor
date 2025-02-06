@@ -153,6 +153,9 @@ class MIDIHelper(QObject):
             parsed_mido_data = self.parse_sysex_data(message.data)
             print(f"parsed_mido_data: {parsed_mido_data}")
 
+            parsed_sysex_data = self.parse_sysex(message.data)
+            print(f"parsed_sysex_data: {parsed_sysex_data}")
+
             # parsed_data_hex_string = " ".join(
             #    f"{byte:02X}" for byte in parsed_data["data"]
             # )
@@ -205,25 +208,65 @@ class MIDIHelper(QObject):
         return parsed
 
     def parse_sysex(self, sysex_bytes):
-        if sysex_bytes[0] != 0x41:
-            raise ValueError("Invalid Roland SysEx message")
+        # Convert bytes to a hex string for regex matching
+        sysex_string = " ".join(f"{byte:02X}" for byte in sysex_bytes)
 
-        manufacturer_id = sysex_bytes[0]
-        device_id = sysex_bytes[1]
-        model_id = sysex_bytes[2:6]
-        command_type = sysex_bytes[6]
-        address = sysex_bytes[7:11]  # 4-byte address
-        data = sysex_bytes[11:-1]  # Data (excluding checksum)
-        checksum = sysex_bytes[-1]  # Last byte is checksum
+        # Define the regular expression pattern
+        sysex_pattern = re.compile(
+            r"""
+            ^F0\s*                # Start of SysEx
+            41\s*                 # Manufacturer ID (Roland)
+            [0-9A-F]{2}\s*        # Device ID
+            (?:[0-9A-F]{2}\s*){3} # Model ID (3 bytes)
+            [0-9A-F]{2}\s*        # JD-Xi ID
+            [0-9A-F]{2}\s*        # Command ID
+            [0-9A-F]{2}\s*        # Area
+            [0-9A-F]{2}\s*        # Synth Number
+            [0-9A-F]{2}\s*        # Section
+            [0-9A-F]{2}\s*        # Parameter
+            [0-9A-F]{2}\s*        # Value
+            [0-9A-F]{2}\s*        # Checksum
+            F7$                   # End of SysEx
+            """,
+            re.VERBOSE
+        )
+
+        # Check if the message matches the expected SysEx format
+        if not sysex_pattern.match(sysex_string):
+            raise ValueError("Invalid SysEx message format")
+
+        if sysex_bytes[0] != 0xF0 or sysex_bytes[-1] != 0xF7:
+            raise ValueError("Invalid SysEx message")
+
+        # Extract components from the SysEx message
+        start = sysex_bytes[0]
+        manufacturer_id = sysex_bytes[1]
+        device_id = sysex_bytes[2]
+        model_id = sysex_bytes[3:6]
+        jd_xi_id = sysex_bytes[6]
+        command_type = sysex_bytes[7]
+        area = sysex_bytes[8]
+        synth_number = sysex_bytes[9]
+        partial = sysex_bytes[10]
+        parameter = sysex_bytes[11]
+        value = sysex_bytes[12]
+        checksum = sysex_bytes[13]
+        end = sysex_bytes[14]
 
         return {
+            "start": start,
             "manufacturer_id": manufacturer_id,
             "device_id": device_id,
             "model_id": model_id,
+            "jd_xi_id": jd_xi_id,
             "command_type": command_type,
-            "address": address,
-            "data": data[:-1],  # Exclude last byte which is the checksum
+            "area": area,
+            "synth_number": synth_number,
+            "partial": partial,
+            "parameter": parameter,
+            "value": value,
             "checksum": checksum,
+            "end": end,
         }
 
     def _handle_control_change(self, message, preset_data):
