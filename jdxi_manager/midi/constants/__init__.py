@@ -12,23 +12,25 @@ VOCAL_FX_AREA = 0x05
 # Import specific classes from analog
 from .analog import (
     AnalogToneCC,
-    #AnalogOscWave,
-    #AnalogSubType,
-    #AnalogLFOShape,
-    #AnalogLFO,
-    #AnalogLFOSync,
-    #AnalogOscWaveform,
-    #AnalogSubOscType,
-    #AnalogFilterType,
-    #ANALOG_LFO_SYNC_NOTES,
-    #ANALOG_LFO_RANGES
+    # AnalogOscWave,
+    # AnalogSubType,
+    # AnalogLFOShape,
+    # AnalogLFO,
+    # AnalogLFOSync,
+    # AnalogOscWaveform,
+    # AnalogSubOscType,
+    # AnalogFilterType,
+    # ANALOG_LFO_SYNC_NOTES,
+    # ANALOG_LFO_RANGES
 )
 
 # Import other module constants as needed
 from .digital import *
 from .drums import *
-#from .effects import *
+
+# from .effects import *
 from .vocal_fx import *
+
 # Part Numbers (Legacy names)
 PART_1 = 0x00  # Analog synth part
 PART_2 = 0x01  # Digital synth 1 part
@@ -37,48 +39,48 @@ PART_4 = 0x03  # Drum part
 PART_5 = 0x04  # Vocal FX part
 
 # Part Numbers (New names)
-ANALOG_PART = PART_1     # 0x00
+ANALOG_PART = PART_1  # 0x00
 DIGITAL_1_PART = PART_2  # 0x01
 DIGITAL_2_PART = PART_3  # 0x02
-DRUM_PART = PART_4       # 0x03
-VOCAL_FX_PART = PART_5   # 0x04
+DRUM_PART = PART_4  # 0x03
+VOCAL_FX_PART = PART_5  # 0x04
 # Part Groups
 SUBGROUP_ZERO = 0x00  # Common parameters
 
 # Oscillator Groups
-OSC_1_GROUP = 0x20     # Oscillator 1 parameters
-OSC_2_GROUP = 0x21     # Oscillator 2 parameters
-OSC_COMMON = 0x22      # Common oscillator parameters
+OSC_1_GROUP = 0x20  # Oscillator 1 parameters
+OSC_2_GROUP = 0x21  # Oscillator 2 parameters
+OSC_COMMON = 0x22  # Common oscillator parameters
 OSC_PARAM_GROUP = OSC_1_GROUP  # Legacy name for compatibility
 
 # Filter/Amp Groups
-FILTER_GROUP = 0x30    # Filter parameters
-AMP_GROUP = 0x31       # Amplifier parameters
+FILTER_GROUP = 0x30  # Filter parameters
+AMP_GROUP = 0x31  # Amplifier parameters
 
 # Modulation Groups
-LFO_1_GROUP = 0x40     # LFO 1 parameters
-LFO_2_GROUP = 0x41     # LFO 2 parameters
-ENV_1_GROUP = 0x42     # Envelope 1 parameters
-ENV_2_GROUP = 0x43     # Envelope 2 parameters
+LFO_1_GROUP = 0x40  # LFO 1 parameters
+LFO_2_GROUP = 0x41  # LFO 2 parameters
+ENV_1_GROUP = 0x42  # Envelope 1 parameters
+ENV_2_GROUP = 0x43  # Envelope 2 parameters
 
 # Effects Groups
-FX_GROUP = 0x50        # Effects parameters
-DELAY_GROUP = 0x51     # Delay parameters
-REVERB_GROUP = 0x52    # Reverb parameters
+FX_GROUP = 0x50  # Effects parameters
+DELAY_GROUP = 0x51  # Delay parameters
+REVERB_GROUP = 0x52  # Reverb parameters
 
 # Bank Select Values
-ANALOG_BANK_MSB = 0x5E    # 94 - Analog synth
-DIGITAL_BANK_MSB = 0x5F   # 95 - Digital synth
-DRUM_BANK_MSB = 0x56      # 86 - Drum kit
+ANALOG_BANK_MSB = 0x5E  # 94 - Analog synth
+DIGITAL_BANK_MSB = 0x5F  # 95 - Digital synth
+DRUM_BANK_MSB = 0x56  # 86 - Drum kit
 
-PRESET_BANK_LSB = 0x00    # 0 - Preset bank 1
+PRESET_BANK_LSB = 0x00  # 0 - Preset bank 1
 PRESET_BANK_2_LSB = 0x01  # 1 - Preset bank 2 (Digital only)
-USER_BANK_LSB = 0x10      # 16 - User bank
+USER_BANK_LSB = 0x10  # 16 - User bank
 
 # MIDI Control Change messages
-BANK_SELECT_MSB = 0x00    # CC 0
-BANK_SELECT_LSB = 0x20    # CC 32
-PROGRAM_CHANGE = 0xC0     # Program Change
+BANK_SELECT_MSB = 0x00  # CC 0
+BANK_SELECT_LSB = 0x20  # CC 32
+PROGRAM_CHANGE = 0xC0  # Program Change
 
 # SysEx Headers
 START_OF_SYSEX = 0xF0
@@ -96,7 +98,13 @@ MODEL_ID_4 = 0x0E  # Product code
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
 
 # Device Identification
-JD_XI_ID = [ROLAND_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]  # Complete device ID
+JD_XI_ID = [
+    ROLAND_ID,
+    MODEL_ID_1,
+    MODEL_ID_2,
+    MODEL_ID_3,
+    MODEL_ID_4,
+]  # Complete device ID
 
 # SysEx Commands
 RQ1_COMMAND = 0x11  # Data Request 1
@@ -111,94 +119,95 @@ DT1_COMMAND_12 = 0x12  # Data Set 1
 RQ1_COMMAND_11 = 0x11  # Data Request 1
 
 # Analog Filter Parameters
-ANALOG_FILTER_SWITCH = 0x20    # Filter switch (0-1: BYPASS, LPF)
-ANALOG_FILTER_CUTOFF = 0x21    # Filter cutoff frequency (0-127)
-ANALOG_FILTER_KEYFOLLOW = 0x22 # Cutoff keyfollow (54-74: -100 to +100)
-ANALOG_FILTER_RESONANCE = 0x23 # Filter resonance (0-127)
+ANALOG_FILTER_SWITCH = 0x20  # Filter switch (0-1: BYPASS, LPF)
+ANALOG_FILTER_CUTOFF = 0x21  # Filter cutoff frequency (0-127)
+ANALOG_FILTER_KEYFOLLOW = 0x22  # Cutoff keyfollow (54-74: -100 to +100)
+ANALOG_FILTER_RESONANCE = 0x23  # Filter resonance (0-127)
 ANALOG_FILTER_ENV_VELO = 0x24  # Env velocity sens (1-127: -63 to +63)
-ANALOG_FILTER_ENV_A = 0x25     # Filter env attack time (0-127)
-ANALOG_FILTER_ENV_D = 0x26     # Filter env decay time (0-127)
-ANALOG_FILTER_ENV_S = 0x27     # Filter env sustain level (0-127)
-ANALOG_FILTER_ENV_R = 0x28     # Filter env release time (0-127)
-ANALOG_FILTER_ENV_DEPTH = 0x29 # Filter env depth (1-127: -63 to +63)
+ANALOG_FILTER_ENV_A = 0x25  # Filter env attack time (0-127)
+ANALOG_FILTER_ENV_D = 0x26  # Filter env decay time (0-127)
+ANALOG_FILTER_ENV_S = 0x27  # Filter env sustain level (0-127)
+ANALOG_FILTER_ENV_R = 0x28  # Filter env release time (0-127)
+ANALOG_FILTER_ENV_DEPTH = 0x29  # Filter env depth (1-127: -63 to +63)
 
 # Filter Modes
 FILTER_MODE_BYPASS = 0x00  # Bypass filter
-FILTER_MODE_LPF = 0x01     # Low-pass filter
+FILTER_MODE_LPF = 0x01  # Low-pass filter
 
 # Oscillator Parameters
-OSC_WAVE_PARAM = 0x00     # Waveform selection
-OSC_RANGE_PARAM = 0x01    # Octave range
-OSC_COARSE_PARAM = 0x02   # Coarse tune
-OSC_FINE_PARAM = 0x03     # Fine tune
-OSC_PW_PARAM = 0x04       # Pulse width
-OSC_PWM_PARAM = 0x05      # PWM depth
-OSC_SYNC_PARAM = 0x06     # Oscillator sync
-OSC_RING_PARAM = 0x07     # Ring modulation
+OSC_WAVE_PARAM = 0x00  # Waveform selection
+OSC_RANGE_PARAM = 0x01  # Octave range
+OSC_COARSE_PARAM = 0x02  # Coarse tune
+OSC_FINE_PARAM = 0x03  # Fine tune
+OSC_PW_PARAM = 0x04  # Pulse width
+OSC_PWM_PARAM = 0x05  # PWM depth
+OSC_SYNC_PARAM = 0x06  # Oscillator sync
+OSC_RING_PARAM = 0x07  # Ring modulation
 
 # Oscillator Waveforms
-OSC_WAVE_SAW = 0x00       # Sawtooth
-OSC_WAVE_SQUARE = 0x01    # Square
+OSC_WAVE_SAW = 0x00  # Sawtooth
+OSC_WAVE_SQUARE = 0x01  # Square
 OSC_WAVE_TRIANGLE = 0x02  # Triangle
-OSC_WAVE_SINE = 0x03      # Sine
-OSC_WAVE_NOISE = 0x04     # Noise
-OSC_WAVE_SUPER_SAW = 0x05 # Super saw
-OSC_WAVE_PCM = 0x06       # PCM waveform
+OSC_WAVE_SINE = 0x03  # Sine
+OSC_WAVE_NOISE = 0x04  # Noise
+OSC_WAVE_SUPER_SAW = 0x05  # Super saw
+OSC_WAVE_PCM = 0x06  # PCM waveform
 
 # Legacy Waveform Constants (for backward compatibility)
-WAVE_SAW = OSC_WAVE_SAW             # Sawtooth
-WAVE_SQUARE = OSC_WAVE_SQUARE       # Square
-WAVE_PULSE = OSC_WAVE_SQUARE        # Pulse (same as square)
-WAVE_TRIANGLE = OSC_WAVE_TRIANGLE   # Triangle
-WAVE_SINE = OSC_WAVE_SINE          # Sine
-WAVE_NOISE = OSC_WAVE_NOISE        # Noise
-WAVE_SUPER_SAW = OSC_WAVE_SUPER_SAW # Super saw
-WAVE_PCM = OSC_WAVE_PCM           # PCM waveform
+WAVE_SAW = OSC_WAVE_SAW  # Sawtooth
+WAVE_SQUARE = OSC_WAVE_SQUARE  # Square
+WAVE_PULSE = OSC_WAVE_SQUARE  # Pulse (same as square)
+WAVE_TRIANGLE = OSC_WAVE_TRIANGLE  # Triangle
+WAVE_SINE = OSC_WAVE_SINE  # Sine
+WAVE_NOISE = OSC_WAVE_NOISE  # Noise
+WAVE_SUPER_SAW = OSC_WAVE_SUPER_SAW  # Super saw
+WAVE_PCM = OSC_WAVE_PCM  # PCM waveform
 
 # Oscillator Ranges
-OSC_RANGE_16 = 0x00   # 16'
-OSC_RANGE_8 = 0x01    # 8'
-OSC_RANGE_4 = 0x02    # 4'
-OSC_RANGE_2 = 0x03    # 2'
+OSC_RANGE_16 = 0x00  # 16'
+OSC_RANGE_8 = 0x01  # 8'
+OSC_RANGE_4 = 0x02  # 4'
+OSC_RANGE_2 = 0x03  # 2'
 
 # Legacy Range Constants
 RANGE_16 = OSC_RANGE_16  # 16'
-RANGE_8 = OSC_RANGE_8    # 8'
-RANGE_4 = OSC_RANGE_4    # 4'
-RANGE_2 = OSC_RANGE_2    # 2'
+RANGE_8 = OSC_RANGE_8  # 8'
+RANGE_4 = OSC_RANGE_4  # 4'
+RANGE_2 = OSC_RANGE_2  # 2'
 
 # Parameter Ranges
-OSC_COARSE_RANGE = (-24, 24)    # Semitones
-OSC_FINE_RANGE = (-50, 50)      # Cents
-OSC_PW_RANGE = (0, 127)         # Pulse width
-OSC_PWM_RANGE = (0, 127)        # PWM depth
-OSC_SYNC_RANGE = (0, 1)         # Off/On
-OSC_RING_RANGE = (0, 1)         # Off/On
+OSC_COARSE_RANGE = (-24, 24)  # Semitones
+OSC_FINE_RANGE = (-50, 50)  # Cents
+OSC_PW_RANGE = (0, 127)  # Pulse width
+OSC_PWM_RANGE = (0, 127)  # PWM depth
+OSC_SYNC_RANGE = (0, 1)  # Off/On
+OSC_RING_RANGE = (0, 1)  # Off/On
+
 
 class DrumKitCC:
     """Drum Kit Control Change parameters"""
-    
+
     # MSB values for NRPN parameters
-    LEVEL_MSB = 0x1A      # Level
-    PAN_MSB = 0x1C        # Pan
-    TUNE_MSB = 0x1E       # Tune
-    DECAY_MSB = 0x20      # Decay
-    CUTOFF_MSB = 0x22     # Cutoff Frequency
+    LEVEL_MSB = 0x1A  # Level
+    PAN_MSB = 0x1C  # Pan
+    TUNE_MSB = 0x1E  # Tune
+    DECAY_MSB = 0x20  # Decay
+    CUTOFF_MSB = 0x22  # Cutoff Frequency
     RESONANCE_MSB = 0x24  # Resonance
-    FX1_SEND_MSB = 0x26   # Effect 1 Send Level
-    FX2_SEND_MSB = 0x28   # Effect 2 Send Level
-    DELAY_SEND_MSB = 0x2A # Delay Send Level
-    REVERB_SEND_MSB = 0x2C # Reverb Send Level
-    
+    FX1_SEND_MSB = 0x26  # Effect 1 Send Level
+    FX2_SEND_MSB = 0x28  # Effect 2 Send Level
+    DELAY_SEND_MSB = 0x2A  # Delay Send Level
+    REVERB_SEND_MSB = 0x2C  # Reverb Send Level
+
     # Value ranges
     LEVEL_RANGE = (0, 127)
-    PAN_RANGE = (0, 127)      # 0=Left, 64=Center, 127=Right
-    TUNE_RANGE = (0, 127)     # 64=Original pitch
+    PAN_RANGE = (0, 127)  # 0=Left, 64=Center, 127=Right
+    TUNE_RANGE = (0, 127)  # 64=Original pitch
     DECAY_RANGE = (0, 127)
     CUTOFF_RANGE = (0, 127)
     RESONANCE_RANGE = (0, 127)
     SEND_RANGE = (0, 127)
-    
+
     @staticmethod
     def validate_msb(msb: int) -> bool:
         """Validate MSB value"""
@@ -212,71 +221,72 @@ class DrumKitCC:
             DrumKitCC.FX1_SEND_MSB,
             DrumKitCC.FX2_SEND_MSB,
             DrumKitCC.DELAY_SEND_MSB,
-            DrumKitCC.REVERB_SEND_MSB
+            DrumKitCC.REVERB_SEND_MSB,
         ]
-    
+
     @staticmethod
     def validate_note(note: int) -> bool:
         """Validate drum note number"""
         return 36 <= note <= 72  # C2 to C5
-        
+
     @staticmethod
     def validate_value(value: int) -> bool:
         """Validate parameter value"""
-        return 0 <= value <= 127 
+        return 0 <= value <= 127
+
 
 class AnalogToneCC:
     """Analog Synth Control Change parameters"""
-    
+
     # Common Parameters
-    LEVEL_MSB = 0x10      # Level
-    PAN_MSB = 0x11        # Pan
-    PORTAMENTO_MSB = 0x12 # Portamento time
-    
+    LEVEL_MSB = 0x10  # Level
+    PAN_MSB = 0x11  # Pan
+    PORTAMENTO_MSB = 0x12  # Portamento time
+
     # Oscillator Parameters
-    OSC_WAVE_MSB = 0x20   # Waveform
+    OSC_WAVE_MSB = 0x20  # Waveform
     OSC_RANGE_MSB = 0x21  # Octave range
-    OSC_COARSE_MSB = 0x22 # Coarse tune
-    OSC_FINE_MSB = 0x23   # Fine tune
-    OSC_PW_MSB = 0x24     # Pulse width
-    
+    OSC_COARSE_MSB = 0x22  # Coarse tune
+    OSC_FINE_MSB = 0x23  # Fine tune
+    OSC_PW_MSB = 0x24  # Pulse width
+
     # Filter Parameters
     FILT_TYPE_MSB = 0x30  # Filter type
-    FILT_CUTOFF_MSB = 0x31 # Cutoff frequency
+    FILT_CUTOFF_MSB = 0x31  # Cutoff frequency
     FILT_RESO_MSB = 0x32  # Resonance
-    FILT_ENV_MSB = 0x33   # Envelope depth
-    FILT_KEY_MSB = 0x34   # Key follow
-    
+    FILT_ENV_MSB = 0x33  # Envelope depth
+    FILT_KEY_MSB = 0x34  # Key follow
+
     # Envelope Parameters
-    FILT_A_MSB = 0x40     # Filter Attack
-    FILT_D_MSB = 0x41     # Filter Decay
-    FILT_S_MSB = 0x42     # Filter Sustain
-    FILT_R_MSB = 0x43     # Filter Release
-    
-    AMP_A_MSB = 0x50      # Amp Attack
-    AMP_D_MSB = 0x51      # Amp Decay
-    AMP_S_MSB = 0x52      # Amp Sustain
-    AMP_R_MSB = 0x53      # Amp Release
-    
+    FILT_A_MSB = 0x40  # Filter Attack
+    FILT_D_MSB = 0x41  # Filter Decay
+    FILT_S_MSB = 0x42  # Filter Sustain
+    FILT_R_MSB = 0x43  # Filter Release
+
+    AMP_A_MSB = 0x50  # Amp Attack
+    AMP_D_MSB = 0x51  # Amp Decay
+    AMP_S_MSB = 0x52  # Amp Sustain
+    AMP_R_MSB = 0x53  # Amp Release
+
     # LFO Parameters
-    LFO_WAVE_MSB = 0x60   # LFO Waveform
-    LFO_RATE_MSB = 0x61   # LFO Rate
+    LFO_WAVE_MSB = 0x60  # LFO Waveform
+    LFO_RATE_MSB = 0x61  # LFO Rate
     LFO_DEPTH_MSB = 0x62  # LFO Depth
-    LFO_DEST_MSB = 0x63   # LFO Destination
-    
+    LFO_DEST_MSB = 0x63  # LFO Destination
+
     # Value ranges
     LEVEL_RANGE = (0, 127)
-    PAN_RANGE = (0, 127)      # 0=Left, 64=Center, 127=Right
+    PAN_RANGE = (0, 127)  # 0=Left, 64=Center, 127=Right
     PORTA_RANGE = (0, 127)
-    WAVE_RANGE = (0, 6)       # See OSC_WAVE_* constants
-    RANGE_RANGE = (0, 3)      # See OSC_RANGE_* constants
-    COARSE_RANGE = (40, 88)   # -24 to +24 semitones
-    FINE_RANGE = (14, 114)    # -50 to +50 cents
+    WAVE_RANGE = (0, 6)  # See OSC_WAVE_* constants
+    RANGE_RANGE = (0, 3)  # See OSC_RANGE_* constants
+    COARSE_RANGE = (40, 88)  # -24 to +24 semitones
+    FINE_RANGE = (14, 114)  # -50 to +50 cents
     PW_RANGE = (0, 127)
     FILTER_RANGE = (0, 127)
     ENV_RANGE = (0, 127)
     LFO_RANGE = (0, 127)
-    
+
     @staticmethod
     def validate_msb(msb: int) -> bool:
         """Validate MSB value"""
@@ -305,9 +315,9 @@ class AnalogToneCC:
             AnalogToneCC.LFO_WAVE_MSB,
             AnalogToneCC.LFO_RATE_MSB,
             AnalogToneCC.LFO_DEPTH_MSB,
-            AnalogToneCC.LFO_DEST_MSB
+            AnalogToneCC.LFO_DEST_MSB,
         ]
-    
+
     @staticmethod
     def validate_value(msb: int, value: int) -> bool:
         """Validate parameter value based on MSB"""
@@ -320,23 +330,25 @@ class AnalogToneCC:
         elif msb == AnalogToneCC.OSC_FINE_MSB:
             return 14 <= value <= 114
         else:
-            return 0 <= value <= 127 
+            return 0 <= value <= 127
+
 
 class Waveform(Enum):
     """Waveform types available on the JD-Xi"""
-    SAW = auto()         # Sawtooth wave
-    SQUARE = auto()      # Square wave
-    TRIANGLE = auto()    # Triangle wave
-    SINE = auto()        # Sine wave
-    NOISE = auto()       # Noise
-    SUPER_SAW = auto()   # Super saw
-    PCM = auto()         # PCM waveform
-    
+
+    SAW = auto()  # Sawtooth wave
+    SQUARE = auto()  # Square wave
+    TRIANGLE = auto()  # Triangle wave
+    SINE = auto()  # Sine wave
+    NOISE = auto()  # Noise
+    SUPER_SAW = auto()  # Super saw
+    PCM = auto()  # PCM waveform
+
     @property
     def display_name(self) -> str:
         """Get display name for waveform"""
-        return self.name.replace('_', ' ').title()
-    
+        return self.name.replace("_", " ").title()
+
     @property
     def midi_value(self) -> int:
         """Get MIDI value for waveform"""
@@ -347,11 +359,11 @@ class Waveform(Enum):
             Waveform.SINE: OSC_WAVE_SINE,
             Waveform.NOISE: OSC_WAVE_NOISE,
             Waveform.SUPER_SAW: OSC_WAVE_SUPER_SAW,
-            Waveform.PCM: OSC_WAVE_PCM
+            Waveform.PCM: OSC_WAVE_PCM,
         }[self]
-    
+
     @classmethod
-    def from_midi_value(cls, value: int) -> 'Waveform':
+    def from_midi_value(cls, value: int) -> "Waveform":
         """Create Waveform from MIDI value"""
         for waveform in cls:
             if waveform.midi_value == value:
@@ -365,7 +377,7 @@ from enum import Enum, auto
 from dataclasses import dataclass
 
 from jdxi_manager.midi.base_messages import RolandSysEx
-from jdxi_manager.midi.sysex import (DT1_COMMAND_12, RQ1_COMMAND_11)
+from jdxi_manager.midi.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 
 # Analog Oscillator Parameters
 ANALOG_OSC_WAVE = 0x16  # Waveform (0-2: SAW,TRI,PW-SQR)
@@ -410,6 +422,7 @@ ANALOG_LFO_KEY_TRIG = 0x15  # LFO Key Trigger (0-1)
 
 class AnalogOscWave(Enum):
     """Analog oscillator waveform types"""
+
     SAW = 0
     TRIANGLE = 1
     PULSE = 2
@@ -417,17 +430,14 @@ class AnalogOscWave(Enum):
     @staticmethod
     def get_display_name(value: int) -> str:
         """Get display name for waveform"""
-        names = {
-            0: "SAW",
-            1: "TRI",
-            2: "P.W"
-        }
+        names = {0: "SAW", 1: "TRI", 2: "P.W"}
         return names.get(value, "???")
 
 
 # Sub oscillator types
 class AnalogSubType(Enum):
     """Analog sub oscillator types"""
+
     OFF = 0
     OCT_DOWN_1 = 1  # -1 octave
     OCT_DOWN_2 = 2  # -2 octaves
@@ -435,17 +445,14 @@ class AnalogSubType(Enum):
     @staticmethod
     def get_display_name(value: int) -> str:
         """Get display name for sub oscillator type"""
-        names = {
-            0: "OFF",
-            1: "-1 OCT",
-            2: "-2 OCT"
-        }
+        names = {0: "OFF", 1: "-1 OCT", 2: "-2 OCT"}
         return names.get(value, "???")
 
 
 # Analog LFO Shape Values
 class AnalogLFOShape(Enum):
     """Analog LFO waveform shapes"""
+
     TRIANGLE = 0  # Triangle wave
     SINE = 1  # Sine wave
     SAW = 2  # Sawtooth wave
@@ -456,14 +463,7 @@ class AnalogLFOShape(Enum):
     @staticmethod
     def get_display_name(value: int) -> str:
         """Get display name for LFO shape"""
-        names = {
-            0: "TRI",
-            1: "SIN",
-            2: "SAW",
-            3: "SQR",
-            4: "S&H",
-            5: "RND"
-        }
+        names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
         return names.get(value, "???")
 
 
@@ -488,20 +488,20 @@ ANALOG_LFO_SYNC_NOTES = [
     "1/12",  # 16
     "1/16",  # 17
     "1/24",  # 18
-    "1/32"  # 19
+    "1/32",  # 19
 ]
 
 # Parameter value ranges
 ANALOG_LFO_RANGES = {
-    'shape': (0, 5),
-    'rate': (0, 127),
-    'fade': (0, 127),
-    'sync': (0, 1),
-    'sync_note': (0, 19),
-    'pitch': (-63, 63),
-    'filter': (-63, 63),
-    'amp': (-63, 63),
-    'key_trig': (0, 1)
+    "shape": (0, 5),
+    "rate": (0, 127),
+    "fade": (0, 127),
+    "sync": (0, 1),
+    "sync_note": (0, 19),
+    "pitch": (-63, 63),
+    "filter": (-63, 63),
+    "amp": (-63, 63),
+    "key_trig": (0, 1),
 }
 
 # JD-Xi Memory Map Areas
@@ -569,10 +569,11 @@ USER_BANK_LSB = 0x00  # 0 (0x00) for user bank
 # Roland Device IDs
 ROLAND_ID = 0x41
 DEVICE_ID = 0x10
-JD_XI_ID = 0x0E
 MODEL_ID = [0x00, 0x00, 0x00, 0x0E]  # JD-Xi model ID
 MODEL_ID_1 = 0x00
 MODEL_ID_2 = 0x00
+MODEL_ID_3 = 0x00
+JD_XI_ID = 0x0E
 DT1_COMMAND = 0x12
 
 # Roland Commands
@@ -583,6 +584,7 @@ RQ1_COMMAND_11 = 0x11  # Data Request 1
 RQ1_COMMAND_11 = 0x11  # Data Request 1
 
 # Memory areas
+COMMON_AREA = 0x00
 DIGITAL_SYNTH_AREA = 0x19  # Base area for digital synths
 
 # Part numbers
@@ -611,6 +613,7 @@ EFFECTS_SEND_PARAM = 0x42  # Effects send level (0-127)
 # Effects Types
 class EffectType(Enum):
     """Effect types for JD-Xi"""
+
     # Reverb Types (0-7)
     ROOM1 = 0
     ROOM2 = 1
@@ -647,7 +650,7 @@ class EffectType(Enum):
     def get_display_name(value: int, effect_type: str) -> str:
         """Get display name for effect type"""
         names = {
-            'reverb': {
+            "reverb": {
                 0: "Room 1",
                 1: "Room 2",
                 2: "Stage 1",
@@ -655,16 +658,16 @@ class EffectType(Enum):
                 4: "Hall 1",
                 5: "Hall 2",
                 6: "Plate",
-                7: "Spring"
+                7: "Spring",
             },
-            'delay': {
+            "delay": {
                 0: "Stereo",
                 1: "Panning",
                 2: "Mono",
                 3: "Tape Echo",
-                4: "Mod Delay"
+                4: "Mod Delay",
             },
-            'fx': {
+            "fx": {
                 0: "Distortion",
                 1: "Fuzz",
                 2: "Compressor",
@@ -677,8 +680,8 @@ class EffectType(Enum):
                 9: "Auto Pan",
                 10: "Slicer",
                 11: "Ring Mod",
-                12: "Isolator"
-            }
+                12: "Isolator",
+            },
         }
         return names.get(effect_type, {}).get(value, "???")
 
@@ -709,6 +712,7 @@ EFFECTS_GROUP = 0x30
 
 class DrumPad(Enum):
     """Drum pad numbers and parameters"""
+
     # Pad numbers
     PAD_1 = 0x00
     PAD_2 = 0x01
@@ -750,6 +754,7 @@ SUBGROUP_ZERO = 0x00
 
 class Waveform(Enum):
     """Waveform types available on JD-Xi"""
+
     SAW = 0x00  # Sawtooth wave
     SQUARE = 0x01  # Square wave
     PW_SQUARE = 0x02  # Pulse width square wave
@@ -762,6 +767,7 @@ class Waveform(Enum):
 
 class ArpeggioGroup(Enum):
     """Arpeggiator parameter groups"""
+
     COMMON = 0x00  # Common parameters
     PATTERN = 0x10  # Pattern parameters
     RHYTHM = 0x20  # Rhythm parameters
@@ -770,6 +776,7 @@ class ArpeggioGroup(Enum):
 
 class DigitalGroup(Enum):
     """Digital synth parameter groups"""
+
     COMMON = 0x00  # Common parameters
     PARTIAL = 0x20  # Partial parameters
     LFO = 0x40  # LFO parameters
@@ -778,6 +785,7 @@ class DigitalGroup(Enum):
 
 class EffectGroup(Enum):
     """Effect parameter groups"""
+
     COMMON = 0x00  # Common parameters
     INSERT = 0x10  # Insert effect parameters
     REVERB = 0x20  # Reverb parameters
@@ -786,6 +794,7 @@ class EffectGroup(Enum):
 
 class FilterMode(Enum):
     """Filter modes available on JD-Xi"""
+
     BYPASS = 0x00
     LPF = 0x01  # Low Pass Filter
     HPF = 0x02  # High Pass Filter
@@ -801,14 +810,18 @@ class DigitalPartial:
 
     class Offset(Enum):
         """Partial parameter offsets"""
+
         PARTIAL_1 = 0x00
         PARTIAL_2 = 0x20  # Offset between partials
         PARTIAL_3 = 0x40
 
     class CC(Enum):
         """Control change numbers for partial parameters"""
+
         # Oscillator parameters (0x00-0x09)
-        OSC_WAVE = 0x00  # Wave (0-7: SAW, SQR, PW-SQR, TRI, SINE, NOISE, SUPER-SAW, PCM)
+        OSC_WAVE = (
+            0x00  # Wave (0-7: SAW, SQR, PW-SQR, TRI, SINE, NOISE, SUPER-SAW, PCM)
+        )
         OSC_VARIATION = 0x01  # Wave Variation (0-2: A, B, C)
         OSC_RESERVE = 0x02  # Reserved
         OSC_PITCH = 0x03  # Pitch (40-88: -24 to +24)
@@ -820,7 +833,9 @@ class DigitalPartial:
         OSC_PITCH_DEPTH = 0x09  # Pitch Env Depth (1-127)
 
         # Filter parameters (0x0A-0x14)
-        FILTER_MODE = 0x0A  # Filter mode (0-7: BYPASS, LPF, HPF, BPF, PKG, LPF2, LPF3, LPF4)
+        FILTER_MODE = (
+            0x0A  # Filter mode (0-7: BYPASS, LPF, HPF, BPF, PKG, LPF2, LPF3, LPF4)
+        )
         FILTER_SLOPE = 0x0B  # Filter slope (0-1: -12dB, -24dB)
         FILTER_CUTOFF = 0x0C  # Filter cutoff frequency (0-127)
         FILTER_KEYFOLLOW = 0x0D  # Cutoff keyfollow (54-74: -100 to +100)
@@ -876,6 +891,7 @@ class DigitalPartial:
 
 class EffectType(Enum):
     """Effect types and parameters"""
+
     # Effect types
     THRU = 0x00
     DISTORTION = 0x01
@@ -929,6 +945,7 @@ class EffectType(Enum):
 
 class VocalFX(Enum):
     """Vocal effects types and parameters"""
+
     # Effect types
     VOCODER = 0x00
     AUTO_PITCH = 0x01
@@ -962,6 +979,7 @@ class VocalFX(Enum):
 
 class VoiceCutoffFilter(Enum):
     """Voice cutoff filter types"""
+
     THRU = 0x00
     LPF = 0x01
     HPF = 0x02
@@ -970,6 +988,7 @@ class VoiceCutoffFilter(Enum):
 
 class VoiceScale(Enum):
     """Voice scale types"""
+
     CHROMATIC = 0x00
     MAJOR = 0x01
     MINOR = 0x02
@@ -979,6 +998,7 @@ class VoiceScale(Enum):
 
 class VoiceKey(Enum):
     """Voice keys"""
+
     C = 0x00
     Db = 0x01
     D = 0x02
@@ -995,6 +1015,7 @@ class VoiceKey(Enum):
 
 class ArpGrid(Enum):
     """Arpeggio grid values"""
+
     GRID_4 = 0  # 04_
     GRID_8 = 1  # 08_
     GRID_8L = 2  # 08L
@@ -1008,6 +1029,7 @@ class ArpGrid(Enum):
 
 class ArpDuration(Enum):
     """Arpeggio duration values"""
+
     DUR_30 = 0  # 30%
     DUR_40 = 1  # 40%
     DUR_50 = 2  # 50%
@@ -1022,6 +1044,7 @@ class ArpDuration(Enum):
 
 class ArpMotif(Enum):
     """Arpeggio motif values"""
+
     UP_L = 0  # UP/L
     UP_H = 1  # UP/H
     UP_NORM = 2  # UP/_
@@ -1038,6 +1061,7 @@ class ArpMotif(Enum):
 
 class ArpParameters(Enum):
     """Arpeggiator parameters"""
+
     GRID = 0x01  # Grid (0-8)
     DURATION = 0x02  # Duration (0-9)
     SWITCH = 0x03  # On/Off (0-1)
@@ -1050,78 +1074,261 @@ class ArpParameters(Enum):
 
 # SuperNATURAL presets for each part
 DIGITAL_SN_PRESETS = [
-    '001: JP8 Strings1', '002: Soft Pad 1', '003: JP8 Strings2', '004: JUNO Str 1', '005: Oct Strings',
-    '006: Brite Str 1', '007: Boreal Pad',
-    '008: JP8 Strings3', '009: JP8 Strings4', '010: Hollow Pad 1', '011: LFO Pad 1', '012: Hybrid Str',
-    '013: Awakening 1', '014: Cincosoft 1',
-    '015: Bright Pad 1', '016: Analog Str 1', '017: Soft ResoPd1', '018: HPF Poly 1', '019: BPF Poly',
-    '020: Sweep Pad 1', '021: Soft Pad 2',
-    '022: Sweep JD 1', '023: FltSweep Pd1', '024: HPF Pad', '025: HPF SweepPd1', '026: KOff Pad', '027: Sweep Pad 2',
-    '028: TrnsSweepPad',
-    '029: Revalation 1', '030: LFO CarvePd1', '031: RETROX 139 1', '032: LFO ResoPad1', '033: PLS Pad 1',
-    '034: PLS Pad 2', '035: Trip 2 Mars1',
-    '036: Reso S&H Pd1', '037: SideChainPd1', '038: PXZoon 1', '039: Psychoscilo1', '040: Fantasy 1',
-    '041: D-50 Stack 1', '042: Organ Pad',
-    '043: Bell Pad', '044: Dreaming 1', '045: Syn Sniper 1', '046: Strings 1', '047: D-50 Pizz 1', '048: Super Saw 1',
-    '049: S-SawStacLd1',
-    '050: Tekno Lead 1', '051: Tekno Lead 2', '052: Tekno Lead 3', '053: OSC-SyncLd 1', '054: WaveShapeLd1',
-    '055: JD RingMod 1', '056: Buzz Lead 1',
-    '057: Buzz Lead 2', '058: SawBuzz Ld 1', '059: Sqr Buzz Ld1', '060: Tekno Lead 4', '061: Dist Flt TB1',
-    '062: Dist TB Sqr1', '063: Glideator 1',
-    '064: Vintager 1', '065: Hover Lead 1', '066: Saw Lead 1', '067: Saw+Tri Lead', '068: PortaSaw Ld1',
-    '069: Reso Saw Ld', '070: SawTrap Ld 1',
-    '071: Fat GR Lead', '072: Pulstar Ld', '073: Slow Lead', '074: AnaVox Lead', '075: Square Ld 1', '076: Square Ld 2',
-    '077: Sqr Lead 1',
-    '078: Sqr Trap Ld1', '079: Sine Lead 1', '080: Tri Lead', '081: Tri Stac Ld1', '082: 5th SawLead1',
-    '083: Sweet 5th 1', '084: 4th Syn Lead',
-    '085: Maj Stack Ld', '086: MinStack Ld1', '087: Chubby Lead1', '088: CuttingLead1', '089: Seq Bass 1',
-    '090: Reso Bass 1', '091: TB Bass 1',
-    '092: 106 Bass 1', '093: FilterEnvBs1', '094: JUNO Sqr Bs1', '095: Reso Bass 2', '096: JUNO Bass', '097: MG Bass 1',
-    '098: 106 Bass 3',
-    '099: Reso Bass 3', '100: Detune Bs 1', '101: MKS-50 Bass1', '102: Sweep Bass', '103: MG Bass 2', '104: MG Bass 3',
-    '105: ResRubber Bs',
-    '106: R&B Bass 1', '107: Reso Bass 4', '108: Wide Bass 1', '109: Chow Bass 1', '110: Chow Bass 2',
-    '111: SqrFilterBs1', '112: Reso Bass 5',
-    '113: Syn Bass 1', '114: ResoSawSynBs', '115: Filter Bass1', '116: SeqFltEnvBs', '117: DnB Bass 1',
-    '118: UnisonSynBs1', '119: Modular Bs',
-    '120: Monster Bs 1', '121: Monster Bs 2', '122: Monster Bs 3', '123: Monster Bs 4', '124: Square Bs 1',
-    '125: 106 Bass 2', '126: 5th Stac Bs1',
-    '127: SqrStacSynBs', '128: MC-202 Bs', '129: TB Bass 2', '130: Square Bs 2', '131: SH-101 Bs', '132: R&B Bass 2',
-    '133: MG Bass 4',
-    '134: Seq Bass 2', '135: Tri Bass 1', '136: BPF Syn Bs 2', '137: BPF Syn Bs 1', '138: Low Bass 1',
-    '139: Low Bass 2', '140: Kick Bass 1',
-    '141: SinDetuneBs1', '142: Organ Bass 1', '143: Growl Bass 1', '144: Talking Bs 1', '145: LFO Bass 1',
-    '146: LFO Bass 2', '147: Crack Bass',
-    '148: Wobble Bs 1', '149: Wobble Bs 2', '150: Wobble Bs 3', '151: Wobble Bs 4', '152: SideChainBs1',
-    '153: SideChainBs2', '154: House Bass 1',
-    '155: FM Bass', '156: 4Op FM Bass1', '157: Ac. Bass', '158: Fingerd Bs 1', '159: Picked Bass', '160: Fretless Bs',
-    '161: Slap Bass 1',
-    '162: JD Piano 1', '163: E. Grand 1', '164: Trem EP 1', '165: FM E.Piano 1', '166: FM E.Piano 2',
-    '167: Vib Wurly 1', '168: Pulse Clav',
-    '169: Clav', '170: 70\'s E.Organ', '171: House Org 1', '172: House Org 2', '173: Bell 1', '174: Bell 2',
-    '175: Organ Bell',
-    '176: Vibraphone 1', '177: Steel Drum', '178: Harp 1', '179: Ac. Guitar', '180: Bright Strat', '181: Funk Guitar1',
-    '182: Jazz Guitar',
-    '183: Dist Guitar1', '184: D. Mute Gtr1', '185: E. Sitar', '186: Sitar Drone', '187: FX 1', '188: FX 2',
-    '189: FX 3',
-    '190: Tuned Winds1', '191: Bend Lead 1', '192: RiSER 1', '193: Rising SEQ 1', '194: Scream Saw', '195: Noise SEQ 1',
-    '196: Syn Vox 1',
-    '197: JD SoftVox', '198: Vox Pad', '199: VP-330 Chr', '200: Orch Hit', '201: Philly Hit', '202: House Hit',
-    '203: O\'Skool Hit1',
-    '204: Punch Hit', '205: Tao Hit', '206: SEQ Saw 1', '207: SEQ Sqr', '208: SEQ Tri 1', '209: SEQ 1', '210: SEQ 2',
-    '211: SEQ 3', '212: SEQ 4', '213: Sqr Reso Plk', '214: Pluck Synth1', '215: Paperclip 1', '216: Sonar Pluck1',
-    '217: SqrTrapPlk 1',
-    '218: TB Saw Seq 1', '219: TB Sqr Seq 1', '220: JUNO Key', '221: Analog Poly1', '222: Analog Poly2',
-    '223: Analog Poly3', '224: Analog Poly4',
-    '225: JUNO Octavr1', '226: EDM Synth 1', '227: Super Saw 2', '228: S-Saw Poly', '229: Trance Key 1',
-    '230: S-Saw Pad 1', '231: 7th Stac Syn',
-    '232: S-SawStc Syn', '233: Trance Key 2', '234: Analog Brass', '235: Reso Brass', '236: Soft Brass 1',
-    '237: FM Brass', '238: Syn Brass 1',
-    '239: Syn Brass 2', '240: JP8 Brass', '241: Soft SynBrs1', '242: Soft SynBrs2', '243: EpicSlow Brs',
-    '244: JUNO Brass', '245: Poly Brass',
-    '246: Voc:Ensemble', '247: Voc:5thStack', '248: Voc:Robot', '249: Voc:Saw', '250: Voc:Sqr', '251: Voc:Rise Up',
-    '252: Voc:Auto Vib',
-    '253: Voc:PitchEnv', '254: Voc:VP-330', '255: Voc:Noise'
+    "001: JP8 Strings1",
+    "002: Soft Pad 1",
+    "003: JP8 Strings2",
+    "004: JUNO Str 1",
+    "005: Oct Strings",
+    "006: Brite Str 1",
+    "007: Boreal Pad",
+    "008: JP8 Strings3",
+    "009: JP8 Strings4",
+    "010: Hollow Pad 1",
+    "011: LFO Pad 1",
+    "012: Hybrid Str",
+    "013: Awakening 1",
+    "014: Cincosoft 1",
+    "015: Bright Pad 1",
+    "016: Analog Str 1",
+    "017: Soft ResoPd1",
+    "018: HPF Poly 1",
+    "019: BPF Poly",
+    "020: Sweep Pad 1",
+    "021: Soft Pad 2",
+    "022: Sweep JD 1",
+    "023: FltSweep Pd1",
+    "024: HPF Pad",
+    "025: HPF SweepPd1",
+    "026: KOff Pad",
+    "027: Sweep Pad 2",
+    "028: TrnsSweepPad",
+    "029: Revalation 1",
+    "030: LFO CarvePd1",
+    "031: RETROX 139 1",
+    "032: LFO ResoPad1",
+    "033: PLS Pad 1",
+    "034: PLS Pad 2",
+    "035: Trip 2 Mars1",
+    "036: Reso S&H Pd1",
+    "037: SideChainPd1",
+    "038: PXZoon 1",
+    "039: Psychoscilo1",
+    "040: Fantasy 1",
+    "041: D-50 Stack 1",
+    "042: Organ Pad",
+    "043: Bell Pad",
+    "044: Dreaming 1",
+    "045: Syn Sniper 1",
+    "046: Strings 1",
+    "047: D-50 Pizz 1",
+    "048: Super Saw 1",
+    "049: S-SawStacLd1",
+    "050: Tekno Lead 1",
+    "051: Tekno Lead 2",
+    "052: Tekno Lead 3",
+    "053: OSC-SyncLd 1",
+    "054: WaveShapeLd1",
+    "055: JD RingMod 1",
+    "056: Buzz Lead 1",
+    "057: Buzz Lead 2",
+    "058: SawBuzz Ld 1",
+    "059: Sqr Buzz Ld1",
+    "060: Tekno Lead 4",
+    "061: Dist Flt TB1",
+    "062: Dist TB Sqr1",
+    "063: Glideator 1",
+    "064: Vintager 1",
+    "065: Hover Lead 1",
+    "066: Saw Lead 1",
+    "067: Saw+Tri Lead",
+    "068: PortaSaw Ld1",
+    "069: Reso Saw Ld",
+    "070: SawTrap Ld 1",
+    "071: Fat GR Lead",
+    "072: Pulstar Ld",
+    "073: Slow Lead",
+    "074: AnaVox Lead",
+    "075: Square Ld 1",
+    "076: Square Ld 2",
+    "077: Sqr Lead 1",
+    "078: Sqr Trap Ld1",
+    "079: Sine Lead 1",
+    "080: Tri Lead",
+    "081: Tri Stac Ld1",
+    "082: 5th SawLead1",
+    "083: Sweet 5th 1",
+    "084: 4th Syn Lead",
+    "085: Maj Stack Ld",
+    "086: MinStack Ld1",
+    "087: Chubby Lead1",
+    "088: CuttingLead1",
+    "089: Seq Bass 1",
+    "090: Reso Bass 1",
+    "091: TB Bass 1",
+    "092: 106 Bass 1",
+    "093: FilterEnvBs1",
+    "094: JUNO Sqr Bs1",
+    "095: Reso Bass 2",
+    "096: JUNO Bass",
+    "097: MG Bass 1",
+    "098: 106 Bass 3",
+    "099: Reso Bass 3",
+    "100: Detune Bs 1",
+    "101: MKS-50 Bass1",
+    "102: Sweep Bass",
+    "103: MG Bass 2",
+    "104: MG Bass 3",
+    "105: ResRubber Bs",
+    "106: R&B Bass 1",
+    "107: Reso Bass 4",
+    "108: Wide Bass 1",
+    "109: Chow Bass 1",
+    "110: Chow Bass 2",
+    "111: SqrFilterBs1",
+    "112: Reso Bass 5",
+    "113: Syn Bass 1",
+    "114: ResoSawSynBs",
+    "115: Filter Bass1",
+    "116: SeqFltEnvBs",
+    "117: DnB Bass 1",
+    "118: UnisonSynBs1",
+    "119: Modular Bs",
+    "120: Monster Bs 1",
+    "121: Monster Bs 2",
+    "122: Monster Bs 3",
+    "123: Monster Bs 4",
+    "124: Square Bs 1",
+    "125: 106 Bass 2",
+    "126: 5th Stac Bs1",
+    "127: SqrStacSynBs",
+    "128: MC-202 Bs",
+    "129: TB Bass 2",
+    "130: Square Bs 2",
+    "131: SH-101 Bs",
+    "132: R&B Bass 2",
+    "133: MG Bass 4",
+    "134: Seq Bass 2",
+    "135: Tri Bass 1",
+    "136: BPF Syn Bs 2",
+    "137: BPF Syn Bs 1",
+    "138: Low Bass 1",
+    "139: Low Bass 2",
+    "140: Kick Bass 1",
+    "141: SinDetuneBs1",
+    "142: Organ Bass 1",
+    "143: Growl Bass 1",
+    "144: Talking Bs 1",
+    "145: LFO Bass 1",
+    "146: LFO Bass 2",
+    "147: Crack Bass",
+    "148: Wobble Bs 1",
+    "149: Wobble Bs 2",
+    "150: Wobble Bs 3",
+    "151: Wobble Bs 4",
+    "152: SideChainBs1",
+    "153: SideChainBs2",
+    "154: House Bass 1",
+    "155: FM Bass",
+    "156: 4Op FM Bass1",
+    "157: Ac. Bass",
+    "158: Fingerd Bs 1",
+    "159: Picked Bass",
+    "160: Fretless Bs",
+    "161: Slap Bass 1",
+    "162: JD Piano 1",
+    "163: E. Grand 1",
+    "164: Trem EP 1",
+    "165: FM E.Piano 1",
+    "166: FM E.Piano 2",
+    "167: Vib Wurly 1",
+    "168: Pulse Clav",
+    "169: Clav",
+    "170: 70's E.Organ",
+    "171: House Org 1",
+    "172: House Org 2",
+    "173: Bell 1",
+    "174: Bell 2",
+    "175: Organ Bell",
+    "176: Vibraphone 1",
+    "177: Steel Drum",
+    "178: Harp 1",
+    "179: Ac. Guitar",
+    "180: Bright Strat",
+    "181: Funk Guitar1",
+    "182: Jazz Guitar",
+    "183: Dist Guitar1",
+    "184: D. Mute Gtr1",
+    "185: E. Sitar",
+    "186: Sitar Drone",
+    "187: FX 1",
+    "188: FX 2",
+    "189: FX 3",
+    "190: Tuned Winds1",
+    "191: Bend Lead 1",
+    "192: RiSER 1",
+    "193: Rising SEQ 1",
+    "194: Scream Saw",
+    "195: Noise SEQ 1",
+    "196: Syn Vox 1",
+    "197: JD SoftVox",
+    "198: Vox Pad",
+    "199: VP-330 Chr",
+    "200: Orch Hit",
+    "201: Philly Hit",
+    "202: House Hit",
+    "203: O'Skool Hit1",
+    "204: Punch Hit",
+    "205: Tao Hit",
+    "206: SEQ Saw 1",
+    "207: SEQ Sqr",
+    "208: SEQ Tri 1",
+    "209: SEQ 1",
+    "210: SEQ 2",
+    "211: SEQ 3",
+    "212: SEQ 4",
+    "213: Sqr Reso Plk",
+    "214: Pluck Synth1",
+    "215: Paperclip 1",
+    "216: Sonar Pluck1",
+    "217: SqrTrapPlk 1",
+    "218: TB Saw Seq 1",
+    "219: TB Sqr Seq 1",
+    "220: JUNO Key",
+    "221: Analog Poly1",
+    "222: Analog Poly2",
+    "223: Analog Poly3",
+    "224: Analog Poly4",
+    "225: JUNO Octavr1",
+    "226: EDM Synth 1",
+    "227: Super Saw 2",
+    "228: S-Saw Poly",
+    "229: Trance Key 1",
+    "230: S-Saw Pad 1",
+    "231: 7th Stac Syn",
+    "232: S-SawStc Syn",
+    "233: Trance Key 2",
+    "234: Analog Brass",
+    "235: Reso Brass",
+    "236: Soft Brass 1",
+    "237: FM Brass",
+    "238: Syn Brass 1",
+    "239: Syn Brass 2",
+    "240: JP8 Brass",
+    "241: Soft SynBrs1",
+    "242: Soft SynBrs2",
+    "243: EpicSlow Brs",
+    "244: JUNO Brass",
+    "245: Poly Brass",
+    "246: Voc:Ensemble",
+    "247: Voc:5thStack",
+    "248: Voc:Robot",
+    "249: Voc:Saw",
+    "250: Voc:Sqr",
+    "251: Voc:Rise Up",
+    "252: Voc:Auto Vib",
+    "253: Voc:PitchEnv",
+    "254: Voc:VP-330",
+    "255: Voc:Noise",
 ]
 
 DRUM_SN_PRESETS = [
@@ -1154,12 +1361,13 @@ DRUM_SN_PRESETS = [
     "027: User Kit 1",
     "028: User Kit 2",
     "029: User Kit 3",
-    "030: User Kit 4"
+    "030: User Kit 4",
 ]
 
 
 class AnalogLFO(Enum):
     """LFO shape values"""
+
     TRIANGLE = 0
     SINE = 1
     SAW = 2
@@ -1170,6 +1378,7 @@ class AnalogLFO(Enum):
 
 class AnalogLFOSync(Enum):
     """LFO tempo sync note values"""
+
     NOTE_16 = 0  # 16 bars
     NOTE_12 = 1  # 12 bars
     NOTE_8 = 2  # 8 bars
@@ -1194,6 +1403,7 @@ class AnalogLFOSync(Enum):
 
 class AnalogOscWaveform(Enum):
     """Analog oscillator waveform types"""
+
     SAW = 0
     TRIANGLE = 1
     PW_SQUARE = 2
@@ -1201,6 +1411,7 @@ class AnalogOscWaveform(Enum):
 
 class AnalogSubOscType(Enum):
     """Analog sub oscillator types"""
+
     OFF = 0
     TYPE_1 = 1
     TYPE_2 = 2
@@ -1208,12 +1419,14 @@ class AnalogSubOscType(Enum):
 
 class AnalogFilterType(Enum):
     """Analog filter types"""
+
     BYPASS = 0
     LPF = 1
 
 
 class AnalogParameter(Enum):
     """Analog synth parameter addresses and ranges"""
+
     # Oscillator parameters (0x16-0x1F)
     OSC1_WAVE = 0x16  # OSC Waveform (0-2: SAW, TRI, PW-SQR)
     OSC1_PITCH = 0x17  # OSC Pitch Coarse (40-88: maps to -24 - +24)
@@ -1251,12 +1464,12 @@ class AnalogParameter(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw MIDI value to display value based on parameter type"""
         display_maps = {
-            0x16: ['SAW', 'TRI', 'PW-SQR'],  # Direct mapping for waveforms
+            0x16: ["SAW", "TRI", "PW-SQR"],  # Direct mapping for waveforms
             0x17: lambda x: f"{x - 64:+d}",  # -24 to +24 (centered at 64)
             0x18: lambda x: f"{x - 64:+d}",  # -50 to +50 (centered at 64)
             0x1B: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
             0x1E: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
-            0x1F: ['OFF', 'OCT-1', 'OCT-2']  # Direct mapping for sub osc type
+            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc type
         }
 
         if param in display_maps:
@@ -1270,6 +1483,7 @@ class AnalogParameter(Enum):
 
 class DigitalParameter(Enum):
     """Digital synth parameter addresses and ranges"""
+
     # Tone name parameters (0x00-0x0B)
     TONE_NAME_1 = 0x00  # ASCII 32-127
     TONE_NAME_2 = 0x01
@@ -1412,23 +1626,18 @@ class DigitalParameter(Enum):
         ranges = {
             # Tone name (0x00-0x0B): ASCII 32-127
             range(0x00, 0x0C): lambda v: 32 <= v <= 127,
-
             # Level: 0-127
             0x0C: lambda v: 0 <= v <= 127,
-
             # Switches: 0-1
             0x12: lambda v: v in (0, 1),  # Portamento
             0x14: lambda v: v in (0, 1),  # Mono
-
             # Portamento time: 0-127
             0x13: lambda v: 0 <= v <= 127,
-
             # Octave shift: 61-67 (-3 to +3)
             0x15: lambda v: 61 <= v <= 67,
-
             # Pitch bend ranges: 0-24
             0x16: lambda v: 0 <= v <= 24,
-            0x17: lambda v: 0 <= v <= 24
+            0x17: lambda v: 0 <= v <= 24,
         }
 
         # Find matching range
@@ -1448,15 +1657,25 @@ class DigitalParameter(Enum):
             return chr(value)
         elif param == 0x15:  # Octave shift
             return f"{value - 64:+d}"  # Convert to -3 to +3
-        elif param in (0x12, 0x14, 0x20, 0x2F,
-                       0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E):  # All switches
+        elif param in (
+            0x12,
+            0x14,
+            0x20,
+            0x2F,
+            0x19,
+            0x1A,
+            0x1B,
+            0x1C,
+            0x1D,
+            0x1E,
+        ):  # All switches
             return "ON" if value else "OFF"
         elif param == 0x22:  # Coarse tune
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x23:  # Fine tune
             return f"{value - 64:+d}"  # Convert to -50/+50
         elif param == 0x28:  # Filter type
-            return ['OFF', 'LPF', 'BPF', 'HPF'][value]
+            return ["OFF", "LPF", "BPF", "HPF"][value]
         elif param == 0x2B:  # Filter env
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x2E:  # Pan
@@ -1466,7 +1685,7 @@ class DigitalParameter(Enum):
                 return f"{value - 64}R"
             return "C"
         elif param == 0x1F:  # Ring switch
-            return ['OFF', '---', 'ON'][value]
+            return ["OFF", "---", "ON"][value]
         elif param in (0x2E, 0x32):  # Unison and Legato switches
             return "ON" if value else "OFF"
         elif param == 0x31:  # Portamento mode
@@ -1474,19 +1693,57 @@ class DigitalParameter(Enum):
         elif param == 0x3C:  # Unison size
             return str([2, 4, 6, 8][value])  # Convert 0-3 to actual voice count
         elif param == 0x04:  # Envelope loop mode
-            return ['OFF', 'FREE-RUN', 'TEMPO-SYNC'][value]
+            return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
         elif param == 0x05:  # Envelope loop sync note
-            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                    '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                    '1/12', '1/16', '1/24', '1/32'][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         elif param in (0x22, 0x23, 0x24, 0x25):  # LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x26:  # Mod LFO shape
-            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
         elif param == 0x29:  # Mod LFO sync note
-            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                    '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                    '1/12', '1/16', '1/24', '1/32'][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         elif param in (0x2C, 0x2D, 0x2E, 0x2F):  # Mod LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param in (0x30, 0x31):  # Aftertouch sensitivities
@@ -1510,6 +1767,7 @@ SYSTEM_CONTROLLER = 0x03  # 00 03 00: System Controller parameters
 # System Common Parameters (0x02 00)
 class SystemCommon(Enum):
     """System Common parameters"""
+
     MASTER_TUNE = 0x00  # Master Tune (24-2024: -100.0 to +100.0 cents)
     MASTER_KEY_SHIFT = 0x04  # Master Key Shift (40-88: -24 to +24 semitones)
     MASTER_LEVEL = 0x05  # Master Level (0-127)
@@ -1527,7 +1785,7 @@ class SystemCommon(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x00:  # Master Tune
-            cents = ((value - 1024) / 10)  # Convert 24-2024 to -100.0/+100.0
+            cents = (value - 1024) / 10  # Convert 24-2024 to -100.0/+100.0
             return f"{cents:+.1f} cents"
         elif param == 0x04:  # Master Key Shift
             semitones = value - 64  # Convert 40-88 to -24/+24
@@ -1542,6 +1800,7 @@ class SystemCommon(Enum):
 @dataclass
 class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SYSTEM_AREA  # 0x02: System area
     section: int = SYSTEM_COMMON  # 0x00: Common section
@@ -1555,7 +1814,7 @@ class SystemCommonMessage(RolandSysEx):
             self.area,  # System area (0x02)
             self.section,  # Common section (0x00)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -1564,31 +1823,27 @@ class SystemCommonMessage(RolandSysEx):
 # Set master tune to +50 cents
 msg = SystemCommonMessage(
     param=SystemCommon.MASTER_TUNE.value,
-    value=1024 + (50 * 10)  # Convert +50.0 cents to 1524
+    value=1024 + (50 * 10),  # Convert +50.0 cents to 1524
 )
 
 # Set master key shift to -12 semitones
 msg = SystemCommonMessage(
-    param=SystemCommon.MASTER_KEY_SHIFT.value,
-    value=52  # Convert -12 to 52 (64-12)
+    param=SystemCommon.MASTER_KEY_SHIFT.value, value=52  # Convert -12 to 52 (64-12)
 )
 
 # Set program control channel to 1
 msg = SystemCommonMessage(
-    param=SystemCommon.PROGRAM_CTRL_CH.value,
-    value=1  # Channel 1
+    param=SystemCommon.PROGRAM_CTRL_CH.value, value=1  # Channel 1
 )
 
 # Enable program change reception
-msg = SystemCommonMessage(
-    param=SystemCommon.RX_PROGRAM_CHANGE.value,
-    value=1  # ON
-)
+msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  # ON
 
 
 # System Controller Parameters (0x02 03)
 class SystemController(Enum):
     """System Controller parameters"""
+
     TX_PROGRAM_CHANGE = 0x00  # Transmit Program Change (0: OFF, 1: ON)
     TX_BANK_SELECT = 0x01  # Transmit Bank Select (0: OFF, 1: ON)
     KEYBOARD_VELOCITY = 0x02  # Keyboard Velocity (0: REAL, 1-127: Fixed)
@@ -1603,7 +1858,7 @@ class SystemController(Enum):
         elif param == 0x02:  # Keyboard velocity
             return "REAL" if value == 0 else str(value)
         elif param == 0x03:  # Velocity curve
-            return ['LIGHT', 'MEDIUM', 'HEAVY'][value]
+            return ["LIGHT", "MEDIUM", "HEAVY"][value]
         elif param == 0x04:  # Velocity offset
             return f"{value - 64:+d}"  # Convert 54-73 to -10/+9
         return str(value)
@@ -1612,6 +1867,7 @@ class SystemController(Enum):
 @dataclass
 class SystemControllerMessage(RolandSysEx):
     """System Controller parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SYSTEM_AREA  # 0x02: System area
     section: int = SYSTEM_CONTROLLER  # 0x03: Controller section
@@ -1625,7 +1881,7 @@ class SystemControllerMessage(RolandSysEx):
             self.area,  # System area (0x02)
             self.section,  # Controller section (0x03)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -1633,26 +1889,22 @@ class SystemControllerMessage(RolandSysEx):
 # Example usage:
 # Enable program change transmission
 msg = SystemControllerMessage(
-    param=SystemController.TX_PROGRAM_CHANGE.value,
-    value=1  # ON
+    param=SystemController.TX_PROGRAM_CHANGE.value, value=1  # ON
 )
 
 # Set keyboard velocity to REAL
 msg = SystemControllerMessage(
-    param=SystemController.KEYBOARD_VELOCITY.value,
-    value=0  # REAL
+    param=SystemController.KEYBOARD_VELOCITY.value, value=0  # REAL
 )
 
 # Set velocity curve to MEDIUM
 msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_CURVE.value,
-    value=1  # MEDIUM
+    param=SystemController.VELOCITY_CURVE.value, value=1  # MEDIUM
 )
 
 # Set velocity offset to +5
 msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_OFFSET.value,
-    value=69  # Convert +5 to 69 (64+5)
+    param=SystemController.VELOCITY_OFFSET.value, value=69  # Convert +5 to 69 (64+5)
 )
 
 # Temporary Tone Areas (0x19)
@@ -1670,6 +1922,7 @@ DRUM_PART = 0x10  # Drum Kit
 # Parameter Groups
 class ToneGroup(Enum):
     """Tone parameter groups"""
+
     COMMON = 0x00  # Common parameters
     OSC = 0x01  # Oscillator parameters
     FILTER = 0x02  # Filter parameters
@@ -1681,6 +1934,7 @@ class ToneGroup(Enum):
 # Program Area Structure (0x18)
 class ProgramArea(Enum):
     """Program memory areas"""
+
     COMMON = 0x00  # 00 00 00: Program Common
     VOCAL_FX = 0x01  # 00 01 00: Program Vocal Effect
     EFFECT_1 = 0x02  # 00 02 00: Program Effect 1
@@ -1706,6 +1960,7 @@ class ProgramArea(Enum):
 # SuperNATURAL Synth Tone Structure (0x19 01/02)
 class DigitalToneSection(Enum):
     """SuperNATURAL Synth Tone sections"""
+
     COMMON = 0x00  # 00 00 00: Common parameters
     PARTIAL_1 = 0x20  # 00 20 00: Partial 1
     PARTIAL_2 = 0x21  # 00 21 00: Partial 2
@@ -1716,6 +1971,7 @@ class DigitalToneSection(Enum):
 @dataclass
 class DigitalToneMessage(RolandSysEx):
     """SuperNATURAL Synth Tone parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = 0x19  # Temporary area
     tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
@@ -1729,7 +1985,7 @@ class DigitalToneMessage(RolandSysEx):
             self.area,  # Temporary area (0x19)
             self.tone_type,  # Digital 1 or 2 (0x01/0x02)
             self.section,  # Section (Common/Partial/Modify)
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -1740,7 +1996,7 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.COMMON.value,
     param=0x00,  # Common parameter
-    value=64
+    value=64,
 )
 
 # Set partial parameter
@@ -1748,7 +2004,7 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.PARTIAL_1.value,
     param=0x00,  # Partial parameter
-    value=64
+    value=64,
 )
 
 # Set modify parameter
@@ -1756,12 +2012,13 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.MODIFY.value,
     param=0x00,  # Modify parameter
-    value=64
+    value=64,
 )
 
 
 class DigitalToneCommon:
     """SuperNATURAL Synth Tone Common parameters"""
+
     # Tone name (12 characters)
     NAME_1 = 0x00  # Character 1 (ASCII 32-127)
     NAME_2 = 0x01  # Character 2
@@ -1807,14 +2064,24 @@ class DigitalToneCommon:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         elif param == 0x15:  # Octave shift
             return f"{value - 64:+d}"  # Convert 61-67 to -3/+3
-        elif param in (0x12, 0x14, 0x19, 0x1A, 0x1B,
-                       0x1C, 0x1D, 0x1E, 0x2E, 0x32):  # Switches
+        elif param in (
+            0x12,
+            0x14,
+            0x19,
+            0x1A,
+            0x1B,
+            0x1C,
+            0x1D,
+            0x1E,
+            0x2E,
+            0x32,
+        ):  # Switches
             return "ON" if value else "OFF"
         elif param == 0x1F:  # Ring switch
-            return ['OFF', '---', 'ON'][value]
+            return ["OFF", "---", "ON"][value]
         elif param == 0x31:  # Portamento mode
             return "LEGATO" if value else "NORMAL"
         elif param == 0x3C:  # Unison size
@@ -1824,6 +2091,7 @@ class DigitalToneCommon:
 
 class DigitalTonePartial(Enum):
     """Partial parameters for SuperNATURAL Synth Tone"""
+
     WAVE = 0x00  # Wave number (0-255)
     LEVEL = 0x01  # Partial level (0-127)
     COARSE = 0x02  # Coarse tune (-24 to +24)
@@ -1847,6 +2115,7 @@ class DigitalTonePartial(Enum):
 
 class DigitalToneModify:
     """SuperNATURAL Synth Tone Modify parameters"""
+
     ATTACK_SENS = 0x01  # Attack Time Interval Sens (0-127)
     RELEASE_SENS = 0x02  # Release Time Interval Sens (0-127)
     PORTA_SENS = 0x03  # Portamento Time Interval Sens (0-127)
@@ -1885,11 +2154,30 @@ class DigitalToneModify:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x04:  # Envelope Loop Mode
-            return ['OFF', 'FREE-RUN', 'TEMPO-SYNC'][value]
+            return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
         elif param == 0x05:  # Envelope Loop Sync Note
-            notes = ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                     '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                     '1/12', '1/16', '1/24', '1/32']
+            notes = [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ]
             return notes[value] if 0 <= value <= 19 else str(value)
         elif param == 0x06:  # Chromatic Portamento
             return "ON" if value else "OFF"
@@ -1898,6 +2186,7 @@ class DigitalToneModify:
 
 class EffectType(Enum):
     """Effect types and parameters"""
+
     # Effect types
     THRU = 0x00
     DISTORTION = 0x01
@@ -1951,6 +2240,7 @@ class EffectType(Enum):
 
 class VocalFX(Enum):
     """Vocal effects types and parameters"""
+
     # Effect types
     VOCODER = 0x00
     AUTO_PITCH = 0x01
@@ -1984,6 +2274,7 @@ class VocalFX(Enum):
 
 class VoiceCutoffFilter(Enum):
     """Voice cutoff filter types"""
+
     THRU = 0x00
     LPF = 0x01
     HPF = 0x02
@@ -1992,6 +2283,7 @@ class VoiceCutoffFilter(Enum):
 
 class VoiceScale(Enum):
     """Voice scale types"""
+
     CHROMATIC = 0x00
     MAJOR = 0x01
     MINOR = 0x02
@@ -2001,6 +2293,7 @@ class VoiceScale(Enum):
 
 class VoiceKey(Enum):
     """Voice keys"""
+
     C = 0x00
     Db = 0x01
     D = 0x02
@@ -2017,6 +2310,7 @@ class VoiceKey(Enum):
 
 class ArpGrid(Enum):
     """Arpeggio grid values"""
+
     GRID_4 = 0  # 04_
     GRID_8 = 1  # 08_
     GRID_8L = 2  # 08L
@@ -2030,6 +2324,7 @@ class ArpGrid(Enum):
 
 class ArpDuration(Enum):
     """Arpeggio duration values"""
+
     DUR_30 = 0  # 30%
     DUR_40 = 1  # 40%
     DUR_50 = 2  # 50%
@@ -2044,6 +2339,7 @@ class ArpDuration(Enum):
 
 class ArpMotif(Enum):
     """Arpeggio motif values"""
+
     UP_L = 0  # UP/L
     UP_H = 1  # UP/H
     UP_NORM = 2  # UP/_
@@ -2060,6 +2356,7 @@ class ArpMotif(Enum):
 
 class ArpParameters(Enum):
     """Arpeggiator parameters"""
+
     GRID = 0x01  # Grid (0-8)
     DURATION = 0x02  # Duration (0-9)
     SWITCH = 0x03  # On/Off (0-1)
@@ -2072,78 +2369,261 @@ class ArpParameters(Enum):
 
 # SuperNATURAL presets for each part
 DIGITAL_SN_PRESETS = [
-    '001: JP8 Strings1', '002: Soft Pad 1', '003: JP8 Strings2', '004: JUNO Str 1', '005: Oct Strings',
-    '006: Brite Str 1', '007: Boreal Pad',
-    '008: JP8 Strings3', '009: JP8 Strings4', '010: Hollow Pad 1', '011: LFO Pad 1', '012: Hybrid Str',
-    '013: Awakening 1', '014: Cincosoft 1',
-    '015: Bright Pad 1', '016: Analog Str 1', '017: Soft ResoPd1', '018: HPF Poly 1', '019: BPF Poly',
-    '020: Sweep Pad 1', '021: Soft Pad 2',
-    '022: Sweep JD 1', '023: FltSweep Pd1', '024: HPF Pad', '025: HPF SweepPd1', '026: KOff Pad', '027: Sweep Pad 2',
-    '028: TrnsSweepPad',
-    '029: Revalation 1', '030: LFO CarvePd1', '031: RETROX 139 1', '032: LFO ResoPad1', '033: PLS Pad 1',
-    '034: PLS Pad 2', '035: Trip 2 Mars1',
-    '036: Reso S&H Pd1', '037: SideChainPd1', '038: PXZoon 1', '039: Psychoscilo1', '040: Fantasy 1',
-    '041: D-50 Stack 1', '042: Organ Pad',
-    '043: Bell Pad', '044: Dreaming 1', '045: Syn Sniper 1', '046: Strings 1', '047: D-50 Pizz 1', '048: Super Saw 1',
-    '049: S-SawStacLd1',
-    '050: Tekno Lead 1', '051: Tekno Lead 2', '052: Tekno Lead 3', '053: OSC-SyncLd 1', '054: WaveShapeLd1',
-    '055: JD RingMod 1', '056: Buzz Lead 1',
-    '057: Buzz Lead 2', '058: SawBuzz Ld 1', '059: Sqr Buzz Ld1', '060: Tekno Lead 4', '061: Dist Flt TB1',
-    '062: Dist TB Sqr1', '063: Glideator 1',
-    '064: Vintager 1', '065: Hover Lead 1', '066: Saw Lead 1', '067: Saw+Tri Lead', '068: PortaSaw Ld1',
-    '069: Reso Saw Ld', '070: SawTrap Ld 1',
-    '071: Fat GR Lead', '072: Pulstar Ld', '073: Slow Lead', '074: AnaVox Lead', '075: Square Ld 1', '076: Square Ld 2',
-    '077: Sqr Lead 1',
-    '078: Sqr Trap Ld1', '079: Sine Lead 1', '080: Tri Lead', '081: Tri Stac Ld1', '082: 5th SawLead1',
-    '083: Sweet 5th 1', '084: 4th Syn Lead',
-    '085: Maj Stack Ld', '086: MinStack Ld1', '087: Chubby Lead1', '088: CuttingLead1', '089: Seq Bass 1',
-    '090: Reso Bass 1', '091: TB Bass 1',
-    '092: 106 Bass 1', '093: FilterEnvBs1', '094: JUNO Sqr Bs1', '095: Reso Bass 2', '096: JUNO Bass', '097: MG Bass 1',
-    '098: 106 Bass 3',
-    '099: Reso Bass 3', '100: Detune Bs 1', '101: MKS-50 Bass1', '102: Sweep Bass', '103: MG Bass 2', '104: MG Bass 3',
-    '105: ResRubber Bs',
-    '106: R&B Bass 1', '107: Reso Bass 4', '108: Wide Bass 1', '109: Chow Bass 1', '110: Chow Bass 2',
-    '111: SqrFilterBs1', '112: Reso Bass 5',
-    '113: Syn Bass 1', '114: ResoSawSynBs', '115: Filter Bass1', '116: SeqFltEnvBs', '117: DnB Bass 1',
-    '118: UnisonSynBs1', '119: Modular Bs',
-    '120: Monster Bs 1', '121: Monster Bs 2', '122: Monster Bs 3', '123: Monster Bs 4', '124: Square Bs 1',
-    '125: 106 Bass 2', '126: 5th Stac Bs1',
-    '127: SqrStacSynBs', '128: MC-202 Bs', '129: TB Bass 2', '130: Square Bs 2', '131: SH-101 Bs', '132: R&B Bass 2',
-    '133: MG Bass 4',
-    '134: Seq Bass 2', '135: Tri Bass 1', '136: BPF Syn Bs 2', '137: BPF Syn Bs 1', '138: Low Bass 1',
-    '139: Low Bass 2', '140: Kick Bass 1',
-    '141: SinDetuneBs1', '142: Organ Bass 1', '143: Growl Bass 1', '144: Talking Bs 1', '145: LFO Bass 1',
-    '146: LFO Bass 2', '147: Crack Bass',
-    '148: Wobble Bs 1', '149: Wobble Bs 2', '150: Wobble Bs 3', '151: Wobble Bs 4', '152: SideChainBs1',
-    '153: SideChainBs2', '154: House Bass 1',
-    '155: FM Bass', '156: 4Op FM Bass1', '157: Ac. Bass', '158: Fingerd Bs 1', '159: Picked Bass', '160: Fretless Bs',
-    '161: Slap Bass 1',
-    '162: JD Piano 1', '163: E. Grand 1', '164: Trem EP 1', '165: FM E.Piano 1', '166: FM E.Piano 2',
-    '167: Vib Wurly 1', '168: Pulse Clav',
-    '169: Clav', '170: 70\'s E.Organ', '171: House Org 1', '172: House Org 2', '173: Bell 1', '174: Bell 2',
-    '175: Organ Bell',
-    '176: Vibraphone 1', '177: Steel Drum', '178: Harp 1', '179: Ac. Guitar', '180: Bright Strat', '181: Funk Guitar1',
-    '182: Jazz Guitar',
-    '183: Dist Guitar1', '184: D. Mute Gtr1', '185: E. Sitar', '186: Sitar Drone', '187: FX 1', '188: FX 2',
-    '189: FX 3',
-    '190: Tuned Winds1', '191: Bend Lead 1', '192: RiSER 1', '193: Rising SEQ 1', '194: Scream Saw', '195: Noise SEQ 1',
-    '196: Syn Vox 1',
-    '197: JD SoftVox', '198: Vox Pad', '199: VP-330 Chr', '200: Orch Hit', '201: Philly Hit', '202: House Hit',
-    '203: O\'Skool Hit1',
-    '204: Punch Hit', '205: Tao Hit', '206: SEQ Saw 1', '207: SEQ Sqr', '208: SEQ Tri 1', '209: SEQ 1', '210: SEQ 2',
-    '211: SEQ 3', '212: SEQ 4', '213: Sqr Reso Plk', '214: Pluck Synth1', '215: Paperclip 1', '216: Sonar Pluck1',
-    '217: SqrTrapPlk 1',
-    '218: TB Saw Seq 1', '219: TB Sqr Seq 1', '220: JUNO Key', '221: Analog Poly1', '222: Analog Poly2',
-    '223: Analog Poly3', '224: Analog Poly4',
-    '225: JUNO Octavr1', '226: EDM Synth 1', '227: Super Saw 2', '228: S-Saw Poly', '229: Trance Key 1',
-    '230: S-Saw Pad 1', '231: 7th Stac Syn',
-    '232: S-SawStc Syn', '233: Trance Key 2', '234: Analog Brass', '235: Reso Brass', '236: Soft Brass 1',
-    '237: FM Brass', '238: Syn Brass 1',
-    '239: Syn Brass 2', '240: JP8 Brass', '241: Soft SynBrs1', '242: Soft SynBrs2', '243: EpicSlow Brs',
-    '244: JUNO Brass', '245: Poly Brass',
-    '246: Voc:Ensemble', '247: Voc:5thStack', '248: Voc:Robot', '249: Voc:Saw', '250: Voc:Sqr', '251: Voc:Rise Up',
-    '252: Voc:Auto Vib',
-    '253: Voc:PitchEnv', '254: Voc:VP-330', '255: Voc:Noise'
+    "001: JP8 Strings1",
+    "002: Soft Pad 1",
+    "003: JP8 Strings2",
+    "004: JUNO Str 1",
+    "005: Oct Strings",
+    "006: Brite Str 1",
+    "007: Boreal Pad",
+    "008: JP8 Strings3",
+    "009: JP8 Strings4",
+    "010: Hollow Pad 1",
+    "011: LFO Pad 1",
+    "012: Hybrid Str",
+    "013: Awakening 1",
+    "014: Cincosoft 1",
+    "015: Bright Pad 1",
+    "016: Analog Str 1",
+    "017: Soft ResoPd1",
+    "018: HPF Poly 1",
+    "019: BPF Poly",
+    "020: Sweep Pad 1",
+    "021: Soft Pad 2",
+    "022: Sweep JD 1",
+    "023: FltSweep Pd1",
+    "024: HPF Pad",
+    "025: HPF SweepPd1",
+    "026: KOff Pad",
+    "027: Sweep Pad 2",
+    "028: TrnsSweepPad",
+    "029: Revalation 1",
+    "030: LFO CarvePd1",
+    "031: RETROX 139 1",
+    "032: LFO ResoPad1",
+    "033: PLS Pad 1",
+    "034: PLS Pad 2",
+    "035: Trip 2 Mars1",
+    "036: Reso S&H Pd1",
+    "037: SideChainPd1",
+    "038: PXZoon 1",
+    "039: Psychoscilo1",
+    "040: Fantasy 1",
+    "041: D-50 Stack 1",
+    "042: Organ Pad",
+    "043: Bell Pad",
+    "044: Dreaming 1",
+    "045: Syn Sniper 1",
+    "046: Strings 1",
+    "047: D-50 Pizz 1",
+    "048: Super Saw 1",
+    "049: S-SawStacLd1",
+    "050: Tekno Lead 1",
+    "051: Tekno Lead 2",
+    "052: Tekno Lead 3",
+    "053: OSC-SyncLd 1",
+    "054: WaveShapeLd1",
+    "055: JD RingMod 1",
+    "056: Buzz Lead 1",
+    "057: Buzz Lead 2",
+    "058: SawBuzz Ld 1",
+    "059: Sqr Buzz Ld1",
+    "060: Tekno Lead 4",
+    "061: Dist Flt TB1",
+    "062: Dist TB Sqr1",
+    "063: Glideator 1",
+    "064: Vintager 1",
+    "065: Hover Lead 1",
+    "066: Saw Lead 1",
+    "067: Saw+Tri Lead",
+    "068: PortaSaw Ld1",
+    "069: Reso Saw Ld",
+    "070: SawTrap Ld 1",
+    "071: Fat GR Lead",
+    "072: Pulstar Ld",
+    "073: Slow Lead",
+    "074: AnaVox Lead",
+    "075: Square Ld 1",
+    "076: Square Ld 2",
+    "077: Sqr Lead 1",
+    "078: Sqr Trap Ld1",
+    "079: Sine Lead 1",
+    "080: Tri Lead",
+    "081: Tri Stac Ld1",
+    "082: 5th SawLead1",
+    "083: Sweet 5th 1",
+    "084: 4th Syn Lead",
+    "085: Maj Stack Ld",
+    "086: MinStack Ld1",
+    "087: Chubby Lead1",
+    "088: CuttingLead1",
+    "089: Seq Bass 1",
+    "090: Reso Bass 1",
+    "091: TB Bass 1",
+    "092: 106 Bass 1",
+    "093: FilterEnvBs1",
+    "094: JUNO Sqr Bs1",
+    "095: Reso Bass 2",
+    "096: JUNO Bass",
+    "097: MG Bass 1",
+    "098: 106 Bass 3",
+    "099: Reso Bass 3",
+    "100: Detune Bs 1",
+    "101: MKS-50 Bass1",
+    "102: Sweep Bass",
+    "103: MG Bass 2",
+    "104: MG Bass 3",
+    "105: ResRubber Bs",
+    "106: R&B Bass 1",
+    "107: Reso Bass 4",
+    "108: Wide Bass 1",
+    "109: Chow Bass 1",
+    "110: Chow Bass 2",
+    "111: SqrFilterBs1",
+    "112: Reso Bass 5",
+    "113: Syn Bass 1",
+    "114: ResoSawSynBs",
+    "115: Filter Bass1",
+    "116: SeqFltEnvBs",
+    "117: DnB Bass 1",
+    "118: UnisonSynBs1",
+    "119: Modular Bs",
+    "120: Monster Bs 1",
+    "121: Monster Bs 2",
+    "122: Monster Bs 3",
+    "123: Monster Bs 4",
+    "124: Square Bs 1",
+    "125: 106 Bass 2",
+    "126: 5th Stac Bs1",
+    "127: SqrStacSynBs",
+    "128: MC-202 Bs",
+    "129: TB Bass 2",
+    "130: Square Bs 2",
+    "131: SH-101 Bs",
+    "132: R&B Bass 2",
+    "133: MG Bass 4",
+    "134: Seq Bass 2",
+    "135: Tri Bass 1",
+    "136: BPF Syn Bs 2",
+    "137: BPF Syn Bs 1",
+    "138: Low Bass 1",
+    "139: Low Bass 2",
+    "140: Kick Bass 1",
+    "141: SinDetuneBs1",
+    "142: Organ Bass 1",
+    "143: Growl Bass 1",
+    "144: Talking Bs 1",
+    "145: LFO Bass 1",
+    "146: LFO Bass 2",
+    "147: Crack Bass",
+    "148: Wobble Bs 1",
+    "149: Wobble Bs 2",
+    "150: Wobble Bs 3",
+    "151: Wobble Bs 4",
+    "152: SideChainBs1",
+    "153: SideChainBs2",
+    "154: House Bass 1",
+    "155: FM Bass",
+    "156: 4Op FM Bass1",
+    "157: Ac. Bass",
+    "158: Fingerd Bs 1",
+    "159: Picked Bass",
+    "160: Fretless Bs",
+    "161: Slap Bass 1",
+    "162: JD Piano 1",
+    "163: E. Grand 1",
+    "164: Trem EP 1",
+    "165: FM E.Piano 1",
+    "166: FM E.Piano 2",
+    "167: Vib Wurly 1",
+    "168: Pulse Clav",
+    "169: Clav",
+    "170: 70's E.Organ",
+    "171: House Org 1",
+    "172: House Org 2",
+    "173: Bell 1",
+    "174: Bell 2",
+    "175: Organ Bell",
+    "176: Vibraphone 1",
+    "177: Steel Drum",
+    "178: Harp 1",
+    "179: Ac. Guitar",
+    "180: Bright Strat",
+    "181: Funk Guitar1",
+    "182: Jazz Guitar",
+    "183: Dist Guitar1",
+    "184: D. Mute Gtr1",
+    "185: E. Sitar",
+    "186: Sitar Drone",
+    "187: FX 1",
+    "188: FX 2",
+    "189: FX 3",
+    "190: Tuned Winds1",
+    "191: Bend Lead 1",
+    "192: RiSER 1",
+    "193: Rising SEQ 1",
+    "194: Scream Saw",
+    "195: Noise SEQ 1",
+    "196: Syn Vox 1",
+    "197: JD SoftVox",
+    "198: Vox Pad",
+    "199: VP-330 Chr",
+    "200: Orch Hit",
+    "201: Philly Hit",
+    "202: House Hit",
+    "203: O'Skool Hit1",
+    "204: Punch Hit",
+    "205: Tao Hit",
+    "206: SEQ Saw 1",
+    "207: SEQ Sqr",
+    "208: SEQ Tri 1",
+    "209: SEQ 1",
+    "210: SEQ 2",
+    "211: SEQ 3",
+    "212: SEQ 4",
+    "213: Sqr Reso Plk",
+    "214: Pluck Synth1",
+    "215: Paperclip 1",
+    "216: Sonar Pluck1",
+    "217: SqrTrapPlk 1",
+    "218: TB Saw Seq 1",
+    "219: TB Sqr Seq 1",
+    "220: JUNO Key",
+    "221: Analog Poly1",
+    "222: Analog Poly2",
+    "223: Analog Poly3",
+    "224: Analog Poly4",
+    "225: JUNO Octavr1",
+    "226: EDM Synth 1",
+    "227: Super Saw 2",
+    "228: S-Saw Poly",
+    "229: Trance Key 1",
+    "230: S-Saw Pad 1",
+    "231: 7th Stac Syn",
+    "232: S-SawStc Syn",
+    "233: Trance Key 2",
+    "234: Analog Brass",
+    "235: Reso Brass",
+    "236: Soft Brass 1",
+    "237: FM Brass",
+    "238: Syn Brass 1",
+    "239: Syn Brass 2",
+    "240: JP8 Brass",
+    "241: Soft SynBrs1",
+    "242: Soft SynBrs2",
+    "243: EpicSlow Brs",
+    "244: JUNO Brass",
+    "245: Poly Brass",
+    "246: Voc:Ensemble",
+    "247: Voc:5thStack",
+    "248: Voc:Robot",
+    "249: Voc:Saw",
+    "250: Voc:Sqr",
+    "251: Voc:Rise Up",
+    "252: Voc:Auto Vib",
+    "253: Voc:PitchEnv",
+    "254: Voc:VP-330",
+    "255: Voc:Noise",
 ]
 
 DRUM_SN_PRESETS = [
@@ -2176,12 +2656,13 @@ DRUM_SN_PRESETS = [
     "027: User Kit 1",
     "028: User Kit 2",
     "029: User Kit 3",
-    "030: User Kit 4"
+    "030: User Kit 4",
 ]
 
 
 class AnalogLFO(Enum):
     """LFO shape values"""
+
     TRIANGLE = 0
     SINE = 1
     SAW = 2
@@ -2192,6 +2673,7 @@ class AnalogLFO(Enum):
 
 class AnalogLFOSync(Enum):
     """LFO tempo sync note values"""
+
     NOTE_16 = 0  # 16 bars
     NOTE_12 = 1  # 12 bars
     NOTE_8 = 2  # 8 bars
@@ -2216,6 +2698,7 @@ class AnalogLFOSync(Enum):
 
 class AnalogOscWaveform(Enum):
     """Analog oscillator waveform types"""
+
     SAW = 0
     TRIANGLE = 1
     PW_SQUARE = 2
@@ -2223,6 +2706,7 @@ class AnalogOscWaveform(Enum):
 
 class AnalogSubOscType(Enum):
     """Analog sub oscillator types"""
+
     OFF = 0
     TYPE_1 = 1
     TYPE_2 = 2
@@ -2230,12 +2714,14 @@ class AnalogSubOscType(Enum):
 
 class AnalogFilterType(Enum):
     """Analog filter types"""
+
     BYPASS = 0
     LPF = 1
 
 
 class AnalogParameter(Enum):
     """Analog synth parameter addresses and ranges"""
+
     # Oscillator parameters (0x16-0x1F)
     OSC1_WAVE = 0x16  # OSC Waveform (0-2: SAW, TRI, PW-SQR)
     OSC1_PITCH = 0x17  # OSC Pitch Coarse (40-88: maps to -24 - +24)
@@ -2273,12 +2759,12 @@ class AnalogParameter(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw MIDI value to display value based on parameter type"""
         display_maps = {
-            0x16: ['SAW', 'TRI', 'PW-SQR'],  # Direct mapping for waveforms
+            0x16: ["SAW", "TRI", "PW-SQR"],  # Direct mapping for waveforms
             0x17: lambda x: f"{x - 64:+d}",  # -24 to +24 (centered at 64)
             0x18: lambda x: f"{x - 64:+d}",  # -50 to +50 (centered at 64)
             0x1B: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
             0x1E: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
-            0x1F: ['OFF', 'OCT-1', 'OCT-2']  # Direct mapping for sub osc type
+            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc type
         }
 
         if param in display_maps:
@@ -2292,6 +2778,7 @@ class AnalogParameter(Enum):
 
 class DigitalParameter(Enum):
     """Digital synth parameter addresses and ranges"""
+
     # Tone name parameters (0x00-0x0B)
     TONE_NAME_1 = 0x00  # ASCII 32-127
     TONE_NAME_2 = 0x01
@@ -2434,23 +2921,18 @@ class DigitalParameter(Enum):
         ranges = {
             # Tone name (0x00-0x0B): ASCII 32-127
             range(0x00, 0x0C): lambda v: 32 <= v <= 127,
-
             # Level: 0-127
             0x0C: lambda v: 0 <= v <= 127,
-
             # Switches: 0-1
             0x12: lambda v: v in (0, 1),  # Portamento
             0x14: lambda v: v in (0, 1),  # Mono
-
             # Portamento time: 0-127
             0x13: lambda v: 0 <= v <= 127,
-
             # Octave shift: 61-67 (-3 to +3)
             0x15: lambda v: 61 <= v <= 67,
-
             # Pitch bend ranges: 0-24
             0x16: lambda v: 0 <= v <= 24,
-            0x17: lambda v: 0 <= v <= 24
+            0x17: lambda v: 0 <= v <= 24,
         }
 
         # Find matching range
@@ -2470,15 +2952,25 @@ class DigitalParameter(Enum):
             return chr(value)
         elif param == 0x15:  # Octave shift
             return f"{value - 64:+d}"  # Convert to -3 to +3
-        elif param in (0x12, 0x14, 0x20, 0x2F,
-                       0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E):  # All switches
+        elif param in (
+            0x12,
+            0x14,
+            0x20,
+            0x2F,
+            0x19,
+            0x1A,
+            0x1B,
+            0x1C,
+            0x1D,
+            0x1E,
+        ):  # All switches
             return "ON" if value else "OFF"
         elif param == 0x22:  # Coarse tune
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x23:  # Fine tune
             return f"{value - 64:+d}"  # Convert to -50/+50
         elif param == 0x28:  # Filter type
-            return ['OFF', 'LPF', 'BPF', 'HPF'][value]
+            return ["OFF", "LPF", "BPF", "HPF"][value]
         elif param == 0x2B:  # Filter env
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x2E:  # Pan
@@ -2488,7 +2980,7 @@ class DigitalParameter(Enum):
                 return f"{value - 64}R"
             return "C"
         elif param == 0x1F:  # Ring switch
-            return ['OFF', '---', 'ON'][value]
+            return ["OFF", "---", "ON"][value]
         elif param in (0x2E, 0x32):  # Unison and Legato switches
             return "ON" if value else "OFF"
         elif param == 0x31:  # Portamento mode
@@ -2496,19 +2988,57 @@ class DigitalParameter(Enum):
         elif param == 0x3C:  # Unison size
             return str([2, 4, 6, 8][value])  # Convert 0-3 to actual voice count
         elif param == 0x04:  # Envelope loop mode
-            return ['OFF', 'FREE-RUN', 'TEMPO-SYNC'][value]
+            return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
         elif param == 0x05:  # Envelope loop sync note
-            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                    '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                    '1/12', '1/16', '1/24', '1/32'][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         elif param in (0x22, 0x23, 0x24, 0x25):  # LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x26:  # Mod LFO shape
-            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
         elif param == 0x29:  # Mod LFO sync note
-            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                    '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                    '1/12', '1/16', '1/24', '1/32'][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         elif param in (0x2C, 0x2D, 0x2E, 0x2F):  # Mod LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param in (0x30, 0x31):  # Aftertouch sensitivities
@@ -2532,6 +3062,7 @@ SYSTEM_CONTROLLER = 0x03  # 00 03 00: System Controller parameters
 # System Common Parameters (0x02 00)
 class SystemCommon(Enum):
     """System Common parameters"""
+
     MASTER_TUNE = 0x00  # Master Tune (24-2024: -100.0 to +100.0 cents)
     MASTER_KEY_SHIFT = 0x04  # Master Key Shift (40-88: -24 to +24 semitones)
     MASTER_LEVEL = 0x05  # Master Level (0-127)
@@ -2549,7 +3080,7 @@ class SystemCommon(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x00:  # Master Tune
-            cents = ((value - 1024) / 10)  # Convert 24-2024 to -100.0/+100.0
+            cents = (value - 1024) / 10  # Convert 24-2024 to -100.0/+100.0
             return f"{cents:+.1f} cents"
         elif param == 0x04:  # Master Key Shift
             semitones = value - 64  # Convert 40-88 to -24/+24
@@ -2564,6 +3095,7 @@ class SystemCommon(Enum):
 @dataclass
 class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SYSTEM_AREA  # 0x02: System area
     section: int = SYSTEM_COMMON  # 0x00: Common section
@@ -2577,7 +3109,7 @@ class SystemCommonMessage(RolandSysEx):
             self.area,  # System area (0x02)
             self.section,  # Common section (0x00)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -2586,31 +3118,27 @@ class SystemCommonMessage(RolandSysEx):
 # Set master tune to +50 cents
 msg = SystemCommonMessage(
     param=SystemCommon.MASTER_TUNE.value,
-    value=1024 + (50 * 10)  # Convert +50.0 cents to 1524
+    value=1024 + (50 * 10),  # Convert +50.0 cents to 1524
 )
 
 # Set master key shift to -12 semitones
 msg = SystemCommonMessage(
-    param=SystemCommon.MASTER_KEY_SHIFT.value,
-    value=52  # Convert -12 to 52 (64-12)
+    param=SystemCommon.MASTER_KEY_SHIFT.value, value=52  # Convert -12 to 52 (64-12)
 )
 
 # Set program control channel to 1
 msg = SystemCommonMessage(
-    param=SystemCommon.PROGRAM_CTRL_CH.value,
-    value=1  # Channel 1
+    param=SystemCommon.PROGRAM_CTRL_CH.value, value=1  # Channel 1
 )
 
 # Enable program change reception
-msg = SystemCommonMessage(
-    param=SystemCommon.RX_PROGRAM_CHANGE.value,
-    value=1  # ON
-)
+msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  # ON
 
 
 # System Controller Parameters (0x02 03)
 class SystemController(Enum):
     """System Controller parameters"""
+
     TX_PROGRAM_CHANGE = 0x00  # Transmit Program Change (0: OFF, 1: ON)
     TX_BANK_SELECT = 0x01  # Transmit Bank Select (0: OFF, 1: ON)
     KEYBOARD_VELOCITY = 0x02  # Keyboard Velocity (0: REAL, 1-127: Fixed)
@@ -2625,7 +3153,7 @@ class SystemController(Enum):
         elif param == 0x02:  # Keyboard velocity
             return "REAL" if value == 0 else str(value)
         elif param == 0x03:  # Velocity curve
-            return ['LIGHT', 'MEDIUM', 'HEAVY'][value]
+            return ["LIGHT", "MEDIUM", "HEAVY"][value]
         elif param == 0x04:  # Velocity offset
             return f"{value - 64:+d}"  # Convert 54-73 to -10/+9
         return str(value)
@@ -2634,6 +3162,7 @@ class SystemController(Enum):
 @dataclass
 class SystemControllerMessage(RolandSysEx):
     """System Controller parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SYSTEM_AREA  # 0x02: System area
     section: int = SYSTEM_CONTROLLER  # 0x03: Controller section
@@ -2647,7 +3176,7 @@ class SystemControllerMessage(RolandSysEx):
             self.area,  # System area (0x02)
             self.section,  # Controller section (0x03)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -2655,26 +3184,22 @@ class SystemControllerMessage(RolandSysEx):
 # Example usage:
 # Enable program change transmission
 msg = SystemControllerMessage(
-    param=SystemController.TX_PROGRAM_CHANGE.value,
-    value=1  # ON
+    param=SystemController.TX_PROGRAM_CHANGE.value, value=1  # ON
 )
 
 # Set keyboard velocity to REAL
 msg = SystemControllerMessage(
-    param=SystemController.KEYBOARD_VELOCITY.value,
-    value=0  # REAL
+    param=SystemController.KEYBOARD_VELOCITY.value, value=0  # REAL
 )
 
 # Set velocity curve to MEDIUM
 msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_CURVE.value,
-    value=1  # MEDIUM
+    param=SystemController.VELOCITY_CURVE.value, value=1  # MEDIUM
 )
 
 # Set velocity offset to +5
 msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_OFFSET.value,
-    value=69  # Convert +5 to 69 (64+5)
+    param=SystemController.VELOCITY_OFFSET.value, value=69  # Convert +5 to 69 (64+5)
 )
 
 # Temporary Tone Areas (0x19)
@@ -2692,6 +3217,7 @@ DRUM_PART = 0x10  # Drum Kit
 # Parameter Groups
 class ToneGroup(Enum):
     """Tone parameter groups"""
+
     COMMON = 0x00  # Common parameters
     OSC = 0x01  # Oscillator parameters
     FILTER = 0x02  # Filter parameters
@@ -2703,6 +3229,7 @@ class ToneGroup(Enum):
 # Program Area Structure (0x18)
 class ProgramArea(Enum):
     """Program memory areas"""
+
     COMMON = 0x00  # 00 00 00: Program Common
     VOCAL_FX = 0x01  # 00 01 00: Program Vocal Effect
     EFFECT_1 = 0x02  # 00 02 00: Program Effect 1
@@ -2728,6 +3255,7 @@ class ProgramArea(Enum):
 # SuperNATURAL Synth Tone Structure (0x19 01/02)
 class DigitalToneSection(Enum):
     """SuperNATURAL Synth Tone sections"""
+
     COMMON = 0x00  # 00 00 00: Common parameters
     PARTIAL_1 = 0x20  # 00 20 00: Partial 1
     PARTIAL_2 = 0x21  # 00 21 00: Partial 2
@@ -2738,6 +3266,7 @@ class DigitalToneSection(Enum):
 @dataclass
 class DigitalToneMessage(RolandSysEx):
     """SuperNATURAL Synth Tone parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = 0x19  # Temporary area
     tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
@@ -2751,7 +3280,7 @@ class DigitalToneMessage(RolandSysEx):
             self.area,  # Temporary area (0x19)
             self.tone_type,  # Digital 1 or 2 (0x01/0x02)
             self.section,  # Section (Common/Partial/Modify)
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -2762,7 +3291,7 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.COMMON.value,
     param=0x00,  # Common parameter
-    value=64
+    value=64,
 )
 
 # Set partial parameter
@@ -2770,7 +3299,7 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.PARTIAL_1.value,
     param=0x00,  # Partial parameter
-    value=64
+    value=64,
 )
 
 # Set modify parameter
@@ -2778,12 +3307,13 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.MODIFY.value,
     param=0x00,  # Modify parameter
-    value=64
+    value=64,
 )
 
 
 class DigitalToneCommon:
     """SuperNATURAL Synth Tone Common parameters"""
+
     # Tone name (12 characters)
     NAME_1 = 0x00  # Character 1 (ASCII 32-127)
     NAME_2 = 0x01  # Character 2
@@ -2829,14 +3359,24 @@ class DigitalToneCommon:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         elif param == 0x15:  # Octave shift
             return f"{value - 64:+d}"  # Convert 61-67 to -3/+3
-        elif param in (0x12, 0x14, 0x19, 0x1A, 0x1B,
-                       0x1C, 0x1D, 0x1E, 0x2E, 0x32):  # Switches
+        elif param in (
+            0x12,
+            0x14,
+            0x19,
+            0x1A,
+            0x1B,
+            0x1C,
+            0x1D,
+            0x1E,
+            0x2E,
+            0x32,
+        ):  # Switches
             return "ON" if value else "OFF"
         elif param == 0x1F:  # Ring switch
-            return ['OFF', '---', 'ON'][value]
+            return ["OFF", "---", "ON"][value]
         elif param == 0x31:  # Portamento mode
             return "LEGATO" if value else "NORMAL"
         elif param == 0x3C:  # Unison size
@@ -2846,6 +3386,7 @@ class DigitalToneCommon:
 
 class DigitalTonePartial(Enum):
     """Partial parameters for SuperNATURAL Synth Tone"""
+
     WAVE = 0x00  # Wave number (0-255)
     LEVEL = 0x01  # Partial level (0-127)
     COARSE = 0x02  # Coarse tune (-24 to +24)
@@ -2869,6 +3410,7 @@ class DigitalTonePartial(Enum):
 
 class DigitalToneModify:
     """SuperNATURAL Synth Tone Modify parameters"""
+
     ATTACK_SENS = 0x01  # Attack Time Interval Sens (0-127)
     RELEASE_SENS = 0x02  # Release Time Interval Sens (0-127)
     PORTA_SENS = 0x03  # Portamento Time Interval Sens (0-127)
@@ -2907,11 +3449,30 @@ class DigitalToneModify:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x04:  # Envelope Loop Mode
-            return ['OFF', 'FREE-RUN', 'TEMPO-SYNC'][value]
+            return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
         elif param == 0x05:  # Envelope Loop Sync Note
-            notes = ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                     '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                     '1/12', '1/16', '1/24', '1/32']
+            notes = [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ]
             return notes[value] if 0 <= value <= 19 else str(value)
         elif param == 0x06:  # Chromatic Portamento
             return "ON" if value else "OFF"
@@ -2920,6 +3481,7 @@ class DigitalToneModify:
 
 class EffectType(Enum):
     """Effect types and parameters"""
+
     # Effect types
     THRU = 0x00
     DISTORTION = 0x01
@@ -2973,6 +3535,7 @@ class EffectType(Enum):
 
 class VocalFX(Enum):
     """Vocal effects types and parameters"""
+
     # Effect types
     VOCODER = 0x00
     AUTO_PITCH = 0x01
@@ -3006,6 +3569,7 @@ class VocalFX(Enum):
 
 class VoiceCutoffFilter(Enum):
     """Voice cutoff filter types"""
+
     THRU = 0x00
     LPF = 0x01
     HPF = 0x02
@@ -3014,6 +3578,7 @@ class VoiceCutoffFilter(Enum):
 
 class VoiceScale(Enum):
     """Voice scale types"""
+
     CHROMATIC = 0x00
     MAJOR = 0x01
     MINOR = 0x02
@@ -3023,6 +3588,7 @@ class VoiceScale(Enum):
 
 class VoiceKey(Enum):
     """Voice keys"""
+
     C = 0x00
     Db = 0x01
     D = 0x02
@@ -3039,6 +3605,7 @@ class VoiceKey(Enum):
 
 class ArpGrid(Enum):
     """Arpeggio grid values"""
+
     GRID_4 = 0  # 04_
     GRID_8 = 1  # 08_
     GRID_8L = 2  # 08L
@@ -3052,6 +3619,7 @@ class ArpGrid(Enum):
 
 class ArpDuration(Enum):
     """Arpeggio duration values"""
+
     DUR_30 = 0  # 30%
     DUR_40 = 1  # 40%
     DUR_50 = 2  # 50%
@@ -3066,6 +3634,7 @@ class ArpDuration(Enum):
 
 class ArpMotif(Enum):
     """Arpeggio motif values"""
+
     UP_L = 0  # UP/L
     UP_H = 1  # UP/H
     UP_NORM = 2  # UP/_
@@ -3082,6 +3651,7 @@ class ArpMotif(Enum):
 
 class ArpParameters(Enum):
     """Arpeggiator parameters"""
+
     GRID = 0x01  # Grid (0-8)
     DURATION = 0x02  # Duration (0-9)
     SWITCH = 0x03  # On/Off (0-1)
@@ -3094,78 +3664,261 @@ class ArpParameters(Enum):
 
 # SuperNATURAL presets for each part
 DIGITAL_SN_PRESETS = [
-    '001: JP8 Strings1', '002: Soft Pad 1', '003: JP8 Strings2', '004: JUNO Str 1', '005: Oct Strings',
-    '006: Brite Str 1', '007: Boreal Pad',
-    '008: JP8 Strings3', '009: JP8 Strings4', '010: Hollow Pad 1', '011: LFO Pad 1', '012: Hybrid Str',
-    '013: Awakening 1', '014: Cincosoft 1',
-    '015: Bright Pad 1', '016: Analog Str 1', '017: Soft ResoPd1', '018: HPF Poly 1', '019: BPF Poly',
-    '020: Sweep Pad 1', '021: Soft Pad 2',
-    '022: Sweep JD 1', '023: FltSweep Pd1', '024: HPF Pad', '025: HPF SweepPd1', '026: KOff Pad', '027: Sweep Pad 2',
-    '028: TrnsSweepPad',
-    '029: Revalation 1', '030: LFO CarvePd1', '031: RETROX 139 1', '032: LFO ResoPad1', '033: PLS Pad 1',
-    '034: PLS Pad 2', '035: Trip 2 Mars1',
-    '036: Reso S&H Pd1', '037: SideChainPd1', '038: PXZoon 1', '039: Psychoscilo1', '040: Fantasy 1',
-    '041: D-50 Stack 1', '042: Organ Pad',
-    '043: Bell Pad', '044: Dreaming 1', '045: Syn Sniper 1', '046: Strings 1', '047: D-50 Pizz 1', '048: Super Saw 1',
-    '049: S-SawStacLd1',
-    '050: Tekno Lead 1', '051: Tekno Lead 2', '052: Tekno Lead 3', '053: OSC-SyncLd 1', '054: WaveShapeLd1',
-    '055: JD RingMod 1', '056: Buzz Lead 1',
-    '057: Buzz Lead 2', '058: SawBuzz Ld 1', '059: Sqr Buzz Ld1', '060: Tekno Lead 4', '061: Dist Flt TB1',
-    '062: Dist TB Sqr1', '063: Glideator 1',
-    '064: Vintager 1', '065: Hover Lead 1', '066: Saw Lead 1', '067: Saw+Tri Lead', '068: PortaSaw Ld1',
-    '069: Reso Saw Ld', '070: SawTrap Ld 1',
-    '071: Fat GR Lead', '072: Pulstar Ld', '073: Slow Lead', '074: AnaVox Lead', '075: Square Ld 1', '076: Square Ld 2',
-    '077: Sqr Lead 1',
-    '078: Sqr Trap Ld1', '079: Sine Lead 1', '080: Tri Lead', '081: Tri Stac Ld1', '082: 5th SawLead1',
-    '083: Sweet 5th 1', '084: 4th Syn Lead',
-    '085: Maj Stack Ld', '086: MinStack Ld1', '087: Chubby Lead1', '088: CuttingLead1', '089: Seq Bass 1',
-    '090: Reso Bass 1', '091: TB Bass 1',
-    '092: 106 Bass 1', '093: FilterEnvBs1', '094: JUNO Sqr Bs1', '095: Reso Bass 2', '096: JUNO Bass', '097: MG Bass 1',
-    '098: 106 Bass 3',
-    '099: Reso Bass 3', '100: Detune Bs 1', '101: MKS-50 Bass1', '102: Sweep Bass', '103: MG Bass 2', '104: MG Bass 3',
-    '105: ResRubber Bs',
-    '106: R&B Bass 1', '107: Reso Bass 4', '108: Wide Bass 1', '109: Chow Bass 1', '110: Chow Bass 2',
-    '111: SqrFilterBs1', '112: Reso Bass 5',
-    '113: Syn Bass 1', '114: ResoSawSynBs', '115: Filter Bass1', '116: SeqFltEnvBs', '117: DnB Bass 1',
-    '118: UnisonSynBs1', '119: Modular Bs',
-    '120: Monster Bs 1', '121: Monster Bs 2', '122: Monster Bs 3', '123: Monster Bs 4', '124: Square Bs 1',
-    '125: 106 Bass 2', '126: 5th Stac Bs1',
-    '127: SqrStacSynBs', '128: MC-202 Bs', '129: TB Bass 2', '130: Square Bs 2', '131: SH-101 Bs', '132: R&B Bass 2',
-    '133: MG Bass 4',
-    '134: Seq Bass 2', '135: Tri Bass 1', '136: BPF Syn Bs 2', '137: BPF Syn Bs 1', '138: Low Bass 1',
-    '139: Low Bass 2', '140: Kick Bass 1',
-    '141: SinDetuneBs1', '142: Organ Bass 1', '143: Growl Bass 1', '144: Talking Bs 1', '145: LFO Bass 1',
-    '146: LFO Bass 2', '147: Crack Bass',
-    '148: Wobble Bs 1', '149: Wobble Bs 2', '150: Wobble Bs 3', '151: Wobble Bs 4', '152: SideChainBs1',
-    '153: SideChainBs2', '154: House Bass 1',
-    '155: FM Bass', '156: 4Op FM Bass1', '157: Ac. Bass', '158: Fingerd Bs 1', '159: Picked Bass', '160: Fretless Bs',
-    '161: Slap Bass 1',
-    '162: JD Piano 1', '163: E. Grand 1', '164: Trem EP 1', '165: FM E.Piano 1', '166: FM E.Piano 2',
-    '167: Vib Wurly 1', '168: Pulse Clav',
-    '169: Clav', '170: 70\'s E.Organ', '171: House Org 1', '172: House Org 2', '173: Bell 1', '174: Bell 2',
-    '175: Organ Bell',
-    '176: Vibraphone 1', '177: Steel Drum', '178: Harp 1', '179: Ac. Guitar', '180: Bright Strat', '181: Funk Guitar1',
-    '182: Jazz Guitar',
-    '183: Dist Guitar1', '184: D. Mute Gtr1', '185: E. Sitar', '186: Sitar Drone', '187: FX 1', '188: FX 2',
-    '189: FX 3',
-    '190: Tuned Winds1', '191: Bend Lead 1', '192: RiSER 1', '193: Rising SEQ 1', '194: Scream Saw', '195: Noise SEQ 1',
-    '196: Syn Vox 1',
-    '197: JD SoftVox', '198: Vox Pad', '199: VP-330 Chr', '200: Orch Hit', '201: Philly Hit', '202: House Hit',
-    '203: O\'Skool Hit1',
-    '204: Punch Hit', '205: Tao Hit', '206: SEQ Saw 1', '207: SEQ Sqr', '208: SEQ Tri 1', '209: SEQ 1', '210: SEQ 2',
-    '211: SEQ 3', '212: SEQ 4', '213: Sqr Reso Plk', '214: Pluck Synth1', '215: Paperclip 1', '216: Sonar Pluck1',
-    '217: SqrTrapPlk 1',
-    '218: TB Saw Seq 1', '219: TB Sqr Seq 1', '220: JUNO Key', '221: Analog Poly1', '222: Analog Poly2',
-    '223: Analog Poly3', '224: Analog Poly4',
-    '225: JUNO Octavr1', '226: EDM Synth 1', '227: Super Saw 2', '228: S-Saw Poly', '229: Trance Key 1',
-    '230: S-Saw Pad 1', '231: 7th Stac Syn',
-    '232: S-SawStc Syn', '233: Trance Key 2', '234: Analog Brass', '235: Reso Brass', '236: Soft Brass 1',
-    '237: FM Brass', '238: Syn Brass 1',
-    '239: Syn Brass 2', '240: JP8 Brass', '241: Soft SynBrs1', '242: Soft SynBrs2', '243: EpicSlow Brs',
-    '244: JUNO Brass', '245: Poly Brass',
-    '246: Voc:Ensemble', '247: Voc:5thStack', '248: Voc:Robot', '249: Voc:Saw', '250: Voc:Sqr', '251: Voc:Rise Up',
-    '252: Voc:Auto Vib',
-    '253: Voc:PitchEnv', '254: Voc:VP-330', '255: Voc:Noise'
+    "001: JP8 Strings1",
+    "002: Soft Pad 1",
+    "003: JP8 Strings2",
+    "004: JUNO Str 1",
+    "005: Oct Strings",
+    "006: Brite Str 1",
+    "007: Boreal Pad",
+    "008: JP8 Strings3",
+    "009: JP8 Strings4",
+    "010: Hollow Pad 1",
+    "011: LFO Pad 1",
+    "012: Hybrid Str",
+    "013: Awakening 1",
+    "014: Cincosoft 1",
+    "015: Bright Pad 1",
+    "016: Analog Str 1",
+    "017: Soft ResoPd1",
+    "018: HPF Poly 1",
+    "019: BPF Poly",
+    "020: Sweep Pad 1",
+    "021: Soft Pad 2",
+    "022: Sweep JD 1",
+    "023: FltSweep Pd1",
+    "024: HPF Pad",
+    "025: HPF SweepPd1",
+    "026: KOff Pad",
+    "027: Sweep Pad 2",
+    "028: TrnsSweepPad",
+    "029: Revalation 1",
+    "030: LFO CarvePd1",
+    "031: RETROX 139 1",
+    "032: LFO ResoPad1",
+    "033: PLS Pad 1",
+    "034: PLS Pad 2",
+    "035: Trip 2 Mars1",
+    "036: Reso S&H Pd1",
+    "037: SideChainPd1",
+    "038: PXZoon 1",
+    "039: Psychoscilo1",
+    "040: Fantasy 1",
+    "041: D-50 Stack 1",
+    "042: Organ Pad",
+    "043: Bell Pad",
+    "044: Dreaming 1",
+    "045: Syn Sniper 1",
+    "046: Strings 1",
+    "047: D-50 Pizz 1",
+    "048: Super Saw 1",
+    "049: S-SawStacLd1",
+    "050: Tekno Lead 1",
+    "051: Tekno Lead 2",
+    "052: Tekno Lead 3",
+    "053: OSC-SyncLd 1",
+    "054: WaveShapeLd1",
+    "055: JD RingMod 1",
+    "056: Buzz Lead 1",
+    "057: Buzz Lead 2",
+    "058: SawBuzz Ld 1",
+    "059: Sqr Buzz Ld1",
+    "060: Tekno Lead 4",
+    "061: Dist Flt TB1",
+    "062: Dist TB Sqr1",
+    "063: Glideator 1",
+    "064: Vintager 1",
+    "065: Hover Lead 1",
+    "066: Saw Lead 1",
+    "067: Saw+Tri Lead",
+    "068: PortaSaw Ld1",
+    "069: Reso Saw Ld",
+    "070: SawTrap Ld 1",
+    "071: Fat GR Lead",
+    "072: Pulstar Ld",
+    "073: Slow Lead",
+    "074: AnaVox Lead",
+    "075: Square Ld 1",
+    "076: Square Ld 2",
+    "077: Sqr Lead 1",
+    "078: Sqr Trap Ld1",
+    "079: Sine Lead 1",
+    "080: Tri Lead",
+    "081: Tri Stac Ld1",
+    "082: 5th SawLead1",
+    "083: Sweet 5th 1",
+    "084: 4th Syn Lead",
+    "085: Maj Stack Ld",
+    "086: MinStack Ld1",
+    "087: Chubby Lead1",
+    "088: CuttingLead1",
+    "089: Seq Bass 1",
+    "090: Reso Bass 1",
+    "091: TB Bass 1",
+    "092: 106 Bass 1",
+    "093: FilterEnvBs1",
+    "094: JUNO Sqr Bs1",
+    "095: Reso Bass 2",
+    "096: JUNO Bass",
+    "097: MG Bass 1",
+    "098: 106 Bass 3",
+    "099: Reso Bass 3",
+    "100: Detune Bs 1",
+    "101: MKS-50 Bass1",
+    "102: Sweep Bass",
+    "103: MG Bass 2",
+    "104: MG Bass 3",
+    "105: ResRubber Bs",
+    "106: R&B Bass 1",
+    "107: Reso Bass 4",
+    "108: Wide Bass 1",
+    "109: Chow Bass 1",
+    "110: Chow Bass 2",
+    "111: SqrFilterBs1",
+    "112: Reso Bass 5",
+    "113: Syn Bass 1",
+    "114: ResoSawSynBs",
+    "115: Filter Bass1",
+    "116: SeqFltEnvBs",
+    "117: DnB Bass 1",
+    "118: UnisonSynBs1",
+    "119: Modular Bs",
+    "120: Monster Bs 1",
+    "121: Monster Bs 2",
+    "122: Monster Bs 3",
+    "123: Monster Bs 4",
+    "124: Square Bs 1",
+    "125: 106 Bass 2",
+    "126: 5th Stac Bs1",
+    "127: SqrStacSynBs",
+    "128: MC-202 Bs",
+    "129: TB Bass 2",
+    "130: Square Bs 2",
+    "131: SH-101 Bs",
+    "132: R&B Bass 2",
+    "133: MG Bass 4",
+    "134: Seq Bass 2",
+    "135: Tri Bass 1",
+    "136: BPF Syn Bs 2",
+    "137: BPF Syn Bs 1",
+    "138: Low Bass 1",
+    "139: Low Bass 2",
+    "140: Kick Bass 1",
+    "141: SinDetuneBs1",
+    "142: Organ Bass 1",
+    "143: Growl Bass 1",
+    "144: Talking Bs 1",
+    "145: LFO Bass 1",
+    "146: LFO Bass 2",
+    "147: Crack Bass",
+    "148: Wobble Bs 1",
+    "149: Wobble Bs 2",
+    "150: Wobble Bs 3",
+    "151: Wobble Bs 4",
+    "152: SideChainBs1",
+    "153: SideChainBs2",
+    "154: House Bass 1",
+    "155: FM Bass",
+    "156: 4Op FM Bass1",
+    "157: Ac. Bass",
+    "158: Fingerd Bs 1",
+    "159: Picked Bass",
+    "160: Fretless Bs",
+    "161: Slap Bass 1",
+    "162: JD Piano 1",
+    "163: E. Grand 1",
+    "164: Trem EP 1",
+    "165: FM E.Piano 1",
+    "166: FM E.Piano 2",
+    "167: Vib Wurly 1",
+    "168: Pulse Clav",
+    "169: Clav",
+    "170: 70's E.Organ",
+    "171: House Org 1",
+    "172: House Org 2",
+    "173: Bell 1",
+    "174: Bell 2",
+    "175: Organ Bell",
+    "176: Vibraphone 1",
+    "177: Steel Drum",
+    "178: Harp 1",
+    "179: Ac. Guitar",
+    "180: Bright Strat",
+    "181: Funk Guitar1",
+    "182: Jazz Guitar",
+    "183: Dist Guitar1",
+    "184: D. Mute Gtr1",
+    "185: E. Sitar",
+    "186: Sitar Drone",
+    "187: FX 1",
+    "188: FX 2",
+    "189: FX 3",
+    "190: Tuned Winds1",
+    "191: Bend Lead 1",
+    "192: RiSER 1",
+    "193: Rising SEQ 1",
+    "194: Scream Saw",
+    "195: Noise SEQ 1",
+    "196: Syn Vox 1",
+    "197: JD SoftVox",
+    "198: Vox Pad",
+    "199: VP-330 Chr",
+    "200: Orch Hit",
+    "201: Philly Hit",
+    "202: House Hit",
+    "203: O'Skool Hit1",
+    "204: Punch Hit",
+    "205: Tao Hit",
+    "206: SEQ Saw 1",
+    "207: SEQ Sqr",
+    "208: SEQ Tri 1",
+    "209: SEQ 1",
+    "210: SEQ 2",
+    "211: SEQ 3",
+    "212: SEQ 4",
+    "213: Sqr Reso Plk",
+    "214: Pluck Synth1",
+    "215: Paperclip 1",
+    "216: Sonar Pluck1",
+    "217: SqrTrapPlk 1",
+    "218: TB Saw Seq 1",
+    "219: TB Sqr Seq 1",
+    "220: JUNO Key",
+    "221: Analog Poly1",
+    "222: Analog Poly2",
+    "223: Analog Poly3",
+    "224: Analog Poly4",
+    "225: JUNO Octavr1",
+    "226: EDM Synth 1",
+    "227: Super Saw 2",
+    "228: S-Saw Poly",
+    "229: Trance Key 1",
+    "230: S-Saw Pad 1",
+    "231: 7th Stac Syn",
+    "232: S-SawStc Syn",
+    "233: Trance Key 2",
+    "234: Analog Brass",
+    "235: Reso Brass",
+    "236: Soft Brass 1",
+    "237: FM Brass",
+    "238: Syn Brass 1",
+    "239: Syn Brass 2",
+    "240: JP8 Brass",
+    "241: Soft SynBrs1",
+    "242: Soft SynBrs2",
+    "243: EpicSlow Brs",
+    "244: JUNO Brass",
+    "245: Poly Brass",
+    "246: Voc:Ensemble",
+    "247: Voc:5thStack",
+    "248: Voc:Robot",
+    "249: Voc:Saw",
+    "250: Voc:Sqr",
+    "251: Voc:Rise Up",
+    "252: Voc:Auto Vib",
+    "253: Voc:PitchEnv",
+    "254: Voc:VP-330",
+    "255: Voc:Noise",
 ]
 
 DRUM_SN_PRESETS = [
@@ -3198,12 +3951,13 @@ DRUM_SN_PRESETS = [
     "027: User Kit 1",
     "028: User Kit 2",
     "029: User Kit 3",
-    "030: User Kit 4"
+    "030: User Kit 4",
 ]
 
 
 class AnalogLFO(Enum):
     """LFO shape values"""
+
     TRIANGLE = 0
     SINE = 1
     SAW = 2
@@ -3214,6 +3968,7 @@ class AnalogLFO(Enum):
 
 class AnalogLFOSync(Enum):
     """LFO tempo sync note values"""
+
     NOTE_16 = 0  # 16 bars
     NOTE_12 = 1  # 12 bars
     NOTE_8 = 2  # 8 bars
@@ -3238,6 +3993,7 @@ class AnalogLFOSync(Enum):
 
 class AnalogOscWaveform(Enum):
     """Analog oscillator waveform types"""
+
     SAW = 0
     TRIANGLE = 1
     PW_SQUARE = 2
@@ -3245,6 +4001,7 @@ class AnalogOscWaveform(Enum):
 
 class AnalogSubOscType(Enum):
     """Analog sub oscillator types"""
+
     OFF = 0
     TYPE_1 = 1
     TYPE_2 = 2
@@ -3252,12 +4009,14 @@ class AnalogSubOscType(Enum):
 
 class AnalogFilterType(Enum):
     """Analog filter types"""
+
     BYPASS = 0
     LPF = 1
 
 
 class AnalogParameter(Enum):
     """Analog synth parameter addresses and ranges"""
+
     # Oscillator parameters (0x16-0x1F)
     OSC1_WAVE = 0x16  # OSC Waveform (0-2: SAW, TRI, PW-SQR)
     OSC1_PITCH = 0x17  # OSC Pitch Coarse (40-88: maps to -24 - +24)
@@ -3295,12 +4054,12 @@ class AnalogParameter(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw MIDI value to display value based on parameter type"""
         display_maps = {
-            0x16: ['SAW', 'TRI', 'PW-SQR'],  # Direct mapping for waveforms
+            0x16: ["SAW", "TRI", "PW-SQR"],  # Direct mapping for waveforms
             0x17: lambda x: f"{x - 64:+d}",  # -24 to +24 (centered at 64)
             0x18: lambda x: f"{x - 64:+d}",  # -50 to +50 (centered at 64)
             0x1B: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
             0x1E: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
-            0x1F: ['OFF', 'OCT-1', 'OCT-2']  # Direct mapping for sub osc type
+            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc type
         }
 
         if param in display_maps:
@@ -3314,6 +4073,7 @@ class AnalogParameter(Enum):
 
 class DigitalParameter(Enum):
     """Digital synth parameter addresses and ranges"""
+
     # Tone name parameters (0x00-0x0B)
     TONE_NAME_1 = 0x00  # ASCII 32-127
     TONE_NAME_2 = 0x01
@@ -3456,23 +4216,18 @@ class DigitalParameter(Enum):
         ranges = {
             # Tone name (0x00-0x0B): ASCII 32-127
             range(0x00, 0x0C): lambda v: 32 <= v <= 127,
-
             # Level: 0-127
             0x0C: lambda v: 0 <= v <= 127,
-
             # Switches: 0-1
             0x12: lambda v: v in (0, 1),  # Portamento
             0x14: lambda v: v in (0, 1),  # Mono
-
             # Portamento time: 0-127
             0x13: lambda v: 0 <= v <= 127,
-
             # Octave shift: 61-67 (-3 to +3)
             0x15: lambda v: 61 <= v <= 67,
-
             # Pitch bend ranges: 0-24
             0x16: lambda v: 0 <= v <= 24,
-            0x17: lambda v: 0 <= v <= 24
+            0x17: lambda v: 0 <= v <= 24,
         }
 
         # Find matching range
@@ -3492,15 +4247,25 @@ class DigitalParameter(Enum):
             return chr(value)
         elif param == 0x15:  # Octave shift
             return f"{value - 64:+d}"  # Convert to -3 to +3
-        elif param in (0x12, 0x14, 0x20, 0x2F,
-                       0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E):  # All switches
+        elif param in (
+            0x12,
+            0x14,
+            0x20,
+            0x2F,
+            0x19,
+            0x1A,
+            0x1B,
+            0x1C,
+            0x1D,
+            0x1E,
+        ):  # All switches
             return "ON" if value else "OFF"
         elif param == 0x22:  # Coarse tune
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x23:  # Fine tune
             return f"{value - 64:+d}"  # Convert to -50/+50
         elif param == 0x28:  # Filter type
-            return ['OFF', 'LPF', 'BPF', 'HPF'][value]
+            return ["OFF", "LPF", "BPF", "HPF"][value]
         elif param == 0x2B:  # Filter env
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x2E:  # Pan
@@ -3510,7 +4275,7 @@ class DigitalParameter(Enum):
                 return f"{value - 64}R"
             return "C"
         elif param == 0x1F:  # Ring switch
-            return ['OFF', '---', 'ON'][value]
+            return ["OFF", "---", "ON"][value]
         elif param in (0x2E, 0x32):  # Unison and Legato switches
             return "ON" if value else "OFF"
         elif param == 0x31:  # Portamento mode
@@ -3518,19 +4283,57 @@ class DigitalParameter(Enum):
         elif param == 0x3C:  # Unison size
             return str([2, 4, 6, 8][value])  # Convert 0-3 to actual voice count
         elif param == 0x04:  # Envelope loop mode
-            return ['OFF', 'FREE-RUN', 'TEMPO-SYNC'][value]
+            return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
         elif param == 0x05:  # Envelope loop sync note
-            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                    '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                    '1/12', '1/16', '1/24', '1/32'][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         elif param in (0x22, 0x23, 0x24, 0x25):  # LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x26:  # Mod LFO shape
-            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
         elif param == 0x29:  # Mod LFO sync note
-            return ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                    '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                    '1/12', '1/16', '1/24', '1/32'][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         elif param in (0x2C, 0x2D, 0x2E, 0x2F):  # Mod LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param in (0x30, 0x31):  # Aftertouch sensitivities
@@ -3554,6 +4357,7 @@ SYSTEM_CONTROLLER = 0x03  # 00 03 00: System Controller parameters
 # System Common Parameters (0x02 00)
 class SystemCommon(Enum):
     """System Common parameters"""
+
     MASTER_TUNE = 0x00  # Master Tune (24-2024: -100.0 to +100.0 cents)
     MASTER_KEY_SHIFT = 0x04  # Master Key Shift (40-88: -24 to +24 semitones)
     MASTER_LEVEL = 0x05  # Master Level (0-127)
@@ -3571,7 +4375,7 @@ class SystemCommon(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x00:  # Master Tune
-            cents = ((value - 1024) / 10)  # Convert 24-2024 to -100.0/+100.0
+            cents = (value - 1024) / 10  # Convert 24-2024 to -100.0/+100.0
             return f"{cents:+.1f} cents"
         elif param == 0x04:  # Master Key Shift
             semitones = value - 64  # Convert 40-88 to -24/+24
@@ -3586,6 +4390,7 @@ class SystemCommon(Enum):
 @dataclass
 class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SYSTEM_AREA  # 0x02: System area
     section: int = SYSTEM_COMMON  # 0x00: Common section
@@ -3599,7 +4404,7 @@ class SystemCommonMessage(RolandSysEx):
             self.area,  # System area (0x02)
             self.section,  # Common section (0x00)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -3608,31 +4413,27 @@ class SystemCommonMessage(RolandSysEx):
 # Set master tune to +50 cents
 msg = SystemCommonMessage(
     param=SystemCommon.MASTER_TUNE.value,
-    value=1024 + (50 * 10)  # Convert +50.0 cents to 1524
+    value=1024 + (50 * 10),  # Convert +50.0 cents to 1524
 )
 
 # Set master key shift to -12 semitones
 msg = SystemCommonMessage(
-    param=SystemCommon.MASTER_KEY_SHIFT.value,
-    value=52  # Convert -12 to 52 (64-12)
+    param=SystemCommon.MASTER_KEY_SHIFT.value, value=52  # Convert -12 to 52 (64-12)
 )
 
 # Set program control channel to 1
 msg = SystemCommonMessage(
-    param=SystemCommon.PROGRAM_CTRL_CH.value,
-    value=1  # Channel 1
+    param=SystemCommon.PROGRAM_CTRL_CH.value, value=1  # Channel 1
 )
 
 # Enable program change reception
-msg = SystemCommonMessage(
-    param=SystemCommon.RX_PROGRAM_CHANGE.value,
-    value=1  # ON
-)
+msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  # ON
 
 
 # System Controller Parameters (0x02 03)
 class SystemController(Enum):
     """System Controller parameters"""
+
     TX_PROGRAM_CHANGE = 0x00  # Transmit Program Change (0: OFF, 1: ON)
     TX_BANK_SELECT = 0x01  # Transmit Bank Select (0: OFF, 1: ON)
     KEYBOARD_VELOCITY = 0x02  # Keyboard Velocity (0: REAL, 1-127: Fixed)
@@ -3647,7 +4448,7 @@ class SystemController(Enum):
         elif param == 0x02:  # Keyboard velocity
             return "REAL" if value == 0 else str(value)
         elif param == 0x03:  # Velocity curve
-            return ['LIGHT', 'MEDIUM', 'HEAVY'][value]
+            return ["LIGHT", "MEDIUM", "HEAVY"][value]
         elif param == 0x04:  # Velocity offset
             return f"{value - 64:+d}"  # Convert 54-73 to -10/+9
         return str(value)
@@ -3656,6 +4457,7 @@ class SystemController(Enum):
 @dataclass
 class SystemControllerMessage(RolandSysEx):
     """System Controller parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SYSTEM_AREA  # 0x02: System area
     section: int = SYSTEM_CONTROLLER  # 0x03: Controller section
@@ -3669,7 +4471,7 @@ class SystemControllerMessage(RolandSysEx):
             self.area,  # System area (0x02)
             self.section,  # Controller section (0x03)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -3677,26 +4479,22 @@ class SystemControllerMessage(RolandSysEx):
 # Example usage:
 # Enable program change transmission
 msg = SystemControllerMessage(
-    param=SystemController.TX_PROGRAM_CHANGE.value,
-    value=1  # ON
+    param=SystemController.TX_PROGRAM_CHANGE.value, value=1  # ON
 )
 
 # Set keyboard velocity to REAL
 msg = SystemControllerMessage(
-    param=SystemController.KEYBOARD_VELOCITY.value,
-    value=0  # REAL
+    param=SystemController.KEYBOARD_VELOCITY.value, value=0  # REAL
 )
 
 # Set velocity curve to MEDIUM
 msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_CURVE.value,
-    value=1  # MEDIUM
+    param=SystemController.VELOCITY_CURVE.value, value=1  # MEDIUM
 )
 
 # Set velocity offset to +5
 msg = SystemControllerMessage(
-    param=SystemController.VELOCITY_OFFSET.value,
-    value=69  # Convert +5 to 69 (64+5)
+    param=SystemController.VELOCITY_OFFSET.value, value=69  # Convert +5 to 69 (64+5)
 )
 
 # Temporary Tone Areas (0x19)
@@ -3714,6 +4512,7 @@ DRUM_PART = 0x10  # Drum Kit
 # Parameter Groups
 class ToneGroup(Enum):
     """Tone parameter groups"""
+
     COMMON = 0x00  # Common parameters
     OSC = 0x01  # Oscillator parameters
     FILTER = 0x02  # Filter parameters
@@ -3725,6 +4524,7 @@ class ToneGroup(Enum):
 # Program Area Structure (0x18)
 class ProgramArea(Enum):
     """Program memory areas"""
+
     COMMON = 0x00  # 00 00 00: Program Common
     VOCAL_FX = 0x01  # 00 01 00: Program Vocal Effect
     EFFECT_1 = 0x02  # 00 02 00: Program Effect 1
@@ -3750,6 +4550,7 @@ class ProgramArea(Enum):
 # SuperNATURAL Synth Tone Structure (0x19 01/02)
 class DigitalToneSection(Enum):
     """SuperNATURAL Synth Tone sections"""
+
     COMMON = 0x00  # 00 00 00: Common parameters
     PARTIAL_1 = 0x20  # 00 20 00: Partial 1
     PARTIAL_2 = 0x21  # 00 21 00: Partial 2
@@ -3760,6 +4561,7 @@ class DigitalToneSection(Enum):
 @dataclass
 class DigitalToneMessage(RolandSysEx):
     """SuperNATURAL Synth Tone parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = 0x19  # Temporary area
     tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
@@ -3773,7 +4575,7 @@ class DigitalToneMessage(RolandSysEx):
             self.area,  # Temporary area (0x19)
             self.tone_type,  # Digital 1 or 2 (0x01/0x02)
             self.section,  # Section (Common/Partial/Modify)
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -3784,7 +4586,7 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.COMMON.value,
     param=0x00,  # Common parameter
-    value=64
+    value=64,
 )
 
 # Set partial parameter
@@ -3792,7 +4594,7 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.PARTIAL_1.value,
     param=0x00,  # Partial parameter
-    value=64
+    value=64,
 )
 
 # Set modify parameter
@@ -3800,12 +4602,13 @@ msg = DigitalToneMessage(
     tone_type=TEMP_DIGITAL_TONE,  # Digital 1
     section=DigitalToneSection.MODIFY.value,
     param=0x00,  # Modify parameter
-    value=64
+    value=64,
 )
 
 
 class DigitalToneCommon:
     """SuperNATURAL Synth Tone Common parameters"""
+
     # Tone name (12 characters)
     NAME_1 = 0x00  # Character 1 (ASCII 32-127)
     NAME_2 = 0x01  # Character 2
@@ -3851,14 +4654,24 @@ class DigitalToneCommon:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         elif param == 0x15:  # Octave shift
             return f"{value - 64:+d}"  # Convert 61-67 to -3/+3
-        elif param in (0x12, 0x14, 0x19, 0x1A, 0x1B,
-                       0x1C, 0x1D, 0x1E, 0x2E, 0x32):  # Switches
+        elif param in (
+            0x12,
+            0x14,
+            0x19,
+            0x1A,
+            0x1B,
+            0x1C,
+            0x1D,
+            0x1E,
+            0x2E,
+            0x32,
+        ):  # Switches
             return "ON" if value else "OFF"
         elif param == 0x1F:  # Ring switch
-            return ['OFF', '---', 'ON'][value]
+            return ["OFF", "---", "ON"][value]
         elif param == 0x31:  # Portamento mode
             return "LEGATO" if value else "NORMAL"
         elif param == 0x3C:  # Unison size
@@ -3868,6 +4681,7 @@ class DigitalToneCommon:
 
 class DigitalTonePartial(Enum):
     """Partial parameters for SuperNATURAL Synth Tone"""
+
     WAVE = 0x00  # Wave number (0-255)
     LEVEL = 0x01  # Partial level (0-127)
     COARSE = 0x02  # Coarse tune (-24 to +24)
@@ -3891,6 +4705,7 @@ class DigitalTonePartial(Enum):
 
 class DigitalToneModify(Enum):
     """Modify parameters for SuperNATURAL Synth Tone"""
+
     RING_SYNC = 0x00  # Ring/Sync switch (0: OFF, 1: RING, 2: SYNC)
     RING_OSC = 0x01  # Ring modulator oscillator (1-3)
     SYNC_OSC = 0x02  # Sync oscillator (1-3)
@@ -3900,7 +4715,9 @@ class DigitalToneModify(Enum):
     LFO_SHAPE = 0x06  # LFO waveform (0: TRI, 1: SIN, 2: SAW, 3: SQR, 4: S&H, 5: RND)
     LFO_RATE = 0x07  # LFO rate (0-127)
     LFO_DEPTH = 0x08  # LFO depth (0-127)
-    LFO_MOD_DEST = 0x09  # LFO modulation destination (0: PITCH, 1: FILTER, 2: AMP, 3: PAN)
+    LFO_MOD_DEST = (
+        0x09  # LFO modulation destination (0: PITCH, 1: FILTER, 2: AMP, 3: PAN)
+    )
     PITCH_ENV_A = 0x0A  # Pitch envelope attack (0-127)
     PITCH_ENV_D = 0x0B  # Pitch envelope decay (0-127)
     PITCH_ENV_DEPTH = 0x0C  # Pitch envelope depth (-63 to +63)
@@ -3909,15 +4726,15 @@ class DigitalToneModify(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x00:  # Ring/Sync
-            return ['OFF', 'RING', 'SYNC'][value]
+            return ["OFF", "RING", "SYNC"][value]
         elif param in (0x01, 0x02):  # Oscillator selection
             return f"OSC {value + 1}"
         elif param == 0x04:  # Unison size
             return str([2, 4, 6, 8][value])
         elif param == 0x06:  # LFO shape
-            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
         elif param == 0x09:  # LFO destination
-            return ['PITCH', 'FILTER', 'AMP', 'PAN'][value]
+            return ["PITCH", "FILTER", "AMP", "PAN"][value]
         elif param == 0x0C:  # Pitch envelope depth
             return f"{value - 64:+d}"
         return str(value)
@@ -3927,6 +4744,7 @@ class DigitalToneModify(Enum):
 
 class AnalogToneParam(Enum):
     """Analog Synth Tone parameters"""
+
     # Common parameters (0x00-0x0F)
     NAME_1 = 0x00  # Character 1 of name (ASCII)
     NAME_2 = 0x01  # Character 2 of name
@@ -3980,7 +4798,7 @@ class AnalogToneParam(Enum):
         elif param == 0x0F:  # Portamento switch
             return "ON" if value else "OFF"
         elif param == 0x10:  # OSC wave
-            return ['SAW', 'SQUARE', 'TRIANGLE'][value]
+            return ["SAW", "SQUARE", "TRIANGLE"][value]
         elif param == 0x11:  # OSC pitch
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x12:  # OSC detune
@@ -3988,7 +4806,7 @@ class AnalogToneParam(Enum):
         elif param == 0x13:  # OSC mod depth
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x20:  # Filter type
-            return ['LPF', 'HPF'][value]
+            return ["LPF", "HPF"][value]
         elif param == 0x23:  # Filter envelope
             return f"{value - 64:+d}"  # Convert to -63/+63
         elif param == 0x24:  # Filter key follow
@@ -4000,7 +4818,7 @@ class AnalogToneParam(Enum):
                 return f"R{value - 64}"
             return "C"
         elif param == 0x40:  # LFO wave
-            return ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND'][value]
+            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
         elif param in (0x43, 0x44, 0x45):  # LFO depths
             return f"{value - 64:+d}"  # Convert to -63/+63
         return str(value)
@@ -4009,6 +4827,7 @@ class AnalogToneParam(Enum):
 @dataclass
 class AnalogToneMessage(RolandSysEx):
     """Analog Synth Tone parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = 0x19  # Temporary area
     tone_type: int = 0x02  # Analog tone
@@ -4022,7 +4841,7 @@ class AnalogToneMessage(RolandSysEx):
             self.area,  # Temporary area (0x19)
             self.tone_type,  # Analog tone (0x02)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -4031,6 +4850,7 @@ class AnalogToneMessage(RolandSysEx):
 
 class DrumKitSection(Enum):
     """Drum Kit sections"""
+
     COMMON = 0x00  # 00 00 00: Common parameters
     PAD_36 = 0x2E  # 00 2E 00: Pad 36 (C1)
     PAD_37 = 0x30  # 00 30 00: Pad 37 (C#1)
@@ -4048,14 +4868,15 @@ class DrumKitSection(Enum):
 
 class Waveform(Enum):
     """Waveform types available on the JD-Xi"""
-    SAW = auto()         # Sawtooth wave
-    SQUARE = auto()      # Square wave
-    TRIANGLE = auto()    # Triangle wave
-    SINE = auto()        # Sine wave
-    NOISE = auto()       # Noise
-    SUPER_SAW = auto()   # Super saw
-    PCM = auto()         # PCM waveform
-    
+
+    SAW = auto()  # Sawtooth wave
+    SQUARE = auto()  # Square wave
+    TRIANGLE = auto()  # Triangle wave
+    SINE = auto()  # Sine wave
+    NOISE = auto()  # Noise
+    SUPER_SAW = auto()  # Super saw
+    PCM = auto()  # PCM waveform
+
     @property
     def display_name(self) -> str:
         """Get display name for waveform"""
@@ -4066,10 +4887,10 @@ class Waveform(Enum):
             Waveform.SINE: "SIN",
             Waveform.NOISE: "NOISE",
             Waveform.SUPER_SAW: "S.SAW",
-            Waveform.PCM: "PCM"
+            Waveform.PCM: "PCM",
         }
         return names[self]
-    
+
     @property
     def midi_value(self) -> int:
         """Get MIDI value for waveform"""
@@ -4080,20 +4901,22 @@ class Waveform(Enum):
             Waveform.SINE: OSC_WAVE_SINE,
             Waveform.NOISE: OSC_WAVE_NOISE,
             Waveform.SUPER_SAW: OSC_WAVE_SUPER_SAW,
-            Waveform.PCM: OSC_WAVE_PCM
+            Waveform.PCM: OSC_WAVE_PCM,
         }
         return values[self]
-    
+
     @classmethod
-    def from_midi_value(cls, value: int) -> 'Waveform':
+    def from_midi_value(cls, value: int) -> "Waveform":
         """Create Waveform from MIDI value"""
         for waveform in cls:
             if waveform.midi_value == value:
                 return waveform
         raise ValueError(f"Invalid waveform value: {value}")
 
+
 class DrumKitCommon(Enum):
     """Common parameters for Drum Kit"""
+
     NAME_1 = 0x00  # Character 1 of name (ASCII)
     NAME_2 = 0x01  # Character 2 of name
     NAME_3 = 0x02  # Character 3 of name
@@ -4112,6 +4935,7 @@ class DrumKitCommon(Enum):
 
 class DrumPadParam(Enum):
     """Parameters for each drum pad"""
+
     WAVE = 0x00  # Wave number (0-127, 0=OFF)
     LEVEL = 0x01  # Level (0-127)
     PAN = 0x02  # Pan (-64 to +63)
@@ -4138,13 +4962,14 @@ class DrumPadParam(Enum):
         elif param == 0x05:  # Mute group
             return "OFF" if value == 0 else str(value)
         elif param == 0x06:  # Output/EFX
-            return ['OUTPUT', 'EFX1', 'EFX2', 'DLY'][value]
+            return ["OUTPUT", "EFX1", "EFX2", "DLY"][value]
         return str(value)
 
 
 @dataclass
 class DrumKitMessage(RolandSysEx):
     """Drum Kit parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = 0x19  # Temporary area
     tone_type: int = 0x10  # Drum Kit
@@ -4158,7 +4983,7 @@ class DrumKitMessage(RolandSysEx):
             self.area,  # Temporary area (0x19)
             self.tone_type,  # Drum Kit (0x10)
             self.section,  # Section (Common/Pad offset)
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -4168,20 +4993,21 @@ class DrumKitMessage(RolandSysEx):
 msg = DrumKitMessage(
     section=DrumKitSection.COMMON.value,
     param=DrumKitCommon.NAME_1.value,
-    value=0x41  # 'A'
+    value=0x41,  # 'A'
 )
 
 # Set pad parameter
 msg = DrumKitMessage(
     section=DrumKitSection.get_pad_offset(36),  # Pad C1
     param=DrumPadParam.WAVE.value,
-    value=1  # Wave number
+    value=1,  # Wave number
 )
 
 
 # Setup Area Structure (0x01)
 class SetupParam(Enum):
     """Setup parameters"""
+
     # Reserved space (0x00-0x03)
     RESERVED_1 = 0x00  # Reserved
     RESERVED_2 = 0x01  # Reserved
@@ -4200,6 +5026,7 @@ class SetupParam(Enum):
 @dataclass
 class SetupMessage(RolandSysEx):
     """Setup parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = SETUP_AREA  # 0x01: Setup area
     section: int = 0x00  # Always 0x00
@@ -4213,34 +5040,26 @@ class SetupMessage(RolandSysEx):
             self.area,  # Setup area (0x01)
             self.section,  # Always 0x00
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
 
 # Example usage:
 # Change program bank MSB
-msg = SetupMessage(
-    param=SetupParam.BANK_MSB.value,
-    value=0  # Bank 0
-)
+msg = SetupMessage(param=SetupParam.BANK_MSB.value, value=0)  # Bank 0
 
 # Change program bank LSB
-msg = SetupMessage(
-    param=SetupParam.BANK_LSB.value,
-    value=0  # Bank 0
-)
+msg = SetupMessage(param=SetupParam.BANK_LSB.value, value=0)  # Bank 0
 
 # Change program number
-msg = SetupMessage(
-    param=SetupParam.PROGRAM.value,
-    value=0  # Program 1
-)
+msg = SetupMessage(param=SetupParam.PROGRAM.value, value=0)  # Program 1
 
 
 # Program Common Parameters (0x18 00)
 class ProgramCommon(Enum):
     """Program Common parameters"""
+
     # Program name (0x00-0x0B)
     NAME_1 = 0x00  # Character 1 of name (ASCII 32-127)
     NAME_2 = 0x01  # Character 2 of name
@@ -4275,11 +5094,11 @@ class ProgramCommon(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         elif param == 0x11:  # Tempo
             return f"{value / 100:.2f}"  # Convert 500-30000 to 5.00-300.00
         elif param == 0x16:  # Vocal Effect
-            return ['OFF', 'VOCODER', 'AUTO-PITCH'][value]
+            return ["OFF", "VOCODER", "AUTO-PITCH"][value]
         elif param == 0x1C:  # Vocal Number
             return str(value + 1)  # Convert 0-20 to 1-21
         elif param == 0x1D:  # Vocal Part
@@ -4292,6 +5111,7 @@ class ProgramCommon(Enum):
 @dataclass
 class ProgramCommonMessage(RolandSysEx):
     """Program Common parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA  # 0x18: Program area
     section: int = 0x00  # 0x00: Common section
@@ -4305,7 +5125,7 @@ class ProgramCommonMessage(RolandSysEx):
             self.area,  # Program area (0x18)
             self.section,  # Common section (0x00)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
@@ -4313,44 +5133,31 @@ class ProgramCommonMessage(RolandSysEx):
 # Example usage:
 # Set program name character
 msg = ProgramCommonMessage(
-    param=ProgramCommon.NAME_1.value,
-    value=ord('A')  # ASCII 'A'
+    param=ProgramCommon.NAME_1.value, value=ord("A")  # ASCII 'A'
 )
 
 # Set program level
-msg = ProgramCommonMessage(
-    param=ProgramCommon.LEVEL.value,
-    value=100  # Level 100
-)
+msg = ProgramCommonMessage(param=ProgramCommon.LEVEL.value, value=100)  # Level 100
 
 # Set program tempo to 120.00 BPM
-msg = ProgramCommonMessage(
-    param=ProgramCommon.TEMPO.value,
-    value=12000  # 120.00 BPM
-)
+msg = ProgramCommonMessage(param=ProgramCommon.TEMPO.value, value=12000)  # 120.00 BPM
 
 # Set vocal effect to VOCODER
-msg = ProgramCommonMessage(
-    param=ProgramCommon.VOCAL_EFFECT.value,
-    value=1  # VOCODER
-)
+msg = ProgramCommonMessage(param=ProgramCommon.VOCAL_EFFECT.value, value=1)  # VOCODER
 
 # Set vocal effect number
 msg = ProgramCommonMessage(
-    param=ProgramCommon.VOCAL_NUMBER.value,
-    value=0  # Vocal Effect 1
+    param=ProgramCommon.VOCAL_NUMBER.value, value=0  # Vocal Effect 1
 )
 
 # Enable auto note
-msg = ProgramCommonMessage(
-    param=ProgramCommon.AUTO_NOTE.value,
-    value=1  # ON
-)
+msg = ProgramCommonMessage(param=ProgramCommon.AUTO_NOTE.value, value=1)  # ON
 
 
 # Program Vocal Effect Parameters (0x18 01)
 class VocalEffect(Enum):
     """Program Vocal Effect parameters"""
+
     LEVEL = 0x00  # Level (0-127)
     PAN = 0x01  # Pan (0-127: L64-63R)
     DELAY_SEND = 0x02  # Delay Send Level (0-127)
@@ -4386,21 +5193,43 @@ class VocalEffect(Enum):
                 return f"R{value - 64}"
             return "C"
         elif param == 0x04:  # Output Assign
-            return ['EFX1', 'EFX2', 'DLY', 'REV', 'DIR'][value]
+            return ["EFX1", "EFX2", "DLY", "REV", "DIR"][value]
         elif param in (0x05, 0x0D):  # Switches
             return "ON" if value else "OFF"
         elif param == 0x06:  # Auto Pitch Type
-            return ['SOFT', 'HARD', 'ELECTRIC1', 'ELECTRIC2'][value]
+            return ["SOFT", "HARD", "ELECTRIC1", "ELECTRIC2"][value]
         elif param == 0x07:  # Auto Pitch Scale
-            return ['CHROMATIC', 'Maj(Min)'][value]
+            return ["CHROMATIC", "Maj(Min)"][value]
         elif param == 0x08:  # Auto Pitch Key
-            keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G',
-                    'Ab', 'A', 'Bb', 'B', 'Cm', 'C#m', 'Dm', 'D#m',
-                    'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm']
+            keys = [
+                "C",
+                "Db",
+                "D",
+                "Eb",
+                "E",
+                "F",
+                "F#",
+                "G",
+                "Ab",
+                "A",
+                "Bb",
+                "B",
+                "Cm",
+                "C#m",
+                "Dm",
+                "D#m",
+                "Em",
+                "Fm",
+                "F#m",
+                "Gm",
+                "G#m",
+                "Am",
+                "Bbm",
+                "Bm",
+            ]
             return keys[value]
         elif param == 0x09:  # Auto Pitch Note
-            notes = ['C', 'C#', 'D', 'D#', 'E', 'F',
-                     'F#', 'G', 'G#', 'A', 'A#', 'B']
+            notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
             return notes[value]
         elif param == 0x0A:  # Auto Pitch Gender
             return f"{value - 10:+d}"  # Convert 0-20 to -10/+10
@@ -4409,12 +5238,25 @@ class VocalEffect(Enum):
         elif param == 0x0C:  # Auto Pitch Balance
             return f"D{100 - value}:W{value}"  # Convert 0-100 to ratio
         elif param == 0x0E:  # Vocoder Envelope
-            return ['SHARP', 'SOFT', 'LONG'][value]
+            return ["SHARP", "SOFT", "LONG"][value]
         elif param == 0x13:  # Vocoder Mic HPF
             if value == 0:
                 return "BYPASS"
-            freqs = [1000, 1250, 1600, 2000, 2500, 3150, 4000,
-                     5000, 6300, 8000, 10000, 12500, 16000]
+            freqs = [
+                1000,
+                1250,
+                1600,
+                2000,
+                2500,
+                3150,
+                4000,
+                5000,
+                6300,
+                8000,
+                10000,
+                12500,
+                16000,
+            ]
             return f"{freqs[value - 1]}Hz"
         return str(value)
 
@@ -4422,6 +5264,7 @@ class VocalEffect(Enum):
 @dataclass
 class VocalEffectMessage(RolandSysEx):
     """Program Vocal Effect parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA  # 0x18: Program area
     section: int = 0x01  # 0x01: Vocal Effect section
@@ -4435,44 +5278,30 @@ class VocalEffectMessage(RolandSysEx):
             self.area,  # Program area (0x18)
             self.section,  # Vocal Effect section (0x01)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         self.data = [self.value]
 
 
 # Example usage:
 # Set vocal effect level
-msg = VocalEffectMessage(
-    param=VocalEffect.LEVEL.value,
-    value=100  # Level 100
-)
+msg = VocalEffectMessage(param=VocalEffect.LEVEL.value, value=100)  # Level 100
 
 # Set auto pitch parameters
-msg = VocalEffectMessage(
-    param=VocalEffect.AUTO_PITCH_SW.value,
-    value=1  # ON
-)
+msg = VocalEffectMessage(param=VocalEffect.AUTO_PITCH_SW.value, value=1)  # ON
 
-msg = VocalEffectMessage(
-    param=VocalEffect.AUTO_PITCH_TYPE.value,
-    value=0  # SOFT
-)
+msg = VocalEffectMessage(param=VocalEffect.AUTO_PITCH_TYPE.value, value=0)  # SOFT
 
 # Set vocoder parameters
-msg = VocalEffectMessage(
-    param=VocalEffect.VOCODER_SW.value,
-    value=1  # ON
-)
+msg = VocalEffectMessage(param=VocalEffect.VOCODER_SW.value, value=1)  # ON
 
-msg = VocalEffectMessage(
-    param=VocalEffect.VOCODER_ENV.value,
-    value=1  # SOFT
-)
+msg = VocalEffectMessage(param=VocalEffect.VOCODER_ENV.value, value=1)  # SOFT
 
 
 # Program Effect 1 Parameters (0x18 02)
 class Effect1(Enum):
     """Program Effect 1 parameters"""
+
     TYPE = 0x00  # Effect type (0-4)
     LEVEL = 0x01  # Effect level (0-127)
     DELAY_SEND = 0x02  # Delay send level (0-127)
@@ -4497,9 +5326,9 @@ class Effect1(Enum):
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 0x00:  # Effect type
-            return ['OFF', 'DISTORTION', 'FUZZ', 'COMPRESSOR', 'BITCRUSHER'][value]
+            return ["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BITCRUSHER"][value]
         elif param == 0x04:  # Output assign
-            return ['DIR', 'EFX2'][value]
+            return ["DIR", "EFX2"][value]
         elif 0x11 <= param <= 0x10D:  # Effect parameters
             return f"{value - 32768:+d}"  # Convert 12768-52768 to -20000/+20000
         return str(value)
@@ -4508,6 +5337,7 @@ class Effect1(Enum):
 @dataclass
 class Effect1Message(RolandSysEx):
     """Program Effect 1 parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA  # 0x18: Program area
     section: int = 0x02  # 0x02: Effect 1 section
@@ -4521,7 +5351,7 @@ class Effect1Message(RolandSysEx):
             self.area,  # Program area (0x18)
             self.section,  # Effect 1 section (0x02)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         # Handle 4-byte parameters
         if 0x11 <= self.param <= 0x10D:
@@ -4531,7 +5361,7 @@ class Effect1Message(RolandSysEx):
                 (value >> 24) & 0x0F,  # High nibble
                 (value >> 16) & 0x0F,
                 (value >> 8) & 0x0F,
-                value & 0x0F  # Low nibble
+                value & 0x0F,  # Low nibble
             ]
         else:
             self.data = [self.value]
@@ -4539,33 +5369,24 @@ class Effect1Message(RolandSysEx):
 
 # Example usage:
 # Set effect type
-msg = Effect1Message(
-    param=Effect1.TYPE.value,
-    value=1  # DISTORTION
-)
+msg = Effect1Message(param=Effect1.TYPE.value, value=1)  # DISTORTION
 
 # Set effect level
-msg = Effect1Message(
-    param=Effect1.LEVEL.value,
-    value=100  # Level 100
-)
+msg = Effect1Message(param=Effect1.LEVEL.value, value=100)  # Level 100
 
 # Set effect parameter 1 to +5000
 msg = Effect1Message(
-    param=Effect1.get_param_offset(1),
-    value=5000  # Will be converted to 37768
+    param=Effect1.get_param_offset(1), value=5000  # Will be converted to 37768
 )
 
 # Set output to EFX2
-msg = Effect1Message(
-    param=Effect1.OUTPUT_ASSIGN.value,
-    value=1  # EFX2
-)
+msg = Effect1Message(param=Effect1.OUTPUT_ASSIGN.value, value=1)  # EFX2
 
 
 # Program Effect 2 Parameters (0x18 04)
 class Effect2(Enum):
     """Program Effect 2 parameters"""
+
     TYPE = 0x00  # Effect type (0, 5-8: OFF, PHASER, FLANGER, DELAY, CHORUS)
     LEVEL = 0x01  # Effect level (0-127)
     DELAY_SEND = 0x02  # Delay send level (0-127)
@@ -4593,7 +5414,7 @@ class Effect2(Enum):
         if param == 0x00:  # Effect type
             if value == 0:
                 return "OFF"
-            types = ['OFF', 'PHASER', 'FLANGER', 'DELAY', 'CHORUS']
+            types = ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
             return types[value - 4] if 5 <= value <= 8 else str(value)
         elif 0x11 <= param <= 0x10D:  # Effect parameters
             return f"{value - 32768:+d}"  # Convert 12768-52768 to -20000/+20000
@@ -4603,6 +5424,7 @@ class Effect2(Enum):
 @dataclass
 class Effect2Message(RolandSysEx):
     """Program Effect 2 parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA  # 0x18: Program area
     section: int = 0x04  # 0x04: Effect 2 section
@@ -4616,7 +5438,7 @@ class Effect2Message(RolandSysEx):
             self.area,  # Program area (0x18)
             self.section,  # Effect 2 section (0x04)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         # Handle 4-byte parameters
         if 0x11 <= self.param <= 0x10D:
@@ -4626,7 +5448,7 @@ class Effect2Message(RolandSysEx):
                 (value >> 24) & 0x0F,  # High nibble
                 (value >> 16) & 0x0F,
                 (value >> 8) & 0x0F,
-                value & 0x0F  # Low nibble
+                value & 0x0F,  # Low nibble
             ]
         else:
             self.data = [self.value]
@@ -4634,38 +5456,26 @@ class Effect2Message(RolandSysEx):
 
 # Example usage:
 # Set effect type
-msg = Effect2Message(
-    param=Effect2.TYPE.value,
-    value=5  # PHASER
-)
+msg = Effect2Message(param=Effect2.TYPE.value, value=5)  # PHASER
 
 # Set effect level
-msg = Effect2Message(
-    param=Effect2.LEVEL.value,
-    value=100  # Level 100
-)
+msg = Effect2Message(param=Effect2.LEVEL.value, value=100)  # Level 100
 
 # Set effect parameter 1 to +5000
 msg = Effect2Message(
-    param=Effect2.get_param_offset(1),
-    value=5000  # Will be converted to 37768
+    param=Effect2.get_param_offset(1), value=5000  # Will be converted to 37768
 )
 
 # Set send levels
-msg = Effect2Message(
-    param=Effect2.DELAY_SEND.value,
-    value=64  # Send to delay
-)
+msg = Effect2Message(param=Effect2.DELAY_SEND.value, value=64)  # Send to delay
 
-msg = Effect2Message(
-    param=Effect2.REVERB_SEND.value,
-    value=64  # Send to reverb
-)
+msg = Effect2Message(param=Effect2.REVERB_SEND.value, value=64)  # Send to reverb
 
 
 # Program Delay Parameters (0x18 06)
 class Delay(Enum):
     """Program Delay parameters"""
+
     # Reserved (0x00)
     LEVEL = 0x01  # Delay Level (0-127)
     # Reserved (0x02)
@@ -4696,6 +5506,7 @@ class Delay(Enum):
 @dataclass
 class DelayMessage(RolandSysEx):
     """Program Delay parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA  # 0x18: Program area
     section: int = 0x06  # 0x06: Delay section
@@ -4709,7 +5520,7 @@ class DelayMessage(RolandSysEx):
             self.area,  # Program area (0x18)
             self.section,  # Delay section (0x06)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         # Handle 4-byte parameters
         if 0x04 <= self.param <= 0x60:
@@ -4719,7 +5530,7 @@ class DelayMessage(RolandSysEx):
                 (value >> 24) & 0x0F,  # High nibble
                 (value >> 16) & 0x0F,
                 (value >> 8) & 0x0F,
-                value & 0x0F  # Low nibble
+                value & 0x0F,  # Low nibble
             ]
         else:
             self.data = [self.value]
@@ -4727,27 +5538,21 @@ class DelayMessage(RolandSysEx):
 
 # Example usage:
 # Set delay level
-msg = DelayMessage(
-    param=Delay.LEVEL.value,
-    value=100  # Level 100
-)
+msg = DelayMessage(param=Delay.LEVEL.value, value=100)  # Level 100
 
 # Set reverb send level
-msg = DelayMessage(
-    param=Delay.REVERB_SEND.value,
-    value=64  # Send to reverb
-)
+msg = DelayMessage(param=Delay.REVERB_SEND.value, value=64)  # Send to reverb
 
 # Set delay parameter 1 to +5000
 msg = DelayMessage(
-    param=Delay.get_param_offset(1),
-    value=5000  # Will be converted to 37768
+    param=Delay.get_param_offset(1), value=5000  # Will be converted to 37768
 )
 
 
 # Program Reverb Parameters (0x18 08)
 class Reverb(Enum):
     """Program Reverb parameters"""
+
     # Reserved (0x00)
     LEVEL = 0x01  # Reverb Level (0-127)
     # Reserved (0x02)
@@ -4777,6 +5582,7 @@ class Reverb(Enum):
 @dataclass
 class ReverbMessage(RolandSysEx):
     """Program Reverb parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA  # 0x18: Program area
     section: int = 0x08  # 0x08: Reverb section
@@ -4790,7 +5596,7 @@ class ReverbMessage(RolandSysEx):
             self.area,  # Program area (0x18)
             self.section,  # Reverb section (0x08)
             self.group,  # Always 0x00
-            self.param  # Parameter number
+            self.param,  # Parameter number
         ]
         # Handle 4-byte parameters
         if 0x03 <= self.param <= 0x5F:
@@ -4800,7 +5606,7 @@ class ReverbMessage(RolandSysEx):
                 (value >> 24) & 0x0F,  # High nibble
                 (value >> 16) & 0x0F,
                 (value >> 8) & 0x0F,
-                value & 0x0F  # Low nibble
+                value & 0x0F,  # Low nibble
             ]
         else:
             self.data = [self.value]
@@ -4808,20 +5614,17 @@ class ReverbMessage(RolandSysEx):
 
 # Example usage:
 # Set reverb level
-msg = ReverbMessage(
-    param=Reverb.LEVEL.value,
-    value=100  # Level 100
-)
+msg = ReverbMessage(param=Reverb.LEVEL.value, value=100)  # Level 100
 
 # Set reverb parameter 1 to +5000
 msg = ReverbMessage(
-    param=Reverb.get_param_offset(1),
-    value=5000  # Will be converted to 37768
+    param=Reverb.get_param_offset(1), value=5000  # Will be converted to 37768
 )
 
 
 class Zone:
     """Program Zone parameters"""
+
     ARPEGGIO_SWITCH = 0x03  # Arpeggio Switch (0-1)
     OCTAVE_SHIFT = 0x19  # Zone Octave Shift (-3/+3)
 
@@ -4829,6 +5632,7 @@ class Zone:
 @dataclass
 class ZoneMessage(RolandSysEx):
     """Program Zone parameter message"""
+
     command: int = DT1_COMMAND_12
     area: int = PROGRAM_AREA
     section: int = 0x01  # Zone section
@@ -4836,6 +5640,7 @@ class ZoneMessage(RolandSysEx):
 
 class Controller:
     """Program Controller parameters"""
+
     # Arpeggio parameters
     ARP_GRID = 0x01  # Arpeggio Grid (0-8)
     ARP_DURATION = 0x02  # Arpeggio Duration (0-9)
@@ -4886,23 +5691,32 @@ class Controller:
     @staticmethod
     def get_grid_name(value: int) -> str:
         """Get grid name from value"""
-        names = ['04_', '08_', '08L', '08H', '08t',
-                 '16_', '16L', '16H', '16t']
+        names = ["04_", "08_", "08L", "08H", "08t", "16_", "16L", "16H", "16t"]
         return names[value] if 0 <= value <= 8 else str(value)
 
     @staticmethod
     def get_duration_name(value: int) -> str:
         """Get duration name from value"""
-        names = ['30', '40', '50', '60', '70', '80', '90',
-                 '100', '120', 'FUL']
+        names = ["30", "40", "50", "60", "70", "80", "90", "100", "120", "FUL"]
         return names[value] if 0 <= value <= 9 else str(value)
 
     @staticmethod
     def get_motif_name(value: int) -> str:
         """Get motif name from value"""
-        names = ['UP/L', 'UP/H', 'UP/_', 'dn/L', 'dn/H',
-                 'dn/_', 'Ud/L', 'Ud/H', 'Ud/_', 'rn/L',
-                 'rn/_', 'PHRASE']
+        names = [
+            "UP/L",
+            "UP/H",
+            "UP/_",
+            "dn/L",
+            "dn/H",
+            "dn/_",
+            "Ud/L",
+            "Ud/H",
+            "Ud/_",
+            "rn/L",
+            "rn/_",
+            "PHRASE",
+        ]
         return names[value] if 0 <= value <= 11 else str(value)
 
     @staticmethod
@@ -4929,6 +5743,7 @@ class Controller:
 
 class DigitalTonePartial:
     """SuperNATURAL Synth Tone Partial parameters"""
+
     # Oscillator parameters
     OSC_WAVE = 0x00  # OSC Wave (0-7)
     OSC_VARIATION = 0x01  # OSC Wave Variation (0-2)
@@ -5039,7 +5854,7 @@ class DigitalTonePartial:
         elif param == 0x09:  # Pitch Env Depth
             return f"{value - 64:+d}"  # Convert 1-127 to -63/+63
         elif param == 0x0A:  # Filter Mode
-            modes = ['BYPASS', 'LPF', 'HPF', 'BPF', 'PKG', 'LPF2', 'LPF3', 'LPF4']
+            modes = ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"]
             return modes[value]
         elif param == 0x0B:  # Filter Slope
             return "-12dB" if value == 0 else "-24dB"
@@ -5058,21 +5873,50 @@ class DigitalTonePartial:
                 return f"{value - 64}R"
             return "C"
         elif param in [0x1C, 0x26]:  # LFO Shapes
-            shapes = ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND']
+            shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]
         elif param in [0x1E, 0x21, 0x28]:  # Switches
             return "ON" if value else "OFF"
         elif param in [0x1F, 0x29]:  # Sync Notes
-            notes = ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                     '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                     '1/12', '1/16', '1/24', '1/32']
+            notes = [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ]
             return notes[value]
-        elif param in [0x22, 0x23, 0x24, 0x25,  # LFO depths
-                       0x2C, 0x2D, 0x2E, 0x2F,  # Mod LFO depths
-                       0x30, 0x31, 0x3B]:  # Aftertouch and Rate Control
+        elif param in [
+            0x22,
+            0x23,
+            0x24,
+            0x25,  # LFO depths
+            0x2C,
+            0x2D,
+            0x2E,
+            0x2F,  # Mod LFO depths
+            0x30,
+            0x31,
+            0x3B,
+        ]:  # Aftertouch and Rate Control
             return f"{value - 64:+d}"  # Convert 1-127 to -63/+63
         elif param == 0x34:  # Wave Gain
-            gains = ['-6dB', '0dB', '+6dB', '+12dB']
+            gains = ["-6dB", "0dB", "+6dB", "+12dB"]
             return gains[value]
         elif param == 0x35:  # Wave Number
             return "OFF" if value == 0 else str(value)
@@ -5083,6 +5927,7 @@ class DigitalTonePartial:
 
 class AnalogTone:
     """Analog Synth Tone parameters"""
+
     # Tone name (12 characters)
     NAME_1 = 0x00  # Character 1 (ASCII 32-127)
     NAME_2 = 0x01  # Character 2
@@ -5177,19 +6022,38 @@ class AnalogTone:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         elif param == 0x0D:  # LFO Shape
-            shapes = ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND']
+            shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]
         elif param == 0x10:  # LFO Sync
             return "ON" if value else "OFF"
         elif param == 0x11:  # LFO Note
-            notes = ['16', '12', '8', '4', '2', '1', '3/4', '2/3', '1/2',
-                     '3/8', '1/3', '1/4', '3/16', '1/6', '1/8', '3/32',
-                     '1/12', '1/16', '1/24', '1/32']
+            notes = [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ]
             return notes[value]
         elif param == 0x16:  # OSC Wave
-            waves = ['SAW', 'TRI', 'PW-SQR']
+            waves = ["SAW", "TRI", "PW-SQR"]
             return waves[value]
         elif param == 0x17:  # OSC Coarse
             return f"{value - 64:+d}"  # Convert 40-88 to -24/+24
@@ -5198,9 +6062,9 @@ class AnalogTone:
         elif param in [0x1B, 0x1E]:  # Pitch Env parameters
             return f"{value - 64:+d}"  # Convert 1-127 to -63/+63
         elif param == 0x1F:  # Sub OSC
-            return ['OFF', 'OCT-1', 'OCT-2'][value]
+            return ["OFF", "OCT-1", "OCT-2"][value]
         elif param == 0x20:  # Filter Switch
-            return ['BYPASS', 'LPF'][value]
+            return ["BYPASS", "LPF"][value]
         elif param == 0x22:  # Filter Keyfollow
             return f"{((value - 54) * 200 / 20) - 100:+.0f}"  # Convert to -100/+100
         elif param in [0x24, 0x29]:  # Filter Env parameters
@@ -5220,6 +6084,7 @@ class AnalogTone:
 
 class DrumKitCommon:
     """Drum Kit Common parameters"""
+
     # Kit name (12 characters)
     NAME_1 = 0x00  # Character 1 (ASCII 32-127)
     NAME_2 = 0x01  # Character 2
@@ -5241,12 +6106,13 @@ class DrumKitCommon:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         return str(value)
 
 
 class DrumKitPartial:
     """Drum Kit Partial parameters"""
+
     # Partial name (12 characters)
     NAME_1 = 0x00  # Character 1 (ASCII 32-127)
     NAME_2 = 0x01  # Character 2
@@ -5288,21 +6154,51 @@ class DrumKitPartial:
     WMT_VEL_CTRL = 0x20  # WMT Velocity Control (0: OFF, 1: ON, 2: RANDOM)
 
     # Random pitch depth values
-    RANDOM_PITCH_VALUES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50,
-                           60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700,
-                           800, 900, 1000, 1100, 1200]
+    RANDOM_PITCH_VALUES = [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000,
+        1100,
+        1200,
+    ]
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else '?'
+            return chr(value) if 32 <= value <= 127 else "?"
         elif param == 0x0C:  # Assign Type
             return "SINGLE" if value else "MULTI"
         elif param == 0x0D:  # Mute Group
             return "OFF" if value == 0 else str(value)
         elif param == 0x0F:  # Coarse Tune
-            notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+            notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
             octave = (value // 12) - 1  # C-1 to G9
             note = notes[value % 12]
             return f"{note}{octave}"
@@ -5321,16 +6217,17 @@ class DrumKitPartial:
         elif param == 0x15:  # Envelope Mode
             return "SUSTAIN" if value else "NO-SUS"
         elif param == 0x1B:  # Output Assign
-            return ['EFX1', 'EFX2', 'DLY', 'REV', 'DIR'][value]
+            return ["EFX1", "EFX2", "DLY", "REV", "DIR"][value]
         elif param in [0x1D, 0x1E]:  # Switches
             return "ON" if value else "OFF"
         elif param == 0x20:  # WMT Velocity Control
-            return ['OFF', 'ON', 'RANDOM'][value]
+            return ["OFF", "ON", "RANDOM"][value]
         return str(value)
 
 
 class DigitalToneCC:
     """SuperNATURAL Synth Tone Control Change parameters"""
+
     # Direct CC parameters (per partial)
     CUTOFF_1 = 102  # Cutoff Partial 1 (0-127)
     CUTOFF_2 = 103  # Cutoff Partial 2 (0-127)
@@ -5373,13 +6270,14 @@ class DigitalToneCC:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param in [3, 4, 5]:  # LFO Shape
-            shapes = ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND']
+            shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]
         return str(value)
 
 
 class AnalogToneCC:
     """Analog Synth Tone Control Change parameters"""
+
     # Direct CC parameters
     CUTOFF = 102  # Cutoff (0-127)
     RESONANCE = 105  # Resonance (0-127)
@@ -5398,13 +6296,14 @@ class AnalogToneCC:
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
         if param == 3:  # LFO Shape
-            shapes = ['TRI', 'SIN', 'SAW', 'SQR', 'S&H', 'RND']
+            shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]
         return str(value)
 
 
 class DrumKitCC:
     """Drum Kit Control Change parameters"""
+
     # NRPN MSB values
     MSB_LEVEL = 64  # Level MSB
     MSB_CUTOFF = 89  # Cutoff MSB
@@ -5430,8 +6329,12 @@ class DrumKitCC:
     @staticmethod
     def validate_msb(msb: int) -> bool:
         """Validate MSB value is valid"""
-        return msb in [DrumKitCC.MSB_LEVEL, DrumKitCC.MSB_CUTOFF,
-                       DrumKitCC.MSB_RESONANCE, DrumKitCC.MSB_ENVELOPE]
+        return msb in [
+            DrumKitCC.MSB_LEVEL,
+            DrumKitCC.MSB_CUTOFF,
+            DrumKitCC.MSB_RESONANCE,
+            DrumKitCC.MSB_ENVELOPE,
+        ]
 
     @staticmethod
     def validate_value(value: int) -> bool:
@@ -5442,17 +6345,17 @@ class DrumKitCC:
 # Bank Select MSB/LSB values
 BANK_MSB = 0x55  # 85 (0x55) for all JD-Xi banks
 BANK_LSB = {
-    'USER_E': 0x00,  # User Bank E (001-064)
-    'USER_F': 0x00,  # User Bank F (065-128)
-    'USER_G': 0x01,  # User Bank G (001-064)
-    'USER_H': 0x01,  # User Bank H (065-128)
-    'PRESET_A': 0x40,  # Preset Bank A (001-064) [64 decimal]
-    'PRESET_B': 0x40,  # Preset Bank B (065-128)
-    'PRESET_C': 0x41,  # Preset Bank C (001-064) [65 decimal]
-    'PRESET_D': 0x41,  # Preset Bank D (065-128)
-    'EXTRA_S': 0x60,  # Extra Bank S (001-064) [96 decimal]
+    "USER_E": 0x00,  # User Bank E (001-064)
+    "USER_F": 0x00,  # User Bank F (065-128)
+    "USER_G": 0x01,  # User Bank G (001-064)
+    "USER_H": 0x01,  # User Bank H (065-128)
+    "PRESET_A": 0x40,  # Preset Bank A (001-064) [64 decimal]
+    "PRESET_B": 0x40,  # Preset Bank B (065-128)
+    "PRESET_C": 0x41,  # Preset Bank C (001-064) [65 decimal]
+    "PRESET_D": 0x41,  # Preset Bank D (065-128)
+    "EXTRA_S": 0x60,  # Extra Bank S (001-064) [96 decimal]
     # ... other extra banks
-    'EXTRA_Z': 0x67,  # Extra Bank Z (001-064) [103 decimal]
+    "EXTRA_Z": 0x67,  # Extra Bank Z (001-064) [103 decimal]
 }
 
 # Bank Select MSB values for different synth types
@@ -5571,6 +6474,7 @@ LEVEL_AFTERTOUCH_PARAM = 0x31  # Level aftertouch sensitivity (1-127 = -63 to +6
 # LFO Shape Values
 class LFOShape(Enum):
     """LFO waveform shapes"""
+
     TRIANGLE = 0x00  # Triangle wave
     SINE = 0x01  # Sine wave
     SAW = 0x02  # Sawtooth wave
@@ -5581,20 +6485,14 @@ class LFOShape(Enum):
     @staticmethod
     def get_display_name(value: int) -> str:
         """Get display name for LFO shape"""
-        names = {
-            0: "TRI",
-            1: "SIN",
-            2: "SAW",
-            3: "SQR",
-            4: "S&H",
-            5: "RND"
-        }
+        names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
         return names.get(value, "???")
 
 
 # LFO Sync Note Values
 class LFOSyncNote(Enum):
     """LFO sync note values"""
+
     BAR_16 = 0  # 16 bars
     BAR_12 = 1  # 12 bars
     BAR_8 = 2  # 8 bars
@@ -5639,7 +6537,7 @@ class LFOSyncNote(Enum):
             16: "1/12",
             17: "1/16",
             18: "1/24",
-            19: "1/32"
+            19: "1/32",
         }
         return names.get(value, "???")
 
@@ -5678,5 +6576,5 @@ LFO_SYNC_NOTES = [
     "1/12",  # 16
     "1/16",  # 17
     "1/24",  # 18
-    "1/32"  # 19
+    "1/32",  # 19
 ]

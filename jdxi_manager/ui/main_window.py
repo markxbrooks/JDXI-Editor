@@ -14,11 +14,9 @@ from PySide6.QtWidgets import (
     QFrame,
     QGroupBox,
     QButtonGroup,
-    QComboBox,
-    QLineEdit,
     QGridLayout,
 )
-from PySide6.QtCore import Qt, QSettings, Signal
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import (
     QAction,
     QFont,
@@ -28,6 +26,7 @@ from PySide6.QtGui import (
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS, DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_AREA, ARP_GROUP
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -36,7 +35,7 @@ from jdxi_manager.ui.editors import (
     EffectsEditor,
     VocalFXEditor,
 )
-from jdxi_manager.ui.editors.pattern import PatternSequencer, sequencer_button_style
+from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
 from jdxi_manager.ui.instrument_pixmap import draw_instrument_pixmap
 from jdxi_manager.ui.midi_config import MIDIConfigDialog
@@ -44,11 +43,11 @@ from jdxi_manager.ui.midi_debugger import MIDIDebugger
 from jdxi_manager.ui.midi_message_debug import MIDIMessageDebug
 from jdxi_manager.ui.patch_name_editor import PatchNameEditor
 from jdxi_manager.ui.patch_manager import PatchManager
-from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.style import Style, sequencer_button_style, toggle_button_style
 from jdxi_manager.ui.widgets.piano_keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.channel_button import ChannelButton
 from jdxi_manager.ui.widgets import MIDIIndicator, LogViewer, LEDIndicator
-from jdxi_manager.ui.widgets.favorite_button import FavoriteButton, PresetFavorite
+from jdxi_manager.ui.widgets.favorite_button import FavoriteButton
 from jdxi_manager.midi import MIDIHelper, MIDIConnection
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX,
@@ -61,6 +60,7 @@ from jdxi_manager.midi.constants import (
     DT1_COMMAND_12,
     END_OF_SYSEX,
     ANALOG_SYNTH_AREA,
+    MODEL_ID_3,
 )
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
@@ -70,39 +70,6 @@ from jdxi_manager.midi.preset_loader import PresetLoader
 
 
 from PySide6.QtCore import QObject, Signal
-
-
-def get_button_styles(active):
-    """Returns the appropriate style for active/inactive states"""
-    if active:
-        return """
-            QPushButton {
-                background-color: #333333;
-                border: 4px solid #ff6666;
-                border-radius: 15px;
-            }
-        """
-    else:
-        return """
-            QPushButton {
-                background-color: #222222;
-                border: 4px solid #666666;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border: 4px solid #ff4d4d;
-            }
-            QPushButton:pressed {
-                background-color: #333333;
-                border: 4px solid #ff6666;
-            }
-        """
-
-
-def update_button_style(button, checked):
-    """Toggle the button style based on the state"""
-    button.setStyleSheet(get_button_styles(checked))
 
 
 class PresetHandler(QObject):
@@ -162,7 +129,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.slot_num = None
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
 
         # Initialize attributes and SysEx settings
         self.attributes = {
@@ -559,7 +526,7 @@ class MainWindow(QMainWindow):
         self._show_editor("Effects", EffectsEditor)
 
     def _open_pattern(self, editor_type: str):
-        self._show_editor("Patterns", PatternSequencer)
+        self._show_editor("Pattern", PatternSequencer)
 
     def _create_main_layout(self):
         """Create the main dashboard"""
@@ -598,34 +565,6 @@ class MainWindow(QMainWindow):
 
         # Initialize current preset index
         self.current_preset_index = 0
-
-    def _create_sequencer(self, seq_x, seq_y, seq_width) -> QWidget:
-        step_count = 16
-        step_size = 40  # Smaller square size
-        total_spacing = seq_width - (step_count * step_size)
-        step_spacing = total_spacing / (step_count - 1)
-
-        sequencer_widget = QWidget()
-        sequencer_layout = QHBoxLayout()
-        sequencer_layout.setSpacing(step_spacing)
-        sequencer_layout.setContentsMargins(seq_x, seq_y, 0, 0)
-
-        self.buttons = []
-
-        for i in range(step_count):
-            button = QPushButton("")
-            button.setFixedSize(step_size, step_size)
-            button.setCheckable(True)
-            button.setStyleSheet(get_button_styles(False))
-            button.toggled.connect(
-                lambda checked, btn=button: update_button_style(btn, checked)
-            )
-
-            self.buttons.append(button)
-            sequencer_layout.addWidget(button)
-
-        sequencer_widget.setLayout(sequencer_layout)
-        return sequencer_widget
 
     def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
@@ -678,13 +617,13 @@ class MainWindow(QMainWindow):
         # Add spacer to push button to right
         row.addStretch()
         # Add button
-        button = QPushButton()
-        button.setFixedSize(30, 30)
-        button.setCheckable(True)
+        self.favourites_button = QPushButton()
+        self.favourites_button.setFixedSize(30, 30)
+        self.favourites_button.setCheckable(True)
         # button.clicked.connect(slot)
         # Style the button with brighter hover/pressed/selected  states
-        button.setStyleSheet(Style.BUTTON_STYLE)
-        row.addWidget(button)
+        self.favourites_button.setStyleSheet(Style.BUTTON_STYLE)
+        row.addWidget(self.favourites_button)
         return row
 
     def _create_sequencer_buttons_row(self):
@@ -696,13 +635,74 @@ class MainWindow(QMainWindow):
         for i in range(16):
             button = QPushButton()
             button.setFixedSize(25, 25)
-            button.setCheckable(True)
+            button.setCheckable(True)  # Ensure the button is checkable
             button.setStyleSheet(sequencer_button_style(button.isChecked()))
+            button.toggled.connect(
+                lambda checked, btn=button: toggle_button_style(btn, checked)
+            )
+            button.clicked.connect(lambda _, idx=i: self._save_favorite(idx))
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
-            grid.setHorizontalSpacing(3)  # Add spacing between columns
+            grid.setHorizontalSpacing(2)  # Add spacing between columns
+            self.sequencer_buttons.append(button)
         row.addLayout(grid)
 
         return row
+
+    def _save_favorite(self, index):
+        """Save the current preset as a favorite"""
+        settings = QSettings("YourCompany", "YourApp")
+        preset_name = f"favorite_{index + 1:02d}"
+        # Assuming you have a method to get the current preset
+        current_preset = self._get_current_preset()
+        settings.setValue(preset_name, current_preset)
+        print(f"Saved {current_preset} as {preset_name}")
+        logging.debug(f"Saved {current_preset} as {preset_name}")
+
+    def _get_current_preset(self):
+        """Retrieve the current preset"""
+        try:
+            # Update the current preset index or details here
+            preset_number = self.current_preset_index
+            preset_name = self._get_current_preset_name()
+            preset_type = self._get_current_preset_type()
+
+            # Format the preset data
+            current_preset = {
+                "number": preset_number,
+                "name": preset_name,
+                "type": preset_type,
+            }
+
+            logging.debug(f"Current preset retrieved: {current_preset}")
+            return current_preset
+
+        except Exception as e:
+            logging.error(f"Error retrieving current preset: {str(e)}")
+            return None
+
+    def _get_current_preset_name(self):
+        """Get the name of the currently selected preset"""
+        try:
+            synth_type = self.settings.value(
+                "last_preset/synth_type", PresetType.ANALOG
+            )
+            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
+
+            # Get preset name - adjust index to be 0-based
+            if synth_type == PresetType.ANALOG:
+                return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
+            elif synth_type == PresetType.DIGITAL_1:
+                return DIGITAL_PRESETS[preset_num - 1]
+            elif synth_type == PresetType.DIGITAL_2:
+                return DIGITAL_PRESETS[preset_num - 1]
+            else:
+                return DRUM_PRESETS[preset_num - 1]
+        except IndexError:
+            return "INIT PATCH"
+
+    def _get_current_preset_type(self):
+        """Get the type of the currently selected preset"""
+        return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
 
     def _create_section(self, title):
         """Create a section frame with title"""
@@ -918,6 +918,8 @@ class MainWindow(QMainWindow):
             elif title == "Drum Kit":
                 self.drum_kit = editor
             elif title == "Effects":
+                self.effects = editor
+            elif title == "Pattern":
                 self.effects = editor
 
             # Show editor
@@ -1458,7 +1460,7 @@ class MainWindow(QMainWindow):
 
         # Beginning of sequencer section
         sequencer_container = QWidget(central_widget)
-        sequencer_container.setGeometry(self.width - 550, self.margin + 120, 650, 100)
+        sequencer_container.setGeometry(self.width - 540, self.margin + 150, 650, 100)
         sequencer_container_layout = QVBoxLayout(sequencer_container)
         sequencer_label_layout = QHBoxLayout()
         sequencer_label = QLabel("Sequencer")
@@ -1476,8 +1478,10 @@ class MainWindow(QMainWindow):
         # sequencer_container_layout.addLayout(sequencer_label_layout)
         sequencer_layout = QHBoxLayout()
         seq_width = 400  # Approximate width for sequencer
+        favorites_button_row = self._create_favorite_buttons_row()
         sequencer = self._create_sequencer_buttons_row()
         sequencer_layout.addLayout(sequencer)
+        # sequencer_container_layout.addLayout(favorites_button_row)
         sequencer_container_layout.addLayout(sequencer_layout)
         # End of sequencer section
 
@@ -1788,7 +1792,7 @@ class MainWindow(QMainWindow):
                     DEVICE_ID,
                     MODEL_ID_1,
                     MODEL_ID_2,
-                    MODEL_ID,
+                    MODEL_ID_3,
                     JD_XI_ID,
                     DT1_COMMAND_12,
                     0x15,  # Arpeggio area
@@ -1816,35 +1820,40 @@ class MainWindow(QMainWindow):
         """Send arpeggiator on/off command"""
         try:
             if self.midi_helper:
-                # Value: 0 = OFF, 1 = ON
-                value = 0x01 if state else 0x00
+                value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
 
-                # Create SysEx message using constants
+                # Ensure all constants are integers
                 sysex_msg = [
-                    START_OF_SYSEX,
-                    ROLAND_ID,
-                    DEVICE_ID,
-                    MODEL_ID_1,
-                    MODEL_ID_2,
-                    MODEL_ID,
-                    JD_XI_ID,
-                    DT1_COMMAND_12,
-                    0x15,  # Arpeggio area
-                    0x00,  # Subgroup
-                    0x00,  # Part
-                    0x00,  # On/Off parameter
-                    value,  # Parameter value
+                    int(START_OF_SYSEX),
+                    int(ROLAND_ID),
+                    int(DEVICE_ID),
+                    int(MODEL_ID_1),
+                    int(MODEL_ID_2),
+                    int(MODEL_ID_3),
+                    int(JD_XI_ID),
+                    int(DT1_COMMAND_12),
+                    ARP_AREA,  # Arpeggio area
+                    ARP_PART,  # Subgroup
+                    ARP_GROUP,  # Part
+                    0x03,  # On/Off parameter
+                    int(value),  # Parameter value
                 ]
 
-                # Calculate checksum (sum all data bytes)
-                checksum = sum(sysex_msg[8:-1]) & 0x7F  # From address to value
-                checksum = (128 - checksum) & 0x7F
+                # Calculate checksum
+                checksum = sum(sysex_msg[8:]) & 0x7F  # Sum from address to value
+                checksum = (128 - checksum) & 0x7F  # Roland's checksum formula
 
                 # Add checksum and end of sysex
-                sysex_msg.extend([checksum, END_OF_SYSEX])
+                sysex_msg.append(checksum)
+                sysex_msg.append(int(END_OF_SYSEX))
+
+                # Validate all elements are integers
+                assert all(
+                    isinstance(x, int) for x in sysex_msg
+                ), "Non-integer found in sysex_msg"
 
                 # Send message
-                self.midi_helper.send_message(bytes(sysex_msg))
+                self.midi_helper.send_message(sysex_msg)  # No need for bytearray()
                 logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
 
         except Exception as e:
@@ -2706,55 +2715,6 @@ class MainWindow(QMainWindow):
             self.arpeggio_editor.show()
         except Exception as e:
             logging.error(f"Error showing Arpeggiator editor: {str(e)}")
-
-    def _get_current_preset_name(self):
-        """Get the name of the currently selected preset"""
-        try:
-            synth_type = self.settings.value(
-                "last_preset/synth_type", PresetType.ANALOG
-            )
-            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
-
-            # Get preset name - adjust index to be 0-based
-            if synth_type == PresetType.ANALOG:
-                return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
-            elif synth_type == PresetType.DIGITAL_1:
-                return DIGITAL_PRESETS[preset_num - 1]
-            elif synth_type == PresetType.DIGITAL_2:
-                return DIGITAL_PRESETS[preset_num - 1]
-            else:
-                return DRUM_PRESETS[preset_num - 1]
-        except IndexError:
-            return "INIT PATCH"
-
-    def save_preset_as_favourite(
-        self, synth_type: str, preset_num: int, preset_name: str, channel: int
-    ):
-        """Save current preset to this favorite slot"""
-        logging.debug(
-            f"Saving preset: {synth_type}, {preset_num}, {preset_name}, {channel}"
-        )
-        self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-        # self._update_style()
-        # self._save_to_settings()
-        logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
-
-    def load_preset_from_favourites(self):
-        """Load saved preset"""
-        if not self.preset:
-            logging.warning(f"No preset saved in favorite slot {self.slot_num}")
-            return
-        logging.debug(
-            f"Loading preset: {self.preset.synth_type}, {self.preset.preset_num}, {self.preset.preset_name}, {self.preset.channel}"
-        )
-        preset_data = {
-            "type": self.preset.synth_type,
-            "selpreset": self.preset.preset_num + 1,
-            "modified": 0,
-        }
-        self.load_preset(preset_data)
-        # self._update_style()
-        logging.debug(f"Loaded favorite {self.slot_num}: {self.preset.preset_name}")
 
     def get_data(self):
         """Retrieve data using SysEx request"""

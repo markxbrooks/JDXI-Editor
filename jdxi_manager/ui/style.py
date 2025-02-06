@@ -436,3 +436,60 @@ class Style:
                 color: white;
             }
         """
+
+
+def sequencer_button_style(active):
+    return f"""
+        QPushButton {{
+            border: 4px solid {'#ff6666' if active else '#666666'};
+            background-color: {'#333333' if active else 'black'};
+            border-radius: 3px;
+            padding: 0px;
+        }}
+        QPushButton:hover {{
+            background-color: #1A1A1A;
+            border-color: #ff4d4d;
+        }}
+        QPushButton:pressed {{
+            background-color: #333333;
+            border-color: #ff6666;
+        }}
+    """
+
+
+def toggle_button_style(button, checked):
+    """Update button style based on its checked state"""
+    button.setStyleSheet(sequencer_button_style(checked))  # Example style for checked
+
+
+def update_button_style(button, checked):
+    """Toggle the button style based on the state"""
+    button.setStyleSheet(get_button_styles(checked))
+
+
+def get_button_styles(active):
+    """Returns the appropriate style for active/inactive states"""
+    if active:
+        return """
+            QPushButton {
+                background-color: #333333;
+                border: 4px solid #ff6666;
+                border-radius: 15px;
+            }
+        """
+    else:
+        return """
+            QPushButton {
+                background-color: #222222;
+                border: 4px solid #666666;
+                border-radius: 15px;
+            }
+            QPushButton:hover {
+                background-color: #1A1A1A;
+                border: 4px solid #ff4d4d;
+            }
+            QPushButton:pressed {
+                background-color: #333333;
+                border: 4px solid #ff6666;
+            }
+        """
