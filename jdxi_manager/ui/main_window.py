@@ -335,18 +335,24 @@ class MainWindow(QMainWindow):
         self.current_preset_index = 0
 
         # Initialize PresetHandler with the desired preset list
-        self.digital_preset_handler = PresetHandler(DIGITAL_PRESETS)
+        self.digital_1_preset_handler = PresetHandler(DIGITAL_PRESETS)
+        self.digital_2_preset_handler = PresetHandler(DIGITAL_PRESETS)
         self.analog_preset_handler = PresetHandler(ANALOG_PRESETS)
         self.drums_preset_handler = PresetHandler(DRUM_PRESETS)
 
-        self.digital_preset_handler.update_display.connect(self.update_display_callback)
+        self.digital_1_preset_handler.update_display.connect(
+            self.update_display_callback
+        )
+        self.digital_2_preset_handler.update_display.connect(
+            self.update_display_callback
+        )
         self.analog_preset_handler.update_display.connect(self.update_display_callback)
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.oldPos = None
         self.get_data()
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self.oldPos = event.globalPos()
 
     def mouseMoveEvent(self, event):
@@ -356,7 +362,7 @@ class MainWindow(QMainWindow):
             self.oldPos = event.globalPos()
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self.oldPos = None
 
     def _select_synth(self, synth_type):
@@ -408,9 +414,24 @@ class MainWindow(QMainWindow):
             return DRUM_PRESETS
         return DIGITAL_PRESETS  # Default to DIGITAL_PRESETS if none match
 
+    def _get_preset_handler_for_current_synth(self):
+        """Return the appropriate preset list based on the current synth type."""
+        if self.current_synth_type == PresetType.ANALOG:
+            return self.analog_preset_handler
+        elif self.current_synth_type in [PresetType.DIGITAL_1]:
+            return self.digital_1_preset_handler
+        elif self.current_synth_type in [PresetType.DIGITAL_2]:
+            return self.digital_2_preset_handler
+        elif self.current_synth_type == PresetType.DRUMS:
+            return self.drums_preset_handler
+        return (
+            self.digital_1_preset_handler
+        )  # Default to digital_1_preset_handler if none match
+
     def _previous_tone(self):
         """Decrement the tone index and update the display."""
-        preset_data = self.digital_preset_handler.previous_tone()
+        preset_handler = self._get_preset_handler_for_current_synth()
+        preset_data = preset_handler.previous_tone()
         if self.current_preset_index > 0:
             self.current_preset_index -= 1
             presets = self._get_presets_for_current_synth()
@@ -428,7 +449,8 @@ class MainWindow(QMainWindow):
 
     def _next_tone(self):
         """Increment the tone index and update the display."""
-        preset_data = self.digital_preset_handler.next_tone()
+        preset_handler = self._get_preset_handler_for_current_synth()
+        preset_data = preset_handler.next_tone()
         if self.current_preset_index < len(self._get_presets_for_current_synth()) - 1:
             self.current_preset_index += 1
             presets = self._get_presets_for_current_synth()
