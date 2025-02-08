@@ -451,6 +451,41 @@ class Style:
             }
         """
 
+    # Default and active styles
+    BUTTON_DEFAULT = """
+        QPushButton {
+            background-color: black;
+            border: 4px solid #666666;
+            border-radius: 15px;
+            padding: 0px;
+        }
+        QPushButton:hover {
+            background-color: #1A1A1A;
+            border: 4px solid #ff4d4d;
+        }
+        QPushButton:pressed {
+            background-color: #333333;
+            border: 4px solid #ff6666;
+        }
+    """
+
+    BUTTON_ACTIVE = """
+        QPushButton {
+            background-color: #ff6666;
+            border: 4px solid #ff4d4d;
+            border-radius: 15px;
+            padding: 0px;
+        }
+        QPushButton:hover {
+            background-color: #ff8080;
+            border: 4px solid #ff9999;
+        }
+        QPushButton:pressed {
+            background-color: #ff4d4d;
+            border: 4px solid #ff3333;
+        }
+    """
+
 
 def sequencer_button_style(active):
     return f"""

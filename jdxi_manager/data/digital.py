@@ -357,11 +357,13 @@ class DigitalParameter(Enum):
         """Get parameter group and address adjusted for partial number"""
         group = self.group  # Base group already includes 0x20 for Osc1
 
-        # Add partial offset (0x20 for partial 2, 0x40 for partial 3)
-        if partial_num == 2:
-            group += 0x20
+        # Add partial groups
+        if partial_num == 1:
+            group = 0x20
+        elif partial_num == 2:
+            group = 0x21
         elif partial_num == 3:
-            group += 0x40
+            group = 0x22
 
         return (group, self.address)
 
