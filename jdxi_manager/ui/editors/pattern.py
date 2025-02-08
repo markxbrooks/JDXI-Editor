@@ -12,7 +12,7 @@ Features:
 - Toggle button states programmatically or via MIDI.
 - Styled buttons with illumination effects.
 - Each button stores an associated MIDI note and its on/off state.
-- Start/Stop playback buttons for sequence control.
+- Start/Stop playback buttons for sequence control. ..
 
 """
 
