@@ -94,7 +94,10 @@ class AnalogSynthEditor(BaseEditor):
         container.setLayout(container_layout)
 
         # Additional styling specific to analog editor
-        self.setStyleSheet(Style.ANALOG_EDITOR_STYLE)
+        self.setStyleSheet(
+            Style.ANALOG_EDITOR_STYLE
+            + "QSlider::groove:vertical { background: #222222; }"
+        )
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 

@@ -16,13 +16,12 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
 )
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QObject, Signal
 from PySide6.QtGui import (
     QAction,
     QFont,
     QFontDatabase,
 )
-
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS, DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
@@ -61,15 +60,14 @@ from jdxi_manager.midi.constants import (
     END_OF_SYSEX,
     ANALOG_SYNTH_AREA,
     MODEL_ID_3,
+    MIDI_CHANNEL_DIGITAL1,
+    MIDI_CHANNEL_DIGITAL2,
+    MIDI_CHANNEL_ANALOG,
+    MIDI_CHANNEL_DRUMS,
 )
 from jdxi_manager.midi.messages import IdentityRequest
 from jdxi_manager.midi.messages import ParameterMessage
 from jdxi_manager.midi.preset_loader import PresetLoader
-
-# from jdxi_manager.ui.preset_handler import PresetHandler
-
-
-from PySide6.QtCore import QObject, Signal
 
 
 class PresetHandler(QObject):
@@ -158,12 +156,11 @@ class MainWindow(QMainWindow):
         self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
         self.setMinimumSize(1000, 400)
-        # self.setMaximumSize(1000, 440)
         # Store window dimensions
         self.width = 1000
         self.height = 400
         self.margin = 15
-        self.preset_type = PresetType.DIGITAL_1
+        self.preset_type = PresetType.DIGITAL_1  # Default preset
         # Store display coordinates as class variables
         self.display_x = 35  # margin + 20
         self.display_y = 50  # margin + 20 + title height
@@ -406,65 +403,84 @@ class MainWindow(QMainWindow):
 
     def _get_presets_for_current_synth(self):
         """Return the appropriate preset list based on the current synth type."""
-        if self.current_synth_type == PresetType.ANALOG:
-            return AN_PRESETS
-        elif self.current_synth_type in [PresetType.DIGITAL_1, PresetType.DIGITAL_2]:
-            return DIGITAL_PRESETS
-        elif self.current_synth_type == PresetType.DRUMS:
-            return DRUM_PRESETS
-        return DIGITAL_PRESETS  # Default to DIGITAL_PRESETS if none match
+        preset_map = {
+            PresetType.ANALOG: AN_PRESETS,
+            PresetType.DIGITAL_1: DIGITAL_PRESETS,
+            PresetType.DIGITAL_2: DIGITAL_PRESETS,
+            PresetType.DRUMS: DRUM_PRESETS,
+        }
+
+        presets = preset_map.get(self.current_synth_type, None)
+        if presets is None:
+            logging.warning(
+                f"Unknown synth type: {self.current_synth_type}, defaulting to DIGITAL_PRESETS"
+            )
+            return DIGITAL_PRESETS  # Safe fallback
+        return presets
 
     def _get_preset_handler_for_current_synth(self):
-        """Return the appropriate preset list based on the current synth type."""
-        if self.current_synth_type == PresetType.ANALOG:
-            return self.analog_preset_handler
-        elif self.current_synth_type in [PresetType.DIGITAL_1]:
-            return self.digital_1_preset_handler
-        elif self.current_synth_type in [PresetType.DIGITAL_2]:
-            return self.digital_2_preset_handler
-        elif self.current_synth_type == PresetType.DRUMS:
-            return self.drums_preset_handler
-        return (
-            self.digital_1_preset_handler
-        )  # Default to digital_1_preset_handler if none match
+        """Return the appropriate preset handler based on the current synth type."""
+        handler_map = {
+            PresetType.ANALOG: self.analog_preset_handler,
+            PresetType.DIGITAL_1: self.digital_1_preset_handler,
+            PresetType.DIGITAL_2: self.digital_2_preset_handler,
+            PresetType.DRUMS: self.drums_preset_handler,
+        }
+
+        handler = handler_map.get(self.current_synth_type, None)
+        if handler is None:
+            logging.warning(
+                f"Unknown synth type: {self.current_synth_type}, defaulting to digital_1_preset_handler"
+            )
+            return self.digital_1_preset_handler  # Safe fallback
+        return handler
 
     def _previous_tone(self):
         """Decrement the tone index and update the display."""
+        if self.current_preset_index <= 0:
+            logging.info("Already at the first preset.")
+            return
+
+        self.current_preset_index -= 1
+        presets = self._get_presets_for_current_synth()
         preset_handler = self._get_preset_handler_for_current_synth()
-        preset_data = preset_handler.previous_tone()
-        if self.current_preset_index > 0:
-            self.current_preset_index -= 1
-            presets = self._get_presets_for_current_synth()
-            self._update_display_preset(
-                self.current_preset_index,
-                presets[self.current_preset_index],
-                self.channel,
-            )
-            preset_data = {
-                "type": self.current_synth_type,  # Ensure this is a valid type
-                "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
-                "modified": 0,  # or 1, depending on your logic
-            }
-            self.load_preset(preset_data)
+
+        self._update_display_preset(
+            self.current_preset_index,
+            presets[self.current_preset_index],
+            self.channel,
+        )
+
+        preset_data = {
+            "type": self.current_synth_type,
+            "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
+            "modified": 0,  # or 1, depending on your logic
+        }
+        self.load_preset(preset_data)
 
     def _next_tone(self):
         """Increment the tone index and update the display."""
+        max_index = len(self._get_presets_for_current_synth()) - 1
+        if self.current_preset_index >= max_index:
+            logging.info("Already at the last preset.")
+            return
+
+        self.current_preset_index += 1
+        presets = self._get_presets_for_current_synth()
         preset_handler = self._get_preset_handler_for_current_synth()
-        preset_data = preset_handler.next_tone()
-        if self.current_preset_index < len(self._get_presets_for_current_synth()) - 1:
-            self.current_preset_index += 1
-            presets = self._get_presets_for_current_synth()
-            self._update_display_preset(
-                self.current_preset_index,
-                presets[self.current_preset_index],
-                self.channel,
-            )
-            preset_data = {
-                "type": self.current_synth_type,  # Ensure this is a valid type
-                "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
-                "modified": 0,  # or 1, depending on your logic
-            }
-            self.load_preset(preset_data)
+
+        self._update_display_preset(
+            self.current_preset_index,
+            presets[self.current_preset_index],
+            self.channel,
+        )
+
+        preset_data = {
+            "type": self.current_synth_type,
+            "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
+            "modified": 0,  # or 1, depending on your logic
+        }
+        self.load_preset(preset_data)
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth type and preset index."""
@@ -787,6 +803,7 @@ class MainWindow(QMainWindow):
 
         analog_action = QAction("Analog Synth", self)
         analog_action.triggered.connect(self._open_analog_synth)
+
         synth_menu.addAction(analog_action)
 
         pattern_action = QAction("Pattern Sequencer", self)
@@ -959,6 +976,10 @@ class MainWindow(QMainWindow):
         self._show_editor("Analog Synth", AnalogSynthEditor)
         self.preset_type = PresetType.ANALOG
         self.current_synth_type = PresetType.ANALOG
+        self.midi_helper.send_program_change(
+            channel=MIDI_CHANNEL_ANALOG, program=1
+        )  # Program 1 for now
+        self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_ANALOG)
 
     def _open_digital_synth1(self):
         """Open the Digital Synth 1 editor and send SysEx message."""
@@ -970,7 +991,13 @@ class MainWindow(QMainWindow):
                 )
             self.digital_synth1_editor.show()
             self.digital_synth1_editor.raise_()
-
+            self.piano_keyboard.set_midi_channel(0)
+            self.midi_helper.send_program_change(
+                channel=MIDI_CHANNEL_DIGITAL1, program=1
+            )  # Program 1 for now
+            self.midi_helper.send_bank_and_program_change(
+                channel=MIDI_CHANNEL_DIGITAL1, bank_msb=87, bank_lsb=0, program=1
+            )
             # Send the SysEx message
             sysex_msg = [
                 0xF0,
@@ -1002,11 +1029,20 @@ class MainWindow(QMainWindow):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
         self.preset_type = PresetType.DIGITAL_2
         self.current_synth_type = PresetType.DIGITAL_2
+        self.midi_helper.send_program_change(
+            channel=MIDI_CHANNEL_DIGITAL2, program=1
+        )  # Program 1 for now
+        self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DIGITAL2)
 
     def _open_drums(self):
-        self._show_drums_editor()
+        self._show_editor("Drums", DrumEditor)
+        # self._show_drums_editor()
         self.preset_type = PresetType.DRUMS
         self.current_synth_type = PresetType.DRUMS
+        self.midi_helper.send_program_change(
+            channel=MIDI_CHANNEL_DRUMS, program=1
+        )  # Program 1 for now
+        self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DRUMS)
 
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
@@ -1663,13 +1699,19 @@ class MainWindow(QMainWindow):
         button.setStyleSheet(style)
 
         def key_pressed():
-            if self.midi_out:
-                self.midi_out.send_message([0x90, note_number, 1])  # Note On
+            if self.midi_helper:
+                handler = self._get_preset_handler_for_current_synth()
+                self.midi_helper.send_note_on(
+                    note=note_number, velocity=1, channel=handler.channel
+                )
                 logging.debug(f"Sent MIDI Note On {note_number} velocity 1")
 
         def key_released():
-            if self.midi_out:
-                self.midi_out.send_message([0x80, note_number, 5])  # Note Off
+            if self.midi_helper:
+                handler = self._get_preset_handler_for_current_synth()
+                self.midi_helper.send_note_off(
+                    note=note_number, velocity=5, channel=handler.channel
+                )
                 logging.debug(f"Sent MIDI Note Off {note_number} velocity 5")
 
         # Connect to mouse events instead of clicked
@@ -1994,14 +2036,17 @@ class MainWindow(QMainWindow):
 
     def _send_midi_message(self, message):
         """Send MIDI message and blink indicator"""
-        if self.midi_out:
-            self.midi_out.send_message(message)
+        if self.midi_helper:
+            self.midi_helper.send_message(message)
+            # if self.midi_out:
+            #    self.midi_out.send_message(message)
             # Blink the output indicator
             if hasattr(self, "midi_out_indicator"):
                 self.midi_out_indicator.blink()
 
+    """
     def _show_drums_editor(self):
-        """Show the drum editor window"""
+        ""Show the drum editor window""
         try:
             if not hasattr(self, "drums_editor"):
                 self.drums_editor = DrumEditor(
@@ -2012,6 +2057,7 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             logging.error(f"Error showing Drums editor: {str(e)}")
+    """
 
     def update_preset_display(self, preset_num, preset_name):
         """Update the current preset display"""
@@ -2743,3 +2789,85 @@ class MainWindow(QMainWindow):
         data = self.midi_helper.send_sysex_rq1(
             self.device_id, self.address + [0x00], self.data_length
         )
+
+    def _handle_sysex_message(self, message, preset_data):
+        """Handle SysEx MIDI messages."""
+        try:
+            sysex_bytes = list(message.data)
+            parsed_data = parse_sysex(sysex_bytes)
+            logging.debug(f"Parsed SysEx data: {parsed_data}")
+        except ValueError as e:
+            logging.error(
+                f"Error handling SysEx message: {str(e)} for message: {message}"
+            )
+
+
+def parse_jdxi_tone(data):
+    """
+    Parses JD-Xi tone data from SysEx messages.
+    Supports Digital1, Digital2, Analog, and Drums.
+
+    Args:
+        data (bytes): SysEx message containing tone data.
+
+    Returns:
+        dict: Parsed tone parameters.
+    """
+    if len(data) < 64:
+        raise ValueError("Invalid data length. Must be at least 64 bytes.")
+
+    parsed = {}
+    try:
+        parsed["header"] = data[:7].hex()
+        parsed["address"] = data[7:11].hex()
+        parsed["tone_name"] = data[11:24].decode(errors="ignore").strip()
+
+        # Extracting shared parameters
+        parsed["LFO Rate"] = data[24]
+        parsed["LFO Depth"] = data[25]
+        parsed["LFO Shape"] = data[26]
+
+        parsed["OSC Type"] = data[33]
+        parsed["OSC Pitch"] = data[34]
+        parsed["Filter Cutoff"] = data[44]
+        parsed["Filter Resonance"] = data[45]
+        parsed["Amp Level"] = data[52]
+
+        # Identify tone type
+        tone_type = data[7]  # Address component identifies type
+        if tone_type == 0x19:
+            parsed["Tone Type"] = "Analog"
+        elif tone_type == 0x1A:
+            parsed["Tone Type"] = "Digital1"
+        elif tone_type == 0x1B:
+            parsed["Tone Type"] = "Digital2"
+        elif tone_type == 0x1C:
+            parsed["Tone Type"] = "Drums"
+        else:
+            parsed["Tone Type"] = "Unknown"
+
+    except Exception as e:
+        logging.error(f"Error parsing JD-Xi tone: {str(e)}")
+
+    return parsed
+
+
+def parse_sysex(sysex_bytes):
+    if len(sysex_bytes) < 15:
+        raise ValueError("Invalid SysEx message length")
+
+    return {
+        "start": sysex_bytes[0],
+        "manufacturer_id": sysex_bytes[1],
+        "device_id": sysex_bytes[2],
+        "model_id": sysex_bytes[3:6],
+        "jd_xi_id": sysex_bytes[6],
+        "command_type": sysex_bytes[7],
+        "area": sysex_bytes[8],
+        "synth_number": sysex_bytes[9],
+        "partial": sysex_bytes[10],
+        "parameter": sysex_bytes[11],
+        "value": sysex_bytes[12],
+        "checksum": sysex_bytes[13],
+        "end": sysex_bytes[14],
+    }

@@ -23,7 +23,12 @@ import qtawesome as qta
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi import MIDIHelper
-from jdxi_manager.midi.conversions import midi_cc_to_frac, midi_cc_to_ms, frac_to_midi_cc, ms_to_midi_cc
+from jdxi_manager.midi.conversions import (
+    midi_cc_to_frac,
+    midi_cc_to_ms,
+    frac_to_midi_cc,
+    ms_to_midi_cc,
+)
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.style import Style
@@ -95,8 +100,11 @@ class PartialEditor(QWidget):
         self.updating_from_spinbox = False
 
     def _create_parameter_slider(
-        self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
-    , vertical=False) -> Slider:
+        self,
+        param: Union[DigitalParameter, DigitalCommonParameter],
+        label: str,
+        vertical=False,
+    ) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
@@ -396,16 +404,24 @@ class PartialEditor(QWidget):
         adsr_vlayout.addLayout(adsr_layout)
 
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_ATTACK, "A", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_ENV_ATTACK, "A", vertical=True
+            )
         )
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_DECAY, "D", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_ENV_DECAY, "D", vertical=True
+            )
         )
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_SUSTAIN, "S", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_ENV_SUSTAIN, "S", vertical=True
+            )
         )
         adsr_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_RELEASE, "R", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_ENV_RELEASE, "R", vertical=True
+            )
         )
         env_layout.addLayout(adsr_vlayout)
 
@@ -418,7 +434,6 @@ class PartialEditor(QWidget):
         env_group.setStyleSheet("QGroupBox { margin-top: 10px; }")
         self.filter_adsr_widget.updateGeometry()
         env_group.updateGeometry()
-
 
         # HPF cutoff
         controls_layout.addWidget(
@@ -443,16 +458,23 @@ class PartialEditor(QWidget):
 
         # 🔹 Connect external controls to ADSR spinboxes dynamically
         for param, spinbox in self.filter_adsr_control_map.items():
-            self.controls[param].valueChanged.connect(partial(self.update_filter_adsr_spinbox_from_param,
-                                                              self.filter_adsr_control_map,
-                                                              param))
+            self.controls[param].valueChanged.connect(
+                partial(
+                    self.update_filter_adsr_spinbox_from_param,
+                    self.filter_adsr_control_map,
+                    param,
+                )
+            )
 
         return group
 
     def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
         spinbox = control_map[param]
-        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.FILTER_ENV_SUSTAIN]:
+        if param in [
+            DigitalParameter.AMP_ENV_SUSTAIN,
+            DigitalParameter.FILTER_ENV_SUSTAIN,
+        ]:
             new_value = midi_cc_to_frac(value)
         else:
             new_value = midi_cc_to_ms(value)
@@ -464,38 +486,78 @@ class PartialEditor(QWidget):
 
     def on_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
-            self.controls[DigitalParameter.FILTER_ENV_ATTACK].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
-            self.controls[DigitalParameter.FILTER_ENV_DECAY].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
-            self.controls[DigitalParameter.FILTER_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
-            self.controls[DigitalParameter.FILTER_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
+            self.controls[DigitalParameter.FILTER_ENV_ATTACK].setValue(
+                ms_to_midi_cc(envelope["attackTime"], 10, 1000)
+            )
+            self.controls[DigitalParameter.FILTER_ENV_DECAY].setValue(
+                ms_to_midi_cc(envelope["decayTime"], 10, 1000)
+            )
+            self.controls[DigitalParameter.FILTER_ENV_SUSTAIN].setValue(
+                ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
+            )
+            self.controls[DigitalParameter.FILTER_ENV_RELEASE].setValue(
+                ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
+            )
 
     def filterAdsrValueChanged(self):
         self.updating_from_spinbox = True
-        self.filter_adsr_widget.envelope["attackTime"] = self.filter_adsr_widget.attackSB.value()
-        self.filter_adsr_widget.envelope["decayTime"] = self.filter_adsr_widget.decaySB.value()
-        self.filter_adsr_widget.envelope["releaseTime"] = self.filter_adsr_widget.releaseSB.value()
-        self.filter_adsr_widget.envelope["initialAmpl"] = self.filter_adsr_widget.initialSB.value()
-        self.filter_adsr_widget.envelope["peakAmpl"] = self.filter_adsr_widget.peakSB.value()
-        self.filter_adsr_widget.envelope["sustainAmpl"] = self.filter_adsr_widget.sustainSB.value()
+        self.filter_adsr_widget.envelope["attackTime"] = (
+            self.filter_adsr_widget.attackSB.value()
+        )
+        self.filter_adsr_widget.envelope["decayTime"] = (
+            self.filter_adsr_widget.decaySB.value()
+        )
+        self.filter_adsr_widget.envelope["releaseTime"] = (
+            self.filter_adsr_widget.releaseSB.value()
+        )
+        self.filter_adsr_widget.envelope["initialAmpl"] = (
+            self.filter_adsr_widget.initialSB.value()
+        )
+        self.filter_adsr_widget.envelope["peakAmpl"] = (
+            self.filter_adsr_widget.peakSB.value()
+        )
+        self.filter_adsr_widget.envelope["sustainAmpl"] = (
+            self.filter_adsr_widget.sustainSB.value()
+        )
         self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
         self.filter_adsr_widget.envelopeChanged.emit(self.filter_adsr_widget.envelope)
         self.updating_from_spinbox = False
 
     def on_amp_env_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
-            self.controls[DigitalParameter.AMP_ENV_ATTACK].setValue(ms_to_midi_cc(envelope["attackTime"], 10, 1000))
-            self.controls[DigitalParameter.AMP_ENV_DECAY].setValue(ms_to_midi_cc(envelope["decayTime"], 10, 1000))
-            self.controls[DigitalParameter.AMP_ENV_SUSTAIN].setValue(ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1))
-            self.controls[DigitalParameter.AMP_ENV_RELEASE].setValue(ms_to_midi_cc(envelope["releaseTime"], 10, 1000))
+            self.controls[DigitalParameter.AMP_ENV_ATTACK].setValue(
+                ms_to_midi_cc(envelope["attackTime"], 10, 1000)
+            )
+            self.controls[DigitalParameter.AMP_ENV_DECAY].setValue(
+                ms_to_midi_cc(envelope["decayTime"], 10, 1000)
+            )
+            self.controls[DigitalParameter.AMP_ENV_SUSTAIN].setValue(
+                ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
+            )
+            self.controls[DigitalParameter.AMP_ENV_RELEASE].setValue(
+                ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
+            )
 
     def ampEnvAdsrValueChanged(self):
         self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope["attackTime"] = self.amp_env_adsr_widget.attackSB.value()
-        self.amp_env_adsr_widget.envelope["decayTime"] = self.amp_env_adsr_widget.decaySB.value()
-        self.amp_env_adsr_widget.envelope["releaseTime"] = self.amp_env_adsr_widget.releaseSB.value()
-        self.amp_env_adsr_widget.envelope["initialAmpl"] = self.amp_env_adsr_widget.initialSB.value()
-        self.amp_env_adsr_widget.envelope["peakAmpl"] = self.amp_env_adsr_widget.peakSB.value()
-        self.amp_env_adsr_widget.envelope["sustainAmpl"] = self.amp_env_adsr_widget.sustainSB.value()
+        self.amp_env_adsr_widget.envelope["attackTime"] = (
+            self.amp_env_adsr_widget.attackSB.value()
+        )
+        self.amp_env_adsr_widget.envelope["decayTime"] = (
+            self.amp_env_adsr_widget.decaySB.value()
+        )
+        self.amp_env_adsr_widget.envelope["releaseTime"] = (
+            self.amp_env_adsr_widget.releaseSB.value()
+        )
+        self.amp_env_adsr_widget.envelope["initialAmpl"] = (
+            self.amp_env_adsr_widget.initialSB.value()
+        )
+        self.amp_env_adsr_widget.envelope["peakAmpl"] = (
+            self.amp_env_adsr_widget.peakSB.value()
+        )
+        self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
+            self.amp_env_adsr_widget.sustainSB.value()
+        )
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
         self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
         self.updating_from_spinbox = False
@@ -594,16 +656,24 @@ class PartialEditor(QWidget):
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
         amp_env_adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_ATTACK, "A", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.AMP_ENV_ATTACK, "A", vertical=True
+            )
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_DECAY, "D", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.AMP_ENV_DECAY, "D", vertical=True
+            )
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_SUSTAIN, "S", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.AMP_ENV_SUSTAIN, "S", vertical=True
+            )
         )
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_ENV_RELEASE, "R", vertical=True)
+            self._create_parameter_slider(
+                DigitalParameter.AMP_ENV_RELEASE, "R", vertical=True
+            )
         )
 
         layout.addWidget(env_group)
@@ -629,14 +699,20 @@ class PartialEditor(QWidget):
 
         # 🔹 Connect external controls to ADSR spinboxes dynamically
         for param, spinbox in self.adsr_control_map.items():
-            self.controls[param].valueChanged.connect(partial(self.update_adsr_spinbox_from_param,
-                                                              self.adsr_control_map, param))
+            self.controls[param].valueChanged.connect(
+                partial(
+                    self.update_adsr_spinbox_from_param, self.adsr_control_map, param
+                )
+            )
         return group
 
     def update_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
         spinbox = control_map[param]
-        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.AMP_ENV_SUSTAIN]:
+        if param in [
+            DigitalParameter.AMP_ENV_SUSTAIN,
+            DigitalParameter.AMP_ENV_SUSTAIN,
+        ]:
             new_value = midi_cc_to_frac(value)
         else:
             new_value = midi_cc_to_ms(value)
@@ -649,7 +725,10 @@ class PartialEditor(QWidget):
     def update_slider_from_adsr(self, param, value):
         """Updates external control from ADSR widget, avoiding infinite loops."""
         control = self.controls[param]
-        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.AMP_ENV_SUSTAIN]:
+        if param in [
+            DigitalParameter.AMP_ENV_SUSTAIN,
+            DigitalParameter.AMP_ENV_SUSTAIN,
+        ]:
             new_value = frac_to_midi_cc(value)
         else:
             new_value = ms_to_midi_cc(value)
@@ -739,7 +818,10 @@ class PartialEditor(QWidget):
     def update_slider_from_adsr(self, param, value):
         """Updates external control from ADSR widget, avoiding infinite loops."""
         control = self.controls[param]
-        if param in [DigitalParameter.AMP_ENV_SUSTAIN, DigitalParameter.FILTER_ENV_SUSTAIN]:
+        if param in [
+            DigitalParameter.AMP_ENV_SUSTAIN,
+            DigitalParameter.FILTER_ENV_SUSTAIN,
+        ]:
             new_value = frac_to_midi_cc(value)
         else:
             new_value = ms_to_midi_cc(value)
@@ -944,7 +1026,10 @@ class DigitalSynthEditor(BaseEditor):
         if preset_handler:
             self.preset_handler = preset_handler
         else:
-            self.preset_handler = parent.digital_preset_handler
+            if self.preset_type == PresetType.DIGITAL_1:
+                self.preset_handler = parent.digital_1_preset_handler
+            else:
+                self.preset_handler = parent.digital_2_preset_handler
         self.synth_num = synth_num
         self.part = PART_1 if synth_num == 1 else PART_2
         self.setWindowTitle(f"Digital Synth {synth_num}")

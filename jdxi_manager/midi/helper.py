@@ -2,6 +2,7 @@ import logging
 import re
 
 import mido
+import struct
 from pubsub import pub
 import rtmidi
 from typing import Optional, List, Tuple, Callable
@@ -17,6 +18,7 @@ from jdxi_manager.midi.constants.sysex import (
     DRUM_KIT_AREA,
 )
 from jdxi_manager.midi.sysex import SysexParameter
+from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 
 def find_preset_number(preset_name, presets):
@@ -48,6 +50,178 @@ def find_preset_number(preset_name, presets):
 
     # Return None if no match is found
     return None
+
+
+def parse_sysex(sysex_bytes):
+    return {
+        "manufacturer_id": sysex_bytes[2],
+        "device_id": sysex_bytes[3],
+        "model_id": sysex_bytes[4:7],
+        "jd_xi_id": sysex_bytes[7],
+        "command_type": sysex_bytes[8],
+        "area": sysex_bytes[9],
+        "synth_number": sysex_bytes[10],
+        "partial": sysex_bytes[11],
+        "parameter": sysex_bytes[12],
+        "value": sysex_bytes[13],
+        "checksum": sysex_bytes[14],
+        "end": sysex_bytes[15],
+    }
+
+
+def parse_jdxi_tone(data):
+    """
+    Parses JD-Xi tone data from SysEx messages.
+    Supports Digital1, Digital2, Analog, and Drums.
+
+    Args:
+        data (bytes): SysEx message containing tone data.
+
+    Returns:
+        dict: Parsed tone parameters.
+    """
+    if len(data) < 64:
+        raise ValueError("Invalid data length. Must be at least 64 bytes.")
+
+    parsed = {}
+    parsed["header"] = data[:7].hex()
+    parsed["address"] = data[7:11].hex()
+    parsed["tone_name"] = data[11:24].decode(errors="ignore").strip()
+
+    # Extracting shared parameters
+    parsed["LFO Rate"] = data[24]
+    parsed["LFO Depth"] = data[25]
+    parsed["LFO Shape"] = data[26]
+
+    parsed["OSC Type"] = data[33]
+    parsed["OSC Pitch"] = data[34]
+    parsed["Filter Cutoff"] = data[44]
+    parsed["Filter Resonance"] = data[45]
+    parsed["Amp Level"] = data[52]
+
+    # Identify tone type
+    tone_type = data[7]  # Address component identifies type
+    if tone_type == 0x19:
+        parsed["Tone Type"] = "Analog"
+    elif tone_type == 0x1A:
+        parsed["Tone Type"] = "Digital1"
+    elif tone_type == 0x1B:
+        parsed["Tone Type"] = "Digital2"
+    elif tone_type == 0x1C:
+        parsed["Tone Type"] = "Drums"
+    else:
+        parsed["Tone Type"] = "Unknown"
+
+    return parsed
+
+
+def parse_sysex_data(data):
+    parsed = {}
+
+    # Example breakdown (adjust based on JD-Xi SysEx spec):
+    parsed["Parameter_1"] = data[0]  # Single byte
+    parsed["Parameter_2"] = data[1]  # Single byte
+    parsed["Parameter_3"] = (data[2] << 7) | data[3]  # 14-bit value (MSB/LSB)
+    parsed["Parameter_4"] = data[4]  # Single byte
+    parsed["Parameter_5"] = (data[5] << 7) | data[6]  # Another 14-bit value
+
+    # Parsing more based on structure...
+    parsed["Parameter_6"] = data[7:11]  # Four-byte value
+    parsed["Parameter_7"] = data[11]  # Single byte
+    parsed["Parameter_8"] = data[12]  # Single byte
+
+    # Example of extracting a series of single-byte values
+    parsed["Flags"] = data[13:19]
+
+    return parsed
+
+
+def validate_sysex_message(message: List[int]) -> bool:
+    """Validate JD-Xi SysEx message format"""
+    try:
+        # Check length
+        if len(message) not in [15, 18]:
+            logging.error(f"Invalid SysEx length: {len(message)}")
+            return False
+
+        # Check header
+        if message[:7] != [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]:
+            logging.error("Invalid SysEx header")
+            return False
+
+        # Check DT1 command
+        if message[7] not in [0x12, 0x11]:
+            logging.error("Invalid command byte")
+            return False
+
+        # Check end marker
+        if message[-1] != 0xF7:
+            logging.error("Invalid SysEx end marker")
+            return False
+
+        # Verify checksum
+        data_sum = sum(message[8:-2]) & 0x7F  # Sum from area to value
+        checksum = (128 - data_sum) & 0x7F
+        if message[-2] != checksum:
+            logging.error(f"Invalid checksum: expected {checksum}, got {message[-2]}")
+            return False
+
+        return True
+
+    except Exception as e:
+        logging.error(f"Error validating SysEx message: {str(e)}")
+        return False
+
+
+def parse_jdxi_patch_data(data: list):
+    """Parse JD-Xi patch data from a SysEx message using regex matching."""
+    data_bytes = bytes(data)
+
+    pattern = re.compile(
+        rb"(?P<tone_name>.{12})"  # Tone name (12 chars)
+        rb"."  # Reserved byte
+        rb"(?P<lfo_waveform>.)"  # LFO waveform
+        rb"(?P<lfo_rate>.)"  # LFO rate
+        rb"(?P<lfo_delay_time>.)"  # LFO delay time
+        rb"(?P<lfo_fade_time>.)"  # LFO fade time
+        rb"(?P<lfo_key_trigger>.)"  # LFO key trigger
+        rb"(?P<lfo_pitch_depth>.)"  # LFO pitch depth
+        rb"(?P<lfo_filter_depth>.)"  # LFO filter depth
+        rb"(?P<lfo_amp_depth>.)"  # LFO amp depth
+        rb"(?P<lfo_sync>.)"  # LFO sync
+        rb"(?P<osc_type>.)"  # OSC type
+        rb"(?P<osc_detune>.)"  # OSC detune
+        rb"(?P<osc_pulse_width>.)"  # OSC pulse width
+        rb"(?P<osc_mod_depth>.)"  # OSC mod depth
+        rb"(?P<osc_sync>.)"  # OSC sync
+        rb"(?P<osc_ring_mod>.)"  # OSC ring mod
+        rb"(?P<filter_type>.)"  # Filter type
+        rb"(?P<filter_cutoff>.)"  # Filter cutoff
+        rb"(?P<filter_resonance>.)"  # Filter resonance
+        rb"(?P<filter_env_depth>.)"  # Filter envelope depth
+        rb"(?P<filter_env_velocity_sensitivity>.)"  # Filter env velocity sensitivity
+        rb"(?P<amp_level>.)"  # AMP level
+        rb"(?P<amp_pan>.)"  # AMP pan
+        rb"(?P<amp_attack>.)"  # AMP attack
+        rb"(?P<amp_decay>.)"  # AMP decay
+        rb"(?P<amp_sustain>.)"  # AMP sustain
+        rb"(?P<amp_release>.)"  # AMP release
+        rb"(?P<common_portamento_switch>.)"  # Common portamento switch
+        rb"(?P<common_portamento_time>.)"  # Common portamento time
+        rb"(?P<common_mono_poly>.)"  # Common mono/poly
+        rb"(?P<common_transpose>.)"  # Common transpose
+        rb"(?P<mod1>.)"  # Mod control 1
+        rb"(?P<mod2>.)"  # Mod control 2
+        rb"(?P<mod3>.)"  # Mod control 3
+        rb"(?P<mod4>.)"  # Mod control 4
+    )
+
+    match = pattern.match(data_bytes)
+    if not match:
+        raise ValueError("Invalid patch data format.")
+
+    parsed_patch = {key: value[0] for key, value in match.groupdict().items()}
+    return parsed_patch
 
 
 class MIDIHelper(QObject):
@@ -91,11 +265,8 @@ class MIDIHelper(QObject):
         return None
 
     def _handle_incoming_midi_message(self, message):
-        """Handle incoming MIDI message from pubsub."""
         preset_data = {"modified": 0}
         try:
-            # print(f"Received MIDI message: {message}")
-
             message_handlers = {
                 "sysex": self._handle_sysex_message,
                 "control_change": self._handle_control_change,
@@ -104,13 +275,11 @@ class MIDIHelper(QObject):
                 "note_off": self._handle_note_change,
                 "clock": self._handle_clock,
             }
-
-            handler = message_handlers[message.type]
+            handler = message_handlers.get(message.type)
             if handler:
                 handler(message, preset_data)
             else:
                 print(f"Unhandled MIDI message type: {message.type}")
-
         except Exception as e:
             logging.error(f"Error handling incoming MIDI message: {str(e)}")
 
@@ -125,7 +294,6 @@ class MIDIHelper(QObject):
     def _handle_sysex_message(self, message, preset_data):
         """Handle SysEx MIDI messages."""
         try:
-            # print(f"message {message.hex}")
             # Print the message in hex format
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             print("Converted SysEx Message:", hex_string)
@@ -136,7 +304,7 @@ class MIDIHelper(QObject):
 
             sysex_bytes = [int(byte, 16) for byte in hex_string.split()]
             print(sysex_bytes)
-            parsed_data = self.parse_sysex(sysex_bytes)
+            parsed_data = parse_sysex(sysex_bytes)
             print(f"parsed_data: {parsed_data}")
 
             parsed_data_hex_string = " ".join(
@@ -147,21 +315,26 @@ class MIDIHelper(QObject):
             sysex_data = [int(byte, 16) for byte in parsed_data_hex_string.split()]
             print(sysex_data)
 
-            parsed_data = self.parse_sysex_data(sysex_data)
+            parsed_data = parse_sysex_data(sysex_data)
             print(f"parsed_data: {parsed_data}")
 
-            parsed_mido_data = self.parse_sysex_data(message.data)
+            parsed_mido_data = parse_sysex_data(message.data)
             print(f"parsed_mido_data: {parsed_mido_data}")
 
-            parsed_sysex_data = self.parse_sysex(message.data)
+            parsed_sysex_data = parse_sysex(message.data)
             print(f"parsed_sysex_data: {parsed_sysex_data}")
-
+            result = parse_jdxi_patch_data(data)
+            print(f"result: {result}")
             # parsed_data_hex_string = " ".join(
             #    f"{byte:02X}" for byte in parsed_data["data"]
             # )
             # print(f"parsed_data_hex_string: {parsed_data_hex_string}")
+            data = parse_jdxi_tone(message.data)
+            print(f"date: {data}")
             print("Valid Roland JD-Xi SysEx message detected.")
             command_type_address, address_offset = message.data[6], message.data[7:11]
+            parsed_data = parse_jdxi_patch_data(message.data)
+            print(f"parsed_data: {parsed_data}")
             print(f"command_type_address: {command_type_address}")
             command_name = SysexParameter.get_command_name(command_type_address)
             print(
@@ -170,7 +343,6 @@ class MIDIHelper(QObject):
             print(
                 f"Address/Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
             )
-
             # Determine which editor to send the message to based on the address
             area_code = address_offset[0]
             if area_code == DIGITAL_SYNTH_1_AREA:
@@ -181,93 +353,27 @@ class MIDIHelper(QObject):
                 self.parameter_received.emit(address_offset, message.data[11])
             elif area_code == DRUM_KIT_AREA:
                 self.parameter_received.emit(address_offset, message.data[11])
-
         except Exception as e:
             logging.error(
                 f"Error handling SysEx message: {str(e)} for message: {message}"
             )
 
-    def parse_sysex_data(self, data):
-        parsed = {}
-
-        # Example breakdown (adjust based on JD-Xi SysEx spec):
-        parsed["Parameter_1"] = data[0]  # Single byte
-        parsed["Parameter_2"] = data[1]  # Single byte
-        parsed["Parameter_3"] = (data[2] << 7) | data[3]  # 14-bit value (MSB/LSB)
-        parsed["Parameter_4"] = data[4]  # Single byte
-        parsed["Parameter_5"] = (data[5] << 7) | data[6]  # Another 14-bit value
-
-        # Parsing more based on structure...
-        parsed["Parameter_6"] = data[7:11]  # Four-byte value
-        parsed["Parameter_7"] = data[11]  # Single byte
-        parsed["Parameter_8"] = data[12]  # Single byte
-
-        # Example of extracting a series of single-byte values
-        parsed["Flags"] = data[13:19]
-
-        return parsed
-
-    def parse_sysex(self, sysex_bytes):
-        # Convert bytes to a hex string for regex matching
-        sysex_string = " ".join(f"{byte:02X}" for byte in sysex_bytes)
-
-        # Define the regular expression pattern
-        sysex_pattern = re.compile(
-            r"""
-            ^F0\s*                # Start of SysEx
-            41\s*                 # Manufacturer ID (Roland)
-            [0-9A-F]{2}\s*        # Device ID
-            (?:[0-9A-F]{2}\s*){3} # Model ID (3 bytes)
-            [0-9A-F]{2}\s*        # JD-Xi ID
-            [0-9A-F]{2}\s*        # Command ID
-            [0-9A-F]{2}\s*        # Area
-            [0-9A-F]{2}\s*        # Synth Number
-            [0-9A-F]{2}\s*        # Section
-            [0-9A-F]{2}\s*        # Parameter
-            [0-9A-F]{2}\s*        # Value
-            [0-9A-F]{2}\s*        # Checksum
-            F7$                   # End of SysEx
-            """,
-            re.VERBOSE
+    def parse_sysex_message(message):
+        # Regular expression pattern to match SysEx structure
+        pattern = re.compile(
+            r"^F0\s"  # SysEx start (F0)
+            r"(41)\s"  # Roland ID (41)
+            r"(10)\s"  # Device ID (10)
+            r"(00\s00\s00)\s"  # Model ID (000000)
+            r"(0E)\s"  # JD-Xi ID (0E)
+            r"(12)\s"  # DT1 Command (12)
+            r"(19|20|40|60)\s"  # Synth Number (19, 20, 40, or 60)
+            r"(01)\s"  # Section (01, related to waveforms or synth part)
+            r"(00)\s"  # Parameter (00 = wave type)
+            r"(01)\s"  # Value (01 = second waveform)
+            r"([0-9A-F]{2})\s"  # Checksum (2 hex digits, example: 45)
+            r"F7$"  # SysEx End (F7)
         )
-
-        # Check if the message matches the expected SysEx format
-        if not sysex_pattern.match(sysex_string):
-            raise ValueError("Invalid SysEx message format")
-
-        if sysex_bytes[0] != 0xF0 or sysex_bytes[-1] != 0xF7:
-            raise ValueError("Invalid SysEx message")
-
-        # Extract components from the SysEx message
-        start = sysex_bytes[0]
-        manufacturer_id = sysex_bytes[1]
-        device_id = sysex_bytes[2]
-        model_id = sysex_bytes[3:6]
-        jd_xi_id = sysex_bytes[6]
-        command_type = sysex_bytes[7]
-        area = sysex_bytes[8]
-        synth_number = sysex_bytes[9]
-        partial = sysex_bytes[10]
-        parameter = sysex_bytes[11]
-        value = sysex_bytes[12]
-        checksum = sysex_bytes[13]
-        end = sysex_bytes[14]
-
-        return {
-            "start": start,
-            "manufacturer_id": manufacturer_id,
-            "device_id": device_id,
-            "model_id": model_id,
-            "jd_xi_id": jd_xi_id,
-            "command_type": command_type,
-            "area": area,
-            "synth_number": synth_number,
-            "partial": partial,
-            "parameter": parameter,
-            "value": value,
-            "checksum": checksum,
-            "end": end,
-        }
 
     def _handle_control_change(self, message, preset_data):
         """Handle Control Change (CC) MIDI messages."""
@@ -275,7 +381,6 @@ class MIDIHelper(QObject):
         print(
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
-
         if control == 0:
             self.cc_msb_value = value
         elif control == 32:
@@ -360,9 +465,8 @@ class MIDIHelper(QObject):
         """Get available MIDI output ports"""
         return self.midi_out.get_ports()
 
-    def get_ports(self) -> Tuple[List[str], List[str]]:
-        """Get available MIDI input and output ports"""
-        return (self.get_input_ports(), self.get_output_ports())
+    # def get_ports(self) -> Tuple[List[str], List[str]]:
+    #    return self.midi_in.get_ports(), self.midi_out.get_ports()
 
     def find_jdxi_ports(self) -> Tuple[Optional[str], Optional[str]]:
         """Find JD-Xi input and output ports"""
@@ -373,44 +477,6 @@ class MIDIHelper(QObject):
         jdxi_out = next((p for p in out_ports if "jd-xi" in p.lower()), None)
 
         return (jdxi_in, jdxi_out)
-
-    def validate_sysex_message(self, message: List[int]) -> bool:
-        """Validate JD-Xi SysEx message format"""
-        try:
-            # Check length
-            if len(message) not in [15, 18]:
-                logging.error(f"Invalid SysEx length: {len(message)}")
-                return False
-
-            # Check header
-            if message[:7] != [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]:
-                logging.error("Invalid SysEx header")
-                return False
-
-            # Check DT1 command
-            if message[7] not in [0x12, 0x11]:
-                logging.error("Invalid command byte")
-                return False
-
-            # Check end marker
-            if message[-1] != 0xF7:
-                logging.error("Invalid SysEx end marker")
-                return False
-
-            # Verify checksum
-            data_sum = sum(message[8:-2]) & 0x7F  # Sum from area to value
-            checksum = (128 - data_sum) & 0x7F
-            if message[-2] != checksum:
-                logging.error(
-                    f"Invalid checksum: expected {checksum}, got {message[-2]}"
-                )
-                return False
-
-            return True
-
-        except Exception as e:
-            logging.error(f"Error validating SysEx message: {str(e)}")
-            return False
 
     def send_message(self, message: List[int]) -> bool:
         """Send raw MIDI message with validation"""
@@ -424,7 +490,7 @@ class MIDIHelper(QObject):
         try:
             # Validate SysEx messages
             # if message[0] == 0xF0:
-            #    if not self.validate_sysex_message(message):
+            #    if not validate_sysex_message(message):
             #        logging.debug(f"Validation failed for message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
             #        return False
 
@@ -437,6 +503,30 @@ class MIDIHelper(QObject):
         except Exception as e:
             logging.error(f"Error sending MIDI message: {str(e)}")
             return False
+
+    def send_note_on(self, note=60, velocity=127, channel=1):
+        """Send a 'Note On' message."""
+        self.send_channel_message(NOTE_ON, note, velocity, channel)
+
+    def send_note_off(self, note=60, velocity=0, channel=1):
+        """Send a 'Note Off' message."""
+        self.send_channel_message(NOTE_OFF, note, velocity, channel)
+
+    def send_channel_message(self, status, data1=None, data2=None, channel=1):
+        """Send a MIDI channel mode message."""
+        msg = [(status & 0xF0) | ((channel - 1) & 0xF)]
+
+        if data1 is not None:
+            msg.append(data1 & 0x7F)
+
+            if data2 is not None:
+                msg.append(data2 & 0x7F)
+
+        if self.midi_out.is_port_open():
+            self.midi_out.send_message(msg)
+            logging.debug(f"Sent MIDI message: {msg}")
+        else:
+            logging.error("MIDI output port not open")
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
         """Send bank select messages
@@ -688,6 +778,57 @@ class MIDIHelper(QObject):
             logging.error(f"Error sending control change: {str(e)}")
             return False
 
+    def send_bank_and_program_change(self, channel, bank_msb, bank_lsb, program):
+        """Sends Bank Select and Program Change messages."""
+        self.send_control_change(channel, 0, bank_msb)  # Bank Select MSB
+        self.send_control_change(channel, 32, bank_lsb)  # Bank Select LSB
+        self.send_program_change(channel, program)  # Program Change
+
+    def select_synth_tone(
+        self, patch_number: int, bank: str = "preset", channel: int = 0
+    ) -> bool:
+        """
+        Select a Synth Tone on the JD-Xi using a Program Change.
+
+        Args:
+            patch_number: Patch number (1-128) as listed in JD-Xi documentation.
+            bank: "preset" (default) or "user" to select the correct bank.
+            channel: MIDI channel (0-15)
+
+        Returns:
+            bool: True if the message was sent successfully, False otherwise.
+        """
+        if not (1 <= patch_number <= 128):
+            logging.error("Patch number must be between 1 and 128.")
+            return False
+
+        # JD-Xi uses 0-based program numbers
+        program_number = patch_number - 1
+
+        # Select correct bank
+        if bank.lower() == "preset":
+            bank_msb = 92  # Preset Bank
+        elif bank.lower() == "user":
+            bank_msb = 93  # User Bank
+        else:
+            logging.error("Invalid bank type. Use 'preset' or 'user'.")
+            return False
+
+        bank_lsb = 0  # Always 0 for JD-Xi
+
+        # Send Bank Select and Program Change
+        if not self.send_control_change(0, bank_msb, channel):  # CC#0 (Bank MSB)
+            return False
+        if not self.send_control_change(32, bank_lsb, channel):  # CC#32 (Bank LSB)
+            return False
+        if not self.send_program_change(program_number, channel):  # Send Program Change
+            return False
+
+        logging.info(
+            f"Selected {bank.capitalize()} Synth Tone #{patch_number} (PC {program_number}) on channel {channel}."
+        )
+        return True
+
     def get_parameter(
         self, area: int, part: int, group: int, param: int
     ) -> Optional[int]:
@@ -850,3 +991,27 @@ class MIDIHelper(QObject):
         logging.debug(f"Sending SysEx message: {sysex_data}")
         self.midi_out.send_message(sysex_data)
         return
+
+    def send_note_on(self, note=60, velocity=127, channel=1):
+        """Send a 'Note On' message."""
+        self.send_channel_message(NOTE_ON, note, velocity, channel)
+
+    def send_note_off(self, note=60, velocity=0, channel=1):
+        """Send a 'Note Off' message."""
+        self.send_channel_message(NOTE_OFF, note, velocity, channel)
+
+    def send_channel_message(self, status, data1=None, data2=None, channel=1):
+        """Send a MIDI channel mode message."""
+        msg = [(status & 0xF0) | ((channel - 1) & 0xF)]
+
+        if data1 is not None:
+            msg.append(data1 & 0x7F)
+
+            if data2 is not None:
+                msg.append(data2 & 0x7F)
+
+        if self.midi_out.is_port_open():
+            self.midi_out.send_message(msg)
+            logging.debug(f"Sent MIDI message: {msg}")
+        else:
+            logging.error("MIDI output port not open")
