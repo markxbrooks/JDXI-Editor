@@ -1651,7 +1651,6 @@ class DigitalSynthEditor(BaseEditor):
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
-        # Check if the address corresponds to this editor's area
         area_code = address[0]
         logging.info(f"In digital: area_code: {area_code}")
         logging.info(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
@@ -1661,20 +1660,92 @@ class DigitalSynthEditor(BaseEditor):
 
             # Retrieve the corresponding DigitalParameter
             param = get_digital_parameter_by_address(parameter_address)
-
+            partial_no = address[1]
             if param:
                 logging.info(f"param: {param}")
-                # Update the UI or internal state based on the address and value
                 logging.info(
                     f"Received parameter update: Address={address}, Value={value}"
                 )
 
                 # Update the corresponding slider
                 if param in self.controls:
-                    slider = self.controls[param]
+                    slider = self.partial_editors[partial_no].controls[param]
                     slider.blockSignals(True)  # Prevent feedback loop
                     slider.setValue(value)
                     slider.blockSignals(False)
+
+                # Handle OSC_WAVE parameter to update waveform buttons
+                if param == DigitalParameter.OSC_WAVE:
+                    self._update_waveform_buttons(partial_no, value)
+                    logging.debug(
+                        "updating waveform buttons for param {param} with {value}"
+                    )
+
+    def _update_waveform_buttons(self, partial_number, value):
+        """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
+        logging.debug("updating waveform buttons for param {param} with {value}")
+        waveform_map = {
+            0: OscWave.SAW,
+            1: OscWave.SQUARE,
+            2: OscWave.PW_SQUARE,
+            3: OscWave.TRIANGLE,
+            4: OscWave.SINE,
+            5: OscWave.NOISE,
+            6: OscWave.SUPER_SAW,
+            7: OscWave.PCM,
+        }
+
+        selected_waveform = waveform_map.get(value)
+
+        if selected_waveform is None:
+            print(f"Warning: Unknown waveform value {value}")  # Debugging/logging
+            return  # Exit early if the value is invalid
+        else:
+            print(f"Warning: waveform value {value} found")  # Debugging/logging
+        # Deselect all buttons first & reset styles
+        for btn in self.partial_editors[partial_number].wave_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(
+                """
+                QPushButton {
+                    background-color: black;
+                    border: 4px solid #666666;
+                    border-radius: 15px;
+                    padding: 0px;
+                }
+                QPushButton:hover {
+                    background-color: #1A1A1A;
+                    border: 4px solid #ff4d4d;
+                }
+                QPushButton:pressed {
+                    background-color: #333333;
+                    border: 4px solid #ff6666;
+                }
+            """
+            )
+
+        # Select the correct button and apply the active style
+        btn = self.partial_editors[partial_number].wave_buttons.get(selected_waveform)
+        if btn:
+            btn.setChecked(True)
+            btn.setStyleSheet(
+                """
+                QPushButton {
+                    background-color: #ff6666;
+                    border: 4px solid #ff4d4d;
+                    border-radius: 15px;
+                    padding: 0px;
+                }
+                QPushButton:hover {
+                    background-color: #ff8080;
+                    border: 4px solid #ff9999;
+                }
+                QPushButton:pressed {
+                    background-color: #ff4d4d;
+                    border: 4px solid #ff3333;
+                }
+            """
+            )
 
 
 def base64_to_pixmap(base64_str):
