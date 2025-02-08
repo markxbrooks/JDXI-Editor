@@ -34,12 +34,12 @@ class BaseEditor(QWidget):
         self.setMinimumSize(800, 400)
 
         # Register the callback for incoming MIDI messages
-        if self.midi_helper and hasattr(self.midi_helper, "set_callback"):
-            self.midi_helper.set_callback(self.handle_midi_message)
-        else:
-            logging.error(
-                "MIDI helper not initialized or set_callback method not found"
-            )
+        # if self.midi_helper and hasattr(self.midi_helper, "set_callback"):
+        #    self.midi_helper.set_callback(self.handle_midi_message)
+        # else:
+        #    logging.error(
+        #        "MIDI helper not initialized or set_callback method not found"
+        #    )
 
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""
@@ -52,12 +52,12 @@ class BaseEditor(QWidget):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        print(f"Updating combo to preset {preset_number}")
+        logging.info(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        print(f"selected_synth_text: {selected_synth_text}")
+        logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
@@ -69,7 +69,7 @@ class BaseEditor(QWidget):
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
             preset_index = int(selected_synth_padded_number)
-            print(f"preset_index: {preset_index}")
+            logging.info(f"preset_index: {preset_index}")
             self.load_preset(preset_index)
 
     def update_instrument_image(self):
@@ -106,7 +106,7 @@ class BaseEditor(QWidget):
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            print(f"selected_instrument_type: {selected_instrument_type}")
+            logging.info(f"selected_instrument_type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
                 instrument_icon_folder,

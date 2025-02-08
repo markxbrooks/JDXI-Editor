@@ -364,7 +364,7 @@ class MainWindow(QMainWindow):
 
     def _select_synth(self, synth_type):
         """Select a synth and update button styles."""
-        print(f"Selected synth: {synth_type}")
+        logging.info(f"Selected synth: {synth_type}")
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
 
@@ -484,7 +484,7 @@ class MainWindow(QMainWindow):
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth type and preset index."""
-        print(
+        logging.info(
             "update_display_callback: synth_type, preset_index, channel",
             synth_type,
             preset_index,
@@ -522,7 +522,7 @@ class MainWindow(QMainWindow):
         if editor_type in editor_map:
             editor_map[editor_type](editor_type)
         else:
-            print(f"Unknown editor type: {editor_type}")
+            logging.info(f"Unknown editor type: {editor_type}")
 
     def _show_vocal_fx(self, editor_type: str):
         if not hasattr(self, "vocal_fx_editor"):
@@ -693,7 +693,7 @@ class MainWindow(QMainWindow):
         # Assuming you have a method to get the current preset
         current_preset = self._get_current_preset()
         settings.setValue(preset_name, current_preset)
-        print(f"Saved {current_preset} as {preset_name}")
+        logging.info(f"Saved {current_preset} as {preset_name}")
         logging.debug(f"Saved {current_preset} as {preset_name}")
 
     def _get_current_preset(self):
@@ -732,7 +732,7 @@ class MainWindow(QMainWindow):
             # Default to DIGITAL_PRESETS if the synth_type is not found in the map
             presets = preset_map.get(preset_type, DIGITAL_PRESETS)
             preset_name = presets[preset_number]
-            print(f"preset_name: {preset_name}")
+            logging.info(f"preset_name: {preset_name}")
             return preset_name
         except IndexError:
             return "Index Error for current preset"
@@ -2330,7 +2330,7 @@ class MainWindow(QMainWindow):
         self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information"""
-        print(
+        logging.info(
             f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
         )
         self.current_preset_index = preset_number
