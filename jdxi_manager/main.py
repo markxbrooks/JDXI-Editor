@@ -1,18 +1,13 @@
-"""
-main entry point of jdxi_manager
-"""
-
 import sys
+import os
 import logging
-import threading
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-import mido
-from pubsub import pub
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPixmap, QColor
-
-from jdxi_manager.ui.main_window import MainWindow
+import mido
+import threading
+from pubsub import pub
 
 
 def midi_callback(msg):
@@ -30,7 +25,7 @@ def listen_midi(port_name, callback):
     Function to listen for MIDI messages and call a callback.
     """
     with mido.open_input(port_name) as inport:
-        logging.info(f"Listening on port: {port_name}")
+        print(f"Listening on port: {port_name}")
         for msg in inport:
             callback(msg)  # Call the provided callback function
 
@@ -39,7 +34,7 @@ def setup_logging():
     """Set up logging configuration"""
     try:
         # Create logs directory in user's home directory
-        _ = logging.getLogger("jdxi_manager")
+        logger = logging.getLogger("jdxi_manager")
         log_dir = Path.home() / ".jdxi_manager" / "logs"
         log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -69,7 +64,7 @@ def setup_logging():
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(logging.INFO)
         console_formatter = logging.Formatter(
-            "%(filename)-20s:%(lineno)-5s %(levelname)-8s: %(message)-24s"
+            "%(filename)s:%(lineno)d %(levelname)s: %(message)s"
         )
         console_handler.setFormatter(console_formatter)
 
@@ -78,13 +73,13 @@ def setup_logging():
         logging.root.addHandler(file_handler)
         logging.root.addHandler(console_handler)
 
-        logging.info("Logging setup complete")
+        print("Logging setup complete")
         logging.info("JDXi Manager starting up...")
         logging.debug(f"Log file: {log_file}")
         return log_file
 
-    except Exception as ex:
-        print(f"Error setting up logging: {str(ex)}")
+    except Exception as e:
+        print(f"Error setting up logging: {str(e)}")
         raise
 
 
@@ -132,6 +127,9 @@ def main():
             app.setWindowIcon(icon)
             logging.info("Using fallback icon")
 
+        # Create and show main window
+        from jdxi_manager.ui.main_window import MainWindow
+
         window = MainWindow()
         window.show()
         logging.info("Main window displayed")
@@ -139,8 +137,8 @@ def main():
         # Start event loop
         return app.exec()
 
-    except Exception as ex:
-        logging.exception(f"Fatal error {ex} occurred")
+    except Exception as e:
+        logging.exception("Fatal error occurred")
         raise
 
 
@@ -165,11 +163,11 @@ if __name__ == "__main__":
             target=listen_midi, args=(port_name, midi_callback), daemon=True
         )
         listener_thread.start()
-    except Exception as ex:
-        print(f"Error starting listener thread: {str(ex)}")
+    except Exception as e:
+        print(f"Error starting listener thread: {str(e)}")
     try:
         sys.exit(main())
-    except Exception as ex:
-        print(f"Application crashed: {str(ex)}")  # Fallback if logging fails
+    except Exception as e:
+        print(f"Application crashed: {str(e)}")  # Fallback if logging fails
         logging.exception("Application crashed")
         sys.exit(1)

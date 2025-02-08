@@ -1660,7 +1660,7 @@ class DigitalSynthEditor(BaseEditor):
         print(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
         if address[0] == DIGITAL_SYNTH_1_AREA:
             # Update the UI or internal state based on the address and value
-            logging.info(f"Received parameter update: Address={address}, Value={value}")
+            print(f"Received parameter update: Address={address}, Value={value}")
 
 
 def base64_to_pixmap(base64_str):
