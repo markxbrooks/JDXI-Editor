@@ -16,8 +16,11 @@ Features:
 
 """
 
+import datetime
 import logging
 import threading
+from random import gauss
+from time import sleep
 
 from typing import Optional
 from rtmidi.midiconstants import (
@@ -46,7 +49,7 @@ from jdxi_manager.ui.style import sequencer_button_style, toggle_button_style
 instrument_icon_folder = "patterns"
 
 
-class Drumpattern(object):
+class DrumPattern(object):
     """Container and iterator for a multi-track step sequence."""
 
     velocities = {
@@ -81,20 +84,22 @@ class Drumpattern(object):
     def reset(self):
         self.step = 0
 
-    def play_step(self, midiout, channel=9):
+    def play_step(self, midi_helper, channel=9):
         for note, strokes in self.instruments:
             char = strokes[self.step]
             velocity = self.velocities.get(char)
 
             if velocity is not None:
                 if self._notes.get(note):
-                    midiout.send_message([NOTE_ON | channel, note, 0])
+                    midi_helper.send_message([NOTE_ON | channel, note, 0])
                     self._notes[note] = 0
                 if velocity > 0:
                     if self.humanize:
                         velocity += int(round(gauss(0, velocity * self.humanize)))
 
-                    midiout.send_message([NOTE_ON | channel, note, max(1, velocity)])
+                    midi_helper.send_message(
+                        [NOTE_ON | channel, note, max(1, velocity)]
+                    )
                     self._notes[note] = velocity
 
         self.step += 1
@@ -103,12 +108,19 @@ class Drumpattern(object):
             self.step = 0
 
 
+def time_now():
+    return int(datetime.datetime.now().timestamp())
+
+
 class Sequencer(threading.Thread):
     """MIDI output and scheduling thread."""
 
-    def __init__(self, midiout, pattern, bpm, channel=9, volume=127):
-        super(Sequencer, self).__init__()
-        self.midiout = midiout
+    def __init__(self, midi_helper: MIDIHelper, pattern, bpm, channel=9, volume=127):
+        super().__init__()
+        self.started = None
+        self.done = None
+        self.call_count = None
+        self.midi_helper = midi_helper
         self.bpm = max(20, min(bpm, 400))
         self.interval = 15.0 / self.bpm
         self.pattern = pattern
@@ -118,38 +130,38 @@ class Sequencer(threading.Thread):
 
     def run(self):
         self.done = False
-        self.callcount = 0
-        self.activate_drumkit(self.pattern.kit)
+        self.call_count = 0
+        self.activate_drum_kit(self.pattern.kit)
         cc = CONTROL_CHANGE | self.channel
-        self.midiout.send_message([cc, CHANNEL_VOLUME, self.volume & 0x7F])
+        self.midi_helper.send_message([cc, CHANNEL_VOLUME, self.volume & 0x7F])
 
         # give MIDI instrument some time to activate drumkit
         sleep(0.3)
-        self.started = timenow()
+        self.started = time_now()
 
         while not self.done:
             self.worker()
-            self.callcount += 1
+            self.call_count += 1
             # Compensate for drift:
             # calculate the time when the worker should be called again.
-            nexttime = self.started + self.callcount * self.interval
-            timetowait = max(0, nexttime - timenow())
-            if timetowait:
-                sleep(timetowait)
+            next_time = self.started + self.call_count * self.interval
+            time_to_wait = max(0, next_time - time_now())
+            if time_to_wait:
+                sleep(time_to_wait)
             else:
-                print("Oops!")
+                logging.warning("Timing drift detected in Sequencer.")
 
-        self.midiout.send_message([cc, ALL_SOUND_OFF, 0])
+        self.midi_helper.send_message([cc, ALL_SOUND_OFF, 0])
 
     def worker(self):
         """Variable time worker function.
 
-        i.e., output notes, emtpy queues, etc.
+        i.e., output notes, empty queues, etc.
 
         """
-        self.pattern.play_step(self.midiout, self.channel)
+        self.pattern.play_step(self.midi_helper, self.channel)
 
-    def activate_drumkit(self, kit):
+    def activate_drum_kit(self, kit):
         if isinstance(kit, (list, tuple)):
             msb, lsb, pc = kit
         elif kit is not None:
@@ -158,13 +170,13 @@ class Sequencer(threading.Thread):
 
         cc = CONTROL_CHANGE | self.channel
         if msb is not None:
-            self.midiout.send_message([cc, BANK_SELECT_MSB, msb & 0x7F])
+            self.midi_helper.send_message([cc, BANK_SELECT_MSB, msb & 0x7F])
 
         if lsb is not None:
-            self.midiout.send_message([cc, BANK_SELECT_LSB, lsb & 0x7F])
+            self.midi_helper.send_message([cc, BANK_SELECT_LSB, lsb & 0x7F])
 
         if kit is not None and pc is not None:
-            self.midiout.send_message([PROGRAM_CHANGE | self.channel, pc & 0x7F])
+            self.midi_helper.send_message([PROGRAM_CHANGE | self.channel, pc & 0x7F])
 
 
 class PatternSequencer(BaseEditor):

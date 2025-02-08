@@ -721,6 +721,25 @@ class MainWindow(QMainWindow):
     def _get_current_preset_name(self):
         """Get the name of the currently selected preset"""
         try:
+            preset_type = self.current_synth_type
+            preset_number = self.current_preset_index
+            preset_map = {
+                PresetType.ANALOG: ANALOG_PRESETS,
+                PresetType.DIGITAL_1: DIGITAL_PRESETS,
+                PresetType.DIGITAL_2: DIGITAL_PRESETS,
+                PresetType.DRUMS: DRUM_PRESETS,
+            }
+            # Default to DIGITAL_PRESETS if the synth_type is not found in the map
+            presets = preset_map.get(preset_type, DIGITAL_PRESETS)
+            preset_name = presets[preset_number]
+            print(f"preset_name: {preset_name}")
+            return preset_name
+        except IndexError:
+            return "Index Error for current preset"
+
+    def _get_current_preset_name_from_settings(self):
+        """Get the name of the currently selected preset"""
+        try:
             synth_type = self.settings.value(
                 "last_preset/synth_type", PresetType.ANALOG
             )

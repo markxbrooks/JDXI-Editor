@@ -55,7 +55,12 @@ from jdxi_manager.data.digital import (
     set_partial_state,
     get_partial_state,
 )
-from jdxi_manager.midi.constants import DIGITAL_SYNTH_AREA, PART_1, PART_2
+from jdxi_manager.midi.constants import (
+    DIGITAL_SYNTH_AREA,
+    PART_1,
+    PART_2,
+    DIGITAL_SYNTH_1_AREA,
+)
 from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
 from jdxi_manager.ui.widgets.switch import Switch
 import os
