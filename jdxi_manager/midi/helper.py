@@ -429,10 +429,10 @@ class MIDIHelper(QObject):
                     0x10,
                     0x00,
                     0x00,
+                    0x00,
                     0x0E,
                     0x12,
                     0x01,
-                    0x00,
                     0x00,
                     0x00,
                     0x01,
@@ -583,12 +583,20 @@ class MIDIHelper(QObject):
             # Emit parameter changes based on the address area
             try:
                 area_code = address_offset[0]
+                print(f"area_code: {area_code}")
+                print(f"DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
+                print(f"DIGITAL_SYNTH_2_AREA: {DIGITAL_SYNTH_2_AREA}")
+                print(f"ANALOG_SYNTH_AREA: {ANALOG_SYNTH_AREA}")
+                print(f"DRUM_KIT_AREA: {DRUM_KIT_AREA}")
                 if area_code in [
                     DIGITAL_SYNTH_1_AREA,
                     DIGITAL_SYNTH_2_AREA,
                     ANALOG_SYNTH_AREA,
                     DRUM_KIT_AREA,
                 ]:
+                    print(
+                        f"Emitting values: address_offset: {address_offset} message.data[11] {message.data[11]}"
+                    )
                     self.parameter_received.emit(address_offset, message.data[11])
             except Exception as ex:
                 logging.info(f"Error emitting parameter change signal: {ex}")
@@ -679,21 +687,14 @@ class MIDIHelper(QObject):
             logging.error(f"Error in MIDI callback: {str(e)}")
 
     def _handle_dt1_message(self, data):
-        """Handle Data Set 1 (DT1) messages
-
-        Format: aa bb cc dd ... where:
-        aa bb cc = Address
-        dd ... = Data
-        """
+        """Handle Data Set 1 (DT1) messages"""
         if len(data) < 4:  # Need at least address and one data byte
             return
 
         address = data[0:3]
-        logging.info(f"Address: {address}")
         value = data[3]
-        logging.info(f"Value: {value}")
-        # Emit signal with parameter data
-        self.parameter_received.emit(address, value)
+        logging.debug(f"Received parameter update: Address={address}, Value={value}")
+        self.parameter_received.emit(address, value)  # Emit the signal
 
     def get_input_ports(self) -> List[str]:
         """Get available MIDI input ports"""
