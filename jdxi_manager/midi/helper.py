@@ -768,18 +768,9 @@ class MIDIHelper(QObject):
         logging.debug(
             f"Sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
         )
-        # Check if the MIDI output port is open
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
-
-        # Validate that all message values are within the valid range (0-255)
-        for byte in message:
-            if not (0 <= byte <= 255):
-                logging.error(
-                    f"Invalid MIDI message byte: {byte}. Must be between 0 and 255."
-                )
-                return False
 
         try:
             # Validate SysEx messages
@@ -793,7 +784,6 @@ class MIDIHelper(QObject):
             )
             self.midi_out.send_message(message)
             return True
-
         except Exception as e:
             logging.error(f"Error sending MIDI message: {str(e)}")
             return False

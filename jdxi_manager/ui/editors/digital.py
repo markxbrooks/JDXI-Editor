@@ -979,22 +979,20 @@ class PartialEditor(QWidget):
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
-        """Handle parameter changes and update UI elements."""
+        """Handle parameter value changes from UI controls"""
         try:
-            # Check if the parameter is a known DigitalParameter
-            if isinstance(param, DigitalParameter):
-                # Update the corresponding UI element
-                if param == DigitalParameter.OSC_WAVE_VAR:
-                    self.wave_var.setValue(display_value)
-                elif param == DigitalParameter.MOD_LFO_SYNC:
-                    self.lfo_sync.setChecked(bool(display_value))
-                # Add more conditions for other parameters as needed
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
 
-                # Log the change for debugging
-                logging.debug(f"Parameter {param} changed to {display_value}")
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
 
         except Exception as e:
-            logging.error(f"Error updating parameter {param}: {str(e)}")
+            logging.error(f"Error handling parameter {param.name}: {str(e)}")
 
     def _on_waveform_selected(self, waveform: OscWave):
         """Handle waveform button clicks"""
@@ -1316,7 +1314,7 @@ class DigitalSynthEditor(BaseEditor):
         else:
             logging.error("MIDI helper not initialized")
 
-        self.midi_helper.parameter_changed.connect(self._on_parameter_changed)
+        # self.midi_helper.parameter_changed.connect(self._on_parameter_changed)
         self.midi_helper.parameter_received.connect(self._on_parameter_received)
 
     def update_combo_box_index(self, preset_number):
@@ -1515,22 +1513,20 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
-        """Handle parameter changes and update UI elements."""
+        """Handle parameter value changes from UI controls"""
         try:
-            # Check if the parameter is a known DigitalParameter
-            if isinstance(param, DigitalParameter):
-                # Update the corresponding UI element
-                if param == DigitalParameter.OSC_WAVE_VAR:
-                    self.wave_var.setValue(display_value)
-                elif param == DigitalParameter.MOD_LFO_SYNC:
-                    self.lfo_sync.setChecked(bool(display_value))
-                # Add more conditions for other parameters as needed
-
-                # Log the change for debugging
-                logging.debug(f"Parameter {param} changed to {display_value}")
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
+            logging.info(f"parameter from widget midi_value: {midi_value}")
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
 
         except Exception as e:
-            logging.error(f"Error updating parameter {param}: {str(e)}")
+            logging.error(f"Error handling parameter {param.name}: {str(e)}")
 
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool
@@ -1559,41 +1555,30 @@ class DigitalSynthEditor(BaseEditor):
         # Show first tab
         self.partial_tab_widget.setCurrentIndex(0)
 
-    def send_midi_parameter(
-        self, param: Union[DigitalParameter, DigitalCommonParameter], value: int
-    ) -> bool:
-        """Send MIDI parameter to synth
+    def send_midi_parameter(self, param, value) -> bool:
+        """Send MIDI parameter with error handling"""
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
 
-        Args:
-            param: Parameter to send
-            value: Parameter value
-
-        Returns:
-            True if successful
-        """
         try:
-            # Validate and convert value
-            midi_value = param.validate_value(value)
-
-            # Common parameters use group 0x00
-            if isinstance(param, DigitalCommonParameter):
-                group = 0x00
-                address = param.address
+            # Get parameter group and address with partial offset
+            if isinstance(param, DigitalParameter):
+                group, param_address = param.get_address_for_partial(self.partial_num)
             else:
-                # Get group/address for partial parameters
-                group, address = param.get_address_for_partial(self.partial_num)
+                group = 0x00  # Common parameters group
+                param_address = param.address
 
-            # Send parameter via MIDI
+            # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
                 area=DIGITAL_SYNTH_AREA,
                 part=self.part,
                 group=group,
-                param=address,
-                value=midi_value,
+                param=param_address,
+                value=value,  # Make sure this value is being sent
             )
-
         except Exception as e:
-            logging.error(f"Error sending parameter {param.name}: {str(e)}")
+            logging.error(f"MIDI error setting {param}: {str(e)}")
             return False
 
     def _update_ui(self, parameters: Dict[str, int]):
@@ -1679,8 +1664,17 @@ class DigitalSynthEditor(BaseEditor):
 
             if param:
                 logging.info(f"param: {param}")
-            # Update the UI or internal state based on the address and value
-            logging.info(f"Received parameter update: Address={address}, Value={value}")
+                # Update the UI or internal state based on the address and value
+                logging.info(
+                    f"Received parameter update: Address={address}, Value={value}"
+                )
+
+                # Update the corresponding slider
+                if param in self.controls:
+                    slider = self.controls[param]
+                    slider.blockSignals(True)  # Prevent feedback loop
+                    slider.setValue(value)
+                    slider.blockSignals(False)
 
 
 def base64_to_pixmap(base64_str):
