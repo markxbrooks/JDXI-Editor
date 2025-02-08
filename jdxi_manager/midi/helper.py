@@ -292,71 +292,67 @@ class MIDIHelper(QObject):
             return
 
     def _handle_sysex_message(self, message, preset_data):
-        """Handle SysEx MIDI messages."""
+        """Handle SysEx MIDI messages from Roland JD-Xi."""
         try:
-            # Print the message in hex format
+            # Print the raw SysEx message in hex format
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            print("Converted SysEx Message:", hex_string)
+            print("Received SysEx Message:", hex_string)
+
             manufacturer_id, device_family_id = message.data[1], message.data[2:6]
             # if manufacturer_id != 0x41 or device_family_id != [0x10, 0x00, 0x00, 0x0E]:
-            #    print("Received SysEx message is not from a Roland JD-Xi.")
+            #    print("Received message is not from a Roland JD-Xi.")
             #    return
 
-            sysex_bytes = [int(byte, 16) for byte in hex_string.split()]
-            print(sysex_bytes)
-            parsed_data = parse_sysex(sysex_bytes)
-            print(f"parsed_data: {parsed_data}")
+            try:
+                parsed_data = parse_sysex(message.data)
+                print(f"parse_sysex parsed_data: {parsed_data}")
+            except Exception as ex:
+                print(f"Error parsing SysEx data: {ex}")
+                return  # Stop further processing if parsing fails
 
-            parsed_data_hex_string = " ".join(
-                f"{byte:02X}" for byte in parsed_data["data"]
-            )
-            print("Converted SysEx data:", parsed_data_hex_string)
+            # Extracting SysEx data and parsing JD-Xi patch
+            try:
+                parsed_sysex_data = parse_jdxi_patch_data(parsed_data["data"])
+                print(f"JD-Xi Patch Data: {parsed_sysex_data}")
+            except Exception as ex:
+                print(f"Error parsing JD-Xi patch data: {ex}")
 
-            sysex_data = [int(byte, 16) for byte in parsed_data_hex_string.split()]
-            print(sysex_data)
+            # Detect and process JD-Xi tone data
+            try:
+                tone_data = parse_jdxi_tone(message.data)
+                print(f"Tone Data: {tone_data}")
+            except Exception as ex:
+                print(f"Error parsing JD-Xi tone data: {ex}")
 
-            parsed_data = parse_sysex_data(sysex_data)
-            print(f"parsed_data: {parsed_data}")
+            # Extract command type and parameter address
+            try:
+                command_type_address, address_offset = (
+                    message.data[6],
+                    message.data[7:11],
+                )
+                command_name = SysexParameter.get_command_name(command_type_address)
+                print(f"Command: {command_name} ({command_type_address:#02X})")
+                print(
+                    f"Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
+                )
+            except Exception as ex:
+                print(f"Error extracting command name: {ex}")
 
-            parsed_mido_data = parse_sysex_data(message.data)
-            print(f"parsed_mido_data: {parsed_mido_data}")
+            # Emit parameter changes based on the address area
+            try:
+                area_code = address_offset[0]
+                if area_code in [
+                    DIGITAL_SYNTH_1_AREA,
+                    DIGITAL_SYNTH_2_AREA,
+                    ANALOG_SYNTH_AREA,
+                    DRUM_KIT_AREA,
+                ]:
+                    self.parameter_received.emit(address_offset, message.data[11])
+            except Exception as ex:
+                print(f"Error emitting parameter change signal: {ex}")
 
-            parsed_sysex_data = parse_sysex(message.data)
-            print(f"parsed_sysex_data: {parsed_sysex_data}")
-            result = parse_jdxi_patch_data(data)
-            print(f"result: {result}")
-            # parsed_data_hex_string = " ".join(
-            #    f"{byte:02X}" for byte in parsed_data["data"]
-            # )
-            # print(f"parsed_data_hex_string: {parsed_data_hex_string}")
-            data = parse_jdxi_tone(message.data)
-            print(f"date: {data}")
-            print("Valid Roland JD-Xi SysEx message detected.")
-            command_type_address, address_offset = message.data[6], message.data[7:11]
-            parsed_data = parse_jdxi_patch_data(message.data)
-            print(f"parsed_data: {parsed_data}")
-            print(f"command_type_address: {command_type_address}")
-            command_name = SysexParameter.get_command_name(command_type_address)
-            print(
-                f"Command Type: {command_type_address:#02X}, command_name: {command_name}"
-            )
-            print(
-                f"Address/Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
-            )
-            # Determine which editor to send the message to based on the address
-            area_code = address_offset[0]
-            if area_code == DIGITAL_SYNTH_1_AREA:
-                self.parameter_received.emit(address_offset, message.data[11])
-            elif area_code == DIGITAL_SYNTH_2_AREA:
-                self.parameter_received.emit(address_offset, message.data[11])
-            elif area_code == ANALOG_SYNTH_AREA:
-                self.parameter_received.emit(address_offset, message.data[11])
-            elif area_code == DRUM_KIT_AREA:
-                self.parameter_received.emit(address_offset, message.data[11])
         except Exception as e:
-            logging.error(
-                f"Error handling SysEx message: {str(e)} for message: {message}"
-            )
+            logging.error(f"Error handling SysEx message: {e} | Message: {message}")
 
     def parse_sysex_message(message):
         # Regular expression pattern to match SysEx structure

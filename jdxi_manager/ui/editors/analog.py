@@ -33,6 +33,7 @@ from jdxi_manager.ui.editors.base_editor import BaseEditor
 from jdxi_manager.ui.editors.digital import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
+from jdxi_manager.ui.widgets.analog_waveform import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.waveform import (
@@ -191,7 +192,7 @@ class AnalogSynthEditor(BaseEditor):
             icon = qta.icon(icon)
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             oscillator_triangle_label.setPixmap(pixmap)
-            oscillator_triangle_label.setAlignment(Qt.AlignHCenter)
+            oscillator_triangle_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             oscillator_hlayout.addWidget(oscillator_triangle_label)
         layout.addLayout(oscillator_hlayout)
 
@@ -199,7 +200,7 @@ class AnalogSynthEditor(BaseEditor):
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
         for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
-            btn = WaveformButton(waveform)
+            btn = AnalogWaveformButton(waveform)
 
             # Set icons for each waveform
             if waveform == Waveform.SAW:

@@ -10,8 +10,8 @@ class Style:
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # """"#1A1A1A"
     FOREGROUND = "#FFFFFF"
-    ACCENT = "#FF0000"  # Red accent color
-    ACCENT_HOVER = "#FF0000"  # Red for hover
+    ACCENT = "#FF2200"  # Red accent color
+    ACCENT_HOVER = "#FF2200"  # Red for hover
     ANALOG_ACCENT = "#00A0E9"
     ANALOG_ACCENT_HOVER = "00A0E9"
     BORDER = "#333333"
@@ -144,7 +144,7 @@ class Style:
         }}
         
         QScrollBar::handle:hover {{
-            background: {ACCENT_HOVER};
+            border: 2px solid {ACCENT_HOVER};
         }}
         
         QLabel {{
@@ -256,7 +256,7 @@ class Style:
         }}
 
         QScrollBar::handle:hover {{
-            background: {ANALOG_ACCENT};
+            border: 2px solid {ANALOG_ACCENT};
         }}
         QSlider::handle:vertical {{
             background: {SLIDER_HANDLE};
