@@ -2330,7 +2330,7 @@ class MainWindow(QMainWindow):
         self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information"""
-        print(
+        logging.info(
             f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
         )
         self.current_preset_index = preset_number

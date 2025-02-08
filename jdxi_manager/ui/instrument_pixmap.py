@@ -1,33 +1,15 @@
-import logging
-import re
-from pathlib import Path
-from pubsub import pub
+"""
+draw a basic image of a jdxi
+"""
 
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QMenuBar,
-    QMenu,
-    QMessageBox,
-    QLabel,
-    QPushButton,
-    QFrame,
-    QGridLayout,
-    QGroupBox,
-    QButtonGroup,
-)
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt
 from PySide6.QtGui import (
-    QAction,
     QFont,
     QPixmap,
     QImage,
     QPainter,
     QPen,
     QColor,
-    QFontDatabase,
 )
 
 
