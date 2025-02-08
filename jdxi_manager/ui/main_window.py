@@ -2073,9 +2073,9 @@ class MainWindow(QMainWindow):
                 )  # Pass midi_helper instance
             self.drums_editor.show()
             self.drums_editor.raise_()
-
+            
         except Exception as e:
-            logging.error(f"Error showing Drums editor: {str(e)}")
+            logging.error(f"Error showing Drums editor: {str(e)}") 
     """
 
     def update_preset_display(self, preset_num, preset_name):

@@ -1656,6 +1656,8 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         # Check if the address corresponds to this editor's area
+        print(f"In digital: area_code: {area_code}")
+        print(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
         if address[0] == DIGITAL_SYNTH_1_AREA:
             # Update the UI or internal state based on the address and value
             logging.info(f"Received parameter update: Address={address}, Value={value}")
