@@ -19,6 +19,17 @@ from jdxi_manager.midi.constants.digital import (
     WAVE_SAW,
 )
 
+
+def get_digital_parameter_by_address(address: Tuple[int, int]):
+    """Retrieve the DigitalParameter by its address."""
+    logging.info(f"address: {address}")
+    for param in DigitalParameter:
+        if (param.group, param.address) == address:
+            logging.info(f"param found: {param}")
+            return param
+    return None
+
+
 # MIDI Constants for Digital Synth
 # DIGITAL_SYNTH_AREA = 0x19  # Digital Synth 1 area
 
