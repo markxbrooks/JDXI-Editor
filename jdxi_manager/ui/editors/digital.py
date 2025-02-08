@@ -158,52 +158,32 @@ class PartialEditor(QWidget):
         # Waveform buttons
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
-        for wave in [
-            OscWave.SAW,
-            OscWave.SQUARE,
-            OscWave.PW_SQUARE,
-            OscWave.TRIANGLE,
-            OscWave.SINE,
-            OscWave.NOISE,
-            OscWave.SUPER_SAW,
-            OscWave.PCM,
-        ]:
+
+        wave_icons = {
+            OscWave.SAW: upsaw_png("#FFFFFF", 1.0),
+            OscWave.SQUARE: square_png("#FFFFFF", 1.0),
+            OscWave.PW_SQUARE: pwsqu_png("#FFFFFF", 1.0),
+            OscWave.TRIANGLE: triangle_png("#FFFFFF", 1.0),
+            OscWave.SINE: sine_png("#FFFFFF", 1.0),
+            OscWave.NOISE: noise_png("#FFFFFF", 1.0),
+            OscWave.SUPER_SAW: spsaw_png("#FFFFFF", 1.0),
+            OscWave.PCM: pcm_png("#FFFFFF", 1.0),
+        }
+
+        for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
-            if wave == OscWave.SAW:
-                saw_wave_icon_base64 = upsaw_png("#FFFFFF", 1.0)
-                saw_wave_pixmap = base64_to_pixmap(saw_wave_icon_base64)
-                btn.setIcon(QIcon(saw_wave_pixmap))
-            elif wave == OscWave.SQUARE:
-                square_wave_icon_base64 = square_png("#FFFFFF", 1.0)
-                square_wave_pixmap = base64_to_pixmap(square_wave_icon_base64)
-                btn.setIcon(QIcon(square_wave_pixmap))
-            elif wave == OscWave.SINE:
-                sine_wave_icon_base64 = sine_png("#FFFFFF", 1.0)
-                sine_wave_pixmap = base64_to_pixmap(sine_wave_icon_base64)
-                btn.setIcon(QIcon(sine_wave_pixmap))
-            elif wave == OscWave.NOISE:
-                noise_wave_icon_base64 = noise_png("#FFFFFF", 1.0)
-                noise_wave_pixmap = base64_to_pixmap(noise_wave_icon_base64)
-                btn.setIcon(QIcon(noise_wave_pixmap))
-            elif wave == OscWave.SUPER_SAW:
-                super_saw_wave_icon_base64 = spsaw_png("#FFFFFF", 1.0)
-                super_saw_wave_pixmap = base64_to_pixmap(super_saw_wave_icon_base64)
-                btn.setIcon(QIcon(super_saw_wave_pixmap))
-            elif wave == OscWave.PCM:
-                pcm_wave_icon_base64 = pcm_png("#FFFFFF", 1.0)
-                pcm_wave_pixmap = base64_to_pixmap(pcm_wave_icon_base64)
-                btn.setIcon(QIcon(pcm_wave_pixmap))
-            elif wave == OscWave.PW_SQUARE:
-                pw_square_wave_icon_base64 = pwsqu_png("#FFFFFF", 1.0)
-                pw_square_wave_pixmap = base64_to_pixmap(pw_square_wave_icon_base64)
-                btn.setIcon(QIcon(pw_square_wave_pixmap))
-            elif wave == OscWave.TRIANGLE:
-                triangle_wave_icon_base64 = triangle_png("#FFFFFF", 1.0)
-                triangle_wave_pixmap = base64_to_pixmap(triangle_wave_icon_base64)
-                btn.setIcon(QIcon(triangle_wave_pixmap))
+            btn.setStyleSheet(Style.BUTTON_DEFAULT)  # Apply default styles
+
+            # Set waveform icons
+            wave_pixmap = base64_to_pixmap(icon_base64)
+            btn.setIcon(QIcon(wave_pixmap))
+
+            # Connect click signal
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
+
             self.wave_buttons[wave] = btn
             wave_layout.addWidget(btn)
+
         top_row.addLayout(wave_layout)
 
         # Wave variation switch
@@ -991,14 +971,25 @@ class PartialEditor(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
 
-        except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
 
     def _on_waveform_selected(self, waveform: OscWave):
         """Handle waveform button clicks"""
+        # Reset all buttons to default style
+        for btn in self.wave_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(Style.BUTTON_DEFAULT)
+
         # Update button states
-        for wave, btn in self.wave_buttons.items():
-            btn.setChecked(wave == waveform)
+        # for wave, btn in self.wave_buttons.items():
+        #    btn.setChecked(wave == waveform)
+
+        # Apply active style to the selected waveform button
+        selected_btn = self.wave_buttons.get(waveform)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(Style.BUTTON_ACTIVE)
 
         # Send MIDI message
         if not self.send_midi_parameter(DigitalParameter.OSC_WAVE, waveform.value):
@@ -1668,7 +1659,7 @@ class DigitalSynthEditor(BaseEditor):
                 )
 
                 # Update the corresponding slider
-                if param in self.controls:
+                if param in self.partial_editors[partial_no].controls:
                     slider = self.partial_editors[partial_no].controls[param]
                     slider.blockSignals(True)  # Prevent feedback loop
                     slider.setValue(value)
@@ -1683,7 +1674,10 @@ class DigitalSynthEditor(BaseEditor):
 
     def _update_waveform_buttons(self, partial_number, value):
         """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
-        logging.debug("updating waveform buttons for param {param} with {value}")
+        logging.debug(
+            f"Updating waveform buttons for partial {partial_number} with value {value}"
+        )
+
         waveform_map = {
             0: OscWave.SAW,
             1: OscWave.SQUARE,
@@ -1698,54 +1692,24 @@ class DigitalSynthEditor(BaseEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            print(f"Warning: Unknown waveform value {value}")  # Debugging/logging
-            return  # Exit early if the value is invalid
-        else:
-            print(f"Warning: waveform value {value} found")  # Debugging/logging
-        # Deselect all buttons first & reset styles
-        for btn in self.partial_editors[partial_number].wave_buttons.values():
-            btn.setChecked(False)
-            btn.setStyleSheet(
-                """
-                QPushButton {
-                    background-color: black;
-                    border: 4px solid #666666;
-                    border-radius: 15px;
-                    padding: 0px;
-                }
-                QPushButton:hover {
-                    background-color: #1A1A1A;
-                    border: 4px solid #ff4d4d;
-                }
-                QPushButton:pressed {
-                    background-color: #333333;
-                    border: 4px solid #ff6666;
-                }
-            """
-            )
+            logging.warning(f"Unknown waveform value: {value}")
+            return
 
-        # Select the correct button and apply the active style
-        btn = self.partial_editors[partial_number].wave_buttons.get(selected_waveform)
-        if btn:
-            btn.setChecked(True)
-            btn.setStyleSheet(
-                """
-                QPushButton {
-                    background-color: #ff6666;
-                    border: 4px solid #ff4d4d;
-                    border-radius: 15px;
-                    padding: 0px;
-                }
-                QPushButton:hover {
-                    background-color: #ff8080;
-                    border: 4px solid #ff9999;
-                }
-                QPushButton:pressed {
-                    background-color: #ff4d4d;
-                    border: 4px solid #ff3333;
-                }
-            """
-            )
+        logging.debug(f"Waveform value {value} found, selecting {selected_waveform}")
+
+        # Retrieve waveform buttons for the given partial
+        wave_buttons = self.partial_editors[partial_number].wave_buttons
+
+        # Reset all buttons to default style
+        for btn in wave_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(Style.BUTTON_DEFAULT)
+
+        # Apply active style to the selected waveform button
+        selected_btn = wave_buttons.get(selected_waveform)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(Style.BUTTON_ACTIVE)
 
 
 def base64_to_pixmap(base64_str):
