@@ -1,33 +1,15 @@
-import logging
-import re
-from pathlib import Path
-from pubsub import pub
+"""
+draw a basic image of a jdxi
+"""
 
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QMenuBar,
-    QMenu,
-    QMessageBox,
-    QLabel,
-    QPushButton,
-    QFrame,
-    QGridLayout,
-    QGroupBox,
-    QButtonGroup,
-)
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt
 from PySide6.QtGui import (
-    QAction,
     QFont,
     QPixmap,
     QImage,
     QPainter,
     QPen,
     QColor,
-    QFontDatabase,
 )
 
 
@@ -103,13 +85,8 @@ def draw_instrument_pixmap(
     painter.drawText(oct_x, oct_y, oct_text)
 
     # Load/Save buttons in display (without boxes)
-    button_width = 70
-    button_height = 25
-    button_margin = 10
-    button_y = display_y + (display_height - button_height * 2 - button_margin) / 2
 
     # Load button (text only)
-    load_x = display_x + button_margin
     painter.setPen(QPen(QColor("#FF8C00")))
     if digital_font_family:
         painter.setFont(QFont(digital_font_family, 22))
@@ -118,31 +95,10 @@ def draw_instrument_pixmap(
 
     # Keyboard section (moved up and taller)
     keyboard_width = 800
-    keyboard_start = width - keyboard_width - margin - 20
     white_key_height = 127
     keyboard_y = height - white_key_height - (height * 0.1) + (white_key_height * 0.3)
 
     # Draw control sections
-    """
-    # Remove the red box borders for effects sections
-    # (Delete or comment out these lines)
-
-    # Draw horizontal Effects section above keyboard
-    effects_y = keyboard_y - 60  # Position above keyboard
-    effects_width = 120  # Width for each section
-    effects_height = 40
-    effects_spacing = 20
-
-    # Arpeggiator section
-    arp_x = (
-        keyboard_start + (keyboard_width - (effects_width * 2 + effects_spacing)) / 2
-    )
-    painter.drawRect(arp_x, effects_y, effects_width, effects_height)
-
-    # Effects section
-    fx_x = arp_x + effects_width + effects_spacing
-    painter.drawRect(fx_x, effects_y, effects_width, effects_height)
-    """
 
     # Draw sequencer section
     seq_y = keyboard_y - 50  # Keep same distance above keyboard
@@ -176,16 +132,6 @@ def draw_instrument_pixmap(
                     ),  # Stop before next measure
                     int(y),
                 )
-
-    # Draw sequence steps
-    for i in range(step_count):
-        x = seq_x + i * (step_size + step_spacing)
-
-        # Draw step squares with double grey border
-        painter.setPen(QPen(QColor("#666666"), 2))  # Mid-grey, doubled width
-        painter.setBrush(Qt.black)  # All steps unlit
-
-        painter.drawRect(int(x), seq_y, step_size, step_size)
 
     painter.end()
     return pixmap

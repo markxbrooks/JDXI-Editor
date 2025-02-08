@@ -1299,10 +1299,10 @@ class DigitalSynthEditor(BaseEditor):
 
         # Register the callback for incoming MIDI messages
         if self.midi_helper:
-            print("MIDI helper initialized")
+            logging.info("MIDI helper initialized")
             if hasattr(self.midi_helper, "set_callback"):
-                self.midi_helper.set_callback(self.handle_midi_message)
-                print("MIDI callback set")
+                self.midi_helper.set_callback(self.midi_helper.midi_callback)
+                logging.info("MIDI callback set")
             else:
                 logging.error("MIDI set_callback method not found")
         else:
@@ -1312,7 +1312,7 @@ class DigitalSynthEditor(BaseEditor):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        print(f"Updating combo to preset {preset_number}")
+        logging.info(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def _create_performance_section(self):
@@ -1420,7 +1420,7 @@ class DigitalSynthEditor(BaseEditor):
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        print(f"selected_synth_text: {selected_synth_text}")
+        logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
@@ -1432,7 +1432,7 @@ class DigitalSynthEditor(BaseEditor):
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
             preset_index = int(selected_synth_padded_number)
-            print(f"preset_index: {preset_index}")
+            logging.info(f"preset_index: {preset_index}")
             self.load_preset(preset_index)
 
     def update_instrument_image(self):
@@ -1472,7 +1472,7 @@ class DigitalSynthEditor(BaseEditor):
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            print(f"selected_instrument_type: {selected_instrument_type}")
+            logging.info(f"selected_instrument_type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
                 instrument_icon_folder,
@@ -1597,7 +1597,7 @@ class DigitalSynthEditor(BaseEditor):
     def handle_midi_message(self, message):
         """Callback for handling incoming MIDI messages"""
         try:
-            print(f"SysEx message: {message}")
+            logging.info(f"SysEx message: {message}")
             if message[7] == 0x12:  # DT1 command
                 self._handle_dt1_message(message[8:])
         except Exception as e:
@@ -1614,9 +1614,9 @@ class DigitalSynthEditor(BaseEditor):
             return
 
         address = data[0:3]
-        print(f"DT1 message Address: {address}")
+        logging.info(f"DT1 message Address: {address}")
         value = data[3]
-        print(f"DT1 message Value: {value}")
+        logging.info(f"DT1 message Value: {value}")
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
 
@@ -1656,11 +1656,12 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         # Check if the address corresponds to this editor's area
-        print(f"In digital: area_code: {area_code}")
-        print(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
+        area_code = address[0]
+        logging.info(f"In digital: area_code: {area_code}")
+        logging.info(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
         if address[0] == DIGITAL_SYNTH_1_AREA:
             # Update the UI or internal state based on the address and value
-            print(f"Received parameter update: Address={address}, Value={value}")
+            logging.info(f"Received parameter update: Address={address}, Value={value}")
 
 
 def base64_to_pixmap(base64_str):
