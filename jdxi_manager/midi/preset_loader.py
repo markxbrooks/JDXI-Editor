@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 
 from PySide6.QtCore import Signal, QObject
@@ -9,6 +10,56 @@ from jdxi_manager.midi.constants import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.constants.sysex import DEVICE_ID
 from jdxi_manager.midi.sysex import XI_HEADER
+
+from PySide6.QtCore import QThread, Signal
+
+
+class PresetLoaderThread(QThread):
+    progress = Signal(str)  # Signal to update the GUI
+    success = Signal(bool)  # Signal to indicate success/failure
+
+    def __init__(self, midi_out, midi_in, preset_sysex):
+        super().__init__()
+        self.midi_out = midi_out
+        self.midi_in = midi_in
+        self.preset_sysex = preset_sysex
+        self.expected_response = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x12, 0xF7]
+        self.retry_attempts = 3
+        self.timeout = 1.0  # seconds
+
+    def send_sysex(self, data):
+        msg = mido.Message("sysex", data=data)
+        self.midi_out.send(msg)
+        self.progress.emit(f"Sent SysEx: {data}")
+
+    def receive_sysex(self):
+        if self.midi_in:
+            start_time = time.time()
+            while time.time() - start_time < self.timeout:
+                for msg in self.midi_in.iter_pending():
+                    if msg.type == "sysex":
+                        self.progress.emit(f"Received SysEx: {msg.data}")
+                        return list(msg.data)
+        return None
+
+    def validate_response(self, response):
+        return response and response[:7] == self.expected_response[:7]
+
+    def run(self):
+        for attempt in range(self.retry_attempts):
+            self.progress.emit(f"Attempt {attempt + 1}: Sending preset SysEx...")
+            self.send_sysex(self.preset_sysex)
+            response = self.receive_sysex()
+
+            if self.validate_response(response):
+                self.progress.emit("Preset load confirmed by JD-Xi.")
+                self.success.emit(True)
+                return
+            else:
+                self.progress.emit("No valid response, retrying...")
+
+        self.progress.emit("Failed to load preset after multiple attempts.")
+        self.success.emit(False)
 
 
 def calculate_checksum(data):

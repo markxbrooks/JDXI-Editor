@@ -25,11 +25,18 @@ class ADSRWidget(QWidget):
         self.setMinimumHeight(150)  # Adjust height as needed
         self.attackSB = self.create_spinbox(0, 1000, " ms", self.envelope["attackTime"])
         self.decaySB = self.create_spinbox(0, 1000, " ms", self.envelope["decayTime"])
-        self.releaseSB = self.create_spinbox(0, 1000, " ms", self.envelope["releaseTime"])
-        self.initialSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["initialAmpl"])
+        self.releaseSB = self.create_spinbox(
+            0, 1000, " ms", self.envelope["releaseTime"]
+        )
+        self.initialSB = self.create_double_spinbox(
+            0, 1, 0.01, self.envelope["initialAmpl"]
+        )
         self.peakSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["peakAmpl"])
-        self.sustainSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["sustainAmpl"])
-        self.setStyleSheet("""
+        self.sustainSB = self.create_double_spinbox(
+            0, 1, 0.01, self.envelope["sustainAmpl"]
+        )
+        self.setStyleSheet(
+            """
                     QSpinBox {
                            font-family: Myriad Pro, sans-serif;
                            font-size: 10px;
@@ -38,7 +45,22 @@ class ADSRWidget(QWidget):
                            font-family: Myriad Pro, sans-serif;
                            font-size: 10px;
                     }
-                """)
+                    QSlider::groove:vertical {
+                        background: red;
+                        width: 6px;
+                        border-radius: 3px;
+                    }
+                    
+                    QSlider::handle:vertical {
+                        background: gray;
+                        border: 1px solid darkgray;
+                        width: 14px;
+                        height: 14px;
+                        margin: -6px 0;
+                        border-radius: 7px;
+                    }
+                """
+        )
         self.plot = ADSRPlot()
 
         self.layout = QGridLayout(self)

@@ -361,7 +361,7 @@ class JDXiKey(QPushButton):
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton:
             self.is_pressed = True
             self.noteOn.emit(self.note_num)
             self.update()

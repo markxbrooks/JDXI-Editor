@@ -300,6 +300,20 @@ class Style:
         QComboBox::down-arrow {{
             image: none;
         }}
+        QSlider::groove:vertical {{
+            background: red;
+            width: 6px;
+            border-radius: 3px;
+        }}
+        
+        QSlider::handle:vertical {{
+            background: gray;
+            border: 1px solid darkgray;
+            width: 14px;
+            height: 14px;
+            margin: -6px 0;
+            border-radius: 7px;
+        }}
     """
 
     DRUMS_STYLE = """
