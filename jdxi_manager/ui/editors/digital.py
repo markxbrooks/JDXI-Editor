@@ -54,6 +54,7 @@ from jdxi_manager.data.digital import (
     DigitalPartial,
     set_partial_state,
     get_partial_state,
+    get_digital_parameter_by_address,
 )
 from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
@@ -131,7 +132,7 @@ class PartialEditor(QWidget):
         layout = QVBoxLayout()
         group.setLayout(layout)
 
-        # prettify with icons
+        # Prettify with icons
         icons_hlayout = QHBoxLayout()
         for icon in [
             "mdi.triangle-wave",
@@ -332,7 +333,7 @@ class PartialEditor(QWidget):
             icon = qta.icon(icon)
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
         layout.addLayout(icon_hlayout)
 
@@ -392,7 +393,7 @@ class PartialEditor(QWidget):
 
         icon_label = QLabel()
         icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignHCenter)
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         sub_layout.addLayout(icons_hlayout)
@@ -802,7 +803,12 @@ class PartialEditor(QWidget):
         # Modulation depths
         depths_group = QGroupBox("Depths")
         depths_layout = QVBoxLayout()
-        depths_group.setLayout(depths_layout)
+
+        # Ensure `depths_group` layout is only set once
+        if (
+            not depths_group.layout()
+        ):  # Check if the group already has a layout assigned
+            depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.LFO_PITCH, "Pitch")
@@ -973,20 +979,22 @@ class PartialEditor(QWidget):
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
-        """Handle parameter value changes from UI controls"""
+        """Handle parameter changes and update UI elements."""
         try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
+            # Check if the parameter is a known DigitalParameter
+            if isinstance(param, DigitalParameter):
+                # Update the corresponding UI element
+                if param == DigitalParameter.OSC_WAVE_VAR:
+                    self.wave_var.setValue(display_value)
+                elif param == DigitalParameter.MOD_LFO_SYNC:
+                    self.lfo_sync.setChecked(bool(display_value))
+                # Add more conditions for other parameters as needed
 
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
+                # Log the change for debugging
+                logging.debug(f"Parameter {param} changed to {display_value}")
 
         except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+            logging.error(f"Error updating parameter {param}: {str(e)}")
 
     def _on_waveform_selected(self, waveform: OscWave):
         """Handle waveform button clicks"""
@@ -1308,6 +1316,7 @@ class DigitalSynthEditor(BaseEditor):
         else:
             logging.error("MIDI helper not initialized")
 
+        self.midi_helper.parameter_changed.connect(self._on_parameter_changed)
         self.midi_helper.parameter_received.connect(self._on_parameter_received)
 
     def update_combo_box_index(self, preset_number):
@@ -1506,20 +1515,22 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
-        """Handle parameter value changes from UI controls"""
+        """Handle parameter changes and update UI elements."""
         try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
+            # Check if the parameter is a known DigitalParameter
+            if isinstance(param, DigitalParameter):
+                # Update the corresponding UI element
+                if param == DigitalParameter.OSC_WAVE_VAR:
+                    self.wave_var.setValue(display_value)
+                elif param == DigitalParameter.MOD_LFO_SYNC:
+                    self.lfo_sync.setChecked(bool(display_value))
+                # Add more conditions for other parameters as needed
 
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
+                # Log the change for debugging
+                logging.debug(f"Parameter {param} changed to {display_value}")
 
         except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+            logging.error(f"Error updating parameter {param}: {str(e)}")
 
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool
@@ -1660,6 +1671,14 @@ class DigitalSynthEditor(BaseEditor):
         logging.info(f"In digital: area_code: {area_code}")
         logging.info(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
         if address[0] == DIGITAL_SYNTH_1_AREA:
+            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
+            parameter_address = tuple(address[2:])  # (80, 0)
+
+            # Retrieve the corresponding DigitalParameter
+            param = get_digital_parameter_by_address(parameter_address)
+
+            if param:
+                logging.info(f"param: {param}")
             # Update the UI or internal state based on the address and value
             logging.info(f"Received parameter update: Address={address}, Value={value}")
 

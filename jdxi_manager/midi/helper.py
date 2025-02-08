@@ -76,6 +76,8 @@ sysex_message = [
 ]
 """
 
+from jdxi_manager.data.digital import get_digital_parameter_by_address
+
 """
 # Example SysEx Data (convert hex to bytes)
 
@@ -477,6 +479,7 @@ class MIDIHelper(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
     parameter_received = Signal(list, int)  # address, value
+    parameter_changed = Signal(object, int)  # Emit parameter and value
     preset_changed = Signal(int, str, int)
     midi_note_received = Signal(str)
 
@@ -611,6 +614,9 @@ class MIDIHelper(QObject):
                     DRUM_KIT_AREA,
                 ]:
                     self.parameter_received.emit(address_offset, message.data[11])
+                    # param = self._get_parameter_from_address(address_offset)
+                    # if param:
+                    #    self.parameter_changed.emit(param, address_offset[-1])
             except Exception as ex:
                 logging.info(f"Error emitting parameter change signal: {ex}")
 
@@ -700,21 +706,41 @@ class MIDIHelper(QObject):
             logging.error(f"Error in MIDI callback: {str(e)}")
 
     def _handle_dt1_message(self, data):
-        """Handle Data Set 1 (DT1) messages
-
-        Format: aa bb cc dd ... where:
-        aa bb cc = Address
-        dd ... = Data
-        """
+        """Handle Data Set 1 (DT1) messages"""
         if len(data) < 4:  # Need at least address and one data byte
             return
 
         address = data[0:3]
-        logging.info(f"Address: {address}")
         value = data[3]
-        logging.info(f"Value: {value}")
-        # Emit signal with parameter data
-        self.parameter_received.emit(address, value)
+        logging.debug(f"Received parameter update: Address={address}, Value={value}")
+
+        # Determine the parameter based on the address
+        param = self._get_parameter_from_address(address)
+        if param:
+            self.parameter_changed.emit(param, value)
+
+    def _get_parameter_from_address(self, address):
+        """Map address to a DigitalParameter"""
+        # Ensure the address is at least two elements
+        if len(address) < 2:
+            raise ValueError(
+                f"Address must contain at least 2 elements, got {len(address)}"
+            )
+
+        # Extract the relevant part of the address (group, address pair)
+        parameter_address = tuple(
+            address[1:2]
+        )  # Assuming address structure [group, address, ...]
+
+        # Retrieve the corresponding DigitalParameter
+        param = get_digital_parameter_by_address(parameter_address)
+
+        if param:
+            return param
+        else:
+            raise ValueError(
+                f"Invalid address {parameter_address} - no corresponding DigitalParameter found."
+            )
 
     def get_input_ports(self) -> List[str]:
         """Get available MIDI input ports"""
