@@ -222,19 +222,19 @@ def parse_jdxi_tone(data):
     if data[1] != 0x41:
         raise ValueError("Invalid Manufacturer ID: Expected 0x41 (Roland).")
 
-    parsed = {}
+    parsed_dict = {}
 
     # Extract header and address safely
-    parsed["header"] = data[:7].hex() if len(data) >= 7 else "N/A"
-    parsed["address"] = data[7:11].hex() if len(data) >= 11 else "N/A"
+    parsed_dict["header"] = data[:7].hex() if len(data) >= 7 else "N/A"
+    parsed_dict["address"] = data[7:11].hex() if len(data) >= 11 else "N/A"
 
     # Identify tone type based on SysEx address
     if len(data) > 7:
         address_high_byte = data[7]  # First byte of the address field
         tone_types = {0x19: "Analog", 0x1A: "Digital1", 0x1B: "Digital2", 0x1C: "Drums"}
-        parsed["Tone Type"] = tone_types.get(address_high_byte, "Unknown")
+        parsed_dict["Tone Type"] = tone_types.get(address_high_byte, "Unknown")
     else:
-        parsed["Tone Type"] = "Unknown"
+        parsed_dict["Tone Type"] = "Unknown"
 
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
@@ -245,19 +245,54 @@ def parse_jdxi_tone(data):
 
     input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
     tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
-    parsed["tone_name"] = tone_name.replace("\u0000", "")  # remove Null characters
+    parsed_dict["tone_name"] = tone_name.replace("\u0000", "")  # remove Null characters
 
     # Extract parameters safely
-    parsed["LFO Rate"] = safe_get(24)
-    parsed["LFO Depth"] = safe_get(25)
-    parsed["LFO Shape"] = safe_get(26)
-    parsed["OSC Type"] = safe_get(33)
-    parsed["OSC Pitch"] = safe_get(34)
-    parsed["Filter Cutoff"] = safe_get(44)
-    parsed["Filter Resonance"] = safe_get(45)
-    parsed["Amp Level"] = safe_get(52)
-
-    return parsed
+    parsed_dict["LFO_RATE"] = safe_get(24)
+    parsed_dict["LFO_FILTER_DEPTH"] = safe_get(25)
+    parsed_dict["LFO_SHAPE"] = safe_get(26)
+    # parsed_dict["UNKNOWN_1"] = safe_get(27)
+    # parsed_dict["UNKNOWN_2"] = safe_get(28)
+    # parsed_dict["UNKNOWN_3"] = safe_get(29)
+    # parsed_dict["UNKNOWN_4"] = safe_get(30)
+    # parsed_dict["UNKNOWN_5"] = safe_get(31)
+    # parsed_dict["UNKNOWN_6"] = safe_get(32)
+    parsed_dict["OSC_TYPE"] = safe_get(33)
+    parsed_dict["Unknown1"] = safe_get(34)
+    parsed_dict["OSC_PITCH"] = safe_get(35)
+    parsed_dict["OSC_DETUNE"] = safe_get(36)
+    parsed_dict["OSC_PULSE_WIDTH"] = safe_get(37)
+    parsed_dict["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(38)
+    # parsed_dict["UNKNOWN_5"] = safe_get(39)
+    parsed_dict["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(40)
+    parsed_dict["OSC_PITCH_ENV_DECAY"] = safe_get(41)
+    parsed_dict["OSC_PITCH_ENV_DEPTH"] = safe_get(42)
+    parsed_dict["SUB_OSCILLATOR_TYPE"] = safe_get(43)
+    parsed_dict["FILTER_SWITCH"] = safe_get(44)
+    parsed_dict["FILTER_CUTOFF"] = safe_get(45)
+    parsed_dict["FILTER_KEYFOLLOW"] = safe_get(46)
+    parsed_dict["FILTER_RESONANCE"] = safe_get(47)
+    parsed_dict["FILTER_ENV_VELOCITY_SENS"] = safe_get(48)
+    parsed_dict["FILTER_ENV_ATTACK_TIME"] = safe_get(49)
+    parsed_dict["FILTER_ENV_DECAY_TIME"] = safe_get(50)
+    parsed_dict["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(51)
+    parsed_dict["FILTER_ENV_RELEASE_TIME"] = safe_get(52)
+    parsed_dict["FILTER_DEPTH"] = safe_get(53)
+    parsed_dict["AMP_LEVEL"] = safe_get(54)
+    parsed_dict["AMP_LEVEL_KEYFOLLOW"] = safe_get(55)
+    parsed_dict["OSC_PITCH_ENV_DEPTH"] = safe_get(56)
+    parsed_dict["AMP_ENV_ATTACK_TIME"] = safe_get(57)
+    parsed_dict["AMP_ENV_DECAY_TIME"] = safe_get(58)
+    parsed_dict["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(59)
+    parsed_dict["AMP_ENV_RELEASE_TIME"] = safe_get(60)
+    # parsed_dict["UNKNOWN_7"] = safe_get(61)
+    # parsed_dict["UNKNOWN_8"] = safe_get(62)
+    # parsed_dict["UNKNOWN_9"] = safe_get(63)
+    # parsed_dict["UNKNOWN_10"] = safe_get(64)
+    # parsed_dict["UNKNOWN_11"] = safe_get(65)
+    # parsed_dict["UNKNOWN_12"] = safe_get(66)
+    # parsed_dict["UNKNOWN_13"] = safe_get(67)
+    return parsed_dict
 
 
 def parse_sysex_data(data):
@@ -322,30 +357,28 @@ def parse_jdxi_sysex(sysex_data):
     if sysex_data[0] != 0xF0 or sysex_data[-1] != 0xF7:
         raise ValueError("Invalid SysEx message")
 
-    manufacturer_id = sysex_data[1]
-    device_id = sysex_data[2:6]
-    command_type = sysex_data[6]
-    data_type = sysex_data[7]
+    ROLAND_ID = sysex_data[1]
+    MODEL_ID = sysex_data[2:6]
+    COMMAND_ID = sysex_data[6]
+    TEMPORARY_AREA = sysex_data[7]
     address = sysex_data[8:12]
     parameters = sysex_data[12:-1]  # Excluding F0 and F7
 
     parsed_patch = {
-        "device": "Roland JD-Xi",
-        "command_type": command_type,
-        "data_type": data_type,
-        "waveform_number": parameters[1],
-        "coarse_tune": parameters[3],
-        "fine_tune": parameters[4],
-        "pan": parameters[5],
-        "filter_cutoff": parameters[6],
-        "filter_resonance": parameters[7],
-        "lfo_depth": parameters[8],
-        "envelope": {
-            "attack": parameters[28],
-            "decay": parameters[29],
-            "sustain": parameters[30],
-            "release": parameters[31],
-        },
+        "MODEL_ID": "Roland JD-Xi",
+        "COMMAND_ID": COMMAND_ID,
+        "TEMPORARY_AREA": TEMPORARY_AREA,
+        "WAVEFORM_NUMBER": parameters[1],
+        "COARSE_TUNE": parameters[3],
+        "FINE_TUNE": parameters[4],
+        "AMP_PAN": parameters[5],
+        "FILTER_CUTOFF": parameters[6],
+        "FILTER_RESONANCE": parameters[7],
+        "LFO_DEPTH": parameters[8],
+        "ENVELOPE_ATTACK": parameters[28],
+        "ENVELOPE_DECAY": parameters[29],
+        "ENVELOPE_SUSTAIN": parameters[30],
+        "ENVELOPE_RELEASE": parameters[31],
     }
 
     return parsed_patch
@@ -479,6 +512,7 @@ class MIDIHelper(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
     parameter_received = Signal(list, int)  # address, value
+    json_sysex = Signal(str)  # json string only
     parameter_changed = Signal(object, int)  # Emit parameter and value
     preset_changed = Signal(int, str, int)
     midi_note_received = Signal(str)
@@ -566,7 +600,6 @@ class MIDIHelper(QObject):
                 return  # Stop further processing if parsing fails
 
             try:
-
                 parsed_patch = parse_jdxi_sysex(sysex_message)
                 log_json(parsed_patch)
                 # logging.info(json.dumps(parsed_patch, indent=4))
@@ -586,6 +619,8 @@ class MIDIHelper(QObject):
                 # Detect and process JD-Xi tone data
                 try:
                     parsed_data = parse_jdxi_tone(sysex_message_bytes)
+                    json_data = json.dumps(parsed_data)
+                    self.json_sysex.emit(json_data)
                     log_json(parsed_data)
                 except Exception as ex:
                     logging.info(f"Error parsing JD-Xi tone data: {ex}")

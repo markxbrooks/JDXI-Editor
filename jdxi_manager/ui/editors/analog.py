@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import json
 from functools import partial
 from typing import Optional, Dict, Union
 
@@ -183,6 +184,7 @@ class AnalogSynthEditor(BaseEditor):
             lambda v: self._send_cc(AnalogToneCC.FILTER_RESO, v)
         )
         self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        self.midi_helper.json_sysex.connect(self.update_sliders_from_sysex)
         self.data_request()
 
     def _create_oscillator_section(self):
@@ -1021,7 +1023,7 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.AMP_LEVEL,
+                param=AnalogParameter.AMP_LEVEL.value[0],
                 value=value,
             )
 
@@ -1178,3 +1180,46 @@ class AnalogSynthEditor(BaseEditor):
                     slider.blockSignals(True)  # Prevent feedback loop
                     slider.setValue(value)
                     slider.blockSignals(False)
+
+    def update_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        logging.info(json_sysex_data)
+        sysex_data = json.loads(json_sysex_data)
+
+        # Mapping for LFO Shape values to combo box indices
+        lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
+
+        # Mapping for Sub Oscillator Type values to switch indices
+        sub_osc_type_map = {0: 0, 1: 1, 2: 2}  # Ensure these are integers
+        failures = []
+        for param_name, param_value in sysex_data.items():
+            # Update sliders
+            param = AnalogParameter.get_by_name(param_name)
+            if param and param in self.controls:
+                slider = self.controls[param]
+                slider.blockSignals(True)  # Prevent feedback loop
+                logging.info(f"Success: \tupdating \t{param} \twith \t{param_value}")
+                slider.setValue(param_value)
+                slider.blockSignals(False)
+            else:
+                # Update LFO Shape combo box
+                if param_name == "LFO_SHAPE":
+                    if param_value in lfo_shape_map:
+                        index = self.lfo_shape.findText(lfo_shape_map[param_value])
+                        if index != -1:
+                            self.lfo_shape.blockSignals(True)
+                            self.lfo_shape.setCurrentIndex(index)
+                            self.lfo_shape.blockSignals(False)
+
+                # Update Sub Oscillator Type switch
+                elif param_name == "SUB_OSCILLATOR_TYPE":
+                    if param_value in sub_osc_type_map:
+                        index = sub_osc_type_map[param_value]
+                        if isinstance(index, int):  # Ensure index is an integer
+                            self.sub_type.blockSignals(True)
+                            self.sub_type.setValue(index)
+                            self.sub_type.blockSignals(False)
+                else:
+                    failures.append(param_name)
+        logging.info(f"failures: {failures}")

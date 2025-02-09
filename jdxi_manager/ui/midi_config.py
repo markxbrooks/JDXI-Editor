@@ -22,6 +22,9 @@ class MIDIConfigDialog(QDialog):
         self.current_in = current_in
         self.current_out = current_out
         
+        # Create an instance of MIDIHelper
+        self.midi_helper = MIDIHelper()
+
         self._create_ui()
         
     def _create_ui(self):
@@ -72,6 +75,11 @@ class MIDIConfigDialog(QDialog):
         output_layout.addWidget(self.output_combo)
         layout.addWidget(output_group)
         
+        # Refresh button
+        refresh_button = QPushButton("Refresh Ports")
+        refresh_button.clicked.connect(self.refresh_ports)
+        layout.addWidget(refresh_button)
+        
         # Buttons
         buttons = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
@@ -80,6 +88,18 @@ class MIDIConfigDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
+
+    def refresh_ports(self):
+        """Refresh the list of MIDI ports"""
+        # Use the MIDIHelper instance to get the updated port lists
+        self.input_ports = self.midi_helper.get_input_ports()
+        self.output_ports = self.midi_helper.get_output_ports()
+
+        # Update the combo boxes
+        self.input_combo.clear()
+        self.input_combo.addItems(self.input_ports)
+        self.output_combo.clear()
+        self.output_combo.addItems(self.output_ports)
 
     def get_input_port(self) -> str:
         """Get selected input port name
