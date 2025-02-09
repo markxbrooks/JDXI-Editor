@@ -160,16 +160,6 @@ AN_CATEGORIES = {
 }
 
 
-def get_analog_parameter_by_address(address: Tuple[int, int]):
-    """Retrieve the DigitalParameter by its address."""
-    logging.info(f"address: {address}")
-    for param in AnalogParameter:
-        if param.address == address:
-            logging.info(f"get_analog_parameter_by_address found param: {param}")
-            return param
-    return None
-
-
 class AnalogParameter(Enum):
     """Analog synth parameters with group, address, and value range."""
 
@@ -261,6 +251,14 @@ class AnalogParameter(Enum):
         """Get the AnalogParameter by name."""
         # Return the parameter member by name, or None if not found
         return AnalogParameter.__members__.get(param_name, None)
+
+    @staticmethod
+    def get_name_by_address(address: int):
+        """Return the parameter name for a given address."""
+        for param in AnalogParameter:
+            if param.address == address:
+                return param.name
+        return None  # Return None if the address is not found
 
     @property
     def display_name(self) -> str:

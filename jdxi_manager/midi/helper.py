@@ -76,8 +76,6 @@ sysex_message = [
 ]
 """
 
-from jdxi_manager.data.digital import get_digital_parameter_by_address
-
 """
 # Example SysEx Data (convert hex to bytes)
 
@@ -145,9 +143,40 @@ from jdxi_manager.midi.constants.sysex import (
     DIGITAL_SYNTH_2_AREA,
     ANALOG_SYNTH_AREA,
     DRUM_KIT_AREA,
+    # TEMPORARY_AREAS,
 )
 from jdxi_manager.midi.sysex import SysexParameter
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
+
+
+def get_analog_parameter_by_address(address: int):
+    """Retrieve the DigitalParameter by its address."""
+    logging.info(f"address: {address}")
+    for param in AnalogParameter:
+        if param.address == address:
+            logging.info(f"get_analog_parameter_by_address found param: {param}")
+            return param
+    return None
+
+
+def get_analog_parameter_name_by_address(address: int):
+    """Retrieve the DigitalParameter by its address."""
+    logging.info(f"address: {address}")
+    for param in AnalogParameter:
+        if param.address == address:
+            logging.info(f"get_analog_parameter_by_address found param: {param}")
+            return param.name
+    return None
+
+
+def get_digital_parameter_by_address(address: Tuple[int, int]):
+    """Retrieve the DigitalParameter by its address."""
+    logging.info(f"address: {address}")
+    for param in DigitalParameter:
+        if (param.group, param.address) == address:
+            logging.info(f"param found: {param}")
+            return param
+    return None
 
 
 def find_preset_number(preset_name, presets):
@@ -225,16 +254,28 @@ def parse_jdxi_tone(data):
     parsed_dict = {}
 
     # Extract header and address safely
-    parsed_dict["header"] = data[:7].hex() if len(data) >= 7 else "N/A"
-    parsed_dict["address"] = data[7:11].hex() if len(data) >= 11 else "N/A"
+    parsed_dict["JD_XI_ID"] = data[:7].hex() if len(data) >= 7 else "N/A"
+    parsed_dict["ADDRESS"] = data[7:11].hex() if len(data) >= 11 else "N/A"
 
     # Identify tone type based on SysEx address
     if len(data) > 7:
         address_high_byte = data[7]  # First byte of the address field
-        tone_types = {0x19: "Analog", 0x1A: "Digital1", 0x1B: "Digital2", 0x1C: "Drums"}
-        parsed_dict["Tone Type"] = tone_types.get(address_high_byte, "Unknown")
-    else:
-        parsed_dict["Tone Type"] = "Unknown"
+        print(
+            f"address_high_byte: {address_high_byte} (type: {type(address_high_byte)})"
+        )
+        TEMPORARY_AREAS = {
+            0x18: "ANALOG_SYNTH_AREA",
+            0x19: "DIGITAL_SYNTH_1_AREA",
+            0x1A: "DIGITAL_SYNTH_2_AREA",
+            0x1C: "DRUM_KIT_AREA",
+            0x16: "EFFECTS_AREA",
+            0x15: "ARPEGGIO_AREA",
+            0x14: "VOCAL_FX_AREA",
+        }
+        parsed_dict["TEMPORARY_AREA"] = TEMPORARY_AREAS.get(
+            address_high_byte + 6,
+            "Unknown",  # somehow the keys wind up being decimals, so need to be converted to hex
+        )
 
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
@@ -245,7 +286,7 @@ def parse_jdxi_tone(data):
 
     input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
     tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
-    parsed_dict["tone_name"] = tone_name.replace("\u0000", "")  # remove Null characters
+    parsed_dict["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
 
     # Extract parameters safely
     parsed_dict["LFO_RATE"] = safe_get(24)
