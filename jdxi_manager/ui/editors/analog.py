@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QScrollArea,
     QComboBox,
+    QPushButton,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
@@ -20,7 +21,11 @@ import qtawesome as qta
 from jdxi_manager.data.digital import DigitalCommonParameter
 from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.data.analog import AnalogParameter, AnalogCommonParameter
+from jdxi_manager.data.analog import (
+    AnalogParameter,
+    AnalogCommonParameter,
+    get_analog_parameter_by_address,
+)
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.conversions import (
     midi_cc_to_ms,
@@ -124,6 +129,11 @@ class AnalogSynthEditor(BaseEditor):
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
 
+        # Add the "Read Request" button
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+
         self.instrument_selection_label = QLabel("Select an Analog synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
@@ -172,6 +182,7 @@ class AnalogSynthEditor(BaseEditor):
         self.resonance.valueChanged.connect(
             lambda v: self._send_cc(AnalogToneCC.FILTER_RESO, v)
         )
+        self.midi_helper.parameter_received.connect(self._on_parameter_received)
         self.data_request()
 
     def _create_oscillator_section(self):
@@ -1141,3 +1152,29 @@ class AnalogSynthEditor(BaseEditor):
         image = QPixmap()
         image.loadFromData(image_data)
         return image
+
+    def _on_parameter_received(self, address, value):
+        """Handle parameter updates from MIDI messages."""
+        area_code = address[0]
+        logging.info(
+            f"In analog area_code: {area_code}: ANALOG_SYNTH_AREA: {ANALOG_SYNTH_AREA}"
+        )
+        if address[0] == ANALOG_SYNTH_AREA:
+            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
+            parameter_address = tuple(address[2:])  # (80, 0)
+
+            # Retrieve the corresponding DigitalParameter
+            param = get_analog_parameter_by_address(parameter_address)
+            partial_no = address[1]
+            if param:
+                logging.info(f"param: {param}")
+                logging.info(
+                    f"Received parameter update: Address={address}, Value={value}"
+                )
+
+                # Update the corresponding slider
+                if param in self.partial_editors[partial_no].controls:
+                    slider = self.partial_editors[partial_no].controls[param]
+                    slider.blockSignals(True)  # Prevent feedback loop
+                    slider.setValue(value)
+                    slider.blockSignals(False)
