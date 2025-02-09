@@ -251,33 +251,38 @@ def parse_jdxi_tone(data):
     parsed_dict["LFO_RATE"] = safe_get(24)
     parsed_dict["LFO_FILTER_DEPTH"] = safe_get(25)
     parsed_dict["LFO_SHAPE"] = safe_get(26)
-    # parsed_dict["UNKNOWN_1"] = safe_get(27)
-    # parsed_dict["UNKNOWN_2"] = safe_get(28)
-    # parsed_dict["UNKNOWN_3"] = safe_get(29)
-    # parsed_dict["UNKNOWN_4"] = safe_get(30)
-    # parsed_dict["UNKNOWN_5"] = safe_get(31)
-    # parsed_dict["UNKNOWN_6"] = safe_get(32)
-    parsed_dict["OSC_TYPE"] = safe_get(33)
-    parsed_dict["Unknown1"] = safe_get(34)
-    parsed_dict["OSC_PITCH"] = safe_get(35)
-    parsed_dict["OSC_DETUNE"] = safe_get(36)
+    """"
+    parsed_dict["UNKNOWN_1"] = safe_get(27)
+    parsed_dict["UNKNOWN_2"] = safe_get(28)
+    parsed_dict["UNKNOWN_3"] = safe_get(29)
+    parsed_dict["UNKNOWN_4"] = safe_get(30)
+    parsed_dict["UNKNOWN_5"] = safe_get(31)
+    parsed_dict["UNKNOWN_6"] = safe_get(32)
+    parsed_dict["UNKNOWN_7"] = safe_get(39)
+    """
+    # parsed_dict["OSC_TYPE"] = safe_get(33)
+    parsed_dict["OSC_WAVEFORM"] = safe_get(33)
+    # parsed_dict["Unknown1"] = safe_get(34)
+    # parsed_dict["OSC_PITCH"] = safe_get(35)
+    parsed_dict["OSC_PITCH_COARSE"] = safe_get(35)
+    # parsed_dict["OSC_DETUNE"] = safe_get(36)
+    parsed_dict["OSC_PITCH_FINE"] = safe_get(36)
     parsed_dict["OSC_PULSE_WIDTH"] = safe_get(37)
     parsed_dict["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(38)
-    # parsed_dict["UNKNOWN_5"] = safe_get(39)
     parsed_dict["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(40)
     parsed_dict["OSC_PITCH_ENV_DECAY"] = safe_get(41)
     parsed_dict["OSC_PITCH_ENV_DEPTH"] = safe_get(42)
     parsed_dict["SUB_OSCILLATOR_TYPE"] = safe_get(43)
     parsed_dict["FILTER_SWITCH"] = safe_get(44)
     parsed_dict["FILTER_CUTOFF"] = safe_get(45)
-    parsed_dict["FILTER_KEYFOLLOW"] = safe_get(46)
+    parsed_dict["FILTER_CUTOFF_KEYFOLLOW"] = safe_get(46)
     parsed_dict["FILTER_RESONANCE"] = safe_get(47)
     parsed_dict["FILTER_ENV_VELOCITY_SENS"] = safe_get(48)
     parsed_dict["FILTER_ENV_ATTACK_TIME"] = safe_get(49)
     parsed_dict["FILTER_ENV_DECAY_TIME"] = safe_get(50)
     parsed_dict["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(51)
     parsed_dict["FILTER_ENV_RELEASE_TIME"] = safe_get(52)
-    parsed_dict["FILTER_DEPTH"] = safe_get(53)
+    parsed_dict["FILTER_ENV_DEPTH"] = safe_get(53)
     parsed_dict["AMP_LEVEL"] = safe_get(54)
     parsed_dict["AMP_LEVEL_KEYFOLLOW"] = safe_get(55)
     parsed_dict["OSC_PITCH_ENV_DEPTH"] = safe_get(56)
@@ -515,7 +520,9 @@ class MIDIHelper(QObject):
     json_sysex = Signal(str)  # json string only
     parameter_changed = Signal(object, int)  # Emit parameter and value
     preset_changed = Signal(int, str, int)
+    dt1_received = Signal(list, int)  # address, value
     midi_note_received = Signal(str)
+    incoming_midi_message = Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -551,6 +558,9 @@ class MIDIHelper(QObject):
         return None
 
     def _handle_incoming_midi_message(self, message):
+        """Handle incoming MIDI messages"""
+        if not message.type == "clock":
+            self.incoming_midi_message.emit(message)
         preset_data = {"modified": 0}
         try:
             message_handlers = {
@@ -713,6 +723,7 @@ class MIDIHelper(QObject):
                 ),
                 channel=channel,
             )
+            # @@
             logging.info(f"Preset changed to: {self.preset_number}")
 
     @staticmethod
