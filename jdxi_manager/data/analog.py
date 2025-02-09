@@ -186,14 +186,14 @@ class AnalogParameter(Enum):
 
     # Oscillator Parameters
     OSC_WAVEFORM = (0x16, 0, 2)
-    OSC_PITCH_COARSE = (0x17, 40, 88)
-    OSC_PITCH_FINE = (0x18, 14, 114)
-    OSC_PULSE_WIDTH = (0x19, 0, 127)
-    OSC_PULSE_WIDTH_MOD_DEPTH = (0x1A, 0, 127)
-    OSC_PITCH_ENV_VELOCITY_SENS = (0x1B, 1, 127)
-    OSC_PITCH_ENV_ATTACK_TIME = (0x1C, 0, 127)
-    OSC_PITCH_ENV_DECAY = (0x1D, 0, 127)
-    OSC_PITCH_ENV_DEPTH = (0x1E, 1, 127)
+    OSC_PITCH = (0x03, 40, 88)
+    OSC_DETUNE = (0x04, 14, 114)
+    OSC_PULSE_WIDTH = (0x06, 0, 127)
+    OSC_PULSE_WIDTH_MOD_DEPTH = (0x05, 0, 127)
+    OSC_PITCH_ENV_VELOCITY_SENS = (0x0E, 1, 127)
+    OSC_PITCH_ENV_ATTACK_TIME = (0x07, 0, 127)
+    OSC_PITCH_ENV_DECAY = (0x08, 0, 127)
+    OSC_PITCH_ENV_DEPTH = (0x09, 1, 127)
     SUB_OSCILLATOR_TYPE = (0x1F, 0, 2)
 
     # Filter Parameters
@@ -253,6 +253,12 @@ class AnalogParameter(Enum):
 
         return value
 
+    @staticmethod
+    def get_by_name(param_name):
+        """Get the AnalogParameter by name."""
+        # Return the parameter member by name, or None if not found
+        return AnalogParameter.__members__.get(param_name, None)
+
     @property
     def display_name(self) -> str:
         """Get display name for the parameter"""
@@ -273,6 +279,22 @@ class AnalogParameter(Enum):
         if self.is_switch:
             return "ON" if value else "OFF"
         return str(value)
+
+    @staticmethod
+    def get_address(param_name):
+        """Get the address of a parameter by name."""
+        param = AnalogParameter.get_by_name(param_name)
+        if param:
+            return param.value[0]
+        return None
+
+    @staticmethod
+    def get_range(param_name):
+        """Get the value range (min, max) of a parameter by name."""
+        param = AnalogParameter.get_by_name(param_name)
+        if param:
+            return param.value[1], param.value[2]
+        return None, None
 
 
 @dataclass

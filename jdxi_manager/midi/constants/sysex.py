@@ -21,25 +21,48 @@ JD_XI_ID = [ROLAND_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
 # SysEx Commands
 DT1_COMMAND = 0x12  # Data Set 1
 RQ1_COMMAND = 0x11  # Data Request 1
+COMMAND_IDS = [DT1_COMMAND, RQ1_COMMAND]  # Roland Exclusive messages
 
 # Memory Areas
-PROGRAM_AREA = 0x18           # Temporary Program area
-DIGITAL_SYNTH_1_AREA = 0x19   # Digital synth 1 area
-DIGITAL_SYNTH_2_AREA = 0x1A   # Digital synth 2 area
-ANALOG_SYNTH_AREA = 0x1B      # Analog synth area
-DRUM_KIT_AREA = 0x1C         # Drum kit area
-EFFECTS_AREA = 0x16          # Effects area
-ARPEGGIO_AREA = 0x15         # Arpeggiator area
-VOCAL_FX_AREA = 0x14         # Vocal effects area
-SYSTEM_AREA = 0x01           # System settings area
+PROGRAM_AREA = 0x18  # Temporary Program area
+DIGITAL_SYNTH_1_AREA = 0x19  # Digital synth 1 area
+DIGITAL_SYNTH_2_AREA = 0x1A  # Digital synth 2 area
+ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
+DRUM_KIT_AREA = 0x1C  # Drum kit area
+EFFECTS_AREA = 0x16  # Effects area
+ARPEGGIO_AREA = 0x15  # Arpeggiator area
+VOCAL_FX_AREA = 0x14  # Vocal effects area
+SETUP_AREA = 0x01  # Settings area
+SYSTEM_AREA = 0x02  # System area
+TEMPORARY_AREAS = [
+    PROGRAM_AREA,
+    DIGITAL_SYNTH_1_AREA,
+    DIGITAL_SYNTH_2_AREA,
+    ANALOG_SYNTH_AREA,
+    DRUM_KIT_AREA,
+    EFFECTS_AREA,
+    ARPEGGIO_AREA,
+    VOCAL_FX_AREA,
+    SETUP_AREA,
+    SYSTEM_AREA,
+]
 
-# Part Numbers
-DIGITAL_PART_1 = 0x01       # Digital synth 1 part
-DIGITAL_PART_2 = 0x02       # Digital synth 2 part
-ANALOG_PART = 0x00          # Analog synth part
-DRUM_PART = 0x00           # Drum part
-VOCAL_PART = 0x00          # Vocal part
-SYSTEM_PART = 0x00         # System part
+
+# Part Numbers AKA "Temporary Tone"
+DIGITAL_PART_1 = 0x01  # Digital synth 1 part
+DIGITAL_PART_2 = 0x02  # Digital synth 2 part
+ANALOG_PART = 0x00  # Analog synth part
+DRUM_PART = 0x00  # Drum part
+VOCAL_PART = 0x00  # Vocal part
+SYSTEM_PART = 0x00  # System part
+TEMPORARY_TONES = [
+    DIGITAL_PART_1,
+    DIGITAL_PART_2,
+    ANALOG_PART,
+    DRUM_PART,
+    VOCAL_PART,
+    SYSTEM_PART,
+]
 
 # Parameter Groups
 PROGRAM_GROUP = 0x00
