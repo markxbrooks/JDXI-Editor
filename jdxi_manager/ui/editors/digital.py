@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QComboBox,
     QFormLayout,
+    QPushButton,
 )
 from PySide6.QtCore import Qt, Signal, QObject
 from PySide6.QtGui import QIcon, QPixmap
@@ -61,6 +62,8 @@ from jdxi_manager.midi.constants import (
     PART_1,
     PART_2,
     DIGITAL_SYNTH_1_AREA,
+    DIGITAL_SYNTH_2_AREA,
+    START_OF_SYSEX,
 )
 from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
 from jdxi_manager.ui.widgets.switch import Switch
@@ -1116,6 +1119,11 @@ class DigitalSynthEditor(BaseEditor):
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
 
+        # Add the "Read Request" button
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.send_read_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+
         self.instrument_selection_label = QLabel("Select a Digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
@@ -1125,6 +1133,7 @@ class DigitalSynthEditor(BaseEditor):
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_handler.current_preset_index
         )
+
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
@@ -1171,127 +1180,7 @@ class DigitalSynthEditor(BaseEditor):
 
         # Initialize with default states
         self.initialize_partial_states()
-        # Parameter request messages based on captured format
-        messages = [
-            # Common parameters (0x00)
-            [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x00,
-                0x0E,
-                0x11,
-                0x19,
-                0x01,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x40,
-                0x26,
-                0xF7,
-            ],
-            # OSC1 parameters (0x20)
-            [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x00,
-                0x0E,
-                0x11,
-                0x19,
-                0x01,
-                0x20,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x3D,
-                0x09,
-                0xF7,
-            ],
-            # OSC2 parameters (0x21)
-            [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x00,
-                0x0E,
-                0x11,
-                0x19,
-                0x01,
-                0x21,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x3D,
-                0x08,
-                0xF7,
-            ],
-            # OSC3 parameters (0x22)
-            [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x00,
-                0x0E,
-                0x11,
-                0x19,
-                0x01,
-                0x22,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x3D,
-                0x07,
-                0xF7,
-            ],
-            # Effects parameters (0x50)
-            [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x00,
-                0x0E,
-                0x11,
-                0x19,
-                0x01,
-                0x50,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x25,
-                0x71,
-                0xF7,
-            ],
-        ]
-
-        # Send each message with a small delay
-        for msg in messages:
-            self.midi_helper.send_message(msg)
-            time.sleep(0.02)  # Small delay between messages
-            logging.debug(
-                f"Sent parameter request: {' '.join([hex(x)[2:].upper().zfill(2) for x in msg])}"
-            )
-
-        # Register the callback for incoming MIDI messages
-        if self.midi_helper:
-            self.midi_helper.set_callback(self.handle_midi_message)
-
+        # self.send_read_request()
         self.data_request()
 
         # Register the callback for incoming MIDI messages
@@ -1546,6 +1435,129 @@ class DigitalSynthEditor(BaseEditor):
         # Show first tab
         self.partial_tab_widget.setCurrentIndex(0)
 
+    def send_read_request(self):
+        """Request status update from jdxi"""
+        # Parameter request messages based on captured format
+        messages = [
+            # Common parameters (0x00)
+            [
+                0xF0,  # START_OF_SYSEX
+                0x41,  # Roland Manufacturer ID
+                0x10,  # Device ID for JD-Xi
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x0E,  # Model ID (part of the JD-Xi identifier)
+                0x11,  # Command ID for Data Request 1 (RQ1)
+                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
+                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
+                0x00,  # Address LSB (specific parameter or section, eg Common parameters)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x40,  # Checksum (calculated for message integrity)
+                0x26,  # Checksum (calculated for message integrity)
+                0xF7,  # END_OF_SYSEX
+            ],
+            # OSC1 parameters (0x20)
+            [
+                0xF0,  # START_OF_SYSEX
+                0x41,  # Roland Manufacturer ID
+                0x10,  # Device ID for JD-Xi
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x0E,  # Model ID (part of the JD-Xi identifier)
+                0x11,  # Command ID for Data Request 1 (RQ1)
+                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
+                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
+                0x20,  # Address LSB (specific parameter or section for OSC1)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x3D,  # Checksum (calculated for message integrity)
+                0x09,  # Checksum (calculated for message integrity)
+                0xF7,  # END_OF_SYSEX
+            ],
+            # OSC2 parameters (0x21)
+            [
+                0xF0,  # START_OF_SYSEX
+                0x41,  # Roland Manufacturer ID
+                0x10,  # Device ID for JD-Xi
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x0E,  # Model ID (part of the JD-Xi identifier)
+                0x11,  # Command ID for Data Request 1 (RQ1)
+                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
+                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
+                0x21,  # Address LSB (specific parameter or section for OSC2)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x3D,  # Checksum (calculated for message integrity)
+                0x08,  # Checksum (calculated for message integrity)
+                0xF7,  # END_OF_SYSEX
+            ],
+            # OSC3 parameters (0x22)
+            [
+                0xF0,  # START_OF_SYSEX
+                0x41,  # Roland Manufacturer ID
+                0x10,  # Device ID for JD-Xi
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x0E,  # Model ID (part of the JD-Xi identifier)
+                0x11,  # Command ID for Data Request 1 (RQ1)
+                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
+                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
+                0x22,  # Address LSB (specific parameter or section for OSC3)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x3D,  # Checksum (calculated for message integrity)
+                0x07,  # Checksum (calculated for message integrity)
+                0xF7,  # END_OF_SYSEX
+            ],
+            # Effects parameters (0x50)
+            [
+                0xF0,  # START_OF_SYSEX
+                0x41,  # Roland Manufacturer ID
+                0x10,  # Device ID for JD-Xi
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x00,  # Model ID (part of the JD-Xi identifier)
+                0x0E,  # Model ID (part of the JD-Xi identifier)
+                0x11,  # Command ID for Data Request 1 (RQ1)
+                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
+                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
+                0x50,  # Address LSB (specific parameter or section for Effects)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x00,  # Data (placeholder for request)
+                0x25,  # Checksum (calculated for message integrity)
+                0x71,  # Checksum (calculated for message integrity)
+                0xF7,  # END_OF_SYSEX
+            ],
+        ]
+
+        # Send each message with a small delay
+        for msg in messages:
+            self.midi_helper.send_message(msg)
+            time.sleep(0.02)  # Small delay between messages
+            logging.debug(
+                f"Sent parameter request: {' '.join([hex(x)[2:].upper().zfill(2) for x in msg])}"
+            )
+
+        # Register the callback for incoming MIDI messages
+        if self.midi_helper:
+            self.midi_helper.set_callback(self.handle_midi_message)
+
     def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
@@ -1643,9 +1655,9 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        logging.info(f"In digital: area_code: {area_code}")
-        logging.info(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
-        if address[0] == DIGITAL_SYNTH_1_AREA:
+        # logging.info(f"In digital: area_code: {area_code}")
+        #  logging.info(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
+        if address[0] in [DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
 
@@ -1653,9 +1665,8 @@ class DigitalSynthEditor(BaseEditor):
             param = get_digital_parameter_by_address(parameter_address)
             partial_no = address[1]
             if param:
-                logging.info(f"param: {param}")
                 logging.info(
-                    f"Received parameter update: Address={address}, Value={value}"
+                    f"Received parameter update: param: {param} address={address}, Value={value}"
                 )
 
                 # Update the corresponding slider
@@ -1670,6 +1681,10 @@ class DigitalSynthEditor(BaseEditor):
                     self._update_waveform_buttons(partial_no, value)
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
+                    )
+                if param == DigitalParameter.FILTER_MODE:
+                    self.partial_editors[partial_no].filter_mode.valueChanged.connect(
+                        lambda value: self._on_filter_mode_changed(value)
                     )
 
     def _update_waveform_buttons(self, partial_number, value):

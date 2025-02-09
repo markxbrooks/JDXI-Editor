@@ -160,6 +160,16 @@ AN_CATEGORIES = {
 }
 
 
+def get_analog_parameter_by_address(address: Tuple[int, int]):
+    """Retrieve the DigitalParameter by its address."""
+    logging.info(f"address: {address}")
+    for param in AnalogParameter:
+        if param.address == address:
+            logging.info(f"get_analog_parameter_by_address found param: {param}")
+            return param
+    return None
+
+
 class AnalogParameter(Enum):
     """Analog synth parameters with group, address, and value range."""
 
