@@ -101,10 +101,7 @@ class AnalogSynthEditor(BaseEditor):
         container.setLayout(container_layout)
 
         # Additional styling specific to analog editor
-        self.setStyleSheet(
-            Style.ANALOG_EDITOR_STYLE
-            + "QSlider::groove:vertical { background: #222222; }"
-        )
+        self.setStyleSheet(Style.ANALOG_EDITOR_STYLE_V3)
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 
@@ -169,23 +166,32 @@ class AnalogSynthEditor(BaseEditor):
         main_layout.addWidget(scroll)
 
         # Connect oscillator controls
-        self.coarse.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.OSC_COARSE, v + 64)  # Center at 0
-        )
-        self.fine.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.OSC_FINE, v + 64)  # Center at 0
-        )
+        # self.coarse.valueChanged.connect(
+        #    lambda v: self._send_cc(AnalogToneCC.OSC_COARSE, v + 64)  # Center at 0
+        # )
+        # self.fine.valueChanged.connect(
+        #    lambda v: self._send_cc(AnalogToneCC.OSC_FINE, v + 64)  # Center at 0
+        # )
 
         # Connect filter controls
-        self.cutoff.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.FILTER_CUTOFF, v)
+        self.filter_cutoff.valueChanged.connect(
+            lambda v: self._send_cc(AnalogParameter.FILTER_CUTOFF.value[0], v)
         )
-        self.resonance.valueChanged.connect(
-            lambda v: self._send_cc(AnalogToneCC.FILTER_RESO, v)
+        self.filter_resonance.valueChanged.connect(
+            lambda v: self._send_cc(AnalogParameter.FILTER_RESONANCE.value[0], v)
         )
         self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        self.midi_helper.incoming_midi_message.connect(self._on_midi_message_received)
         self.midi_helper.json_sysex.connect(self.update_sliders_from_sysex)
         self.data_request()
+
+    def _on_midi_message_received(self, message):
+        """Handle incoming MIDI messages"""
+        if not message.type == "clock":
+            logging.info(f"MIDI message: {message}")
+            self.blockSignals(True)
+            self.data_request()
+            self.blockSignals(False)
 
     def _create_oscillator_section(self):
         group = QGroupBox("Oscillator")
@@ -239,16 +245,15 @@ class AnalogSynthEditor(BaseEditor):
         tuning_layout = QVBoxLayout()
         tuning_group.setLayout(tuning_layout)
 
-        self.coarse = Slider("Coarse", -24, 24)  # Will be mapped to 40-88
-        self.coarse.valueChanged.connect(
-            self._on_coarse_changed
-        )  # Changed to new method
+        self.osc_pitch_coarse = self._create_parameter_slider(
+            AnalogParameter.OSC_PITCH_COARSE, "Coarse"
+        )
+        self.osc_pitch_fine = self._create_parameter_slider(
+            AnalogParameter.OSC_PITCH_FINE, "Fine"
+        )
 
-        self.fine = Slider("Fine", -50, 50)  # Will be mapped to 14-114
-        self.fine.valueChanged.connect(self._on_fine_changed)  # Changed to new method
-
-        tuning_layout.addWidget(self.coarse)
-        tuning_layout.addWidget(self.fine)
+        tuning_layout.addWidget(self.osc_pitch_coarse)
+        tuning_layout.addWidget(self.osc_pitch_fine)
         layout.addWidget(tuning_group)
 
         # Pulse Width controls
@@ -256,17 +261,17 @@ class AnalogSynthEditor(BaseEditor):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        self.pw = self._create_parameter_slider(
+        self.osc_pulse_width = self._create_parameter_slider(
             AnalogParameter.OSC_PULSE_WIDTH,
             "Width",
         )
-        self.pw_mod = self._create_parameter_slider(
+        self.osc_pulse_width_mod_depth = self._create_parameter_slider(
             AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH,
             "Mod Depth",
         )
 
-        pw_layout.addWidget(self.pw)
-        pw_layout.addWidget(self.pw_mod)
+        pw_layout.addWidget(self.osc_pulse_width)
+        pw_layout.addWidget(self.osc_pulse_width_mod_depth)
         layout.addWidget(pw_group)
 
         # Pitch Envelope
@@ -403,14 +408,14 @@ class AnalogSynthEditor(BaseEditor):
     def _update_pw_controls_state(self, waveform: Waveform):
         """Enable/disable PW controls based on waveform"""
         pw_enabled = waveform == Waveform.PULSE
-        self.pw.setEnabled(pw_enabled)
-        self.pw_mod.setEnabled(pw_enabled)
+        self.osc_pulse_width.setEnabled(pw_enabled)
+        self.osc_pulse_width_mod_depth.setEnabled(pw_enabled)
         # Update the visual state
-        self.pw.setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #222222; }"
+        self.osc_pulse_width.setStyleSheet(
+            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
-        self.pw_mod.setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #222222; }"
+        self.osc_pulse_width_mod_depth.setStyleSheet(
+            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
 
     def send_midi_parameter(self, param, value) -> bool:
@@ -537,12 +542,30 @@ class AnalogSynthEditor(BaseEditor):
         layout.addLayout(icon_hlayout)
 
         # Filter controls
-        self.cutoff = Slider("Cutoff", 0, 127)
-        self.resonance = Slider("Resonance", 0, 127)
-        self.cutoff.valueChanged.connect(self._on_cutoff_changed)
-        self.resonance.valueChanged.connect(self._on_resonance_changed)
-        layout.addWidget(self.cutoff)
-        layout.addWidget(self.resonance)
+        self.filter_switch = Switch("Filter", ["BYPASS", "LPF"])
+        self.filter_switch.valueChanged.connect(self._on_filter_switch_changed)
+        layout.addWidget(self.filter_switch)
+        self.filter_cutoff = self._create_parameter_slider(
+            AnalogParameter.FILTER_CUTOFF, "Cutoff"
+        )
+        self.filter_resonance = self._create_parameter_slider(
+            AnalogParameter.FILTER_RESONANCE, "Resonance"
+        )
+        self.filter_cutoff_keyfollow = self._create_parameter_slider(
+            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
+        )
+        self.filter_env_depth = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_DEPTH, "Depth"
+        )
+
+        self.filter_env_velocity_sens = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_VELOCITY_SENS, "Env. Velocity Sens."
+        )
+        layout.addWidget(self.filter_cutoff)
+        layout.addWidget(self.filter_resonance)
+        layout.addWidget(self.filter_cutoff_keyfollow)
+        layout.addWidget(self.filter_env_depth)
+        layout.addWidget(self.filter_env_velocity_sens)
 
         # Add spacing
         layout.addSpacing(10)
@@ -627,6 +650,17 @@ class AnalogSynthEditor(BaseEditor):
 
         return group
 
+    def _on_filter_switch_changed(self, value):
+        """Handle filter switch change"""
+        if self.midi_helper:
+            self.midi_helper.send_parameter(
+                area=ANALOG_SYNTH_AREA,
+                part=ANALOG_PART,
+                group=ANALOG_OSC_GROUP,
+                param=AnalogParameter.FILTER_SWITCH.value[0],
+                value=value,
+            )
+
     def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
         spinbox = control_map[param]
@@ -669,9 +703,14 @@ class AnalogSynthEditor(BaseEditor):
         layout.addLayout(icons_hlayout)
 
         # Level control
-        self.level = Slider("Level", 0, 127)
-        self.level.valueChanged.connect(self._on_level_changed)
-        layout.addWidget(self.level)
+        self.amp_level = self._create_parameter_slider(
+            AnalogParameter.AMP_LEVEL, "Level"
+        )
+        self.amp_level_keyfollow = self._create_parameter_slider(
+            AnalogParameter.AMP_LEVEL_KEYFOLLOW, "Keyfollow"
+        )
+        layout.addWidget(self.amp_level)
+        layout.addWidget(self.amp_level_keyfollow)
 
         # Add spacing
         layout.addSpacing(10)
@@ -858,20 +897,15 @@ class AnalogSynthEditor(BaseEditor):
         self.lfo_pitch = self._create_parameter_slider(
             AnalogParameter.LFO_PITCH_DEPTH, "Pitch Depth"
         )
-        # self.lfo_pitch = Slider("Pitch Depth", -63, 63)
-        # self.lfo_pitch.valueChanged.connect(self._on_lfo_pitch_changed)
 
         self.lfo_filter = self._create_parameter_slider(
             AnalogParameter.LFO_FILTER_DEPTH,
             "Filter Depth",
         )
-        # self.lfo_filter = Slider("Filter Depth", -63, 63)
-        # self.lfo_filter.valueChanged.connect(self._on_lfo_filter_changed)
 
         self.lfo_amp = self._create_parameter_slider(
             AnalogParameter.LFO_AMP_DEPTH, "Amp Depth"
         )
-        # self.lfo_amp.valueChanged.connect(self._on_lfo_amp_changed)
 
         # Key Trigger switch
         self.key_trig = Switch("Key Trigger", ["OFF", "ON"])
@@ -889,13 +923,13 @@ class AnalogSynthEditor(BaseEditor):
         return group
 
     def _on_waveform_selected(self, waveform: Waveform):
-        """Handle waveform button selection"""
+        """Handle waveform button selection KEEP!"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_WAVE,
+                param=AnalogParameter.OSC_WAVEFORM.value[0],
                 value=waveform.midi_value,
             )
             self._update_pw_controls_state(waveform)
@@ -916,7 +950,7 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.SUB_TYPE,
+                param=AnalogParameter.SUB_OSCILLATOR_TYPE.value[0],
                 value=sub_type.midi_value,
             )
 
@@ -929,150 +963,43 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_COARSE,
+                param=AnalogParameter.OSC_PITCH_COARSE.value[0],
                 value=midi_value,
-            )
-
-    def _on_fine_changed(self, value: int):
-        """Handle fine tune change"""
-        if self.midi_helper:
-            # Convert -50 to +50 range to MIDI value
-            midi_value = value + 64
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_FINE,
-                value=midi_value,
-            )
-
-    def _on_pitch_env_velo_changed(self, value: int):
-        """Handle pitch envelope velocity change"""
-        if self.midi_helper:
-            # Convert -63 to +63 range to 1-127
-            midi_value = value + 64 if value >= 0 else abs(value)
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_PENV_VELO,
-                value=midi_value,
-            )
-
-    def _on_pitch_env_attack_changed(self, value: int):
-        """Handle pitch envelope attack change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_PENV_A,
-                value=value,
-            )
-
-    def _on_pitch_env_decay_changed(self, value: int):
-        """Handle pitch envelope decay change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_PENV_D,
-                value=value,
-            )
-
-    def _on_pitch_env_depth_changed(self, value: int):
-        """Handle pitch envelope depth change"""
-        if self.midi_helper:
-            # Convert -63 to +63 range to 1-127
-            midi_value = value + 64 if value >= 0 else abs(value)
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.OSC_PENV_DEPTH,
-                value=midi_value,
-            )
-
-    def _on_cutoff_changed(self, value: int):
-        """Handle cutoff change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.FILTER_CUTOFF,
-                value=value,
-            )
-
-    def _on_resonance_changed(self, value: int):
-        """Handle resonance change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.FILTER_RESO,
-                value=value,
-            )
-
-    def _on_level_changed(self, value: int):
-        """Handle level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.AMP_LEVEL.value[0],
-                value=value,
             )
 
     def _on_lfo_shape_changed(self, value: int):
-        """Handle LFO shape change"""
+        """
+        Handle LFO shape change
+        KEEP!
+        """
         if self.midi_helper:
             self.midi_helper.send_parameter(
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_SHAPE,
-                value=value,
-            )
-
-    def _on_lfo_rate_changed(self, value: int):
-        """Handle LFO rate change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_RATE,
-                value=value,
-            )
-
-    def _on_lfo_fade_changed(self, value: int):
-        """Handle LFO fade time change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_FADE,
+                param=AnalogParameter.LFO_SHAPE.value[0],
                 value=value,
             )
 
     def _on_lfo_sync_changed(self, value: int):
-        """Handle LFO sync change"""
+        """
+        Handle LFO sync change
+        KEEP
+        """
         if self.midi_helper:
             self.midi_helper.send_parameter(
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_SYNC,
+                param=AnalogParameter.LFO_SYNC.value[0],
                 value=value,
             )
 
     def _on_lfo_sync_note_changed(self, value: int):
-        """Handle LFO sync note change"""
+        """
+        Handle LFO sync note change
+        KEEP
+        """
         if self.midi_helper:
             self.midi_helper.send_parameter(
                 area=ANALOG_SYNTH_AREA,
@@ -1105,19 +1032,6 @@ class AnalogSynthEditor(BaseEditor):
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogToneCC.LFO_FILTER,
-                value=midi_value,
-            )
-
-    def _on_lfo_amp_changed(self, value: int):
-        """Handle LFO amp depth change"""
-        if self.midi_helper:
-            # Convert -63 to +63 range to 1-127
-            midi_value = value + 64 if value >= 0 else abs(value)
-            self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_AMP,
                 value=midi_value,
             )
 
@@ -1186,13 +1100,25 @@ class AnalogSynthEditor(BaseEditor):
         logging.info("Updating UI components from SysEx data")
         logging.info(json_sysex_data)
         sysex_data = json.loads(json_sysex_data)
+        keys_to_remove = {"header", "address", "Tone Type", "tone_name"}
+
+        for key in keys_to_remove:
+            sysex_data.pop(key, None)
 
         # Mapping for LFO Shape values to combo box indices
         lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
 
         # Mapping for Sub Oscillator Type values to switch indices
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}  # Ensure these are integers
+
+        # Mapping for OSC Waveform values to button indices
+        osc_waveform_map = {0: Waveform.SAW, 1: Waveform.TRIANGLE, 2: Waveform.PULSE}
+
+        # Mapping for Filter Switch values to switch indices
+        filter_switch_map = {0: 0, 1: 1}  # Assuming 0 is BYPASS, 1 is LPF
+
         failures = []
+        successes = []
         for param_name, param_value in sysex_data.items():
             # Update sliders
             param = AnalogParameter.get_by_name(param_name)
@@ -1202,6 +1128,7 @@ class AnalogSynthEditor(BaseEditor):
                 logging.info(f"Success: \tupdating \t{param} \twith \t{param_value}")
                 slider.setValue(param_value)
                 slider.blockSignals(False)
+                successes.append(param_name)
             else:
                 # Update LFO Shape combo box
                 if param_name == "LFO_SHAPE":
@@ -1220,6 +1147,27 @@ class AnalogSynthEditor(BaseEditor):
                             self.sub_type.blockSignals(True)
                             self.sub_type.setValue(index)
                             self.sub_type.blockSignals(False)
+
+                # Update OSC Waveform buttons
+                elif param_name == "OSC_WAVEFORM":
+                    if param_value in osc_waveform_map:
+                        waveform = osc_waveform_map[param_value]
+                        if waveform in self.wave_buttons:
+                            button = self.wave_buttons[waveform]
+                            button.setChecked(True)
+                            self._on_waveform_selected(waveform)
+
+                # Update Filter Switch
+                elif param_name == "FILTER_SWITCH":
+                    if param_value in filter_switch_map:
+                        index = filter_switch_map[param_value]
+                        self.filter_switch.blockSignals(True)
+                        self.filter_switch.setValue(index)
+                        self.filter_switch.blockSignals(False)
+
                 else:
                     failures.append(param_name)
-        logging.info(f"failures: {failures}")
+        logging.info(f"successes: \t{successes}")
+        logging.info(f"failures: \t{failures}")
+        logging.info(f"percentage: \t{len(successes) / len(sysex_data) * 100:.1f}%")
+        logging.info("--------------------------------")

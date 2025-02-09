@@ -186,19 +186,22 @@ class AnalogParameter(Enum):
 
     # Oscillator Parameters
     OSC_WAVEFORM = (0x16, 0, 2)
-    OSC_PITCH = (0x03, 40, 88)
-    OSC_DETUNE = (0x04, 14, 114)
-    OSC_PULSE_WIDTH = (0x06, 0, 127)
-    OSC_PULSE_WIDTH_MOD_DEPTH = (0x05, 0, 127)
-    OSC_PITCH_ENV_VELOCITY_SENS = (0x0E, 1, 127)
-    OSC_PITCH_ENV_ATTACK_TIME = (0x07, 0, 127)
-    OSC_PITCH_ENV_DECAY = (0x08, 0, 127)
-    OSC_PITCH_ENV_DEPTH = (0x09, 1, 127)
+    OSC_PITCH_COARSE = (0x17, 40, 88)  # -24 - +24
+    OSC_PITCH_FINE = (0x18, 14, 114)  # -50 - +50
+
+    # OSC_PITCH = (0x03, 40, 88)
+    # OSC_DETUNE = (0x04, 14, 114)
+    OSC_PULSE_WIDTH = (0x19, 0, 127)
+    OSC_PULSE_WIDTH_MOD_DEPTH = (0x1A, 0, 127)
+    OSC_PITCH_ENV_VELOCITY_SENS = (0x1B, 1, 127)  # -63 - +63
+    OSC_PITCH_ENV_ATTACK_TIME = (0x1C, 0, 127)
+    OSC_PITCH_ENV_DECAY = (0x1D, 0, 127)
+    OSC_PITCH_ENV_DEPTH = (0x1E, 1, 127)  # -63 - +63
     SUB_OSCILLATOR_TYPE = (0x1F, 0, 2)
 
     # Filter Parameters
-    FILTER_SWITCH = (0x20, 0, 1)
-    FILTER_CUTOFF = (0x21, 0, 127)
+    FILTER_SWITCH = (0x20, 0, 1)  # BYPASS, LPF
+    FILTER_CUTOFF = (0x21, 0, 127)  # (54 - 74)
     FILTER_CUTOFF_KEYFOLLOW = (0x22, 54, 74)
     FILTER_RESONANCE = (0x23, 0, 127)
     FILTER_ENV_VELOCITY_SENS = (0x24, 1, 127)
@@ -210,7 +213,7 @@ class AnalogParameter(Enum):
 
     # Amplifier Parameters
     AMP_LEVEL = (0x2A, 0, 127)
-    AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74)
+    AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74)  # -100 - +100
     AMP_LEVEL_VELOCITY_SENS = (0x2C, 1, 127)
     AMP_ENV_ATTACK_TIME = (0x2D, 0, 127)
     AMP_ENV_DECAY_TIME = (0x2E, 0, 127)
@@ -766,13 +769,13 @@ class AnalogCommonParameter(Enum):
     FILTER_ENV_DEPTH = (0x29, 1, 127)  # -63 to +63
 
     # Amplifier Parameters
-    AMP_LEVEL = (0x2A, 0, 127)
-    AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74)  # -100 to +100
-    AMP_LEVEL_VELOCITY_SENS = (0x2C, 1, 127)  # -63 to +63
-    AMP_ENV_ATTACK_TIME = (0x2D, 0, 127)
-    AMP_ENV_DECAY_TIME = (0x2E, 0, 127)
-    AMP_ENV_SUSTAIN_LEVEL = (0x2F, 0, 127)
-    AMP_ENV_RELEASE_TIME = (0x30, 0, 127)
+    AMP_LEVEL = (0x15, 0, 127)
+    AMP_LEVEL_VELOCITY_SENS = (0x16, 1, 127)  # -63 to +63
+    AMP_ENV_ATTACK_TIME = (0x17, 0, 127)
+    AMP_ENV_DECAY_TIME = (0x18, 0, 127)
+    AMP_ENV_SUSTAIN_LEVEL = (0x19, 0, 127)
+    AMP_ENV_RELEASE_TIME = (0x1A, 0, 127)
+    AMP_PAN = (0x1B, 1, 127)  # L64 - 63R
 
     # Portamento and Other Parameters
     PORTAMENTO_SWITCH = (0x31, 0, 1)  # OFF, ON
