@@ -2,6 +2,7 @@
 Digital Editor
 """
 
+import json
 import os
 import re
 import logging
@@ -44,6 +45,7 @@ from jdxi_manager.midi.constants import (
     PART_2,
     DIGITAL_SYNTH_1_AREA,
     DIGITAL_SYNTH_2_AREA,
+    Waveform,
 )
 from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
 from jdxi_manager.ui.widgets.switch import Switch
@@ -177,7 +179,7 @@ class DigitalSynthEditor(BaseEditor):
 
         # Add the "Read Request" button
         self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.send_read_request)
+        self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
 
         self.instrument_selection_label = QLabel("Select a Digital synth:")
@@ -236,7 +238,6 @@ class DigitalSynthEditor(BaseEditor):
 
         # Initialize with default states
         self.initialize_partial_states()
-        # self.send_read_request()
         self.data_request()
 
         # Register the callback for incoming MIDI messages
@@ -250,8 +251,8 @@ class DigitalSynthEditor(BaseEditor):
         else:
             logging.error("MIDI helper not initialized")
 
-        # self.midi_helper.parameter_changed.connect(self._on_parameter_changed)
-        self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        self.midi_helper.json_sysex.connect(self._update_sliders_from_sysex)
+        # self.midi_helper.parameter_received.connect(self._on_parameter_received)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -439,8 +440,6 @@ class DigitalSynthEditor(BaseEditor):
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
-        # if self.preset_handler:
-        #    self.preset_handler.set_preset(preset_index)
         if not self.preset_loader:
             self.preset_loader = PresetLoader(self.midi_helper)
         if self.preset_loader:
@@ -490,129 +489,6 @@ class DigitalSynthEditor(BaseEditor):
 
         # Show first tab
         self.partial_tab_widget.setCurrentIndex(0)
-
-    def send_read_request(self):
-        """Request status update from jdxi"""
-        # Parameter request messages based on captured format
-        messages = [
-            # Common parameters (0x00)
-            [
-                0xF0,  # START_OF_SYSEX
-                0x41,  # Roland Manufacturer ID
-                0x10,  # Device ID for JD-Xi
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x0E,  # Model ID (part of the JD-Xi identifier)
-                0x11,  # Command ID for Data Request 1 (RQ1)
-                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
-                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
-                0x00,  # Address LSB (specific parameter or section, eg Common parameters)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x40,  # Checksum (calculated for message integrity)
-                0x26,  # Checksum (calculated for message integrity)
-                0xF7,  # END_OF_SYSEX
-            ],
-            # OSC1 parameters (0x20)
-            [
-                0xF0,  # START_OF_SYSEX
-                0x41,  # Roland Manufacturer ID
-                0x10,  # Device ID for JD-Xi
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x0E,  # Model ID (part of the JD-Xi identifier)
-                0x11,  # Command ID for Data Request 1 (RQ1)
-                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
-                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
-                0x20,  # Address LSB (specific parameter or section for OSC1)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x3D,  # Checksum (calculated for message integrity)
-                0x09,  # Checksum (calculated for message integrity)
-                0xF7,  # END_OF_SYSEX
-            ],
-            # OSC2 parameters (0x21)
-            [
-                0xF0,  # START_OF_SYSEX
-                0x41,  # Roland Manufacturer ID
-                0x10,  # Device ID for JD-Xi
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x0E,  # Model ID (part of the JD-Xi identifier)
-                0x11,  # Command ID for Data Request 1 (RQ1)
-                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
-                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
-                0x21,  # Address LSB (specific parameter or section for OSC2)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x3D,  # Checksum (calculated for message integrity)
-                0x08,  # Checksum (calculated for message integrity)
-                0xF7,  # END_OF_SYSEX
-            ],
-            # OSC3 parameters (0x22)
-            [
-                0xF0,  # START_OF_SYSEX
-                0x41,  # Roland Manufacturer ID
-                0x10,  # Device ID for JD-Xi
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x0E,  # Model ID (part of the JD-Xi identifier)
-                0x11,  # Command ID for Data Request 1 (RQ1)
-                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
-                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
-                0x22,  # Address LSB (specific parameter or section for OSC3)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x3D,  # Checksum (calculated for message integrity)
-                0x07,  # Checksum (calculated for message integrity)
-                0xF7,  # END_OF_SYSEX
-            ],
-            # Effects parameters (0x50)
-            [
-                0xF0,  # START_OF_SYSEX
-                0x41,  # Roland Manufacturer ID
-                0x10,  # Device ID for JD-Xi
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x00,  # Model ID (part of the JD-Xi identifier)
-                0x0E,  # Model ID (part of the JD-Xi identifier)
-                0x11,  # Command ID for Data Request 1 (RQ1)
-                0x19,  # Address MSB (indicating the area, e.g., Temporary Tone)
-                0x01,  # Address (indicating the specific part, e.g., Digital Synth Part 1)
-                0x50,  # Address LSB (specific parameter or section for Effects)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x00,  # Data (placeholder for request)
-                0x25,  # Checksum (calculated for message integrity)
-                0x71,  # Checksum (calculated for message integrity)
-                0xF7,  # END_OF_SYSEX
-            ],
-        ]
-
-        # Send each message with a small delay
-        for msg in messages:
-            self.midi_helper.send_message(msg)
-            time.sleep(0.02)  # Small delay between messages
-            logging.debug(
-                f"Sent parameter request: {' '.join([hex(x)[2:].upper().zfill(2) for x in msg])}"
-            )
-
-        # Register the callback for incoming MIDI messages
-        if self.midi_helper:
-            self.midi_helper.set_callback(self.handle_midi_message)
 
     def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""
@@ -675,32 +551,6 @@ class DigitalSynthEditor(BaseEditor):
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
 
-    def data_request(self):
-        """Send data request SysEx messages to the JD-Xi"""
-        # Define SysEx messages as byte arrays
-        wave_type_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7"
-        )
-        oscillator_1_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7"
-        )
-        oscillator_2_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7"
-        )
-        oscillator_3_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7"
-        )
-        effects_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7"
-        )
-
-        # Send each SysEx message
-        self.send_message(wave_type_request)
-        self.send_message(oscillator_1_request)
-        self.send_message(oscillator_2_request)
-        self.send_message(oscillator_3_request)
-        self.send_message(effects_request)
-
     def send_message(self, message):
         """Send a SysEx message using the MIDI helper"""
         if self.midi_helper:
@@ -711,8 +561,6 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        # logging.info(f"In digital: area_code: {area_code}")
-        #  logging.info(f"In digital: DIGITAL_SYNTH_1_AREA: {DIGITAL_SYNTH_1_AREA}")
         if address[0] in [DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
@@ -742,6 +590,89 @@ class DigitalSynthEditor(BaseEditor):
                     self.partial_editors[partial_no].filter_mode.valueChanged.connect(
                         lambda value: self._on_filter_mode_changed(value)
                     )
+
+    def _update_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+
+        try:
+            sysex_data = json.loads(json_sysex_data)
+        except json.JSONDecodeError as e:
+            logging.error(f"Invalid JSON format: {e}")
+            return
+
+        area = sysex_data.get("TEMPORARY_AREA", None)
+        logging.info(f"In analog: TEMPORARY_AREA: {area}")
+
+        if area not in [DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]:
+            logging.warning(
+                "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update."
+            )
+            return
+
+        # Remove unnecessary keys
+        for key in {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}:
+            sysex_data.pop(key, None)
+
+        # Define mapping dictionaries
+        lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
+        sub_osc_type_map = {0: 0, 1: 1, 2: 2}
+        osc_waveform_map = {0: Waveform.SAW, 1: Waveform.TRIANGLE, 2: Waveform.PULSE}
+        filter_switch_map = {0: 0, 1: 1}
+
+        failures, successes = [], []
+
+        for param_name, param_value in sysex_data.items():
+            param = DigitalParameter.get_by_name(
+                param_name
+            )  # @@ FIXME: implement get_by_name
+
+            if param and param in self.controls:
+                slider = self.controls[param]
+                slider.blockSignals(True)
+                logging.info(f"Updating: {param:50} {param_value}")
+                slider.setValue(param_value)
+                slider.blockSignals(False)
+                successes.append(param_name)
+
+            elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
+                index = self.lfo_shape.findText(lfo_shape_map[param_value])
+                if index != -1:
+                    self.lfo_shape.blockSignals(True)
+                    self.lfo_shape.setCurrentIndex(index)
+                    self.lfo_shape.blockSignals(False)
+
+            elif (
+                param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
+            ):
+                index = sub_osc_type_map[param_value]
+                if isinstance(index, int):
+                    self.sub_type.blockSignals(True)
+                    self.sub_type.setValue(index)
+                    self.sub_type.blockSignals(False)
+
+            elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
+                waveform = osc_waveform_map[param_value]
+                if waveform in self.wave_buttons:
+                    button = self.wave_buttons[waveform]
+                    button.setChecked(True)
+                    self._on_waveform_selected(waveform)
+
+            elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
+                index = filter_switch_map[param_value]
+                self.filter_switch.blockSignals(True)
+                self.filter_switch.setValue(index)
+                self.filter_switch.blockSignals(False)
+
+            else:
+                failures.append(param_name)
+
+        # Logging success rate
+        success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+        logging.info(f"Successes: {successes}")
+        logging.info(f"Failures: {failures}")
+        logging.info(f"Success Rate: {success_rate:.1f}%")
+        logging.info("--------------------------------")
 
     def _update_waveform_buttons(self, partial_number, value):
         """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""

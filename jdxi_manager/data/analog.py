@@ -5,6 +5,7 @@ from enum import Enum, auto
 from typing import Dict, List, ClassVar, Tuple
 import logging
 
+from jdxi_manager.data.base import BaseParameter
 from jdxi_manager.midi.messages import AnalogToneMessage
 from jdxi_manager.midi.constants import AnalogToneCC, ANALOG_SYNTH_AREA, ANALOG_PART
 

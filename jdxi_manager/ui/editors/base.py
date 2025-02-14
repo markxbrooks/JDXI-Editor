@@ -185,10 +185,10 @@ class BaseEditor(QWidget):
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
-        for midi_data_request in self.midi_data_requests:
-            midi_data_request = bytes.fromhex(midi_data_request)
+        for wave_type_request in self.midi_data_requests:
+            wave_type_request = bytes.fromhex(wave_type_request)
             # Send each SysEx message
-            self.send_message(midi_data_request)
+            self.send_message(wave_type_request)
 
     def send_message(self, message):
         """Send a SysEx message using the MIDI helper"""

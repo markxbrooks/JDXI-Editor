@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum, auto, IntEnum
 from typing import Dict, List, Tuple, Optional
 import logging
+
+from jdxi_manager.data.base import BaseParameter
 from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
     PART_1,

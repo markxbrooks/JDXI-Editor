@@ -227,69 +227,86 @@ def parse_sysex(sysex_bytes):
     }
 
 
-def json_parse_jdxi_tone(data):
-    """
-    Parses JD-Xi tone data from SysEx messages.
-    Supports Digital1, Digital2, Analog, and Drums.
-
-    Args:
-        data (bytes): SysEx message containing tone data.
-
-    Returns:
-        dict: Parsed tone parameters.
-    """
+def parse_digital_parameters(data: list) -> dict:
+    """Parse parameters from the given data list."""
     parsed_dict = {}
-
-    # Extract header and address safely
-    parsed_dict["JD_XI_ID"] = data[:7].hex() if len(data) >= 7 else "N/A"
-    parsed_dict["ADDRESS"] = data[7:11].hex() if len(data) >= 11 else "N/A"
-
-    # Identify tone type based on SysEx address
-    if len(data) > 7:
-        address_high_byte = data[7]  # First byte of the address field
-        TEMPORARY_AREAS = {
-            0x18: "ANALOG_SYNTH_AREA",
-            0x19: "DIGITAL_SYNTH_1_AREA",
-            0x1A: "DIGITAL_SYNTH_2_AREA",
-            0x1C: "DRUM_KIT_AREA",
-        }
-        logging.info(f"address_high_byte: {address_high_byte}")
-        parsed_dict["TEMPORARY_AREA"] = TEMPORARY_AREAS.get(
-            address_high_byte + 6, "Unknown"
-        )
-    else:
-        parsed_dict["TEMPORARY_AREA"] = "Unknown"
 
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
         return data[index] if index < len(data) else default
 
-    # Extract tone name safely (ensuring valid bounds)
-    name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
+    # Extract parameters safely
+    parsed_dict["WAVE_TYPE"] = safe_get(1)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(2)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(3)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(4)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(5)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(6)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(7)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(8)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(9)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(10)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(11)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(12)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(13)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(14)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(15)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(16)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(17)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(18)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(19)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(20)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(21)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(22)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(23)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(24)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(25)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(26)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(27)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(28)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(29)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(30)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(31)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(32)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(33)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(34)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(35)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(36)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(37)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(38)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(39)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(40)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(41)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(42)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(43)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(44)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(45)
+    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(46)
+    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(47)
+    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(48)
+    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(49)
 
-    input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
-    tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
-    parsed_dict["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
+    return parsed_dict
+
+
+def parse_analog_parameters(data: list) -> dict:
+    """Parse parameters from the given data list."""
+    parsed_dict = {}
+
+    # Function to safely retrieve values from `data`
+    def safe_get(index, default=0):
+        return data[index] if index < len(data) else default
 
     # Extract parameters safely
-    parsed_dict["LFO_RATE"] = safe_get(24)
-    parsed_dict["LFO_FILTER_DEPTH"] = safe_get(25)
-    parsed_dict["LFO_SHAPE"] = safe_get(26)
-    """"
-    parsed_dict["UNKNOWN_1"] = safe_get(27)
-    parsed_dict["UNKNOWN_2"] = safe_get(28)
-    parsed_dict["UNKNOWN_3"] = safe_get(29)
-    parsed_dict["UNKNOWN_4"] = safe_get(30)
-    parsed_dict["UNKNOWN_5"] = safe_get(31)
-    parsed_dict["UNKNOWN_6"] = safe_get(32)
-    parsed_dict["UNKNOWN_7"] = safe_get(39)
-    """
-    # parsed_dict["OSC_TYPE"] = safe_get(33)
+    # parsed_dict["AMP_ENV_ATTACK_TIME"] = safe_get(21)
+    # parsed_dict["AMP_ENV_DECAY_TIME"] = safe_get(22)
+    # parsed_dict["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(23)
+    # parsed_dict["AMP_ENV_RELEASE_TIME"] = safe_get(24)
+    # parsed_dict["LFO_FILTER_DEPTH"] = safe_get(25)
+    parsed_dict["LFO_RATE"] = safe_get(25)
+    # parsed_dict["UNK"] = safe_get(26)
     parsed_dict["OSC_WAVEFORM"] = safe_get(33)
-    # parsed_dict["Unknown1"] = safe_get(34)
-    # parsed_dict["OSC_PITCH"] = safe_get(35)
     parsed_dict["OSC_PITCH_COARSE"] = safe_get(35)
-    # parsed_dict["OSC_DETUNE"] = safe_get(36)
     parsed_dict["OSC_PITCH_FINE"] = safe_get(36)
     parsed_dict["OSC_PULSE_WIDTH"] = safe_get(37)
     parsed_dict["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(38)
@@ -314,13 +331,74 @@ def json_parse_jdxi_tone(data):
     parsed_dict["AMP_ENV_DECAY_TIME"] = safe_get(58)
     parsed_dict["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(59)
     parsed_dict["AMP_ENV_RELEASE_TIME"] = safe_get(60)
-    # parsed_dict["UNKNOWN_7"] = safe_get(61)
-    # parsed_dict["UNKNOWN_8"] = safe_get(62)
-    # parsed_dict["UNKNOWN_9"] = safe_get(63)
-    # parsed_dict["UNKNOWN_10"] = safe_get(64)
-    # parsed_dict["UNKNOWN_11"] = safe_get(65)
-    # parsed_dict["UNKNOWN_12"] = safe_get(66)
-    # parsed_dict["UNKNOWN_13"] = safe_get(67)
+
+    # Unknown parameters
+    # parsed_dict["UNKNOWN_1"] = safe_get(27)
+    # parsed_dict["UNKNOWN_2"] = safe_get(28)
+    # parsed_dict["UNKNOWN_3"] = safe_get(29)
+    # parsed_dict["UNKNOWN_4"] = safe_get(30)
+    # parsed_dict["UNKNOWN_5"] = safe_get(31)
+    # parsed_dict["UNKNOWN_6"] = safe_get(32)
+    # parsed_dict["UNKNOWN_7"] = safe_get(39)
+    # parsed_dict["UNKNOWN_8"] = safe_get(61)
+    # parsed_dict["UNKNOWN_9"] = safe_get(62)
+    # parsed_dict["UNKNOWN_10"] = safe_get(63)
+    # parsed_dict["UNKNOWN_11"] = safe_get(64)
+    # parsed_dict["UNKNOWN_12"] = safe_get(65)
+    # parsed_dict["UNKNOWN_13"] = safe_get(66)
+    # parsed_dict["UNKNOWN_14"] = safe_get(67)
+
+    return parsed_dict
+
+
+def json_parse_jdxi_tone(data):
+    """
+    Parses JD-Xi tone data from SysEx messages.
+    Supports Digital1, Digital2, Analog, and Drums.
+
+    Args:
+        data (bytes): SysEx message containing tone data.
+
+    Returns:
+        dict: Parsed tone parameters.
+    """
+    parsed_dict = {}
+
+    # Extract header and address safely
+    parsed_dict["JD_XI_ID"] = data[:7].hex() if len(data) >= 7 else "N/A"
+    parsed_dict["ADDRESS"] = data[7:11].hex() if len(data) >= 11 else "N/A"
+    address_high_byte = ""
+    # Identify tone type based on SysEx address
+    if len(data) > 7:
+        address_high_byte = data[7]  # First byte of the address field
+        temporary_areas = {
+            0x18: "ANALOG_SYNTH_AREA",
+            0x19: "DIGITAL_SYNTH_1_AREA",
+            0x1A: "DIGITAL_SYNTH_2_AREA",
+            0x1C: "DRUM_KIT_AREA",
+        }
+
+        parsed_dict["TEMPORARY_AREA"] = temporary_areas.get(
+            address_high_byte + 6, "Unknown"
+        )
+    else:
+        parsed_dict["TEMPORARY_AREA"] = "Unknown"
+    logging.info(
+        f"address_high_byte: {address_high_byte}: {parsed_dict['TEMPORARY_AREA']}"
+    )
+    # Extract tone name safely (ensuring valid bounds)
+    name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
+
+    input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
+    tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
+    parsed_dict["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
+
+    # Use the new parse_parameters function
+    if parsed_dict["TEMPORARY_AREA"] == "DIGITAL_SYNTH_1_AREA":
+        parsed_dict.update(parse_digital_parameters(data))
+    else:
+        parsed_dict.update(parse_analog_parameters(data))
+
     return parsed_dict
 
 
@@ -625,20 +703,21 @@ class MIDIHelper(QObject):
             # if manufacturer_id != 0x41 or device_family_id != [0x10, 0x00, 0x00, 0x0E]:
             #    logging.info("Received message is not from a Roland JD-Xi.")
             #    return
-
+            """ 
             try:
                 parsed_data = parse_sysex(message.data)
                 logging.info(f"parse_sysex parsed_data: {parsed_data}")
             except Exception as ex:
                 logging.info(f"Error parsing SysEx data: {ex}")
                 return  # Stop further processing if parsing fails
-
+              
             try:
                 parsed_patch = parse_jdxi_sysex(sysex_message)
                 log_json(parsed_patch)
                 # logging.info(json.dumps(parsed_patch, indent=4))
             except Exception as ex:
                 logging.info(f"Error parsing JD-Xi patch data: {ex}")
+            """
 
             if len(message.data) > 63:
                 # Extracting SysEx data and parsing JD-Xi patch

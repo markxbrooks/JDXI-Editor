@@ -196,9 +196,7 @@ class AnalogSynthEditor(BaseEditor):
         self.filter_resonance.valueChanged.connect(
             lambda v: self._send_cc(AnalogParameter.FILTER_RESONANCE.value[0], v)
         )
-        self.midi_helper.parameter_received.connect(self._on_parameter_received)
-        # self.midi_helper.incoming_midi_message.connect(self._on_midi_message_received)
-        self.midi_helper.json_sysex.connect(self.update_sliders_from_sysex)
+        self.midi_helper.json_sysex.connect(self._update_sliders_from_sysex)
         self.data_request()
 
     def _on_midi_message_received(self, message):
@@ -392,7 +390,7 @@ class AnalogSynthEditor(BaseEditor):
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            logging.info(f"selected_instrument_type: {selected_instrument_type}")
+            logging.info(f"selected instrument image type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
                 instrument_icon_folder,
@@ -856,7 +854,7 @@ class AnalogSynthEditor(BaseEditor):
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
@@ -1074,116 +1072,115 @@ class AnalogSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        logging.info(
-            f"In analog area_code: {area_code}: ANALOG_SYNTH_AREA: {ANALOG_SYNTH_AREA}"
-        )
-        if address[0] == ANALOG_SYNTH_AREA:
-            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
-            parameter_address = tuple(address[2:])  # (80, 0)
+        # logging.info(
+        #    f"In analog area_code: {area_code}: ANALOG_SYNTH_AREA: {ANALOG_SYNTH_AREA}"
+        # )
 
-            # Retrieve the corresponding DigitalParameter
-            param = get_analog_parameter_by_address(parameter_address)
-            partial_no = address[1]
-            if param:
-                logging.info(f"param: {param}")
-                logging.info(
-                    f"Received parameter update: Address={address}, Value={value}"
-                )
-
-                # Update the corresponding slider
-                if param in self.partial_editors[partial_no].controls:
-                    slider = self.partial_editors[partial_no].controls[param]
-                    slider.blockSignals(True)  # Prevent feedback loop
-                    slider.setValue(value)
-                    slider.blockSignals(False)
-
-    def update_sliders_from_sysex(self, json_sysex_data: str):
+    def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
-        logging.info(json_sysex_data)
-        sysex_data = json.loads(json_sysex_data)
-        logging.info(f'In analog: \tTEMPORARY_AREA: \t{sysex_data["TEMPORARY_AREA"]}')
-        if (
-            sysex_data["TEMPORARY_AREA"] == "ANALOG_SYNTH_AREA"
-        ):  # Only do anything if this is in the ANALOG AREA
-            keys_to_remove = {
-                "JD_XI_ID",
-                "ADDRESS",
-                "TEMPORARY_AREA",
-                "TONE_NAME",
-            }  # Tidy up some unneeded values
 
-            for key in keys_to_remove:
-                sysex_data.pop(key, None)
+        try:
+            sysex_data = json.loads(json_sysex_data)
+        except json.JSONDecodeError as e:
+            logging.error(f"Invalid JSON format: {e}")
+            return
 
-            # Mapping for LFO Shape values to combo box indices
-            lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
+        area = sysex_data.get("TEMPORARY_AREA", None)
+        logging.info(f"TEMPORARY_AREA: {area}")
 
-            # Mapping for Sub Oscillator Type values to switch indices
-            sub_osc_type_map = {0: 0, 1: 1, 2: 2}  # Ensure these are integers
+        if area != "ANALOG_SYNTH_AREA":
+            logging.warning(
+                "SysEx data does not belong to ANALOG_SYNTH_AREA. Skipping update."
+            )
+            return
 
-            # Mapping for OSC Waveform values to button indices
-            osc_waveform_map = {
-                0: Waveform.SAW,
-                1: Waveform.TRIANGLE,
-                2: Waveform.PULSE,
-            }
+        # Remove unnecessary keys
+        for key in {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}:
+            sysex_data.pop(key, None)
 
-            # Mapping for Filter Switch values to switch indices
-            filter_switch_map = {0: 0, 1: 1}  # Assuming 0 is BYPASS, 1 is LPF
+        # Define mapping dictionaries
+        lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
+        sub_osc_type_map = {0: 0, 1: 1, 2: 2}
+        osc_waveform_map = {0: Waveform.SAW, 1: Waveform.TRIANGLE, 2: Waveform.PULSE}
+        filter_switch_map = {0: 0, 1: 1}
 
-            failures = []
-            successes = []
-            for param_name, param_value in sysex_data.items():
-                # Update sliders
-                param = AnalogParameter.get_by_name(param_name)
-                if param and param in self.controls:
-                    slider = self.controls[param]
-                    slider.blockSignals(True)  # Prevent feedback loop
-                    logging.info(
-                        f"Success: \tupdating \t{param} \twith \t{param_value}"
-                    )
-                    slider.setValue(param_value)
-                    successes.append(param_name)
+        failures, successes = [], []
+
+        for param_name, param_value in sysex_data.items():
+            param = AnalogParameter.get_by_name(param_name)
+
+            if param and param in self.controls:
+                slider = self.controls[param]
+                slider.blockSignals(True)
+                logging.info(f"Updating: {param:50} {param_value}")
+                slider.setValue(param_value)
+                slider.blockSignals(False)
+                successes.append(param_name)
+
+                if param in [
+                    AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+                    AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                ]:
+                    new_value = midi_cc_to_frac(param_value)
                 else:
-                    # Update LFO Shape combo box
-                    if param_name == "LFO_SHAPE":
-                        if param_value in lfo_shape_map:
-                            index = self.lfo_shape.findText(lfo_shape_map[param_value])
-                            if index != -1:
-                                self.lfo_shape.blockSignals(True)
-                                self.lfo_shape.setCurrentIndex(index)
-                                self.lfo_shape.blockSignals(False)
+                    new_value = midi_cc_to_ms(param_value)
+                # Update ADSR parameters in their respective spinboxes
+                if param == AnalogParameter.AMP_ENV_ATTACK_TIME:
+                    self.amp_env_adsr_widget.attackSB.setValue(new_value)
+                elif param == AnalogParameter.AMP_ENV_DECAY_TIME:
+                    self.amp_env_adsr_widget.decaySB.setValue(new_value)
+                elif param == AnalogParameter.AMP_ENV_SUSTAIN_LEVEL:
+                    self.amp_env_adsr_widget.sustainSB.setValue(new_value)
+                elif param == AnalogParameter.AMP_ENV_RELEASE_TIME:
+                    self.amp_env_adsr_widget.releaseSB.setValue(new_value)
 
-                    # Update Sub Oscillator Type switch
-                    elif param_name == "SUB_OSCILLATOR_TYPE":
-                        if param_value in sub_osc_type_map:
-                            index = sub_osc_type_map[param_value]
-                            if isinstance(index, int):  # Ensure index is an integer
-                                self.sub_type.blockSignals(True)
-                                self.sub_type.setValue(index)
-                                self.sub_type.blockSignals(False)
+                # Update ADSR parameters in their respective spinboxes
+                if param == AnalogParameter.FILTER_ENV_ATTACK_TIME:
+                    self.filter_adsr_widget.attackSB.setValue(new_value)
+                elif param == AnalogParameter.FILTER_ENV_DECAY_TIME:
+                    self.filter_adsr_widget.decaySB.setValue(new_value)
+                elif param == AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL:
+                    self.filter_adsr_widget.sustainSB.setValue(new_value)
+                elif param == AnalogParameter.FILTER_ENV_RELEASE_TIME:
+                    self.filter_adsr_widget.releaseSB.setValue(new_value)
+                # logging.info(f"Updating ADSR spinbox: {param_name:50} {new_value}")
 
-                    # Update OSC Waveform buttons
-                    elif param_name == "OSC_WAVEFORM":
-                        if param_value in osc_waveform_map:
-                            waveform = osc_waveform_map[param_value]
-                            if waveform in self.wave_buttons:
-                                button = self.wave_buttons[waveform]
-                                button.setChecked(True)
-                                self._on_waveform_selected(waveform)
+            elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
+                index = self.lfo_shape.findText(lfo_shape_map[param_value])
+                if index != -1:
+                    self.lfo_shape.blockSignals(True)
+                    self.lfo_shape.setCurrentIndex(index)
+                    self.lfo_shape.blockSignals(False)
 
-                    # Update Filter Switch
-                    elif param_name == "FILTER_SWITCH":
-                        if param_value in filter_switch_map:
-                            index = filter_switch_map[param_value]
-                            self.filter_switch.blockSignals(True)
-                            self.filter_switch.setValue(index)
-                            self.filter_switch.blockSignals(False)
+            elif (
+                param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
+            ):
+                index = sub_osc_type_map[param_value]
+                if isinstance(index, int):
+                    self.sub_type.blockSignals(True)
+                    self.sub_type.setValue(index)
+                    self.sub_type.blockSignals(False)
 
-                    else:
-                        failures.append(param_name)
-            logging.info(f"successes: \t{successes}")
-            logging.info(f"failures: \t{failures}")
-            logging.info(f"percentage: \t{len(successes) / len(sysex_data) * 100:.1f}%")
-            logging.info("--------------------------------")
+            elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
+                waveform = osc_waveform_map[param_value]
+                if waveform in self.wave_buttons:
+                    button = self.wave_buttons[waveform]
+                    button.setChecked(True)
+                    self._on_waveform_selected(waveform)
+
+            elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
+                index = filter_switch_map[param_value]
+                self.filter_switch.blockSignals(True)
+                self.filter_switch.setValue(index)
+                self.filter_switch.blockSignals(False)
+
+            else:
+                failures.append(param_name)
+
+        # Logging success rate
+        success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+        logging.info(f"Successes: {successes}")
+        logging.info(f"Failures: {failures}")
+        logging.info(f"Success Rate: {success_rate:.1f}%")
+        logging.info("--------------------------------")
