@@ -227,7 +227,7 @@ def parse_sysex(sysex_bytes):
     }
 
 
-def parse_jdxi_tone(data):
+def json_parse_jdxi_tone(data):
     """
     Parses JD-Xi tone data from SysEx messages.
     Supports Digital1, Digital2, Analog, and Drums.
@@ -238,19 +238,6 @@ def parse_jdxi_tone(data):
     Returns:
         dict: Parsed tone parameters.
     """
-    if len(data) < 12:  # Adjusted minimum length for safe parsing
-        raise ValueError(
-            f"Invalid data length ({len(data)} bytes). Too short to parse."
-        )
-
-    if data[0] != 0xF0 or data[-1] != 0xF7:
-        raise ValueError(
-            "Invalid SysEx format: Must start with 0xF0 and end with 0xF7."
-        )
-
-    if data[1] != 0x41:
-        raise ValueError("Invalid Manufacturer ID: Expected 0x41 (Roland).")
-
     parsed_dict = {}
 
     # Extract header and address safely
@@ -260,22 +247,18 @@ def parse_jdxi_tone(data):
     # Identify tone type based on SysEx address
     if len(data) > 7:
         address_high_byte = data[7]  # First byte of the address field
-        print(
-            f"address_high_byte: {address_high_byte} (type: {type(address_high_byte)})"
-        )
         TEMPORARY_AREAS = {
             0x18: "ANALOG_SYNTH_AREA",
             0x19: "DIGITAL_SYNTH_1_AREA",
             0x1A: "DIGITAL_SYNTH_2_AREA",
             0x1C: "DRUM_KIT_AREA",
-            0x16: "EFFECTS_AREA",
-            0x15: "ARPEGGIO_AREA",
-            0x14: "VOCAL_FX_AREA",
         }
+        logging.info(f"address_high_byte: {address_high_byte}")
         parsed_dict["TEMPORARY_AREA"] = TEMPORARY_AREAS.get(
-            address_high_byte + 6,
-            "Unknown",  # somehow the keys wind up being decimals, so need to be converted to hex
+            address_high_byte + 6, "Unknown"
         )
+    else:
+        parsed_dict["TEMPORARY_AREA"] = "Unknown"
 
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
@@ -669,7 +652,7 @@ class MIDIHelper(QObject):
 
                 # Detect and process JD-Xi tone data
                 try:
-                    parsed_data = parse_jdxi_tone(sysex_message_bytes)
+                    parsed_data = json_parse_jdxi_tone(sysex_message_bytes)
                     json_data = json.dumps(parsed_data)
                     self.json_sysex.emit(json_data)
                     log_json(parsed_data)
@@ -718,7 +701,7 @@ class MIDIHelper(QObject):
             r"(00\s00\s00)\s"  # Model ID (000000)
             r"(0E)\s"  # JD-Xi ID (0E)
             r"(12)\s"  # DT1 Command (12)
-            r"(19|20|40|60)\s"  # Synth Number (19, 20, 40, or 60)
+            r"(19|20|40|60|25)\s"  # Synth Number (19, 20, 18, 40, or 60)
             r"(01)\s"  # Section (01, related to waveforms or synth part)
             r"(00)\s"  # Parameter (00 = wave type)
             r"(01)\s"  # Value (01 = second waveform)

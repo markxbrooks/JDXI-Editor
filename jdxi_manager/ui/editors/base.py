@@ -19,6 +19,9 @@ class BaseEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
+        self.midi_data_requests = [
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
+        ]
         self.midi_helper = midi_helper
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
@@ -182,11 +185,10 @@ class BaseEditor(QWidget):
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
-        wave_type_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
-        )
-        # Send each SysEx message
-        self.send_message(wave_type_request)
+        for midi_data_request in self.midi_data_requests:
+            midi_data_request = bytes.fromhex(midi_data_request)
+            # Send each SysEx message
+            self.send_message(midi_data_request)
 
     def send_message(self, message):
         """Send a SysEx message using the MIDI helper"""
@@ -194,10 +196,3 @@ class BaseEditor(QWidget):
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
-
-    def _base64_to_pixmap(self, base64_str):
-        """Convert base64 string to QPixmap"""
-        image_data = base64.b64decode(base64_str)
-        image = QPixmap()
-        image.loadFromData(image_data)
-        return image
