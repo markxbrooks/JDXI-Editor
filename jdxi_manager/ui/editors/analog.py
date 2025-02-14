@@ -31,8 +31,8 @@ from jdxi_manager.midi.conversions import (
     ms_to_midi_cc,
 )
 from jdxi_manager.midi.preset_loader import PresetLoader
-from jdxi_manager.ui.editors.base_editor import BaseEditor
-from jdxi_manager.ui.editors.digital import base64_to_pixmap
+from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.image_utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
 from jdxi_manager.ui.widgets.analog_waveform import AnalogWaveformButton
@@ -108,6 +108,9 @@ class AnalogSynthEditor(BaseEditor):
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS
         self.preset_type = PresetType.ANALOG
+        self.midi_data_requests = [
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
+        ]
         # Create scroll area for resizable content
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -186,14 +189,6 @@ class AnalogSynthEditor(BaseEditor):
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
-        # Connect oscillator controls
-        # self.coarse.valueChanged.connect(
-        #    lambda v: self._send_cc(AnalogToneCC.OSC_COARSE, v + 64)  # Center at 0
-        # )
-        # self.fine.valueChanged.connect(
-        #    lambda v: self._send_cc(AnalogToneCC.OSC_FINE, v + 64)  # Center at 0
-        # )
-
         # Connect filter controls
         self.filter_cutoff.valueChanged.connect(
             lambda v: self._send_cc(AnalogParameter.FILTER_CUTOFF.value[0], v)
@@ -245,15 +240,15 @@ class AnalogSynthEditor(BaseEditor):
             # Set icons for each waveform
             if waveform == Waveform.SAW:
                 saw_icon_base64 = upsaw_png("#FFFFFF", 1.0)
-                saw_pixmap = self._base64_to_pixmap(saw_icon_base64)
+                saw_pixmap = base64_to_pixmap(saw_icon_base64)
                 btn.setIcon(QIcon(saw_pixmap))
             elif waveform == Waveform.TRIANGLE:
                 tri_icon_base64 = triangle_png("#FFFFFF", 1.0)
-                tri_pixmap = self._base64_to_pixmap(tri_icon_base64)
+                tri_pixmap = base64_to_pixmap(tri_icon_base64)
                 btn.setIcon(QIcon(tri_pixmap))
             elif waveform == Waveform.PULSE:
                 pulse_icon_base64 = pwsqu_png("#FFFFFF", 1.0)
-                pulse_pixmap = self._base64_to_pixmap(pulse_icon_base64)
+                pulse_pixmap = base64_to_pixmap(pulse_icon_base64)
                 btn.setIcon(QIcon(pulse_pixmap))
 
             btn.waveform_selected.connect(self._on_waveform_selected)
@@ -1069,28 +1064,12 @@ class AnalogSynthEditor(BaseEditor):
                 value=value,
             )
 
-    def data_request(self):
-        """Send data request SysEx messages to the JD-Xi"""
-        # Define SysEx messages as byte arrays
-        wave_type_request = bytes.fromhex(
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
-        )
-        # Send each SysEx message
-        self.send_message(wave_type_request)
-
     def send_message(self, message):
         """Send a SysEx message using the MIDI helper"""
         if self.midi_helper:
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
-
-    def _base64_to_pixmap(self, base64_str):
-        """Convert base64 string to QPixmap"""
-        image_data = base64.b64decode(base64_str)
-        image = QPixmap()
-        image.loadFromData(image_data)
-        return image
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
@@ -1124,8 +1103,15 @@ class AnalogSynthEditor(BaseEditor):
         logging.info(json_sysex_data)
         sysex_data = json.loads(json_sysex_data)
         logging.info(f'In analog: \tTEMPORARY_AREA: \t{sysex_data["TEMPORARY_AREA"]}')
-        if sysex_data["TEMPORARY_AREA"] == "ANALOG_SYNTH_AREA":
-            keys_to_remove = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
+        if (
+            sysex_data["TEMPORARY_AREA"] == "ANALOG_SYNTH_AREA"
+        ):  # Only do anything if this is in the ANALOG AREA
+            keys_to_remove = {
+                "JD_XI_ID",
+                "ADDRESS",
+                "TEMPORARY_AREA",
+                "TONE_NAME",
+            }  # Tidy up some unneeded values
 
             for key in keys_to_remove:
                 sysex_data.pop(key, None)
@@ -1197,7 +1183,7 @@ class AnalogSynthEditor(BaseEditor):
 
                     else:
                         failures.append(param_name)
-        logging.info(f"successes: \t{successes}")
-        logging.info(f"failures: \t{failures}")
-        logging.info(f"percentage: \t{len(successes) / len(sysex_data) * 100:.1f}%")
-        logging.info("--------------------------------")
+            logging.info(f"successes: \t{successes}")
+            logging.info(f"failures: \t{failures}")
+            logging.info(f"percentage: \t{len(successes) / len(sysex_data) * 100:.1f}%")
+            logging.info("--------------------------------")
