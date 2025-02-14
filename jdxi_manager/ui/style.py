@@ -285,16 +285,20 @@ class Style:
         QSlider::handle:vertical {{
             background: {SLIDER_HANDLE};
             border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
+            width: 40px;
             height: 18px;
             margin: -9px 0;
             border-radius: 9px;
         }}
 
         QSlider::handle:vertical:hover {{
-            border-color: {ANALOG_ACCENT_HOVER};
+            border-color: {ANALOG_ACCENT};
         }}
-
+        QSlider::tick-mark {{
+            background: #ff4500; /* Bright tick marks */
+            width: 2px;
+            height: 2px;
+        }}
         QComboBox::drop-down {{
             border: none;
         }}
@@ -302,6 +306,7 @@ class Style:
         QComboBox::down-arrow {{
             image: none;
         }}
+
     """
 
     ANALOG_EDITOR_STYLE_V2 = f"""
@@ -646,6 +651,74 @@ class Style:
                 font-size: "8pt"
             }
         """
+    ADSR_STYLE = """
+    QSlider::groove:vertical {
+        background: #1A1A1A; /* Dark background */
+        width: 6px; /* Thin groove */
+        border-radius: 3px;
+    }
+
+    QSlider::handle:vertical {
+        background: black;
+        border: 2px solid #ff4500; /* Bright red/orange border */
+        width: 40px;  /* Wider handle */
+        height: 10px;  /* Shorter handle */
+        margin: -2p x -5px; /* Centers the handle */
+        border-radius: 2px;
+    }
+
+    QSlider::sub-page:vertical {
+        background: rgba(255, 69, 0, 0.5); /* Glowing effect on filled portion */
+        border-radius: 3px;
+    }
+
+    QSlider::add-page:vertical {
+        background: #333333; /* Unfilled portion */
+        border-radius: 3px;
+    }
+
+    QSlider::tick-mark {
+        background: #ff4500; /* Bright tick marks */
+        width: 2px;
+        height: 2px;
+    }
+"""
+    ADSR_STYLE_old = """
+          QSlider:vertical {
+              background: #333; /* Background of the slider */
+              width: 30px; /* Width of the fader */
+              border: 1px solid #FF6D00; /* External border color */
+              border-radius: 5px; /* Rounded edges */
+          }
+          QSlider::handle:vertical {
+              background: #FF6D00; /* Color of the fader handle */
+              width: 20px; /* Width of the handle */
+              border-radius: 5px; /* Rounded edges */
+          }
+          QSlider::handle:vertical:hover {
+              background: #FF8C00; /* Color on hover */
+          }
+          QSlider::groove:vertical {
+              background: #666; /* Color of the groove */
+              width: 10px; /* Width of the groove */
+          }
+          QSlider::sub-page:vertical {
+              background: #FF3D00; /* Color of the filled area */
+          }
+          QSlider::add-page:vertical {
+              background: #333; /* Color of the unfilled area */
+          }
+          QSlider::tick:vertical {
+              background: #FF6D00; /* Color of the tick marks */
+              width: 2px; /* Width of the tick marks */
+              margin-left: -5px; /* Positioning ticks */
+          }
+          QSlider::tick-mark:vertical {
+              width: 3px;
+              height: 3px;
+              color: #FF6D00; /* Color of the tick marks */
+          }"""
+
     JDXI_STYLE = """
             QMainWindow {
                 background-color: black;

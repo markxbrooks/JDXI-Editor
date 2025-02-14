@@ -402,10 +402,10 @@ class DigitalPartialEditor(QWidget):
         )
         # Mapping ADSR parameters to their corresponding spinboxes
         self.filter_adsr_control_map = {
-            DigitalParameter.FILTER_ENV_ATTACK: self.filter_adsr_widget.attackSB,
-            DigitalParameter.FILTER_ENV_DECAY: self.filter_adsr_widget.decaySB,
-            DigitalParameter.FILTER_ENV_SUSTAIN: self.filter_adsr_widget.sustainSB,
-            DigitalParameter.FILTER_ENV_RELEASE: self.filter_adsr_widget.releaseSB,
+            DigitalParameter.FILTER_ENV_ATTACK: self.filter_adsr_widget.attack_sb,
+            DigitalParameter.FILTER_ENV_DECAY: self.filter_adsr_widget.decay_sb,
+            DigitalParameter.FILTER_ENV_SUSTAIN: self.filter_adsr_widget.sustain_sb,
+            DigitalParameter.FILTER_ENV_RELEASE: self.filter_adsr_widget.release_sb,
         }
 
         # 🔹 Connect ADSR spinboxes to external controls dynamically
@@ -458,13 +458,13 @@ class DigitalPartialEditor(QWidget):
     def filterAdsrValueChanged(self):
         self.updating_from_spinbox = True
         self.filter_adsr_widget.envelope["attackTime"] = (
-            self.filter_adsr_widget.attackSB.value()
+            self.filter_adsr_widget.attack_sb.value()
         )
         self.filter_adsr_widget.envelope["decayTime"] = (
-            self.filter_adsr_widget.decaySB.value()
+            self.filter_adsr_widget.decay_sb.value()
         )
         self.filter_adsr_widget.envelope["releaseTime"] = (
-            self.filter_adsr_widget.releaseSB.value()
+            self.filter_adsr_widget.release_sb.value()
         )
         self.filter_adsr_widget.envelope["initialAmpl"] = (
             self.filter_adsr_widget.initialSB.value()
@@ -473,7 +473,7 @@ class DigitalPartialEditor(QWidget):
             self.filter_adsr_widget.peakSB.value()
         )
         self.filter_adsr_widget.envelope["sustainAmpl"] = (
-            self.filter_adsr_widget.sustainSB.value()
+            self.filter_adsr_widget.sustain_sb.value()
         )
         self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
         self.filter_adsr_widget.envelopeChanged.emit(self.filter_adsr_widget.envelope)
@@ -497,13 +497,13 @@ class DigitalPartialEditor(QWidget):
     def ampEnvAdsrValueChanged(self):
         self.updating_from_spinbox = True
         self.amp_env_adsr_widget.envelope["attackTime"] = (
-            self.amp_env_adsr_widget.attackSB.value()
+            self.amp_env_adsr_widget.attack_sb.value()
         )
         self.amp_env_adsr_widget.envelope["decayTime"] = (
-            self.amp_env_adsr_widget.decaySB.value()
+            self.amp_env_adsr_widget.decay_sb.value()
         )
         self.amp_env_adsr_widget.envelope["releaseTime"] = (
-            self.amp_env_adsr_widget.releaseSB.value()
+            self.amp_env_adsr_widget.release_sb.value()
         )
         self.amp_env_adsr_widget.envelope["initialAmpl"] = (
             self.amp_env_adsr_widget.initialSB.value()
@@ -512,7 +512,7 @@ class DigitalPartialEditor(QWidget):
             self.amp_env_adsr_widget.peakSB.value()
         )
         self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
-            self.amp_env_adsr_widget.sustainSB.value()
+            self.amp_env_adsr_widget.sustain_sb.value()
         )
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
         self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
@@ -643,10 +643,10 @@ class DigitalPartialEditor(QWidget):
         )
         # Mapping ADSR parameters to their corresponding spinboxes
         self.adsr_control_map = {
-            DigitalParameter.AMP_ENV_ATTACK: self.amp_env_adsr_widget.attackSB,
-            DigitalParameter.AMP_ENV_DECAY: self.amp_env_adsr_widget.decaySB,
-            DigitalParameter.AMP_ENV_SUSTAIN: self.amp_env_adsr_widget.sustainSB,
-            DigitalParameter.AMP_ENV_RELEASE: self.amp_env_adsr_widget.releaseSB,
+            DigitalParameter.AMP_ENV_ATTACK: self.amp_env_adsr_widget.attack_sb,
+            DigitalParameter.AMP_ENV_DECAY: self.amp_env_adsr_widget.decay_sb,
+            DigitalParameter.AMP_ENV_SUSTAIN: self.amp_env_adsr_widget.sustain_sb,
+            DigitalParameter.AMP_ENV_RELEASE: self.amp_env_adsr_widget.release_sb,
         }
 
         # 🔹 Connect ADSR spinboxes to external controls dynamically
