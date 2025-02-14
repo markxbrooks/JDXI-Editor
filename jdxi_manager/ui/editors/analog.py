@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QComboBox,
     QPushButton,
+    QSlider,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
@@ -197,6 +198,12 @@ class AnalogSynthEditor(BaseEditor):
             lambda v: self._send_cc(AnalogParameter.FILTER_RESONANCE.value[0], v)
         )
         self.midi_helper.json_sysex.connect(self._update_sliders_from_sysex)
+        for param, slider in self.controls.items():
+            if isinstance(slider, QSlider):  # Ensure it's a slider
+                slider.setTickPosition(
+                    QSlider.TickPosition.TicksBothSides
+                )  # Tick marks on both sides
+                slider.setTickInterval(10)  # Adjust interval as needed
         self.data_request()
 
     def _on_midi_message_received(self, message):
@@ -516,13 +523,13 @@ class AnalogSynthEditor(BaseEditor):
     def ampEnvAdsrValueChanged(self):
         self.updating_from_spinbox = True
         self.amp_env_adsr_widget.envelope["attackTime"] = (
-            self.amp_env_adsr_widget.attackSB.value()
+            self.amp_env_adsr_widget.attack_sb.value()
         )
         self.amp_env_adsr_widget.envelope["decayTime"] = (
-            self.amp_env_adsr_widget.decaySB.value()
+            self.amp_env_adsr_widget.decay_sb.value()
         )
         self.amp_env_adsr_widget.envelope["releaseTime"] = (
-            self.amp_env_adsr_widget.releaseSB.value()
+            self.amp_env_adsr_widget.release_sb.value()
         )
         self.amp_env_adsr_widget.envelope["initialAmpl"] = (
             self.amp_env_adsr_widget.initialSB.value()
@@ -531,7 +538,7 @@ class AnalogSynthEditor(BaseEditor):
             self.amp_env_adsr_widget.peakSB.value()
         )
         self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
-            self.amp_env_adsr_widget.sustainSB.value()
+            self.amp_env_adsr_widget.sustain_sb.value()
         )
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
         self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
@@ -616,11 +623,26 @@ class AnalogSynthEditor(BaseEditor):
         adsr_layout = QHBoxLayout()
         adsr_vlayout.addLayout(adsr_layout)
 
+        self.filter_env_attack_time = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True
+        )
+        self.filter_env_decay_time = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True
+        )
+        self.filter_env_sustain_level = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True
+        )
+        self.filter_env_release_time = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
+        )
+
+        """
         adsr_layout.addWidget(
             self._create_parameter_slider(
                 AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True
             )
         )
+        
         adsr_layout.addWidget(
             self._create_parameter_slider(
                 AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True
@@ -636,16 +658,21 @@ class AnalogSynthEditor(BaseEditor):
                 AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
             )
         )
+        """
+        adsr_layout.addWidget(self.filter_env_attack_time)
+        adsr_layout.addWidget(self.filter_env_decay_time)
+        adsr_layout.addWidget(self.filter_env_sustain_level)
+        adsr_layout.addWidget(self.filter_env_release_time)
         sub_layout.addWidget(env_group)
         env_group.setLayout(adsr_vlayout)
         layout.addLayout(sub_layout)
 
         # Mapping ADSR parameters to their corresponding spinboxes
         self.filter_adsr_control_map = {
-            AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attackSB,
-            AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decaySB,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustainSB,
-            AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.releaseSB,
+            AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attack_sb,
+            AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decay_sb,
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustain_sb,
+            AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.release_sb,
         }
 
         # 🔹 Connect ADSR spinboxes to external controls dynamically
@@ -782,10 +809,10 @@ class AnalogSynthEditor(BaseEditor):
 
         # Mapping ADSR parameters to their corresponding spinboxes
         self.adsr_control_map = {
-            AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attackSB,
-            AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decaySB,
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustainSB,
-            AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.releaseSB,
+            AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
+            AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decay_sb,
+            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustain_sb,
+            AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.release_sb,
         }
 
         # 🔹 Connect ADSR spinboxes to external controls dynamically
@@ -1125,25 +1152,25 @@ class AnalogSynthEditor(BaseEditor):
                     new_value = midi_cc_to_frac(param_value)
                 else:
                     new_value = midi_cc_to_ms(param_value)
-                # Update ADSR parameters in their respective spinboxes
+                # Update ADSR parameters in their respective spin boxes
                 if param == AnalogParameter.AMP_ENV_ATTACK_TIME:
-                    self.amp_env_adsr_widget.attackSB.setValue(new_value)
+                    self.amp_env_adsr_widget.attack_sb.setValue(new_value)
                 elif param == AnalogParameter.AMP_ENV_DECAY_TIME:
-                    self.amp_env_adsr_widget.decaySB.setValue(new_value)
+                    self.amp_env_adsr_widget.decay_sb.setValue(new_value)
                 elif param == AnalogParameter.AMP_ENV_SUSTAIN_LEVEL:
-                    self.amp_env_adsr_widget.sustainSB.setValue(new_value)
+                    self.amp_env_adsr_widget.sustain_sb.setValue(new_value)
                 elif param == AnalogParameter.AMP_ENV_RELEASE_TIME:
-                    self.amp_env_adsr_widget.releaseSB.setValue(new_value)
+                    self.amp_env_adsr_widget.release_sb.setValue(new_value)
 
                 # Update ADSR parameters in their respective spinboxes
                 if param == AnalogParameter.FILTER_ENV_ATTACK_TIME:
-                    self.filter_adsr_widget.attackSB.setValue(new_value)
+                    self.filter_adsr_widget.attack_sb.setValue(new_value)
                 elif param == AnalogParameter.FILTER_ENV_DECAY_TIME:
-                    self.filter_adsr_widget.decaySB.setValue(new_value)
+                    self.filter_adsr_widget.decay_sb.setValue(new_value)
                 elif param == AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL:
-                    self.filter_adsr_widget.sustainSB.setValue(new_value)
+                    self.filter_adsr_widget.sustain_sb.setValue(new_value)
                 elif param == AnalogParameter.FILTER_ENV_RELEASE_TIME:
-                    self.filter_adsr_widget.releaseSB.setValue(new_value)
+                    self.filter_adsr_widget.release_sb.setValue(new_value)
                 # logging.info(f"Updating ADSR spinbox: {param_name:50} {new_value}")
 
             elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:

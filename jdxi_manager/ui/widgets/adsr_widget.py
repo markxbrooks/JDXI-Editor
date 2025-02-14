@@ -23,16 +23,18 @@ class ADSRWidget(QWidget):
             "sustainAmpl": 0.8,
         }
         self.setMinimumHeight(150)  # Adjust height as needed
-        self.attackSB = self.create_spinbox(0, 1000, " ms", self.envelope["attackTime"])
-        self.decaySB = self.create_spinbox(0, 1000, " ms", self.envelope["decayTime"])
-        self.releaseSB = self.create_spinbox(
+        self.attack_sb = self.create_spinbox(
+            0, 1000, " ms", self.envelope["attackTime"]
+        )
+        self.decay_sb = self.create_spinbox(0, 1000, " ms", self.envelope["decayTime"])
+        self.release_sb = self.create_spinbox(
             0, 1000, " ms", self.envelope["releaseTime"]
         )
         self.initialSB = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["initialAmpl"]
         )
         self.peakSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["peakAmpl"])
-        self.sustainSB = self.create_double_spinbox(
+        self.sustain_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["sustainAmpl"]
         )
         self.setStyleSheet(
@@ -65,26 +67,26 @@ class ADSRWidget(QWidget):
 
         self.layout = QGridLayout(self)
         self.layout.addWidget(QLabel("Attack:"), 0, 0)
-        self.layout.addWidget(self.attackSB, 0, 1)
+        self.layout.addWidget(self.attack_sb, 0, 1)
         self.layout.addWidget(QLabel("Decay:"), 1, 0)
-        self.layout.addWidget(self.decaySB, 1, 1)
+        self.layout.addWidget(self.decay_sb, 1, 1)
         self.layout.addWidget(QLabel("Release:"), 2, 0)
-        self.layout.addWidget(self.releaseSB, 2, 1)
+        self.layout.addWidget(self.release_sb, 2, 1)
         self.layout.addWidget(QLabel("Initial:"), 0, 2)
         self.layout.addWidget(self.initialSB, 0, 3)
         self.layout.addWidget(QLabel("Peak:"), 1, 2)
         self.layout.addWidget(self.peakSB, 1, 3)
         self.layout.addWidget(QLabel("Sustain:"), 2, 2)
-        self.layout.addWidget(self.sustainSB, 2, 3)
+        self.layout.addWidget(self.sustain_sb, 2, 3)
         self.layout.addWidget(self.plot, 0, 4, 4, 1)
         self.layout.setColumnMinimumWidth(4, 150)
 
-        self.attackSB.valueChanged.connect(self.valueChanged)
-        self.decaySB.valueChanged.connect(self.valueChanged)
-        self.releaseSB.valueChanged.connect(self.valueChanged)
+        self.attack_sb.valueChanged.connect(self.valueChanged)
+        self.decay_sb.valueChanged.connect(self.valueChanged)
+        self.release_sb.valueChanged.connect(self.valueChanged)
         self.initialSB.valueChanged.connect(self.valueChanged)
         self.peakSB.valueChanged.connect(self.valueChanged)
-        self.sustainSB.valueChanged.connect(self.valueChanged)
+        self.sustain_sb.valueChanged.connect(self.valueChanged)
 
         self.setLayout(self.layout)
         self.plot.set_values(self.envelope)
@@ -104,11 +106,11 @@ class ADSRWidget(QWidget):
         return sb
 
     def valueChanged(self):
-        self.envelope["attackTime"] = self.attackSB.value()
-        self.envelope["decayTime"] = self.decaySB.value()
-        self.envelope["releaseTime"] = self.releaseSB.value()
+        self.envelope["attackTime"] = self.attack_sb.value()
+        self.envelope["decayTime"] = self.decay_sb.value()
+        self.envelope["releaseTime"] = self.release_sb.value()
         self.envelope["initialAmpl"] = self.initialSB.value()
         self.envelope["peakAmpl"] = self.peakSB.value()
-        self.envelope["sustainAmpl"] = self.sustainSB.value()
+        self.envelope["sustainAmpl"] = self.sustain_sb.value()
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
