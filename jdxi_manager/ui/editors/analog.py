@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSlider, QTabWidget,
 )
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtGui import QIcon, QPixmap
 import qtawesome as qta
 
@@ -235,7 +235,7 @@ class AnalogSynthEditor(BaseEditor):
             "mdi.waveform",
         ]:
             oscillator_triangle_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             oscillator_triangle_label.setPixmap(pixmap)
             oscillator_triangle_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -558,15 +558,22 @@ class AnalogSynthEditor(BaseEditor):
         group.setLayout(layout)
 
         # prettify with icons
-        icon_hlayout = QHBoxLayout()
-        for icon in ["mdi.sine-wave", "ri.filter-3-fill", "mdi.waveform"]:
+        icons_hlayout = QHBoxLayout()
+        for icon in [
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
+        ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icon_hlayout.addWidget(icon_label)
-        layout.addLayout(icon_hlayout)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            icons_hlayout.addWidget(icon_label)
+        layout.addLayout(icons_hlayout)
 
         # Filter controls
         self.filter_switch = Switch("Filter", ["BYPASS", "LPF"])
@@ -743,7 +750,7 @@ class AnalogSynthEditor(BaseEditor):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -884,7 +891,7 @@ class AnalogSynthEditor(BaseEditor):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -893,13 +900,37 @@ class AnalogSynthEditor(BaseEditor):
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
-        # LFO Shape selector
+        # Replace the LFO Shape selector combo box with buttons
         shape_row = QHBoxLayout()
         shape_row.addWidget(QLabel("Shape"))
-        self.lfo_shape = QComboBox()
-        self.lfo_shape.addItems(["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
-        self.lfo_shape.currentIndexChanged.connect(self._on_lfo_shape_changed)
-        shape_row.addWidget(self.lfo_shape)
+        shape_row.addStretch(1)  # Add stretch before buttons
+        self.lfo_shape_buttons = {}
+
+        # Create buttons for each LFO shape
+        lfo_shapes = [
+            ("TRI", "mdi.triangle-wave", 0),
+            ("SIN", "mdi.sine-wave", 1),
+            ("SAW", "mdi.sawtooth-wave", 2),
+            ("SQR", "mdi.square-wave", 3),
+            ("S&H", "mdi.waveform", 4),  # Sample & Hold
+            ("RND", "mdi.wave", 5),      # Random
+        ]
+
+        for name, icon_name, value in lfo_shapes:
+            btn = QPushButton(name)  # Add text to button
+            btn.setCheckable(True)
+            btn.setProperty("value", value)
+            icon = qta.icon(icon_name)
+            btn.setIcon(icon)
+            btn.setIconSize(QSize(24, 24))
+            btn.setFixedSize(80, 40)  # Make buttons wider to accommodate text
+            btn.setToolTip(name)
+            btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
+            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+            self.lfo_shape_buttons[value] = btn
+            shape_row.addWidget(btn)
+            shape_row.addStretch(1)  # Add stretch after each button
+
         layout.addLayout(shape_row)
 
         # Rate and Fade Time
@@ -1028,10 +1059,7 @@ class AnalogSynthEditor(BaseEditor):
             )
 
     def _on_lfo_shape_changed(self, value: int):
-        """
-        Handle LFO shape change
-        KEEP!
-        """
+        """Handle LFO shape change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
                 area=ANALOG_SYNTH_AREA,
@@ -1040,6 +1068,16 @@ class AnalogSynthEditor(BaseEditor):
                 param=AnalogParameter.LFO_SHAPE.value[0],
                 value=value,
             )
+            # Reset all buttons to default style
+            for btn in self.lfo_shape_buttons.values():
+                btn.setChecked(False)
+                btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+
+            # Apply active style to the selected button
+            selected_btn = self.lfo_shape_buttons.get(value)
+            if selected_btn:
+                selected_btn.setChecked(True)
+                selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
 
     def _on_lfo_sync_changed(self, value: int):
         """
@@ -1190,12 +1228,8 @@ class AnalogSynthEditor(BaseEditor):
                     self.filter_adsr_widget.release_sb.setValue(new_value)
                 # logging.info(f"Updating ADSR spinbox: {param_name:50} {new_value}")
 
-            elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
-                index = self.lfo_shape.findText(lfo_shape_map[param_value])
-                if index != -1:
-                    self.lfo_shape.blockSignals(True)
-                    self.lfo_shape.setCurrentIndex(index)
-                    self.lfo_shape.blockSignals(False)
+            elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
+                self._update_lfo_shape_buttons(param_value)
 
             elif (
                 param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
@@ -1275,3 +1309,20 @@ class AnalogSynthEditor(BaseEditor):
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
+
+    def _update_lfo_shape_buttons(self, value):
+        """Update the LFO shape buttons with visual feedback."""
+        logging.debug(f"Updating LFO shape buttons with value {value}")
+
+        # Reset all buttons to default style
+        for btn in self.lfo_shape_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+
+        # Apply active style to the selected button
+        selected_btn = self.lfo_shape_buttons.get(value)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
+        else:
+            logging.warning(f"Unknown LFO shape value: {value}")
