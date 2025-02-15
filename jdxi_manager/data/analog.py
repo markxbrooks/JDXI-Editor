@@ -161,6 +161,40 @@ AN_CATEGORIES = {
 }
 
 
+class SynthParameter(Enum):
+
+    def __init__(self, address: int, min_val: int, max_val: int):
+        self.address = address
+        self.min_val = min_val
+        self.max_val = max_val
+
+    @property
+    def display_name(self) -> str:
+        """Get display name for the parameter"""
+        return self.name.replace("_", " ").title()
+
+    def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value to MIDI range (0-127)"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be integer, got {type(value)}")
+
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} "
+                f"(valid range: {self.min_val}-{self.max_val})"
+            )
+
+        return value
+
+    @staticmethod
+    def get_name_by_address(address: int):
+        """Return the parameter name for a given address."""
+        for param in SynthParameter:
+            if param.address == address:
+                return param.name
+        return None  # Return None if the address is not found
+
+
 class AnalogParameter(Enum):
     """Analog synth parameters with group, address, and value range."""
 

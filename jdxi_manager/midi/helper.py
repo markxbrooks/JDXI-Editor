@@ -291,64 +291,62 @@ def parse_digital_parameters(data: list) -> dict:
 
 def parse_analog_parameters(data: list) -> dict:
     """Parse parameters from the given data list."""
-    parsed_dict = {}
+    parameters = {}
 
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
         return data[index] if index < len(data) else default
 
     # Extract parameters safely
-    # parsed_dict["AMP_ENV_ATTACK_TIME"] = safe_get(21)
-    # parsed_dict["AMP_ENV_DECAY_TIME"] = safe_get(22)
-    # parsed_dict["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(23)
-    # parsed_dict["AMP_ENV_RELEASE_TIME"] = safe_get(24)
-    # parsed_dict["LFO_FILTER_DEPTH"] = safe_get(25)
-    parsed_dict["LFO_RATE"] = safe_get(25)
-    # parsed_dict["UNK"] = safe_get(26)
-    parsed_dict["OSC_WAVEFORM"] = safe_get(33)
-    parsed_dict["OSC_PITCH_COARSE"] = safe_get(35)
-    parsed_dict["OSC_PITCH_FINE"] = safe_get(36)
-    parsed_dict["OSC_PULSE_WIDTH"] = safe_get(37)
-    parsed_dict["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(38)
-    parsed_dict["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(40)
-    parsed_dict["OSC_PITCH_ENV_DECAY"] = safe_get(41)
-    parsed_dict["OSC_PITCH_ENV_DEPTH"] = safe_get(42)
-    parsed_dict["SUB_OSCILLATOR_TYPE"] = safe_get(43)
-    parsed_dict["FILTER_SWITCH"] = safe_get(44)
-    parsed_dict["FILTER_CUTOFF"] = safe_get(45)
-    parsed_dict["FILTER_CUTOFF_KEYFOLLOW"] = safe_get(46)
-    parsed_dict["FILTER_RESONANCE"] = safe_get(47)
-    parsed_dict["FILTER_ENV_VELOCITY_SENS"] = safe_get(48)
-    parsed_dict["FILTER_ENV_ATTACK_TIME"] = safe_get(49)
-    parsed_dict["FILTER_ENV_DECAY_TIME"] = safe_get(50)
-    parsed_dict["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(51)
-    parsed_dict["FILTER_ENV_RELEASE_TIME"] = safe_get(52)
-    parsed_dict["FILTER_ENV_DEPTH"] = safe_get(53)
-    parsed_dict["AMP_LEVEL"] = safe_get(54)
-    parsed_dict["AMP_LEVEL_KEYFOLLOW"] = safe_get(55)
-    parsed_dict["OSC_PITCH_ENV_DEPTH"] = safe_get(56)
-    parsed_dict["AMP_ENV_ATTACK_TIME"] = safe_get(57)
-    parsed_dict["AMP_ENV_DECAY_TIME"] = safe_get(58)
-    parsed_dict["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(59)
-    parsed_dict["AMP_ENV_RELEASE_TIME"] = safe_get(60)
+    parameters["LFO_SHAPE"] = safe_get(25)
+    parameters["LFO_RATE"] = safe_get(26)
+    parameters["LFO_FADE_TIME"] = safe_get(27)
+    parameters["LFO_TEMPO_SYNC_SWITCH"] = safe_get(28)
+    parameters["LFO_TEMPO_SYNC_NOTE"] = safe_get(29)
+    parameters["LFO_PITCH_DEPTH"] = safe_get(30)
+    parameters["LFO_FILTER_DEPTH"] = safe_get(31)
+    parameters["LFO_AMP_DEPTH"] = safe_get(32)
+    parameters["LFO_KEY_TRIGGER"] = safe_get(33)
+    parameters["OSC_WAVEFORM"] = safe_get(34)
+    parameters["OSC_PITCH_COARSE"] = safe_get(35)
+    parameters["OSC_PITCH_FINE"] = safe_get(36)
+    parameters["OSC_PULSE_WIDTH"] = safe_get(37)
+    parameters["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(38)
+    parameters["OSC_PITCH_ENV_VELOCITY_SENS"] = safe_get(39)
+    parameters["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(40)
+    parameters["OSC_PITCH_ENV_DECAY"] = safe_get(41)
+    parameters["OSC_PITCH_ENV_DEPTH"] = safe_get(42)  # Depth not being captured
+    parameters["SUB_OSCILLATOR_TYPE"] = safe_get(43)
+    parameters["FILTER_SWITCH"] = safe_get(44)
+    parameters["FILTER_CUTOFF"] = safe_get(45)
+    parameters["FILTER_CUTOFF_KEYFOLLOW"] = safe_get(46)
+    parameters["FILTER_RESONANCE"] = safe_get(47)
+    parameters["FILTER_ENV_VELOCITY_SENS"] = safe_get(48)
+    parameters["FILTER_ENV_ATTACK_TIME"] = safe_get(49)
+    parameters["FILTER_ENV_DECAY_TIME"] = safe_get(50)
+    parameters["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(51)
+    parameters["FILTER_ENV_RELEASE_TIME"] = safe_get(52)
+    parameters["FILTER_ENV_DEPTH"] = safe_get(53)
+    parameters["AMP_LEVEL"] = safe_get(54)
+    parameters["AMP_LEVEL_KEYFOLLOW"] = safe_get(55)
+    parameters["OSC_PITCH_ENV_DEPTH"] = safe_get(56)
+    parameters["AMP_ENV_ATTACK_TIME"] = safe_get(57)
+    parameters["AMP_ENV_DECAY_TIME"] = safe_get(58)
+    parameters["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(59)
+    parameters["AMP_ENV_RELEASE_TIME"] = safe_get(60)
+    # No sliders for these yet
+    # parameters["PORTAMENTO_SWITCH"] = safe_get(61)
+    # parameters["PORTAMENTO_TIME"] = safe_get(62)
+    # parameters["LEGATO_SWITCH"] = safe_get(63)
+    # parameters["OCTAVE_SHIFT"] = safe_get(64)
+    # parameters["PITCH_BEND_RANGE_UP"] = safe_get(65)
+    # parameters["PITCH_BEND_RANGE_DOWN"] = safe_get(66)
+    # parameters["LFO_PITCH_MODULATION_CONTROL"] = safe_get(67)
+    # parameters["LFO_FILTER_MODULATION_CONTROL"] = safe_get(68)
+    # parameters["LFO_AMP_MODULATION_CONTROL"] = safe_get(69)
+    # parameters["LFO_RATE_MODULATION_CONTROL"] = safe_get(70)
 
-    # Unknown parameters
-    # parsed_dict["UNKNOWN_1"] = safe_get(27)
-    # parsed_dict["UNKNOWN_2"] = safe_get(28)
-    # parsed_dict["UNKNOWN_3"] = safe_get(29)
-    # parsed_dict["UNKNOWN_4"] = safe_get(30)
-    # parsed_dict["UNKNOWN_5"] = safe_get(31)
-    # parsed_dict["UNKNOWN_6"] = safe_get(32)
-    # parsed_dict["UNKNOWN_7"] = safe_get(39)
-    # parsed_dict["UNKNOWN_8"] = safe_get(61)
-    # parsed_dict["UNKNOWN_9"] = safe_get(62)
-    # parsed_dict["UNKNOWN_10"] = safe_get(63)
-    # parsed_dict["UNKNOWN_11"] = safe_get(64)
-    # parsed_dict["UNKNOWN_12"] = safe_get(65)
-    # parsed_dict["UNKNOWN_13"] = safe_get(66)
-    # parsed_dict["UNKNOWN_14"] = safe_get(67)
-
-    return parsed_dict
+    return parameters
 
 
 def json_parse_jdxi_tone(data):
