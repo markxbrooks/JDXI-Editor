@@ -13,7 +13,7 @@ class Style:
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF2200"  # Red for hover
     ANALOG_ACCENT = "#00A0E9"
-    ANALOG_ACCENT_HOVER = "00A0E9"
+    ANALOG_ACCENT_HOVER = "#00A0E9"
     BORDER = "#333333"
     SLIDER_HANDLE = "#000000"  # Black fill
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
@@ -755,42 +755,99 @@ class Style:
 
     # Default and active styles
     BUTTON_DEFAULT = """
-        QPushButton {
-            background: #000000;       /* Default tab background */
-            color: #AAAAAA;           /* Default text color */
-            padding: 8px 12px;      /* Padding for tab spacing */
-            margin: 2px;
-            border: 2px solid #666; /* Default border */
-            border-radius: 4px;
-            font-family: "Myriad Pro", "sans serif"
-        }
-        QPushButton:hover {
-            background-color: #1A1A1A;
-            border: 2px solid #ff4d4d;
-        }
-        QPushButton:pressed {
-            background-color: #333333;
-            border: 2px solid #ff6666;
-        }
-    """
+         QPushButton {
+             background: #000000;       /* Default tab background */
+             color: #AAAAAA;           /* Default text color */
+             padding: 8px 12px;      /* Padding for tab spacing */
+             margin: 2px;
+             border: 2px solid #666; /* Default border */
+             border-radius: 4px;
+             font-family: "Myriad Pro", "sans serif"
+         }
+         QPushButton:hover {
+             background-color: #1A1A1A;
+             border: 2px solid #ff4d4d;
+         }
+         QPushButton:pressed {
+             background-color: #333333;
+             border: 2px solid #ff6666;
+         }
+     """
 
     BUTTON_ACTIVE = """
-        QPushButton {
-            color: white;
-            background-color: #222222;
-            border: 2px solid #ff4d4d;
-            border-radius: 4px;
-            padding: 8px 12px;      /* Padding for tab spacing */
-        }
-        QPushButton:hover {
-            background-color: #ff8080;
-            border: 2px solid #ff9999;
-        }
-        QPushButton:pressed {
-            background-color: #ff4d4d;
-            border: 2px solid #ff3333;
-        }
-    """
+         QPushButton {
+             color: white;
+             background-color: #222222;
+             border: 2px solid #ff4d4d;
+             border-radius: 4px;
+             padding: 8px 12px;      /* Padding for tab spacing */
+         }
+         QPushButton:hover {
+             background-color: #ff8080;
+             border: 2px solid #ff9999;
+         }
+         QPushButton:pressed {
+             background-color: #ff4d4d;
+             border: 2px solid #ff3333;
+         }
+     """
+
+    # Default and active styles
+    ANALOG_BUTTON_DEFAULT = """
+         QPushButton {
+             background: #000000;       /* Default tab background */
+             color: #AAAAAA;           /* Default text color */
+             padding: 8px 12px;      /* Padding for tab spacing */
+             margin: 2px;
+             border: 2px solid #666; /* Default border */
+             border-radius: 4px;
+             font-family: "Myriad Pro", "sans serif"
+         }
+         QPushButton:hover {
+             background-color: #1A1A1A;
+             border: 2px solid #00A0E9;
+         }
+         QPushButton:pressed {
+             background-color: #333333;
+             border: 2px solid #00A0E9;
+         }
+     """
+
+    ANALOG_BUTTON_ACTIVE = """
+         QPushButton {
+             color: white;
+             background-color: #222222;
+             border: 2px solid #00A0E9;
+             border-radius: 4px;
+             padding: 8px 12px;      /* Padding for tab spacing */
+         }
+         QPushButton:hover {
+             background-color: #00A0C1;
+             border: 2px solid #00A0E9;
+         }
+         QPushButton:pressed {
+             background-color: #ff4d4d;
+             border: 2px solid #00A0E9;
+         }
+     """
+
+    ANALOG_BUTTON = """
+            QPushButton {
+                background-color: #222222;
+                color: #CCCCCC;
+                border: 1px solid #666666;
+                border-radius: 3px;
+                padding: 5px;
+            }
+            QPushButton:checked {
+                background-color: #333333;
+                color: white;
+                border: 1px solid #00A0E9;
+            }
+            QPushButton:hover {
+                background-color: #444444;
+            }
+        """
 
 
 def sequencer_button_style(active):
