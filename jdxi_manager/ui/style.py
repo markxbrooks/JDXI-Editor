@@ -624,6 +624,35 @@ class Style:
                 font-family: "Myriad Pro", "sans serif"
             }
         """
+
+    JDXI_ANALOG_TABS_STYLE = """
+            QTabBar::tab {
+                background: #000000;       /* Default tab background */
+                color: white;           /* Default text color */
+                padding: 8px 12px;      /* Padding for tab spacing */
+                margin: 2px;
+                border: 2px solid #666; /* Default border */
+                border-radius: 4px;
+                font-family: "Myriad Pro", "sans serif"
+            }
+
+            QTabBar::tab:selected {
+                background: #222222;    /* Selected tab background */
+                color: white;           /* Selected text color */
+                border: 2px solid #00A0E9; /* Border for selected tab */
+                font-family: "Myriad Pro", "sans serif"
+            }
+
+            QTabBar::tab:hover {
+                background: #00A0C1;       /* Hover effect */
+                border: 2px solid #00A0E9;
+                font-family: "Myriad Pro", "sans serif"
+            }
+            QTabWidget::pane {
+                border: 1px solid #00A0E9;
+            }
+        """
+
     JDXI_DRUM_TABS_STYLE = """
             QTabBar::tab {
                 background: #000000;       /* Default tab background */

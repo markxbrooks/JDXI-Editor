@@ -26,45 +26,6 @@ class AnalogToneCC(IntEnum):
     NRPN_LFO_AMP = 21  # LFO Amp Depth (0-127)
     NRPN_PW = 37  # Pulse Width (0-127)
 
-    # Oscillator Parameters
-    OSC_WAVE = 0x16  # Waveform (0-2: SAW,TRI,PW-SQR)
-    OSC_COARSE = 0x17  # Pitch Coarse (40-88: -24 to +24)
-    OSC_FINE = 0x18  # Pitch Fine (14-114: -50 to +50)
-    OSC_PW = 0x19  # Pulse Width (0-127)
-    OSC_PWM = 0x1A  # PW Mod Depth (0-127)
-    OSC_PENV_VELO = 0x1B  # Pitch Env Velocity (1-127: -63 to +63, 64=center)
-    OSC_PENV_A = 0x1C  # Pitch Env Attack (0-127)
-    OSC_PENV_D = 0x1D  # Pitch Env Decay (0-127)
-    OSC_PENV_DEPTH = 0x1E  # Pitch Env Depth (1-127: -63 to +63, 64=center)
-    SUB_TYPE = 0x1F  # Sub Oscillator Type (0-2: OFF,OCT-1,OCT-2)
-
-    # Filter parameters
-    FILTER_CUTOFF = 0x21  # Filter cutoff frequency (0-127)
-    FILTER_RESO = 0x23  # Filter resonance (0-127)
-    FILTER_ENV_A = 0x24  # Filter envelope attack (0-127)
-    FILTER_ENV_D = 0x25  # Filter envelope decay (0-127)
-    FILTER_ENV_S = 0x26  # Filter envelope sustain (0-127)
-    FILTER_ENV_R = 0x27  # Filter envelope release (0-127)
-    FILTER_ENV_DEPTH = 0x28  # Filter envelope depth (-63 to +63)
-
-    # Amplifier parameters
-    AMP_LEVEL = 0x2A  # Amplifier level (0-127)
-    AMP_ENV_A = 0x2B  # Amplifier envelope attack (0-127) !!! Incorrect -> 2D
-    AMP_ENV_D = 0x2C  # Amplifier envelope decay (0-127)
-    AMP_ENV_S = 0x2D  # Amplifier envelope sustain (0-127)
-    AMP_ENV_R = 0x2E  # Amplifier envelope release (0-127)
-
-    # LFO parameters
-    LFO_SHAPE = 0x0D  # LFO Shape (0-5: TRI,SIN,SAW,SQR,S&H,RND)
-    LFO_RATE = 0x0E  # LFO Rate (0-127)
-    LFO_FADE = 0x0F  # LFO Fade Time (0-127)
-    LFO_SYNC = 0x10  # LFO Tempo Sync Switch (0-1)
-    LFO_SYNC_NOTE = 0x11  # LFO Tempo Sync Note (0-19)
-    LFO_PITCH = 0x12  # LFO Pitch Depth (1-127: -63 to +63)
-    LFO_FILTER = 0x13  # LFO Filter Depth (1-127: -63 to +63)
-    LFO_AMP = 0x14  # LFO Amp Depth (1-127: -63 to +63)
-    LFO_KEY_TRIG = 0x15  # LFO Key Trigger (0-1)
-
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
