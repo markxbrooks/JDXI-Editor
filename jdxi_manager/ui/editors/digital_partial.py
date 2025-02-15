@@ -951,10 +951,6 @@ class DigitalPartialEditor(QWidget):
             btn.setChecked(False)
             btn.setStyleSheet(Style.BUTTON_DEFAULT)
 
-        # Update button states
-        # for wave, btn in self.wave_buttons.items():
-        #    btn.setChecked(wave == waveform)
-
         # Apply active style to the selected waveform button
         selected_btn = self.wave_buttons.get(waveform)
         if selected_btn:

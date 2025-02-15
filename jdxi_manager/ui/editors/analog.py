@@ -244,6 +244,7 @@ class AnalogSynthEditor(BaseEditor):
         self.wave_buttons = {}
         for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
             btn = AnalogWaveformButton(waveform)
+            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
 
             # Set icons for each waveform
             if waveform == Waveform.SAW:
@@ -978,6 +979,15 @@ class AnalogSynthEditor(BaseEditor):
                 param=AnalogParameter.OSC_WAVEFORM.value[0],
                 value=waveform.midi_value,
             )
+            for btn in self.wave_buttons.values():
+                btn.setChecked(False)
+                btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+
+            # Apply active style to the selected waveform button
+            selected_btn = self.wave_buttons.get(waveform)
+            if selected_btn:
+                selected_btn.setChecked(True)
+                selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
             self._update_pw_controls_state(waveform)
 
     def _send_cc(self, cc: AnalogToneCC, value: int):
@@ -1267,10 +1277,10 @@ class AnalogSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.BUTTON_DEFAULT)
+            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.BUTTON_ACTIVE)
+            selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
