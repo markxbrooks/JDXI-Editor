@@ -288,7 +288,7 @@ class Style:
             width: 40px;
             height: 18px;
             margin: -9px 0;
-            border-radius: 9px;
+            border-radius: 6px;
         }}
 
         QSlider::handle:vertical:hover {{

@@ -206,6 +206,9 @@ class AnalogSynthEditor(BaseEditor):
                 slider.setTickInterval(10)  # Adjust interval as needed
         self.data_request()
 
+        # Initialize previous JSON data storage
+        self.previous_json_data = None
+
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""
         if not message.type == "clock":
@@ -1108,12 +1111,19 @@ class AnalogSynthEditor(BaseEditor):
         logging.info("Updating UI components from SysEx data")
 
         try:
-            sysex_data = json.loads(json_sysex_data)
+            current_sysex_data = json.loads(json_sysex_data)
         except json.JSONDecodeError as e:
             logging.error(f"Invalid JSON format: {e}")
             return
 
-        area = sysex_data.get("TEMPORARY_AREA", None)
+        # Compare with previous data and log changes
+        if self.previous_json_data:
+            self._log_changes(self.previous_json_data, current_sysex_data)
+
+        # Store the current data as previous for next comparison
+        self.previous_json_data = current_sysex_data
+
+        area = current_sysex_data.get("TEMPORARY_AREA", None)
         logging.info(f"TEMPORARY_AREA: {area}")
 
         if area != "ANALOG_SYNTH_AREA":
@@ -1124,7 +1134,7 @@ class AnalogSynthEditor(BaseEditor):
 
         # Remove unnecessary keys
         for key in {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}:
-            sysex_data.pop(key, None)
+            current_sysex_data.pop(key, None)
 
         # Define mapping dictionaries
         lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
@@ -1134,13 +1144,13 @@ class AnalogSynthEditor(BaseEditor):
 
         failures, successes = [], []
 
-        for param_name, param_value in sysex_data.items():
+        for param_name, param_value in current_sysex_data.items():
             param = AnalogParameter.get_by_name(param_name)
 
             if param and param in self.controls:
                 slider = self.controls[param]
                 slider.blockSignals(True)
-                logging.info(f"Updating: {param:50} {param_value}")
+                # logging.info(f"Updating: {param:50} {param_value}")
                 slider.setValue(param_value)
                 slider.blockSignals(False)
                 successes.append(param_name)
@@ -1190,11 +1200,13 @@ class AnalogSynthEditor(BaseEditor):
                     self.sub_type.blockSignals(False)
 
             elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
-                waveform = osc_waveform_map[param_value]
-                if waveform in self.wave_buttons:
-                    button = self.wave_buttons[waveform]
-                    button.setChecked(True)
-                    self._on_waveform_selected(waveform)
+                self._update_waveform_buttons(param_value)
+
+                # waveform = osc_waveform_map[param_value]
+                # if waveform in self.wave_buttons:
+                #    button = self.wave_buttons[waveform]
+                #    button.setChecked(True)
+                #    self._on_waveform_selected(waveform)
 
             elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
                 index = filter_switch_map[param_value]
@@ -1206,8 +1218,59 @@ class AnalogSynthEditor(BaseEditor):
                 failures.append(param_name)
 
         # Logging success rate
-        success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-        logging.info(f"Successes: {successes}")
-        logging.info(f"Failures: {failures}")
-        logging.info(f"Success Rate: {success_rate:.1f}%")
-        logging.info("--------------------------------")
+        success_rate = (
+            (len(successes) / len(current_sysex_data) * 100)
+            if current_sysex_data
+            else 0
+        )
+        # logging.info(f"Successes: {successes}")
+        # logging.info(f"Failures: {failures}")
+        # logging.info(f"Success Rate: {success_rate:.1f}%")
+        # logging.info("--------------------------------")
+
+    def _log_changes(self, previous_data, current_data):
+        """Log changes between previous and current JSON data."""
+        changes = []
+        for key, current_value in current_data.items():
+            previous_value = previous_data.get(key)
+            if previous_value != current_value:
+                changes.append((key, previous_value, current_value))
+
+        if changes:
+            logging.info("Changes detected:")
+            for key, prev, curr in changes:
+                logging.info(f"Parameter: {key}, Previous: {prev}, Current: {curr}")
+        else:
+            logging.info("No changes detected.")
+
+    def _update_waveform_buttons(self, value):
+        """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
+        logging.debug(f"Updating waveform buttons with value {value}")
+
+        waveform_map = {
+            0: Waveform.SAW,
+            1: Waveform.TRIANGLE,
+            2: Waveform.PULSE,
+        }
+
+        selected_waveform = waveform_map.get(value)
+
+        if selected_waveform is None:
+            logging.warning(f"Unknown waveform value: {value}")
+            return
+
+        logging.debug(f"Waveform value {value} found, selecting {selected_waveform}")
+
+        # Retrieve waveform buttons for the given partial
+        wave_buttons = self.wave_buttons
+
+        # Reset all buttons to default style
+        for btn in wave_buttons.values():
+            btn.setChecked(False)
+            btn.setStyleSheet(Style.BUTTON_DEFAULT)
+
+        # Apply active style to the selected waveform button
+        selected_btn = wave_buttons.get(selected_waveform)
+        if selected_btn:
+            selected_btn.setChecked(True)
+            selected_btn.setStyleSheet(Style.BUTTON_ACTIVE)
