@@ -209,12 +209,13 @@ class DigitalSynthEditor(BaseEditor):
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
 
+        # Add performance section
+        container_layout.addWidget(self._create_performance_section())
+
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
         container_layout.addWidget(self.partials_panel)
-
-        # Add performance section
-        container_layout.addWidget(self._create_performance_section())
+        self.partials_panel.setStyleSheet(Style.JDXI_TABS_STYLE)
 
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()

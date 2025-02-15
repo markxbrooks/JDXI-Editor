@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QSpinBox,
+    QSpinBox, QTabWidget,
 )
 
 from jdxi_manager.data import DigitalParameter
@@ -63,13 +63,14 @@ class DigitalPartialEditor(QWidget):
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
-
+        self.tab_widget = QTabWidget()
+        container_layout.addWidget(self.tab_widget)
         # Add sections in a vertical layout
-        container_layout.addWidget(self._create_oscillator_section())
-        container_layout.addWidget(self._create_filter_section())
-        container_layout.addWidget(self._create_amp_section())
-        container_layout.addWidget(self._create_lfo_section())
-        container_layout.addWidget(self._create_mod_lfo_section())
+        self.tab_widget.addTab(self._create_oscillator_section(), qta.icon("mdi.triangle-wave", color='#666666'), "Oscillator")
+        self.tab_widget.addTab(self._create_filter_section(), qta.icon("ri.filter-3-fill", color='#666666'), "Filter")
+        self.tab_widget.addTab(self._create_amp_section(), qta.icon("mdi.amplifier", color='#666666'), "Amp")
+        self.tab_widget.addTab(self._create_lfo_section(), qta.icon("mdi.sine-wave", color='#666666'), "LFO")
+        self.tab_widget.addTab(self._create_mod_lfo_section(), qta.icon("mdi.waveform", color='#666666'), "Mod LFO")
 
         # Add container to scroll area
         main_layout.addWidget(container)
@@ -98,7 +99,9 @@ class DigitalPartialEditor(QWidget):
         return slider
 
     def _create_oscillator_section(self):
-        group = QGroupBox("Oscillator")
+        """Create the oscillator section of the partial editor"""
+        group = QWidget()
+        #group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -113,7 +116,7 @@ class DigitalPartialEditor(QWidget):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -272,7 +275,9 @@ class DigitalPartialEditor(QWidget):
             logging.error(f"Error setting wave number: {str(e)}")
 
     def _create_filter_section(self):
-        group = QGroupBox("Filter")
+        """Create the filter section of the partial editor"""
+        group = QWidget()
+        # group = QGroupBox("Filter")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -280,7 +285,7 @@ class DigitalPartialEditor(QWidget):
         icon_hlayout = QHBoxLayout()
         for icon in ["mdi.sine-wave", "ri.filter-3-fill", "mdi.waveform"]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -545,7 +550,9 @@ class DigitalPartialEditor(QWidget):
                 self.controls[param].setEnabled(enabled)
 
     def _create_amp_section(self):
-        group = QGroupBox("Amplifier")
+        """Create the amplifier section of the partial editor"""
+        group = QWidget()
+        # group = QGroupBox("Amplifier")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -558,7 +565,7 @@ class DigitalPartialEditor(QWidget):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -694,7 +701,9 @@ class DigitalPartialEditor(QWidget):
             control.blockSignals(False)
 
     def _create_lfo_section(self):
-        group = QGroupBox("LFO")
+        """Create the LFO section of the partial editor"""
+        group = QWidget()
+        # group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -708,7 +717,7 @@ class DigitalPartialEditor(QWidget):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -793,7 +802,8 @@ class DigitalPartialEditor(QWidget):
 
     def _create_mod_lfo_section(self):
         """Create modulation LFO section"""
-        group = QGroupBox("Mod LFO")
+        group = QWidget()
+        # group = QGroupBox("Mod LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -807,7 +817,7 @@ class DigitalPartialEditor(QWidget):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size

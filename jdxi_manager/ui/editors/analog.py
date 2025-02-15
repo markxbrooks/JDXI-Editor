@@ -183,10 +183,10 @@ class AnalogSynthEditor(BaseEditor):
         # Add sections side by side
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        self.tab_widget.addTab(self._create_oscillator_section(), "Oscillator")
-        self.tab_widget.addTab(self._create_filter_section(), "Filter")
-        self.tab_widget.addTab(self._create_amp_section(), "Amp")
-        self.tab_widget.addTab(self._create_lfo_section(), "LFO")
+        self.tab_widget.addTab(self._create_oscillator_section(), qta.icon("mdi.triangle-wave", color='#666666'), "Oscillator")
+        self.tab_widget.addTab(self._create_filter_section(), qta.icon("ri.filter-3-fill", color='#666666'), "Filter")
+        self.tab_widget.addTab(self._create_amp_section(), qta.icon("mdi.amplifier", color='#666666'), "Amp")
+        self.tab_widget.addTab(self._create_lfo_section(), qta.icon("mdi.sine-wave", color='#666666'), "LFO")
 
         # Add container to scroll area
         scroll.setWidget(container)

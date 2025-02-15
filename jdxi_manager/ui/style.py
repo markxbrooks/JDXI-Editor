@@ -498,7 +498,7 @@ class Style:
             width: 18px;
             height: 18px;
             margin: -9px 0;
-            border-radius: 9px;
+            border-radius: 6px;
         }}
         
         QSlider::handle:vertical:hover {{
@@ -622,6 +622,9 @@ class Style:
                 background: #222222;       /* Hover effect */
                 border: 2px solid #ff9999;
                 font-family: "Myriad Pro", "sans serif"
+            }
+            QTabWidget::pane {
+                border: 1px solid #ff6666;
             }
         """
 
