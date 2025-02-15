@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QComboBox,
     QPushButton,
-    QSlider,
+    QSlider, QTabWidget,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon, QPixmap
@@ -126,7 +126,7 @@ class AnalogSynthEditor(BaseEditor):
         container.setLayout(container_layout)
 
         # Additional styling specific to analog editor
-        self.setStyleSheet(Style.ANALOG_EDITOR_STYLE_V3)
+        self.setStyleSheet(Style.JDXI_ANALOG_TABS_STYLE + Style.ANALOG_EDITOR_STYLE_V3)
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 
@@ -181,10 +181,12 @@ class AnalogSynthEditor(BaseEditor):
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
         # Add sections side by side
-        container_layout.addWidget(self._create_oscillator_section())
-        container_layout.addWidget(self._create_filter_section())
-        container_layout.addWidget(self._create_amp_section())
-        container_layout.addWidget(self._create_lfo_section())
+        self.tab_widget = QTabWidget()
+        container_layout.addWidget(self.tab_widget)
+        self.tab_widget.addTab(self._create_oscillator_section(), "Oscillator")
+        self.tab_widget.addTab(self._create_filter_section(), "Filter")
+        self.tab_widget.addTab(self._create_amp_section(), "Amp")
+        self.tab_widget.addTab(self._create_lfo_section(), "LFO")
 
         # Add container to scroll area
         scroll.setWidget(container)
@@ -218,7 +220,8 @@ class AnalogSynthEditor(BaseEditor):
             self.blockSignals(False)
 
     def _create_oscillator_section(self):
-        group = QGroupBox("Oscillator")
+        group = QWidget()
+        #group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -549,10 +552,9 @@ class AnalogSynthEditor(BaseEditor):
         self.updating_from_spinbox = False
 
     def _create_filter_section(self):
-        group = QGroupBox("Filter")
+        group = QWidget()
+        #group = QGroupBox("Filter")
         layout = QVBoxLayout()
-        layout.setSpacing(5)
-        layout.setContentsMargins(5, 15, 5, 5)
         group.setLayout(layout)
 
         # prettify with icons
@@ -725,7 +727,8 @@ class AnalogSynthEditor(BaseEditor):
             self.filter_adsr_widget.valueChanged()
 
     def _create_amp_section(self):
-        group = QGroupBox("Amplifier")
+        group = QWidget()
+        #group = QGroupBox("Amplifier")
         layout = QVBoxLayout()
         layout.setSpacing(5)
         layout.setContentsMargins(5, 15, 5, 5)
@@ -865,7 +868,8 @@ class AnalogSynthEditor(BaseEditor):
             control.blockSignals(False)
 
     def _create_lfo_section(self):
-        group = QGroupBox("LFO")
+        group = QWidget()
+        #group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -1061,7 +1065,7 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_TEMPO_SYNC_NOTE,
+                param=AnalogParameter.LFO_TEMPO_SYNC_NOTE.value[0],
                 value=value,
             )
 
@@ -1074,7 +1078,7 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_PITCH,
+                param=AnalogParameter.LFO_PITCH_DEPTH.value[0],
                 value=midi_value,
             )
 
@@ -1087,7 +1091,7 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_FILTER,
+                param=AnalogParameter.LFO_FILTER_DEPTH.value[0],
                 value=midi_value,
             )
 
@@ -1098,7 +1102,7 @@ class AnalogSynthEditor(BaseEditor):
                 area=ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogToneCC.LFO_KEY_TRIG,
+                param=AnalogParameter.LFO_KEY_TRIG.value[0],
                 value=value,
             )
 
@@ -1108,13 +1112,6 @@ class AnalogSynthEditor(BaseEditor):
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
-
-    def _on_parameter_received(self, address, value):
-        """Handle parameter updates from MIDI messages."""
-        area_code = address[0]
-        # logging.info(
-        #    f"In analog area_code: {area_code}: ANALOG_SYNTH_AREA: {ANALOG_SYNTH_AREA}"
-        # )
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
@@ -1211,12 +1208,6 @@ class AnalogSynthEditor(BaseEditor):
 
             elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                 self._update_waveform_buttons(param_value)
-
-                # waveform = osc_waveform_map[param_value]
-                # if waveform in self.wave_buttons:
-                #    button = self.wave_buttons[waveform]
-                #    button.setChecked(True)
-                #    self._on_waveform_selected(waveform)
 
             elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
                 index = filter_switch_map[param_value]
