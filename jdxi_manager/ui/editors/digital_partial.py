@@ -753,11 +753,11 @@ class DigitalPartialEditor(QWidget):
         top_row.addWidget(self.lfo_shape)
 
         # Sync switch
-        self.lfo_sync = Switch("Sync", ["OFF", "ON"])
-        self.lfo_sync.valueChanged.connect(
+        self.lfo_tempo_sync_switch = Switch("Tempo Sync", ["OFF", "ON"])
+        self.lfo_tempo_sync_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.LFO_TEMPO_SYNC_SWITCH, v)
         )
-        top_row.addWidget(self.lfo_sync)
+        top_row.addWidget(self.lfo_tempo_sync_switch)
         layout.addLayout(top_row)
 
         # Rate and fade controls

@@ -578,7 +578,7 @@ class AnalogTone:
             "lfo_shape": data[ANALOG_LFO_SHAPE],
             "lfo_rate": data[ANALOG_LFO_RATE],
             "lfo_fade": data[ANALOG_LFO_FADE],
-            "lfo_sync": data[ANALOG_LFO_SYNC],
+            "lfo_tempo_sync_switch": data[ANALOG_LFO_SYNC],
             "lfo_sync_note": data[ANALOG_LFO_SYNC_NOTE],
             "lfo_pitch": data[ANALOG_LFO_PITCH] - 64,  # Convert to -63/+63
             "lfo_filter": data[ANALOG_LFO_FILTER] - 64,  # Convert to -63/+63

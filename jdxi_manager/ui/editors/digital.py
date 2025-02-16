@@ -683,7 +683,7 @@ class DigitalSynthEditor(BaseEditor):
 
         ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-
+        sysex_data_remaining = sysex_data.copy()
         failures, successes = [], []
 
         def _update_slider(param, value):
@@ -727,8 +727,10 @@ class DigitalSynthEditor(BaseEditor):
                 if param:
                     if param == DigitalParameter.OSC_WAVE:
                         self._update_waveform_buttons(partial_no, param_value)
-                    _update_slider(param, param_value)
-                    update_adsr_widget(param, param_value)
+                    else:
+                        _update_slider(param, param_value)
+                        update_adsr_widget(param, param_value)
+                    sysex_data_remaining.pop(param_name, None)
                 else:
                     failures.append(param_name)
             except Exception as ex:
@@ -738,9 +740,10 @@ class DigitalSynthEditor(BaseEditor):
             """Helper function to log debugging statistics."""
             if debug_stats:
                 success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-                logging.info(f"Successes: {successes}")
-                logging.info(f"Failures: {failures}")
-                logging.info(f"Success Rate: {success_rate:.1f}%")
+                logging.info(f"successes: \t{successes}")
+                logging.info(f"failures: \t{failures}")
+                logging.info(f"sysex_data_remaining: \t{sysex_data_remaining}")
+                logging.info(f"success rate: \t{success_rate:.1f}%")
                 logging.info("--------------------------------")
 
         _log_debug_info()
@@ -794,6 +797,7 @@ class DigitalSynthEditor(BaseEditor):
                 slider.setValue(param_value)
                 slider.blockSignals(False)
                 successes.append(param_name)
+                sysex_data.pop(param_name, None)
 
             #elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
             #    index = self.lfo_shape.findText(lfo_shape_map[param_value])
@@ -817,6 +821,7 @@ class DigitalSynthEditor(BaseEditor):
                 logging.debug(
                     "updating waveform buttons for param {param} with {value}"
                 )
+                sysex_data.pop(param_name, None)
 
             elif param_name == "OSC_WAVE" and param_value in osc_waveform_map:
                 waveform = osc_waveform_map[param_value]
@@ -825,6 +830,7 @@ class DigitalSynthEditor(BaseEditor):
                     button = self.partial_editors[partial_no].wave_buttons[waveform]
                     button.setChecked(True)
                     self.partial_editors[partial_no]._on_waveform_selected(waveform)
+                    sysex_data.pop(param_name, None)
 
             #elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
             #    index = filter_switch_map[param_value]
