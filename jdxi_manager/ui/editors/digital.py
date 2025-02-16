@@ -26,6 +26,7 @@ import qtawesome as qta
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
@@ -83,11 +84,11 @@ class DigitalSynthEditor(BaseEditor):
         self.midi_helper = midi_helper
         self.preset_loader = PresetLoader(self.midi_helper)
         self.midi_data_requests = [
-            #"F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # wave type request
+            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # common controls
             "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
-            #"F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
-            #"F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
-            #"F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
+            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
         ]
         if preset_handler:
             self.preset_handler = preset_handler
@@ -633,12 +634,118 @@ class DigitalSynthEditor(BaseEditor):
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
                     )
-                #if param == DigitalParameter.FILTER_MODE:
-                #    self.partial_editors[partial_no].filter_mode.valueChanged.connect(
-                #        lambda value: self._on_filter_mode_changed(value)
-                #x    )
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        debug_param_updates = True
+        debug_stats = True
+        def _parse_sysex_json(json_data):
+            """Parse JSON safely and log changes."""
+            try:
+                sysex_data = json.loads(json_data)
+                self.previous_data = self.current_data
+                self.current_data = sysex_data
+                self._log_changes(self.previous_data, sysex_data)
+                return sysex_data
+            except json.JSONDecodeError as ex:
+                logging.error(f"Invalid JSON format: {ex}")
+                return None
+
+        def _is_valid_sysex_area(sysex_data):
+            """Check if SysEx data belongs to a supported digital synth area."""
+            return sysex_data.get("TEMPORARY_AREA") in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]
+
+        def _get_partial_number(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            return {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3
+            }.get(synth_tone, None)
+
+        # Parse SysEx data
+        sysex_data = _parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+
+        if not _is_valid_sysex_area(sysex_data):
+            logging.warning(
+                "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
+            return
+
+        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
+        if partial_no is None:
+            logging.warning(f"Unrecognized SYNTH_TONE: {sysex_data.get('SYNTH_TONE')}. Skipping update.")
+            return
+
+        logging.info(f"Updating sliders for Partial {partial_no}")
+
+        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
+
+        failures, successes = [], []
+
+        def _update_slider(param, value):
+            """Helper function to update sliders safely."""
+            slider = self.partial_editors[partial_no].controls.get(param)
+            if slider:
+                slider.blockSignals(True)
+                slider.setValue(value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
+
+        def update_adsr_widget(param, value):
+            """Helper function to update ADSR widgets."""
+            new_value = midi_cc_to_frac(value) if param in [
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            ] else midi_cc_to_ms(value)
+
+            adsr_mapping = {
+                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.attack_sb,
+                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.decay_sb,
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].amp_env_adsr_widget.sustain_sb,
+                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.release_sb,
+                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[partial_no].filter_adsr_widget.attack_sb,
+                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[partial_no].filter_adsr_widget.decay_sb,
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].filter_adsr_widget.sustain_sb,
+                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[partial_no].filter_adsr_widget.release_sb,
+            }
+
+            if param in adsr_mapping:
+                spinbox = adsr_mapping[param]
+                spinbox.setValue(new_value)
+
+        for param_name, param_value in sysex_data.items():
+            param = DigitalParameter.get_by_name(param_name)
+            try:
+                if param:
+                    if param == DigitalParameter.OSC_WAVE:
+                        self._update_waveform_buttons(partial_no, param_value)
+                    _update_slider(param, param_value)
+                    update_adsr_widget(param, param_value)
+                else:
+                    failures.append(param_name)
+            except Exception as ex:
+                print(f"Error {ex} occurred")
+
+        def _log_debug_info():
+            """Helper function to log debugging statistics."""
+            if debug_stats:
+                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                logging.info(f"Successes: {successes}")
+                logging.info(f"Failures: {failures}")
+                logging.info(f"Success Rate: {success_rate:.1f}%")
+                logging.info("--------------------------------")
+
+        _log_debug_info()
+
+    def _update_sliders_from_sysex_old(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
         debug_param_updates = True
@@ -695,21 +802,29 @@ class DigitalSynthEditor(BaseEditor):
             #        self.lfo_shape.setCurrentIndex(index)
             #        self.lfo_shape.blockSignals(False)
 
-            elif (
-                param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
-            ):
-                index = sub_osc_type_map[param_value]
-                if isinstance(index, int):
-                    self.sub_type.blockSignals(True)
-                    self.sub_type.setValue(index)
-                    self.sub_type.blockSignals(False)
+            #elif (
+            #    param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
+            #):
+            #    index = sub_osc_type_map[param_value]
+            #    if isinstance(index, int):
+            #        self.sub_type.blockSignals(True)
+            #        self.sub_type.setValue(index)
+            #        self.sub_type.blockSignals(False)
 
-            elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
+            # Handle OSC_WAVE parameter to update waveform buttons
+            if param == DigitalParameter.OSC_WAVE:
+                self._update_waveform_buttons(partial_no, param_value)
+                logging.debug(
+                    "updating waveform buttons for param {param} with {value}"
+                )
+
+            elif param_name == "OSC_WAVE" and param_value in osc_waveform_map:
                 waveform = osc_waveform_map[param_value]
+                print(f"param_name: {param_name} waveform: {waveform}")
                 if waveform in self.partial_editors[partial_no].wave_buttons:
-                    button = self.wave_buttons[waveform]
+                    button = self.partial_editors[partial_no].wave_buttons[waveform]
                     button.setChecked(True)
-                    self._on_waveform_selected(waveform)
+                    self.partial_editors[partial_no]._on_waveform_selected(waveform)
 
             #elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
             #    index = filter_switch_map[param_value]
