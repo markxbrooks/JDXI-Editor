@@ -194,8 +194,14 @@ class SynthParameter(Enum):
                 return param.name
         return None  # Return None if the address is not found
 
+    @staticmethod
+    def get_by_name(param_name):
+        """Get the AnalogParameter by name."""
+        # Return the parameter member by name, or None if not found
+        return SynthParameter.__members__.get(param_name, None)
 
-class AnalogParameter(Enum):
+
+class AnalogParameter(SynthParameter):
     """Analog synth parameters with group, address, and value range."""
 
     # LFO Parameters

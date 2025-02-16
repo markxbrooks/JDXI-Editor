@@ -210,7 +210,7 @@ class DigitalSynthEditor(BaseEditor):
         self.update_instrument_image()
 
         # Add performance section
-        container_layout.addWidget(self._create_performance_section())
+        # container_layout.addWidget(self._create_performance_section())
 
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
@@ -219,6 +219,7 @@ class DigitalSynthEditor(BaseEditor):
 
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()
+        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS_STYLE)
         self.partial_editors = {}
 
         # Create editor for each partial
@@ -226,6 +227,7 @@ class DigitalSynthEditor(BaseEditor):
             editor = DigitalPartialEditor(midi_helper, i, self.part)
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
+        self.partial_tab_widget.addTab(self._create_performance_section(), "Common Controls")
 
         container_layout.addWidget(self.partial_tab_widget)
 
@@ -262,7 +264,8 @@ class DigitalSynthEditor(BaseEditor):
 
     def _create_performance_section(self):
         """Create performance controls section"""
-        group = QGroupBox("Performance")
+        group = QWidget()
+        # group = QGroupBox("Common Controls")
         layout = QVBoxLayout()
         group.setLayout(layout)
         # prettify with icons
@@ -276,7 +279,7 @@ class DigitalSynthEditor(BaseEditor):
             "mdi.piano",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color='#666666')
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -285,60 +288,100 @@ class DigitalSynthEditor(BaseEditor):
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
-        # Create two rows of controls
-        top_row = QHBoxLayout()
-        bottom_row = QHBoxLayout()
+        mono_row = QHBoxLayout()
+        
+        self.mono_switch = Switch("Mono", ["OFF", "ON"])
+        self.mono_switch.valueChanged.connect(
+            lambda v: self._on_parameter_changed(DigitalCommonParameter.MONO_SW, v)
+        )
+        mono_row.addWidget(self.mono_switch)
+        layout.addLayout(mono_row)
+
+        self.pitch_bend_row = QHBoxLayout()
+        self.pitch_bend_up = self._create_parameter_slider(DigitalCommonParameter.PITCH_BEND_UP, "Pitch Bend Up")   
+        self.pitch_bend_down = self._create_parameter_slider(DigitalCommonParameter.PITCH_BEND_DOWN, "Pitch Bend Down")
+        self.pitch_bend_row.addWidget(self.pitch_bend_up)
+        self.pitch_bend_row.addWidget(self.pitch_bend_down)
+        layout.addLayout(self.pitch_bend_row)
+
+        # Create tone level row
+        self.tone_level_row = QHBoxLayout()
+        self.tone_level = self._create_parameter_slider(DigitalCommonParameter.TONE_LEVEL, "Tone Level")
+        self.tone_level_row.addWidget(self.tone_level)
+        layout.addLayout(self.tone_level_row)
 
         # Ring Modulator switch
+        self.ring_row = QHBoxLayout()
         self.ring_switch = Switch("Ring", ["OFF", "---", "ON"])
         self.ring_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalCommonParameter.RING_SWITCH, v)
         )
-        top_row.addWidget(self.ring_switch)
+        self.ring_row.addWidget(self.ring_switch)
+        layout.addLayout(self.ring_row)
 
         # Unison switch and size
+        self.unison_row = QHBoxLayout()
         self.unison_switch = Switch("Unison", ["OFF", "ON"])
         self.unison_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(
                 DigitalCommonParameter.UNISON_SWITCH, v
             )
         )
-        top_row.addWidget(self.unison_switch)
+        self.unison_row.addWidget(self.unison_switch)
+        layout.addLayout(self.unison_row)
 
         self.unison_size = Switch("Size", ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"])
         self.unison_size.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalCommonParameter.UNISON_SIZE, v)
         )
-        top_row.addWidget(self.unison_size)
+        self.unison_row.addWidget(self.unison_size)
+        layout.addLayout(self.unison_row)
+
+        self.portamento_row = QHBoxLayout()
+        self.portamento_switch = Switch("Portamento", ["OFF", "ON"])
+        self.portamento_switch.valueChanged.connect(
+            lambda v: self._on_parameter_changed(DigitalCommonParameter.PORTAMENTO_SW, v)
+        )
+        self.portamento_row.addWidget(self.portamento_switch)
+        layout.addLayout(self.portamento_row)
+
+        self.portamento_time_row = QHBoxLayout()
+        self.portamento_time = self._create_parameter_slider(DigitalCommonParameter.PORTAMENTO_TIME, "Portamento Time")
+        self.portamento_time_row.addWidget(self.portamento_time)
+        layout.addLayout(self.portamento_time_row)
 
         # Portamento mode and legato
-        self.porto_mode = Switch("Porto", ["NORMAL", "LEGATO"])
+        self.porto_mode = Switch("Portamento Mode", ["NORMAL", "LEGATO"])
         self.porto_mode.valueChanged.connect(
             lambda v: self._on_parameter_changed(
                 DigitalCommonParameter.PORTAMENTO_MODE, v
             )
         )
-        bottom_row.addWidget(self.porto_mode)
+        self.portamento_row.addWidget(self.porto_mode)
 
+        self.legato_row = QHBoxLayout()
         self.legato_switch = Switch("Legato", ["OFF", "ON"])
         self.legato_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(
                 DigitalCommonParameter.LEGATO_SWITCH, v
             )
         )
-        bottom_row.addWidget(self.legato_switch)
+        self.legato_row.addWidget(self.legato_switch)
 
         # Analog Feel and Wave Shape
         analog_feel = self._create_parameter_slider(
-            DigitalCommonParameter.ANALOG_FEEL, "Analog"
+            DigitalCommonParameter.ANALOG_FEEL, "Analog Feel"
         )
         wave_shape = self._create_parameter_slider(
-            DigitalCommonParameter.WAVE_SHAPE, "Shape"
+            DigitalCommonParameter.WAVE_SHAPE, "Wave Shape"
         )
 
         # Add all controls to layout
-        layout.addLayout(top_row)
-        layout.addLayout(bottom_row)
+        layout.addLayout(mono_row)
+        layout.addLayout(self.tone_level_row)
+        layout.addLayout(self.ring_row)
+        layout.addLayout(self.unison_row)
+        layout.addLayout(self.legato_row)
         layout.addWidget(analog_feel)
         layout.addWidget(wave_shape)
         self.update_instrument_image()
@@ -571,7 +614,7 @@ class DigitalSynthEditor(BaseEditor):
             partial_no = address[1]
             if param:
                 logging.info(
-                    f"Received parameter update: param: {param} address={address}, Value={value}"
+                    f"param: \t{param} \taddress=\t{address}, Value=\t{value}"
                 )
 
                 # Update the corresponding slider
@@ -587,10 +630,10 @@ class DigitalSynthEditor(BaseEditor):
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
                     )
-                if param == DigitalParameter.FILTER_MODE:
-                    self.partial_editors[partial_no].filter_mode.valueChanged.connect(
-                        lambda value: self._on_filter_mode_changed(value)
-                    )
+                #if param == DigitalParameter.FILTER_MODE:
+                #    self.partial_editors[partial_no].filter_mode.valueChanged.connect(
+                #        lambda value: self._on_filter_mode_changed(value)
+                #x    )
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
@@ -598,14 +641,14 @@ class DigitalSynthEditor(BaseEditor):
 
         try:
             sysex_data = json.loads(json_sysex_data)
-        except json.JSONDecodeError as e:
-            logging.error(f"Invalid JSON format: {e}")
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
             return
 
-        area = sysex_data.get("TEMPORARY_AREA", None)
-        logging.info(f"In analog: TEMPORARY_AREA: {area}")
+        temporary_area = sysex_data.get("TEMPORARY_AREA", None)
+        logging.info(f"In digital: TEMPORARY_AREA: {temporary_area}")
 
-        if area not in [DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]:
+        if temporary_area not in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
             logging.warning(
                 "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update."
             )
@@ -618,7 +661,7 @@ class DigitalSynthEditor(BaseEditor):
         # Define mapping dictionaries
         lfo_shape_map = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}
-        osc_waveform_map = {0: Waveform.SAW, 1: Waveform.TRIANGLE, 2: Waveform.PULSE}
+        osc_waveform_map = {wave.value: wave for wave in OscWave}
         filter_switch_map = {0: 0, 1: 1}
 
         failures, successes = [], []
