@@ -176,7 +176,7 @@ class Style:
             width: 18px;
             height: 18px;
             margin: -9px 0;
-            border-radius: 9px;
+            border-radius: 6px;
         }}
         
         QSlider::handle:vertical:hover {{
