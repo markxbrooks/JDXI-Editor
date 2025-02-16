@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QSpinBox, QTabWidget,
 )
 
-from jdxi_manager.data import DigitalParameter
+from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.digital import DigitalCommonParameter, OscWave
 from jdxi_manager.midi.constants import PART_1, DIGITAL_SYNTH_AREA
 from jdxi_manager.midi.conversions import (
@@ -162,7 +162,7 @@ class DigitalPartialEditor(QWidget):
         # Wave variation switch
         self.wave_var = Switch("Var", ["A", "B", "C"])
         self.wave_var.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.OSC_WAVE_VAR, v)
+            lambda v: self._on_parameter_changed(DigitalParameter.OSC_WAVE_VARIATION, v)
         )
         top_row.addWidget(self.wave_var)
         layout.addLayout(top_row)
@@ -185,13 +185,27 @@ class DigitalPartialEditor(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        self.pw_slider = self._create_parameter_slider(DigitalParameter.OSC_PW, "Width")
+        self.pw_slider = self._create_parameter_slider(DigitalParameter.OSC_PULSE_WIDTH, "Width")
         self.pwm_slider = self._create_parameter_slider(
-            DigitalParameter.OSC_PWM_DEPTH, "Mod"
+            DigitalParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
         )
         pw_layout.addWidget(self.pw_slider)
         pw_layout.addWidget(self.pwm_slider)
         layout.addWidget(pw_group)
+
+        # PCM Wave controls
+        pcm_group = QGroupBox("PCM Wave")
+        pcm_layout = QVBoxLayout()
+        pcm_group.setLayout(pcm_layout)
+
+       
+        self.pcm_wave_number = self._create_parameter_slider(DigitalParameter.PCM_WAVE_NUMBER, "Number")
+        pcm_layout.addWidget(self.pcm_wave_number)
+        layout.addWidget(pcm_group)
+        self.pcm_group = pcm_group  # Store reference for visibility control        
+        self.pcm_wave_gain = self._create_parameter_slider(DigitalParameter.PCM_WAVE_GAIN, "Gain")
+        pcm_layout.addWidget(self.pcm_wave_gain)
+        layout.addWidget(pcm_group)
 
         # Pitch Envelope
         pitch_env_group = QGroupBox("Pitch Envelope")
@@ -199,13 +213,13 @@ class DigitalPartialEditor(QWidget):
         pitch_env_group.setLayout(pitch_env_layout)
 
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ATTACK, "Attack")
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack")
         )
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH_DECAY, "Decay")
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_DECAY_TIME, "Decay")
         )
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH_DEPTH, "Depth")
+            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_DEPTH, "Depth")
         )
         layout.addWidget(pitch_env_group)
 
@@ -224,7 +238,8 @@ class DigitalPartialEditor(QWidget):
 
         # Update PW controls enabled state when waveform changes
         self._update_pw_controls_state(OscWave.SAW)  # Initial state
-
+        self._update_pcm_controls_state(OscWave.PCM)  # Initial state
+        
         # PCM Wave number selector (only for PCM wave)
         pcm_group = QGroupBox("PCM Wave")
         pcm_layout = QVBoxLayout()
@@ -254,7 +269,8 @@ class DigitalPartialEditor(QWidget):
 
     def _update_pcm_controls_state(self, waveform: OscWave):
         """Update PCM wave controls visibility based on waveform"""
-        self.pcm_group.setVisible(waveform == OscWave.PCM)
+        self.pcm_wave_gain.setEnabled(waveform == OscWave.PCM)
+        self.pcm_wave_number.setEnabled(waveform == OscWave.PCM)
 
     def _on_wave_number_changed(self, value: int):
         """Handle wave number changes"""
@@ -325,11 +341,11 @@ class DigitalPartialEditor(QWidget):
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_KEYFOLLOW, "KeyFollow"
+                DigitalParameter.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"
             )
         )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_VELOCITY, "Velocity")
+            self._create_parameter_slider(DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity")
         )
         layout.addWidget(controls_group)
 
@@ -366,22 +382,22 @@ class DigitalPartialEditor(QWidget):
 
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_ATTACK, "A", vertical=True
+                DigitalParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True
             )
         )
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_DECAY, "D", vertical=True
+                DigitalParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True
             )
         )
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_SUSTAIN, "S", vertical=True
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True
             )
         )
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_RELEASE, "R", vertical=True
+                DigitalParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
             )
         )
         env_layout.addLayout(adsr_vlayout)
@@ -407,10 +423,10 @@ class DigitalPartialEditor(QWidget):
         )
         # Mapping ADSR parameters to their corresponding spinboxes
         self.filter_adsr_control_map = {
-            DigitalParameter.FILTER_ENV_ATTACK: self.filter_adsr_widget.attack_sb,
-            DigitalParameter.FILTER_ENV_DECAY: self.filter_adsr_widget.decay_sb,
-            DigitalParameter.FILTER_ENV_SUSTAIN: self.filter_adsr_widget.sustain_sb,
-            DigitalParameter.FILTER_ENV_RELEASE: self.filter_adsr_widget.release_sb,
+            DigitalParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attack_sb,
+            DigitalParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decay_sb,
+            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustain_sb,
+            DigitalParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.release_sb,
         }
 
         # 🔹 Connect ADSR spinboxes to external controls dynamically
@@ -433,8 +449,8 @@ class DigitalPartialEditor(QWidget):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
         spinbox = control_map[param]
         if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN,
-            DigitalParameter.FILTER_ENV_SUSTAIN,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
         ]:
             new_value = midi_cc_to_frac(value)
         else:
@@ -447,16 +463,16 @@ class DigitalPartialEditor(QWidget):
 
     def on_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
-            self.controls[DigitalParameter.FILTER_ENV_ATTACK].setValue(
+            self.controls[DigitalParameter.FILTER_ENV_ATTACK_TIME].setValue(
                 ms_to_midi_cc(envelope["attackTime"], 10, 1000)
             )
-            self.controls[DigitalParameter.FILTER_ENV_DECAY].setValue(
+            self.controls[DigitalParameter.FILTER_ENV_DECAY_TIME].setValue(
                 ms_to_midi_cc(envelope["decayTime"], 10, 1000)
             )
-            self.controls[DigitalParameter.FILTER_ENV_SUSTAIN].setValue(
+            self.controls[DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(
                 ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
             )
-            self.controls[DigitalParameter.FILTER_ENV_RELEASE].setValue(
+            self.controls[DigitalParameter.FILTER_ENV_RELEASE_TIME].setValue(
                 ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
             )
 
@@ -486,16 +502,16 @@ class DigitalPartialEditor(QWidget):
 
     def on_amp_env_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
-            self.controls[DigitalParameter.AMP_ENV_ATTACK].setValue(
+            self.controls[DigitalParameter.AMP_ENV_ATTACK_TIME].setValue(
                 ms_to_midi_cc(envelope["attackTime"], 10, 1000)
             )
-            self.controls[DigitalParameter.AMP_ENV_DECAY].setValue(
+            self.controls[DigitalParameter.AMP_ENV_DECAY_TIME].setValue(
                 ms_to_midi_cc(envelope["decayTime"], 10, 1000)
             )
-            self.controls[DigitalParameter.AMP_ENV_SUSTAIN].setValue(
+            self.controls[DigitalParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
                 ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
             )
-            self.controls[DigitalParameter.AMP_ENV_RELEASE].setValue(
+            self.controls[DigitalParameter.AMP_ENV_RELEASE_TIME].setValue(
                 ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
             )
 
@@ -538,11 +554,11 @@ class DigitalPartialEditor(QWidget):
             DigitalParameter.FILTER_CUTOFF,
             DigitalParameter.FILTER_RESONANCE,
             DigitalParameter.FILTER_KEYFOLLOW,
-            DigitalParameter.FILTER_VELOCITY,
-            DigitalParameter.FILTER_ENV_ATTACK,
-            DigitalParameter.FILTER_ENV_DECAY,
-            DigitalParameter.FILTER_ENV_SUSTAIN,
-            DigitalParameter.FILTER_ENV_RELEASE,
+            DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
+            DigitalParameter.FILTER_ENV_ATTACK_TIME,
+            DigitalParameter.FILTER_ENV_DECAY_TIME,
+            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.FILTER_ENV_RELEASE_TIME,
             DigitalParameter.FILTER_ENV_DEPTH,
             DigitalParameter.FILTER_SLOPE,
         ]:
@@ -620,22 +636,22 @@ class DigitalPartialEditor(QWidget):
         amp_env_adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_ATTACK, "A", vertical=True
+                DigitalParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_DECAY, "D", vertical=True
+                DigitalParameter.AMP_ENV_DECAY_TIME, "D", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_SUSTAIN, "S", vertical=True
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_RELEASE, "R", vertical=True
+                DigitalParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True
             )
         )
 
@@ -643,17 +659,17 @@ class DigitalPartialEditor(QWidget):
 
         # Keyfollow and aftertouch
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_KEYFOLLOW, "KeyFollow")
+            self._create_parameter_slider(DigitalParameter.AMP_LEVEL_KEYFOLLOW, "KeyFollow")
         )
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens")
         )
         # Mapping ADSR parameters to their corresponding spinboxes
         self.adsr_control_map = {
-            DigitalParameter.AMP_ENV_ATTACK: self.amp_env_adsr_widget.attack_sb,
-            DigitalParameter.AMP_ENV_DECAY: self.amp_env_adsr_widget.decay_sb,
-            DigitalParameter.AMP_ENV_SUSTAIN: self.amp_env_adsr_widget.sustain_sb,
-            DigitalParameter.AMP_ENV_RELEASE: self.amp_env_adsr_widget.release_sb,
+            DigitalParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
+            DigitalParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decay_sb,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustain_sb,
+            DigitalParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.release_sb,
         }
 
         # 🔹 Connect ADSR spinboxes to external controls dynamically
@@ -673,8 +689,8 @@ class DigitalPartialEditor(QWidget):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
         spinbox = control_map[param]
         if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN,
-            DigitalParameter.AMP_ENV_SUSTAIN,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
         ]:
             new_value = midi_cc_to_frac(value)
         else:
@@ -689,8 +705,8 @@ class DigitalPartialEditor(QWidget):
         """Updates external control from ADSR widget, avoiding infinite loops."""
         control = self.controls[param]
         if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN,
-            DigitalParameter.AMP_ENV_SUSTAIN,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
         ]:
             new_value = frac_to_midi_cc(value)
         else:
@@ -739,7 +755,7 @@ class DigitalPartialEditor(QWidget):
         # Sync switch
         self.lfo_sync = Switch("Sync", ["OFF", "ON"])
         self.lfo_sync.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.LFO_SYNC, v)
+            lambda v: self._on_parameter_changed(DigitalParameter.LFO_TEMPO_SYNC_SWITCH, v)
         )
         top_row.addWidget(self.lfo_sync)
         layout.addLayout(top_row)
@@ -749,13 +765,13 @@ class DigitalPartialEditor(QWidget):
             self._create_parameter_slider(DigitalParameter.LFO_RATE, "Rate")
         )
         layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_FADE, "Fade")
+            self._create_parameter_slider(DigitalParameter.LFO_FADE_TIME, "Fade")
         )
 
         # Key trigger switch
         self.lfo_trigger = Switch("Key Trigger", ["OFF", "ON"])
         self.lfo_trigger.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.LFO_TRIGGER, v)
+            lambda v: self._on_parameter_changed(DigitalParameter.LFO_KEY_TRIGGER, v)
         )
         layout.addWidget(self.lfo_trigger)
 
@@ -770,16 +786,16 @@ class DigitalPartialEditor(QWidget):
             depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_PITCH, "Pitch")
+            self._create_parameter_slider(DigitalParameter.LFO_PITCH_DEPTH, "Pitch")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_FILTER, "Filter")
+            self._create_parameter_slider(DigitalParameter.LFO_FILTER_DEPTH, "Filter")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_AMP, "Amp")
+            self._create_parameter_slider(DigitalParameter.LFO_AMP_DEPTH, "Amp")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_PAN, "Pan")
+            self._create_parameter_slider(DigitalParameter.LFO_PAN_DEPTH, "Pan")
         )
         layout.addWidget(depths_group)
 
@@ -789,8 +805,8 @@ class DigitalPartialEditor(QWidget):
         """Updates external control from ADSR widget, avoiding infinite loops."""
         control = self.controls[param]
         if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN,
-            DigitalParameter.FILTER_ENV_SUSTAIN,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
         ]:
             new_value = frac_to_midi_cc(value)
         else:
@@ -839,7 +855,7 @@ class DigitalPartialEditor(QWidget):
         # Sync switch
         self.mod_lfo_sync = Switch("Sync", ["OFF", "ON"])
         self.mod_lfo_sync.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_SYNC, v)
+            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v)
         )
         top_row.addWidget(self.mod_lfo_sync)
         layout.addLayout(top_row)
@@ -877,7 +893,7 @@ class DigitalPartialEditor(QWidget):
             ],
         )
         self.mod_lfo_note.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_NOTE, v)
+            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_TEMPO_SYNC_NOTE, v)
         )
         rate_row.addWidget(self.mod_lfo_note)
         layout.addLayout(rate_row)
@@ -888,13 +904,13 @@ class DigitalPartialEditor(QWidget):
         depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_PITCH, "Pitch")
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_PITCH_DEPTH, "Pitch")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_FILTER, "Filter")
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_FILTER_DEPTH, "Filter")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_AMP, "Amp")
+            self._create_parameter_slider(DigitalParameter.MOD_LFO_AMP_DEPTH, "Amp")
         )
         depths_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.MOD_LFO_PAN, "Pan")

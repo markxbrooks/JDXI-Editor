@@ -23,7 +23,8 @@ import qtawesome as qta
 from jdxi_manager.data.digital import DigitalCommonParameter
 from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.data.analog import AnalogParameter, AnalogCommonParameter
+from jdxi_manager.data.analog import AnalogCommonParameter
+from jdxi_manager.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.conversions import (
     midi_cc_to_ms,

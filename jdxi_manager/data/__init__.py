@@ -10,7 +10,7 @@ from jdxi_manager.data.drums import (
 )
 
 from jdxi_manager.data.analog import (
-    AnalogParameter,  # Parameter enum
+    # Parameter enum
     AnalogOscillator,  # Oscillator settings
     AnalogFilter,  # Filter settings
     AnalogAmplifier,  # Amplifier settings
@@ -18,14 +18,16 @@ from jdxi_manager.data.analog import (
     AnalogEnvelope,  # Envelope settings
     AnalogSynthPatch  # Complete patch class
 )
+from .parameter.analog import AnalogParameter
 
 # Import digital synth data
 from .digital import (
     DigitalSynth,  # Constants and presets
-    DigitalParameter,  # Parameter enum
+    # Parameter enum
     DigitalPartial,  # Partial constants
     DigitalPatch  # Complete patch class
 )
+from .parameter.digital import DigitalParameter
 
 # Import effects data
 from .effects import (

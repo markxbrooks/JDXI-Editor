@@ -843,7 +843,7 @@ class DigitalPartial:
         )
         FILTER_SLOPE = 0x0B  # Filter slope (0-1: -12dB, -24dB)
         FILTER_CUTOFF = 0x0C  # Filter cutoff frequency (0-127)
-        FILTER_KEYFOLLOW = 0x0D  # Cutoff keyfollow (54-74: -100 to +100)
+        FILTER_CUTOFF_KEYFOLLOW = 0x0D  # Cutoff keyfollow (54-74: -100 to +100)
         FILTER_VELO = 0x0E  # Env velocity sensitivity (1-127: -63 to +63)
         FILTER_RESO = 0x0F  # Resonance (0-127)
         FILTER_ATTACK = 0x10  # Env attack time (0-127)
