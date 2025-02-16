@@ -605,7 +605,7 @@ def parse_jdxi_patch_data(data: list):
         rb"(?P<lfo_pitch_depth>.)"  # LFO pitch depth
         rb"(?P<lfo_filter_depth>.)"  # LFO filter depth
         rb"(?P<lfo_amp_depth>.)"  # LFO amp depth
-        rb"(?P<lfo_sync>.)"  # LFO sync
+        rb"(?P<lfo_tempo_sync_switch>.)"  # LFO sync
         rb"(?P<osc_type>.)"  # OSC type
         rb"(?P<osc_detune>.)"  # OSC detune
         rb"(?P<osc_pulse_width>.)"  # OSC pulse width

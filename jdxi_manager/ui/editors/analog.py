@@ -943,10 +943,10 @@ class AnalogSynthEditor(BaseEditor):
 
         # Tempo Sync controls
         sync_row = QHBoxLayout()
-        # self.lfo_sync = self._create_parameter_slider(AnalogParameter.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync")
-        self.lfo_sync = Switch("Tempo Sync", ["OFF", "ON"])
-        self.lfo_sync.valueChanged.connect(self._on_lfo_sync_changed)
-        sync_row.addWidget(self.lfo_sync)
+
+        self.lfo_sync_switch = Switch("Tempo Sync", ["OFF", "ON"])
+        self.lfo_sync_switch.valueChanged.connect(self._on_lfo_sync_changed)
+        sync_row.addWidget(self.lfo_sync_switch)
 
         self.sync_note = QComboBox()
         self.sync_note.addItems(
