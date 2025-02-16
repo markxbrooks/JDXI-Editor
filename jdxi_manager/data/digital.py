@@ -237,6 +237,12 @@ class DigitalParameter(SynthParameter):
         self.min_val = min_val
         self.max_val = max_val
 
+    @staticmethod
+    def get_by_name(param_name):
+        """Get the AnalogParameter by name."""
+        # Return the parameter member by name, or None if not found
+        return DigitalParameter.__members__.get(param_name, None)
+
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
         if not isinstance(value, int):
