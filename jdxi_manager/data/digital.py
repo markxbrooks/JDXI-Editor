@@ -3,6 +3,7 @@ from enum import Enum, auto, IntEnum
 from typing import Dict, List, Tuple, Optional
 import logging
 
+from jdxi_manager.data.analog import SynthParameter
 from jdxi_manager.data.base import BaseParameter
 from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
@@ -157,7 +158,7 @@ class DigitalPartialOffset(IntEnum):
     PARTIAL_3 = 0x80  # 128 bytes offset
 
 
-class DigitalParameter(Enum):
+class DigitalParameter(SynthParameter):
     """Digital synth parameters with their addresses and value ranges"""
 
     # Oscillator parameters

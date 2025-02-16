@@ -360,15 +360,16 @@ def json_parse_jdxi_tone(data):
     Returns:
         dict: Parsed tone parameters.
     """
-    parsed_dict = {}
+    parameters = {}
 
     # Extract header and address safely
-    parsed_dict["JD_XI_ID"] = data[:7].hex() if len(data) >= 7 else "N/A"
-    parsed_dict["ADDRESS"] = data[7:11].hex() if len(data) >= 11 else "N/A"
-    address_high_byte = ""
+    parameters["JD_XI_ID"] = data[:7].hex() if len(data) >= 7 else "N/A"
+    parameters["ADDRESS"] = data[7:11].hex() if len(data) >= 11 else "N/A"
+    logging.info(f'address: {parameters["ADDRESS"]}')
     # Identify tone type based on SysEx address
     if len(data) > 7:
-        address_high_byte = data[7]  # First byte of the address field
+        temporary_area = data[8]
+        # First byte of the address field
         temporary_areas = {
             0x18: "ANALOG_SYNTH_AREA",
             0x19: "DIGITAL_SYNTH_1_AREA",
@@ -376,28 +377,28 @@ def json_parse_jdxi_tone(data):
             0x1C: "DRUM_KIT_AREA",
         }
 
-        parsed_dict["TEMPORARY_AREA"] = temporary_areas.get(
-            address_high_byte + 6, "Unknown"
+        parameters["TEMPORARY_AREA"] = temporary_areas.get(
+            temporary_area, "Unknown"
         )
     else:
-        parsed_dict["TEMPORARY_AREA"] = "Unknown"
+        parameters["TEMPORARY_AREA"] = "Unknown"
     logging.info(
-        f"address_high_byte: {address_high_byte}: {parsed_dict['TEMPORARY_AREA']}"
+        f"temporary_area: {temporary_area}: {parameters['TEMPORARY_AREA']}"
     )
     # Extract tone name safely (ensuring valid bounds)
     name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
 
     input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
     tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
-    parsed_dict["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
+    parameters["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
 
     # Use the new parse_parameters function
-    if parsed_dict["TEMPORARY_AREA"] == "DIGITAL_SYNTH_1_AREA":
-        parsed_dict.update(parse_digital_parameters(data))
+    if parameters["TEMPORARY_AREA"] == "DIGITAL_SYNTH_1_AREA":
+        parameters.update(parse_digital_parameters(data))
     else:
-        parsed_dict.update(parse_analog_parameters(data))
+        parameters.update(parse_analog_parameters(data))
 
-    return parsed_dict
+    return parameters
 
 
 def parse_sysex_data(data):
