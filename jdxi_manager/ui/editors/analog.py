@@ -540,10 +540,10 @@ class AnalogSynthEditor(BaseEditor):
             self.amp_env_adsr_widget.release_sb.value()
         )
         self.amp_env_adsr_widget.envelope["initialAmpl"] = (
-            self.amp_env_adsr_widget.initialSB.value()
+            self.amp_env_adsr_widget.initial_sb.value()
         )
         self.amp_env_adsr_widget.envelope["peakAmpl"] = (
-            self.amp_env_adsr_widget.peakSB.value()
+            self.amp_env_adsr_widget.peak_sb.value()
         )
         self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
             self.amp_env_adsr_widget.sustain_sb.value()
@@ -1153,6 +1153,99 @@ class AnalogSynthEditor(BaseEditor):
             logging.error("MIDI helper not initialized")
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+
+        try:
+            current_sysex_data = json.loads(json_sysex_data)
+        except json.JSONDecodeError as e:
+            logging.error(f"Invalid JSON format: {e}")
+            return
+
+        # Compare with previous data and log changes
+        if self.previous_json_data:
+            self._log_changes(self.previous_json_data, current_sysex_data)
+
+        # Store the current data for future comparison
+        self.previous_json_data = current_sysex_data
+
+        if current_sysex_data.get("TEMPORARY_AREA") != "ANALOG_SYNTH_AREA":
+            logging.warning("SysEx data does not belong to ANALOG_SYNTH_AREA. Skipping update.")
+            return
+
+        # Remove unnecessary keys
+        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
+        current_sysex_data = {k: v for k, v in current_sysex_data.items() if k not in ignored_keys}
+
+        # Define mapping dictionaries
+        sub_osc_type_map = {0: 0, 1: 1, 2: 2}
+        filter_switch_map = {0: 0, 1: 1}
+        osc_waveform_map = {0: Waveform.SAW, 1: Waveform.TRIANGLE, 2: Waveform.PULSE}
+
+        failures, successes = [], []
+
+        def update_slider(param, value):
+            """Helper function to update sliders safely."""
+            slider = self.controls.get(param)
+            if slider:
+                slider.blockSignals(True)
+                slider.setValue(value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+
+        def update_adsr_widget(param, value):
+            """Helper function to update ADSR widgets."""
+            new_value = midi_cc_to_frac(value) if param in [
+                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            ] else midi_cc_to_ms(value)
+
+            adsr_mapping = {
+                AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
+                AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decay_sb,
+                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustain_sb,
+                AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.release_sb,
+                AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attack_sb,
+                AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decay_sb,
+                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustain_sb,
+                AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.release_sb,
+            }
+
+            if param in adsr_mapping:
+                spinbox = adsr_mapping[param]
+                spinbox.setValue(new_value)
+
+        for param_name, param_value in current_sysex_data.items():
+            param = AnalogParameter.get_by_name(param_name)
+
+            if param:
+                update_slider(param, param_value)
+                update_adsr_widget(param, param_value)
+
+            elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
+                self._update_lfo_shape_buttons(param_value)
+
+            elif param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map:
+                self.sub_type.blockSignals(True)
+                self.sub_type.setValue(sub_osc_type_map[param_value])
+                self.sub_type.blockSignals(False)
+
+            elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
+                self._update_waveform_buttons(param_value)
+
+            elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
+                self.filter_switch.blockSignals(True)
+                self.filter_switch.setValue(filter_switch_map[param_value])
+                self.filter_switch.blockSignals(False)
+
+            else:
+                failures.append(param_name)
+
+        logging.info(f"Updated {len(successes)} parameters successfully.")
+        if failures:
+            logging.warning(f"Failed to update {len(failures)} parameters: {failures}")
+
+    def _update_sliders_from_sysex_old(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
 

@@ -390,31 +390,46 @@ def json_parse_jdxi_tone(data):
     Returns:
         dict: Parsed tone parameters.
     """
-    parameters = {}
 
-    # Extract header and address safely
-    parameters["JD_XI_ID"] = data[:7].hex() if len(data) >= 7 else "N/A"
-    parameters["ADDRESS"] = data[7:11].hex() if len(data) >= 11 else "N/A"
-    logging.info(f'address: {parameters["ADDRESS"]}')
-    # Identify tone type based on SysEx address
-    if len(data) > 7:
-        temporary_area = data[8]
-        # First byte of the address field
-        temporary_areas = {
+    def _extract_hex(data, start, end, default="N/A"):
+        """Extract a hex value from data safely."""
+        return data[start:end].hex() if len(data) >= end else default
+
+    def _get_temporary_area(byte_value):
+        """Map byte value to corresponding temporary area."""
+        return {
             0x18: "ANALOG_SYNTH_AREA",
             0x19: "DIGITAL_SYNTH_1_AREA",
             0x1A: "DIGITAL_SYNTH_2_AREA",
             0x1C: "DRUM_KIT_AREA",
-        }
+        }.get(byte_value, "Unknown")
 
-        parameters["TEMPORARY_AREA"] = temporary_areas.get(
-            temporary_area, "Unknown"
-        )
+    def _get_synth_tone(byte_value):
+        """Map byte value to corresponding synth tone."""
+        return {
+            0x00: "TONE_COMMON",
+            0x20: "PARTIAL_1",
+            0x21: "PARTIAL_2",
+            0x22: "PARTIAL_3",
+            0x50: "TONE_MODIFY",
+        }.get(byte_value, "Unknown")
+
+    parameters = {
+        "JD_XI_ID": _extract_hex(data, 0, 7),
+        "ADDRESS": _extract_hex(data, 7, 11),
+    }
+
+    if len(data) > 7:
+        temporary_area = data[8]
+        parameters["TEMPORARY_AREA"] = _get_temporary_area(temporary_area)
+        synth_tone = data[10] if len(data) > 10 else None
+        parameters["SYNTH_TONE"] = _get_synth_tone(synth_tone) if synth_tone is not None else "Unknown"
     else:
-        parameters["TEMPORARY_AREA"] = "Unknown"
-    logging.info(
-        f"temporary_area: {temporary_area}: {parameters['TEMPORARY_AREA']}"
-    )
+        parameters.update({"TEMPORARY_AREA": "Unknown", "SYNTH_TONE": "Unknown"})
+
+    logging.info(f"Address: {parameters['ADDRESS']}")
+    logging.info(f"Temporary Area: {parameters.get('TEMPORARY_AREA', 'Unknown')}")
+
     # Extract tone name safely (ensuring valid bounds)
     name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
 

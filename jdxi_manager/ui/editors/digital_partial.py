@@ -488,10 +488,10 @@ class DigitalPartialEditor(QWidget):
             self.filter_adsr_widget.release_sb.value()
         )
         self.filter_adsr_widget.envelope["initialAmpl"] = (
-            self.filter_adsr_widget.initialSB.value()
+            self.filter_adsr_widget.initial_sb.value()
         )
         self.filter_adsr_widget.envelope["peakAmpl"] = (
-            self.filter_adsr_widget.peakSB.value()
+            self.filter_adsr_widget.peak_sb.value()
         )
         self.filter_adsr_widget.envelope["sustainAmpl"] = (
             self.filter_adsr_widget.sustain_sb.value()
@@ -527,10 +527,10 @@ class DigitalPartialEditor(QWidget):
             self.amp_env_adsr_widget.release_sb.value()
         )
         self.amp_env_adsr_widget.envelope["initialAmpl"] = (
-            self.amp_env_adsr_widget.initialSB.value()
+            self.amp_env_adsr_widget.initial_sb.value()
         )
         self.amp_env_adsr_widget.envelope["peakAmpl"] = (
-            self.amp_env_adsr_widget.peakSB.value()
+            self.amp_env_adsr_widget.peak_sb.value()
         )
         self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
             self.amp_env_adsr_widget.sustain_sb.value()

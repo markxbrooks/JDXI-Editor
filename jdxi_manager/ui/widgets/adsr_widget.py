@@ -30,10 +30,10 @@ class ADSRWidget(QWidget):
         self.release_sb = self.create_spinbox(
             0, 1000, " ms", self.envelope["releaseTime"]
         )
-        self.initialSB = self.create_double_spinbox(
+        self.initial_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["initialAmpl"]
         )
-        self.peakSB = self.create_double_spinbox(0, 1, 0.01, self.envelope["peakAmpl"])
+        self.peak_sb = self.create_double_spinbox(0, 1, 0.01, self.envelope["peakAmpl"])
         self.sustain_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["sustainAmpl"]
         )
@@ -73,9 +73,9 @@ class ADSRWidget(QWidget):
         self.layout.addWidget(QLabel("Release:"), 2, 0)
         self.layout.addWidget(self.release_sb, 2, 1)
         self.layout.addWidget(QLabel("Initial:"), 0, 2)
-        self.layout.addWidget(self.initialSB, 0, 3)
+        self.layout.addWidget(self.initial_sb, 0, 3)
         self.layout.addWidget(QLabel("Peak:"), 1, 2)
-        self.layout.addWidget(self.peakSB, 1, 3)
+        self.layout.addWidget(self.peak_sb, 1, 3)
         self.layout.addWidget(QLabel("Sustain:"), 2, 2)
         self.layout.addWidget(self.sustain_sb, 2, 3)
         self.layout.addWidget(self.plot, 0, 4, 4, 1)
@@ -84,8 +84,8 @@ class ADSRWidget(QWidget):
         self.attack_sb.valueChanged.connect(self.valueChanged)
         self.decay_sb.valueChanged.connect(self.valueChanged)
         self.release_sb.valueChanged.connect(self.valueChanged)
-        self.initialSB.valueChanged.connect(self.valueChanged)
-        self.peakSB.valueChanged.connect(self.valueChanged)
+        self.initial_sb.valueChanged.connect(self.valueChanged)
+        self.peak_sb.valueChanged.connect(self.valueChanged)
         self.sustain_sb.valueChanged.connect(self.valueChanged)
 
         self.setLayout(self.layout)
@@ -109,8 +109,8 @@ class ADSRWidget(QWidget):
         self.envelope["attackTime"] = self.attack_sb.value()
         self.envelope["decayTime"] = self.decay_sb.value()
         self.envelope["releaseTime"] = self.release_sb.value()
-        self.envelope["initialAmpl"] = self.initialSB.value()
-        self.envelope["peakAmpl"] = self.peakSB.value()
+        self.envelope["initialAmpl"] = self.initial_sb.value()
+        self.envelope["peakAmpl"] = self.peak_sb.value()
         self.envelope["sustainAmpl"] = self.sustain_sb.value()
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
