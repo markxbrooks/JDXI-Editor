@@ -19,16 +19,16 @@ class BaseEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
-        self.midi_data_requests = [
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
-        ]
+        # self.midi_data_requests = [
+        #    "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
+        #
         self.midi_helper = midi_helper
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
 
         # Set window flags for a tool window
-        self.setWindowFlags(Qt.Tool)
+        self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
         self.setStyleSheet(Style.EDITOR_STYLE)

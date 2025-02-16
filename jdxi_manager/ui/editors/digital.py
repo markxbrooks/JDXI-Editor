@@ -2,11 +2,10 @@
 Digital Editor
 """
 
-import json
 import os
+import json
 import re
 import logging
-import time
 from typing import Dict, Optional, Union
 from PySide6.QtWidgets import (
     QWidget,
@@ -43,6 +42,7 @@ from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
     PART_1,
     PART_2,
+    PART_3,
     DIGITAL_SYNTH_1_AREA,
     DIGITAL_SYNTH_2_AREA,
     Waveform,
@@ -80,11 +80,11 @@ class DigitalSynthEditor(BaseEditor):
         self.midi_helper = midi_helper
         self.preset_loader = PresetLoader(self.midi_helper)
         self.midi_data_requests = [
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # wave_type_request
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # oscillator_1_request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # oscillator_2_request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # oscillator_3_request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects_request
+            #"F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # wave type request
+            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
+            #"F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
+            #"F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
+            #"F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
         ]
         if preset_handler:
             self.preset_handler = preset_handler
@@ -653,7 +653,7 @@ class DigitalSynthEditor(BaseEditor):
                 "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update."
             )
             return
-
+        partial_no = 1
         # Remove unnecessary keys
         for key in {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}:
             sysex_data.pop(key, None)
@@ -679,12 +679,12 @@ class DigitalSynthEditor(BaseEditor):
                 slider.blockSignals(False)
                 successes.append(param_name)
 
-            elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
-                index = self.lfo_shape.findText(lfo_shape_map[param_value])
-                if index != -1:
-                    self.lfo_shape.blockSignals(True)
-                    self.lfo_shape.setCurrentIndex(index)
-                    self.lfo_shape.blockSignals(False)
+            #elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
+            #    index = self.lfo_shape.findText(lfo_shape_map[param_value])
+            #    if index != -1:
+            #        self.lfo_shape.blockSignals(True)
+            #        self.lfo_shape.setCurrentIndex(index)
+            #        self.lfo_shape.blockSignals(False)
 
             elif (
                 param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
@@ -697,16 +697,16 @@ class DigitalSynthEditor(BaseEditor):
 
             elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                 waveform = osc_waveform_map[param_value]
-                if waveform in self.wave_buttons:
+                if waveform in self.partial_editors[partial_no].wave_buttons:
                     button = self.wave_buttons[waveform]
                     button.setChecked(True)
                     self._on_waveform_selected(waveform)
 
-            elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
-                index = filter_switch_map[param_value]
-                self.filter_switch.blockSignals(True)
-                self.filter_switch.setValue(index)
-                self.filter_switch.blockSignals(False)
+            #elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
+            #    index = filter_switch_map[param_value]
+            #    self.filter_switch.blockSignals(True)
+            #    self.filter_switch.setValue(index)
+            #    self.filter_switch.blockSignals(False)
 
             else:
                 failures.append(param_name)

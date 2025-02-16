@@ -228,65 +228,94 @@ def parse_sysex(sysex_bytes):
 
 
 def parse_digital_parameters(data: list) -> dict:
-    """Parse parameters from the given data list."""
-    parsed_dict = {}
+    """
+    Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, Amplifier, LFO, and other modulation settings.
+
+    Args:
+        data (bytes): SysEx message containing tone parameters.
+
+    Returns:
+        dict: Parsed parameters.
+    """
 
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
         return data[index] if index < len(data) else default
 
-    # Extract parameters safely
-    parsed_dict["WAVE_TYPE"] = safe_get(1)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(2)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(3)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(4)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(5)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(6)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(7)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(8)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(9)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(10)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(11)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(12)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(13)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(14)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(15)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(16)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(17)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(18)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(19)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(20)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(21)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(22)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(23)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(24)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(25)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(26)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(27)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(28)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(29)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(30)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(31)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(32)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(33)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(34)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(35)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(36)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(37)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(38)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(39)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(40)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(41)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(42)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(43)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(44)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(45)
-    parsed_dict["OSCILLATOR_1_WAVE_TYPE"] = safe_get(46)
-    parsed_dict["OSCILLATOR_2_WAVE_TYPE"] = safe_get(47)
-    parsed_dict["OSCILLATOR_3_WAVE_TYPE"] = safe_get(48)
-    parsed_dict["EFFECTS_WAVE_TYPE"] = safe_get(49)
+    parameters = {}
 
-    return parsed_dict
+    # ---- Oscillator Parameters ----
+    parameters["OSC_WAVE"] = safe_get(25)  # (0x20, 0x00)
+    parameters["OSC_WAVE_VAR"] = safe_get(26)  # (0x20, 0x01)
+    parameters["OSC_PITCH"] = safe_get(27)  # (0x20, 0x02)
+    parameters["OSC_DETUNE"] = safe_get(28)  # (0x20, 0x03)
+    parameters["OSC_PW"] = safe_get(29)  # (0x20, 0x05)
+    parameters["OSC_PWM_DEPTH"] = safe_get(30)  # (0x20, 0x06)
+    parameters["OSC_PITCH_ATTACK"] = safe_get(31)  # (0x20, 0x07)
+    parameters["OSC_PITCH_DECAY"] = safe_get(32)  # (0x20, 0x08)
+    parameters["OSC_PITCH_DEPTH"] = safe_get(33)  # (0x20, 0x09)
+
+    # ---- Filter Parameters ----
+    parameters["FILTER_MODE"] = safe_get(34)  # (0x21, 0x00)
+    parameters["FILTER_SLOPE"] = safe_get(35)  # (0x21, 0x01)
+    parameters["FILTER_CUTOFF"] = safe_get(36)  # (0x21, 0x02)
+    parameters["FILTER_RESONANCE"] = safe_get(37)  # (0x21, 0x03)
+    parameters["FILTER_KEYFOLLOW"] = safe_get(38)  # (0x21, 0x04)
+    parameters["FILTER_VELOCITY"] = safe_get(39)  # (0x21, 0x05)
+    parameters["FILTER_ENV_ATTACK"] = safe_get(40)  # (0x21, 0x06)
+    parameters["FILTER_ENV_DECAY"] = safe_get(41)  # (0x21, 0x07)
+    parameters["FILTER_ENV_SUSTAIN"] = safe_get(42)  # (0x21, 0x08)
+    parameters["FILTER_ENV_RELEASE"] = safe_get(43)  # (0x21, 0x09)
+    parameters["FILTER_ENV_DEPTH"] = safe_get(44)  # (0x21, 0x0A)
+
+    # ---- Amplifier Parameters ----
+    parameters["AMP_LEVEL"] = safe_get(45)  # (0x20, 0x15)
+    parameters["AMP_VELOCITY"] = safe_get(46)  # (0x20, 0x16)
+    parameters["AMP_ENV_ATTACK"] = safe_get(47)  # (0x20, 0x17)
+    parameters["AMP_ENV_DECAY"] = safe_get(48)  # (0x20, 0x18)
+    parameters["AMP_ENV_SUSTAIN"] = safe_get(49)  # (0x20, 0x19)
+    parameters["AMP_ENV_RELEASE"] = safe_get(50)  # (0x20, 0x1A)
+    parameters["AMP_PAN"] = safe_get(51)  # (0x20, 0x1B)
+    parameters["AMP_KEYFOLLOW"] = safe_get(52)  # (0x20, 0x1C)
+
+    # ---- LFO Parameters ----
+    parameters["LFO_SHAPE"] = safe_get(53)  # (0x23, 0x00)
+    parameters["LFO_RATE"] = safe_get(54)  # (0x23, 0x01)
+    parameters["LFO_SYNC"] = safe_get(55)  # (0x23, 0x02)
+    parameters["LFO_NOTE"] = safe_get(56)  # (0x23, 0x03)
+    parameters["LFO_FADE"] = safe_get(57)  # (0x23, 0x04)
+    parameters["LFO_TRIGGER"] = safe_get(58)  # (0x23, 0x05)
+    parameters["LFO_PITCH"] = safe_get(59)  # (0x23, 0x06)
+    parameters["LFO_FILTER"] = safe_get(60)  # (0x23, 0x07)
+    parameters["LFO_AMP"] = safe_get(61)  # (0x23, 0x08)
+    parameters["LFO_PAN"] = safe_get(62)  # (0x23, 0x09)
+
+    # ---- Modulation LFO Parameters ----
+    parameters["MOD_LFO_SHAPE"] = safe_get(63)  # (0x24, 0x00)
+    parameters["MOD_LFO_RATE"] = safe_get(64)  # (0x24, 0x01)
+    parameters["MOD_LFO_SYNC"] = safe_get(65)  # (0x24, 0x02)
+    parameters["MOD_LFO_NOTE"] = safe_get(66)  # (0x24, 0x03)
+    parameters["MOD_LFO_PITCH"] = safe_get(67)  # (0x24, 0x04)
+    parameters["MOD_LFO_FILTER"] = safe_get(68)  # (0x24, 0x05)
+    parameters["MOD_LFO_AMP"] = safe_get(69)  # (0x24, 0x06)
+    parameters["MOD_LFO_PAN"] = safe_get(70)  # (0x24, 0x07)
+    parameters["MOD_LFO_RATE_CTRL"] = safe_get(71)  # (0x24, 0x08)
+
+    # ---- Additional Parameters ----
+    parameters["CUTOFF_AFTERTOUCH"] = safe_get(72)  # (0x25, 0x00)
+    parameters["LEVEL_AFTERTOUCH"] = safe_get(73)  # (0x25, 0x01)
+    parameters["WAVE_GAIN"] = safe_get(74)  # (0x25, 0x02)
+    parameters["HPF_CUTOFF"] = safe_get(75)  # (0x25, 0x03)
+    parameters["SUPER_SAW_DETUNE"] = safe_get(76)  # (0x25, 0x04)
+
+    # ---- Wave Number Parameters ----
+    parameters["WAVE_NUMBER_1"] = safe_get(77)  # (0x26, 0x00)
+    parameters["WAVE_NUMBER_2"] = safe_get(78)  # (0x26, 0x01)
+    parameters["WAVE_NUMBER_3"] = safe_get(79)  # (0x26, 0x02)
+    parameters["WAVE_NUMBER_4"] = safe_get(80)  # (0x26, 0x03)
+
+    return parameters
+
 
 
 def parse_analog_parameters(data: list) -> dict:
@@ -749,26 +778,10 @@ class MIDIHelper(QObject):
                     f"Parameter Offset: {''.join(f'{byte:02X}' for byte in address_offset)}"
                 )
             except Exception as ex:
-                logging.info(f"Error extracting command name: {ex}")
-
-            # Emit parameter changes based on the address area
-            try:
-                area_code = address_offset[0]
-                if area_code in [
-                    DIGITAL_SYNTH_1_AREA,
-                    DIGITAL_SYNTH_2_AREA,
-                    ANALOG_SYNTH_AREA,
-                    DRUM_KIT_AREA,
-                ]:
-                    self.parameter_received.emit(address_offset, message.data[11])
-                    # param = self._get_parameter_from_address(address_offset)
-                    # if param:
-                    #    self.parameter_changed.emit(param, address_offset[-1])
-            except Exception as ex:
-                logging.info(f"Error emitting parameter change signal: {ex}")
+                logging.error(f"Error parsing JD-Xi tone data: {ex}", exc_info=True)
 
         except Exception as e:
-            logging.error(f"Error handling SysEx message: {e} | Message: {message}")
+            logging.error(f"Error handling SysEx message: {e}", exc_info=True)
 
     def parse_sysex_message(message):
         # Regular expression pattern to match SysEx structure
