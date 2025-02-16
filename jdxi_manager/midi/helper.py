@@ -75,6 +75,7 @@ sysex_message = [
     0xF7,
 ]
 """
+from jdxi_manager.data.parameter.digital import parse_digital_parameters
 
 """
 # Example SysEx Data (convert hex to bytes)
@@ -226,8 +227,7 @@ def parse_sysex(sysex_bytes):
         "end": sysex_bytes[15],
     }
 
-
-def parse_digital_parameters(data: list) -> dict:
+def parse_digital_parameters_really_old(data: list) -> dict:
     """
     Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, Amplifier, LFO, and other modulation settings.
 
@@ -246,58 +246,59 @@ def parse_digital_parameters(data: list) -> dict:
 
     # ---- Oscillator Parameters ----
     parameters["OSC_WAVE"] = safe_get(12)  # (0x20, 0x00)
-    parameters["OSC_WAVE_VAR"] = safe_get(13)  # (0x20, 0x01)
-    parameters["OSC_PITCH"] = safe_get(14)  # (0x20, 0x02)
-    parameters["OSC_DETUNE"] = safe_get(15)  # (0x20, 0x03)
-    parameters["OSC_PW"] = safe_get(16)  # (0x20, 0x05)
-    parameters["OSC_PWM_DEPTH"] = safe_get(17)  # (0x20, 0x06)
-    parameters["OSC_PITCH_ATTACK"] = safe_get(18)  # (0x20, 0x07)
-    parameters["OSC_PITCH_DECAY"] = safe_get(19)  # (0x20, 0x08)
-    parameters["OSC_PITCH_DEPTH"] = safe_get(20)  # (0x20, 0x09)
+    parameters["OSC_WAVE_VARIATION"] = safe_get(13)  # (0x20, 0x01)
+    # 14 is a reserved byte
+    parameters["OSC_PITCH"] = safe_get(15)  # (0x20, 0x02)
+    parameters["OSC_DETUNE"] = safe_get(16)  # (0x20, 0x03)
+    parameters["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(17)  # (0x20, 0x05)
+    parameters["OSC_PULSE_WIDTH"] = safe_get(18)  # (0x20, 0x06)
+    parameters["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(19)  # (0x20, 0x07)
+    parameters["OSC_PITCH_ENV_DECAY_TIME"] = safe_get(20)  # (0x20, 0x08)
+    parameters["OSC_PITCH_ENV_DEPTH"] = safe_get(21)  # (0x20, 0x09)
 
     # ---- Filter Parameters ----
-    parameters["FILTER_MODE"] = safe_get(21)  # (0x21, 0x00)
-    parameters["FILTER_SLOPE"] = safe_get(22)  # (0x21, 0x01)
-    parameters["FILTER_CUTOFF"] = safe_get(23)  # (0x21, 0x02)
-    parameters["FILTER_RESONANCE"] = safe_get(24)  # (0x21, 0x03)
-    parameters["FILTER_KEYFOLLOW"] = safe_get(25)  # (0x21, 0x04)
-    parameters["FILTER_VELOCITY"] = safe_get(26)  # (0x21, 0x05)
-    parameters["FILTER_ENV_ATTACK"] = safe_get(27)  # (0x21, 0x06)
-    parameters["FILTER_ENV_DECAY"] = safe_get(28)  # (0x21, 0x07)
-    parameters["FILTER_ENV_SUSTAIN"] = safe_get(29)  # (0x21, 0x08)
-    parameters["FILTER_ENV_RELEASE"] = safe_get(30)  # (0x21, 0x09)
-    parameters["FILTER_ENV_DEPTH"] = safe_get(31)  # (0x21, 0x0A)
+    parameters["FILTER_MODE"] = safe_get(22)  # (0x21, 0x00)
+    parameters["FILTER_SLOPE"] = safe_get(23)  # (0x21, 0x01)
+    parameters["FILTER_CUTOFF"] = safe_get(24)  # (0x21, 0x02)
+    parameters["FILTER_CUTOFF_KEYFOLLOW"] = safe_get(25)  # (0x21, 0x03)
+    parameters["FILTER_ENV_VELOCITY_SENSITIVITY"] = safe_get(26)  # (0x21, 0x04)
+    parameters["FILTER_RESONANCE"] = safe_get(27)  # (0x21, 0x05)
+    parameters["FILTER_ENV_ATTACK_TIME"] = safe_get(28)  # (0x21, 0x06)
+    parameters["FILTER_ENV_DECAY_TIME"] = safe_get(29)  # (0x21, 0x07)
+    parameters["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(30)  # (0x21, 0x08)
+    parameters["FILTER_ENV_RELEASE_TIME"] = safe_get(31)  # (0x21, 0x09)
+    parameters["FILTER_ENV_DEPTH"] = safe_get(32)  # (0x21, 0x0A)
 
     # ---- Amplifier Parameters ----
-    parameters["AMP_LEVEL"] = safe_get(32)  # (0x20, 0x15)
-    parameters["AMP_VELOCITY"] = safe_get(33)  # (0x20, 0x16)
-    parameters["AMP_ENV_ATTACK"] = safe_get(34)  # (0x20, 0x17)
-    parameters["AMP_ENV_DECAY"] = safe_get(35)  # (0x20, 0x18)
-    parameters["AMP_ENV_SUSTAIN"] = safe_get(36)  # (0x20, 0x19)
-    parameters["AMP_ENV_RELEASE"] = safe_get(37)  # (0x20, 0x1A)
-    parameters["AMP_PAN"] = safe_get(38)  # (0x20, 0x1B)
-    parameters["AMP_KEYFOLLOW"] = safe_get(39)  # (0x20, 0x1C)
+    parameters["AMP_LEVEL"] = safe_get(33)  # (0x20, 0x15)
+    parameters["AMP_VELOCITY"] = safe_get(34)  # (0x20, 0x16)
+    parameters["AMP_ENV_ATTACK_TIME"] = safe_get(35)  # (0x20, 0x17)
+    parameters["AMP_ENV_DECAY_TIME"] = safe_get(36)  # (0x20, 0x18)
+    parameters["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(37)  # (0x20, 0x19)
+    parameters["AMP_ENV_RELEASE_TIME"] = safe_get(38)  # (0x20, 0x1A)
+    parameters["AMP_PAN"] = safe_get(39)  # (0x20, 0x1B)
+    parameters["AMP_LEVEL_KEYFOLLOW"] = safe_get(40)  # (0x20, 0x1C)
 
     # ---- LFO Parameters ----
     parameters["LFO_SHAPE"] = safe_get(40)  # (0x23, 0x00)
     parameters["LFO_RATE"] = safe_get(41)  # (0x23, 0x01)
-    parameters["LFO_SYNC"] = safe_get(42)  # (0x23, 0x02)
-    parameters["LFO_NOTE"] = safe_get(43)  # (0x23, 0x03)
-    parameters["LFO_FADE"] = safe_get(44)  # (0x23, 0x04)
-    parameters["LFO_TRIGGER"] = safe_get(45)  # (0x23, 0x05)
-    parameters["LFO_PITCH"] = safe_get(46)  # (0x23, 0x06)
-    parameters["LFO_FILTER"] = safe_get(47)  # (0x23, 0x07)
-    parameters["LFO_AMP"] = safe_get(48)  # (0x23, 0x08)
-    parameters["LFO_PAN"] = safe_get(49)  # (0x23, 0x09)
+    parameters["LFO_TEMPO_SYNC_SWITCH"] = safe_get(42)  # (0x23, 0x02)
+    parameters["LFO_TEMPO_SYNC_NOTE"] = safe_get(43)  # (0x23, 0x03)
+    parameters["LFO_FADE_TIME"] = safe_get(44)  # (0x23, 0x04)
+    parameters["LFO_KEY_TRIGGER"] = safe_get(45)  # (0x23, 0x05)
+    parameters["LFO_PITCH_DEPTH"] = safe_get(46)  # (0x23, 0x06)
+    parameters["LFO_FILTER_DEPTH"] = safe_get(47)  # (0x23, 0x07)
+    parameters["LFO_AMP_DEPTH"] = safe_get(48)  # (0x23, 0x08)
+    parameters["LFO_PAN_DEPTH"] = safe_get(49)  # (0x23, 0x09)
 
     # ---- Modulation LFO Parameters ----
     parameters["MOD_LFO_SHAPE"] = safe_get(50)  # (0x24, 0x00)
     parameters["MOD_LFO_RATE"] = safe_get(51)  # (0x24, 0x01)
-    parameters["MOD_LFO_SYNC"] = safe_get(52)  # (0x24, 0x02)
-    parameters["MOD_LFO_NOTE"] = safe_get(53)  # (0x24, 0x03)
-    parameters["MOD_LFO_PITCH"] = safe_get(54)  # (0x24, 0x04)
-    parameters["MOD_LFO_FILTER"] = safe_get(55)  # (0x24, 0x05)
-    parameters["MOD_LFO_AMP"] = safe_get(56)  # (0x24, 0x06)
+    parameters["MOD_LFO_TEMPO_SYNC_SWITCH"] = safe_get(52)  # (0x24, 0x02)
+    parameters["MOD_LFO_TEMPO_SYNC_NOTE"] = safe_get(53)  # (0x24, 0x03)
+    parameters["MOD_LFO_PITCH_DEPTH"] = safe_get(54)  # (0x24, 0x04)
+    parameters["MOD_LFO_FILTER_DEPTH"] = safe_get(55)  # (0x24, 0x05)
+    parameters["MOD_LFO_AMP_DEPTH"] = safe_get(56)  # (0x24, 0x06)
     parameters["MOD_LFO_PAN"] = safe_get(57)  # (0x24, 0x07)
     parameters["MOD_LFO_RATE_CTRL"] = safe_get(58)  # (0x24, 0x08)
 

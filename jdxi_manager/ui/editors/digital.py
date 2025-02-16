@@ -6,6 +6,8 @@ import os
 import json
 import re
 import logging
+from gc import DEBUG_STATS
+from http.cookiejar import debug
 from typing import Dict, Optional, Union
 from PySide6.QtWidgets import (
     QWidget,
@@ -31,13 +33,13 @@ from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.data.digital import (
-    DigitalParameter,
     DigitalCommonParameter,
     OscWave,
     DigitalPartial,
     set_partial_state,
     get_digital_parameter_by_address,
 )
+from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
     PART_1,
@@ -639,7 +641,8 @@ class DigitalSynthEditor(BaseEditor):
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
-
+        debug_param_updates = True
+        debug_stats = True
         try:
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
@@ -679,7 +682,8 @@ class DigitalSynthEditor(BaseEditor):
             if param and param in self.partial_editors[partial_no].controls:
                 slider = self.partial_editors[partial_no].controls[param]
                 slider.blockSignals(True)
-                logging.info(f"Updating: {param:50} {param_value}")
+                if debug_param_updates:
+                    logging.info(f"Updating: {param:50} {param_value}")
                 slider.setValue(param_value)
                 slider.blockSignals(False)
                 successes.append(param_name)
@@ -716,12 +720,13 @@ class DigitalSynthEditor(BaseEditor):
             else:
                 failures.append(param_name)
 
-        # Logging success rate
-        success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-        logging.info(f"Successes: {successes}")
-        logging.info(f"Failures: {failures}")
-        logging.info(f"Success Rate: {success_rate:.1f}%")
-        logging.info("--------------------------------")
+        if debug_stats:
+            # Logging success rate
+            success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+            logging.info(f"Successes: {successes}")
+            logging.info(f"Failures: {failures}")
+            logging.info(f"Success Rate: {success_rate:.1f}%")
+            logging.info("--------------------------------")
 
     def _log_changes(self, previous_data, current_data):
         """Log changes between previous and current JSON data."""
