@@ -68,6 +68,7 @@ class DigitalSynthEditor(BaseEditor):
     ):
         super().__init__(parent)
         # Image display
+        self.current_data = None
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
         )
@@ -238,7 +239,7 @@ class DigitalSynthEditor(BaseEditor):
         # Connect partial switches to enable/disable tabs
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
-
+        self.midi_helper.parameter_received.connect(self._on_parameter_received)
         # Initialize with default states
         self.initialize_partial_states()
         self.data_request()
@@ -641,6 +642,9 @@ class DigitalSynthEditor(BaseEditor):
 
         try:
             sysex_data = json.loads(json_sysex_data)
+            self.previous_data = self.current_data
+            self.current_data = sysex_data
+            self._log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return
@@ -669,10 +673,11 @@ class DigitalSynthEditor(BaseEditor):
         for param_name, param_value in sysex_data.items():
             param = DigitalParameter.get_by_name(
                 param_name
-            )  # @@ FIXME: implement get_by_name
+            )
+            # logging.info(f"param_name: {param_name}: {param}")
 
-            if param and param in self.controls:
-                slider = self.controls[param]
+            if param and param in self.partial_editors[partial_no].controls:
+                slider = self.partial_editors[partial_no].controls[param]
                 slider.blockSignals(True)
                 logging.info(f"Updating: {param:50} {param_value}")
                 slider.setValue(param_value)
@@ -717,6 +722,27 @@ class DigitalSynthEditor(BaseEditor):
         logging.info(f"Failures: {failures}")
         logging.info(f"Success Rate: {success_rate:.1f}%")
         logging.info("--------------------------------")
+
+    def _log_changes(self, previous_data, current_data):
+        """Log changes between previous and current JSON data."""
+        changes = []
+        if not current_data or not previous_data:
+            return
+        for key, current_value in current_data.items():
+            previous_value = previous_data.get(key)
+            if previous_value != current_value:
+                changes.append((key, previous_value, current_value))
+
+        changes = [
+            change for change in changes if change[0] not in ["JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+        ]
+
+        if changes:
+            logging.info("Changes detected:")
+            for key, prev, curr in changes:
+                logging.info(f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}")
+        else:
+            logging.info("No changes detected.")
 
     def _update_waveform_buttons(self, partial_number, value):
         """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
