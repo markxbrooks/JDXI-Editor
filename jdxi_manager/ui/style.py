@@ -10,6 +10,8 @@ class Style:
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # """"#1A1A1A"
     FOREGROUND = "#FFFFFF"
+    PADDING = 2 # in px
+    BUTTON_PADDING = 3
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF2200"  # Red for hover
     ANALOG_ACCENT = "#00A0E9"
@@ -92,7 +94,7 @@ class Style:
             border: 1px solid {ACCENT};
             border-radius: 3px;
             margin-top: 1.5ex;
-            padding: 10px;
+            padding: {PADDING}px;
         }}
         
         QGroupBox[adsr="true"] {{
@@ -204,7 +206,7 @@ class Style:
             border: 1px solid {ANALOG_ACCENT};
             border-radius: 3px;
             margin-top: 1.5ex;
-            padding: 10px;
+            padding: {PADDING}px;
         }}
 
         QGroupBox[adsr="true"] {{
@@ -223,7 +225,7 @@ class Style:
             background-color: {BACKGROUND};
             border: 1px solid {ANALOG_ACCENT};  /* Red border */
             border-radius: 3px;
-            padding: 5px;
+            padding: {BUTTON_PADDING}px;
             color: {FOREGROUND};
         }}
 
@@ -321,7 +323,7 @@ class Style:
             border: 1px solid {ANALOG_ACCENT};
             border-radius: 3px;
             margin-top: 1.5ex;
-            padding: 10px;
+            padding: {PADDING}px;
         }}
 
         QGroupBox[adsr="true"] {{
@@ -438,7 +440,7 @@ class Style:
             border: 1px solid {ANALOG_ACCENT};
             border-radius: 3px;
             margin-top: 1.5ex;
-            padding: 10px;
+            padding: {PADDING}px;
         }}
 
         QGroupBox[adsr="true"] {{

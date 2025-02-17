@@ -110,7 +110,7 @@ class AnalogSynthEditor(BaseEditor):
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS
         self.preset_type = PresetType.ANALOG
-        self.midi_data_requests = [
+        self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
         ]
         # Create scroll area for resizable content

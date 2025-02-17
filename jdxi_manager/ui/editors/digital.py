@@ -84,12 +84,12 @@ class DigitalSynthEditor(BaseEditor):
 
         self.midi_helper = midi_helper
         self.preset_loader = PresetLoader(self.midi_helper)
-        self.midi_data_requests = [
+        self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # common controls
-            #"F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
-            #"F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
-            #"F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
-            #"F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
+            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
+            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
         ]
         if preset_handler:
             self.preset_handler = preset_handler
@@ -259,7 +259,7 @@ class DigitalSynthEditor(BaseEditor):
         else:
             logging.error("MIDI helper not initialized")
 
-        self.midi_helper.json_sysex.connect(self._update_sliders_from_sysex)
+        self.midi_helper.json_sysex.connect(self._dispatch_sysex_to_area)
         # self.midi_helper.parameter_received.connect(self._on_parameter_received)
         print(f"self.controls: {self.controls}")
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
@@ -653,83 +653,28 @@ class DigitalSynthEditor(BaseEditor):
         logging.info("Updating UI components from SysEx data")
         debug_param_updates = True
         debug_stats = True
-        failures, successes = [], []
 
-        def _parse_sysex_json(json_data):
-            """Parse JSON safely and log changes."""
-            try:
-                sysex_data = json.loads(json_data)
-                self.previous_data = self.current_data
-                self.current_data = sysex_data
-                self._log_changes(self.previous_data, sysex_data)
-                return sysex_data
-            except json.JSONDecodeError as ex:
-                logging.error(f"Invalid JSON format: {ex}")
-                return None
-
-        def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to a supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]
-
-        def _get_partial_number(synth_tone):
-            """Retrieve partial number from synth tone mapping."""
-            return {
-                "PARTIAL_1": 1,
-                "PARTIAL_2": 2,
-                "PARTIAL_3": 3
-            }.get(synth_tone, None)
-
-        def _update_common_slider(param, value):
-            """Helper function to update sliders safely."""
-            logging.info(f"param: {param}")
-            slider = self.controls.get(param)
-            logging.info(f"slider: {slider}")
-            if slider:
-                slider.blockSignals(True)
-                slider.setValue(value)
-                slider.blockSignals(False)
-                successes.append(param.name)
-                if debug_param_updates:
-                    logging.info(f"Updated: {param.name:50} {value}")
-            else:
-                failures.append(param.name)
-
-        # Parse SysEx data
-        sysex_data = _parse_sysex_json(json_sysex_data)
-        if not sysex_data:
+        try:
+            sysex_data = json.loads(json_sysex_data)
+            self.previous_data = self.current_data
+            self.current_data = sysex_data
+            self._log_changes(self.previous_data, sysex_data)
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
             return
 
-        if not _is_valid_sysex_area(sysex_data):
+        if sysex_data.get("TEMPORARY_AREA") not in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
             logging.warning(
                 "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
             return
 
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        #if partial_no is None:
-        #    logging.warning(f"Unrecognized SYNTH_TONE: {synth_tone}. Skipping update of partials")
-        #elif synth_tone == "TONE_MODIFY":
-        #    return
-        if synth_tone == "TONE_COMMON":
-            logging.info(f"\nTone common")
-            for param_name, param_value in sysex_data.items():
-                param = DigitalCommonParameter.get_by_name(param_name)
-                logging.info(f"Tone common: param_name: {param} {param_value}")
-                try:
-                    if param:
-                        _update_common_slider(param, param_value)
-                    else:
-                        failures.append(param_name)
-                except Exception as ex:
-                    logging.info(f"Error {ex} occurred")
+        partial_no = 1  # Default partial number
+        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
-        logging.info(f"Updating sliders for Partial {partial_no}")
+        osc_waveform_map = {wave.value: wave for wave in OscWave}
 
-        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
-        #sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-
-        common_ignored_keys = {'JD_XI_ID', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
+        failures, successes = [], []
 
         def _update_slider(param, value):
             """Helper function to update sliders safely."""
@@ -741,57 +686,43 @@ class DigitalSynthEditor(BaseEditor):
                 successes.append(param.name)
                 if debug_param_updates:
                     logging.info(f"Updated: {param.name:50} {value}")
-            else:
-                failures.append(param.name)
 
-        def update_adsr_widget(param, value):
-            """Helper function to update ADSR widgets."""
-            new_value = midi_cc_to_frac(value) if param in [
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            ] else midi_cc_to_ms(value)
-
-            adsr_mapping = {
-                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.attack_sb,
-                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.decay_sb,
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].amp_env_adsr_widget.sustain_sb,
-                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.release_sb,
-                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[partial_no].filter_adsr_widget.attack_sb,
-                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[partial_no].filter_adsr_widget.decay_sb,
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].filter_adsr_widget.sustain_sb,
-                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[partial_no].filter_adsr_widget.release_sb,
-            }
-
-            if param in adsr_mapping:
-                spinbox = adsr_mapping[param]
-                spinbox.setValue(new_value)
+        def _update_waveform(param_value):
+            """Helper function to update waveform selection UI."""
+            waveform = osc_waveform_map.get(param_value)
+            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
+                button = self.partial_editors[partial_no].wave_buttons[waveform]
+                button.setChecked(True)
+                self.partial_editors[partial_no]._on_waveform_selected(waveform)
+                logging.debug(f"Updated waveform button for {waveform}")
 
         for param_name, param_value in sysex_data.items():
             param = DigitalParameter.get_by_name(param_name)
-            try:
-                if param:
-                    if param == DigitalParameter.OSC_WAVE:
-                        self._update_waveform_buttons(partial_no, param_value)
-                    else:
-                        _update_slider(param, param_value)
-                        update_adsr_widget(param, param_value)
-                else:
-                    failures.append(param_name)
-            except Exception as ex:
-                logging.info(f"Error {ex} occurred")
+
+            if param:
+                _update_slider(param, param_value)
+
+            elif param == DigitalParameter.OSC_WAVE:
+                self._update_waveform_buttons(partial_no, param_value)
+
+            elif param_name == "OSC_WAVE":
+                _update_waveform(param_value)
+
+            else:
+                failures.append(param_name)
 
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
                 success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-                logging.info(f"successes: \t{successes}")
-                logging.info(f"failures: \t{failures}")
-                logging.info(f"success rate: \t{success_rate:.1f}%")
+                logging.info(f"Successes: {successes}")
+                logging.info(f"Failures: {failures}")
+                logging.info(f"Success Rate: {success_rate:.1f}%")
                 logging.info("--------------------------------")
 
         _log_debug_info()
 
-    def _update_all_sliders_from_sysex(self, json_sysex_data: str):
+    def _update_sliders_from_sysex_hacked(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
         debug_param_updates = True
@@ -848,35 +779,15 @@ class DigitalSynthEditor(BaseEditor):
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
-        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        #if partial_no is None:
-        #    logging.warning(f"Unrecognized SYNTH_TONE: {synth_tone}. Skipping update of partials")
-        #elif synth_tone == "TONE_MODIFY":
-        #    return
-        if synth_tone == "TONE_COMMON":
-            logging.info(f"\nTone common")
-            for param_name, param_value in sysex_data.items():
-                param = DigitalCommonParameter.get_by_name(param_name)
-                logging.info(f"Tone common: param_name: {param} {param_value}")
-                try:
-                    if param:
-                        _update_common_slider(param, param_value)
-                    else:
-                        failures.append(param_name)
-                except Exception as ex:
-                    logging.info(f"Error {ex} occurred")
-
-        logging.info(f"Updating sliders for Partial {partial_no}")
+        partial_no = _get_partial_number(synth_tone)
 
         ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
-        #sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-
-        common_ignored_keys = {'JD_XI_ID', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
         def _update_slider(param, value):
             """Helper function to update sliders safely."""
             slider = self.partial_editors[partial_no].controls.get(param)
+            logging.info(f"Updating slider for param {param}")
             if slider:
                 slider.blockSignals(True)
                 slider.setValue(value)
@@ -910,7 +821,9 @@ class DigitalSynthEditor(BaseEditor):
                 spinbox.setValue(new_value)
 
         for param_name, param_value in sysex_data.items():
+            logging.info(f"param_name {param_name}")
             param = DigitalParameter.get_by_name(param_name)
+            logging.info(f"param {param}")
             try:
                 if param:
                     if param == DigitalParameter.OSC_WAVE:
@@ -934,7 +847,36 @@ class DigitalSynthEditor(BaseEditor):
 
         _log_debug_info()
 
-    def _update_sliders_from_sysex(self, json_sysex_data: str):
+    def _dispatch_sysex_to_area(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        failures, successes = [], []
+
+        def _parse_sysex_json(json_data):
+            """Parse JSON safely and log changes."""
+            try:
+                sysex_data = json.loads(json_data)
+                return sysex_data
+            except json.JSONDecodeError as ex:
+                logging.error(f"Invalid JSON format: {ex}")
+                return None
+
+        # Parse SysEx data
+        sysex_data = _parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+
+        if synth_tone == "TONE_COMMON":
+            logging.info(f"\nTone common")
+            self._update_common_sliders_from_sysex(json_sysex_data)
+        elif synth_tone == "TONE_MODIFY":
+            pass  # not yet implemented
+        else:
+            self._update_partial_sliders_from_sysex(json_sysex_data)
+
+    def _update_common_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
         debug_param_updates = True
@@ -981,21 +923,6 @@ class DigitalSynthEditor(BaseEditor):
                 failures.append(param.name)
 
         def _update_common_switch(param, value):
-            """Helper function to update sliders safely."""
-            logging.info(f"switch param: {param}")
-            switch = self.controls.get(param)
-            logging.info(f"switch: {switch}")
-            if switch:
-                switch.blockSignals(True)
-                switch.setValue(value)
-                switch.blockSignals(False)
-                successes.append(param.name)
-                if debug_param_updates:
-                    logging.info(f"Updated: {param.name:50} {value}")
-            else:
-                failures.append(param.name)
-
-        def _update_common_checkbox(param, value):
             """Helper function to update checkbox safely."""
             logging.info(f"checkbox param: {param} {value}")
             partial_switch_map = {"PARTIAL1_SWITCH": 1, "PARTIAL2_SWITCH": 2, "PARTIAL3_SWITCH": 3}
@@ -1012,7 +939,6 @@ class DigitalSynthEditor(BaseEditor):
             else:
                 failures.append(param.name)
 
-
         # Parse SysEx data
         sysex_data = _parse_sysex_json(json_sysex_data)
         if not sysex_data:
@@ -1025,10 +951,6 @@ class DigitalSynthEditor(BaseEditor):
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        #if partial_no is None:
-        #    logging.warning(f"Unrecognized SYNTH_TONE: {synth_tone}. Skipping update of partials")
-        #elif synth_tone == "TONE_MODIFY":
-        #    return
 
         common_ignored_keys = {'JD_XI_ID', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
         sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
@@ -1041,19 +963,15 @@ class DigitalSynthEditor(BaseEditor):
                 try:
                     if param:
                         if param_name in ['PARTIAL1_SWITCH', 'PARTIAL1_SELECT', 'PARTIAL2_SWITCH', 'PARTIAL2_SELECT', 'PARTIAL3_SWITCH', 'PARTIAL3_SELECT']:
-                            _update_common_checkbox(param, param_value)
-                        _update_common_slider(param, param_value)
+                            _update_common_switch(param, param_value)
+                        else:
+                            _update_common_slider(param, param_value)
                     else:
                         failures.append(param_name)
                 except Exception as ex:
                     logging.info(f"Error {ex} occurred")
 
         logging.info(f"Updating sliders for Partial {partial_no}")
-
-        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
-        #sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-
-
 
         def _update_slider(param, value):
             """Helper function to update sliders safely."""
