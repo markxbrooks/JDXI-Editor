@@ -56,7 +56,7 @@ class DigitalCommonParameter(SynthParameter):
     TONE_NAME_11 = (0x0A, 32, 127)  # ASCII character 11
     TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
 
-    # Program level
+    # Tone level
     TONE_LEVEL = (0x0C, 0, 127)  # Overall tone level
 
     # Performance parameters

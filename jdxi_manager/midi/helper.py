@@ -415,65 +415,51 @@ def json_parse_jdxi_tone(data):
             0x50: "TONE_MODIFY",
         }.get(byte_value, "Unknown")
 
+    def _extract_tone_name(data):
+        """Extract and clean the tone name from SysEx data."""
+        if len(data) < 12:
+            return "Unknown"
+        name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
+        raw_name = bytes(data[11:name_end]).decode(errors="ignore").strip()
+        return raw_name.replace("\u0000", "")  # Remove null characters
+
+    # Initialize parameters dictionary
     parameters = {
         "JD_XI_ID": _extract_hex(data, 0, 7),
         "ADDRESS": _extract_hex(data, 7, 11),
     }
 
-    if len(data) > 7:
-        temporary_area = data[8]
-        parameters["TEMPORARY_AREA"] = _get_temporary_area(temporary_area)
-        synth_tone = data[10] if len(data) > 10 else None
-        parameters["SYNTH_TONE"] = _get_synth_tone(synth_tone) if synth_tone is not None else "Unknown"
-        # Extract tone name safely (ensuring valid bounds)
-        name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
-
-        input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
-        tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
-        parameters["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
-        """
-        # Use the new parse_parameters function
-        if parameters["TEMPORARY_AREA"] in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
-            if synth_tone == "TONE_COMMON":
-                parameters.update(parse_digital_common_parameters(data))
-            elif synth_tone == "TONE_MODIFY":
-                pass
-                # parameters.update(parse_digital_effects_parameters(data))
-            else:
-                parameters.update(parse_digital_parameters(data))
-        else:
-            parameters.update(parse_analog_parameters(data))
-        """
-        parameters.update(parse_digital_common_parameters(data))
-        print(parameters)
-        return parameters
-    else:
+    # Ensure minimum length for parsing
+    if len(data) <= 7:
         parameters.update({"TEMPORARY_AREA": "Unknown", "SYNTH_TONE": "Unknown"})
+        logging.warning("Insufficient data length for parsing.")
+        return parameters
+
+    # Extract Temporary Area and Synth Tone
+    temporary_area = _get_temporary_area(data[8])
+    synth_tone = _get_synth_tone(data[10]) if len(data) > 10 else "Unknown"
+
+    parameters.update({
+        "TEMPORARY_AREA": temporary_area,
+        "SYNTH_TONE": synth_tone,
+        "TONE_NAME": _extract_tone_name(data),
+    })
+
+    # Parse additional parameters based on area type
+    if temporary_area in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
+        if synth_tone == "TONE_COMMON":
+            parameters.update(parse_digital_common_parameters(data))
+        elif synth_tone == "TONE_MODIFY":
+            logging.info("Parsing for TONE_MODIFY not yet implemented.")  # FIXME
+        else:
+            parameters.update(parse_digital_parameters(data))
+    elif temporary_area == "ANALOG_SYNTH_AREA":
+        parameters.update(parse_analog_parameters(data))
 
     logging.info(f"Address: {parameters['ADDRESS']}")
-    logging.info(f"Temporary Area: {parameters.get('TEMPORARY_AREA', 'Unknown')}")
+    logging.info(f"Temporary Area: {temporary_area}")
+
     return parameters
-
-
-def parse_sysex_data(data):
-    parsed = {}
-
-    # Example breakdown (adjust based on JD-Xi SysEx spec):
-    parsed["Parameter_1"] = data[0]  # Single byte
-    parsed["Parameter_2"] = data[1]  # Single byte
-    parsed["Parameter_3"] = (data[2] << 7) | data[3]  # 14-bit value (MSB/LSB)
-    parsed["Parameter_4"] = data[4]  # Single byte
-    parsed["Parameter_5"] = (data[5] << 7) | data[6]  # Another 14-bit value
-
-    # Parsing more based on structure...
-    parsed["Parameter_6"] = data[7:11]  # Four-byte value
-    parsed["Parameter_7"] = data[11]  # Single byte
-    parsed["Parameter_8"] = data[12]  # Single byte
-
-    # Example of extracting a series of single-byte values
-    parsed["Flags"] = data[13:19]
-
-    return parsed
 
 
 def validate_sysex_message(message: List[int]) -> bool:
@@ -511,144 +497,6 @@ def validate_sysex_message(message: List[int]) -> bool:
     except Exception as e:
         logging.error(f"Error validating SysEx message: {str(e)}")
         return False
-
-
-def parse_jdxi_sysex(sysex_data):
-    if sysex_data[0] != 0xF0 or sysex_data[-1] != 0xF7:
-        raise ValueError("Invalid SysEx message")
-
-    ROLAND_ID = sysex_data[1]
-    MODEL_ID = sysex_data[2:6]
-    COMMAND_ID = sysex_data[6]
-    TEMPORARY_AREA = sysex_data[7]
-    address = sysex_data[8:12]
-    parameters = sysex_data[12:-1]  # Excluding F0 and F7
-
-    parsed_patch = {
-        "MODEL_ID": "Roland JD-Xi",
-        "COMMAND_ID": COMMAND_ID,
-        "TEMPORARY_AREA": TEMPORARY_AREA,
-        "WAVEFORM_NUMBER": parameters[1],
-        "COARSE_TUNE": parameters[3],
-        "FINE_TUNE": parameters[4],
-        "AMP_PAN": parameters[5],
-        "FILTER_CUTOFF": parameters[6],
-        "FILTER_RESONANCE": parameters[7],
-        "LFO_DEPTH": parameters[8],
-        "ENVELOPE_ATTACK": parameters[28],
-        "ENVELOPE_DECAY": parameters[29],
-        "ENVELOPE_SUSTAIN": parameters[30],
-        "ENVELOPE_RELEASE": parameters[31],
-    }
-
-    return parsed_patch
-
-
-def parse_jdxi_sysex_v1(sysex_bytes):
-    """
-    Parses a Roland JD-Xi SysEx message and extracts key parameters.
-    :param sysex_bytes: List of SysEx message bytes.
-    :return: Dictionary of extracted parameter values.
-    """
-    logging.info(f"sysex_bytes: {sysex_bytes}")
-    if not (sysex_bytes[0] == 0xF0 and sysex_bytes[-1] == 0xF7):
-        raise ValueError("Invalid SysEx message (must start with F0 and end with F7)")
-
-    # manufacturer_id = sysex_bytes[1]
-    # if manufacturer_id != 0x41:
-    #    raise ValueError("Not a Roland SysEx message")
-
-    # device_family_id = sysex_bytes[2:6]
-    # if device_family_id != [0x10, 0x00, 0x00, 0x0E]:
-    #    raise ValueError("Not a JD-Xi SysEx message")
-
-    # Extract address and data bytes
-    command_type = sysex_bytes[6]  # SysEx command type
-    address_offset = sysex_bytes[7:11]  # Address section
-    data_bytes = sysex_bytes[11:-1]  # Exclude F7 (End of SysEx)
-
-    # Identify JD-Xi section
-    area_code = address_offset[0]
-    area_mapping = {
-        0x01: "Digital Synth 1",
-        0x02: "Digital Synth 2",
-        0x03: "Analog Synth",
-        0x04: "Drum Kit",
-    }
-    area = area_mapping.get(area_code, "Unknown")
-
-    # Parse known parameters
-    parsed_data = {
-        "section": area,
-        "tone_type": "PCM" if data_bytes[0] == 0x01 else "Unknown",
-        "waveform_number": data_bytes[1],
-        "coarse_tune": data_bytes[4],
-        "fine_tune": data_bytes[5],
-        "pan": data_bytes[8],
-        "cutoff": data_bytes[9],
-        "resonance": data_bytes[10],
-        "lfo_depth": data_bytes[11],
-        "lfo_rate": data_bytes[12],
-        "envelope": {
-            "attack": data_bytes[15],
-            "decay": data_bytes[17],
-            "sustain": data_bytes[19],
-            "release": data_bytes[21],
-        },
-    }
-
-    return parsed_data
-
-
-def parse_jdxi_patch_data(data: list):
-    """Parse JD-Xi patch data from a SysEx message using regex matching."""
-    data_bytes = bytes(data)
-
-    pattern = re.compile(
-        rb"(?P<tone_name>.{12})"  # Tone name (12 chars)
-        rb"."  # Reserved byte
-        rb"(?P<lfo_waveform>.)"  # LFO waveform
-        rb"(?P<lfo_rate>.)"  # LFO rate
-        rb"(?P<lfo_delay_time>.)"  # LFO delay time
-        rb"(?P<lfo_fade_time>.)"  # LFO fade time
-        rb"(?P<lfo_key_trigger>.)"  # LFO key trigger
-        rb"(?P<lfo_pitch_depth>.)"  # LFO pitch depth
-        rb"(?P<lfo_filter_depth>.)"  # LFO filter depth
-        rb"(?P<lfo_amp_depth>.)"  # LFO amp depth
-        rb"(?P<lfo_tempo_sync_switch>.)"  # LFO sync
-        rb"(?P<osc_type>.)"  # OSC type
-        rb"(?P<osc_detune>.)"  # OSC detune
-        rb"(?P<osc_pulse_width>.)"  # OSC pulse width
-        rb"(?P<osc_mod_depth>.)"  # OSC mod depth
-        rb"(?P<osc_sync>.)"  # OSC sync
-        rb"(?P<osc_ring_mod>.)"  # OSC ring mod
-        rb"(?P<filter_type>.)"  # Filter type
-        rb"(?P<filter_cutoff>.)"  # Filter cutoff
-        rb"(?P<filter_resonance>.)"  # Filter resonance
-        rb"(?P<filter_env_depth>.)"  # Filter envelope depth
-        rb"(?P<filter_env_velocity_sensitivity>.)"  # Filter env velocity sensitivity
-        rb"(?P<amp_level>.)"  # AMP level
-        rb"(?P<amp_pan>.)"  # AMP pan
-        rb"(?P<amp_attack>.)"  # AMP attack
-        rb"(?P<amp_decay>.)"  # AMP decay
-        rb"(?P<amp_sustain>.)"  # AMP sustain
-        rb"(?P<amp_release>.)"  # AMP release
-        rb"(?P<common_portamento_switch>.)"  # Common portamento switch
-        rb"(?P<common_portamento_time>.)"  # Common portamento time
-        rb"(?P<common_mono_poly>.)"  # Common mono/poly
-        rb"(?P<common_transpose>.)"  # Common transpose
-        rb"(?P<mod1>.)"  # Mod control 1
-        rb"(?P<mod2>.)"  # Mod control 2
-        rb"(?P<mod3>.)"  # Mod control 3
-        rb"(?P<mod4>.)"  # Mod control 4
-    )
-
-    match = pattern.match(data_bytes)
-    if not match:
-        raise ValueError("Invalid patch data format.")
-
-    parsed_patch = {key: value[0] for key, value in match.groupdict().items()}
-    return parsed_patch
 
 
 def log_json(data):
