@@ -15,7 +15,8 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.data.digital import DigitalCommonParameter, OscWave
+from jdxi_manager.data.digital import OscWave
+from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.midi.constants import PART_1, DIGITAL_SYNTH_AREA
 from jdxi_manager.midi.conversions import (
     midi_cc_to_frac,
