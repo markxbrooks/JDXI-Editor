@@ -20,7 +20,7 @@ from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtGui import QIcon, QPixmap
 import qtawesome as qta
 
-from jdxi_manager.data.digital import DigitalCommonParameter
+from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.data.analog import AnalogCommonParameter

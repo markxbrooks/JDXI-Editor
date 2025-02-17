@@ -69,6 +69,7 @@ def parse_digital_parameters(data: list) -> dict:
 
     return parameters
 
+
 class DigitalParameter(SynthParameter):
     """Digital synth parameters with their addresses and value ranges"""
 

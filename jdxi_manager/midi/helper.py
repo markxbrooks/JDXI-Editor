@@ -76,6 +76,7 @@ sysex_message = [
 ]
 """
 from jdxi_manager.data.parameter.digital import parse_digital_parameters
+from jdxi_manager.data.parameter.digital_common import parse_digital_common_parameters
 
 """
 # Example SysEx Data (convert hex to bytes)
@@ -424,24 +425,33 @@ def json_parse_jdxi_tone(data):
         parameters["TEMPORARY_AREA"] = _get_temporary_area(temporary_area)
         synth_tone = data[10] if len(data) > 10 else None
         parameters["SYNTH_TONE"] = _get_synth_tone(synth_tone) if synth_tone is not None else "Unknown"
+        # Extract tone name safely (ensuring valid bounds)
+        name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
+
+        input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
+        tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
+        parameters["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
+        """
+        # Use the new parse_parameters function
+        if parameters["TEMPORARY_AREA"] in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
+            if synth_tone == "TONE_COMMON":
+                parameters.update(parse_digital_common_parameters(data))
+            elif synth_tone == "TONE_MODIFY":
+                pass
+                # parameters.update(parse_digital_effects_parameters(data))
+            else:
+                parameters.update(parse_digital_parameters(data))
+        else:
+            parameters.update(parse_analog_parameters(data))
+        """
+        parameters.update(parse_digital_common_parameters(data))
+        print(parameters)
+        return parameters
     else:
         parameters.update({"TEMPORARY_AREA": "Unknown", "SYNTH_TONE": "Unknown"})
 
     logging.info(f"Address: {parameters['ADDRESS']}")
     logging.info(f"Temporary Area: {parameters.get('TEMPORARY_AREA', 'Unknown')}")
-
-    # Extract tone name safely (ensuring valid bounds)
-    name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
-
-    input_string = bytes(data[11:name_end]).decode(errors="ignore").strip()
-    tone_name = bytes(input_string, "utf-8").decode("unicode_escape")
-    parameters["TONE_NAME"] = tone_name.replace("\u0000", "")  # remove Null characters
-
-    # Use the new parse_parameters function
-    if parameters["TEMPORARY_AREA"] == "DIGITAL_SYNTH_1_AREA":
-        parameters.update(parse_digital_parameters(data))
-    else:
-        parameters.update(parse_analog_parameters(data))
     return parameters
 
 

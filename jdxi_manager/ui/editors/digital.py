@@ -34,12 +34,12 @@ from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.data.digital import (
-    DigitalCommonParameter,
     OscWave,
     DigitalPartial,
     set_partial_state,
     get_digital_parameter_by_address,
 )
+from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_AREA,
@@ -71,6 +71,7 @@ class DigitalSynthEditor(BaseEditor):
     ):
         super().__init__(parent)
         # Image display
+        self.partial_num = None
         self.current_data = None
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
@@ -85,10 +86,10 @@ class DigitalSynthEditor(BaseEditor):
         self.preset_loader = PresetLoader(self.midi_helper)
         self.midi_data_requests = [
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # common controls
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
+            #"F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
+            #"F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
+            #"F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
+            #"F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
         ]
         if preset_handler:
             self.preset_handler = preset_handler
@@ -231,7 +232,7 @@ class DigitalSynthEditor(BaseEditor):
             editor = DigitalPartialEditor(midi_helper, i, self.part)
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
-        self.partial_tab_widget.addTab(self._create_performance_section(), "Common Controls")
+        self.partial_tab_widget.addTab(self._create_common_controls_section(), "Common Controls")
 
         container_layout.addWidget(self.partial_tab_widget)
 
@@ -260,14 +261,15 @@ class DigitalSynthEditor(BaseEditor):
 
         self.midi_helper.json_sysex.connect(self._update_sliders_from_sysex)
         # self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        print(f"self.controls: {self.controls}")
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
         logging.info(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
-    def _create_performance_section(self):
-        """Create performance controls section"""
+    def _create_common_controls_section(self):
+        """Create common controls section"""
         group = QWidget()
         # group = QGroupBox("Common Controls")
         layout = QVBoxLayout()
@@ -640,6 +642,8 @@ class DigitalSynthEditor(BaseEditor):
         logging.info("Updating UI components from SysEx data")
         debug_param_updates = True
         debug_stats = True
+        failures, successes = [], []
+
         def _parse_sysex_json(json_data):
             """Parse JSON safely and log changes."""
             try:
@@ -664,6 +668,21 @@ class DigitalSynthEditor(BaseEditor):
                 "PARTIAL_3": 3
             }.get(synth_tone, None)
 
+        def _update_common_slider(param, value):
+            """Helper function to update sliders safely."""
+            logging.info(f"param: {param}")
+            slider = self.controls.get(param)
+            logging.info(f"slider: {slider}")
+            if slider:
+                slider.blockSignals(True)
+                slider.setValue(value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
+
         # Parse SysEx data
         sysex_data = _parse_sysex_json(json_sysex_data)
         if not sysex_data:
@@ -674,17 +693,30 @@ class DigitalSynthEditor(BaseEditor):
                 "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
             return
 
+        synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        if partial_no is None:
-            logging.warning(f"Unrecognized SYNTH_TONE: {sysex_data.get('SYNTH_TONE')}. Skipping update.")
-            return
+        #if partial_no is None:
+        #    logging.warning(f"Unrecognized SYNTH_TONE: {synth_tone}. Skipping update of partials")
+        #elif synth_tone == "TONE_MODIFY":
+        #    return
+        if synth_tone == "TONE_COMMON":
+            logging.info(f"\nTone common")
+            for param_name, param_value in sysex_data.items():
+                param = DigitalCommonParameter.get_by_name(param_name)
+                logging.info(f"Tone common: param_name: {param} {param_value}")
+                try:
+                    if param:
+                        _update_common_slider(param, param_value)
+                    else:
+                        failures.append(param_name)
+                except Exception as ex:
+                    logging.info(f"Error {ex} occurred")
 
         logging.info(f"Updating sliders for Partial {partial_no}")
 
         ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-        sysex_data_remaining = sysex_data.copy()
-        failures, successes = [], []
+
 
         def _update_slider(param, value):
             """Helper function to update sliders safely."""
@@ -730,11 +762,10 @@ class DigitalSynthEditor(BaseEditor):
                     else:
                         _update_slider(param, param_value)
                         update_adsr_widget(param, param_value)
-                    sysex_data_remaining.pop(param_name, None)
                 else:
                     failures.append(param_name)
             except Exception as ex:
-                print(f"Error {ex} occurred")
+                logging.info(f"Error {ex} occurred")
 
         def _log_debug_info():
             """Helper function to log debugging statistics."""
@@ -742,7 +773,6 @@ class DigitalSynthEditor(BaseEditor):
                 success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
                 logging.info(f"successes: \t{successes}")
                 logging.info(f"failures: \t{failures}")
-                logging.info(f"sysex_data_remaining: \t{sysex_data_remaining}")
                 logging.info(f"success rate: \t{success_rate:.1f}%")
                 logging.info("--------------------------------")
 
@@ -780,7 +810,8 @@ class DigitalSynthEditor(BaseEditor):
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}
         osc_waveform_map = {wave.value: wave for wave in OscWave}
         filter_switch_map = {0: 0, 1: 1}
-
+        lfo_tempo_sync_switch_map = {0: "OFF", 1: "ON"}
+        lfo_trigger_map = {0: "OFF", 1: "ON"}
         failures, successes = [], []
 
         for param_name, param_value in sysex_data.items():
@@ -797,23 +828,7 @@ class DigitalSynthEditor(BaseEditor):
                 slider.setValue(param_value)
                 slider.blockSignals(False)
                 successes.append(param_name)
-                sysex_data.pop(param_name, None)
-
-            #elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
-            #    index = self.lfo_shape.findText(lfo_shape_map[param_value])
-            #    if index != -1:
-            #        self.lfo_shape.blockSignals(True)
-            #        self.lfo_shape.setCurrentIndex(index)
-            #        self.lfo_shape.blockSignals(False)
-
-            #elif (
-            #    param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map
-            #):
-            #    index = sub_osc_type_map[param_value]
-            #    if isinstance(index, int):
-            #        self.sub_type.blockSignals(True)
-            #        self.sub_type.setValue(index)
-            #        self.sub_type.blockSignals(False)
+                
 
             # Handle OSC_WAVE parameter to update waveform buttons
             if param == DigitalParameter.OSC_WAVE:
@@ -821,7 +836,7 @@ class DigitalSynthEditor(BaseEditor):
                 logging.debug(
                     "updating waveform buttons for param {param} with {value}"
                 )
-                sysex_data.pop(param_name, None)
+                
 
             elif param_name == "OSC_WAVE" and param_value in osc_waveform_map:
                 waveform = osc_waveform_map[param_value]
@@ -830,13 +845,44 @@ class DigitalSynthEditor(BaseEditor):
                     button = self.partial_editors[partial_no].wave_buttons[waveform]
                     button.setChecked(True)
                     self.partial_editors[partial_no]._on_waveform_selected(waveform)
-                    sysex_data.pop(param_name, None)
+                    
 
-            #elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
-            #    index = filter_switch_map[param_value]
-            #    self.filter_switch.blockSignals(True)
-            #    self.filter_switch.setValue(index)
-            #    self.filter_switch.blockSignals(False)
+            elif param_name == "LFO_TEMPO_SYNC_SWITCH" and param_value in lfo_tempo_sync_switch_map:
+                index = lfo_tempo_sync_switch_map[param_value]
+                self.partial_editors[partial_no].lfo_tempo_sync_switch.blockSignals(True)
+                self.partial_editors[partial_no].lfo_tempo_sync_switch.setValue(index)
+                self.partial_editors[partial_no].lfo_tempo_sync_switch.blockSignals(False)
+
+            elif param_name == "LFO_SHAPE" and param_value in lfo_shape_map:
+                index = lfo_shape_map[param_value]
+                self.partial_editors[partial_no].lfo_shape.blockSignals(True)
+                self.partial_editors[partial_no].lfo_shape.setValue(index)
+                self.partial_editors[partial_no].lfo_shape.blockSignals(False)
+
+            elif param_name == "LFO_KEY_TRIGGER" and param_value in lfo_trigger_map:
+                index = lfo_trigger_map[param_value]
+                self.partial_editors[partial_no].lfo_trigger.blockSignals(True)
+                self.partial_editors[partial_no].lfo_trigger.setValue(index)
+                self.partial_editors[partial_no].lfo_trigger.blockSignals(False)
+
+            elif param_name == "MOD_LFO_SHAPE" and param_value in lfo_shape_map:
+                index = lfo_shape_map[param_value]
+                self.partial_editors[partial_no].mod_lfo_shape.blockSignals(True)
+                self.partial_editors[partial_no].mod_lfo_shape.setValue(index)
+                self.partial_editors[partial_no].mod_lfo_shape.blockSignals(False)
+
+            elif param_name == "MOD_LFO_TEMPO_SYNC_SWITCH" and param_value in lfo_tempo_sync_switch_map:
+                index = lfo_tempo_sync_switch_map[param_value]
+                self.partial_editors[partial_no].mod_lfo_tempo_sync_switch.blockSignals(True)
+                self.partial_editors[partial_no].mod_lfo_tempo_sync_switch.setValue(index)
+                self.partial_editors[partial_no].mod_lfo_tempo_sync_switch.blockSignals(False)
+
+            elif param_name == "MOD_LFO_KEY_TRIGGER" and param_value in lfo_trigger_map:
+                index = lfo_trigger_map[param_value]
+                self.partial_editors[partial_no].mod_lfo_key_trigger.blockSignals(True)
+                self.partial_editors[partial_no].mod_lfo_key_trigger.setValue(index)
+                self.partial_editors[partial_no].mod_lfo_key_trigger.blockSignals(False)
+
 
             else:
                 failures.append(param_name)
