@@ -1,3 +1,5 @@
+from functools import partial
+
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (
     QWidget,
@@ -23,7 +25,7 @@ class PartialSwitch(QWidget):
         self.partial = partial
 
         layout = QHBoxLayout()
-        layout.setSpacing(5)
+        layout.setSpacing(20)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
@@ -33,7 +35,7 @@ class PartialSwitch(QWidget):
         layout.addWidget(self.enable_check)
 
         # Select switch
-        self.select_check = QCheckBox("SEL")
+        self.select_check = QCheckBox("Selected")
         self.select_check.stateChanged.connect(self._on_state_changed)
         layout.addWidget(self.select_check)
 
@@ -49,10 +51,10 @@ class PartialSwitch(QWidget):
                 height: 16px;
                 background: #333333;
                 border: 1px solid #555555;
-                border-radius: 2px;
+                border-radius: 8px;
             }
             QCheckBox::indicator:checked {
-                background: #CC3333;
+                background: #666666;
                 border-color: #FF4444;
             }
         """
@@ -70,44 +72,37 @@ class PartialSwitch(QWidget):
         self.select_check.setChecked(selected)
 
 
-class PartialsPanel(QGroupBox):
+class PartialsPanel(QWidget):
     """Panel containing all partial switches"""
 
     def __init__(self, parent=None):
-        super().__init__("Partials", parent)
+        super().__init__(parent)
 
         layout = QVBoxLayout()
         layout.setSpacing(10)
         self.setLayout(layout)
 
         partial_layout = QHBoxLayout()
-        partial_layout.setSpacing(10)
+        partial_layout.setSpacing(40)
         self.setLayout(partial_layout)
-
-        oscillator_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.directions-fork",
-            "mdi.numeric-1-circle-outline",
-            "mdi.numeric-2-circle-outline",
-            "mdi.numeric-3-circle-outline",
-            "mdi.call-merge",
-        ]:
-            oscillator_triangle_label = QLabel()
-            icon = qta.icon(icon)
-            pixmap = icon.pixmap(
-                Style.ICON_SIZE, Style.ICON_SIZE
-            )  # Set the desired size
-            oscillator_triangle_label.setPixmap(pixmap)
-            oscillator_triangle_label.setAlignment(Qt.AlignHCenter)
-            oscillator_hlayout.addWidget(oscillator_triangle_label)
-        layout.addLayout(oscillator_hlayout)
 
         # Create switches for each partial (not structure types)
         self.switches = {}
         for partial in DigitalPartial.get_partials():  # Only get actual partials
+            group_box = QGroupBox(f"Partial {partial}")
+            group_layout = QHBoxLayout()
+            partial_icon = QLabel()
+            qta_icon = qta.icon(f"mdi.numeric-{partial}-circle-outline", color="#666666")
+            partial_icon_pixmap = qta_icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            partial_icon.setPixmap(partial_icon_pixmap)
+            group_layout.addWidget(partial_icon)
             switch = PartialSwitch(partial)
-            self.switches[partial] = switch
-            partial_layout.addWidget(switch)
+            self.switches[partial] = switch 
+            group_layout.addWidget(switch)
+            group_layout.setSpacing(40)
+            group_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            group_box.setLayout(group_layout)
+            partial_layout.addWidget(group_box)
 
         layout.addLayout(partial_layout)
         # Style

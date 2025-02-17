@@ -1,4 +1,4 @@
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from typing import Optional, Union
@@ -26,6 +26,13 @@ class BaseEditor(QWidget):
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
+        # Add keyboard shortcuts
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
+
+        # Add close window shortcut
+        self.close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
+        self.close_shortcut.activated.connect(self.close)
 
         # Set window flags for a tool window
         self.setWindowFlags(Qt.WindowType.Tool)
