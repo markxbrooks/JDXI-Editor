@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QSlider, QTabWidget,
 )
 from PySide6.QtCore import Qt, Signal, QSize
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
@@ -211,6 +211,8 @@ class AnalogSynthEditor(BaseEditor):
 
         # Initialize previous JSON data storage
         self.previous_json_data = None
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
 
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""

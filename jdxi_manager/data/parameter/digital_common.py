@@ -60,9 +60,9 @@ class DigitalCommonParameter(SynthParameter):
     TONE_LEVEL = (0x0C, 0, 127)  # Overall tone level
 
     # Performance parameters
-    PORTAMENTO_SW = (0x12, 0, 1)  # Portamento Switch (OFF, ON)
+    PORTAMENTO_SWITCH = (0x12, 0, 1)  # Portamento Switch (OFF, ON)
     PORTAMENTO_TIME = (0x13, 0, 127)  # Portamento Time (CC# 5)
-    MONO_SW = (0x14, 0, 1)  # Mono Switch (OFF, ON)
+    MONO_SWITCH = (0x14, 0, 1)  # Mono Switch (OFF, ON)
     OCTAVE_SHIFT = (0x15, 61, 67)  # Octave Shift (-3 to +3)
     PITCH_BEND_UP = (0x16, 0, 24)  # Pitch Bend Range Up (semitones)
     PITCH_BEND_DOWN = (0x17, 0, 24)  # Pitch Bend Range Down (semitones)
@@ -109,8 +109,8 @@ class DigitalCommonParameter(SynthParameter):
     def is_switch(self) -> bool:
         """Returns True if parameter is a binary/enum switch"""
         return self in [
-            self.PORTAMENTO_SW,
-            self.MONO_SW,
+            self.PORTAMENTO_SWITCH,
+            self.MONO_SWITCH,
             self.PARTIAL1_SWITCH,
             self.PARTIAL1_SELECT,
             self.PARTIAL2_SWITCH,
