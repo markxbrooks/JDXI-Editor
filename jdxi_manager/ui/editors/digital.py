@@ -89,7 +89,7 @@ class DigitalSynthEditor(BaseEditor):
             "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
             "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
             "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # effects request
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # modify request
         ]
         if preset_handler:
             self.preset_handler = preset_handler
@@ -663,16 +663,53 @@ class DigitalSynthEditor(BaseEditor):
             logging.error(f"Invalid JSON format: {ex}")
             return
 
-        if sysex_data.get("TEMPORARY_AREA") not in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
+        def _is_valid_sysex_area(sysex_data):
+            """Check if SysEx data belongs to a supported digital synth area."""
+            return sysex_data.get("TEMPORARY_AREA") in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]
+
+        def _get_partial_number(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            return {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3
+            }.get(synth_tone, None)
+
+
+        def update_adsr_widget(param, value):
+            """Helper function to update ADSR widgets."""
+            new_value = midi_cc_to_frac(value) if param in [
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            ] else midi_cc_to_ms(value)
+
+            adsr_mapping = {
+                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.attack_sb,
+                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.decay_sb,
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].amp_env_adsr_widget.sustain_sb,
+                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.release_sb,
+                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[partial_no].filter_adsr_widget.attack_sb,
+                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[partial_no].filter_adsr_widget.decay_sb,
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].filter_adsr_widget.sustain_sb,
+                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[partial_no].filter_adsr_widget.release_sb,
+            }
+
+            if param in adsr_mapping:
+                spinbox = adsr_mapping[param]
+                spinbox.setValue(new_value)
+
+        if not _is_valid_sysex_area(sysex_data):
             logging.warning(
                 "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
             return
 
-        partial_no = 1  # Default partial number
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        partial_no = _get_partial_number(synth_tone)
+
         ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
-        osc_waveform_map = {wave.value: wave for wave in OscWave}
+        # osc_waveform_map = {wave.value: wave for wave in OscWave}
 
         failures, successes = [], []
 
@@ -700,14 +737,11 @@ class DigitalSynthEditor(BaseEditor):
             param = DigitalParameter.get_by_name(param_name)
 
             if param:
-                _update_slider(param, param_value)
-
-            elif param == DigitalParameter.OSC_WAVE:
-                self._update_waveform_buttons(partial_no, param_value)
-
-            elif param_name == "OSC_WAVE":
-                _update_waveform(param_value)
-
+                if param == DigitalParameter.OSC_WAVE:
+                    self._update_waveform_buttons(partial_no, param_value)
+                else:
+                    _update_slider(param, param_value)
+                    update_adsr_widget(param, param_value)
             else:
                 failures.append(param_name)
 
