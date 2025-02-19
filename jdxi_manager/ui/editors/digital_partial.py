@@ -106,26 +106,6 @@ class DigitalPartialEditor(QWidget):
         layout = QVBoxLayout()
         group.setLayout(layout)
 
-        # Prettify with icons
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
-            pixmap = icon.pixmap(
-                Style.ICON_SIZE, Style.ICON_SIZE
-            )  # Set the desired size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
-
         # Top row: Waveform buttons and variation
         top_row = QHBoxLayout()
 
@@ -823,25 +803,6 @@ class DigitalPartialEditor(QWidget):
         # group = QGroupBox("Mod LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
-
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
-            pixmap = icon.pixmap(
-                Style.ICON_SIZE, Style.ICON_SIZE
-            )  # Set the desired size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
 
         # Shape and sync controls
         top_row = QHBoxLayout()

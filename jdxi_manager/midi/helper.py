@@ -396,14 +396,31 @@ def json_parse_jdxi_tone(data):
         """Extract a hex value from data safely."""
         return data[start:end].hex() if len(data) >= end else default
 
-    def _get_temporary_area(byte_value):
-        """Map byte value to corresponding temporary area."""
-        return {
-            0x18: "ANALOG_SYNTH_AREA",
-            0x19: "DIGITAL_SYNTH_1_AREA",
-            0x1A: "DIGITAL_SYNTH_2_AREA",
-            0x1C: "DRUM_KIT_AREA",
-        }.get(byte_value, "Unknown")
+    def _get_temporary_area(data):
+        """
+        Map address bytes to corresponding temporary area.
+        
+        Args:
+            data (bytes): SysEx message data containing address bytes
+            
+        Returns:
+            str: Name of the temporary area or "Unknown"
+        """
+        if len(data) < 9:  # Need at least 9 bytes to check address
+            return "Unknown"
+        
+        # Extract the two address bytes
+        addr1, addr2 = data[8:10]
+        
+        # Map address combinations to areas
+        area_mapping = {
+            (0x19, 0x42): "ANALOG_SYNTH_AREA",
+            (0x19, 0x01): "DIGITAL_SYNTH_1_AREA",
+            (0x19, 0x21): "DIGITAL_SYNTH_2_AREA",
+            (0x19, 0x70): "DRUM_KIT_AREA"
+        }
+        
+        return area_mapping.get((addr1, addr2), "Unknown")
 
     def _get_synth_tone(byte_value):
         """Map byte value to corresponding synth tone."""
@@ -423,7 +440,6 @@ def json_parse_jdxi_tone(data):
         raw_name = bytes(data[11:name_end]).decode(errors="ignore").strip()
         return raw_name.replace("\u0000", "")  # Remove null characters
 
-    # Initialize parameters dictionary
     parameters = {
         "JD_XI_ID": _extract_hex(data, 0, 7),
         "ADDRESS": _extract_hex(data, 7, 11),
@@ -435,8 +451,8 @@ def json_parse_jdxi_tone(data):
         logging.warning("Insufficient data length for parsing.")
         return parameters
 
-    # Extract Temporary Area and Synth Tone
-    temporary_area = _get_temporary_area(data[8])
+    # Extract Temporary Area using both address bytes
+    temporary_area = _get_temporary_area(data)
     synth_tone = _get_synth_tone(data[10]) if len(data) > 10 else "Unknown"
 
     parameters.update({
@@ -526,6 +542,7 @@ class MIDIHelper(QObject):
     dt1_received = Signal(list, int)  # address, value
     midi_note_received = Signal(str)
     incoming_midi_message = Signal(object)
+    program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -564,6 +581,7 @@ class MIDIHelper(QObject):
         """Handle incoming MIDI messages"""
         if not message.type == "clock":
             self.incoming_midi_message.emit(message)
+            logging.info(f"MIDI message of type {message.type} incoming: {message}")
         preset_data = {"modified": 0}
         try:
             message_handlers = {
@@ -688,6 +706,9 @@ class MIDIHelper(QObject):
         """Handle Program Change (PC) MIDI messages."""
         channel, program_number = message.channel + 1, message.program
         logging.info(f"Program Change - Channel: {channel}, Program: {program_number}")
+        
+        # Emit the program change signal
+        self.program_changed.emit(channel, program_number)
 
         preset_mapping = {
             95: PresetType.DIGITAL_1,
@@ -711,7 +732,6 @@ class MIDIHelper(QObject):
                 ),
                 channel=channel,
             )
-            # @@
             logging.info(f"Preset changed to: {self.preset_number}")
 
     @staticmethod
@@ -725,19 +745,29 @@ class MIDIHelper(QObject):
             self.callbacks.append(callback)
 
     def midi_callback(self, message, timestamp=None):
-        """Internal callback for MIDI messages"""
+        """Handle incoming MIDI messages"""
         try:
-            logging.info(f"MIDI message: {message}")
-            # Invoke all registered callbacks
-            for callback in self.callbacks:
-                callback(message, timestamp)
-
-            # Handle SysEx messages separately if needed
-            if message[0] == 0xF0:  # SysEx start
-                self.handle_sysex_message(message)
-
+            if message.type == "program_change":
+                logging.info(f"Program Change - Channel: {message.channel}, Program: {message.program}")
+            if not message.type == "clock":
+                self.incoming_midi_message.emit(message)
+                logging.info(f"MIDI message of type {message.type} incoming: {message}")
+            preset_data = {"modified": 0}
+            message_handlers = {
+                "sysex": self._handle_sysex_message,
+                "control_change": self._handle_control_change,
+                "program_change": self._handle_program_change,
+                "note_on": self._handle_note_change,
+                "note_off": self._handle_note_change,
+                "clock": self._handle_clock,
+            }
+            handler = message_handlers.get(message.type)
+            if handler:
+                handler(message, preset_data)
+            else:
+                logging.info(f"Unhandled MIDI message type: {message.type}")
         except Exception as e:
-            logging.error(f"Error in MIDI callback: {str(e)}")
+            logging.error(f"Error handling incoming MIDI message: {str(e)}")
 
     def _handle_dt1_message(self, data):
         """Handle Data Set 1 (DT1) messages"""

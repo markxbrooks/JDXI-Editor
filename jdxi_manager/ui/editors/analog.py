@@ -96,7 +96,7 @@ class AnalogSynthEditor(BaseEditor):
         self.part = ANALOG_PART
         self.preset_loader = None
         self.setWindowTitle("Analog Synth")
-
+        self.previous_json_data = None
         # Allow resizing
         self.setMinimumSize(800, 400)
         self.resize(1000, 600)
@@ -213,6 +213,8 @@ class AnalogSynthEditor(BaseEditor):
         self.previous_json_data = None
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+        if self.midi_helper:
+            self.midi_helper.program_changed.connect(self._handle_program_change)
 
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""
@@ -224,27 +226,10 @@ class AnalogSynthEditor(BaseEditor):
 
     def _create_oscillator_section(self):
         group = QWidget()
-        #group = QGroupBox("Oscillator")
         layout = QVBoxLayout()
+        layout.setContentsMargins(1, 1, 1, 1)  # Remove margins
         group.setLayout(layout)
-
-        oscillator_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            oscillator_triangle_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
-            pixmap = icon.pixmap(30, 30)  # Set the desired size
-            oscillator_triangle_label.setPixmap(pixmap)
-            oscillator_triangle_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            oscillator_hlayout.addWidget(oscillator_triangle_label)
-        layout.addLayout(oscillator_hlayout)
-
+        
         # Waveform buttons
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
@@ -556,7 +541,6 @@ class AnalogSynthEditor(BaseEditor):
 
     def _create_filter_section(self):
         group = QWidget()
-        #group = QGroupBox("Filter")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -651,30 +635,6 @@ class AnalogSynthEditor(BaseEditor):
         self.filter_env_release_time = self._create_parameter_slider(
             AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
         )
-
-        """
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True
-            )
-        )
-        
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True
-            )
-        )
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True
-            )
-        )
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
-            )
-        )
-        """
         adsr_layout.addWidget(self.filter_env_attack_time)
         adsr_layout.addWidget(self.filter_env_decay_time)
         adsr_layout.addWidget(self.filter_env_sustain_level)
@@ -709,7 +669,7 @@ class AnalogSynthEditor(BaseEditor):
 
     def _on_filter_switch_changed(self, value):
         """Handle filter switch change"""
-        from jdxi_manager.data.analog import AnalogParameter
+        from jdxi_manager.data.parameter.analog import AnalogParameter
 
         if self.midi_helper:
             self.midi_helper.send_parameter(
@@ -882,26 +842,6 @@ class AnalogSynthEditor(BaseEditor):
         #group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
-
-        # pimp up the section with some icons
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
-            pixmap = icon.pixmap(
-                Style.ICON_SIZE, Style.ICON_SIZE
-            )  # Set the desired size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
 
         # Replace the LFO Shape selector combo box with buttons
         shape_row = QHBoxLayout()
@@ -1221,25 +1161,21 @@ class AnalogSynthEditor(BaseEditor):
             param = AnalogParameter.get_by_name(param_name)
 
             if param:
-                update_slider(param, param_value)
-                update_adsr_widget(param, param_value)
-
-            elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
-                self._update_lfo_shape_buttons(param_value)
-
-            elif param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map:
-                self.sub_type.blockSignals(True)
-                self.sub_type.setValue(sub_osc_type_map[param_value])
-                self.sub_type.blockSignals(False)
-
-            elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
-                self._update_waveform_buttons(param_value)
-
-            elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
-                self.filter_switch.blockSignals(True)
-                self.filter_switch.setValue(filter_switch_map[param_value])
-                self.filter_switch.blockSignals(False)
-
+                if param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
+                    self._update_lfo_shape_buttons(param_value)
+                elif param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map:
+                    self.sub_type.blockSignals(True)
+                    self.sub_type.setValue(sub_osc_type_map[param_value])
+                    self.sub_type.blockSignals(False)
+                elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
+                    self._update_waveform_buttons(param_value)
+                elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
+                    self.filter_switch.blockSignals(True)
+                    self.filter_switch.setValue(filter_switch_map[param_value])
+                    self.filter_switch.blockSignals(False)
+                else:
+                    update_slider(param, param_value)
+                    update_adsr_widget(param, param_value)
             else:
                 failures.append(param_name)
 

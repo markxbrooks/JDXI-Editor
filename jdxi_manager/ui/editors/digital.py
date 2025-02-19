@@ -264,6 +264,8 @@ class DigitalSynthEditor(BaseEditor):
         print(f"self.controls: {self.controls}")
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+        if self.midi_helper:
+            self.midi_helper.program_changed.connect(self._handle_program_change)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
