@@ -89,8 +89,37 @@ class DigitalPartialEditor(QWidget):
         else:
             display_min, display_max = param.min_val, param.max_val
 
-        # Create horizontal slider (removed vertical ADSR check)
+        # Create slider
         slider = Slider(label, display_min, display_max, vertical)
+        
+        # Set up bipolar parameters
+        if isinstance(param, DigitalParameter) and param in [
+            DigitalParameter.OSC_DETUNE,
+            DigitalParameter.OSC_PITCH,
+            DigitalParameter.OSC_PITCH_ENV_DEPTH,
+            DigitalParameter.AMP_PAN,
+            # Add other bipolar parameters as needed
+        ]:
+            # Set format string to show + sign for positive values
+            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
+            # Set center tick
+            slider.setCenterMark(0)
+            # Add more prominent tick at center
+            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
+            slider.setTickInterval((display_max - display_min) // 4)
+
+            # Get initial MIDI value and convert to display value
+            if self.midi_helper:
+                group, param_address = param.get_address_for_partial(self.partial_num)
+                midi_value = self.midi_helper.get_parameter(
+                    area=DIGITAL_SYNTH_AREA,
+                    part=self.part,
+                    group=group,
+                    param=param_address
+                )
+                if midi_value is not None:
+                    display_value = param.convert_from_midi(midi_value)
+                    slider.setValue(display_value)
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
@@ -141,7 +170,7 @@ class DigitalPartialEditor(QWidget):
         top_row.addLayout(wave_layout)
 
         # Wave variation switch
-        self.wave_var = Switch("Var", ["A", "B", "C"])
+        self.wave_var = Switch("Variation", ["A", "B", "C"])
         self.wave_var.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.OSC_WAVE_VARIATION, v)
         )
@@ -782,21 +811,6 @@ class DigitalPartialEditor(QWidget):
 
         return group
 
-    def update_slider_from_adsr(self, param, value):
-        """Updates external control from ADSR widget, avoiding infinite loops."""
-        control = self.controls[param]
-        if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = frac_to_midi_cc(value)
-        else:
-            new_value = ms_to_midi_cc(value)
-        if control.value() != new_value:
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
-
     def _create_mod_lfo_section(self):
         """Create modulation LFO section"""
         group = QWidget()
@@ -919,7 +933,7 @@ class DigitalPartialEditor(QWidget):
     ):
         """Handle parameter value changes from UI controls"""
         try:
-            # Convert display value to MIDI value if needed
+            # Convert display value to MIDI value
             if hasattr(param, "convert_from_display"):
                 midi_value = param.convert_from_display(display_value)
             else:
@@ -928,6 +942,17 @@ class DigitalPartialEditor(QWidget):
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
+                return
+
+            # Convert back to display value to ensure consistency
+            if isinstance(param, DigitalParameter):  # Check if it's a DigitalParameter
+                # display_value = param.convert_from_midi(midi_value)
+                # logging.info(f"Converted {param.name} {midi_value} to {display_value}")
+                # Update the control with the converted value if needed
+                if param in self.controls and self.controls[param].value() != display_value:
+                    self.controls[param].blockSignals(True)
+                    self.controls[param].setValue(value)
+                    self.controls[param].blockSignals(False)
 
         except Exception as ex:
             logging.error(f"Error handling parameter {param.name}: {str(ex)}")

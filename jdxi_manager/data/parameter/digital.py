@@ -38,9 +38,11 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 
 import logging
-from typing import Tuple, Optional
-
+from typing import Tuple, Optional, Union
+from enum import Enum
+from dataclasses import dataclass
 from jdxi_manager.data.parameter.synth import SynthParameter
+# from jdxi_manager.ui.widgets.slider import Slider
 
 
 def parse_digital_parameters(data: list) -> dict:
@@ -70,31 +72,120 @@ def parse_digital_parameters(data: list) -> dict:
     return parameters
 
 
+""" For reference:
+| 00 02 | 0000 00aa | (reserve) <*> |
+| 00 03 | 00aa aaaa | OSC Pitch (40 - 88) |
+| | | -24 - +24 |
+| 00 04 | 0aaa aaaa | OSC Detune (14 - 114) |
+| | | -50 - +50 |
+| 00 05 | 0aaa aaaa | OSC Pulse Width Mod Depth (0 - 127) |
+| 00 06 | 0aaa aaaa | OSC Pulse Width (0 - 127) |
+| 00 07 | 0aaa aaaa | OSC Pitch Env Attack Time (0 - 127) |
+| 00 08 | 0aaa aaaa | OSC Pitch Env Decay (0 - 127) |
+| 00 09 | 0aaa aaaa | OSC Pitch Env Depth (1 - 127) |
+| | | -63 - +63 |
+|-------------+-----------+----------------------------------------------------|
+| 00 0A | 0000 0aaa | FILTER Mode (0 - 7) |
+| | | BYPASS, LPF, HPF, BPF, PKG, |
+| | | LPF2, LPF3, LPF4 |
+| 00 0B | 0000 000a | FILTER Slope (0 - 1) |
+| | | -12, -24 [dB] |
+| 00 0C | 0aaa aaaa | FILTER Cutoff (0 - 127) |
+| 00 0D | 00aa aaaa | FILTER Cutoff Keyfollow (54 - 74) |
+| | | -100 - +100 |
+| 00 0E | 0aaa aaaa | FILTER Env Velocity Sens (1 - 127) |
+| | | -63 - +63 |
+| 00 0F | 0aaa aaaa | FILTER Resonance (0 - 127) |
+| 00 10 | 0aaa aaaa | FILTER Env Attack Time (0 - 127) |
+| 00 11 | 0aaa aaaa | FILTER Env Decay Time (0 - 127) |
+| 00 12 | 0aaa aaaa | FILTER Env Sustain Level (0 - 127) |
+| 00 13 | 0aaa aaaa | FILTER Env Release Time (0 - 127) |
+| 00 14 | 0aaa aaaa | FILTER Env Depth (1 - 127) |
+| | | -63 - +63 |
+|-------------+-----------+----------------------------------------------------|
+| 00 15 | 0aaa aaaa | AMP Level (0 - 127) |
+| 00 16 | 0aaa aaaa | AMP Level Velocity Sens (1 - 127) |
+| | | -63 - +63 |
+| 00 17 | 0aaa aaaa | AMP Env Attack Time (0 - 127) |
+| 00 18 | 0aaa aaaa | AMP Env Decay Time (0 - 127) |
+| 00 19 | 0aaa aaaa | AMP Env Sustain Level (0 - 127) |
+| 00 1A | 0aaa aaaa | AMP Env Release Time (0 - 127) |
+| 00 1B | 0aaa aaaa | AMP Pan (0 - 127) |
+| | | L64 - 63R |
+|-------------+-----------+----------------------------------------------------|
+| 00 1C | 0000 0aaa | LFO Shape (0 - 5) |
+| | | TRI, SIN, SAW, SQR, S&H, RND |
+| 00 1D | 0aaa aaaa | LFO Rate (0 - 127) |
+| 00 1E | 0000 000a | LFO Tempo Sync Switch (0 - 1) |
+| | | OFF, ON |
+| 00 1F | 000a aaaa | LFO Tempo Sync Note (0 - 19) |
+| | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |
+| | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |
+| | | 1/12, 1/16, 1/24, 1/32 |
+| 00 20 | 0aaa aaaa | LFO Fade Time (0 - 127) |
+| 00 21 | 0000 000a | LFO Key Trigger (0 - 1) |
+| | | OFF, ON |
+| 00 22 | 0aaa aaaa | LFO Pitch Depth (1 - 127) |
+| | | -63 - +63 |
+| 00 23 | 0aaa aaaa | LFO Filter Depth (1 - 127) |
+| | | -63 - +63 |
+| 00 24 | 0aaa aaaa | LFO Amp Depth (1 - 127) |
+| | | -63 - +63 |
+| 00 25 | 0aaa aaaa | LFO Pan Depth (1 - 127) |
+| | | -63 - +63 |
+|-------------+-----------+----------------------------------------------------|
+| 00 26 | 0000 0aaa | Modulation LFO Shape (0 - 5) |
+| | | TRI, SIN, SAW, SQR, S&H, RND |
+| 00 27 | 0aaa aaaa | Modulation LFO Rate (0 - 127) |
+| 00 28 | 0000 000a | Modulation LFO Tempo Sync Switch (0 - 1) |
+| | | OFF, ON |
+| 00 29 | 000a aaaa | Modulation LFO Tempo Sync Note (0 - 19) |
+| | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |
+| | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |
+| | | 1/12, 1/16, 1/24, 1/32 |
+| 00 2A | 0aaa aaaa | OSC Pulse Width Shift (0 - 127) |
+| 00 2B | 0000 000a | (reserve) <*> |
+| 00 2C | 0aaa aaaa | Modulation LFO Pitch Depth (1 - 127) |
+| | | -63 - +63 |
+| 00 2D |
+"""
+
+
 class DigitalParameter(SynthParameter):
     """Digital synth parameters with their addresses and value ranges"""
+
+    def __init__(self, address: int, min_val: int, max_val: int, 
+                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+        super().__init__(address, min_val, max_val)
+        self.display_min = display_min if display_min is not None else min_val
+        self.display_max = display_max if display_max is not None else max_val
+
+    def get_display_value(self) -> Tuple[int, int]:
+        """Get the display range for the parameter"""
+        return self.display_min, self.display_max
 
     # Oscillator parameters
     OSC_WAVE = (0x00, 0, 7)  # Waveform type
     OSC_WAVE_VARIATION = (0x01, 0, 2)  # Wave variation
     OSC_PITCH = (0x03, -24, 24)  # Coarse tune
-    OSC_DETUNE = (0x04, 14, 114)  # -50, 50  # Fine tune
+    OSC_DETUNE = (0x04, -50, 50)  # Fine tune (-50 to +50)
     OSC_PULSE_WIDTH_MOD_DEPTH = (0x05, 0, 127)  # PWM Depth
     OSC_PULSE_WIDTH = (0x06, 0, 127)  # Pulse Width
     OSC_PITCH_ENV_ATTACK_TIME = (0x07, 0, 127)  # Pitch Envelope Attack
     OSC_PITCH_ENV_DECAY_TIME = (0x08, 0, 127)  # Pitch Envelope Decay
-    OSC_PITCH_ENV_DEPTH = (0x09, -63, 63)  # Pitch Envelope Depth
+    OSC_PITCH_ENV_DEPTH = (0x09, -63, 63)  # Pitch Envelope Depth (-63 to +63)
 
     FILTER_MODE = (0x0A, 0, 7)  # Filter mode
     FILTER_SLOPE = (0x0B, 0, 1)  # Filter slope
     FILTER_CUTOFF = (0x0C, 0, 127)  # Cutoff frequency
-    FILTER_CUTOFF_KEYFOLLOW = (0x0D, -100, 100)  # Key follow
-    FILTER_ENV_VELOCITY_SENSITIVITY = (0x0E, -63, 63)  # Velocity sensitivity
+    FILTER_CUTOFF_KEYFOLLOW = (0x0D, 54, 74, -100, 100)  # Key follow
+    FILTER_ENV_VELOCITY_SENSITIVITY = (0x0E, 1, 127, -63, 63)  # Velocity sensitivity
     FILTER_RESONANCE = (0x0F, 0, 127)  # Resonance
     FILTER_ENV_ATTACK_TIME = (0x10, 0, 127)  # Filter envelope attack
     FILTER_ENV_DECAY_TIME = (0x11, 0, 127)  # Filter envelope decay
     FILTER_ENV_SUSTAIN_LEVEL = (0x12, 0, 127)  # Filter envelope sustain
     FILTER_ENV_RELEASE_TIME = (0x13, 0, 127)  # Filter envelope release
-    FILTER_ENV_DEPTH = (0x14, -63, 63)  # Filter envelope depth
+    FILTER_ENV_DEPTH = (0x14, 1, 127, -63, 63)  # Filter envelope depth
 
     # Amplifier parameters
     AMP_LEVEL = (0x15, 0, 127)  # Amplitude level
@@ -103,8 +194,8 @@ class DigitalParameter(SynthParameter):
     AMP_ENV_DECAY_TIME = (0x18, 0, 127)  # Amplitude envelope decay
     AMP_ENV_SUSTAIN_LEVEL = (0x19, 0, 127)  # Amplitude envelope sustain
     AMP_ENV_RELEASE_TIME = (0x1A, 0, 127)  # Amplitude envelope release
-    AMP_PAN = (0x1B, -64, 63)  # Pan position
-    AMP_LEVEL_KEYFOLLOW = (0x1C, -100, 100)  # Key follow (-100 to +100)
+    AMP_PAN = (0x1B, 0, 127, -64, 63)  # Pan position
+    AMP_LEVEL_KEYFOLLOW = (0x1C, 54, 74, -100, 100)  # Key follow (-100 to +100)
 
     # LFO parameters
     LFO_SHAPE = (0x1C, 0, 5)  # LFO waveform
@@ -113,27 +204,27 @@ class DigitalParameter(SynthParameter):
     LFO_TEMPO_SYNC_NOTE = (0x1F, 0, 19)  # Tempo sync note
     LFO_FADE_TIME = (0x20, 0, 127)  # Fade time
     LFO_KEY_TRIGGER = (0x21, 0, 1)  # Key trigger
-    LFO_PITCH_DEPTH = (0x22, -63, 63)  # Pitch mod depth
-    LFO_FILTER_DEPTH = (0x23, -63, 63)  # Filter mod depth
-    LFO_AMP_DEPTH = (0x24, -63, 63)  # Amp mod depth
-    LFO_PAN_DEPTH = (0x25, -63, 63)  # Pan mod depth
+    LFO_PITCH_DEPTH = (0x22, 1, 127, -63, 63)  # Pitch mod depth
+    LFO_FILTER_DEPTH = (0x23, 1, 127, -63, 63)  # Filter mod depth
+    LFO_AMP_DEPTH = (0x24, 1, 127, -63, 63)  # Amp mod depth
+    LFO_PAN_DEPTH = (0x25, 1, 127, -63, 63)  # Pan mod depth
 
     # Modulation LFO parameters
     MOD_LFO_SHAPE = (0x26, 0, 5)  # Mod LFO waveform
     MOD_LFO_RATE = (0x27, 0, 127)  # Mod LFO rate
     MOD_LFO_TEMPO_SYNC_SWITCH = (0x28, 0, 1)  # Tempo sync switch
     MOD_LFO_TEMPO_SYNC_NOTE = (0x29, 0, 19)  # Tempo sync note
-    OSC_PULSE_WIDTH_SHIFT = (0x2A, -63, 63)  # OSC Pulse Width Shift
+    OSC_PULSE_WIDTH_SHIFT = (0x2A, 0, 127)  # OSC Pulse Width Shift
     # 2B is reserved
-    MOD_LFO_PITCH_DEPTH = (0x2C, -63, 63)  # Pitch mod depth
-    MOD_LFO_FILTER_DEPTH = (0x2D, -63, 63)  # Filter mod depth
-    MOD_LFO_AMP_DEPTH = (0x2E, -63, 63)  # Amp mod depth
-    MOD_LFO_PAN = (0x2F, -63, 63)  # Pan mod depth
-    MOD_LFO_RATE_CTRL = (0x3B, -63, 63)  # Rate control
+    MOD_LFO_PITCH_DEPTH = (0x2C, 1, 127, -63, 63)  # Pitch mod depth
+    MOD_LFO_FILTER_DEPTH = (0x2D, 1, 127, -63, 63)  # Filter mod depth
+    MOD_LFO_AMP_DEPTH = (0x2E, 1, 127, -63, 63)  # Amp mod depth
+    MOD_LFO_PAN = (0x2F, 1, 127, -63, 63)  # Pan mod depth
+    MOD_LFO_RATE_CTRL = (0x3B, 1, 127, -63, 63)  # Rate control
 
     # Additional parameters
-    CUTOFF_AFTERTOUCH = (0x30, -63, 63)  # Cutoff aftertouch
-    LEVEL_AFTERTOUCH = (0x31, -63, 63)  # Level aftertouch
+    CUTOFF_AFTERTOUCH = (0x30, 1, 127, -63, 63)  # Cutoff aftertouch
+    LEVEL_AFTERTOUCH = (0x31, 1, 127, -63, 63)  # Level aftertouch
     WAVE_GAIN = (0x34, 0, 3)  # Wave gain
     HPF_CUTOFF = (0x39, 0, 127)  # HPF cutoff
     SUPER_SAW_DETUNE = (0x3A, 0, 127)  # Super saw detune
@@ -146,148 +237,6 @@ class DigitalParameter(SynthParameter):
 
     PCM_WAVE_NUMBER = (0x3F, 0, 3)
     PCM_WAVE_GAIN = (0x40, 0, 16384)
-
-    def __init__(self, address: int, min_val: int, max_val: int):
-        super().__init__(address, min_val, max_val)
-        self.address = address
-        self.min_val = min_val
-        self.max_val = max_val
-
-    @staticmethod
-    def get_by_name(param_name):
-        """Get the AnalogParameter by name."""
-        # Return the parameter member by name, or None if not found
-        return DigitalParameter.__members__.get(param_name, None)
-
-    def validate_value(self, value: int) -> int:
-        """Validate and convert parameter value to MIDI range (0-127)"""
-        if not isinstance(value, int):
-            raise ValueError(f"Value must be integer, got {type(value)}")
-
-        # Convert bipolar values to MIDI range
-        if self in [
-            # Oscillator parameters
-            self.OSC_PITCH,
-            self.OSC_DETUNE,
-            self.OSC_PITCH_ENV_DEPTH,
-            # Filter parameters
-            self.FILTER_CUTOFF_KEYFOLLOW,
-            self.FILTER_ENV_VELOCITY_SENSITIVITY,
-            self.FILTER_ENV_DEPTH,
-            # Amplifier parameters
-            self.AMP_VELOCITY,
-            self.AMP_PAN,
-            self.AMP_LEVEL_KEYFOLLOW,
-            # LFO parameters
-            self.LFO_PITCH_DEPTH,
-            self.LFO_FILTER_DEPTH,
-            self.LFO_AMP_DEPTH,
-            self.LFO_PAN_DEPTH,
-            # Mod LFO parameters
-            self.MOD_LFO_PITCH_DEPTH,
-            self.MOD_LFO_FILTER_DEPTH,
-            self.MOD_LFO_AMP_DEPTH,
-            self.MOD_LFO_PAN,
-            self.MOD_LFO_RATE_CTRL,
-        ]:
-            # Convert from display range to MIDI range
-            if self == self.AMP_PAN:
-                value = value + 64  # -64 to +63 -> 0 to 127
-            elif self in [self.FILTER_CUTOFF_KEYFOLLOW, self.AMP_LEVEL_KEYFOLLOW]:
-                value = value + 100  # -100 to +100 -> 0 to 200
-                value = (value * 127) // 200  # Scale to MIDI range
-            elif self == self.OSC_PITCH:
-                value = value + 64  # -24 to +24 -> 40 to 88
-            elif self == self.OSC_DETUNE:
-                value = value + 64  # -50 to +50 -> 14 to 114
-            elif self == self.OSC_PITCH_ENV_DEPTH:
-                value = value + 64  # -63 to +63 -> 0 to 127
-            elif self in [
-                self.LFO_PITCH_DEPTH,
-                self.LFO_FILTER_DEPTH,
-                self.LFO_AMP_DEPTH,
-                self.LFO_PAN_DEPTH,
-                self.MOD_LFO_PITCH_DEPTH,
-                self.MOD_LFO_FILTER_DEPTH,
-                self.MOD_LFO_AMP_DEPTH,
-                self.MOD_LFO_PAN,
-                self.MOD_LFO_RATE_CTRL,
-            ]:
-                value = value + 64  # -63 to +63 -> 0 to 127
-            else:
-                value = value + 63  # -63 to +63 -> 0 to 126
-
-        # Ensure value is in valid MIDI range
-        if value < 0 or value > 127:
-            raise ValueError(
-                f"MIDI value {value} out of range for {self.name} " f"(must be 0-127)"
-            )
-
-        return value
-
-    def convert_from_display(self, display_value: int) -> int:
-        """Convert from display value to MIDI value (0-127)"""
-        # Handle bipolar parameters
-        if self in [
-            # Oscillator parameters
-            self.OSC_PITCH,
-            self.OSC_DETUNE,
-            # Filter parameters
-            self.FILTER_CUTOFF_KEYFOLLOW,
-            self.FILTER_ENV_VELOCITY_SENSITIVITY,
-            self.FILTER_ENV_DEPTH,
-            # Amplifier parameters
-            self.AMP_VELOCITY,
-            self.AMP_PAN,
-            self.AMP_LEVEL_KEYFOLLOW,
-            # LFO parameters
-            self.LFO_PITCH_DEPTH,
-            self.LFO_FILTER_DEPTH,
-            self.LFO_AMP_DEPTH,
-            self.LFO_PAN_DEPTH,
-            # Mod LFO parameters
-            self.MOD_LFO_PITCH_DEPTH,
-            self.MOD_LFO_FILTER_DEPTH,
-            self.MOD_LFO_AMP_DEPTH,
-            self.MOD_LFO_PAN,
-            self.MOD_LFO_RATE_CTRL,
-        ]:
-            # Convert from display range to MIDI range
-            if self == self.AMP_PAN:
-                return display_value + 64  # -64 to +63 -> 0 to 127
-            elif self in [self.FILTER_CUTOFF_KEYFOLLOW, self.AMP_LEVEL_KEYFOLLOW]:
-                return display_value + 100  # -100 to +100 -> 0 to 200
-            elif self == self.OSC_PITCH:
-                return display_value + 64  # -24 to +24 -> 40 to 88
-            elif self == self.OSC_DETUNE:
-                return display_value + 64  # -50 to +50 -> 14 to 114
-            elif self in [
-                self.LFO_PITCH_DEPTH,
-                self.LFO_FILTER_DEPTH,
-                self.LFO_AMP_DEPTH,
-                self.LFO_PAN_DEPTH,
-                self.MOD_LFO_PITCH_DEPTH,
-                self.MOD_LFO_FILTER_DEPTH,
-                self.MOD_LFO_AMP_DEPTH,
-                self.MOD_LFO_PAN,
-                self.MOD_LFO_RATE_CTRL,
-            ]:
-                return display_value + 64  # -63 to +63 -> 0 to 127
-            else:
-                return display_value + 63  # -63 to +63 -> 0 to 126
-
-        return display_value
-
-    def get_address_for_partial(self, partial_num: int) -> Tuple[int, int]:
-        """Get parameter group and address adjusted for partial number."""
-        group_map = {1: 0x20, 2: 0x21, 3: 0x22}
-        group = group_map.get(partial_num, 0x20)  # Default to 0x20 if partial_num is not 1, 2, or 3
-        return group, self.address
-
-    def __new__(cls, *args):
-        obj = object.__new__(cls)
-        obj._value_ = args  # Store all values
-        return obj
 
     def __str__(self) -> str:
         return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
@@ -373,3 +322,285 @@ class DigitalParameter(SynthParameter):
         except Exception as e:
             logging.error(f"Error setting wave number: {str(e)}")
             return False
+
+    def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value to MIDI range (0-127)"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be integer, got {type(value)}")
+
+        # Convert bipolar values to MIDI range
+        if self in [
+            # Oscillator parameters
+            self.OSC_PITCH,
+            self.OSC_DETUNE,
+            self.OSC_PITCH_ENV_DEPTH,
+            # Filter parameters
+            self.FILTER_CUTOFF_KEYFOLLOW,
+            self.FILTER_ENV_VELOCITY_SENSITIVITY,
+            self.FILTER_ENV_DEPTH,
+            # Amplifier parameters
+            self.AMP_VELOCITY,
+            self.AMP_PAN,
+            self.AMP_LEVEL_KEYFOLLOW,
+            # LFO parameters
+            self.LFO_PITCH_DEPTH,
+            self.LFO_FILTER_DEPTH,
+            self.LFO_AMP_DEPTH,
+            self.LFO_PAN_DEPTH,
+            # Mod LFO parameters
+            self.MOD_LFO_PITCH_DEPTH,
+            self.MOD_LFO_FILTER_DEPTH,
+            self.MOD_LFO_AMP_DEPTH,
+            self.MOD_LFO_PAN,
+            self.MOD_LFO_RATE_CTRL,
+        ]:
+            # Convert from display range to MIDI range
+            if self == self.AMP_PAN:
+                value = value + 64  # -64 to +63 -> 0 to 127
+            elif self in [self.FILTER_CUTOFF_KEYFOLLOW, self.AMP_LEVEL_KEYFOLLOW]:
+                value = value + 100  # -100 to +100 -> 0 to 200
+                value = (value * 127) // 200  # Scale to MIDI range
+            elif self == self.OSC_PITCH:
+                value = value + 64  # -24 to +24 -> 40 to 88
+            elif self == self.OSC_DETUNE:
+                value = value + 64  # -50 to +50 -> 14 to 114
+            elif self == self.OSC_PITCH_ENV_DEPTH:
+                value = value + 64  # -63 to +63 -> 1 to 127
+            elif self in [
+                self.LFO_PITCH_DEPTH,
+                self.LFO_FILTER_DEPTH,
+                self.LFO_AMP_DEPTH,
+                self.LFO_PAN_DEPTH,
+                self.MOD_LFO_PITCH_DEPTH,
+                self.MOD_LFO_FILTER_DEPTH,
+                self.MOD_LFO_AMP_DEPTH,
+                self.MOD_LFO_PAN,
+                self.MOD_LFO_RATE_CTRL,
+            ]:
+                value = value + 64  # -63 to +63 -> 0 to 127
+            else:
+                value = value + 63  # -63 to +63 -> 0 to 126
+
+        # Ensure value is in valid MIDI range
+        if value < 0 or value > 127:
+            raise ValueError(
+                f"MIDI value {value} out of range for {self.name} " f"(must be 0-127)"
+            )
+
+        return value
+
+    def convert_from_display(self, display_value: int) -> int:
+        """Convert from display value to MIDI value (0-127)"""
+        # Handle bipolar parameters
+        if self in [
+            # Oscillator parameters
+            self.OSC_PITCH,
+            self.OSC_DETUNE,
+            # Filter parameters
+            self.FILTER_CUTOFF_KEYFOLLOW,
+            self.FILTER_ENV_VELOCITY_SENSITIVITY,
+            self.FILTER_ENV_DEPTH,
+            # Amplifier parameters
+            self.AMP_VELOCITY,
+            self.AMP_PAN,
+            self.AMP_LEVEL_KEYFOLLOW,
+            # LFO parameters
+            self.LFO_PITCH_DEPTH,
+            self.LFO_FILTER_DEPTH,
+            self.LFO_AMP_DEPTH,
+            self.LFO_PAN_DEPTH,
+            # Mod LFO parameters
+            self.MOD_LFO_PITCH_DEPTH,
+            self.MOD_LFO_FILTER_DEPTH,
+            self.MOD_LFO_AMP_DEPTH,
+            self.MOD_LFO_PAN,
+            self.MOD_LFO_RATE_CTRL,
+        ]:
+            # Convert from display range to MIDI range
+            if self == self.AMP_PAN:
+                return display_value + 64  # -64 to +63 -> 0 to 127
+            elif self in [self.FILTER_CUTOFF_KEYFOLLOW, self.AMP_LEVEL_KEYFOLLOW]:
+                return display_value + 100  # -100 to +100 -> 0 to 200
+            elif self == self.OSC_PITCH:
+                return display_value + 64  # -24 to +24 -> 40 to 88
+            elif self == self.OSC_DETUNE:
+                return display_value + 64  # -50 to +50 -> 14 to 114
+            elif self in [
+                self.LFO_PITCH_DEPTH,
+                self.LFO_FILTER_DEPTH,
+                self.LFO_AMP_DEPTH,
+                self.LFO_PAN_DEPTH,
+                self.MOD_LFO_PITCH_DEPTH,
+                self.MOD_LFO_FILTER_DEPTH,
+                self.MOD_LFO_AMP_DEPTH,
+                self.MOD_LFO_PAN,
+                self.MOD_LFO_RATE_CTRL,
+            ]:
+                return display_value + 64  # -63 to +63 -> 0 to 127
+            else:
+                return display_value + 63  # -63 to +63 -> 0 to 126
+
+        return display_value
+
+    def get_address_for_partial(self, partial_num: int) -> Tuple[int, int]:
+        """Get parameter group and address adjusted for partial number."""
+        group_map = {1: 0x20, 2: 0x21, 3: 0x22}
+        group = group_map.get(partial_num, 0x20)  # Default to 0x20 if partial_num is not 1, 2, or 3
+        return group, self.address
+
+    @staticmethod
+    def get_by_name(param_name):
+        """Get the AnalogParameter by name."""
+        # Return the parameter member by name, or None if not found
+        return DigitalParameter.__members__.get(param_name, None)
+    
+    def convert_from_midi_test(self, midi_value: int) -> int:
+        """Convert from MIDI value to display value"""
+        # Handle special bipolar cases first
+        if self == self.OSC_DETUNE:
+            return midi_value - 64  # 14 to 114 -> -50 to +50
+        elif self == self.OSC_PITCH:
+            return midi_value - 64  # 40 to 88 -> -24 to +24
+        elif self == self.OSC_PITCH_ENV_DEPTH:
+            return midi_value - 64  # 1 to 127 -> -63 to +63
+        
+        # For parameters with simple linear scaling
+        if self.display_min != self.min_val or self.display_max != self.max_val:
+            return int(self.display_min + (midi_value - self.min_val) * 
+                       (self.display_max - self.display_min) / (self.max_val - self.min_val))
+        return midi_value
+    
+    def convert_to_midi_test(self, display_value: int) -> int:
+        """Convert from display value to MIDI value"""
+        # Handle special bipolar cases first
+        if self == self.OSC_DETUNE:
+            return display_value + 64  # -50 to +50 -> 14 to 114
+        elif self == self.OSC_PITCH:
+            return display_value + 64  # -24 to +24 -> 40 to 88
+        elif self == self.OSC_PITCH_ENV_DEPTH:
+            return display_value + 64  # -63 to +63 -> 1 to 127
+        
+        # For parameters with simple linear scaling
+        if self.display_min != self.min_val or self.display_max != self.max_val:
+            return int(self.min_val + (display_value - self.display_min) * 
+                       (self.max_val - self.min_val) / (self.display_max - self.display_min))
+        return display_value
+
+
+    def convert_from_midi(self, midi_value: int) -> int:
+        """Convert from MIDI value to display value"""
+        if self == self.OSC_DETUNE:
+            return midi_value - 64  # 14 to 114 -> -50 to +50
+        elif self == self.AMP_PAN:
+            return midi_value - 64  # 0 to 127 -> -64 to +63        
+        elif self == self.FILTER_CUTOFF_KEYFOLLOW:
+            return midi_value + 100  # 0 to 200 -> -100 to +100
+        elif self == self.AMP_LEVEL_KEYFOLLOW:
+            return midi_value + 100  # 0 to 200 -> -100 to +100
+        elif self == self.OSC_PITCH:
+            return midi_value - 64  # 40 to 88 -> -24 to +24
+        elif self == self.OSC_PITCH_ENV_DEPTH:
+            return midi_value - 64  # 1 to 127 -> -63 to +63
+        elif self == self.FILTER_CUTOFF:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_CUTOFF_KEYFOLLOW:
+            return midi_value + 100  # 0 to 200 -> -100 to +100
+        elif self == self.FILTER_ENV_VELOCITY_SENSITIVITY:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_DEPTH:
+            return midi_value - 64  # 1 to 127 -> -63 to +63
+        elif self == self.FILTER_RESONANCE:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_ATTACK_TIME:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_DECAY_TIME:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_SUSTAIN_LEVEL:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_RELEASE_TIME:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_PITCH_DEPTH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_FILTER_DEPTH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_AMP_DEPTH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+
+        elif self == self.MOD_LFO_PITCH_DEPTH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_FILTER_DEPTH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_AMP_DEPTH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_PAN:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_RATE_CTRL:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.CUTOFF_AFTERTOUCH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        elif self == self.LEVEL_AFTERTOUCH:
+            return midi_value - 64  # 0 to 127 -> -63 to +63
+        # ... handle other parameters ...
+        return midi_value
+
+    def convert_to_midi(self, slider_value: int) -> int:
+        """Convert from display value to MIDI value"""
+        if self == self.OSC_DETUNE:
+            return slider_value + 64  # 14 to 114 -> -50 to +50
+        elif self == self.OSC_PITCH_ENV_DEPTH:
+            return slider_value + 64  # 1 to 127 -> -63 to +63
+        elif self == self.AMP_PAN:
+            return slider_value - 64  # 0 to 127 -> -64 to +63  
+        elif self == self.FILTER_CUTOFF_KEYFOLLOW:
+            return slider_value + 100  # 0 to 200 -> -100 to +100
+        elif self == self.AMP_LEVEL_KEYFOLLOW:
+            return slider_value + 100  # 0 to 200 -> -100 to +100           
+        elif self == self.OSC_PITCH:
+            return slider_value + 64  # 40 to 88 -> -24 to +24
+        elif self == self.OSC_DETUNE:
+            return slider_value + 64  # 14 to 114 -> -50 to +50
+        elif self == self.OSC_PITCH_ENV_DEPTH:
+            return slider_value + 64  # 1 to 127 -> -63 to +63      
+        elif self == self.FILTER_CUTOFF:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_CUTOFF_KEYFOLLOW:
+            return slider_value + 100  # 0 to 200 -> -100 to +100
+        elif self == self.FILTER_ENV_VELOCITY_SENSITIVITY:
+            return slider_value + 64  # 0 to 127 -> -63 to +63                  
+        elif self == self.FILTER_ENV_DEPTH:
+            return slider_value + 64  # 1 to 127 -> -63 to +63
+        elif self == self.FILTER_RESONANCE:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_ATTACK_TIME:
+            return slider_value + 64  # 0 to 127 -> -63 to +63  
+        elif self == self.FILTER_ENV_DECAY_TIME:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_SUSTAIN_LEVEL:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.FILTER_ENV_RELEASE_TIME:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_PITCH_DEPTH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_FILTER_DEPTH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_AMP_DEPTH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.LFO_PAN:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_PITCH_DEPTH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_FILTER_DEPTH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_AMP_DEPTH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_PAN:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.MOD_LFO_RATE_CTRL:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.CUTOFF_AFTERTOUCH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+        elif self == self.LEVEL_AFTERTOUCH:
+            return slider_value + 64  # 0 to 127 -> -63 to +63
+            
+        # ... handle other parameters ...
+        return slider_value

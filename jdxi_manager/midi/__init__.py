@@ -3,7 +3,7 @@ from .connection import MIDIConnection
 from .constants import analog, digital, drums, sysex, vocal
 
 __all__ = [
-    'MIDIHelper', 
+    # 'MIDIHelper',
     'MIDIConnection',
     'analog',
     'digital', 

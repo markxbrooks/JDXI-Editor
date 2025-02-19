@@ -189,10 +189,11 @@ class PatternSequencer(BaseEditor):
         self.timer = None
         self.current_step = 0
         self.sequence = None
-        self.beats_per_pattern = 16  # Default to 16 beats
-        self.measures = 1  # Default to 1 measure
+        self.beats_per_pattern = 16
+        self.measures = 1
         self.total_steps = self.beats_per_pattern * self.measures
         self.button_notes = [[None for _ in range(16)] for _ in range(4)]
+        self.is_playing = False  # Add state tracking
         self._setup_ui()
 
     def _setup_ui(self):
@@ -239,8 +240,11 @@ class PatternSequencer(BaseEditor):
         control_layout = QHBoxLayout()
         self.start_button = QPushButton("Start")
         self.stop_button = QPushButton("Stop")
+        
+        # Direct connection without lambda
         self.start_button.clicked.connect(self.play_pattern)
         self.stop_button.clicked.connect(self.stop_pattern)
+        
         control_layout.addWidget(self.start_button)
         control_layout.addWidget(self.stop_button)
         layout.addLayout(control_layout)
@@ -256,22 +260,56 @@ class PatternSequencer(BaseEditor):
 
     def play_pattern(self):
         """Plays the stored pattern in a loop using a QTimer."""
+        logging.info("play_pattern called")
+        if self.is_playing:
+            logging.info("Already playing, returning")
+            return
+            
+        self.is_playing = True
         self.current_step = 0
-        self.timer = QTimer(self)
+        self.timer = QTimer()
         self.timer.timeout.connect(self._play_step)
-        self.timer.start(500)
+        self.timer.start(500)  # 500ms per step
+        logging.info("Timer started")
 
     def _play_step(self):
         """Plays the current step and advances to the next one."""
         step = self.current_step % self.total_steps
+        logging.info(f"Playing step {step}")
+        
+        # Check each row's button at the current step
+        for row in range(4):
+            button = self.buttons[row][step]
+            if button.isChecked():
+                # Determine channel based on row
+                channel = row if row < 3 else 9  # channels 0,1,2 for synths, 9 for drums
+                
+                # Send Note On message for C4 (note 60)
+                if self.midi_helper:
+                    logging.info(f"Row {row} active at step {step}, sending note on channel {channel}")
+                    # Note On message: [Status byte (Note On + channel), note number, velocity]
+                    self.midi_helper.send_message([0x90 | channel, 60, 100])  # velocity 100
+                    # Note Off message after a short delay
+                    QTimer.singleShot(100, lambda ch=channel: 
+                        self.midi_helper.send_message([0x90 | ch, 60, 0]))
+                else:
+                    logging.warning("MIDI helper not available")
+
+        # Update measure button highlighting
         for i, btn in enumerate(self.measure_buttons):
             btn.setChecked(i == step // self.beats_per_pattern)
+        
+        # Advance to next step
         self.current_step = (self.current_step + 1) % self.total_steps
 
     def stop_pattern(self):
         """Stops the pattern playback."""
+        logging.info("stop_pattern called")
+        self.is_playing = False
         if self.timer:
             self.timer.stop()
+            self.timer = None
+        logging.info("Timer stopped")
 
 
 class PatternSequencerOld(BaseEditor):

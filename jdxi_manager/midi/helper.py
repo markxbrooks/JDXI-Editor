@@ -75,6 +75,7 @@ sysex_message = [
     0xF7,
 ]
 """
+from jdxi_manager.data.parameter.analog import parse_analog_parameters
 from jdxi_manager.data.parameter.digital import parse_digital_parameters
 from jdxi_manager.data.parameter.digital_common import parse_digital_common_parameters
 
@@ -320,7 +321,7 @@ def parse_digital_parameters_really_old(data: list) -> dict:
 
 
 
-def parse_analog_parameters(data: list) -> dict:
+def parse_analog_parameters_old(data: list) -> dict:
     """Parse parameters from the given data list."""
     parameters = {}
 
