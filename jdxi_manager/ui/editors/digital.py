@@ -638,9 +638,11 @@ class DigitalSynthEditor(BaseEditor):
 
                 # Update the corresponding slider
                 if param in self.partial_editors[partial_no].controls:
+                    slider_value = param.convert_from_midi(value)
+                    logging.info(f"midi value {value} converted to slider value {slider_value}")
                     slider = self.partial_editors[partial_no].controls[param]
                     slider.blockSignals(True)  # Prevent feedback loop
-                    slider.setValue(value)
+                    slider.setValue(slider_value)
                     slider.blockSignals(False)
 
                 # Handle OSC_WAVE parameter to update waveform buttons
@@ -719,8 +721,10 @@ class DigitalSynthEditor(BaseEditor):
             """Helper function to update sliders safely."""
             slider = self.partial_editors[partial_no].controls.get(param)
             if slider:
+                slider_value = param.convert_from_midi(value)
+                logging.info(f"midi value {value} converted to slider value {slider_value}")
                 slider.blockSignals(True)
-                slider.setValue(value)
+                slider.setValue(slider_value)
                 slider.blockSignals(False)
                 successes.append(param.name)
                 if debug_param_updates:

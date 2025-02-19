@@ -492,6 +492,30 @@ class AnalogSynthEditor(BaseEditor):
 
         # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max, vertical)
+               
+        # Set up bipolar parameters
+        if isinstance(param, AnalogParameter) and param in [
+            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW,
+            AnalogParameter.FILTER_ENV_VELOCITY_SENS,
+            AnalogParameter.AMP_LEVEL_KEYFOLLOW,
+            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENS,
+            AnalogParameter.OSC_PITCH_COARSE,
+            AnalogParameter.OSC_PITCH_FINE,
+            AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
+            AnalogParameter.LFO_AMP_MODULATION_CONTROL,
+            AnalogParameter.LFO_FILTER_MODULATION_CONTROL,
+            AnalogParameter.OSC_PITCH_ENV_DEPTH,
+            AnalogParameter.LFO_RATE_MODULATION_CONTROL,
+            AnalogParameter.FILTER_ENV_DEPTH
+            # Add other bipolar parameters as needed
+        ]:
+            # Set format string to show + sign for positive values
+            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
+            # Set center tick
+            slider.setCenterMark(0)
+            # Add more prominent tick at center
+            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
+            slider.setTickInterval((display_max - display_min) // 4)
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
@@ -1130,8 +1154,9 @@ class AnalogSynthEditor(BaseEditor):
             """Helper function to update sliders safely."""
             slider = self.controls.get(param)
             if slider:
+                slider_value = param.convert_from_midi(value)
                 slider.blockSignals(True)
-                slider.setValue(value)
+                slider.setValue(slider_value)
                 slider.blockSignals(False)
                 successes.append(param.name)
 
