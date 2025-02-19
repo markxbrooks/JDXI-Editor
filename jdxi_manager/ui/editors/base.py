@@ -1,4 +1,4 @@
-from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
+from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
 from typing import Optional, Union
@@ -19,14 +19,18 @@ class BaseEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
-        # self.midi_requests = [
-        #    "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
-        #
-        self.midi_requests = None
         self.midi_helper = midi_helper
+        self.midi_requests = []  # Initialize empty list of MIDI requests
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
+
+        # Set window flags for a tool window
+        self.setWindowFlags(Qt.WindowType.Tool)
+
+        # Apply common style
+        self.setStyleSheet(Style.EDITOR_STYLE)
+
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -34,12 +38,6 @@ class BaseEditor(QWidget):
         # Add close window shortcut
         self.close_shortcut = QShortcut(QKeySequence.StandardKey.Close, self)
         self.close_shortcut.activated.connect(self.close)
-
-        # Set window flags for a tool window
-        self.setWindowFlags(Qt.WindowType.Tool)
-
-        # Apply common style
-        self.setStyleSheet(Style.EDITOR_STYLE)
 
         # Common minimum size for all editors
         self.setMinimumSize(800, 400)
@@ -51,6 +49,10 @@ class BaseEditor(QWidget):
         #    logging.error(
         #        "MIDI helper not initialized or set_callback method not found"
         #    )
+
+        # Connect to program change signal if MIDI helper exists
+        if self.midi_helper:
+            self.midi_helper.program_changed.connect(self._handle_program_change)
 
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""
@@ -193,12 +195,10 @@ class BaseEditor(QWidget):
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
-        for midi_request in self.midi_requests:
-            logging.info(f"midi_request: {midi_request}")
-            midi_request = bytes.fromhex(midi_request)
-            logging.info(f"midi_request from hex: {midi_request}")
+        for request in self.midi_requests:
+            request = bytes.fromhex(request)
             # Send each SysEx message
-            self.send_message(midi_request)
+            self.send_message(request)
 
     def send_message(self, message):
         """Send a SysEx message using the MIDI helper"""
@@ -206,3 +206,11 @@ class BaseEditor(QWidget):
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
+
+    def _handle_program_change(self, channel: int, program: int):
+        """Handle program change messages by requesting updated data"""
+        logging.info(f"Program change detected on channel {channel}, requesting data update")
+        self.data_request()
+        #if hasattr(self, 'part') and channel == self.part:
+        #    logging.info(f"Program change detected on channel {channel}, requesting data update")
+        #    self.data_request()
