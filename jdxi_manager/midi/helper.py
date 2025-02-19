@@ -78,6 +78,7 @@ sysex_message = [
 from jdxi_manager.data.parameter.analog import parse_analog_parameters
 from jdxi_manager.data.parameter.digital import parse_digital_parameters
 from jdxi_manager.data.parameter.digital_common import parse_digital_common_parameters
+from jdxi_manager.midi.parsers import parse_sysex
 
 """
 # Example SysEx Data (convert hex to bytes)
@@ -131,23 +132,14 @@ import json
 import logging
 import re
 
-import mido
-import struct
 from pubsub import pub
 import rtmidi
 from typing import Optional, List, Tuple, Callable
 import time
-from jdxi_manager.data.preset_data import DIGITAL_PRESETS, DRUM_PRESETS, ANALOG_PRESETS
+from jdxi_manager.data.preset_data import DIGITAL_PRESETS
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.midi.constants.sysex import (
-    DIGITAL_SYNTH_1_AREA,
-    DIGITAL_SYNTH_2_AREA,
-    ANALOG_SYNTH_AREA,
-    DRUM_KIT_AREA,
-    # TEMPORARY_AREAS,
-)
 from jdxi_manager.midi.sysex import SysexParameter
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
@@ -211,272 +203,6 @@ def find_preset_number(preset_name, presets):
 
     # Return None if no match is found
     return None
-
-
-def parse_sysex(sysex_bytes):
-    return {
-        "manufacturer_id": sysex_bytes[2],
-        "device_id": sysex_bytes[3],
-        "model_id": sysex_bytes[4:7],
-        "jd_xi_id": sysex_bytes[7],
-        "command_type": sysex_bytes[8],
-        "area": sysex_bytes[9],
-        "synth_number": sysex_bytes[10],
-        "partial": sysex_bytes[11],
-        "parameter": sysex_bytes[12],
-        "value": sysex_bytes[13],
-        "checksum": sysex_bytes[14],
-        "end": sysex_bytes[15],
-    }
-
-def parse_digital_parameters_really_old(data: list) -> dict:
-    """
-    Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, Amplifier, LFO, and other modulation settings.
-
-    Args:
-        data (bytes): SysEx message containing tone parameters.
-
-    Returns:
-        dict: Parsed parameters.
-    """
-
-    # Function to safely retrieve values from `data`
-    def safe_get(index, default=0):
-        return data[index] if index < len(data) else default
-
-    parameters = {}
-
-    # ---- Oscillator Parameters ----
-    parameters["OSC_WAVE"] = safe_get(12)  # (0x20, 0x00)
-    parameters["OSC_WAVE_VARIATION"] = safe_get(13)  # (0x20, 0x01)
-    # 14 is a reserved byte
-    parameters["OSC_PITCH"] = safe_get(15)  # (0x20, 0x02)
-    parameters["OSC_DETUNE"] = safe_get(16)  # (0x20, 0x03)
-    parameters["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(17)  # (0x20, 0x05)
-    parameters["OSC_PULSE_WIDTH"] = safe_get(18)  # (0x20, 0x06)
-    parameters["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(19)  # (0x20, 0x07)
-    parameters["OSC_PITCH_ENV_DECAY_TIME"] = safe_get(20)  # (0x20, 0x08)
-    parameters["OSC_PITCH_ENV_DEPTH"] = safe_get(21)  # (0x20, 0x09)
-
-    # ---- Filter Parameters ----
-    parameters["FILTER_MODE"] = safe_get(22)  # (0x21, 0x00)
-    parameters["FILTER_SLOPE"] = safe_get(23)  # (0x21, 0x01)
-    parameters["FILTER_CUTOFF"] = safe_get(24)  # (0x21, 0x02)
-    parameters["FILTER_CUTOFF_KEYFOLLOW"] = safe_get(25)  # (0x21, 0x03)
-    parameters["FILTER_ENV_VELOCITY_SENSITIVITY"] = safe_get(26)  # (0x21, 0x04)
-    parameters["FILTER_RESONANCE"] = safe_get(27)  # (0x21, 0x05)
-    parameters["FILTER_ENV_ATTACK_TIME"] = safe_get(28)  # (0x21, 0x06)
-    parameters["FILTER_ENV_DECAY_TIME"] = safe_get(29)  # (0x21, 0x07)
-    parameters["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(30)  # (0x21, 0x08)
-    parameters["FILTER_ENV_RELEASE_TIME"] = safe_get(31)  # (0x21, 0x09)
-    parameters["FILTER_ENV_DEPTH"] = safe_get(32)  # (0x21, 0x0A)
-
-    # ---- Amplifier Parameters ----
-    parameters["AMP_LEVEL"] = safe_get(33)  # (0x20, 0x15)
-    parameters["AMP_VELOCITY"] = safe_get(34)  # (0x20, 0x16)
-    parameters["AMP_ENV_ATTACK_TIME"] = safe_get(35)  # (0x20, 0x17)
-    parameters["AMP_ENV_DECAY_TIME"] = safe_get(36)  # (0x20, 0x18)
-    parameters["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(37)  # (0x20, 0x19)
-    parameters["AMP_ENV_RELEASE_TIME"] = safe_get(38)  # (0x20, 0x1A)
-    parameters["AMP_PAN"] = safe_get(39)  # (0x20, 0x1B)
-    parameters["AMP_LEVEL_KEYFOLLOW"] = safe_get(40)  # (0x20, 0x1C)
-
-    # ---- LFO Parameters ----
-    parameters["LFO_SHAPE"] = safe_get(40)  # (0x23, 0x00)
-    parameters["LFO_RATE"] = safe_get(41)  # (0x23, 0x01)
-    parameters["LFO_TEMPO_SYNC_SWITCH"] = safe_get(42)  # (0x23, 0x02)
-    parameters["LFO_TEMPO_SYNC_NOTE"] = safe_get(43)  # (0x23, 0x03)
-    parameters["LFO_FADE_TIME"] = safe_get(44)  # (0x23, 0x04)
-    parameters["LFO_KEY_TRIGGER"] = safe_get(45)  # (0x23, 0x05)
-    parameters["LFO_PITCH_DEPTH"] = safe_get(46)  # (0x23, 0x06)
-    parameters["LFO_FILTER_DEPTH"] = safe_get(47)  # (0x23, 0x07)
-    parameters["LFO_AMP_DEPTH"] = safe_get(48)  # (0x23, 0x08)
-    parameters["LFO_PAN_DEPTH"] = safe_get(49)  # (0x23, 0x09)
-
-    # ---- Modulation LFO Parameters ----
-    parameters["MOD_LFO_SHAPE"] = safe_get(50)  # (0x24, 0x00)
-    parameters["MOD_LFO_RATE"] = safe_get(51)  # (0x24, 0x01)
-    parameters["MOD_LFO_TEMPO_SYNC_SWITCH"] = safe_get(52)  # (0x24, 0x02)
-    parameters["MOD_LFO_TEMPO_SYNC_NOTE"] = safe_get(53)  # (0x24, 0x03)
-    parameters["MOD_LFO_PITCH_DEPTH"] = safe_get(54)  # (0x24, 0x04)
-    parameters["MOD_LFO_FILTER_DEPTH"] = safe_get(55)  # (0x24, 0x05)
-    parameters["MOD_LFO_AMP_DEPTH"] = safe_get(56)  # (0x24, 0x06)
-    parameters["MOD_LFO_PAN"] = safe_get(57)  # (0x24, 0x07)
-    parameters["MOD_LFO_RATE_CTRL"] = safe_get(58)  # (0x24, 0x08)
-
-    # ---- Additional Parameters ----
-    parameters["CUTOFF_AFTERTOUCH"] = safe_get(59)  # (0x25, 0x00)
-    parameters["LEVEL_AFTERTOUCH"] = safe_get(60)  # (0x25, 0x01)
-    parameters["WAVE_GAIN"] = safe_get(61)  # (0x25, 0x02)
-    parameters["HPF_CUTOFF"] = safe_get(62)  # (0x25, 0x03)
-    parameters["SUPER_SAW_DETUNE"] = safe_get(63)  # (0x25, 0x04)
-
-    # ---- Wave Number Parameters ----
-    parameters["WAVE_NUMBER_1"] = safe_get(64)  # (0x26, 0x00)
-    parameters["WAVE_NUMBER_2"] = safe_get(65)  # (0x26, 0x01)
-    parameters["WAVE_NUMBER_3"] = safe_get(66)  # (0x26, 0x02)
-    parameters["WAVE_NUMBER_4"] = safe_get(67)  # (0x26, 0x03)
-
-    return parameters
-
-
-
-def parse_analog_parameters_old(data: list) -> dict:
-    """Parse parameters from the given data list."""
-    parameters = {}
-
-    # Function to safely retrieve values from `data`
-    def safe_get(index, default=0):
-        return data[index] if index < len(data) else default
-
-    # Extract parameters safely
-    parameters["LFO_SHAPE"] = safe_get(25)
-    parameters["LFO_RATE"] = safe_get(26)
-    parameters["LFO_FADE_TIME"] = safe_get(27)
-    parameters["LFO_TEMPO_SYNC_SWITCH"] = safe_get(28)
-    parameters["LFO_TEMPO_SYNC_NOTE"] = safe_get(29)
-    parameters["LFO_PITCH_DEPTH"] = safe_get(30)
-    parameters["LFO_FILTER_DEPTH"] = safe_get(31)
-    parameters["LFO_AMP_DEPTH"] = safe_get(32)
-    parameters["LFO_KEY_TRIGGER"] = safe_get(33)
-    parameters["OSC_WAVEFORM"] = safe_get(34)
-    parameters["OSC_PITCH_COARSE"] = safe_get(35)
-    parameters["OSC_PITCH_FINE"] = safe_get(36)
-    parameters["OSC_PULSE_WIDTH"] = safe_get(37)
-    parameters["OSC_PULSE_WIDTH_MOD_DEPTH"] = safe_get(38)
-    parameters["OSC_PITCH_ENV_VELOCITY_SENS"] = safe_get(39)
-    parameters["OSC_PITCH_ENV_ATTACK_TIME"] = safe_get(40)
-    parameters["OSC_PITCH_ENV_DECAY"] = safe_get(41)
-    parameters["OSC_PITCH_ENV_DEPTH"] = safe_get(42)  # Depth not being captured
-    parameters["SUB_OSCILLATOR_TYPE"] = safe_get(43)
-    parameters["FILTER_SWITCH"] = safe_get(44)
-    parameters["FILTER_CUTOFF"] = safe_get(45)
-    parameters["FILTER_CUTOFF_KEYFOLLOW"] = safe_get(46)
-    parameters["FILTER_RESONANCE"] = safe_get(47)
-    parameters["FILTER_ENV_VELOCITY_SENS"] = safe_get(48)
-    parameters["FILTER_ENV_ATTACK_TIME"] = safe_get(49)
-    parameters["FILTER_ENV_DECAY_TIME"] = safe_get(50)
-    parameters["FILTER_ENV_SUSTAIN_LEVEL"] = safe_get(51)
-    parameters["FILTER_ENV_RELEASE_TIME"] = safe_get(52)
-    parameters["FILTER_ENV_DEPTH"] = safe_get(53)
-    parameters["AMP_LEVEL"] = safe_get(54)
-    parameters["AMP_LEVEL_KEYFOLLOW"] = safe_get(55)
-    parameters["OSC_PITCH_ENV_DEPTH"] = safe_get(56)
-    parameters["AMP_ENV_ATTACK_TIME"] = safe_get(57)
-    parameters["AMP_ENV_DECAY_TIME"] = safe_get(58)
-    parameters["AMP_ENV_SUSTAIN_LEVEL"] = safe_get(59)
-    parameters["AMP_ENV_RELEASE_TIME"] = safe_get(60)
-    # No sliders for these yet
-    # parameters["PORTAMENTO_SWITCH"] = safe_get(61)
-    # parameters["PORTAMENTO_TIME"] = safe_get(62)
-    # parameters["LEGATO_SWITCH"] = safe_get(63)
-    # parameters["OCTAVE_SHIFT"] = safe_get(64)
-    # parameters["PITCH_BEND_RANGE_UP"] = safe_get(65)
-    # parameters["PITCH_BEND_RANGE_DOWN"] = safe_get(66)
-    # parameters["LFO_PITCH_MODULATION_CONTROL"] = safe_get(67)
-    # parameters["LFO_FILTER_MODULATION_CONTROL"] = safe_get(68)
-    # parameters["LFO_AMP_MODULATION_CONTROL"] = safe_get(69)
-    # parameters["LFO_RATE_MODULATION_CONTROL"] = safe_get(70)
-
-    return parameters
-
-
-def json_parse_jdxi_tone(data):
-    """
-    Parses JD-Xi tone data from SysEx messages.
-    Supports Digital1, Digital2, Analog, and Drums.
-
-    Args:
-        data (bytes): SysEx message containing tone data.
-
-    Returns:
-        dict: Parsed tone parameters.
-    """
-
-    def _extract_hex(data, start, end, default="N/A"):
-        """Extract a hex value from data safely."""
-        return data[start:end].hex() if len(data) >= end else default
-
-    def _get_temporary_area(data):
-        """
-        Map address bytes to corresponding temporary area.
-        
-        Args:
-            data (bytes): SysEx message data containing address bytes
-            
-        Returns:
-            str: Name of the temporary area or "Unknown"
-        """
-        if len(data) < 9:  # Need at least 9 bytes to check address
-            return "Unknown"
-        
-        # Extract the two address bytes
-        addr1, addr2 = data[8:10]
-        
-        # Map address combinations to areas
-        area_mapping = {
-            (0x19, 0x42): "ANALOG_SYNTH_AREA",
-            (0x19, 0x01): "DIGITAL_SYNTH_1_AREA",
-            (0x19, 0x21): "DIGITAL_SYNTH_2_AREA",
-            (0x19, 0x70): "DRUM_KIT_AREA"
-        }
-        
-        return area_mapping.get((addr1, addr2), "Unknown")
-
-    def _get_synth_tone(byte_value):
-        """Map byte value to corresponding synth tone."""
-        return {
-            0x00: "TONE_COMMON",
-            0x20: "PARTIAL_1",
-            0x21: "PARTIAL_2",
-            0x22: "PARTIAL_3",
-            0x50: "TONE_MODIFY",
-        }.get(byte_value, "Unknown")
-
-    def _extract_tone_name(data):
-        """Extract and clean the tone name from SysEx data."""
-        if len(data) < 12:
-            return "Unknown"
-        name_end = min(23, len(data) - 1)  # Prevent out-of-bounds access
-        raw_name = bytes(data[11:name_end]).decode(errors="ignore").strip()
-        return raw_name.replace("\u0000", "")  # Remove null characters
-
-    parameters = {
-        "JD_XI_ID": _extract_hex(data, 0, 7),
-        "ADDRESS": _extract_hex(data, 7, 11),
-    }
-
-    # Ensure minimum length for parsing
-    if len(data) <= 7:
-        parameters.update({"TEMPORARY_AREA": "Unknown", "SYNTH_TONE": "Unknown"})
-        logging.warning("Insufficient data length for parsing.")
-        return parameters
-
-    # Extract Temporary Area using both address bytes
-    temporary_area = _get_temporary_area(data)
-    synth_tone = _get_synth_tone(data[10]) if len(data) > 10 else "Unknown"
-
-    parameters.update({
-        "TEMPORARY_AREA": temporary_area,
-        "SYNTH_TONE": synth_tone,
-        "TONE_NAME": _extract_tone_name(data),
-    })
-
-    # Parse additional parameters based on area type
-    if temporary_area in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
-        if synth_tone == "TONE_COMMON":
-            parameters.update(parse_digital_common_parameters(data))
-        elif synth_tone == "TONE_MODIFY":
-            logging.info("Parsing for TONE_MODIFY not yet implemented.")  # FIXME
-        else:
-            parameters.update(parse_digital_parameters(data))
-    elif temporary_area == "ANALOG_SYNTH_AREA":
-        parameters.update(parse_analog_parameters(data))
-
-    logging.info(f"Address: {parameters['ADDRESS']}")
-    logging.info(f"Temporary Area: {temporary_area}")
-
-    return parameters
 
 
 def validate_sysex_message(message: List[int]) -> bool:
@@ -651,7 +377,7 @@ class MIDIHelper(QObject):
 
                 # Detect and process JD-Xi tone data
                 try:
-                    parsed_data = json_parse_jdxi_tone(sysex_message_bytes)
+                    parsed_data = parse_sysex(sysex_message_bytes)
                     json_data = json.dumps(parsed_data)
                     self.json_sysex.emit(json_data)
                     log_json(parsed_data)
@@ -674,23 +400,6 @@ class MIDIHelper(QObject):
 
         except Exception as e:
             logging.error(f"Error handling SysEx message: {e}", exc_info=True)
-
-    def parse_sysex_message(message):
-        # Regular expression pattern to match SysEx structure
-        pattern = re.compile(
-            r"^F0\s"  # SysEx start (F0)
-            r"(41)\s"  # Roland ID (41)
-            r"(10)\s"  # Device ID (10)
-            r"(00\s00\s00)\s"  # Model ID (000000)
-            r"(0E)\s"  # JD-Xi ID (0E)
-            r"(12)\s"  # DT1 Command (12)
-            r"(19|20|40|60|25)\s"  # Synth Number (19, 20, 18, 40, or 60)
-            r"(01)\s"  # Section (01, related to waveforms or synth part)
-            r"(00)\s"  # Parameter (00 = wave type)
-            r"(01)\s"  # Value (01 = second waveform)
-            r"([0-9A-F]{2})\s"  # Checksum (2 hex digits, example: 45)
-            r"F7$"  # SysEx End (F7)
-        )
 
     def _handle_control_change(self, message, preset_data):
         """Handle Control Change (CC) MIDI messages."""
