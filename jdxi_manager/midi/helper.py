@@ -2,12 +2,12 @@ from pubsub import pub
 from typing import List, Callable
 from PySide6.QtCore import Signal
 
-from jdxi_manager.midi.input_handler import MIDIInHandlerNew
+from jdxi_manager.midi.input_handler import MIDIInHandler
 from jdxi_manager.data.digital import get_digital_parameter_by_address
-from jdxi_manager.midi.output_handler import MIDIOutHandlerNew
+from jdxi_manager.midi.output_handler import MIDIOutHandler
 
 
-class MIDIHelper(MIDIInHandlerNew, MIDIOutHandlerNew):
+class MIDIHelper(MIDIInHandler, MIDIOutHandler):
     """Helper class for MIDI communication with the JD-Xi"""
 
     parameter_received = Signal(list, int)  # address, value
