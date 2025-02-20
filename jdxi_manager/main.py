@@ -24,7 +24,7 @@ def midi_callback(msg):
     """
     # logging.debug(f"Callback received message: {msg}")
     pub.sendMessage(
-        "incoming_midi_message", message=msg
+        "midi_incoming_message", message=msg
     )  # Publish the message to subscribers
 
 

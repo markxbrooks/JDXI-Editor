@@ -52,7 +52,7 @@ class PresetEditor(QMainWindow):
         self.parameter_handler = ParameterHandler()
 
         if midi_helper:
-            midi_helper.parameter_changed.connect(
+            midi_helper.midi_parameter_changed.connect(
                 self.parameter_handler.update_parameter
             )
             self.parameter_handler.parameters_updated.connect(self._update_ui)

@@ -382,7 +382,7 @@ from enum import Enum, auto
 from dataclasses import dataclass
 
 from jdxi_manager.midi.base_messages import RolandSysEx
-from jdxi_manager.midi.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
+from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 
 # Analog Oscillator Parameters
 ANALOG_OSC_WAVE = 0x16  # Waveform (0-2: SAW,TRI,PW-SQR)

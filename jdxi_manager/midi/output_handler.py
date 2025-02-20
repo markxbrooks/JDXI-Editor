@@ -21,7 +21,6 @@ from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_manager.data.digital import get_digital_parameter_by_address
 from jdxi_manager.midi.basenew import MIDIBase
 
 
@@ -32,41 +31,6 @@ class MIDIOutHandler(MIDIBase):
         super().__init__(parent)
         self.parent = parent
         self.channel = 1
-
-    @staticmethod
-    def _extract_patch_name(patch_name_bytes: List[int]) -> str:
-        """
-        Extract ASCII patch name from SysEx message data.
-
-        Args:
-            patch_name_bytes: List of byte values representing the patch name.
-        Returns:
-            A string representing the patch name.
-        """
-        return "".join(chr(b) for b in patch_name_bytes if 32 <= b <= 127).strip()
-
-    def _get_parameter_from_address(self, address: List[int]):
-        """
-        Map a given address to a DigitalParameter.
-
-        Args:
-            address: A list representing the address bytes.
-        Raises:
-            ValueError: If the address is too short or no corresponding DigitalParameter is found.
-        Returns:
-            The DigitalParameter corresponding to the address.
-        """
-        if len(address) < 2:
-            raise ValueError(f"Address must contain at least 2 elements, got {len(address)}")
-
-        # Assuming address structure [group, address, ...]
-        parameter_address = tuple(address[1:2])
-        param = get_digital_parameter_by_address(parameter_address)
-
-        if param:
-            return param
-        else:
-            raise ValueError(f"Invalid address {parameter_address} - no corresponding DigitalParameter found.")
 
     def send_message(self, message: List[int]) -> bool:
         """

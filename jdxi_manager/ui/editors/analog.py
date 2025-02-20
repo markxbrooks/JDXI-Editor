@@ -200,7 +200,7 @@ class AnalogSynthEditor(BaseEditor):
         self.filter_resonance.valueChanged.connect(
             lambda v: self._send_cc(AnalogParameter.FILTER_RESONANCE.value[0], v)
         )
-        self.midi_helper.json_sysex.connect(self._update_sliders_from_sysex)
+        self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         for param, slider in self.controls.items():
             if isinstance(slider, QSlider):  # Ensure it's a slider
                 slider.setTickPosition(
@@ -208,13 +208,13 @@ class AnalogSynthEditor(BaseEditor):
                 )  # Tick marks on both sides
                 slider.setTickInterval(10)  # Adjust interval as needed
         self.data_request()
-        self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
         # Initialize previous JSON data storage
         self.previous_json_data = None
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         if self.midi_helper:
-            self.midi_helper.program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""

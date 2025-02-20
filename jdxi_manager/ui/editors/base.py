@@ -52,7 +52,7 @@ class BaseEditor(QWidget):
 
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
-            self.midi_helper.program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
 
     def set_midi_helper(self, midi_helper: MIDIHelper):
         """Set MIDI helper instance"""
