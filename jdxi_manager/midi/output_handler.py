@@ -1,101 +1,119 @@
+"""
+MIDI Output Handler
+
+This module provides the `MIDIOutHandler` class for managing MIDI output, allowing users to send
+note-on, note-off, and control change messages through a specified MIDI output port.
+
+Dependencies:
+    - rtmidi: A library for working with MIDI messages and ports.
+
+Example usage:
+    handler = MIDIOutHandler("MIDI Output Port")
+    handler.send_note_on(60, velocity=100)
+    handler.send_note_off(60)
+    handler.send_control_change(7, 127)
+    handler.close()
+
+"""
 import logging
 import time
-from typing import List, Callable, Optional
+from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 from jdxi_manager.data.digital import get_digital_parameter_by_address
-from jdxi_manager.midi.basenew import MIDIBaseNew
+from jdxi_manager.midi.basenew import MIDIBase
 
 
-class MIDIOutHandlerNew(MIDIBaseNew):
-    """Helper class for MIDI communication with the JD-Xi"""
-
-    # parameter_received = Signal(list, int)  # address, value
-    # json_sysex = Signal(str)  # json string only
-    # parameter_changed = Signal(object, int)  # Emit parameter and value
-    # preset_changed = Signal(int, str, int)
-    # incoming_midi_message = Signal(object)
-    # program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
+class MIDIOutHandler(MIDIBase):
+    """Helper class for MIDI communication with the JD-Xi."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.callbacks: List[Callable] = []
         self.channel = 1
-        self.preset_number = 0
-        self.cc_number = 0
-        self.cc_msb_value = 0
-        self.cc_lsb_value = 0
 
     @staticmethod
-    def _extract_patch_name(patch_name_bytes):
-        """Extract ASCII patch name from SysEx message data."""
+    def _extract_patch_name(patch_name_bytes: List[int]) -> str:
+        """
+        Extract ASCII patch name from SysEx message data.
+
+        Args:
+            patch_name_bytes: List of byte values representing the patch name.
+        Returns:
+            A string representing the patch name.
+        """
         return "".join(chr(b) for b in patch_name_bytes if 32 <= b <= 127).strip()
 
-    def _get_parameter_from_address(self, address):
-        """Map address to a DigitalParameter"""
-        # Ensure the address is at least two elements
+    def _get_parameter_from_address(self, address: List[int]):
+        """
+        Map a given address to a DigitalParameter.
+
+        Args:
+            address: A list representing the address bytes.
+        Raises:
+            ValueError: If the address is too short or no corresponding DigitalParameter is found.
+        Returns:
+            The DigitalParameter corresponding to the address.
+        """
         if len(address) < 2:
-            raise ValueError(
-                f"Address must contain at least 2 elements, got {len(address)}"
-            )
+            raise ValueError(f"Address must contain at least 2 elements, got {len(address)}")
 
-        # Extract the relevant part of the address (group, address pair)
-        parameter_address = tuple(
-            address[1:2]
-        )  # Assuming address structure [group, address, ...]
-
-        # Retrieve the corresponding DigitalParameter
+        # Assuming address structure [group, address, ...]
+        parameter_address = tuple(address[1:2])
         param = get_digital_parameter_by_address(parameter_address)
 
         if param:
             return param
         else:
-            raise ValueError(
-                f"Invalid address {parameter_address} - no corresponding DigitalParameter found."
-            )
+            raise ValueError(f"Invalid address {parameter_address} - no corresponding DigitalParameter found.")
 
     def send_message(self, message: List[int]) -> bool:
-        """Send raw MIDI message with validation"""
-        logging.debug(
-            f"Sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
-        )
+        """
+        Send a raw MIDI message with validation.
+
+        Args:
+            message: List of integer values representing the MIDI message.
+        Returns:
+            True if the message was sent successfully, False otherwise.
+        """
+        formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+        logging.debug(f"Sending MIDI message: {formatted_message}")
+
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
-            # Validate SysEx messages
-            # if message[0] == 0xF0:
-            #    if not validate_sysex_message(message):
-            #        logging.debug(f"Validation failed for message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}")
-            #        return False
-
-            logging.debug(
-                f"Validation passed, sending MIDI message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
-            )
+            logging.debug(f"Validation passed, sending MIDI message: {formatted_message}")
             self.midi_out.send_message(message)
             return True
         except Exception as e:
-            logging.error(f"Error sending MIDI message: {str(e)}")
+            logging.error(f"Error sending MIDI message: {e}")
             return False
 
-    def send_note_on(self, note=60, velocity=127, channel=1):
+    def send_note_on(self, note: int = 60, velocity: int = 127, channel: int = 1):
         """Send a 'Note On' message."""
         self.send_channel_message(NOTE_ON, note, velocity, channel)
 
-    def send_note_off(self, note=60, velocity=0, channel=1):
+    def send_note_off(self, note: int = 60, velocity: int = 0, channel: int = 1):
         """Send a 'Note Off' message."""
         self.send_channel_message(NOTE_OFF, note, velocity, channel)
 
-    def send_channel_message(self, status, data1=None, data2=None, channel=1):
-        """Send a MIDI channel mode message."""
-        msg = [(status & 0xF0) | ((channel - 1) & 0xF)]
+    def send_channel_message(self, status: int, data1: Optional[int] = None,
+                             data2: Optional[int] = None, channel: int = 1):
+        """
+        Send a MIDI channel mode message.
 
+        Args:
+            status: Status byte (e.g., NOTE_ON, NOTE_OFF).
+            data1: First data byte (optional).
+            data2: Second data byte (optional).
+            channel: MIDI channel (1-based).
+        """
+        msg = [(status & 0xF0) | ((channel - 1) & 0x0F)]
         if data1 is not None:
             msg.append(data1 & 0x7F)
-
             if data2 is not None:
                 msg.append(data2 & 0x7F)
 
@@ -106,14 +124,17 @@ class MIDIOutHandlerNew(MIDIBaseNew):
             logging.error("MIDI output port not open")
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
-        """Send bank select messages
+        """
+        Send bank select messages.
 
         Args:
-            msb: Bank Select MSB value (0-127)
-            lsb: Bank Select LSB value (0-127)
-            channel: MIDI channel (0-15)
+            msb: Bank Select MSB value (0-127).
+            lsb: Bank Select LSB value (0-127).
+            channel: MIDI channel (0-15).
+        Returns:
+            True if successful, False otherwise.
         """
-        logging.debug(f"Sending bank select: {msb} {lsb} {channel}")
+        logging.debug(f"Sending bank select: MSB={msb}, LSB={lsb}, channel={channel}")
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
@@ -125,88 +146,70 @@ class MIDIOutHandlerNew(MIDIBaseNew):
             self.send_message([0xB0 + channel, 0x20, lsb])
             return True
         except Exception as e:
-            logging.error(f"Error sending bank select: {str(e)}")
+            logging.error(f"Error sending bank select: {e}")
             return False
 
     def send_identity_request(self) -> bool:
-        """Send identity request message (Universal System Exclusive)"""
-        logging.debug(f"Sending identity request")
-        try:
-            # F0 7E 7F 06 01 F7
-            return self.send_message([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
-        except Exception as e:
-            logging.error(f"Error sending identity request: {str(e)}")
-            return False
-
-    def send_parameter(
-            self, area: int, part: int, group: int, param: int, value: int
-    ) -> bool:
-        """Send parameter change message
-
-        Args:
-            area: Parameter area (e.g., Program, Digital Synth)
-            part: Part number
-            group: Parameter group
-            param: Parameter number
-            value: Parameter value (0-127)
+        """
+        Send identity request message (Universal System Exclusive).
 
         Returns:
-            True if successful, False otherwise
+            True if the message was sent successfully, False otherwise.
         """
-        logging.debug(
-            f"Sending parameter: area={area}, part={part}, group={group}, param={param}, value={value}"
-        )
+        logging.debug("Sending identity request")
         try:
-            if not self.is_output_open:
-                logging.warning("MIDI output not open")
-                return False
+            # Identity Request: F0 7E 7F 06 01 F7
+            return self.send_message([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
+        except Exception as e:
+            logging.error(f"Error sending identity request: {e}")
+            return False
 
-            # Ensure all values are integers and within valid ranges
-            area = int(area) & 0x7F
-            part = int(part) & 0x7F
-            group = int(group) & 0x7F
-            param = int(param) & 0x7F
-            value = int(value) & 0x7F
+    def send_parameter(self, area: int, part: int, group: int, param: int, value: int) -> bool:
+        """
+        Send a parameter change message.
 
-            # Create parameter message
+        Args:
+            area: Parameter area (e.g., Program, Digital Synth).
+            part: Part number.
+            group: Parameter group.
+            param: Parameter number.
+            value: Parameter value (0-127).
+        Returns:
+            True if successful, False otherwise.
+        """
+        logging.debug(f"Sending parameter: area={area}, part={part}, group={group}, param={param}, value={value}")
+        if not self.is_output_open:
+            logging.warning("MIDI output not open")
+            return False
+
+        try:
+            # Ensure values are integers within 0-127 range.
+            area, part, group, param, value = (int(x) & 0x7F for x in (area, part, group, param, value))
+            # Construct the SysEx parameter message.
             message = [
-                0xF0,  # Start of SysEx
-                0x41,
-                0x10,  # Roland ID
-                0x00,
-                0x00,  # Device ID
-                0x00,
-                0x0E,  # Model ID
-                0x12,  # DT1 Command
-                area,  # Parameter area
-                part,  # Part number
-                group,  # Parameter group
-                param,  # Parameter number
-                value,  # Parameter value
-                0x00,  # Checksum (placeholder)
-                0xF7,  # End of SysEx
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
+                area, part, group, param, value, 0x00, 0xF7
             ]
-
-            # Calculate checksum
+            # Calculate checksum for message[8:-2]
             checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
             message[-2] = checksum
 
-            logging.debug(
-                f"Sending parameter message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
-            )
-            # Send message directly instead of using output_port
+            formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+            logging.debug(f"Sending parameter message: {formatted_message}")
             return self.send_message(message)
-
         except Exception as e:
-            logging.error(f"Error sending parameter: {str(e)}")
+            logging.error(f"Error sending parameter: {e}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
-        """Send program change message
+        """
+        Send a program change message.
 
         Args:
-            program: Program number (0-127)
-            channel: MIDI channel (0-15)
+            program: Program number (0-127).
+            channel: MIDI channel (0-15).
+        Returns:
+            True if successful, False otherwise.
         """
         logging.debug(f"Sending program change: program={program}, channel={channel}")
         if not self.midi_out.is_port_open():
@@ -214,58 +217,66 @@ class MIDIOutHandlerNew(MIDIBaseNew):
             return False
 
         try:
-            # Program Change status byte: 0xC0 + channel
-            logging.debug(
-                f"Sending program change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xC0 + channel, program & 0x7F]])}"
-            )
-            return self.send_message([0xC0 + channel, program & 0x7F])
+            msg = [0xC0 + channel, program & 0x7F]
+            formatted_msg = " ".join([hex(x)[2:].upper().zfill(2) for x in msg])
+            logging.debug(f"Sending program change message: {formatted_msg}")
+            return self.send_message(msg)
         except Exception as e:
-            logging.error(f"Error sending program change: {str(e)}")
+            logging.error(f"Error sending program change: {e}")
             return False
 
-    def send_control_change(
-            self, controller: int, value: int, channel: int = 0
-    ) -> bool:
-        """Send control change message
+    def send_control_change(self, controller: int, value: int, channel: int = 0) -> bool:
+        """
+        Send a control change message.
 
         Args:
-            controller: Controller number (0-127)
-            value: Controller value (0-127)
-            channel: MIDI channel (0-15)
+            controller: Controller number (0-127).
+            value: Controller value (0-127).
+            channel: MIDI channel (0-15).
+        Returns:
+            True if successful, False otherwise.
         """
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
-            # Control Change status byte: 0xB0 + channel
-            logging.debug(
-                f"Sending control change message: {' '.join([hex(x)[2:].upper().zfill(2) for x in [0xB0 + channel, controller & 0x7F, value & 0x7F]])}"
-            )
-            return self.send_message([0xB0 + channel, controller & 0x7F, value & 0x7F])
+            msg = [0xB0 + channel, controller & 0x7F, value & 0x7F]
+            formatted_msg = " ".join([hex(x)[2:].upper().zfill(2) for x in msg])
+            logging.debug(f"Sending control change message: {formatted_msg}")
+            return self.send_message(msg)
         except Exception as e:
-            logging.error(f"Error sending control change: {str(e)}")
+            logging.error(f"Error sending control change: {e}")
             return False
 
-    def send_bank_and_program_change(self, channel, bank_msb, bank_lsb, program):
-        """Sends Bank Select and Program Change messages."""
-        self.send_control_change(channel, 0, bank_msb)  # Bank Select MSB
-        self.send_control_change(channel, 32, bank_lsb)  # Bank Select LSB
-        self.send_program_change(channel, program)  # Program Change
+    def send_bank_and_program_change(self, channel: int, bank_msb: int, bank_lsb: int, program: int) -> bool:
+        """
+        Sends Bank Select and Program Change messages.
 
-    def select_synth_tone(
-            self, patch_number: int, bank: str = "preset", channel: int = 0
-    ) -> bool:
+        Args:
+            channel: MIDI channel (0-15).
+            bank_msb: Bank MSB value.
+            bank_lsb: Bank LSB value.
+            program: Program number.
+        Returns:
+            True if all messages are sent successfully, False otherwise.
+        """
+        if not (self.send_control_change(0, bank_msb, channel) and
+                self.send_control_change(32, bank_lsb, channel) and
+                self.send_program_change(program, channel)):
+            return False
+        return True
+
+    def select_synth_tone(self, patch_number: int, bank: str = "preset", channel: int = 0) -> bool:
         """
         Select a Synth Tone on the JD-Xi using a Program Change.
 
         Args:
             patch_number: Patch number (1-128) as listed in JD-Xi documentation.
             bank: "preset" (default) or "user" to select the correct bank.
-            channel: MIDI channel (0-15)
-
+            channel: MIDI channel (0-15).
         Returns:
-            bool: True if the message was sent successfully, False otherwise.
+            True if the message was sent successfully, False otherwise.
         """
         if not (1 <= patch_number <= 128):
             logging.error("Patch number must be between 1 and 128.")
@@ -273,11 +284,11 @@ class MIDIOutHandlerNew(MIDIBaseNew):
 
         # JD-Xi uses 0-based program numbers
         program_number = patch_number - 1
+        bank = bank.lower()
 
-        # Select correct bank
-        if bank.lower() == "preset":
+        if bank == "preset":
             bank_msb = 92  # Preset Bank
-        elif bank.lower() == "user":
+        elif bank == "user":
             bank_msb = 93  # User Bank
         else:
             logging.error("Invalid bank type. Use 'preset' or 'user'.")
@@ -285,66 +296,45 @@ class MIDIOutHandlerNew(MIDIBaseNew):
 
         bank_lsb = 0  # Always 0 for JD-Xi
 
-        # Send Bank Select and Program Change
-        if not self.send_control_change(0, bank_msb, channel):  # CC#0 (Bank MSB)
-            return False
-        if not self.send_control_change(32, bank_lsb, channel):  # CC#32 (Bank LSB)
-            return False
-        if not self.send_program_change(program_number, channel):  # Send Program Change
-            return False
+        if (self.send_control_change(0, bank_msb, channel) and
+            self.send_control_change(32, bank_lsb, channel) and
+            self.send_program_change(program_number, channel)):
+            logging.info(f"Selected {bank.capitalize()} Synth Tone #{patch_number} (PC {program_number}) on channel {channel}.")
+            return True
+        return False
 
-        logging.info(
-            f"Selected {bank.capitalize()} Synth Tone #{patch_number} (PC {program_number}) on channel {channel}."
-        )
-        return True
-
-    def get_parameter(
-            self, area: int, part: int, group: int, param: int
-    ) -> Optional[int]:
-        """Get parameter value via MIDI System Exclusive message
+    def get_parameter(self, area: int, part: int, group: int, param: int) -> Optional[int]:
+        """
+        Get parameter value via MIDI System Exclusive message.
 
         Args:
-            area: Parameter area (e.g., Digital Synth 1)
-            part: Part number
-            group: Parameter group
-            param: Parameter number
-
+            area: Parameter area (e.g., Digital Synth 1).
+            part: Part number.
+            group: Parameter group.
+            param: Parameter number.
         Returns:
-            Parameter value (0-127) or None if error
+            Parameter value (0-127) or None if an error occurs.
         """
-        logging.debug(
-            f"Requesting parameter: area={area}, part={part}, group={group}, param={param}"
-        )
+        logging.debug(f"Requesting parameter: area={area}, part={part}, group={group}, param={param}")
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None
 
         try:
-            # Format: F0 41 10 00 00 3B {area} {part} {group} {param} F7
             request = [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x3B,
-                area,
-                part,
-                group,
-                param,
-                0xF7,
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x3B,
+                area, part, group, param,
+                0xF7
             ]
-
-            # Send parameter request
             self.midi_out.send_message(request)
 
-            # Wait for response (with timeout)
+            # Wait for response with a timeout of 100ms.
             start_time = time.time()
-            while time.time() - start_time < 0.1:  # 100ms timeout
-                if self.midi_in.get_message():
-                    msg, _ = self.midi_in.get_message()
+            while time.time() - start_time < 0.1:
+                message = self.midi_in.get_message()
+                if message:
+                    msg, _ = message
                     if len(msg) >= 11 and msg[0] == 0xF0 and msg[-1] == 0xF7:
-                        # Response format: F0 41 10 00 00 3B {area} {part} {group} {param} {value} F7
                         return msg[10]  # Value is at index 10
                 time.sleep(0.001)
 
@@ -352,50 +342,46 @@ class MIDIOutHandlerNew(MIDIBaseNew):
             return None
 
         except Exception as e:
-            logging.error(f"Error getting parameter: {str(e)}")
+            logging.error(f"Error getting parameter: {e}")
             return None
 
     def request_parameter(self, area: int, part: int, group: int, param: int) -> bool:
-        """Send parameter request message
+        """
+        Send a non-blocking parameter request message.
 
-        This is a non-blocking version that just sends the request without waiting for response.
-        The response will be handled by the callback if registered.
+        Args:
+            area: Parameter area.
+            part: Part number.
+            group: Parameter group.
+            param: Parameter number.
+        Returns:
+            True if the message was sent successfully, False otherwise.
         """
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
 
         try:
-            # Format: F0 41 10 00 00 3B {area} {part} {group} {param} F7
             request = [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x3B,
-                area,
-                part,
-                group,
-                param,
-                0xF7,
+                0xF0, 0x41, 0x10, 0x00, 0x00, 0x3B,
+                area, part, group, param,
+                0xF7
             ]
             return self.send_message(request)
-
         except Exception as e:
-            logging.error(f"Error requesting parameter: {str(e)}")
+            logging.error(f"Error requesting parameter: {e}")
             return False
 
-    def send_cc(self, cc: int, value: int, channel: int = 0):
-        """Send Control Change message
+    def send_cc(self, cc: int, value: int, channel: int = 0) -> bool:
+        """
+        Send a Control Change (CC) message.
 
         Args:
-            cc: Control Change number (0-127)
-            value: Control Change value (0-127)
-            channel: MIDI channel (0-15)
-
+            cc: Control Change number (0-127).
+            value: Control Change value (0-127).
+            channel: MIDI channel (0-15).
         Returns:
-            True if successful, False otherwise
+            True if the message was sent successfully, False otherwise.
         """
         logging.debug(f"Sending CC: cc={cc}, value={value}, channel={channel}")
         try:
@@ -403,68 +389,27 @@ class MIDIOutHandlerNew(MIDIBaseNew):
                 logging.warning("MIDI output not open")
                 return False
 
-            # Create Control Change message (Status byte: 0xB0 + channel)
-            message = [0xB0 + channel, cc & 0x7F, value & 0x7F]
-            logging.debug(
-                f"Sending CC message: {' '.join([hex(x)[2:].upper().zfill(2) for x in message])}"
-            )
-            # Send message using midi_out instead of output_port
-            self.midi_out.send_message(message)
+            msg = [0xB0 + channel, cc & 0x7F, value & 0x7F]
+            formatted_msg = " ".join([hex(x)[2:].upper().zfill(2) for x in msg])
+            logging.debug(f"Sending CC message: {formatted_msg}")
+            self.midi_out.send_message(msg)
             logging.debug(f"Sent CC {cc}={value} on ch{channel}")
             return True
-
         except Exception as e:
-            logging.error(f"Error sending CC message: {str(e)}")
+            logging.error(f"Error sending CC message: {e}")
             return False
 
-    def send_sysex_rq1(self, device_id, address, size):
+    def send_sysex_rq1(self, device_id: List[int], address: List[int], size: List[int]):
         """
-        This message requests the other device to transmit data. The address
-        and size indicate the type and amount of data that is requested.
+        Send a SysEx Request (RQ1) message.
 
-        Parameters
-        ----------
-        device_id : list
-            List of data for a specific device - [0x41, 0x10, 0x00, 0x00, 0x00, 0x0e] for Roland JD-Xi.
-        address : list
-            Base address where to save data (the last byte is defined in the instrument).
-        size : list
-            List of four bytes - [MSB, 2nd, 3rd, LSB].
-        timeout : int, optional
-            Maximum number of attempts to wait for a response (default is 100).
+        The address and size indicate the type and amount of data that is requested.
 
-        Returns
-        -------
-        list or str
-            If a valid SysEx response is received, returns the data (excluding header).
-            Otherwise, returns 'unknown'.
+        Args:
+            device_id: List of device-specific data (e.g., [0x41, 0x10, 0x00, 0x00, 0x00, 0x0E] for Roland JD-Xi).
+            address: Base address where to save data.
+            size: List of four bytes representing the size (e.g., [MSB, second, third, LSB]).
         """
-        # Create the SysEx message
         sysex_data = device_id + [0x11] + address + size + [0]
         logging.debug(f"Sending SysEx message: {sysex_data}")
         self.midi_out.send_message(sysex_data)
-        return
-
-    def send_note_on(self, note=60, velocity=127, channel=1):
-        """Send a 'Note On' message."""
-        self.send_channel_message(NOTE_ON, note, velocity, channel)
-
-    def send_note_off(self, note=60, velocity=0, channel=1):
-        """Send a 'Note Off' message."""
-        self.send_channel_message(NOTE_OFF, note, velocity, channel)
-
-    def send_channel_message(self, status, data1=None, data2=None, channel=1):
-        """Send a MIDI channel mode message."""
-        msg = [(status & 0xF0) | ((channel - 1) & 0xF)]
-
-        if data1 is not None:
-            msg.append(data1 & 0x7F)
-
-            if data2 is not None:
-                msg.append(data2 & 0x7F)
-
-        if self.midi_out.is_port_open():
-            self.midi_out.send_message(msg)
-            logging.debug(f"Sent MIDI message: {msg}")
-        else:
-            logging.error("MIDI output port not open")
