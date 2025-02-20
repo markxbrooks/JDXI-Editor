@@ -208,13 +208,44 @@ class AnalogSynthEditor(BaseEditor):
                 )  # Tick marks on both sides
                 slider.setTickInterval(10)  # Adjust interval as needed
         self.data_request()
-
+        self.midi_helper.parameter_received.connect(self._on_parameter_received)
         # Initialize previous JSON data storage
         self.previous_json_data = None
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         if self.midi_helper:
             self.midi_helper.program_changed.connect(self._handle_program_change)
+
+    def _on_parameter_received(self, address, value):
+        """Handle parameter updates from MIDI messages."""
+        area_code = address[0]
+        if address[0] == ANALOG_SYNTH_AREA:
+            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
+            parameter_address = tuple(address[2:])  # (80, 0)
+
+            # Retrieve the corresponding DigitalParameter
+            param = get_analog_parameter_by_address(parameter_address)
+            partial_no = address[1]
+            if param:
+                logging.info(
+                    f"param: \t{param} \taddress=\t{address}, Value=\t{value}"
+                )
+
+                # Update the corresponding slider
+                if param in self.controls:
+                    slider_value = param.convert_from_midi(value)
+                    logging.info(f"midi value {value} converted to slider value {slider_value}")
+                    slider = self.controls[param]
+                    slider.blockSignals(True)  # Prevent feedback loop
+                    slider.setValue(slider_value)
+                    slider.blockSignals(False)
+
+                # Handle OSC_WAVE parameter to update waveform buttons
+                if param == AnalogParameter.OSC_WAVEFORM:
+                    self._update_waveform_buttons(value)
+                    logging.debug(
+                        "updating waveform buttons for param {param} with {value}"
+                    )
 
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""
