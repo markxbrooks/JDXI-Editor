@@ -124,7 +124,7 @@ class PresetHandler(QObject):
 
 
 class MainWindow(QMainWindow):
-    program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
+    midi_program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
 
     def __init__(self):
         super().__init__()
@@ -349,11 +349,6 @@ class MainWindow(QMainWindow):
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.oldPos = None
         self.get_data()
-
-    def _handle_program_change(self, channel: int, program: int):
-        """Handle program change messages"""
-        logging.info(f"Program Change - Channel: {channel}, Program: {program}")
-        self.program_changed.emit(channel, program)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:

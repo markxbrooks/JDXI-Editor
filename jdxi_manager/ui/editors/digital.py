@@ -243,7 +243,7 @@ class DigitalSynthEditor(BaseEditor):
         # Connect partial switches to enable/disable tabs
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
-        self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
         # Initialize with default states
         self.initialize_partial_states()
         self.data_request()
@@ -259,13 +259,12 @@ class DigitalSynthEditor(BaseEditor):
         else:
             logging.error("MIDI helper not initialized")
 
-        self.midi_helper.json_sysex.connect(self._dispatch_sysex_to_area)
-        # self.midi_helper.parameter_received.connect(self._on_parameter_received)
+        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         print(f"self.controls: {self.controls}")
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         if self.midi_helper:
-            self.midi_helper.program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

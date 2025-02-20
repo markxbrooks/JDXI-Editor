@@ -17,7 +17,7 @@ from jdxi_manager.data import EffectParameter
 from jdxi_manager.data.effects import EffectsCommonParameter
 from jdxi_manager.midi.constants.analog import ANALOG_SYNTH_AREA
 from jdxi_manager.midi.constants.sysex import PROGRAM_AREA
-from jdxi_manager.midi.sysex import PROGRAM_COMMON
+from jdxi_manager.midi.sysex.sysex import PROGRAM_COMMON
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
