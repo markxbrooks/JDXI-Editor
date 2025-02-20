@@ -22,8 +22,9 @@ Dependencies:
 
 import json
 import logging
-from typing import Any, Callable, Dict, List, Optional
-
+import mido
+from typing import Any, Callable, Dict, List, Optional, Tuple
+from rtmidi.midiconstants import NOTE_ON, NOTE_OFF, PROGRAM_CHANGE, CONTROL_CHANGE, SYSTEM_EXCLUSIVE, TIMING_CLOCK
 from PySide6.QtCore import Signal
 from pubsub import pub
 
@@ -65,7 +66,12 @@ class MIDIInHandler(MIDIBase):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
+        self.register_callback(self.midi_callback)
         pub.subscribe(self._handle_incoming_midi_message, "midi_incoming_message")
+
+    def rtmidi_to_mido(self, rtmidi_message):
+        """Convert an rtmidi message to a mido message."""
+        return mido.Message.from_bytes(rtmidi_message)
 
     def register_callback(self, callback: Callable) -> None:
         """
@@ -76,7 +82,7 @@ class MIDIInHandler(MIDIBase):
         if callback not in self.callbacks:
             self.callbacks.append(callback)
 
-    def midi_callback(self, message: Any, timestamp: Optional[float] = None) -> None:
+    def midi_callback(self, event: Any, timestamp: Optional[float] = None) -> None:
         """
         Handle incoming MIDI messages and route them to appropriate handlers.
 
@@ -86,25 +92,29 @@ class MIDIInHandler(MIDIBase):
         :param timestamp: Optional timestamp for the message.
         """
         try:
-            if message.type == "program_change":
-                logging.info("Program Change - Channel: %d, Program: %d", message.channel, message.program)
-            if message.type != "clock":
-                self.midi_incoming_message.emit(message)
-                logging.info("MIDI message of type %s incoming: %s", message.type, message)
-            preset_data: Dict[str, Any] = {"modified": 0}
-            message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
-                "sysex": self._handle_sysex_message,
-                "control_change": self._handle_control_change,
-                "program_change": self._handle_program_change,
-                "note_on": self._handle_note_change,
-                "note_off": self._handle_note_change,
-                "clock": self._handle_clock,
-            }
-            handler = message_handlers.get(message.type)
-            if handler:
-                handler(message, preset_data)
-            else:
-                logging.info("Unhandled MIDI message type: %s", message.type)
+            logging.info(f"message type: {type(event)}")
+            if type(event) == tuple:
+                message_data , _ = event
+                message = self.rtmidi_to_mido(message_data)
+                if message.type == "program_change":
+                    logging.info("Program Change - Channel: %d, Program: %d", message.channel, message.program)
+                if message.type != "clock":
+                    self.midi_incoming_message.emit(message)
+                    logging.info("MIDI message of type %s incoming: %s", message.type, message)
+                preset_data: Dict[str, Any] = {"modified": 0}
+                message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
+                    "sysex": self._handle_sysex_message,
+                    "control_change": self._handle_control_change,
+                    "program_change": self._handle_program_change,
+                    "note_on": self._handle_note_change,
+                    "note_off": self._handle_note_change,
+                    "clock": self._handle_clock,
+                }
+                handler = message_handlers.get(message.type)
+                if handler:
+                    handler(message, preset_data)
+                else:
+                    logging.info("Unhandled MIDI message type: %s", message.type)
         except Exception as exc:
             logging.error("Error handling incoming MIDI message: %s", str(exc))
 
