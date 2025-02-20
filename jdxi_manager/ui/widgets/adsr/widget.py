@@ -6,7 +6,7 @@ Editing ADSR parameters
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QLabel, QSpinBox, QDoubleSpinBox, QGridLayout
 
-from jdxi_manager.ui.widgets.adsr_plot import ADSRPlot
+from jdxi_manager.ui.widgets.adsr.plot import ADSRPlot
 
 
 class ADSRWidget(QWidget):

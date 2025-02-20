@@ -66,7 +66,7 @@ from jdxi_manager.midi.constants.sysex import (
     MODEL_ID_3,
     MODEL_ID_4,
 )
-from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
 
 instrument_icon_folder = "drum_kits"
 

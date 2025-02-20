@@ -15,7 +15,7 @@ from typing import Optional
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.switch import Switch
+from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.vocal_fx import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,

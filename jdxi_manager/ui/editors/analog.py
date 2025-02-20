@@ -34,20 +34,15 @@ from jdxi_manager.midi.conversions import (
 )
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
-from jdxi_manager.ui.image_utils import base64_to_pixmap
+from jdxi_manager.ui.image.image_utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
-from jdxi_manager.ui.widgets.analog_waveform import AnalogWaveformButton
-from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
+from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
+from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.waveform import (
-    WaveformButton,
-    upsaw_png,
-    triangle_png,
-    pwsqu_png,
-    adsr_waveform_icon,
-)
-from jdxi_manager.ui.widgets.switch import Switch
+from jdxi_manager.ui.widgets.button.waveform import WaveformButton
+from jdxi_manager.ui.image.waveform import upsaw_png, triangle_png, pwsqu_png, adsr_waveform_icon
+from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.analog import (
     AnalogToneCC,
     Waveform,

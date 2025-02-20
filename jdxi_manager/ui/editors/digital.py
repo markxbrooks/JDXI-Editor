@@ -31,7 +31,7 @@ from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.data.digital import (
     OscWave,
@@ -50,8 +50,8 @@ from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_2_AREA,
     Waveform,
 )
-from jdxi_manager.ui.widgets.partial_switch import PartialsPanel
-from jdxi_manager.ui.widgets.switch import Switch
+from jdxi_manager.ui.widgets.switch.partial import PartialsPanel
+from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
 instrument_icon_folder = "digital_synths"

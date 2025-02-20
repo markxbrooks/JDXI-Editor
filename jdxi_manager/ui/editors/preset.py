@@ -31,7 +31,7 @@ from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.midi.parameter_handler import ParameterHandler
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS, DRUM_PRESETS
-from jdxi_manager.ui.widgets.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
 
 
 class PresetEditor(QMainWindow):

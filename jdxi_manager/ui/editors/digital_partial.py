@@ -24,12 +24,13 @@ from jdxi_manager.midi.conversions import (
     ms_to_midi_cc,
     frac_to_midi_cc,
 )
-from jdxi_manager.ui.image_utils import base64_to_pixmap
+from jdxi_manager.ui.image.image_utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets import Slider, WaveformButton
-from jdxi_manager.ui.widgets.adsr_widget import ADSRWidget
-from jdxi_manager.ui.widgets.switch import Switch
-from jdxi_manager.ui.widgets.waveform import (
+from jdxi_manager.ui.widgets import Slider
+from jdxi_manager.ui.widgets.button.waveform import WaveformButton
+from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
+from jdxi_manager.ui.widgets.switch.switch import Switch
+from jdxi_manager.ui.image.waveform import (
     upsaw_png,
     square_png,
     pwsqu_png,
