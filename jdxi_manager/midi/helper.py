@@ -1,132 +1,6 @@
-"""
-test message
-sysex_message = [
-    0xF0,
-    0x41,
-    0x10,
-    0x00,
-    0x00,
-    0x0E,
-    0x12,
-    0x01,
-    0x00,
-    0x00,
-    0x00,
-    0x01,
-    0x54,
-    0x00,
-    0x00,
-    0x55,
-    0x40,
-    0x00,
-    0x00,
-    0x00,
-    0x40,
-    0x00,
-    0x7F,
-    0x01,
-    0x54,
-    0x00,
-    0x00,
-    0x55,
-    0x40,
-    0x00,
-    0x64,
-    0x40,
-    0x40,
-    0x00,
-    0x7F,
-    0x01,
-    0x01,
-    0x01,
-    0x01,
-    0x01,
-    0x01,
-    0x40,
-    0x40,
-    0x00,
-    0x00,
-    0x00,
-    0x05,
-    0x05,
-    0x00,
-    0x01,
-    0x00,
-    0x02,
-    0x40,
-    0x00,
-    0x64,
-    0x00,
-    0x00,
-    0x01,
-    0x00,
-    0x00,
-    0x01,
-    0x00,
-    0x64,
-    0x7F,
-    0x00,
-    0x01,
-    0x00,
-    0x01,
-    0x00,
-    0x00,
-    0x6B,
-    0xF7,
-]
-"""
-from jdxi_manager.data.parameter.analog import parse_analog_parameters
-from jdxi_manager.data.parameter.digital import parse_digital_parameters
-from jdxi_manager.data.parameter.digital_common import parse_digital_common_parameters
+
 from jdxi_manager.midi.parsers import parse_sysex
 
-"""
-# Example SysEx Data (convert hex to bytes)
-
-sysex_bytes = bytes(
-    [
-        0xF0,
-        0x41,
-        0x10,
-        0x00,
-        0x00,
-        0x00,
-        0x0E,
-        0x1A,
-        0x01,
-        0x00,
-        0x00,  # Header + Address
-        0x00,
-        0x54,
-        0x72,
-        0x61,
-        0x6E,
-        0x63,
-        0x65,
-        0x20,
-        0x50,
-        0x61,
-        0x64,  # "Trance Pad"
-        0x00,  # Null padding
-        0x64,
-        0x32,
-        0x02,  # LFO (Rate, Depth, Shape)
-        0x00,
-        0x00,
-        0x00,
-        0x01,  # Unused
-        0x55,
-        0x40,
-        0x00,  # OSC Type & Pitch
-        0x00,
-        0x40,  # Filter Cutoff & Resonance
-        0x7F,
-        0x01,  # Unused
-        0x64,  # Amp Level
-        0xF7,  # SysEx End
-    ]
-)
-"""
 
 import json
 import logging
@@ -144,29 +18,10 @@ from jdxi_manager.midi.sysex import SysexParameter
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 
-def get_analog_parameter_by_address(address: int):
-    """Retrieve the DigitalParameter by its address."""
-    logging.info(f"address: {address}")
-    for param in AnalogParameter:
-        if param.address == address:
-            logging.info(f"get_analog_parameter_by_address found param: {param}")
-            return param
-    return None
-
-
-def get_analog_parameter_name_by_address(address: int):
-    """Retrieve the DigitalParameter by its address."""
-    logging.info(f"address: {address}")
-    for param in AnalogParameter:
-        if param.address == address:
-            logging.info(f"get_analog_parameter_by_address found param: {param}")
-            return param.name
-    return None
-
-
 def get_digital_parameter_by_address(address: Tuple[int, int]):
     """Retrieve the DigitalParameter by its address."""
     logging.info(f"address: {address}")
+    from jdxi_manager.data.parameter.digital import DigitalParameter
     for param in DigitalParameter:
         if (param.group, param.address) == address:
             logging.info(f"param found: {param}")
