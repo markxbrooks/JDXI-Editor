@@ -24,22 +24,14 @@ from jdxi_manager.midi.conversions import (
     ms_to_midi_cc,
     frac_to_midi_cc,
 )
-from jdxi_manager.ui.image.image_utils import base64_to_pixmap
+from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
 from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.ui.image.waveform import (
-    upsaw_png,
-    square_png,
-    pwsqu_png,
-    triangle_png,
-    sine_png,
-    noise_png,
-    spsaw_png,
-    pcm_png,
-    adsr_waveform_icon,
+    generate_waveform_icon,
 )
 
 
@@ -144,14 +136,14 @@ class DigitalPartialEditor(QWidget):
         self.wave_buttons = {}
 
         wave_icons = {
-            OscWave.SAW: upsaw_png("#FFFFFF", 1.0),
-            OscWave.SQUARE: square_png("#FFFFFF", 1.0),
-            OscWave.PW_SQUARE: pwsqu_png("#FFFFFF", 1.0),
-            OscWave.TRIANGLE: triangle_png("#FFFFFF", 1.0),
-            OscWave.SINE: sine_png("#FFFFFF", 1.0),
-            OscWave.NOISE: noise_png("#FFFFFF", 1.0),
-            OscWave.SUPER_SAW: spsaw_png("#FFFFFF", 1.0),
-            OscWave.PCM: pcm_png("#FFFFFF", 1.0),
+            OscWave.SAW: generate_waveform_icon("upsaw", "#FFFFFF", 1.0),
+            OscWave.SQUARE: generate_waveform_icon("square", "#FFFFFF", 1.0),
+            OscWave.PW_SQUARE: generate_waveform_icon("pwsqu", "#FFFFFF", 1.0),
+            OscWave.TRIANGLE: generate_waveform_icon("triangle", "#FFFFFF", 1.0),
+            OscWave.SINE: generate_waveform_icon("sine", "#FFFFFF", 1.0),
+            OscWave.NOISE: generate_waveform_icon("noise", "#FFFFFF", 1.0),
+            OscWave.SUPER_SAW: generate_waveform_icon("spsaw", "#FFFFFF", 1.0),
+            OscWave.PCM: generate_waveform_icon("pcm", "#FFFFFF", 1.0),
         }
 
         for wave, icon_base64 in wave_icons.items():
@@ -367,7 +359,7 @@ class DigitalPartialEditor(QWidget):
         env_group.setLayout(env_layout)
 
         # Generate the ADSR waveform icon
-        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
         pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
 
         # Vbox to vertically arrange icons and ADSR(D) Envelope controls
@@ -628,7 +620,7 @@ class DigitalPartialEditor(QWidget):
         env_group.setLayout(amp_env_adsr_vlayout)
 
         # Generate the ADSR waveform icon
-        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
         pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
 
         icon_label = QLabel()

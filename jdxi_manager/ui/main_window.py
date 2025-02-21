@@ -36,7 +36,7 @@ from jdxi_manager.ui.editors import (
 )
 from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
-from jdxi_manager.ui.image.instrument_pixmap import draw_instrument_pixmap
+from jdxi_manager.ui.image.instrument import draw_instrument_pixmap
 from jdxi_manager.ui.windows.midi.midi_config import MIDIConfigDialog
 from jdxi_manager.ui.windows.midi.midi_debugger import MIDIDebugger
 from jdxi_manager.ui.windows.midi.midi_message_debug import MIDIMessageDebug
@@ -2326,7 +2326,7 @@ class MainWindow(QMainWindow):
             midi_helper=self.midi_helper, parent=self, preset_type=PresetType.ANALOG
         )
         self.preset_editor.preset_changed.connect(self._update_display_preset)
-        self.midi_helper.preset_changed.connect(self._update_display_preset)
+        # self.midi_helper.preset_changed.connect(self._update_display_preset)
         self.preset_editor.show()
 
     def _update_display_preset(

@@ -1,1 +1,1 @@
-from .preset_panel import PresetPanel
+from .panel import PresetPanel

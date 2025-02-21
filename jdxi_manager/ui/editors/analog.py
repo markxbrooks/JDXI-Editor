@@ -34,14 +34,14 @@ from jdxi_manager.midi.conversions import (
 )
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
-from jdxi_manager.ui.image.image_utils import base64_to_pixmap
+from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
-from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
-from jdxi_manager.ui.image.waveform import upsaw_png, triangle_png, pwsqu_png, adsr_waveform_icon
+from jdxi_manager.ui.image.waveform import generate_waveform_icon
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.analog import (
     AnalogToneCC,
@@ -265,15 +265,15 @@ class AnalogSynthEditor(BaseEditor):
 
             # Set icons for each waveform
             if waveform == Waveform.SAW:
-                saw_icon_base64 = upsaw_png("#FFFFFF", 1.0)
+                saw_icon_base64 = generate_waveform_icon("upsaw", "#FFFFFF", 1.0)
                 saw_pixmap = base64_to_pixmap(saw_icon_base64)
                 btn.setIcon(QIcon(saw_pixmap))
             elif waveform == Waveform.TRIANGLE:
-                tri_icon_base64 = triangle_png("#FFFFFF", 1.0)
+                tri_icon_base64 = generate_waveform_icon("triangle", "#FFFFFF", 1.0)
                 tri_pixmap = base64_to_pixmap(tri_icon_base64)
                 btn.setIcon(QIcon(tri_pixmap))
             elif waveform == Waveform.PULSE:
-                pulse_icon_base64 = pwsqu_png("#FFFFFF", 1.0)
+                pulse_icon_base64 = generate_waveform_icon("pwsqu", "#FFFFFF", 1.0)
                 pulse_pixmap = base64_to_pixmap(pulse_icon_base64)
                 btn.setIcon(QIcon(pulse_pixmap))
 
@@ -642,7 +642,7 @@ class AnalogSynthEditor(BaseEditor):
         layout.addSpacing(10)
 
         # Generate the ADSR waveform icon
-        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
         pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
 
         # Vbox to vertically arrange icons and ADSR(D) Envelope controls
@@ -795,7 +795,7 @@ class AnalogSynthEditor(BaseEditor):
         env_group.setLayout(amp_env_adsr_vlayout)
 
         # Generate the ADSR waveform icon
-        icon_base64 = adsr_waveform_icon("#FFFFFF", 2.0)
+        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
         pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
 
         # Vbox to vertically arrange icons and ADSR(D) Envelope controls
