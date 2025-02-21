@@ -22,11 +22,11 @@ from PySide6.QtCore import Qt, Signal
 import logging
 
 from jdxi_manager.data.drums import (
-    DrumParameter,
     get_address_for_partial,
     DRUM_PARTIAL_NAMES,
     DRUM_ADDRESSES,
 )
+from jdxi_manager.data.parameter.drums import DrumParameter
 from jdxi_manager.data.preset_data import DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.data.presets import preset
