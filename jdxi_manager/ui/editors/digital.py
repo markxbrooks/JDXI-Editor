@@ -31,7 +31,7 @@ from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.data.digital import (
     OscWave,

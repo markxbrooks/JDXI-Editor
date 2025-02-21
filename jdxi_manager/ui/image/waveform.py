@@ -1,302 +1,97 @@
+"""
+waveform_icons
+
+This module provides functions to generate PNG images representing different waveform icons
+using the Python Imaging Library (PIL). Each function returns a base64-encoded string of
+the generated image.
+
+Functions:
+    generate_waveform_icon(icon_type, foreground_color, icon_scale): Generates a
+    - triangle: Generates a triangle waveform icon.
+    - upsaw: Generates an upward sawtooth waveform icon.
+    - square: Generates a square waveform icon.
+    - sine: Generates a sine waveform icon.
+    - noise: Generates a noise waveform icon.
+    - spsaw: Generates a special sawtooth waveform icon.
+    - pcm: Generates a PCM waveform icon.
+    - adsr: Generates an ADSR envelope waveform icon.
+"""
+
 import base64
+import math
 from io import BytesIO
-
-from PIL import Image, ImageDraw
-
-
-def triangle_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-
-    # Create image with transparent background
-    im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Set line color to white
-    white = (255, 255, 255)
-
-    # Draw lines
-    draw.line([(0, y * 0.5 - int(rz * 0.5)), (x * 0.25, 0)], fill=white, width=th)
-    draw.line([(x * 0.25, 0), (x * 0.75, y - 1)], fill=white, width=th)
-    draw.line([(x * 0.75, y - 1), (x, y * 0.5)], fill=white, width=th)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
+from PIL import Image, ImageDraw, ImageColor
 
 
-def upsaw_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-    if x % 2 == 0:
-        x += 1
-
-    # Create image with transparent background
-    im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Set line color to white
-    white = (255, 255, 255)
-
-    # Draw lines
-    draw.line([(0, y - 1), (x * 0.5, 0)], fill=white, width=th)
-    draw.line([(x * 0.5, 0), (x * 0.5, y - 1)], fill=white, width=th)
-    draw.line([(x * 0.5, y - 1), (x - 1, 0)], fill=white, width=th)
-    draw.line([(x - th * 0.5, 0), (x - th * 0.5, y - 1)], fill=white, width=th)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-
-def square_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-
-    # Create image with transparent background
-    im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Set line color to white
-    white = (255, 255, 255)
-
-    # Draw lines
-    draw.line([(th * 0.5, y - 1), (th * 0.5, 0)], fill=white, width=th)
-    draw.line([(0, th * 0.5), (x * 0.5, th * 0.5)], fill=white, width=th)
-    draw.line([(x * 0.5, 0), (x * 0.5, y - 1)], fill=white, width=th)
-    draw.line([(x * 0.5, y - th * 0.5), (x - 1, y - th * 0.5)], fill=white, width=th)
-    draw.line([(x - th * 0.5, y - 1), (x - th * 0.5, 0)], fill=white, width=th)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-
-def sine_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-
-    # Create image with transparent background
-    im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Set line color to white
-    white = (255, 255, 255)
-
-    # Draw arcs
-    if rz == 1.75:
-        draw.arc([(x * 0.25 - x * 0.25, y * 0.5 - y * 0.5), (x * 0.25 + x * 0.25, y * 0.5 + y * 0.5)], 180, 360, fill=white)
-        draw.arc([(x * 0.75 - x * 0.25, y * 0.5 - y * 0.5), (x * 0.75 + x * 0.25, y * 0.5 + y * 0.5)], 0, 180, fill=white)
-    elif rz >= 2.75:
-        draw.arc([(x * 0.25 - x * 0.25, y * 0.5 - y * 0.5), (x * 0.25 + x * 0.25, y * 0.5 + y * 0.5)], 180, 360, fill=white)
-        draw.arc([(x * 0.75 - x * 0.25, y * 0.5 - y * 0.5), (x * 0.75 + x * 0.25, y * 0.5 + y * 0.5)], 0, 180, fill=white)
-    else:
-        draw.arc([(x * 0.25 - x * 0.25, y * 0.5 - y * 0.5), (x * 0.25 + x * 0.25, y * 0.5 + y * 0.5)], 180, 360, fill=white)
-        draw.arc([(x * 0.75 - x * 0.25, y * 0.5 - y * 0.5), (x * 0.75 + x * 0.25, y * 0.5 + y * 0.5)], 0, 180, fill=white)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-
-def noise_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-
-    # Create image with transparent background
-    im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Set line color to white
-    white = (255, 255, 255)
-
-    # Draw polyline
-    points = [
-        (th * 0.5, y - 1), (th * 0.5, 0), (th * 0.5 + x * 0.0588, y * 0.61),
-        (th * 0.5 + x * 0.0588 * 2, y * 0.12), (th * 0.5 + x * 0.0588 * 3, y * 0.87),
-        (th * 0.5 + x * 0.0588 * 4, y * 0.50), (th * 0.5 + x * 0.0588 * 5, y * 0.99),
-        (th * 0.5 + x * 0.0588 * 6, y * 0.01), (th * 0.5 + x * 0.0588 * 7, y * 0.93),
-        (th * 0.5 + x * 0.0588 * 8, y * 0.15), (th * 0.5 + x * 0.0588 * 9, y * 0.85),
-        (th * 0.5 + x * 0.0588 * 10, y * 0.01), (th * 0.5 + x * 0.0588 * 11, y * 0.92),
-        (th * 0.5 + x * 0.0588 * 12, y * 0.23), (th * 0.5 + x * 0.0588 * 13, y * 0.72),
-        (th * 0.5 + x * 0.0588 * 14, y * 0.06), (th * 0.5 + x * 0.0588 * 15, y * 0.45),
-        (x - th * 0.5, y - 1), (x - th * 0.5, 0)
-    ]
-    draw.line(points, fill=white, width=th)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-
-def spsaw_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-
-    # Create image with transparent background
-    im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Set line color to white
-    white = (255, 255, 255)
-
-    # Draw lines
-    draw.line([(0, y * 0.5), (y * 0.5, 0)], fill=white, width=th)
-    draw.line([(y * 0.5, 0), (y * 0.5, y - 1)], fill=white, width=th)
-    draw.line([(y * 0.5, y - 1), (y * 0.5 + y - int(rz), 0)], fill=white, width=th)
-    draw.line([(y * 0.5 + y - int(rz), 0), (y * 0.5 + y - int(rz), y - 1)], fill=white, width=th)
-    draw.line([(y * 0.5 + y - int(rz), y - 1), (x - 1, y * 0.5)], fill=white, width=th)
-    draw.line([(0, y - 1), (y - 1, 0)], fill=white, width=th)
-    draw.line([(y - 1, 0), (y - 1, y - 1)], fill=white, width=th)
-    draw.line([(y - 1, y - 1), (x - 1, 0)], fill=white, width=th)
-    draw.line([(x - th * 0.5, 0), (x - th * 0.5, y - 1)], fill=white, width=th)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-
-def pcm_png(btnfcol, rz):
+def generate_waveform_icon(waveform: str, foreground_color: str, icon_scale: float) -> str:
     """
-    PCM Icon
+    Generate a waveform icon as a base64-encoded PNG image
+
+    :param waveform: str
+    :param foreground_color: str
+    :param icon_scale: float
+    :return: icon
+    :rtype: str
     """
-    line_color = btnfcol
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-    width = x
-    height = y
-
-    # Create an image with a black background
-    im = Image.new('RGBA', (width, height), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(im)
-
-    # Define line positions and heights with reduced spacing
-    line_positions = [
-        (0.1*width, 0.6*height), (0.2*width, 0.4*height), (0.3*width, 0.8*height), (0.4*width, 0.6*height), (0.5*width, 1.0*height), (0.6*width, 0.8*height), (0.7*width, 0.6*height),
-        (0.8*width, 0.4*height), (0.9*width, 1.0*height), (1.0*width, 0.8*height), (1.1*width, 0.6*height), (1.2*width, 0.4*height)
-    ]
-
-    # Draw lines
-    for x, h in line_positions:
-        draw.line([(x, height), (x, height - h)], fill=line_color, width=th)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-def adsr_waveform_icon(btnfcol, rz: float = 1.0):
-    # Create an image with a transparent background
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-    width = int(17 * rz)
-    height = int(9 * rz)
-    th = int(rz + 0.49)
-    line_color = btnfcol
-    im = Image.new('RGBA', (width, height), (0, 0, 0, 0))
-
-    draw = ImageDraw.Draw(im)
-
-    # Define the ADSR shape
-    points = [
-        (0.2*width, height*1),  # Start
-        (0.3*width, height*0),  # Attack
-        (0.5*width, height*0.4),  # Decay
-        (0.7*width, height*0.4),  # Sustain
-        (0.9*width, height*1)   # Release
-    ]
-
-    # Draw the ADSR shape
-    draw.line(points, fill=line_color, width=3)
-
-    # Save image to a bytes buffer
-    buffer = BytesIO()
-    im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
-
-
-def pwsqu_png(btnfcol, rz):
-    # Convert hex color to RGB
-    rgb = tuple(int(btnfcol[i:i+2], 16) for i in (1, 3, 5))
-
-    # Calculate dimensions and thickness
-    x = int(17 * rz)
-    y = int(9 * rz)
-    th = int(rz + 0.49)
-
-    # Create image with transparent background
+    x = int(17 * icon_scale)
+    y = int(9 * icon_scale)
+    th = int(icon_scale + 0.49)
     im = Image.new('RGBA', (x, y), (255, 255, 255, 0))
     draw = ImageDraw.Draw(im)
+    color = ImageColor.getrgb(foreground_color)
 
-    # Set line color to white
-    white = (255, 255, 255)
+    half_y = y * 0.5
+    quarter_x = x * 0.25
+    three_quarters_x = x * 0.75
 
-    # Draw lines
-    draw.line([(th * 0.5, y - 1), (th * 0.5, 0)], fill=white, width=th)
-    draw.line([(0, th * 0.5), (x * 0.68 - th * 0.5, th * 0.5)], fill=white, width=th)
-    draw.line([(x * 0.68, 0), (x * 0.68, y - 1)], fill=white, width=th)
-    draw.line([(x * 0.68, y - th * 0.5), (x - 1, y - th * 0.5)], fill=white, width=th)
-    draw.line([(x - th * 0.5, y - 1), (x - th * 0.5, 0)], fill=white, width=th)
-    draw.line([(x * 0.325 + int(th * 0.5), y * 0.223), (x * 0.325 + int(th * 0.5), y * 0.443)], fill=white, width=th)
-    draw.line([(x * 0.325 + int(th * 0.5), y * 0.556), (x * 0.325 + int(th * 0.5), y * 0.776)], fill=white, width=th)
-    draw.line([(x * 0.324, y - th * 0.5), (x * 0.400, y - th * 0.5)], fill=white, width=th)
-    draw.line([(x * 0.500, y - th * 0.5), (x * 0.580, y - th * 0.5)], fill=white, width=th)
-
-    # Save image to a bytes buffer
+    if waveform == "triangle":
+        draw.line([(0, half_y), (quarter_x, 0), (three_quarters_x, y - 1), (x, half_y)], fill=color, width=th)
+    elif waveform == "upsaw":
+        draw.line([(0, y - 1), (x * 0.5, 0), (x * 0.5, y - 1), (x - 1, 0)], fill=color, width=th)
+    elif waveform == "square":
+        draw.line([(th * 0.5, y - 1), (th * 0.5, 0), (x * 0.5, 0), (x * 0.5, y - 1), (x - th * 0.5, y - 1),
+                   (x - th * 0.5, 0)], fill=color, width=th)
+    elif waveform == "sine":
+        # Define the number of points for smoothness
+        num_points = 60
+        sine_wave = [
+            (i * x / (num_points - 1), half_y + (math.sin(i * 2 * math.pi / (num_points - 1)) * half_y * 0.8))
+            for i in range(num_points)
+        ]
+        draw.line(sine_wave, fill=color, width=th)
+    elif waveform == "noise":
+        import random
+        points = [(th * 0.5 + x * 0.0588 * i, y * (0.5 + random.uniform(-0.4, 0.4))) for i in range(16)]
+        draw.line(points, fill=color, width=th)
+    elif waveform == "spsaw":
+        draw.line([(0, half_y), (y * 0.5, 0), (y * 0.5, y - 1), (x - 1, half_y)], fill=color, width=th)
+    elif waveform == "pcm":
+        for i in range(12):
+            draw.line([(x * (0.1 * i), y), (x * (0.1 * i), y - (y * (0.4 + 0.2 * (-1) ** i)))], fill=color, width=th)
+    elif waveform == "pwsqu":
+        draw.line([(th * 0.5, y - 1), (th * 0.5, 0)], fill=color, width=th)
+        draw.line([(0, th * 0.5), (x * 0.68 - th * 0.5, th * 0.5)], fill=color, width=th)
+        draw.line([(x * 0.68, 0), (x * 0.68, y - 1)], fill=color, width=th)
+        draw.line([(x * 0.68, y - th * 0.5), (x - 1, y - th * 0.5)], fill=color, width=th)
+        draw.line([(x - th * 0.5, y - 1), (x - th * 0.5, 0)], fill=color, width=th)
+    elif waveform == "adsr":
+        rgb = tuple(int(foreground_color[i:i + 2], 16) for i in (1, 3, 5))
+        width = int(17 * icon_scale)
+        height = int(9 * icon_scale)
+        th = int(icon_scale + 0.49)
+        line_color = foreground_color
+        im = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(im)
+        # Define the ADSR shape
+        points = [
+            (0.2 * width, height * 1),  # Start
+            (0.3 * width, height * 0),  # Attack
+            (0.5 * width, height * 0.4),  # Decay
+            (0.7 * width, height * 0.4),  # Sustain
+            (0.9 * width, height * 1)  # Release
+        ]
+        # Draw the ADSR shape
+        draw.line(points, fill=line_color, width=3)
     buffer = BytesIO()
     im.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
-
-    return img_str
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')

@@ -10,28 +10,18 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QMessageBox,
 )
-from PySide6.QtCore import Signal, Qt, QSettings
+from PySide6.QtCore import Signal, QSettings
 from PySide6.QtGui import QFont
 from typing import Optional, List, Dict
 import logging
-import time
 
 from jdxi_manager.midi import MIDIHelper
-
-# from jdxi_manager.ui.editors.base import BaseEditor
-from jdxi_manager.midi.constants import (
-    DIGITAL_SYNTH_AREA,
-    ANALOG_SYNTH_AREA,
-    DRUM_KIT_AREA,
-    DT1_COMMAND_12,
-    RQ1_COMMAND_11,
-)
 from jdxi_manager.ui.style import Style
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.midi.parameter_handler import ParameterHandler
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS, DRUM_PRESETS
-from jdxi_manager.ui.widgets.preset.preset_combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 
 class PresetEditor(QMainWindow):

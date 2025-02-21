@@ -1,2 +1,2 @@
-from .led_indicator import LEDIndicator
-from .midi_indicator import MIDIIndicator
+from .led import LEDIndicator
+from .midi import MIDIIndicator
