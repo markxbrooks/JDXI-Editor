@@ -614,10 +614,10 @@ class DrumParameter(SynthParameter):
     # TVF_ENV_LEVEL_0 = (0x2F, 0x13F, 0, 127)
     # Add other relevant drum parameters here
 
-    def __init__(self, address: int, min_val: int, max_val: int):
-        self.address = address
-        self.min_val = min_val
-        self.max_val = max_val
+    #def __init__(self, address: int, min_val: int, max_val: int):
+    #    self.address = address
+    #    self.min_val = min_val
+    #    self.max_val = max_val
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
