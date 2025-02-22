@@ -37,7 +37,6 @@ from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
-from jdxi_manager.ui.widgets.adsr.widget_new import ADSRWidgetNew
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
@@ -510,7 +509,6 @@ class AnalogSynthEditor(BaseEditor):
         param: Union[AnalogParameter, AnalogCommonParameter],
         label: str,
         vertical=False,
-        show_value_label=True,
     ) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
@@ -519,7 +517,7 @@ class AnalogSynthEditor(BaseEditor):
             display_min, display_max = param.min_val, param.max_val
 
         # Create horizontal slider (removed vertical ADSR check)
-        slider = Slider(label, display_min, display_max, vertical, show_value_label)
+        slider = Slider(label, display_min, display_max, vertical)
                
         # Set up bipolar parameters
         if isinstance(param, AnalogParameter) and param in [
@@ -555,36 +553,36 @@ class AnalogSynthEditor(BaseEditor):
     def on_amp_env_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
             self.controls[AnalogParameter.AMP_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope["attack_time"], 10, 1000)
+                ms_to_midi_cc(envelope["attackTime"], 10, 1000)
             )
             self.controls[AnalogParameter.AMP_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope["decay_time"], 10, 1000)
+                ms_to_midi_cc(envelope["decayTime"], 10, 1000)
             )
             self.controls[AnalogParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
+                ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
             )
             self.controls[AnalogParameter.AMP_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope["release_time"], 10, 1000)
+                ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
             )
 
     def ampEnvAdsrValueChanged(self):
         self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope["attack_time"] = (
+        self.amp_env_adsr_widget.envelope["attackTime"] = (
             self.amp_env_adsr_widget.attack_sb.value()
         )
-        self.amp_env_adsr_widget.envelope["decay_time"] = (
+        self.amp_env_adsr_widget.envelope["decayTime"] = (
             self.amp_env_adsr_widget.decay_sb.value()
         )
-        self.amp_env_adsr_widget.envelope["release_time"] = (
+        self.amp_env_adsr_widget.envelope["releaseTime"] = (
             self.amp_env_adsr_widget.release_sb.value()
         )
-        #self.amp_env_adsr_widget.envelope["initial_level"] = (
-        #    self.amp_env_adsr_widget.initial_sb.value()
-        #)
-        #self.amp_env_adsr_widget.envelope["peak_level"] = (
-        #    self.amp_env_adsr_widget.peak_sb.value()
-        #)
-        self.amp_env_adsr_widget.envelope["sustain_level"] = (
+        self.amp_env_adsr_widget.envelope["initialAmpl"] = (
+            self.amp_env_adsr_widget.initial_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["peakAmpl"] = (
+            self.amp_env_adsr_widget.peak_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
             self.amp_env_adsr_widget.sustain_sb.value()
         )
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
@@ -592,7 +590,6 @@ class AnalogSynthEditor(BaseEditor):
         self.updating_from_spinbox = False
 
     def _create_filter_section(self):
-        """Create the filter section"""
         group = QWidget()
         layout = QVBoxLayout()
         group.setLayout(layout)
@@ -677,16 +674,16 @@ class AnalogSynthEditor(BaseEditor):
         adsr_vlayout.addLayout(adsr_layout)
 
         self.filter_env_attack_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True
         )
         self.filter_env_decay_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True
         )
         self.filter_env_sustain_level = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True
         )
         self.filter_env_release_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
         )
         adsr_layout.addWidget(self.filter_env_attack_time)
         adsr_layout.addWidget(self.filter_env_decay_time)
@@ -750,8 +747,8 @@ class AnalogSynthEditor(BaseEditor):
             self.filter_adsr_widget.valueChanged()
 
     def _create_amp_section(self):
-        """Create the Amp section"""
         group = QWidget()
+        #group = QGroupBox("Amplifier")
         layout = QVBoxLayout()
         layout.setSpacing(5)
         layout.setContentsMargins(5, 15, 5, 5)
@@ -813,29 +810,28 @@ class AnalogSynthEditor(BaseEditor):
 
         env_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
+                AnalogParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
+                AnalogParameter.AMP_ENV_DECAY_TIME, "D", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
+                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
+                AnalogParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True
             )
         )
-        self.amp_env_adsr_widget = ADSRWidgetNew(AnalogParameter.AMP_ENV_ATTACK_TIME, AnalogParameter.AMP_ENV_DECAY_TIME, AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, AnalogParameter.AMP_ENV_RELEASE_TIME)
+        self.amp_env_adsr_widget = ADSRWidget()
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        # amp_env_adsr_vlayout.addLayout(env_layout)
+        amp_env_adsr_vlayout.addLayout(env_layout)
         sub_layout.addWidget(env_group)
-        # self.amp_env_adsr_widget.sliders_layout.addLayout(env_layout)
         layout.addLayout(sub_layout)
 
         # Mapping ADSR parameters to their corresponding spinboxes
@@ -892,8 +888,8 @@ class AnalogSynthEditor(BaseEditor):
             control.blockSignals(False)
 
     def _create_lfo_section(self):
-        """Create the LFO section"""
         group = QWidget()
+        #group = QGroupBox("LFO")
         layout = QVBoxLayout()
         group.setLayout(layout)
 
@@ -1079,6 +1075,7 @@ class AnalogSynthEditor(BaseEditor):
     def _on_lfo_sync_changed(self, value: int):
         """
         Handle LFO sync change
+        KEEP
         """
         if self.midi_helper:
             self.midi_helper.send_parameter(
@@ -1092,6 +1089,7 @@ class AnalogSynthEditor(BaseEditor):
     def _on_lfo_sync_note_changed(self, value: int):
         """
         Handle LFO sync note change
+        KEEP
         """
         if self.midi_helper:
             self.midi_helper.send_parameter(

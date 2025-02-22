@@ -33,7 +33,7 @@ from jdxi_manager.data.presets import preset
 from jdxi_manager.midi import MIDIHelper
 from jdxi_manager.midi.preset_loader import PresetLoader
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.slider import Slider
+from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.midi.constants import (
     DRUM_KIT_AREA,

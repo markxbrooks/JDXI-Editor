@@ -37,9 +37,9 @@ from jdxi_manager.ui.editors import (
 from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
 from jdxi_manager.ui.image.instrument import draw_instrument_pixmap
-from jdxi_manager.ui.windows.midi.config import MIDIConfigDialog
-from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
-from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
+from jdxi_manager.ui.windows.midi.midi_config import MIDIConfigDialog
+from jdxi_manager.ui.windows.midi.midi_debugger import MIDIDebugger
+from jdxi_manager.ui.windows.midi.midi_message_debug import MIDIMessageDebug
 from jdxi_manager.ui.windows.patch.patch_name_editor import PatchNameEditor
 from jdxi_manager.ui.windows.patch.patch_manager import PatchManager
 from jdxi_manager.ui.style import Style, sequencer_button_style, toggle_button_style
@@ -2234,7 +2234,7 @@ class MainWindow(QMainWindow):
             logging.error(f"Error showing Digital Synth {synth_num} editor: {str(e)}")
             self.show_error("Editor Error", str(e))
 
-    def handle_piano_note_on(self, note_num):
+    def _handle_piano_note_on(self, note_num):
         """Handle piano key press"""
         if self.midi_helper:
             # Note on message: 0x90 (Note On, channel 1), note number, velocity 100
@@ -2242,7 +2242,7 @@ class MainWindow(QMainWindow):
             self.midi_helper.send_message(msg)
             logging.debug(f"Sent Note On: {note_num}")
 
-    def handle_piano_note_off(self, note_num):
+    def _handle_piano_note_off(self, note_num):
         """Handle piano key release"""
         if self.midi_helper:
             # Note off message: 0x80 (Note Off, channel 1), note number, velocity 0

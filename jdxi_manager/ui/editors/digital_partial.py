@@ -26,7 +26,7 @@ from jdxi_manager.midi.conversions import (
 )
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.slider import Slider
+from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
 from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
 from jdxi_manager.ui.widgets.switch.switch import Switch
@@ -75,7 +75,6 @@ class DigitalPartialEditor(QWidget):
         param: Union[DigitalParameter, DigitalCommonParameter],
         label: str,
         vertical=False,
-            show_value_label=True,
     ) -> Slider:
         """Create a slider for a parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
@@ -84,7 +83,7 @@ class DigitalPartialEditor(QWidget):
             display_min, display_max = param.min_val, param.max_val
 
         # Create slider
-        slider = Slider(label, display_min, display_max, vertical, show_value_label)
+        slider = Slider(label, display_min, display_max, vertical)
         
         # Set up bipolar parameters
         if isinstance(param, DigitalParameter) and param in [
@@ -386,22 +385,22 @@ class DigitalPartialEditor(QWidget):
 
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
+                DigitalParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True
             )
         )
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
+                DigitalParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True
             )
         )
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True
             )
         )
         adsr_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
+                DigitalParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True
             )
         )
         env_layout.addLayout(adsr_vlayout)
@@ -468,36 +467,36 @@ class DigitalPartialEditor(QWidget):
     def on_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
             self.controls[DigitalParameter.FILTER_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope["attack_time"], 10, 1000)
+                ms_to_midi_cc(envelope["attackTime"], 10, 1000)
             )
             self.controls[DigitalParameter.FILTER_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope["decay_time"], 10, 1000)
+                ms_to_midi_cc(envelope["decayTime"], 10, 1000)
             )
             self.controls[DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
+                ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
             )
             self.controls[DigitalParameter.FILTER_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope["release_time"], 10, 1000)
+                ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
             )
 
     def filterAdsrValueChanged(self):
         self.updating_from_spinbox = True
-        self.filter_adsr_widget.envelope["attack_time"] = (
+        self.filter_adsr_widget.envelope["attackTime"] = (
             self.filter_adsr_widget.attack_sb.value()
         )
-        self.filter_adsr_widget.envelope["decay_time"] = (
+        self.filter_adsr_widget.envelope["decayTime"] = (
             self.filter_adsr_widget.decay_sb.value()
         )
-        self.filter_adsr_widget.envelope["release_time"] = (
+        self.filter_adsr_widget.envelope["releaseTime"] = (
             self.filter_adsr_widget.release_sb.value()
         )
-        #self.filter_adsr_widget.envelope["initial_level"] = (
-        #    self.filter_adsr_widget.initial_sb.value()
-        #)
-        #self.filter_adsr_widget.envelope["peak_level"] = (
-        #    self.filter_adsr_widget.peak_sb.value()
-        #)
-        self.filter_adsr_widget.envelope["sustain_level"] = (
+        self.filter_adsr_widget.envelope["initialAmpl"] = (
+            self.filter_adsr_widget.initial_sb.value()
+        )
+        self.filter_adsr_widget.envelope["peakAmpl"] = (
+            self.filter_adsr_widget.peak_sb.value()
+        )
+        self.filter_adsr_widget.envelope["sustainAmpl"] = (
             self.filter_adsr_widget.sustain_sb.value()
         )
         self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
@@ -507,36 +506,36 @@ class DigitalPartialEditor(QWidget):
     def on_amp_env_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
             self.controls[DigitalParameter.AMP_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope["attack_time"], 10, 1000)
+                ms_to_midi_cc(envelope["attackTime"], 10, 1000)
             )
             self.controls[DigitalParameter.AMP_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope["decay_time"], 10, 1000)
+                ms_to_midi_cc(envelope["decayTime"], 10, 1000)
             )
             self.controls[DigitalParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
+                ms_to_midi_cc(envelope["sustainAmpl"], 0.1, 1)
             )
             self.controls[DigitalParameter.AMP_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope["release_time"], 10, 1000)
+                ms_to_midi_cc(envelope["releaseTime"], 10, 1000)
             )
 
     def ampEnvAdsrValueChanged(self):
         self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope["attack_time"] = (
+        self.amp_env_adsr_widget.envelope["attackTime"] = (
             self.amp_env_adsr_widget.attack_sb.value()
         )
-        self.amp_env_adsr_widget.envelope["decay_time"] = (
+        self.amp_env_adsr_widget.envelope["decayTime"] = (
             self.amp_env_adsr_widget.decay_sb.value()
         )
-        self.amp_env_adsr_widget.envelope["release_time"] = (
+        self.amp_env_adsr_widget.envelope["releaseTime"] = (
             self.amp_env_adsr_widget.release_sb.value()
         )
-        #self.amp_env_adsr_widget.envelope["initial_level"] = (
-        #    self.amp_env_adsr_widget.initial_sb.value()
-        #)
-        #self.amp_env_adsr_widget.envelope["peak_level"] = (
-        #    self.amp_env_adsr_widget.peak_sb.value()
-        #)
-        self.amp_env_adsr_widget.envelope["sustain_level"] = (
+        self.amp_env_adsr_widget.envelope["initialAmpl"] = (
+            self.amp_env_adsr_widget.initial_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["peakAmpl"] = (
+            self.amp_env_adsr_widget.peak_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["sustainAmpl"] = (
             self.amp_env_adsr_widget.sustain_sb.value()
         )
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
@@ -640,22 +639,22 @@ class DigitalPartialEditor(QWidget):
         amp_env_adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
+                DigitalParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
+                DigitalParameter.AMP_ENV_DECAY_TIME, "D", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True
             )
         )
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
+                DigitalParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True
             )
         )
 

@@ -171,6 +171,7 @@ class Style:
         QSlider::handle:horizontal:hover {{
             border-color: {ACCENT_HOVER};
         }}
+        
         QSlider::handle:vertical {{
             background: {SLIDER_HANDLE};
             border: 2px solid {SLIDER_HANDLE_BORDER};
