@@ -11,6 +11,7 @@ envelope parameters. It includes:
 The widget supports both analog and digital synth parameters and provides visual feedback
 through an animated envelope curve.
 """
+
 import logging
 import re
 
@@ -29,16 +30,22 @@ from jdxi_manager.midi.constants.analog import (
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )
-from jdxi_manager.midi.conversions import midi_cc_to_ms, midi_cc_to_frac, ms_to_midi_cc, ms_to_midi_cc, frac_to_midi_cc
+from jdxi_manager.midi.conversions import (
+    midi_cc_to_ms,
+    midi_cc_to_frac,
+    ms_to_midi_cc,
+    ms_to_midi_cc,
+    frac_to_midi_cc
+)
 
 # Precompile the regex pattern at module level or in the class constructor
 ENVELOPE_PATTERN = re.compile(r'(attack|decay|release)', re.IGNORECASE)
 
-class ADSRWidgetNew(QWidget):
+class ADSR(QWidget):
     envelopeChanged = Signal(dict)
 
     def __init__(self, attack_param: SynthParameter, decay_param: SynthParameter,
-                 sustain_param: SynthParameter, release_param: SynthParameter, midi_helper=None, parent=None):
+                 sustain_param: SynthParameter, release_param: SynthParameter, midi_helper=None, group=None, area=None, part=None, parent=None):
         super().__init__(parent)
         
         # Store parameter controls
@@ -60,9 +67,9 @@ class ADSRWidgetNew(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.group = ANALOG_OSC_GROUP
-        self.area = ANALOG_SYNTH_AREA
-        self.part = 1
+        self.group = group if group else ANALOG_OSC_GROUP
+        self.area = area if area else ANALOG_SYNTH_AREA
+        self.part = part if part else ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
 
@@ -74,9 +81,10 @@ class ADSRWidgetNew(QWidget):
         self.release_sb = self.create_spinbox(
             0, 1000, " ms", self.envelope["release_time"]
         )
-        #self.initial_sb = self.create_double_spinbox(
+        # no initial level or peak level in jdxi
+        # self.initial_sb = self.create_double_spinbox(
         #    0, 1, 0.01, self.envelope["initial_level"]
-        #)
+        # )
         # self.peak_sb = self.create_double_spinbox(0, 1, 0.01, self.envelope["peak_level"])
         self.sustain_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["sustain_level"]
@@ -109,7 +117,7 @@ class ADSRWidgetNew(QWidget):
         self.layout.setColumnMinimumWidth(4, 150)
 
         # Connect signals
-        #for slider in self.controls.values():
+        # for slider in self.controls.values():
         #    slider.valueChanged.connect(self.valueChanged)
         spin_boxes = [ self.attack_sb, self.decay_sb, self.sustain_sb, self.release_sb ]
         for sb in spin_boxes:
@@ -168,8 +176,6 @@ class ADSRWidgetNew(QWidget):
         for param, slider in self.controls.items():
             if param == self.parameters['sustain']:
                 slider.setValue(int(self.envelope["sustain_level"] * 127))
-                #logging.info(
-                #    f"param: {param} value {self.envelope['sustain_level']} slider value: {slider.value()}")
             else:
                 if match := ENVELOPE_PATTERN.search(param.name):
                     key = f"{match.group().lower()}_time"
@@ -178,7 +184,6 @@ class ADSRWidgetNew(QWidget):
     def _on_parameter_changed(self, param: SynthParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""
         # logging.info(f"_on_parameter_changed param: {param} value: {value}")
-
         # Update display range if available
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
@@ -202,8 +207,6 @@ class ADSRWidgetNew(QWidget):
             self.release_sb.blockSignals(True)
             self.release_sb.setValue(self.envelope["release_time"])
             self.release_sb.blockSignals(False)
-        # Update plot and emit change signal
-        # self.update_spinboxes_from_envelope()
         try:
             # Convert display value to MIDI value if needed
             if hasattr(param, "convert_from_display"):
@@ -258,7 +261,6 @@ class ADSRWidgetNew(QWidget):
         self.envelopeChanged.emit(self.envelope)
 
     def update_envelope_from_spinboxes(self):
-        # self.updating_from_spinbox = True
         self.envelope["attack_time"] = (
             self.attack_sb.value()
         )
@@ -271,9 +273,6 @@ class ADSRWidgetNew(QWidget):
         self.envelope["sustain_level"] = (
             self.sustain_sb.value()
         )
-        # self.plot.set_values(self.envelope)
-        # self.envelopeChanged.emit(self.envelope)
-        # self.updating_from_spinbox = False
 
     def update_spinboxes_from_envelope(self):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""

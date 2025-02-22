@@ -4,6 +4,7 @@ import re
 import json
 from functools import partial
 from typing import Optional, Dict, Union
+import base64
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -37,7 +38,7 @@ from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
-from jdxi_manager.ui.widgets.adsr.widget_new import ADSRWidgetNew
+from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
@@ -52,8 +53,6 @@ from jdxi_manager.midi.constants.analog import (
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )
-
-import base64
 
 instrument_icon_folder = "analog_synths"
 
@@ -578,12 +577,6 @@ class AnalogSynthEditor(BaseEditor):
         self.amp_env_adsr_widget.envelope["release_time"] = (
             self.amp_env_adsr_widget.release_sb.value()
         )
-        #self.amp_env_adsr_widget.envelope["initial_level"] = (
-        #    self.amp_env_adsr_widget.initial_sb.value()
-        #)
-        #self.amp_env_adsr_widget.envelope["peak_level"] = (
-        #    self.amp_env_adsr_widget.peak_sb.value()
-        #)
         self.amp_env_adsr_widget.envelope["sustain_level"] = (
             self.amp_env_adsr_widget.sustain_sb.value()
         )
@@ -665,8 +658,12 @@ class AnalogSynthEditor(BaseEditor):
         env_layout.setSpacing(5)
 
         # Create ADSRWidget
-        self.filter_adsr_widget = ADSRWidget()
-
+        # self.filter_adsr_widget = ADSRWidget()
+        self.filter_adsr_widget = ADSR(AnalogParameter.FILTER_ENV_ATTACK_TIME,
+                                       AnalogParameter.FILTER_ENV_DECAY_TIME,
+                                       AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                                       AnalogParameter.FILTER_ENV_RELEASE_TIME,
+                                       self.midi_helper)
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(self.filter_adsr_widget)
@@ -688,10 +685,10 @@ class AnalogSynthEditor(BaseEditor):
         self.filter_env_release_time = self._create_parameter_slider(
             AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
         )
-        adsr_layout.addWidget(self.filter_env_attack_time)
-        adsr_layout.addWidget(self.filter_env_decay_time)
-        adsr_layout.addWidget(self.filter_env_sustain_level)
-        adsr_layout.addWidget(self.filter_env_release_time)
+        # adsr_layout.addWidget(self.filter_env_attack_time)
+        # adsr_layout.addWidget(self.filter_env_decay_time)
+        # adsr_layout.addWidget(self.filter_env_sustain_level)
+        # adsr_layout.addWidget(self.filter_env_release_time)
         sub_layout.addWidget(env_group)
         env_group.setLayout(adsr_vlayout)
         layout.addLayout(sub_layout)
@@ -811,59 +808,13 @@ class AnalogSynthEditor(BaseEditor):
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         sub_layout.addLayout(icons_hlayout)
-
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
-            )
-        )
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
-            )
-        )
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
-            )
-        )
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                AnalogParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
-            )
-        )
-        self.amp_env_adsr_widget = ADSRWidget()
-        # self.amp_env_adsr_widget = ADSRWidgetNew(AnalogParameter.AMP_ENV_ATTACK_TIME,
-        #                                         AnalogParameter.AMP_ENV_DECAY_TIME,
-        #                                         AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-        #                                         AnalogParameter.AMP_ENV_RELEASE_TIME,
-        #                                         self.midi_helper)
+        self.amp_env_adsr_widget = ADSR(AnalogParameter.AMP_ENV_ATTACK_TIME,
+                                        AnalogParameter.AMP_ENV_DECAY_TIME,
+                                        AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+                                        AnalogParameter.AMP_ENV_RELEASE_TIME, self.midi_helper)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        amp_env_adsr_vlayout.addLayout(env_layout)
         sub_layout.addWidget(env_group)
-        # self.amp_env_adsr_widget.sliders_layout.addLayout(env_layout)
         layout.addLayout(sub_layout)
-
-        # Mapping ADSR parameters to their corresponding spinboxes
-        self.adsr_control_map = {
-            AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
-            AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decay_sb,
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustain_sb,
-            AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.release_sb,
-        }
-
-        # 🔹 Connect ADSR spinboxes to external controls dynamically
-        for param, spinbox in self.adsr_control_map.items():
-            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
-
-        # 🔹 Connect external controls to ADSR spinboxes dynamically
-        for param, spinbox in self.adsr_control_map.items():
-            self.controls[param].valueChanged.connect(
-                partial(
-                    self.update_adsr_spinbox_from_param, self.adsr_control_map, param
-                )
-            )
-
         return group
 
     def update_adsr_spinbox_from_param(self, control_map, param, value):
