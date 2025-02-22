@@ -17,7 +17,7 @@ from typing import Optional
 
 from jdxi_manager.midi.constants.sysex import ARPEGGIO_AREA
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.slider import Slider
+from jdxi_manager.ui.widgets import Slider
 from jdxi_manager.data.arpeggio import (
     ArpeggioParameter,
     arp_style,

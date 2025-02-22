@@ -1,27 +1,3 @@
-"""
-Custom Slider Widget Module
-
-This module defines a custom slider widget (Slider) that combines a QSlider with a label and a value display.
-It offers additional functionality including:
-
-- Customizable value display using a format function.
-- Support for vertical or horizontal orientation.
-- Option to add a visual center mark for bipolar sliders.
-- Customizable tick mark positions and intervals.
-- Integrated signal (valueChanged) for reacting to slider value changes.
-
-The widget is built using PySide6 and is intended for use in applications requiring a more informative slider,
-such as in audio applications or other UIs where real-time feedback is important.
-
-Usage Example:
-    from your_module import Slider
-    slider = Slider("Volume", 0, 100, vertical=False)
-    slider.setValueDisplayFormat(lambda v: f"{v}%")
-    slider.valueChanged.connect(handle_value_change)
-
-This module requires PySide6 to be installed.
-"""
-
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -54,7 +30,6 @@ class Slider(QWidget):
         min_val: int,
         max_val: int,
         vertical: bool = False,
-        show_value_label: bool = True,
         parent=None,
     ):
         super().__init__(parent)
@@ -71,6 +46,7 @@ class Slider(QWidget):
 
         # Create label
         self.label = QLabel(label)
+        layout.addWidget(self.label)
 
         # Create slider
         self.slider = QSlider(
@@ -82,34 +58,28 @@ class Slider(QWidget):
 
         # Set size policy for vertical sliders
         if vertical:
-            layout.addWidget(self.slider)
-            layout.addWidget(self.label) # Label is added under the slider
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding
             )
             self.setMinimumHeight(125)  # 50% of 250px ADSR group height
-            layout.setAlignment(self.label, Qt.AlignmentFlag.AlignLeft)
-            layout.setAlignment(self.slider, Qt.AlignmentFlag.AlignLeft)
+            layout.setAlignment(self.label, Qt.AlignmentFlag.AlignHCenter)
+            layout.setAlignment(self.slider, Qt.AlignmentFlag.AlignHCenter)
             self.slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
             self.slider.setTickInterval(20)
-            self.setMinimumWidth(80)
-            self.setMaximumWidth(120)
         else:
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
             )
-            layout.addWidget(self.label) # Label is added before the slider
-            layout.addWidget(self.slider)
+
+        layout.addWidget(self.slider)
 
         # Create value display
-
         self.value_label = QLabel(str(min_val))
         self.value_label.setMinimumWidth(30)
-        if show_value_label: # Add value label if needed
-            self.value_label.setAlignment(
-                Qt.AlignmentFlag.AlignRight if vertical else Qt.AlignmentFlag.AlignLeft
-            )
-            layout.addWidget(self.value_label)
+        self.value_label.setAlignment(
+            Qt.AlignmentFlag.AlignRight if vertical else Qt.AlignmentFlag.AlignLeft
+        )
+        layout.addWidget(self.value_label)
 
     def setValueDisplayFormat(self, format_func):
         """Set custom format function for value display"""
