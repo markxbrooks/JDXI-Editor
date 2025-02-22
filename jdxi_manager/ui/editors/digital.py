@@ -1,13 +1,38 @@
 """
-Digital Editor
+Digital Synth Editor for the Roland JD-Xi.
+
+This module provides the UI components for editing digital synth parameters on the Roland JD-Xi.
+The editor supports three partials (voices) with individual parameter control and common parameters
+that affect all partials.
+
+Classes:
+    DigitalSynthEditor: Main editor class for digital synth parameters
+        - Handles MIDI communication for parameter changes
+        - Manages UI state for all digital synth controls
+        - Provides preset loading and management
+        - Supports real-time parameter updates via SysEx
+
+Features:
+    - Three independent partial editors
+    - Common parameter controls (portamento, unison, legato, etc.)
+    - Preset management and loading
+    - Real-time MIDI parameter updates
+    - ADSR envelope controls for both amplitude and filter
+    - Oscillator waveform selection
+    - Partial enabling/disabling and selection
+
+Dependencies:
+    - PySide6 for UI components
+    - qtawesome for icons
+    - Custom MIDI handling classes
+    - Digital synth parameter definitions
 """
+
 
 import os
 import json
 import re
 import logging
-from gc import DEBUG_STATS
-from http.cookiejar import debug
 from typing import Dict, Optional, Union
 from PySide6.QtWidgets import (
     QWidget,
@@ -425,11 +450,13 @@ class DigitalSynthEditor(BaseEditor):
         return slider
 
     def update_instrument_title(self):
+        """Update the instrument title label with the selected synth name."""
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
+        """Update the instrument preset based on the selected preset."""
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
@@ -442,6 +469,7 @@ class DigitalSynthEditor(BaseEditor):
             self.load_preset(preset_index)
 
     def update_instrument_image(self):
+        """Update the instrument image based on the selected synth."""
         def load_and_set_image(image_path, secondary_image_path):
             """Helper function to load and set the image on the label."""
             file_to_load = ""
@@ -497,6 +525,7 @@ class DigitalSynthEditor(BaseEditor):
                 self.image_label.clear()  # Clear label if default image is also missing
 
     def load_preset(self, preset_index):
+        """Load a preset by index"""
         preset_data = {
             "type": self.preset_type,  # Ensure this is a valid type
             "selpreset": preset_index,  # Convert to 1-based index

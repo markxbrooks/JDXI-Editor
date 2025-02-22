@@ -38,12 +38,12 @@ class ADSRPlot(QWidget):
     def __init__(self):
         super().__init__()
         self.envelope = {
-            "attackTime": 100,
-            "decayTime": 400,
-            "releaseTime": 100,
-            "initialAmpl": 0,
-            "peakAmpl": 1,
-            "sustainAmpl": 0.8,
+            "attack_time": 100,
+            "decay_time": 400,
+            "release_time": 100,
+            "initial_level": 0,
+            "peak_level": 1,
+            "sustain_level": 0.8,
         }
 
         # Set font globally
@@ -76,12 +76,12 @@ class ADSRPlot(QWidget):
         self.ax.set_xlim(0, 5)
 
         # Extract envelope parameters
-        attack_time = self.envelope["attackTime"] / 1000
-        decay_time = self.envelope["decayTime"] / 1000
-        release_time = self.envelope["releaseTime"] / 1000
-        sustain_amplitude = self.envelope["sustainAmpl"]
-        peak_amplitude = self.envelope["peakAmpl"]
-        initial_amplitude = self.envelope["initialAmpl"]
+        attack_time = self.envelope["attack_time"] / 1000
+        decay_time = self.envelope["decay_time"] / 1000
+        release_time = self.envelope["release_time"] / 1000
+        sustain_level = self.envelope["sustain_level"]
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
 
         # Convert to samples (assuming a 44.1 kHz sample rate)
         attack_samples = int(attack_time * 44100)
@@ -91,10 +91,10 @@ class ADSRPlot(QWidget):
 
         # Construct ADSR envelope
         envelope = np.concatenate([
-            np.linspace(initial_amplitude, peak_amplitude, attack_samples),
-            np.linspace(peak_amplitude, sustain_amplitude, decay_samples),
-            np.full(sustain_samples, sustain_amplitude),
-            np.linspace(sustain_amplitude, 0, release_samples)
+            np.linspace(initial_level, peak_level, attack_samples),
+            np.linspace(peak_level, sustain_level, decay_samples),
+            np.full(sustain_samples, sustain_level),
+            np.linspace(sustain_level, 0, release_samples)
         ])
 
         time = np.linspace(0, len(envelope) / 44100, len(envelope))

@@ -1,16 +1,39 @@
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient, QPalette
-from PySide6.QtCore import Signal
+"""
+Piano keyboard widget for JD-Xi Manager.
+
+This module defines a PianoKeyboard widget, a custom QWidget that arranges and displays
+a set of piano keys styled like those on a JD-Xi synthesizer. The widget combines both
+white and black keys to form a complete piano keyboard, along with labels representing
+drum pad names.
+
+Key Features:
+- **Custom Key Dimensions:** White and black keys are sized and positioned appropriately,
+    with configurable widths and heights.
+- **Dynamic Key Creation:** White keys are created first in a horizontal layout,
+    while black keys are overlaid at specific positions.
+- **Drum Pad Labels:** A row of labels is displayed above the keyboard to denote
+    corresponding drum pad names.
+- **Signal Integration:** Each key emits custom signals (noteOn and noteOff) to notify
+    parent widgets of key events.
+- **MIDI Channel Configuration:** The widget supports setting a MIDI channel for outgoing
+    note messages.
+- **Styling and Layout:** Uses QHBoxLayout and QVBoxLayout to manage key and label placement,
+    ensuring a neat appearance.
+
+Usage Example:
+    from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
+    keyboard = PianoKeyboard(parent=main_window)
+    keyboard.set_midi_channel(1)
+    main_window.setCentralWidget(keyboard)
+
+This module requires PySide6 and proper integration with the JD-Xi Manager's signal handling for note events.
+"""
+
 import logging
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen
-from PySide6.QtCore import Qt, QPropertyAnimation, Property, QPointF
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt, QSize
 
-
-from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Signal, QPropertyAnimation, QEasingCurve, Qt, QRect
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen
+from jdxi_manager.ui.widgets.piano.key import PianoKey
 
 
 class PianoKeyboard(QWidget):
@@ -166,8 +189,8 @@ class PianoKeyboard(QWidget):
     def _create_keys(self, keyboard_widget):
         """Create piano keys"""
         # First create all white keys
-        for i, note in enumerate(self.white_notes):
-            key = JDXiKey(
+        for _, note in enumerate(self.white_notes):
+            key = PianoKey(
                 note,
                 is_black=False,
                 width=self.white_key_width,
@@ -176,10 +199,10 @@ class PianoKeyboard(QWidget):
             keyboard_widget.layout().addWidget(key)
 
             # Connect signals
-            if hasattr(self.parent(), "_handle_piano_note_on"):
-                key.noteOn.connect(self.parent()._handle_piano_note_on)
-            if hasattr(self.parent(), "_handle_piano_note_off"):
-                key.noteOff.connect(self.parent()._handle_piano_note_off)
+            if hasattr(self.parent(), "handle_piano_note_on"):
+                key.noteOn.connect(self.parent().handle_piano_note_on)
+            if hasattr(self.parent(), "handle_piano_note_off"):
+                key.noteOff.connect(self.parent().handle_piano_note_off)
 
         # Then add black keys
         black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19]
@@ -187,7 +210,7 @@ class PianoKeyboard(QWidget):
         for pos, note in zip(
             black_positions, [n for n in self.black_notes if n is not None]
         ):
-            black_key = JDXiKey(
+            black_key = PianoKey(
                 note,
                 is_black=True,
                 width=self.black_key_width,
@@ -203,10 +226,10 @@ class PianoKeyboard(QWidget):
             black_key.show()
 
             # Connect signals
-            if hasattr(self.parent(), "_handle_piano_note_on"):
-                black_key.noteOn.connect(self.parent()._handle_piano_note_on)
-            if hasattr(self.parent(), "_handle_piano_note_off"):
-                black_key.noteOff.connect(self.parent()._handle_piano_note_off)
+            if hasattr(self.parent(), "handle_piano_note_on"):
+                black_key.noteOn.connect(self.parent().handle_piano_note_on)
+            if hasattr(self.parent(), "handle_piano_note_off"):
+                black_key.noteOff.connect(self.parent().handle_piano_note_off)
 
     def set_midi_channel(self, channel: int):
         """Set MIDI channel for note messages"""
@@ -216,263 +239,3 @@ class PianoKeyboard(QWidget):
     def _update_channel_display(self):
         """Update channel indicator"""
         self.channel_button.set_channel(self.current_channel)
-
-
-class ChannelButton(QPushButton):
-    """Channel indicator button with synth-specific styling"""
-
-    CHANNEL_STYLES = {
-        0: ("ANALOG", "#FF8C00"),  # Orange for Analog
-        1: ("DIGI 1", "#00FF00"),  # Green for Digital 1
-        2: ("DIGI 2", "#00FFFF"),  # Cyan for Digital 2
-        9: ("DRUMS", "#FF00FF"),  # Magenta for Drums
-    }
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(30, 160)  # Same height as white keys
-        self.setFlat(True)
-        self.current_channel = 0
-        self._update_style()
-
-    def set_channel(self, channel: int):
-        """Set channel and update appearance"""
-        self.current_channel = channel
-        self._update_style()
-
-    def _update_style(self):
-        """Update button appearance based on channel"""
-        style, color = self.CHANNEL_STYLES.get(
-            self.current_channel, (f"CH {self.current_channel + 1}", "#FFFFFF")
-        )
-
-        # Create gradient background
-        gradient = f"""
-            background: qlineargradient(
-                x1:0, y1:0, x2:0, y2:1,
-                stop:0 {color}33,
-                stop:0.5 {color}22,
-                stop:1 {color}33
-            );
-        """
-
-        # Set button style
-        self.setStyleSheet(
-            f"""
-            QPushButton {{
-                {gradient}
-                border: 1px solid {color};
-                border-radius: 3px;
-                color: {color};
-                font-size: 10px;
-                font-weight: bold;
-                padding: 2px;
-                text-align: center;
-            }}
-            QPushButton:pressed {{
-                background: {color}44;
-            }}
-        """
-        )
-
-        # Set text
-        self.setText(style)
-
-    def paintEvent(self, event):
-        """Custom paint event for vertical text"""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        # Save current state
-        painter.save()
-
-        # Rotate text
-        painter.translate(self.width(), 0)
-        painter.rotate(90)
-
-        # Draw text
-        painter.drawText(0, 0, self.height(), self.width(), Qt.AlignCenter, self.text())
-
-        # Restore state
-        painter.restore()
-
-
-from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Qt, QRect, QPropertyAnimation, Signal
-from PySide6.QtGui import QPainter, QColor, QLinearGradient, QPen
-
-
-from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Qt, QRect, QPropertyAnimation, Signal
-from PySide6.QtGui import QPainter, QColor, QLinearGradient, QPen
-
-
-class JDXiKey(QPushButton):
-    """Piano key styled like JD-Xi keys with animations"""
-
-    noteOn = Signal(int)
-    noteOff = Signal(int)
-
-    def __init__(self, note_num, is_black=False, width=22, height=160, parent=None):
-        super().__init__(parent)
-        self.note_num = note_num
-        self.is_black = is_black
-        self.is_pressed = False
-        self.setFixedSize(width, height)
-        self.setFlat(True)
-
-        # Animation setup
-        self.press_animation = QPropertyAnimation(self, b"geometry")
-        self.press_animation.setDuration(50)
-
-        self.release_animation = QPropertyAnimation(self, b"geometry")
-        self.release_animation.setDuration(100)
-
-    def paintEvent(self, event):
-        """Custom paint for JD-Xi style keys"""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        gradient = QLinearGradient(0, 0, 0, self.height())
-
-        if self.is_black:
-            if self.is_pressed:
-                gradient.setColorAt(0, QColor(80, 80, 80))
-                gradient.setColorAt(1, QColor(40, 40, 40))
-            else:
-                gradient.setColorAt(0, QColor(40, 40, 40))
-                gradient.setColorAt(1, QColor(10, 10, 10))
-        else:
-            if self.is_pressed:
-                gradient.setColorAt(0, QColor(200, 200, 200))
-                gradient.setColorAt(1, QColor(180, 180, 180))
-            else:
-                gradient.setColorAt(0, QColor(255, 255, 255))
-                gradient.setColorAt(1, QColor(220, 220, 220))
-
-        painter.fillRect(0, 0, self.width(), self.height(), gradient)
-
-        if self.is_pressed:
-            painter.fillRect(
-                0, self.height() - 4, self.width(), 4, QColor(255, 0, 0, 100)
-            )
-
-        painter.setPen(QPen(QColor(60, 60, 60), 1))
-        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.is_pressed = True
-            self.noteOn.emit(self.note_num)
-            self.update()
-
-            # Adjust movement amount based on key type
-            move_amount = 3 if not self.is_black else 2  # Black keys move less
-
-            self.press_animation.setStartValue(self.geometry())
-            self.press_animation.setEndValue(
-                QRect(
-                    self.x(),
-                    self.y() + move_amount,
-                    self.width(),
-                    self.height() - move_amount,
-                )
-            )
-            self.press_animation.start()
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.is_pressed = False
-            self.noteOff.emit(self.note_num)
-            self.update()
-
-            move_amount = 3 if not self.is_black else 2  # Restore position
-
-            self.release_animation.setStartValue(self.geometry())
-            self.release_animation.setEndValue(
-                QRect(
-                    self.x(),
-                    self.y() - move_amount,
-                    self.width(),
-                    self.height() + move_amount,
-                )
-            )
-            self.release_animation.start()
-
-
-class JDXiKeyOld(QPushButton):
-    """Piano key styled like JD-Xi keys"""
-
-    noteOn = Signal(int)
-    noteOff = Signal(int)
-
-    def __init__(self, note_num, is_black=False, width=22, height=160, parent=None):
-        super().__init__(parent)
-        self.note_num = note_num
-        self.is_black = is_black
-        self.is_pressed = False
-        self.setFixedSize(width, height)
-
-        # Remove border and set flat style
-        self.setFlat(True)
-
-    def paintEvent(self, event):
-        """Custom paint for JD-Xi style keys"""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        if self.is_black:
-            # Black key gradient
-            if self.is_pressed:
-                # Lighter gradient when pressed
-                gradient = QLinearGradient(0, 0, 0, self.height())
-                gradient.setColorAt(0, QColor(80, 80, 80))  # Lighter top
-                gradient.setColorAt(1, QColor(40, 40, 40))  # Lighter bottom
-            else:
-                # Normal gradient when not pressed
-                gradient = QLinearGradient(0, 0, 0, self.height())
-                gradient.setColorAt(0, QColor(40, 40, 40))
-                gradient.setColorAt(1, QColor(10, 10, 10))
-
-            painter.fillRect(0, 0, self.width(), self.height(), gradient)
-
-            # Thinner red glow when pressed
-            if self.is_pressed:
-                painter.fillRect(
-                    0, self.height() - 4, self.width(), 4, QColor(255, 0, 0, 100)
-                )
-        else:
-            # White key gradient
-            gradient = QLinearGradient(0, 0, 0, self.height())
-            if self.is_pressed:
-                # Darker gradient when pressed
-                gradient.setColorAt(0, QColor(200, 200, 200))  # Darker white
-                gradient.setColorAt(1, QColor(180, 180, 180))  # Even darker at bottom
-            else:
-                gradient.setColorAt(0, QColor(255, 255, 255))
-                gradient.setColorAt(1, QColor(220, 220, 220))
-            painter.fillRect(0, 0, self.width(), self.height(), gradient)
-
-            # Thinner red glow when pressed
-            if self.is_pressed:
-                painter.fillRect(
-                    0, self.height() - 4, self.width(), 4, QColor(255, 0, 0, 100)
-                )
-
-        # Draw border
-        painter.setPen(QPen(QColor(60, 60, 60), 1))
-        painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.is_pressed = True
-            self.noteOn.emit(self.note_num)
-            self.update()
-            logging.debug(f"Note On: {self.note_num}")
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.is_pressed = False
-            self.noteOff.emit(self.note_num)
-            self.update()
-            logging.debug(f"Note Off: {self.note_num}")
