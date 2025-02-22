@@ -191,22 +191,7 @@ class ADSR(QWidget):
             display_min, display_max = param.min_val, param.max_val
         # Update envelope based on slider values
         self.update_envelope_from_controls()
-        if param == self.parameters['sustain']:
-            self.sustain_sb.blockSignals(True)
-            self.sustain_sb.setValue(self.envelope["sustain_level"])
-            self.sustain_sb.blockSignals(False)
-        elif param == self.parameters['attack']:
-            self.attack_sb.blockSignals(True)
-            self.attack_sb.setValue(self.envelope["attack_time"])
-            self.attack_sb.blockSignals(False)
-        elif param == self.parameters['decay']:
-            self.decay_sb.blockSignals(True)
-            self.decay_sb.setValue(self.envelope["decay_time"])
-            self.decay_sb.blockSignals(False)
-        elif param == self.parameters['release']:
-            self.release_sb.blockSignals(True)
-            self.release_sb.setValue(self.envelope["release_time"])
-            self.release_sb.blockSignals(False)
+        self.update_spin_box(param)
         try:
             # Convert display value to MIDI value if needed
             if hasattr(param, "convert_from_display"):
@@ -221,6 +206,23 @@ class ADSR(QWidget):
             logging.error(f"Error updating parameter: {ex}")
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
+
+    def update_spin_box(self, param):
+        """Update the corresponding spin box based on the given parameter."""
+        # Mapping of parameters to their corresponding spin box and envelope keys
+        param_mapping = {
+            self.parameters['sustain']: (self.sustain_sb, "sustain_level"),
+            self.parameters['attack']: (self.attack_sb, "attack_time"),
+            self.parameters['decay']: (self.decay_sb, "decay_time"),
+            self.parameters['release']: (self.release_sb, "release_time"),
+        }
+
+        # Update the corresponding spin box if the parameter is in the mapping
+        if param in param_mapping:
+            spin_box, envelope_key = param_mapping[param]
+            spin_box.blockSignals(True)
+            spin_box.setValue(self.envelope[envelope_key])
+            spin_box.blockSignals(False)
 
     def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""
