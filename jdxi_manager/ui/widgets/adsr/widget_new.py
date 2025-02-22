@@ -162,18 +162,27 @@ class ADSRWidgetNew(QWidget):
                     slider.setValue(ms_to_midi_cc(self.envelope[key]))
 
     def _on_parameter_changed(self, param: SynthParameter, value: int):
-        """Handle parameter value changes and update envelope accordingly."""
-        # logging.info(f"_on_parameter_changed param: {param} value: {value}")
+        """Handle parameter value changes and update both envelope and spinboxes."""
+        # Update envelope values based on parameter type
+        if param == self.parameters['attack']:
+            self.envelope["attack_time"] = value
+            self.attack_sb.setValue(value)
+        elif param == self.parameters['decay']:
+            self.envelope["decay_time"] = value
+            self.decay_sb.setValue(value)
+        elif param == self.parameters['sustain']:
+            self.envelope["sustain_level"] = value / param.value_range[1]  # Normalize to 0-1
+            self.sustain_sb.setValue(self.envelope["sustain_level"])
+        elif param == self.parameters['release']:
+            self.envelope["release_time"] = value
+            self.release_sb.setValue(value)
 
-        # Update display range if available
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-        # Update envelope based on slider values
-        self.update_envelope_from_controls()
+        # Block signals to avoid feedback loops
+        self.blockSignals(True)
+        self.update_spinboxes_from_envelope()
+        self.blockSignals(False)
+
         # Update plot and emit change signal
-        # self.update_spinboxes_from_envelope()
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
