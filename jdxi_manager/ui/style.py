@@ -98,7 +98,7 @@ class Style:
         }}
         
         QGroupBox[adsr="true"] {{
-            min-height: 400px;  /* Reduced height for horizontal layout */
+            min-height: 200px;  /* Reduced height for horizontal layout */
         }}
         
         QGroupBox::title {{
@@ -115,6 +115,13 @@ class Style:
             border-radius: 3px;
             padding: 5px;
             color: {FOREGROUND};
+        }}
+        QSpinBox {{
+            font-size: 14px;
+            
+        }}
+        QDoubleSpinBox {{
+            font-size: 14px;
         }}
         
         QPushButton:hover {{

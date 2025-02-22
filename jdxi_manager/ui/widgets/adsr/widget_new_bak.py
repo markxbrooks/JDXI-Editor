@@ -21,14 +21,6 @@ from jdxi_manager.data.parameter.synth import SynthParameter
 from jdxi_manager.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_manager.ui.widgets.slider.slider import Slider
 from jdxi_manager.ui.style import Style
-from jdxi_manager.midi.constants.analog import (
-    AnalogToneCC,
-    Waveform,
-    SubOscType,
-    ANALOG_SYNTH_AREA,
-    ANALOG_PART,
-    ANALOG_OSC_GROUP,
-)
 from jdxi_manager.midi.conversions import midi_cc_to_ms, midi_cc_to_frac, ms_to_midi_cc, ms_to_midi_cc, frac_to_midi_cc
 
 # Precompile the regex pattern at module level or in the class constructor
@@ -38,7 +30,7 @@ class ADSRWidgetNew(QWidget):
     envelopeChanged = Signal(dict)
 
     def __init__(self, attack_param: SynthParameter, decay_param: SynthParameter,
-                 sustain_param: SynthParameter, release_param: SynthParameter, midi_helper=None, parent=None):
+                 sustain_param: SynthParameter, release_param: SynthParameter, parent=None):
         super().__init__(parent)
         
         # Store parameter controls
@@ -60,12 +52,6 @@ class ADSRWidgetNew(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.group = ANALOG_OSC_GROUP
-        self.area = ANALOG_SYNTH_AREA
-        self.part = 1
-        self.midi_helper = midi_helper
-        self.updating_from_spinbox = False
-
         self.setMinimumHeight(100)  # Adjust height as needed
         self.attack_sb = self.create_spinbox(
             0, 1000, " ms", self.envelope["attack_time"]
@@ -153,7 +139,7 @@ class ADSRWidgetNew(QWidget):
         """Update envelope values from slider controls. @@"""
         for param, slider in self.controls.items():
             if param == self.parameters['sustain']:
-                self.envelope["sustain_level"] = slider.value() / 127
+                self.envelope["sustain_level"] = slider.value() + 1/ 128
                 logging.info(f"param: {param} slider value: {slider.value()}")
                 logging.info(f'sustain_level: {self.envelope["sustain_level"]}')
             else:
@@ -167,7 +153,7 @@ class ADSRWidgetNew(QWidget):
         """Update slider controls from envelope values."""
         for param, slider in self.controls.items():
             if param == self.parameters['sustain']:
-                slider.setValue(int(self.envelope["sustain_level"] * 127))
+                slider.setValue(int(self.envelope["sustain_level"] * 128))
                 #logging.info(
                 #    f"param: {param} value {self.envelope['sustain_level']} slider value: {slider.value()}")
             else:
@@ -186,60 +172,33 @@ class ADSRWidgetNew(QWidget):
             display_min, display_max = param.min_val, param.max_val
         # Update envelope based on slider values
         self.update_envelope_from_controls()
-        if param == self.parameters['sustain']:
+        # Update plot and emit change signal
+        """
+        if param == self.parameters['attack']:
+            # self.envelope["attack_time"] = value
+            self.attack_sb.blockSignals(True)
+            self.attack_sb.setValue(ms_to_midi_cc(self.envelope["attack_time"]))
+            self.attack_sb.blockSignals(False)
+        elif param == self.parameters['decay']:
+            # self.envelope["decay_time"] = value
+            self.decay_sb.blockSignals(True)
+            self.decay_sb.setValue(frac_to_midi_cc(self.envelope["decay_time"] ))
+            self.decay_sb.blockSignals(False)
+        elif param == self.parameters['sustain']:
+            self.envelope["sustain_level"] = value + 1 /128
             self.sustain_sb.blockSignals(True)
             self.sustain_sb.setValue(self.envelope["sustain_level"])
             self.sustain_sb.blockSignals(False)
-        elif param == self.parameters['attack']:
-            self.attack_sb.blockSignals(True)
-            self.attack_sb.setValue(self.envelope["attack_time"])
-            self.attack_sb.blockSignals(False)
-        elif param == self.parameters['decay']:
-            self.decay_sb.blockSignals(True)
-            self.decay_sb.setValue(self.envelope["decay_time"])
-            self.decay_sb.blockSignals(False)
         elif param == self.parameters['release']:
+            # self.envelope["release_time"] = value
             self.release_sb.blockSignals(True)
-            self.release_sb.setValue(self.envelope["release_time"])
+            self.release_sb.setValue(ms_to_midi_cc(self.envelope["release_time"]))
             self.release_sb.blockSignals(False)
-        # Update plot and emit change signal
-        # self.update_spinboxes_from_envelope()
-        try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(value)
-            else:
-                midi_value = param.validate_value(value)
-
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
-        except ValueError as ex:
-            logging.error(f"Error updating parameter: {ex}")
+            self.plot.set_values(self.envelope)
+            self.envelopeChanged.emit(self.envelope)
+        """
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
-
-    def send_midi_parameter(self, param, value) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            logging.debug("No MIDI helper available - parameter change ignored")
-            return False
-
-        try:
-            group = self.group  # Common parameters group
-            param_address = param.address
-
-            # Ensure value is included in the MIDI message
-            return self.midi_helper.send_parameter(
-                area=self.area,
-                part=self.part,
-                group=group,
-                param=param_address,
-                value=value,  # Make sure this value is being sent
-            )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
-            return False
 
     def update_sliders_from_envelope(self):
         """Update sliders from envelope values and update the plot."""
@@ -249,16 +208,15 @@ class ADSRWidgetNew(QWidget):
     def valueChanged(self):
         """Update envelope values when spin boxes change"""
         self.updating_from_spinbox = True
-        self.blockSignals(True)
+        self.envelopeChanged.emit(self.envelope)
         self.update_envelope_from_spinboxes()
         self.update_sliders_from_envelope()
-        self.updating_from_spinbox = False
-        self.blockSignals(False)
         self.plot.set_values(self.envelope)
+        self.updating_from_spinbox = False
         self.envelopeChanged.emit(self.envelope)
 
     def update_envelope_from_spinboxes(self):
-        # self.updating_from_spinbox = True
+        self.updating_from_spinbox = True
         self.envelope["attack_time"] = (
             self.attack_sb.value()
         )
@@ -271,9 +229,9 @@ class ADSRWidgetNew(QWidget):
         self.envelope["sustain_level"] = (
             self.sustain_sb.value()
         )
-        # self.plot.set_values(self.envelope)
-        # self.envelopeChanged.emit(self.envelope)
-        # self.updating_from_spinbox = False
+        self.plot.set_values(self.envelope)
+        self.envelopeChanged.emit(self.envelope)
+        self.updating_from_spinbox = False
 
     def update_spinboxes_from_envelope(self):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
