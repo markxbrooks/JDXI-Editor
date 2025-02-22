@@ -791,6 +791,7 @@ class AnalogSynthEditor(BaseEditor):
         # Amp envelope
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)  # Mark as ADSR group
+        # env_group.setMaximumHeight(300)
         amp_env_adsr_vlayout = QVBoxLayout()
         env_layout = QHBoxLayout()
         env_layout.setSpacing(5)
@@ -831,9 +832,14 @@ class AnalogSynthEditor(BaseEditor):
                 AnalogParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
             )
         )
-        self.amp_env_adsr_widget = ADSRWidgetNew(AnalogParameter.AMP_ENV_ATTACK_TIME, AnalogParameter.AMP_ENV_DECAY_TIME, AnalogParameter.AMP_ENV_SUSTAIN_LEVEL, AnalogParameter.AMP_ENV_RELEASE_TIME)
+        self.amp_env_adsr_widget = ADSRWidget()
+        # self.amp_env_adsr_widget = ADSRWidgetNew(AnalogParameter.AMP_ENV_ATTACK_TIME,
+        #                                         AnalogParameter.AMP_ENV_DECAY_TIME,
+        #                                         AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+        #                                         AnalogParameter.AMP_ENV_RELEASE_TIME,
+        #                                         self.midi_helper)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        # amp_env_adsr_vlayout.addLayout(env_layout)
+        amp_env_adsr_vlayout.addLayout(env_layout)
         sub_layout.addWidget(env_group)
         # self.amp_env_adsr_widget.sliders_layout.addLayout(env_layout)
         layout.addLayout(sub_layout)
