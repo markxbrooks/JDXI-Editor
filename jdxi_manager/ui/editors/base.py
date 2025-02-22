@@ -9,7 +9,7 @@ from jdxi_manager.midi.constants import DIGITAL_1_PART, AnalogParameter
 from jdxi_manager.midi.conversions import midi_cc_to_frac, midi_cc_to_ms
 from jdxi_manager.midi.helper import MIDIHelper
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets import Slider
+from jdxi_manager.ui.widgets.slider import Slider
 
 
 class BaseEditor(QWidget):
