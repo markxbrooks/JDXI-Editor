@@ -52,7 +52,7 @@ from jdxi_manager.data.preset_data import DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
-from jdxi_manager.midi.preset.preset_loader import PresetLoader
+from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style

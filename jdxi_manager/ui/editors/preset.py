@@ -18,7 +18,7 @@ import logging
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.style import Style
 from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.midi.preset.preset_loader import PresetLoader
+from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.midi.preset.parameter_handler import ParameterHandler
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS, DRUM_PRESETS
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox

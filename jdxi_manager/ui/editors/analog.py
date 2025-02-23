@@ -33,7 +33,7 @@ from jdxi_manager.midi.utils.conversions import (
     frac_to_midi_cc,
     ms_to_midi_cc,
 )
-from jdxi_manager.midi.preset.preset_loader import PresetLoader
+from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
