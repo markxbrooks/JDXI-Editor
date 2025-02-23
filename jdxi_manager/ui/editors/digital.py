@@ -50,9 +50,9 @@ import qtawesome as qta
 
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.midi import MIDIHelper
-from jdxi_manager.midi.conversions import midi_cc_to_ms, midi_cc_to_frac
-from jdxi_manager.midi.preset_loader import PresetLoader
+from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
+from jdxi_manager.midi.preset.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style
@@ -71,7 +71,7 @@ from jdxi_manager.midi.constants import (
     PART_1,
     PART_2,
     PART_3,
-    DIGITAL_SYNTH_1_AREA,
+    TEMPORARY_DIGITAL_SYNTH_1_AREA,
     DIGITAL_SYNTH_2_AREA,
     Waveform,
 )
@@ -652,7 +652,7 @@ class DigitalSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        if address[0] in [DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]:
+        if address[0] in [TEMPORARY_DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
 
@@ -697,7 +697,7 @@ class DigitalSynthEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to a supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
@@ -732,7 +732,7 @@ class DigitalSynthEditor(BaseEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
@@ -811,7 +811,7 @@ class DigitalSynthEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to a supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
@@ -843,7 +843,7 @@ class DigitalSynthEditor(BaseEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
@@ -965,7 +965,7 @@ class DigitalSynthEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to a supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
@@ -1014,7 +1014,7 @@ class DigitalSynthEditor(BaseEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update.")
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
@@ -1082,9 +1082,9 @@ class DigitalSynthEditor(BaseEditor):
         temporary_area = sysex_data.get("TEMPORARY_AREA", None)
         logging.info(f"In digital: TEMPORARY_AREA: {temporary_area}")
 
-        if temporary_area not in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
+        if temporary_area not in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
             logging.warning(
-                "SysEx data does not belong to DIGITAL_SYNTH_1_AREA or DIGITAL_SYNTH_2_AREA. Skipping update."
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
             )
             return
         partial_no = 1

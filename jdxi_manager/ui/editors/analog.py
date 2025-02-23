@@ -26,14 +26,14 @@ from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.data.analog import AnalogCommonParameter
 from jdxi_manager.data.parameter.analog import AnalogParameter
-from jdxi_manager.midi import MIDIHelper
-from jdxi_manager.midi.conversions import (
+from jdxi_manager.midi.io.helper import MIDIHelper
+from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
     frac_to_midi_cc,
     ms_to_midi_cc,
 )
-from jdxi_manager.midi.preset_loader import PresetLoader
+from jdxi_manager.midi.preset.preset_loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
@@ -49,7 +49,7 @@ from jdxi_manager.midi.constants.analog import (
     AnalogToneCC,
     Waveform,
     SubOscType,
-    ANALOG_SYNTH_AREA,
+    TEMPORARY_ANALOG_SYNTH_AREA,
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )
@@ -214,7 +214,7 @@ class AnalogSynthEditor(BaseEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        if address[0] == ANALOG_SYNTH_AREA:
+        if address[0] == TEMPORARY_ANALOG_SYNTH_AREA:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
 
@@ -476,7 +476,7 @@ class AnalogSynthEditor(BaseEditor):
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=self.part,
                 group=group,
                 param=param_address,
@@ -723,7 +723,7 @@ class AnalogSynthEditor(BaseEditor):
 
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.FILTER_SWITCH.value[0],
@@ -962,7 +962,7 @@ class AnalogSynthEditor(BaseEditor):
         """Handle waveform button selection KEEP!"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.OSC_WAVEFORM.value[0],
@@ -992,7 +992,7 @@ class AnalogSynthEditor(BaseEditor):
             # Convert switch position to SubOscType enum
             sub_type = SubOscType(value)
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.SUB_OSCILLATOR_TYPE.value[0],
@@ -1005,7 +1005,7 @@ class AnalogSynthEditor(BaseEditor):
             # Convert -24 to +24 range to MIDI value (0x28 to 0x58)
             midi_value = value + 63  # Center at 63 (0x3F)
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.OSC_PITCH_COARSE.value[0],
@@ -1016,7 +1016,7 @@ class AnalogSynthEditor(BaseEditor):
         """Handle LFO shape change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.LFO_SHAPE.value[0],
@@ -1039,7 +1039,7 @@ class AnalogSynthEditor(BaseEditor):
         """
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.LFO_TEMPO_SYNC_SWITCH.value[0],
@@ -1052,7 +1052,7 @@ class AnalogSynthEditor(BaseEditor):
         """
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.LFO_TEMPO_SYNC_NOTE.value[0],
@@ -1065,7 +1065,7 @@ class AnalogSynthEditor(BaseEditor):
             # Convert -63 to +63 range to 1-127
             midi_value = value + 64 if value >= 0 else abs(value)
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.LFO_PITCH_DEPTH.value[0],
@@ -1078,7 +1078,7 @@ class AnalogSynthEditor(BaseEditor):
             # Convert -63 to +63 range to 1-127
             midi_value = value + 64 if value >= 0 else abs(value)
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.LFO_FILTER_DEPTH.value[0],
@@ -1089,7 +1089,7 @@ class AnalogSynthEditor(BaseEditor):
         """Handle LFO key trigger change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ANALOG_SYNTH_AREA,
+                area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
                 param=AnalogParameter.LFO_KEY_TRIG.value[0],
@@ -1120,8 +1120,8 @@ class AnalogSynthEditor(BaseEditor):
         # Store the current data for future comparison
         self.previous_json_data = current_sysex_data
 
-        if current_sysex_data.get("TEMPORARY_AREA") != "ANALOG_SYNTH_AREA":
-            logging.warning("SysEx data does not belong to ANALOG_SYNTH_AREA. Skipping update.")
+        if current_sysex_data.get("TEMPORARY_AREA") != "TEMPORARY_ANALOG_SYNTH_AREA":
+            logging.warning("SysEx data does not belong to TEMPORARY_ANALOG_SYNTH_AREA. Skipping update.")
             return
 
         # Remove unnecessary keys
@@ -1213,9 +1213,9 @@ class AnalogSynthEditor(BaseEditor):
         area = current_sysex_data.get("TEMPORARY_AREA", None)
         logging.info(f"TEMPORARY_AREA: {area}")
 
-        if area != "ANALOG_SYNTH_AREA":
+        if area != "TEMPORARY_ANALOG_SYNTH_AREA":
             logging.warning(
-                "SysEx data does not belong to ANALOG_SYNTH_AREA. Skipping update."
+                "SysEx data does not belong to TEMPORARY_ANALOG_SYNTH_AREA. Skipping update."
             )
             return
 

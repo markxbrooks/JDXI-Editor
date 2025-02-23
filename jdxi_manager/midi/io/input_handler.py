@@ -31,14 +31,14 @@ from pubsub import pub
 from jdxi_manager.data.digital import get_digital_parameter_by_address
 from jdxi_manager.data.preset_data import DIGITAL_PRESETS
 from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.midi.basenew import MIDIBase
-from jdxi_manager.midi.jsonutils import log_json
-from jdxi_manager.midi.parsers import parse_sysex
+from jdxi_manager.midi.io.controller import MidiIOController
+from jdxi_manager.midi.utils.json import log_json
+from jdxi_manager.midi.utils.parsers import parse_sysex
 from jdxi_manager.midi.sysex.sysex import SysexParameter
-from jdxi_manager.midi.sysex.params import get_parameter_from_address
+from jdxi_manager.midi.sysex.utils import get_parameter_from_address
 
 
-class MIDIInHandler(MIDIBase):
+class MIDIInHandler(MidiIOController):
     """
     Helper class for MIDI communication with the JD-Xi.
 

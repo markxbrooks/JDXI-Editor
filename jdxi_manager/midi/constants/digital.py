@@ -1,10 +1,10 @@
 """Digital synth MIDI constants"""
 
 from enum import Enum, IntEnum
-from .sysex import DIGITAL_SYNTH_1_AREA
+from .sysex import TEMPORARY_DIGITAL_SYNTH_1_AREA
 
 # Areas and Parts
-DIGITAL_SYNTH_AREA = DIGITAL_SYNTH_1_AREA  # For backwards compatibility
+DIGITAL_SYNTH_AREA = TEMPORARY_DIGITAL_SYNTH_1_AREA  # For backwards compatibility
 DIGITAL_PART_1 = 0x01
 DIGITAL_PART_2 = 0x02
 PART_1 = DIGITAL_PART_1  # For backwards compatibility

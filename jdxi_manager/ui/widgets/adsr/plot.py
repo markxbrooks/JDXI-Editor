@@ -78,6 +78,7 @@ class ADSRPlot(QWidget):
 
         # Use orange for drawing
         pen = QPen(QColor("orange"))
+        axis_pen = QPen(QColor("white"))
         pen.setWidth(2)
         painter.setPen(pen)
         painter.setFont(QFont("Consolas", 10))
@@ -140,6 +141,7 @@ class ADSRPlot(QWidget):
             painter.drawPath(path)
 
         # Optionally draw axis lines and labels
+        painter.setPen(axis_pen)
         painter.drawLine(padding, padding, padding, padding + plot_h)  # Y-axis
         painter.drawLine(padding, padding + plot_h, padding + plot_w, padding + plot_h)  # X-axis
         painter.drawText(padding - 30, padding + plot_h + 5, "0s")

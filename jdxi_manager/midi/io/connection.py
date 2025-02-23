@@ -1,8 +1,8 @@
 import logging
 from typing import Optional
 import rtmidi
-from jdxi_manager.midi.device import DeviceInfo
-from jdxi_manager.midi.messages import IdentityRequest
+from jdxi_manager.midi.sysex.device import DeviceInfo
+from jdxi_manager.midi.sysex.messages import IdentityRequest
 
 class MIDIConnection:
     _instance = None

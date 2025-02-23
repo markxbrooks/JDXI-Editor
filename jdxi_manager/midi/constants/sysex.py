@@ -24,27 +24,27 @@ RQ1_COMMAND = 0x11  # Data Request 1
 COMMAND_IDS = [DT1_COMMAND, RQ1_COMMAND]  # Roland Exclusive messages
 
 # Memory Areas
-PROGRAM_AREA = 0x18  # Temporary Program area
-DIGITAL_SYNTH_1_AREA = 0x19  # Digital synth 1 area
-DIGITAL_SYNTH_2_AREA = 0x1A  # Digital synth 2 area
-ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
-DRUM_KIT_AREA = 0x1C  # Drum kit area
+TEMPORARY_PROGRAM_AREA = 0x18  # Temporary Program area
+TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x19  # Digital synth 1 area
+TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x1A  # Digital synth 2 area
+TEMPORARY_ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
+TEMPORARY_DRUM_KIT_AREA = 0x1C  # Drum kit area
 EFFECTS_AREA = 0x16  # Effects area
 ARPEGGIO_AREA = 0x15  # Arpeggiator area
 VOCAL_FX_AREA = 0x14  # Vocal effects area
-SETUP_AREA = 0x01  # Settings area
-SYSTEM_AREA = 0x02  # System area
+TEMPORARY_SETUP_AREA = 0x01  # Settings area
+TEMPORARY_SYSTEM_AREA = 0x02  # System area
 TEMPORARY_AREAS = [
-    PROGRAM_AREA,
-    DIGITAL_SYNTH_1_AREA,
-    DIGITAL_SYNTH_2_AREA,
-    ANALOG_SYNTH_AREA,
-    DRUM_KIT_AREA,
+    TEMPORARY_PROGRAM_AREA,
+    TEMPORARY_DIGITAL_SYNTH_1_AREA,
+    TEMPORARY_DIGITAL_SYNTH_2_AREA,
+    TEMPORARY_ANALOG_SYNTH_AREA,
+    TEMPORARY_DRUM_KIT_AREA,
     EFFECTS_AREA,
     ARPEGGIO_AREA,
     VOCAL_FX_AREA,
-    SETUP_AREA,
-    SYSTEM_AREA,
+    TEMPORARY_SETUP_AREA,
+    TEMPORARY_SYSTEM_AREA,
 ]
 
 

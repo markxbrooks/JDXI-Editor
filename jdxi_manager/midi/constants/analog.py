@@ -1,7 +1,7 @@
 """Analog synth MIDI constants"""
 
 from enum import Enum, IntEnum
-from .sysex import ANALOG_SYNTH_AREA  # Remove this import
+from .sysex import TEMPORARY_ANALOG_SYNTH_AREA  # Remove this import
 
 # Areas and Parts
 ANALOG_SYNTH_AREA = 0x19  # Changed from 0x1B to 0x19

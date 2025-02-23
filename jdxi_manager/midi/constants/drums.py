@@ -1,7 +1,7 @@
 """Drum kit MIDI constants"""
 
 from enum import Enum, IntEnum
-from .sysex import DRUM_KIT_AREA, DRUM_PART
+from .sysex import TEMPORARY_DRUM_KIT_AREA, DRUM_PART
 
 class DrumToneCC(IntEnum):
     """Drum kit CC parameters"""
