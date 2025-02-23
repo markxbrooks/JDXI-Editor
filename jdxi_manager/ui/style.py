@@ -98,7 +98,7 @@ class Style:
         }}
         
         QGroupBox[adsr="true"] {{
-            min-height: 200px;  /* Reduced height for horizontal layout */
+            min-height: 400px;  /* Reduced height for horizontal layout */
         }}
         
         QGroupBox::title {{
