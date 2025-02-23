@@ -113,7 +113,7 @@ class ADSR(QWidget):
         self.layout.addWidget(self.release_sb, 1, 3)
         
         # Add plot
-        self.layout.addWidget(self.plot, 0, 4, 4, 1)
+        self.layout.addWidget(self.plot, 0, 4, 3, 1)
         self.layout.setColumnMinimumWidth(4, 150)
 
         # Connect signals

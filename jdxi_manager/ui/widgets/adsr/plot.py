@@ -64,7 +64,11 @@ class ADSRPlot(QWidget):
         # Set a fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(400, 400)
         # Use dark gray background
-        self.setStyleSheet("background-color: #333333;")
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #333333;
+        }
+        """)
         # Sample rate for converting times to samples
         self.sample_rate = 44100
 
@@ -139,7 +143,6 @@ class ADSRPlot(QWidget):
         painter.drawLine(padding, padding, padding, padding + plot_h)  # Y-axis
         painter.drawLine(padding, padding + plot_h, padding + plot_w, padding + plot_h)  # X-axis
         painter.drawText(padding - 30, padding + plot_h + 5, "0s")
-        #painter.drawText(padding + plot_w - 20, padding + plot_h + 5, f"{total_time:.1f}s")
         for i in range(1, 5):
             x = padding + i * plot_w / 5
             painter.drawLine(x, padding + plot_h, x, padding + plot_h + 5)
@@ -149,7 +152,6 @@ class ADSRPlot(QWidget):
             painter.drawLine(padding, y, padding - 5, y)
             painter.drawText(padding - 35, y + 5, f"{1 - i * 0.2:.1f}")
         painter.drawText(padding - 35, padding + 5, "1")
-        #painter.drawText(padding - 35, padding + plot_h/2, "0.5")
         painter.drawText(padding - 35, padding + plot_h, "0")
 
     def set_values(self, envelope):
@@ -158,243 +160,7 @@ class ADSRPlot(QWidget):
         self.update()
 
 
-class ADSRPlotV2(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        # Default envelope parameters (times in ms)
-        self.envelope = {
-            "attack_time": 100,  # ms
-            "decay_time": 400,  # ms
-            "release_time": 100,  # ms
-            "initial_level": 0,
-            "peak_level": 1,
-            "sustain_level": 0.8,
-        }
-        # Sustain duration in ms (fixed plateau)
-        self.sustain_duration = 2000  # 2000 ms = 2 seconds
-
-        # Use dark gray background
-        self.setStyleSheet("background-color: #333333;")
-        self.setMinimumSize(400, 400)
-
-        # Sample rate for converting times to samples
-        self.sample_rate = 44100
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        # Set drawing properties: orange pen, Consolas font
-        pen = QPen(QColor("orange"))
-        pen.setWidth(2)
-        painter.setPen(pen)
-        painter.setFont(QFont("Consolas", 10))
-
-        # Extract envelope times in seconds
-        attack_time = self.envelope["attack_time"] / 1000.0
-        decay_time = self.envelope["decay_time"] / 1000.0
-        release_time = self.envelope["release_time"] / 1000.0
-        sustain_time = self.sustain_duration / 1000.0  # 2 seconds
-
-        # Get envelope amplitude levels
-        initial_level = self.envelope["initial_level"]
-        peak_level = self.envelope["peak_level"]
-        sustain_level = self.envelope["sustain_level"]
-
-        # Convert times to sample counts
-        attack_samples = int(attack_time * self.sample_rate)
-        decay_samples = int(decay_time * self.sample_rate)
-        sustain_samples = int(sustain_time * self.sample_rate)
-        release_samples = int(release_time * self.sample_rate)
-
-        # 1) Attack: from initial_level to peak_level
-        attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=True)
-
-        # 2) Decay: from peak_level down to sustain_level
-        decay = np.linspace(peak_level, sustain_level, decay_samples, endpoint=True)
-
-        # 3) Sustain: flat plateau at sustain_level
-        sustain = np.full(sustain_samples, sustain_level)
-
-        # 4) Release: from sustain_level down to 0
-        release = np.linspace(sustain_level, 0, release_samples, endpoint=True)
-
-        # Concatenate all segments
-        envelope = np.concatenate([attack, decay, sustain, release])
-        total_samples = len(envelope)
-
-        # Original total time in seconds (envelope duration)
-        original_total_time = total_samples / self.sample_rate
-
-        # ----------------------------------------------
-        # Add 1 second (1000 ms) to extend the x-axis
-        # ----------------------------------------------
-        extended_total_time = 6 # original_total_time + 1.0
-
-        # Prepare the plotting area
-        w = self.width()
-        h = self.height()
-        padding = 40
-        plot_w = w - 2 * padding
-        plot_h = h - 2 * padding
-
-        # Build points for the envelope polyline
-        points = []
-        num_points = 500  # for smoother drawing
-        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-        for i in indices:
-            t = i / self.sample_rate  # time in seconds
-            # Map time to x coordinate: [0, extended_total_time]
-            # This ensures the envelope ends at its actual time,
-            # but we still have extra space to the right
-            x = padding + (t / extended_total_time) * plot_w
-
-            # Invert y so amplitude=1 is near the top
-            y = padding + plot_h - (envelope[i] * plot_h)
-            points.append((x, y))
-
-        # Draw the envelope as a path
-        if points:
-            path = QPainterPath()
-            path.moveTo(*points[0])
-            for pt in points[1:]:
-                path.lineTo(*pt)
-            painter.drawPath(path)
-
-        # Optionally draw axes
-        painter.drawLine(padding, padding, padding, padding + plot_h)  # Y-axis
-        painter.drawLine(padding, padding + plot_h, padding + plot_w, padding + plot_h)  # X-axis
-
-        # Update labels to reflect the extended axis
-        # Show 0s at the left, and extended_total_time at the right
-        painter.drawText(padding - 30, padding + plot_h + 5, "0s")
-        painter.drawText(
-            padding + plot_w - 40,
-            padding + plot_h + 5,
-            f"{extended_total_time:.1f}s"
-        )
-
-        # Also show a label at the actual end of the envelope
-        # (where the release slope hits zero)
-        # We'll mark this in the middle of the extra space for clarity
-        envelope_end_x = padding + (original_total_time / extended_total_time) * plot_w
-        painter.drawText(
-            envelope_end_x - 10,
-            padding + plot_h + 20,
-            f"{original_total_time:.1f}s"
-        )
-
-        # Label amplitude axis
-        painter.drawText(padding - 35, padding + 5, "1")
-        painter.drawText(padding - 35, padding + plot_h, "0")
-
-    def set_values(self, envelope):
-        """Update envelope values and trigger a redraw."""
-        self.envelope = envelope
-        self.update()
-
-
-class ADSRPlotV1(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        # Default envelope parameters (times in ms)
-        self.envelope = {
-            "attack_time": 100,
-            "decay_time": 400,
-            "release_time": 100,
-            "initial_level": 0,
-            "peak_level": 1,
-            "sustain_level": 0.8,
-        }
-        # Set a fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(400, 400)
-        # Use dark gray background
-        self.setStyleSheet("background-color: #333333;")
-        # Sample rate for converting times to samples
-        self.sample_rate = 44100
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        # Use orange for drawing
-        pen = QPen(QColor("orange"))
-        pen.setWidth(2)
-        painter.setPen(pen)
-        painter.setFont(QFont("Consolas", 10))
-
-        # Compute envelope segments in seconds
-        attack_time = self.envelope["attack_time"] / 1000.0
-        decay_time = self.envelope["decay_time"] / 1000.0
-        release_time = self.envelope["release_time"] / 1000.0
-        sustain_level = self.envelope["sustain_level"]
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
-
-        # Convert times to sample counts (for internal computation)
-        attack_samples = int(attack_time * self.sample_rate)
-        decay_samples = int(decay_time * self.sample_rate)
-        sustain_samples = int(self.sample_rate * 2)  # Fixed 2 seconds sustain
-        release_samples = int(release_time * self.sample_rate)
-
-        # Construct the ADSR envelope as one concatenated array
-        attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
-        decay = np.linspace(peak_level, sustain_level, decay_samples, endpoint=False)
-        sustain = np.full(sustain_samples, sustain_level)
-        release = np.linspace(sustain_level, 0, release_samples)
-
-        envelope = np.concatenate([attack, decay, sustain, release])
-        total_samples = len(envelope)
-        total_time = total_samples / self.sample_rate  # in seconds
-
-        # Prepare points for drawing
-        # Map time (x) to widget width and amplitude (y) to widget height (inverting y)
-        w = self.width()
-        h = self.height()
-        # Leave some padding for axes labels (optional)
-        padding = 40
-        plot_w = w - 2 * padding
-        plot_h = h - 2 * padding
-
-        # Create a list of points for the envelope polyline.
-        points = []
-        # We'll sample a fixed number of points for efficiency
-        num_points = 500
-        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-        for i in indices:
-            t = i / self.sample_rate  # time in seconds
-            # x coordinate: map [0, total_time] to [padding, padding+plot_w]
-            x = padding + (t / total_time) * plot_w
-            # y coordinate: map amplitude [0, 1] to [padding+plot_h, padding] (invert y)
-            y = padding + plot_h - (envelope[i] * plot_h)
-            points.append((x, y))
-
-        # Draw the envelope polyline
-        if points:
-            # Convert points to QPainterPath
-            from PySide6.QtGui import QPainterPath
-            path = QPainterPath()
-            first_point = points[0]
-            path.moveTo(*first_point)
-            for pt in points[1:]:
-                path.lineTo(*pt)
-            painter.drawPath(path)
-
-        # Optionally draw axis lines and labels
-        painter.drawLine(padding, padding, padding, padding + plot_h)  # Y-axis
-        painter.drawLine(padding, padding + plot_h, padding + plot_w, padding + plot_h)  # X-axis
-        painter.drawText(padding - 30, padding + plot_h + 5, "0s")
-        painter.drawText(padding + plot_w - 20, padding + plot_h + 5, f"{total_time:.1f}s")
-        painter.drawText(padding - 35, padding + 5, "1")
-        painter.drawText(padding - 35, padding + plot_h, "0")
-
-    def set_values(self, envelope):
-        """Update envelope values and trigger a redraw."""
-        self.envelope = envelope
-        self.update()
-
-
-class ADSRPlotOld(QWidget):
+class ADSRMatplot(QWidget):
     def __init__(self):
         super().__init__()
         self.envelope = {

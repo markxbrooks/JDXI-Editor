@@ -29,6 +29,7 @@ from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
 from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
+from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.ui.image.waveform import (
     generate_waveform_icon,
@@ -124,10 +125,9 @@ class DigitalPartialEditor(QWidget):
 
     def _create_oscillator_section(self):
         """Create the oscillator section of the partial editor"""
-        group = QWidget()
-        #group = QGroupBox("Oscillator")
+        oscillator_section = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        oscillator_section.setLayout(layout)
 
         # Top row: Waveform buttons and variation
         top_row = QHBoxLayout()
@@ -263,7 +263,7 @@ class DigitalPartialEditor(QWidget):
         pcm_group.setVisible(False)  # Hide initially
         self.pcm_group = pcm_group  # Store reference for visibility control
 
-        return group
+        return oscillator_section
 
     def _update_pw_controls_state(self, waveform: OscWave):
         """Update pulse width controls enabled state based on waveform"""
@@ -296,10 +296,9 @@ class DigitalPartialEditor(QWidget):
 
     def _create_filter_section(self):
         """Create the filter section of the partial editor"""
-        group = QWidget()
-        # group = QGroupBox("Filter")
-        layout = QVBoxLayout()
-        group.setLayout(layout)
+        filter_section = QWidget()
+        filter_layout = QVBoxLayout()
+        filter_section.setLayout(filter_layout)
 
         # prettify with icons
         icon_hlayout = QHBoxLayout()
@@ -310,7 +309,7 @@ class DigitalPartialEditor(QWidget):
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icon_hlayout.addWidget(icon_label)
-        layout.addLayout(icon_hlayout)
+        filter_layout.addLayout(icon_hlayout)
 
         # Filter type controls
         type_row = QHBoxLayout()
@@ -328,12 +327,12 @@ class DigitalPartialEditor(QWidget):
             lambda v: self._on_parameter_changed(DigitalParameter.FILTER_SLOPE, v)
         )
         type_row.addWidget(self.filter_slope)
-        layout.addLayout(type_row)
+        filter_layout.addLayout(type_row)
 
         # Main filter controls
-        controls_group = QGroupBox("Controls")
+        controls_group_box = QGroupBox("Controls")
         controls_layout = QVBoxLayout()
-        controls_group.setLayout(controls_layout)
+        controls_group_box.setLayout(controls_layout)
 
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.FILTER_CUTOFF, "Cutoff")
@@ -351,7 +350,7 @@ class DigitalPartialEditor(QWidget):
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity")
         )
-        layout.addWidget(controls_group)
+        filter_layout.addWidget(controls_group_box)
 
         # Filter envelope
         env_group = QGroupBox("Envelope")
@@ -374,7 +373,10 @@ class DigitalPartialEditor(QWidget):
         sub_layout.addLayout(icons_hlayout)
 
         # Create ADSRWidget
-        self.filter_adsr_widget = ADSRWidget()
+        # self.filter_adsr_widget = ADSRWidget()
+        group_address, param_address = DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_num)
+        self.filter_adsr_widget = ADSR(DigitalParameter.FILTER_ENV_ATTACK_TIME, DigitalParameter.FILTER_ENV_DECAY_TIME, DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, DigitalParameter.FILTER_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_AREA, part=self.part, group=group_address)
+
         adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
         # adsr_vlayout.addWidget(self.filter_adsr_widget)
@@ -383,27 +385,6 @@ class DigitalPartialEditor(QWidget):
         # ADSR controls
         adsr_layout = QHBoxLayout()
         adsr_vlayout.addLayout(adsr_layout)
-
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
-            )
-        )
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
-            )
-        )
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
-            )
-        )
-        adsr_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
-            )
-        )
         env_layout.addLayout(adsr_vlayout)
 
         # Envelope depth
@@ -411,7 +392,7 @@ class DigitalPartialEditor(QWidget):
             self._create_parameter_slider(DigitalParameter.FILTER_ENV_DEPTH, "Depth")
         )
         sub_layout.addWidget(env_group)
-        layout.addLayout(sub_layout)
+        filter_layout.addLayout(sub_layout)
         env_group.setStyleSheet("QGroupBox { margin-top: 10px; }")
         self.filter_adsr_widget.updateGeometry()
         env_group.updateGeometry()
@@ -420,34 +401,11 @@ class DigitalPartialEditor(QWidget):
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.HPF_CUTOFF, "HPF Cutoff")
         )
-
         # Aftertouch sensitivity
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.CUTOFF_AFTERTOUCH, "AT Sens")
         )
-        # Mapping ADSR parameters to their corresponding spinboxes
-        self.filter_adsr_control_map = {
-            DigitalParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attack_sb,
-            DigitalParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decay_sb,
-            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustain_sb,
-            DigitalParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.release_sb,
-        }
-
-        # 🔹 Connect ADSR spinboxes to external controls dynamically
-        for param, spinbox in self.filter_adsr_control_map.items():
-            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
-
-        # 🔹 Connect external controls to ADSR spinboxes dynamically
-        for param, spinbox in self.filter_adsr_control_map.items():
-            self.controls[param].valueChanged.connect(
-                partial(
-                    self.update_filter_adsr_spinbox_from_param,
-                    self.filter_adsr_control_map,
-                    param,
-                )
-            )
-
-        return group
+        return filter_section
 
     def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
@@ -571,10 +529,9 @@ class DigitalPartialEditor(QWidget):
 
     def _create_amp_section(self):
         """Create the amplifier section of the partial editor"""
-        group = QWidget()
-        # group = QGroupBox("Amplifier")
-        layout = QVBoxLayout()
-        group.setLayout(layout)
+        amp_section = QWidget()
+        amp_section_layout = QVBoxLayout()
+        amp_section.setLayout(amp_section_layout)
 
         icons_hlayout = QHBoxLayout()
         for icon in [
@@ -592,7 +549,7 @@ class DigitalPartialEditor(QWidget):
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
+        amp_section_layout.addLayout(icons_hlayout)
 
         # Level and velocity controls
         controls_group = QGroupBox("Controls")
@@ -611,7 +568,7 @@ class DigitalPartialEditor(QWidget):
         pan_slider.setValue(0)  # Center the pan slider
         controls_layout.addWidget(pan_slider)
 
-        layout.addWidget(controls_group)
+        amp_section_layout.addWidget(controls_group)
 
         # Amp envelope
         env_group = QGroupBox("Envelope")
@@ -629,37 +586,16 @@ class DigitalPartialEditor(QWidget):
         icon_label.setAlignment(Qt.AlignHCenter)
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
+        amp_section_layout.addLayout(icons_hlayout)
 
         # Create ADSRWidget
-        self.amp_env_adsr_widget = ADSRWidget()
-
+        group_address, param_address = DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_num)
+        self.amp_env_adsr_widget = ADSR(DigitalParameter.AMP_ENV_ATTACK_TIME, DigitalParameter.AMP_ENV_DECAY_TIME, DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, DigitalParameter.AMP_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_AREA, part=self.part, group=group_address)
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
         amp_env_adsr_vlayout.addLayout(env_layout)
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
-            )
-        )
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
-            )
-        )
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
-            )
-        )
-        env_layout.addWidget(
-            self._create_parameter_slider(
-                DigitalParameter.AMP_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
-            )
-        )
-
-        layout.addWidget(env_group)
+        amp_section_layout.addWidget(env_group)
 
         # Keyfollow and aftertouch
         controls_layout.addWidget(
@@ -668,64 +604,13 @@ class DigitalPartialEditor(QWidget):
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens")
         )
-        # Mapping ADSR parameters to their corresponding spinboxes
-        self.adsr_control_map = {
-            DigitalParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
-            DigitalParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decay_sb,
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustain_sb,
-            DigitalParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.release_sb,
-        }
-
-        # 🔹 Connect ADSR spinboxes to external controls dynamically
-        for param, spinbox in self.adsr_control_map.items():
-            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
-
-        # 🔹 Connect external controls to ADSR spinboxes dynamically
-        for param, spinbox in self.adsr_control_map.items():
-            self.controls[param].valueChanged.connect(
-                partial(
-                    self.update_adsr_spinbox_from_param, self.adsr_control_map, param
-                )
-            )
-        return group
-
-    def update_adsr_spinbox_from_param(self, control_map, param, value):
-        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
-        spinbox = control_map[param]
-        if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = midi_cc_to_frac(value)
-        else:
-            new_value = midi_cc_to_ms(value)
-        if spinbox.value() != new_value:
-            spinbox.blockSignals(True)
-            spinbox.setValue(new_value)
-            spinbox.blockSignals(False)
-            self.amp_env_adsr_widget.valueChanged()
-
-    def update_slider_from_adsr(self, param, value):
-        """Updates external control from ADSR widget, avoiding infinite loops."""
-        control = self.controls[param]
-        if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = frac_to_midi_cc(value)
-        else:
-            new_value = ms_to_midi_cc(value)
-        if control.value() != new_value:
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
+        return amp_section
 
     def _create_lfo_section(self):
         """Create the LFO section of the partial editor"""
-        group = QWidget()
-        # group = QGroupBox("LFO")
+        lfo_section = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        lfo_section.setLayout(layout)
 
         icons_hlayout = QHBoxLayout()
         for icon in [
@@ -803,14 +688,13 @@ class DigitalPartialEditor(QWidget):
         )
         layout.addWidget(depths_group)
 
-        return group
+        return lfo_section
 
     def _create_mod_lfo_section(self):
         """Create modulation LFO section"""
-        group = QWidget()
-        # group = QGroupBox("Mod LFO")
-        layout = QVBoxLayout()
-        group.setLayout(layout)
+        mod_lfo_group_box = QWidget()
+        mod_lfo_layout = QVBoxLayout()
+        mod_lfo_group_box.setLayout(mod_lfo_layout)
 
         # Shape and sync controls
         top_row = QHBoxLayout()
@@ -828,7 +712,7 @@ class DigitalPartialEditor(QWidget):
             lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v)
         )
         top_row.addWidget(self.mod_lfo_sync)
-        layout.addLayout(top_row)
+        mod_lfo_layout.addLayout(top_row)
 
         # Rate and note controls
         rate_row = QHBoxLayout()
@@ -866,7 +750,7 @@ class DigitalPartialEditor(QWidget):
             lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_TEMPO_SYNC_NOTE, v)
         )
         rate_row.addWidget(self.mod_lfo_note)
-        layout.addLayout(rate_row)
+        mod_lfo_layout.addLayout(rate_row)
 
         # Modulation depths
         depths_group = QGroupBox("Depths")
@@ -885,16 +769,16 @@ class DigitalPartialEditor(QWidget):
         depths_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.MOD_LFO_PAN, "Pan")
         )
-        layout.addWidget(depths_group)
+        mod_lfo_layout.addWidget(depths_group)
 
         # Rate control
-        layout.addWidget(
+        mod_lfo_layout.addWidget(
             self._create_parameter_slider(
                 DigitalParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
             )
         )
 
-        return group
+        return mod_lfo_group_box
 
     def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""
