@@ -70,7 +70,7 @@ from jdxi_manager.midi.constants import (
 )
 from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
 from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
-from jdxi_manager.midi.preset.preset_loader import PresetLoader
+from jdxi_manager.midi.preset.loader import PresetLoader
 
 
 class PresetHandler(QObject):

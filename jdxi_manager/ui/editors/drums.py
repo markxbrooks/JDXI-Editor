@@ -31,7 +31,7 @@ from jdxi_manager.data.preset_data import DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.data.presets import preset
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.midi.preset.preset_loader import PresetLoader
+from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.editors.base import BaseEditor
