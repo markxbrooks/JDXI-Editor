@@ -21,10 +21,10 @@ from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_manager.midi.basenew import MIDIBase
+from jdxi_manager.midi.io.controller import MidiIOController
 
 
-class MIDIOutHandler(MIDIBase):
+class MIDIOutHandler(MidiIOController):
     """Helper class for MIDI communication with the JD-Xi."""
 
     def __init__(self, parent=None):

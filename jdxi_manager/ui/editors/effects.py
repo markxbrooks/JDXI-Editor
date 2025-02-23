@@ -15,14 +15,14 @@ import logging
 
 from jdxi_manager.data import EffectParameter
 from jdxi_manager.data.effects import EffectsCommonParameter
-from jdxi_manager.midi.constants.analog import ANALOG_SYNTH_AREA
-from jdxi_manager.midi.constants.sysex import PROGRAM_AREA
+from jdxi_manager.midi.constants.analog import TEMPORARY_ANALOG_SYNTH_AREA
+from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
 from jdxi_manager.midi.sysex.sysex import PROGRAM_COMMON
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.midi.constants import EFFECTS_AREA
-from jdxi_manager.midi.helper import MIDIHelper
+from jdxi_manager.midi.io.helper import MIDIHelper
 from typing import Union
 
 
@@ -212,7 +212,7 @@ class EffectsEditor(BaseEditor):
         address_offset = EffectParameter.get_address_by_name("EFX2_LEVEL")
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=PROGRAM_AREA,  # 0x18
+                area=TEMPORARY_PROGRAM_AREA,  # 0x18
                 part=PROGRAM_COMMON,
                 group=common_param.address,
                 param=address_offset,
@@ -225,7 +225,7 @@ class EffectsEditor(BaseEditor):
         address_offset = EffectParameter.get_address_by_name("EFX2_DELAY_SEND_LEVEL")
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=PROGRAM_AREA,  # 0x18
+                area=TEMPORARY_PROGRAM_AREA,  # 0x18
                 part=PROGRAM_COMMON,
                 group=common_param.address,
                 param=address_offset,
@@ -240,7 +240,7 @@ class EffectsEditor(BaseEditor):
         address_offset = EffectParameter.get_address_by_name("EFX2_REVERB_SEND_LEVEL")
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=PROGRAM_AREA,  # 0x18
+                area=TEMPORARY_PROGRAM_AREA,  # 0x18
                 part=PROGRAM_COMMON,
                 group=common_param.address,
                 param=address_offset,
@@ -321,7 +321,7 @@ class EffectsEditor(BaseEditor):
         logging.debug(f"Full address calculated for {param.name}: {full_address}")
 
         self.midi_helper.send_parameter(
-            area=PROGRAM_AREA,  # 0x18
+            area=TEMPORARY_PROGRAM_AREA,  # 0x18
             part=PROGRAM_COMMON,
             group=common_param.address,
             param=address_offset,

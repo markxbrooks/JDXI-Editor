@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from jdxi_manager.midi.base_messages import RolandSysEx
+from jdxi_manager.midi.sysex.roland import RolandSysEx
 from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
-from jdxi_manager.midi.device import DeviceInfo
+from jdxi_manager.midi.sysex.device import DeviceInfo
 from jdxi_manager.midi.constants import (
     DrumKitCC, 
     START_OF_SYSEX, 

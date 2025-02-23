@@ -48,27 +48,29 @@ from jdxi_manager.ui.widgets.button.channel import ChannelButton
 from jdxi_manager.ui.widgets.viewer.log import LogViewer
 from jdxi_manager.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_manager.ui.widgets.button.favorite import FavoriteButton
-from jdxi_manager.midi import MIDIHelper, MIDIConnection
+from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.io.connection import MIDIConnection
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX,
     ROLAND_ID,
     DEVICE_ID,
     MODEL_ID_1,
     MODEL_ID_2,
+    MODEL_ID_3,
     MODEL_ID,
     JD_XI_ID,
     DT1_COMMAND_12,
+    RQ1_COMMAND_11,
     END_OF_SYSEX,
     ANALOG_SYNTH_AREA,
-    MODEL_ID_3,
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_DIGITAL2,
     MIDI_CHANNEL_ANALOG,
     MIDI_CHANNEL_DRUMS,
 )
-from jdxi_manager.midi.messages import IdentityRequest
-from jdxi_manager.midi.messages import ParameterMessage
-from jdxi_manager.midi.preset_loader import PresetLoader
+from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
+from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
+from jdxi_manager.midi.preset.preset_loader import PresetLoader
 
 
 class PresetHandler(QObject):
@@ -1881,7 +1883,7 @@ class MainWindow(QMainWindow):
                     MODEL_ID_3,
                     JD_XI_ID,
                     DT1_COMMAND_12,
-                    0x15,  # Arpeggio area
+                    TEMPORARY_PROGRAM_AREA,  # Arpeggio area
                     0x00,  # Subgroup
                     0x00,  # Part
                     0x02,  # Key Hold parameter
@@ -1918,8 +1920,8 @@ class MainWindow(QMainWindow):
                     int(MODEL_ID_3),
                     int(JD_XI_ID),
                     int(DT1_COMMAND_12),
-                    ARP_AREA,  # Arpeggio area
-                    ARP_PART,  # Subgroup
+                    TEMPORARY_PROGRAM_AREA,  # Temporary area
+                    ARP_PART,  # Part
                     ARP_GROUP,  # Part
                     0x03,  # On/Off parameter
                     int(value),  # Parameter value

@@ -1,8 +1,4 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# midiclock.py
-#
 """Receive MIDI clock and print out current BPM.
 
 MIDI clock (status 0xF8) is sent 24 times per quarter note by clock generators.

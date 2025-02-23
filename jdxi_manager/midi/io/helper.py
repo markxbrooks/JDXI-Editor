@@ -20,8 +20,8 @@ Dependencies:
 
 from PySide6.QtCore import Signal
 
-from jdxi_manager.midi.input_handler import MIDIInHandler
-from jdxi_manager.midi.output_handler import MIDIOutHandler
+from jdxi_manager.midi.io.input_handler import MIDIInHandler
+from jdxi_manager.midi.io.output_handler import MIDIOutHandler
 
 
 class MIDIHelper(MIDIInHandler, MIDIOutHandler):

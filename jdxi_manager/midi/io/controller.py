@@ -5,7 +5,7 @@ import rtmidi
 from PySide6.QtCore import QObject
 
 
-class MIDIBase(QObject):
+class MidiIOController(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
     def __init__(self, parent=None):

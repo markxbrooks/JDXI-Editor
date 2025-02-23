@@ -6,8 +6,8 @@ import logging
 
 from jdxi_manager.data.analog import AnalogCommonParameter
 from jdxi_manager.midi.constants import DIGITAL_1_PART, AnalogParameter
-from jdxi_manager.midi.conversions import midi_cc_to_frac, midi_cc_to_ms
-from jdxi_manager.midi.helper import MIDIHelper
+from jdxi_manager.midi.utils.conversions import midi_cc_to_frac, midi_cc_to_ms
+from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 

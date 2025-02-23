@@ -26,11 +26,11 @@ from jdxi_manager.midi.constants.analog import (
     AnalogToneCC,
     Waveform,
     SubOscType,
-    ANALOG_SYNTH_AREA,
+    TEMPORARY_ANALOG_SYNTH_AREA,
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )
-from jdxi_manager.midi.conversions import (
+from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
     ms_to_midi_cc,
@@ -68,7 +68,7 @@ class ADSR(QWidget):
             "sustain_level": 0.8,
         }
         self.group = group if group else ANALOG_OSC_GROUP
-        self.area = area if area else ANALOG_SYNTH_AREA
+        self.area = area if area else TEMPORARY_ANALOG_SYNTH_AREA
         self.part = part if part else ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False

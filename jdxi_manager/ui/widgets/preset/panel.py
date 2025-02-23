@@ -10,7 +10,7 @@ from PySide6.QtCore import Signal
 import logging
 
 from jdxi_manager.ui.style import Style
-from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.editors.preset import PresetEditor
 from jdxi_manager.data.preset_type import PresetType
 

@@ -37,10 +37,10 @@ def extract_hex(data: List[int], start: int, end: int, default: str = "N/A") -> 
 def get_temporary_area(data: List[int]) -> str:
     """Map address bytes to corresponding temporary area."""
     area_mapping = {
-        (0x19, 0x42): "ANALOG_SYNTH_AREA",
-        (0x19, 0x01): "DIGITAL_SYNTH_1_AREA",
-        (0x19, 0x21): "DIGITAL_SYNTH_2_AREA",
-        (0x19, 0x70): "DRUM_KIT_AREA"
+        (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
+        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+        (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA"
     }
     return area_mapping.get(tuple(data[8:10]), "Unknown") if len(data) >= 10 else "Unknown"
 
@@ -92,16 +92,16 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
     temporary_area = parameters["TEMPORARY_AREA"]
     synth_tone = parameters["SYNTH_TONE"]
 
-    if temporary_area in ["DIGITAL_SYNTH_1_AREA", "DIGITAL_SYNTH_2_AREA"]:
+    if temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DigitalCommonParameter))
         elif synth_tone == "TONE_MODIFY":
             logging.info("Parsing for TONE_MODIFY not yet implemented.")  # FIXME
         else:
             parameters.update(parse_parameters(data, DigitalParameter))
-    elif temporary_area == "ANALOG_SYNTH_AREA":
+    elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
         parameters.update(parse_parameters(data, AnalogParameter))
-    elif temporary_area == "DRUM_KIT_AREA":
+    elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
         parameters.update(parse_parameters(data, DrumParameter))
 
     logging.info(f"Address: {parameters['ADDRESS']}")

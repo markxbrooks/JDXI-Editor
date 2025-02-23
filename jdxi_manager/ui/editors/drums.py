@@ -30,13 +30,13 @@ from jdxi_manager.data.parameter.drums import DrumParameter
 from jdxi_manager.data.preset_data import DRUM_PRESETS
 from jdxi_manager.data.preset_type import PresetType
 from jdxi_manager.data.presets import preset
-from jdxi_manager.midi import MIDIHelper
-from jdxi_manager.midi.preset_loader import PresetLoader
+from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.preset.preset_loader import PresetLoader
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.midi.constants import (
-    DRUM_KIT_AREA,
+    TEMPORARY_DRUM_KIT_AREA,
     DRUM_PART,
     DRUM_LEVEL,
     DRUM_PAN,
@@ -52,14 +52,14 @@ from jdxi_manager.midi.constants.sysex import (
     DEVICE_ID,
     MODEL_ID,
     DT1_COMMAND,
-    DIGITAL_SYNTH_1_AREA,
-    DIGITAL_SYNTH_2_AREA,
-    ANALOG_SYNTH_AREA,
-    DRUM_KIT_AREA,
+    TEMPORARY_DIGITAL_SYNTH_1_AREA,
+    TEMPORARY_DIGITAL_SYNTH_2_AREA,
+    TEMPORARY_ANALOG_SYNTH_AREA,
+    TEMPORARY_DRUM_KIT_AREA,
     EFFECTS_AREA,
     ARPEGGIO_AREA,
     VOCAL_FX_AREA,
-    SYSTEM_AREA,
+    TEMPORARY_SYSTEM_AREA,
     JD_XI_ID,
     MODEL_ID_1,
     MODEL_ID_2,
@@ -1132,7 +1132,7 @@ class DrumEditor(BaseEditor):
             MODEL_ID_3,
             MODEL_ID_4,
             DT1_COMMAND,
-            DIGITAL_SYNTH_1_AREA,  # Assuming this is a fixed part of the message
+            TEMPORARY_DIGITAL_SYNTH_1_AREA,  # Assuming this is a fixed part of the message
             0x70,  # Assuming this is a fixed part of the message
             address,
             value,
@@ -1143,7 +1143,7 @@ class DrumEditor(BaseEditor):
         #     0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, checksum, 0xF7
         # ]
         return self.midi_helper.send_parameter(
-            area=DRUM_KIT_AREA,
+            area=TEMPORARY_DRUM_KIT_AREA,
             part=0x70,
             group=group,
             param=address,
@@ -1156,7 +1156,7 @@ class DrumEditor(BaseEditor):
         # Use the helper function to send the SysEx message
         # self.send_sysex_message(0x0C, value)
         return self.midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_1_AREA,
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
             part=0x70,
             group=0x00,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
             param=0x0C,
@@ -1168,7 +1168,7 @@ class DrumEditor(BaseEditor):
         # Use the helper function to send the SysEx message
         # self.send_sysex_message(0x2E, value)
         return self.midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_1_AREA,
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
             part=0x70,
             group=0x2E,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
             param=0x1C,
@@ -1179,7 +1179,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Level Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_LEVEL_VELOCITY_SENS.value[0],
@@ -1191,7 +1191,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Time 1 Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS.value[0],
@@ -1203,7 +1203,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Time 4 Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS.value[0],
@@ -1215,7 +1215,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Time 1 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_1.value[0],
@@ -1227,7 +1227,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Time 2 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_2.value[0],
@@ -1239,7 +1239,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Time 3 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_3.value[0],
@@ -1251,7 +1251,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Level 1 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_LEVEL_1.value[0],
@@ -1263,7 +1263,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Level 2 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_LEVEL_2.value[0],
@@ -1275,7 +1275,7 @@ class DrumEditor(BaseEditor):
         """Handle TVA Env Level 3 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_LEVEL_3.value[0],
@@ -1287,7 +1287,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Filter Type change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_FILTER_TYPE.value[0],
@@ -1299,7 +1299,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Cutoff Frequency change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_CUTOFF_FREQUENCY.value[0],
@@ -1311,7 +1311,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Cutoff Velocity Curve change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_CUTOFF_VELOCITY_CURVE.value[0],
@@ -1323,7 +1323,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Cutoff Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_CUTOFF_VELOCITY_SENS.value[0],
@@ -1335,7 +1335,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Env Depth change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_DEPTH.value[0],
@@ -1347,7 +1347,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Env Velocity Curve Type change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE.value[0],
@@ -1359,7 +1359,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Env Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_VELOCITY_SENS.value[0],
@@ -1371,7 +1371,7 @@ class DrumEditor(BaseEditor):
         """Handle TVF Env Time 1 Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS.value[0],
@@ -1416,7 +1416,7 @@ class DrumEditor(BaseEditor):
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 part=DrumParameter.DRUM_PART.value[0],
                 group=partial_group,
                 param=param.address,

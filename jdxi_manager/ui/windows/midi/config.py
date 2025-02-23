@@ -7,7 +7,7 @@ from PySide6.QtGui import QPalette, QColor
 import logging
 import qtawesome as qta
 from jdxi_manager.ui.style import Style
-from jdxi_manager.midi.helper import MIDIHelper
+from jdxi_manager.midi.io.helper import MIDIHelper
 
 
 class MIDIConfigDialog(QDialog):

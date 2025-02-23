@@ -42,7 +42,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QTimer
 
-from jdxi_manager.midi import MIDIHelper
+from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.style import sequencer_button_style, toggle_button_style
 

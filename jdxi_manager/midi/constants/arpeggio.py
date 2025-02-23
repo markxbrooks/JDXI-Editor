@@ -5,7 +5,7 @@ from enum import Enum, IntEnum
 # Areas and Parts
 ARP_AREA = 0x18
 ARP_PART = 0x00
-ARP_GROUP = 0x40
+ARP_GROUP = 0x00
 
 class ArpParameters(IntEnum):
     """Arpeggiator parameters"""
