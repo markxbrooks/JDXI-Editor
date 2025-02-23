@@ -143,7 +143,7 @@ class DrumEditor(BaseEditor):
         super().__init__(midi_helper, parent)
         self.partial_num = 1  # Initialize partial_num
         self.group = 0x00
-        self.address = 0x00
+        self.address = 0x00 # Initialize address to common area
         self.image_label = None
         # Main layout
         self.controls: Dict[DrumParameter, QWidget] = {}
@@ -383,7 +383,7 @@ class DrumEditor(BaseEditor):
             pitch_env_group = QGroupBox("Pitch Env")
             pitch_env_layout = QFormLayout()
             pitch_env_group.setLayout(pitch_env_layout)
-            grid_layout.addWidget(pitch_env_group, 1, 0)
+            grid_layout.addWidget(pitch_env_group, 1, 1)
 
             # Add pitch env parameters
             pitch_env_depth_slider = QSlider(Qt.Orientation.Horizontal)
@@ -448,7 +448,7 @@ class DrumEditor(BaseEditor):
             tvf_group = QGroupBox("TVF")
             tvf_layout = QFormLayout()
             tvf_group.setLayout(tvf_layout)
-            grid_layout.addWidget(tvf_group, 2, 2)
+            grid_layout.addWidget(tvf_group, 1, 2)
 
             # Add TVF parameters
             tvf_filter_type_combo = QComboBox()
@@ -566,7 +566,7 @@ class DrumEditor(BaseEditor):
             wmt_group = QGroupBox("WMT")
             wmt_layout = QVBoxLayout()
             wmt_group.setLayout(wmt_layout)
-            grid_layout.addWidget(wmt_group, 2, 0)
+            grid_layout.addWidget(wmt_group, 1, 0)
 
             # WMT Velocity Control
             wmt_velocity_control_combo = QComboBox()
@@ -681,7 +681,7 @@ class DrumEditor(BaseEditor):
             tva_group = QGroupBox("TVA")
             tva_layout = QFormLayout()
             tva_group.setLayout(tva_layout)
-            grid_layout.addWidget(tva_group, 2, 1)
+            grid_layout.addWidget(tva_group, 0, 2)
 
             # Add TVA parameters
             tva_level_velocity_curve_spin = QSpinBox()
