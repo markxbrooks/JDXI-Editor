@@ -1,5 +1,7 @@
 import logging
 import re
+
+from jdxi_manager.midi.preset.handler import PresetHandler
 from pubsub import pub
 
 from PySide6.QtWidgets import (
@@ -16,7 +18,7 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
 )
-from PySide6.QtCore import Qt, QSettings, QObject, Signal
+from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import (
     QAction,
     QFont,
@@ -25,7 +27,7 @@ from PySide6.QtGui import (
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED, DIGITAL_PRESETS_ENUMERATED, DRUM_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_AREA, ARP_GROUP
+from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_GROUP
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -60,7 +62,6 @@ from jdxi_manager.midi.constants import (
     MODEL_ID,
     JD_XI_ID,
     DT1_COMMAND_12,
-    RQ1_COMMAND_11,
     END_OF_SYSEX,
     ANALOG_SYNTH_AREA,
     MIDI_CHANNEL_DIGITAL1,
@@ -71,59 +72,6 @@ from jdxi_manager.midi.constants import (
 from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
 from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
 from jdxi_manager.midi.preset.loader import PresetLoader
-
-
-class PresetHandler(QObject):
-    preset_changed = Signal(int)  # Signal emitted when preset changes
-    update_display = Signal(int, int, int)
-
-    def __init__(self, presets, channel=1, type=PresetType.DIGITAL_1):
-        super().__init__()
-        self.presets = presets
-        self.channel = channel
-        self.type = type
-        self.current_preset_index = 0
-
-    def next_tone(self):
-        """Increase the tone index and return the new preset."""
-        if self.current_preset_index < len(self.presets) - 1:
-            self.current_preset_index += 1
-            self.preset_changed.emit(self.current_preset_index)  # Emit signal
-            self.update_display.emit(
-                self.type, self.current_preset_index, self.channel
-            )  # Emit signal
-        return self.get_current_preset()
-
-    def previous_tone(self):
-        """Decrease the tone index and return the new preset."""
-        if self.current_preset_index < len(self.presets) - 1:
-            self.current_preset_index -= 1
-            self.preset_changed.emit(self.current_preset_index)  # Emit signal
-            self.update_display.emit(
-                self.type, self.current_preset_index, self.channel
-            )  # Emit signal
-        return self.get_current_preset()
-
-    def get_current_preset(self):
-        """Get the current preset details."""
-        return {
-            "index": self.current_preset_index,
-            "preset": self.presets[self.current_preset_index],
-            "channel": self.channel,
-        }
-
-    def set_channel(self, channel):
-        """Set the MIDI channel."""
-        self.channel = channel
-
-    def set_preset(self, index):
-        """Set the preset manually and emit the signal."""
-        if 0 <= index < len(self.presets):
-            self.current_preset_index = index
-            self.preset_changed.emit(self.current_preset_index)
-            self.update_display.emit(
-                self.type, self.current_preset_index, self.channel
-            )  # Emit signal
 
 
 class MainWindow(QMainWindow):
@@ -1006,11 +954,7 @@ class MainWindow(QMainWindow):
         self._show_editor("Analog Synth", AnalogSynthEditor)
         self.preset_type = PresetType.ANALOG
         self.current_synth_type = PresetType.ANALOG
-        self.midi_helper.send_program_change(
-            channel=MIDI_CHANNEL_ANALOG, program=1
-        )  # Program 1 for now
         self.channel = MIDI_CHANNEL_ANALOG
-        self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_ANALOG)
 
     def _open_digital_synth1(self):
         """Open the Digital Synth 1 editor and send SysEx message."""
@@ -1023,13 +967,6 @@ class MainWindow(QMainWindow):
                 )
             self.digital_synth1_editor.show()
             self.digital_synth1_editor.raise_()
-            #self.piano_keyboard.set_midi_channel(0)
-            #self.midi_helper.send_program_change(
-            #    channel=MIDI_CHANNEL_DIGITAL1, program=1
-            #)  # Program 1 for now
-            #self.midi_helper.send_bank_and_program_change(
-            #    channel=MIDI_CHANNEL_DIGITAL1, bank_msb=87, bank_lsb=0, program=1
-            #)
             # Send the SysEx message
             sysex_msg = [
                 0xF0,
@@ -1062,21 +999,12 @@ class MainWindow(QMainWindow):
         self.channel = MIDI_CHANNEL_DIGITAL2
         self.preset_type = PresetType.DIGITAL_2
         self.current_synth_type = PresetType.DIGITAL_2
-        #self.midi_helper.send_program_change(
-        #    channel=MIDI_CHANNEL_DIGITAL2, program=1
-        #)  # Program 1 for now
-        # self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DIGITAL2)
 
     def _open_drums(self):
         self.channel = MIDI_CHANNEL_DRUMS
         self._show_editor("Drums", DrumEditor)
-        # self._show_drums_editor()
         self.preset_type = PresetType.DRUMS
         self.current_synth_type = PresetType.DRUMS
-        #self.midi_helper.send_program_change(
-        #    channel=MIDI_CHANNEL_DRUMS, program=1
-        #)  # Program 1 for now
-        #self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DRUMS)
 
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
@@ -1192,7 +1120,7 @@ class MainWindow(QMainWindow):
         row.addWidget(button)
         return row, button
 
-    def add_arpeggiator_buttons(self, widget):
+    def _add_arpeggiator_buttons(self, widget):
         """Add arpeggiator up/down buttons to the interface"""
         # Create container
         arpeggiator_buttons_container = QWidget(widget)
@@ -1318,7 +1246,7 @@ class MainWindow(QMainWindow):
         # Make container transparent
         arpeggiator_buttons_container.setStyleSheet("background: transparent;")
 
-    def add_octave_buttons(self, widget):
+    def _add_octave_buttons(self, widget):
         """Add octave up/down buttons to the interface"""
         # Create container
         octave_buttons_container = QWidget(widget)
@@ -1513,8 +1441,8 @@ class MainWindow(QMainWindow):
         parts_layout.addLayout(analog_row)
         parts_layout.addLayout(arp_row)
 
-        self.add_octave_buttons(central_widget)
-        self.add_arpeggiator_buttons(central_widget)
+        self._add_octave_buttons(central_widget)
+        self._add_arpeggiator_buttons(central_widget)
 
         # Effects button in top row
         fx_container = QWidget(central_widget)
@@ -2255,16 +2183,10 @@ class MainWindow(QMainWindow):
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
         if self.midi_helper:
-            # For drums, we use a higher velocity. Note:
-            # - If self.channel is 1-indexed, then for non-drums:
-            #   status = 0x90 + (self.channel - 1)
-            # - For the drum channel (here, channel 9), we use a special case.
-            #if self.channel == MIDI_CHANNEL_DRUMS + 1:
-            #    msg = [0x90 + self.channel, note_num, 127]  # Note: 0x90 + 9 = 0x99 (drum channel if intended)
-            #else:
+            # self.channel is 0-indexed, so add 1 to match MIDI channel
             msg = [0x90 + (self.channel), note_num, 100]
             self.midi_helper.send_message(msg)
-            logging.info(f"Sent Note On: {note_num} on channel {self.channel}")
+            logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
     def handle_piano_note_off(self, note_num):
         """Handle piano key release"""
@@ -2637,9 +2559,6 @@ class MainWindow(QMainWindow):
                 if self.midi_helper.open_ports(in_port, out_port):
                     logging.info(f"Connected to JD-Xi ({in_port}, {out_port})")
                     self.statusBar().showMessage(f"Connected to JD-Xi")
-
-                    # Remove or comment out any initialization messages
-                    # self.midi_helper.send_identity_request()  # Remove this
                     return True
 
             logging.warning("JD-Xi not found")
@@ -2838,17 +2757,6 @@ class MainWindow(QMainWindow):
             self.device_id, self.address + [0x00], self.data_length
         )
 
-    def _handle_sysex_message(self, message, preset_data):
-        """Handle SysEx MIDI messages."""
-        try:
-            sysex_bytes = list(message.data)
-            parsed_data = parse_sysex(sysex_bytes)
-            logging.debug(f"Parsed SysEx data: {parsed_data}")
-        except ValueError as e:
-            logging.error(
-                f"Error handling SysEx message: {str(e)} for message: {message}"
-            )
-
     def open_digital_synth_1_editor(self):
         """Open Digital Synth 1 editor window"""
         try:
@@ -2863,74 +2771,3 @@ class MainWindow(QMainWindow):
             logging.info("Selected synth: Digital 1")
         except Exception as e:
             logging.error(f"Error opening Digital Synth 1 editor: {str(e)}")
-
-
-def parse_jdxi_tone(data):
-    """
-    Parses JD-Xi tone data from SysEx messages.
-    Supports Digital1, Digital2, Analog, and Drums.
-
-    Args:
-        data (bytes): SysEx message containing tone data.
-
-    Returns:
-        dict: Parsed tone parameters.
-    """
-    if len(data) < 64:
-        raise ValueError("Invalid data length. Must be at least 64 bytes.")
-
-    parsed = {}
-    try:
-        parsed["header"] = data[:7].hex()
-        parsed["address"] = data[7:11].hex()
-        parsed["tone_name"] = data[11:24].decode(errors="ignore").strip()
-
-        # Extracting shared parameters
-        parsed["LFO Rate"] = data[24]
-        parsed["LFO Depth"] = data[25]
-        parsed["LFO Shape"] = data[26]
-
-        parsed["OSC Type"] = data[33]
-        parsed["OSC Pitch"] = data[34]
-        parsed["Filter Cutoff"] = data[44]
-        parsed["Filter Resonance"] = data[45]
-        parsed["Amp Level"] = data[52]
-
-        # Identify tone type
-        tone_type = data[7]  # Address component identifies type
-        if tone_type == 0x19:
-            parsed["Tone Type"] = "Analog"
-        elif tone_type == 0x1A:
-            parsed["Tone Type"] = "Digital1"
-        elif tone_type == 0x1B:
-            parsed["Tone Type"] = "Digital2"
-        elif tone_type == 0x1C:
-            parsed["Tone Type"] = "Drums"
-        else:
-            parsed["Tone Type"] = "Unknown"
-
-    except Exception as e:
-        logging.error(f"Error parsing JD-Xi tone: {str(e)}")
-
-    return parsed
-
-
-def parse_sysex(sysex_bytes):
-    if len(sysex_bytes) < 15:
-        raise ValueError("Invalid SysEx message length")
-
-    return {
-        "start": sysex_bytes[0],
-        "manufacturer_id": sysex_bytes[1],
-        "device_id": sysex_bytes[2],
-        "model_id": sysex_bytes[3:6],
-        "jd_xi_id": sysex_bytes[6],
-        "command_type": sysex_bytes[7],
-        "area": sysex_bytes[8],
-        "synth_number": sysex_bytes[9],
-        "partial": sysex_bytes[10],
-        "parameter": sysex_bytes[11],
-        "value": sysex_bytes[12],
-        "checksum": sysex_bytes[13],
-        "end": sysex_bytes[14],
-    }
