@@ -344,72 +344,35 @@ class DrumEditor(BaseEditor):
         tva_level_velocity_curve_spin.setRange(0, 7)
         tva_layout.addRow("TVA Level Velocity Curve", tva_level_velocity_curve_spin)
 
-        tva_level_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_level_velocity_sens_slider.setRange(1, 127)
-        tva_level_velocity_sens_slider.valueChanged.connect(
-            self._on_tva_level_velocity_sens_slider_changed
-        )
-        tva_layout.addRow("TVA Level Velocity Sens", tva_level_velocity_sens_slider)
+        tva_level_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_LEVEL_VELOCITY_SENS, "TVA Level Velocity Sens")
+        tva_layout.addRow(tva_level_velocity_sens_slider)
 
-        tva_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_time1_velocity_sens_slider.setRange(1, 127)
-        tva_env_time1_velocity_sens_slider.valueChanged.connect(
-            self._on_tva_env_time1_velocity_sens_slider_changed
-        )
-        tva_layout.addRow(
-            "TVA Env Time 1 Velocity Sens", tva_env_time1_velocity_sens_slider
-        )
+        tva_env_time1_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "TVA Env Time 1 Velocity Sens")
+        tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
-        tva_env_time4_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_time4_velocity_sens_slider.setRange(1, 127)
-        tva_env_time4_velocity_sens_slider.valueChanged.connect(
-            self._on_tva_env_time4_velocity_sens_slider_changed
-        )
-        tva_layout.addRow(
-            "TVA Env Time 4 Velocity Sens", tva_env_time4_velocity_sens_slider
-        )
+        tva_env_time4_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "TVA Env Time 4 Velocity Sens")
+        tva_layout.addRow(tva_env_time4_velocity_sens_slider)
 
-        tva_env_time1_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_time1_slider.setRange(0, 127)
-        tva_env_time1_slider.valueChanged.connect(
-            self._on_tva_env_time1_slider_changed
-        )
-        tva_layout.addRow("TVA Env Time 1", tva_env_time1_slider)
+        tva_env_time1_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_1, "TVA Env Time 1")
+        tva_layout.addRow(tva_env_time1_slider)
 
-        tva_env_time2_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_time2_slider.setRange(0, 127)
-        tva_env_time2_slider.valueChanged.connect(
-            self._on_tva_env_time2_slider_changed
-        )
-        tva_layout.addRow("TVA Env Time 2", tva_env_time2_slider)
+        tva_env_time2_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_2, "TVA Env Time 2")
+        tva_layout.addRow(tva_env_time2_slider)
 
-        tva_env_time3_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_time3_slider.setRange(0, 127)
-        tva_env_time3_slider.valueChanged.connect(
-            self._on_tva_env_time3_slider_changed
-        )
-        tva_layout.addRow("TVA Env Time 3", tva_env_time3_slider)
+        tva_env_time3_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_3, "TVA Env Time 3")
+        tva_layout.addRow(tva_env_time3_slider)
 
-        tva_env_level1_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_level1_slider.setRange(0, 127)
-        tva_env_level1_slider.valueChanged.connect(
-            self._on_tva_env_level1_slider_changed
-        )
-        tva_layout.addRow("TVA Env Level 1", tva_env_level1_slider)
+        tva_env_time4_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_4, "TVA Env Time 4")
+        tva_layout.addRow(tva_env_time4_slider)
 
-        tva_env_level2_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_level2_slider.setRange(0, 127)
-        tva_env_level2_slider.valueChanged.connect(
-            self._on_tva_env_level2_slider_changed
-        )
-        tva_layout.addRow("TVA Env Level 2", tva_env_level2_slider)
+        tva_env_level1_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_LEVEL_1, "TVA Env Level 1")
+        tva_layout.addRow(tva_env_level1_slider)
 
-        tva_env_level3_slider = QSlider(Qt.Orientation.Horizontal)
-        tva_env_level3_slider.setRange(0, 127)
-        tva_env_level3_slider.valueChanged.connect(
-            self._on_tva_env_level3_slider_changed
-        )
-        tva_layout.addRow("TVA Env Level 3", tva_env_level3_slider)
+        tva_env_level2_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_LEVEL_2, "TVA Env Level 2")
+        tva_layout.addRow(tva_env_level2_slider)
+
+        tva_env_level3_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_LEVEL_3, "TVA Env Level 3")
+        tva_layout.addRow(tva_env_level3_slider)
         return tva_group
 
     def _create_wmt_group(self):
