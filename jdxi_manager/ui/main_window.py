@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
         self.sysex_getlist = self.device_id + [0x11]
         self.device_status = "unknown"
 
-        self.channel = 1
+        self.channel = MIDI_CHANNEL_DIGITAL1
         self.analog_editor = None
         self.last_preset = None
         self.preset_loader = None
@@ -556,10 +556,12 @@ class MainWindow(QMainWindow):
 
     def _show_analog_synth_editor(self, editor_type: str):
         self._show_editor("Analog Synth", AnalogSynthEditor)
+        self.channel = MIDI_CHANNEL_ANALOG
         self.preset_type = PresetType.ANALOG
 
     def _show_drums_editor(self, editor_type: str):
         self._show_editor("Drums", DrumEditor)
+        self.channel = MIDI_CHANNEL_DRUMS
         self.preset_type = PresetType.DRUMS
 
     def _show_arpeggio_editor(self, editor_type: str):
@@ -970,21 +972,25 @@ class MainWindow(QMainWindow):
 
             # Set window title
             editor.setWindowTitle(title)
-
+            logging.info(f"Showing {title} editor")
             # Store reference and show
             if title == "Digital Synth 1":
                 self.digital_synth1 = editor
+                self.channel = MIDI_CHANNEL_DIGITAL1
             elif title == "Digital Synth 2":
                 self.digital_synth2 = editor
+                self.channel = MIDI_CHANNEL_DIGITAL2
             elif title == "Analog Synth":
                 self.analog_synth = editor
-            elif title == "Drum Kit":
+                self.channel = MIDI_CHANNEL_ANALOG
+            elif title == "Drums":
                 self.drum_kit = editor
+                self.channel = MIDI_CHANNEL_DRUMS
             elif title == "Effects":
                 self.effects = editor
             elif title == "Pattern":
                 self.effects = editor
-
+            logging.info(f"midi channel: {self.channel}")
             # Show editor
             editor.show()
             editor.raise_()
@@ -1003,11 +1009,13 @@ class MainWindow(QMainWindow):
         self.midi_helper.send_program_change(
             channel=MIDI_CHANNEL_ANALOG, program=1
         )  # Program 1 for now
+        self.channel = MIDI_CHANNEL_ANALOG
         self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_ANALOG)
 
     def _open_digital_synth1(self):
         """Open the Digital Synth 1 editor and send SysEx message."""
         self.current_synth_type = PresetType.DIGITAL_1
+        self.channel = MIDI_CHANNEL_DIGITAL1
         try:
             if not hasattr(self, "digital_synth1_editor"):
                 self.digital_synth1_editor = DigitalSynthEditor(
@@ -1051,6 +1059,7 @@ class MainWindow(QMainWindow):
 
     def _open_digital_synth2(self):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
+        self.channel = MIDI_CHANNEL_DIGITAL2
         self.preset_type = PresetType.DIGITAL_2
         self.current_synth_type = PresetType.DIGITAL_2
         self.midi_helper.send_program_change(
@@ -1059,6 +1068,7 @@ class MainWindow(QMainWindow):
         self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DIGITAL2)
 
     def _open_drums(self):
+        self.channel = MIDI_CHANNEL_DRUMS
         self._show_editor("Drums", DrumEditor)
         # self._show_drums_editor()
         self.preset_type = PresetType.DRUMS
@@ -2220,6 +2230,12 @@ class MainWindow(QMainWindow):
                 editor = DigitalSynthEditor(
                     synth_num=synth_num, midi_helper=self.midi_helper, parent=self
                 )
+                if synth_num == 1:
+                    self.channel = 1
+                elif synth_num == 2:
+                    self.channel = 2
+                else:
+                    self.channel = 1
                 setattr(self, f"digital_synth_{synth_num}_editor", editor)
 
             # Get editor instance
@@ -2239,18 +2255,26 @@ class MainWindow(QMainWindow):
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
         if self.midi_helper:
-            # Note on message: 0x90 (Note On, channel 1), note number, velocity 100
-            msg = [0x90, note_num, 100]
+            # For drums, we use a higher velocity. Note:
+            # - If self.channel is 1-indexed, then for non-drums:
+            #   status = 0x90 + (self.channel - 1)
+            # - For the drum channel (here, channel 9), we use a special case.
+            #if self.channel == MIDI_CHANNEL_DRUMS + 1:
+            #    msg = [0x90 + self.channel, note_num, 127]  # Note: 0x90 + 9 = 0x99 (drum channel if intended)
+            #else:
+            msg = [0x90 + (self.channel), note_num, 100]
             self.midi_helper.send_message(msg)
-            logging.debug(f"Sent Note On: {note_num}")
+            logging.info(f"Sent Note On: {note_num} on channel {self.channel}")
 
     def handle_piano_note_off(self, note_num):
         """Handle piano key release"""
         if self.midi_helper:
-            # Note off message: 0x80 (Note Off, channel 1), note number, velocity 0
-            msg = [0x80, note_num, 0]
+            # Calculate the correct status byte for note_off:
+            # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
+            status = 0x80 + (self.channel)
+            msg = [status, note_num, 0]
             self.midi_helper.send_message(msg)
-            logging.debug(f"Sent Note Off: {note_num}")
+            logging.info(f"Sent Note Off: {note_num} on channel {self.channel}")
 
     def _create_midi_indicators(self):
         """Create MIDI activity indicators"""
