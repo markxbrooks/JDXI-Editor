@@ -1023,13 +1023,13 @@ class MainWindow(QMainWindow):
                 )
             self.digital_synth1_editor.show()
             self.digital_synth1_editor.raise_()
-            self.piano_keyboard.set_midi_channel(0)
-            self.midi_helper.send_program_change(
-                channel=MIDI_CHANNEL_DIGITAL1, program=1
-            )  # Program 1 for now
-            self.midi_helper.send_bank_and_program_change(
-                channel=MIDI_CHANNEL_DIGITAL1, bank_msb=87, bank_lsb=0, program=1
-            )
+            #self.piano_keyboard.set_midi_channel(0)
+            #self.midi_helper.send_program_change(
+            #    channel=MIDI_CHANNEL_DIGITAL1, program=1
+            #)  # Program 1 for now
+            #self.midi_helper.send_bank_and_program_change(
+            #    channel=MIDI_CHANNEL_DIGITAL1, bank_msb=87, bank_lsb=0, program=1
+            #)
             # Send the SysEx message
             sysex_msg = [
                 0xF0,
@@ -1062,10 +1062,10 @@ class MainWindow(QMainWindow):
         self.channel = MIDI_CHANNEL_DIGITAL2
         self.preset_type = PresetType.DIGITAL_2
         self.current_synth_type = PresetType.DIGITAL_2
-        self.midi_helper.send_program_change(
-            channel=MIDI_CHANNEL_DIGITAL2, program=1
-        )  # Program 1 for now
-        self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DIGITAL2)
+        #self.midi_helper.send_program_change(
+        #    channel=MIDI_CHANNEL_DIGITAL2, program=1
+        #)  # Program 1 for now
+        # self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DIGITAL2)
 
     def _open_drums(self):
         self.channel = MIDI_CHANNEL_DRUMS
@@ -1073,10 +1073,10 @@ class MainWindow(QMainWindow):
         # self._show_drums_editor()
         self.preset_type = PresetType.DRUMS
         self.current_synth_type = PresetType.DRUMS
-        self.midi_helper.send_program_change(
-            channel=MIDI_CHANNEL_DRUMS, program=1
-        )  # Program 1 for now
-        self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DRUMS)
+        #self.midi_helper.send_program_change(
+        #    channel=MIDI_CHANNEL_DRUMS, program=1
+        #)  # Program 1 for now
+        #self.piano_keyboard.set_midi_channel(MIDI_CHANNEL_DRUMS)
 
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
