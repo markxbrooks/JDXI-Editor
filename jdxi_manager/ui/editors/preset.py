@@ -17,10 +17,10 @@ import logging
 
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.style import Style
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.midi.preset.parameter_handler import ParameterHandler
-from jdxi_manager.data.preset_data import DIGITAL_PRESETS, ANALOG_PRESETS, DRUM_PRESETS
+from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED, ANALOG_PRESETS_ENUMERATED, DRUM_PRESETS_ENUMERATED
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 
@@ -81,7 +81,7 @@ class PresetEditor(QMainWindow):
         preset_layout.addLayout(type_row)
 
         # Preset ComboBox
-        self.preset_combo_box = PresetComboBox(DIGITAL_PRESETS)
+        self.preset_combo_box = PresetComboBox(DIGITAL_PRESETS_ENUMERATED)
         self.preset_combo_box.preset_selected.connect(self._on_preset_changed)
         self.preset_combo_box.preset_loaded.connect(self._on_load_clicked)
         preset_layout.addWidget(self.preset_combo_box)
@@ -105,11 +105,11 @@ class PresetEditor(QMainWindow):
         """Get the appropriate preset list based on type"""
         logging.debug(f"Getting preset list for type: {self.preset_type}")
         if self.preset_type == PresetType.ANALOG:
-            return ANALOG_PRESETS
+            return ANALOG_PRESETS_ENUMERATED
         elif self.preset_type == PresetType.DIGITAL_1:
-            return DIGITAL_PRESETS
+            return DIGITAL_PRESETS_ENUMERATED
         else:
-            return DRUM_PRESETS
+            return DRUM_PRESETS_ENUMERATED
 
     def _on_type_changed(self, preset_type: str):
         """Handle preset type change"""

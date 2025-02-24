@@ -1,5 +1,5 @@
 # Preset lists
-ANALOG_PRESETS = [
+ANALOG_PRESETS_ENUMERATED = [
     '001: Toxic Bass 1', '002: Sub Bass 1', '003: Backwards 1', '004: Fat as That1', '005: Saw+Sub Bs 1',
     '006: Saw Bass 1', '007: Pulse Bass 1',
     '008: ResoSaw Bs 1', '009: ResoSaw Bs 2', '010: AcidSaw SEQ1', '011: Psy Bass 1', '012: Dist TB Bs 1',
@@ -20,7 +20,7 @@ ANALOG_PRESETS = [
     '063: SirenFX/Mod1'
 ]
 
-DIGITAL_PRESETS = [
+DIGITAL_PRESETS_ENUMERATED = [
     '001: JP8 Strings1', '002: Soft Pad 1', '003: JP8 Strings2', '004: JUNO Str 1', '005: Oct Strings',
     '006: Brite Str 1', '007: Boreal Pad',
     '008: JP8 Strings3', '009: JP8 Strings4', '010: Hollow Pad 1', '011: LFO Pad 1', '012: Hybrid Str',
@@ -95,7 +95,7 @@ DIGITAL_PRESETS = [
     '253: Voc:PitchEnv', '254: Voc:VP-330', '255: Voc:Noise'
 ]
 
-DRUM_PRESETS = [
+DRUM_PRESETS_ENUMERATED = [
     '001: TR-909 Kit 1', '002: TR-808 Kit 1', '003: 707&727 Kit1', '004: CR-78 Kit 1', '005: TR-606 Kit 1',
     '006: TR-626 Kit 1', '007: EDM Kit 1',
     '008: Drum&Bs Kit1', '009: Techno Kit 1', '010: House Kit 1', '011: Hiphop Kit 1', '012: R&B Kit 1',
@@ -105,4 +105,43 @@ DRUM_PRESETS = [
     '022: 808&7*7 Kit1', '023: EDM Kit 2', '024: Techno Kit 2', '025: Hiphop Kit 2', '026: 80\'s Kit 1',
     '027: 90\'s Kit 1', '028: Noise Kit 1',
     '029: Pop Kit 1', '030: Pop Kit 2', '031: Rock Kit', '032: Jazz Kit', '033: Latin Kit'
+]
+DIGITAL_PRESETS = [
+    'JP8 Strings1', 'Soft Pad 1', 'JP8 Strings2', 'JUNO Str 1', 'Oct Strings', 'Brite Str 1', 'Boreal Pad',
+    'JP8 Strings3', 'JP8 Strings4', 'Hollow Pad 1', 'LFO Pad 1', 'Hybrid Str', 'Awakening 1', 'Cincosoft 1',
+    'Bright Pad 1', 'Analog Str 1', 'Soft ResoPd1', 'HPF Poly 1', 'BPF Poly', 'Sweep Pad 1', 'Soft Pad 2',
+    'Sweep JD 1', 'FltSweep Pd1', 'HPF Pad', 'HPF SweepPd1', 'KOff Pad', 'Sweep Pad 2', 'TrnsSweepPad',
+    'Revalation 1', 'LFO CarvePd1', 'RETROX 139 1', 'LFO ResoPad1', 'PLS Pad 1', 'PLS Pad 2', 'Trip 2 Mars1',
+    'Reso S&H Pd1', 'SideChainPd1', 'PXZoon 1', 'Psychoscilo1', 'Fantasy 1', 'D-50 Stack 1', 'Organ Pad',
+    'Bell Pad', 'Dreaming 1', 'Syn Sniper 1', 'Strings 1', 'D-50 Pizz 1', 'Super Saw 1', 'S-SawStacLd1',
+    'Tekno Lead 1', 'Tekno Lead 2', 'Tekno Lead 3', 'OSC-SyncLd 1', 'WaveShapeLd1', 'JD RingMod 1', 'Buzz Lead 1',
+    'Buzz Lead 2', 'SawBuzz Ld 1', 'Sqr Buzz Ld1', 'Tekno Lead 4', 'Dist Flt TB1', 'Dist TB Sqr1', 'Glideator 1',
+    'Vintager 1', 'Hover Lead 1', 'Saw Lead 1', 'Saw+Tri Lead', 'PortaSaw Ld1', 'Reso Saw Ld', 'SawTrap Ld 1',
+    'Fat GR Lead', 'Pulstar Ld', 'Slow Lead', 'AnaVox Lead', 'Square Ld 1', 'Square Ld 2', 'Sqr Lead 1',
+    'Sqr Trap Ld1', 'Sine Lead 1', 'Tri Lead', 'Tri Stac Ld1', '5th SawLead1', 'Sweet 5th 1', '4th Syn Lead',
+    'Maj Stack Ld', 'MinStack Ld1', 'Chubby Lead1', 'CuttingLead1', 'Seq Bass 1', 'Reso Bass 1', 'TB Bass 1',
+    '106 Bass 1', 'FilterEnvBs1', 'JUNO Sqr Bs1', 'Reso Bass 2', 'JUNO Bass', 'MG Bass 1', '106 Bass 3',
+    'Reso Bass 3', 'Detune Bs 1', 'MKS-50 Bass1', 'Sweep Bass', 'MG Bass 2', 'MG Bass 3', 'ResRubber Bs',
+    'R&B Bass 1', 'Reso Bass 4', 'Wide Bass 1', 'Chow Bass 1', 'Chow Bass 2', 'SqrFilterBs1', 'Reso Bass 5',
+    'Syn Bass 1', 'ResoSawSynBs', 'Filter Bass1', 'SeqFltEnvBs', 'DnB Bass 1', 'UnisonSynBs1', 'Modular Bs',
+    'Monster Bs 1', 'Monster Bs 2', 'Monster Bs 3', 'Monster Bs 4', 'Square Bs 1', '106 Bass 2', '5th Stac Bs1',
+    'SqrStacSynBs', 'MC-202 Bs', 'TB Bass 2', 'Square Bs 2', 'SH-101 Bs', 'R&B Bass 2', 'MG Bass 4',
+    'Seq Bass 2', 'Tri Bass 1', 'BPF Syn Bs 2', 'BPF Syn Bs 1', 'Low Bass 1', 'Low Bass 2', 'Kick Bass 1',
+    'SinDetuneBs1', 'Organ Bass 1', 'Growl Bass 1', 'Talking Bs 1', 'LFO Bass 1', 'LFO Bass 2', 'Crack Bass',
+    'Wobble Bs 1', 'Wobble Bs 2', 'Wobble Bs 3', 'Wobble Bs 4', 'SideChainBs1', 'SideChainBs2', 'House Bass 1',
+    'FM Bass', '4Op FM Bass1', 'Ac. Bass', 'Fingerd Bs 1', 'Picked Bass', 'Fretless Bs', 'Slap Bass 1',
+    'JD Piano 1', 'E. Grand 1', 'Trem EP 1', 'FM E.Piano 1', 'FM E.Piano 2', 'Vib Wurly 1', 'Pulse Clav',
+    'Clav', '70\'s E.Organ', 'House Org 1', 'House Org 2', 'Bell 1', 'Bell 2', 'Organ Bell',
+    'Vibraphone 1', 'Steel Drum', 'Harp 1', 'Ac. Guitar', 'Bright Strat', 'Funk Guitar1', 'Jazz Guitar',
+    'Dist Guitar1', 'D. Mute Gtr1', 'E. Sitar', 'Sitar Drone', 'FX 1', 'FX 2', 'FX 3',
+    'Tuned Winds1', 'Bend Lead 1', 'RiSER 1', 'Rising SEQ 1', 'Scream Saw', 'Noise SEQ 1', 'Syn Vox 1',
+    'JD SoftVox', 'Vox Pad', 'VP-330 Chr', 'Orch Hit', 'Philly Hit', 'House Hit', 'O\'Skool Hit1',
+    'Punch Hit', 'Tao Hit', 'SEQ Saw 1', 'SEQ Sqr', 'SEQ Tri 1', 'SEQ 1', 'SEQ 2',
+    'SEQ 3', 'SEQ 4', 'Sqr Reso Plk', 'Pluck Synth1', 'Paperclip 1', 'Sonar Pluck1', 'SqrTrapPlk 1',
+    'TB Saw Seq 1', 'TB Sqr Seq 1', 'JUNO Key', 'Analog Poly1', 'Analog Poly2', 'Analog Poly3', 'Analog Poly4',
+    'JUNO Octavr1', 'EDM Synth 1', 'Super Saw 2', 'S-Saw Poly', 'Trance Key 1', 'S-Saw Pad 1', '7th Stac Syn',
+    'S-SawStc Syn', 'Trance Key 2', 'Analog Brass', 'Reso Brass', 'Soft Brass 1', 'FM Brass', 'Syn Brass 1',
+    'Syn Brass 2', 'JP8 Brass', 'Soft SynBrs1', 'Soft SynBrs2', 'EpicSlow Brs', 'JUNO Brass', 'Poly Brass',
+    'Voc:Ensemble', 'Voc:5thStack', 'Voc:Robot', 'Voc:Saw', 'Voc:Sqr', 'Voc:Rise Up', 'Voc:Auto Vib',
+    'Voc:PitchEnv', 'Voc:VP-330', 'Voc:Noise'
 ]

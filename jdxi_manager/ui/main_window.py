@@ -23,8 +23,8 @@ from PySide6.QtGui import (
     QFontDatabase,
 )
 from jdxi_manager.data.analog import AN_PRESETS
-from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS, DRUM_PRESETS
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED, DIGITAL_PRESETS_ENUMERATED, DRUM_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_AREA, ARP_GROUP
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
@@ -337,10 +337,10 @@ class MainWindow(QMainWindow):
         self.current_preset_index = 0
 
         # Initialize PresetHandler with the desired preset list
-        self.digital_1_preset_handler = PresetHandler(DIGITAL_PRESETS)
-        self.digital_2_preset_handler = PresetHandler(DIGITAL_PRESETS)
-        self.analog_preset_handler = PresetHandler(ANALOG_PRESETS)
-        self.drums_preset_handler = PresetHandler(DRUM_PRESETS)
+        self.digital_1_preset_handler = PresetHandler(DIGITAL_PRESETS_ENUMERATED)
+        self.digital_2_preset_handler = PresetHandler(DIGITAL_PRESETS_ENUMERATED)
+        self.analog_preset_handler = PresetHandler(ANALOG_PRESETS_ENUMERATED)
+        self.drums_preset_handler = PresetHandler(DRUM_PRESETS_ENUMERATED)
 
         self.digital_1_preset_handler.update_display.connect(
             self.update_display_callback
@@ -410,9 +410,9 @@ class MainWindow(QMainWindow):
         """Return the appropriate preset list based on the current synth type."""
         preset_map = {
             PresetType.ANALOG: AN_PRESETS,
-            PresetType.DIGITAL_1: DIGITAL_PRESETS,
-            PresetType.DIGITAL_2: DIGITAL_PRESETS,
-            PresetType.DRUMS: DRUM_PRESETS,
+            PresetType.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
+            PresetType.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
+            PresetType.DRUMS: DRUM_PRESETS_ENUMERATED,
         }
 
         presets = preset_map.get(self.current_synth_type, None)
@@ -420,7 +420,7 @@ class MainWindow(QMainWindow):
             logging.warning(
                 f"Unknown synth type: {self.current_synth_type}, defaulting to DIGITAL_PRESETS"
             )
-            return DIGITAL_PRESETS  # Safe fallback
+            return DIGITAL_PRESETS_ENUMERATED  # Safe fallback
         return presets
 
     def _get_preset_handler_for_current_synth(self):
@@ -496,14 +496,14 @@ class MainWindow(QMainWindow):
             channel,
         )
         preset_map = {
-            PresetType.ANALOG: ANALOG_PRESETS,
-            PresetType.DIGITAL_1: DIGITAL_PRESETS,
-            PresetType.DIGITAL_2: DIGITAL_PRESETS,
-            PresetType.DRUMS: DRUM_PRESETS,
+            PresetType.ANALOG: ANALOG_PRESETS_ENUMERATED,
+            PresetType.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
+            PresetType.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
+            PresetType.DRUMS: DRUM_PRESETS_ENUMERATED,
         }
 
-        # Default to DIGITAL_PRESETS if the synth_type is not found in the map
-        presets = preset_map.get(synth_type, DIGITAL_PRESETS)
+        # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
+        presets = preset_map.get(synth_type, DIGITAL_PRESETS_ENUMERATED)
 
         self._update_display_preset(
             preset_index,
@@ -729,13 +729,13 @@ class MainWindow(QMainWindow):
             preset_type = self.current_synth_type
             preset_number = self.current_preset_index
             preset_map = {
-                PresetType.ANALOG: ANALOG_PRESETS,
-                PresetType.DIGITAL_1: DIGITAL_PRESETS,
-                PresetType.DIGITAL_2: DIGITAL_PRESETS,
-                PresetType.DRUMS: DRUM_PRESETS,
+                PresetType.ANALOG: ANALOG_PRESETS_ENUMERATED,
+                PresetType.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
+                PresetType.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
+                PresetType.DRUMS: DRUM_PRESETS_ENUMERATED,
             }
-            # Default to DIGITAL_PRESETS if the synth_type is not found in the map
-            presets = preset_map.get(preset_type, DIGITAL_PRESETS)
+            # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
+            presets = preset_map.get(preset_type, DIGITAL_PRESETS_ENUMERATED)
             preset_name = presets[preset_number]
             logging.info(f"preset_name: {preset_name}")
             return preset_name
@@ -754,11 +754,11 @@ class MainWindow(QMainWindow):
             if synth_type == PresetType.ANALOG:
                 return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
             elif synth_type == PresetType.DIGITAL_1:
-                return DIGITAL_PRESETS[preset_num - 1]
+                return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
             elif synth_type == PresetType.DIGITAL_2:
-                return DIGITAL_PRESETS[preset_num - 1]
+                return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
             else:
-                return DRUM_PRESETS[preset_num - 1]
+                return DRUM_PRESETS_ENUMERATED[preset_num - 1]
         except IndexError:
             return "INIT PATCH"
 
@@ -2407,17 +2407,17 @@ class MainWindow(QMainWindow):
                 bank_lsb = preset_num // 7
                 program = preset_num % 7
             elif synth_type == PresetType.DIGITAL_1:
-                presets = DIGITAL_PRESETS
+                presets = DIGITAL_PRESETS_ENUMERATED
                 bank_msb = 1
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
             elif synth_type == PresetType.DIGITAL_2:
-                presets = DIGITAL_PRESETS
+                presets = DIGITAL_PRESETS_ENUMERATED
                 bank_msb = 2
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
             else:  # Drums
-                presets = DRUM_PRESETS
+                presets = DRUM_PRESETS_ENUMERATED
                 bank_msb = 3
                 bank_lsb = preset_num // 16
                 program = preset_num % 16

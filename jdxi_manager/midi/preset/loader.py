@@ -7,7 +7,7 @@ from pubsub import pub
 from typing import Optional
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.constants import DT1_COMMAND_12, RQ1_COMMAND_11
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants.sysex import DEVICE_ID
 from jdxi_manager.midi.sysex.sysex import XI_HEADER
 

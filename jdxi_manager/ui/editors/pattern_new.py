@@ -195,20 +195,18 @@ class PatternSequencer(BaseEditor):
         self.total_steps = self.beats_per_pattern * self.measures
         self.button_notes = [[None for _ in range(16)] for _ in range(4)]
         self.is_playing = False  # Add state tracking
-        self._setup_ui()
-
-    def _setup_ui(self):
-        layout = QVBoxLayout()
-        row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
-        self.buttons = [[] for _ in range(4)]
-
-        # Define drum kit options
         self.drum_options = [
             "BD1", "RIM", "BD2", "CLAP", "BD3", "SD1", "CHH", 
             "SD2", "PHH", "SD3", "OHH", "SD4", "TOM1", "PRC1", "TOM2", 
             "PRC2", "TOM3", "PRC3", "CYM1", "PRC4", "CYM2", "PRC5", "CYM3", 
             "HIT", "OTH1", "OTH2"
         ]
+        self._setup_ui()
+
+    def _setup_ui(self):
+        layout = QVBoxLayout()
+        row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
+        self.buttons = [[] for _ in range(4)]
 
         for row_idx, label_text in enumerate(row_labels):
             row_layout = QVBoxLayout()
@@ -223,7 +221,7 @@ class PatternSequencer(BaseEditor):
             if row_idx == 3:  # Drums row
                 self.drum_selector = QComboBox()
                 self.drum_selector.addItems(self.drum_options)
-                # self.drum_selector.currentIndexChanged.connect(self._on_drum_changed)
+                self.drum_selector.currentIndexChanged.connect(self._on_drum_changed)
                 header_layout.addWidget(self.drum_selector)
             
             row_layout.addLayout(header_layout)
@@ -235,7 +233,7 @@ class PatternSequencer(BaseEditor):
                 button.setFixedSize(40, 40)
                 button.setStyleSheet(sequencer_button_style(False))
                 button.toggled.connect(
-                    lambda checked, btn=button: toggle_button_style(btn, checked)
+                    lambda checked, btn=button: self.toggle_button(row_idx, i)
                 )
                 self.buttons[row_idx].append(button)
                 button_layout.addWidget(button)
@@ -261,11 +259,11 @@ class PatternSequencer(BaseEditor):
         control_layout = QHBoxLayout()
         self.start_button = QPushButton("Start")
         self.stop_button = QPushButton("Stop")
-
+        
         # Direct connection without lambda
         self.start_button.clicked.connect(self.play_pattern)
         self.stop_button.clicked.connect(self.stop_pattern)
-
+        
         control_layout.addWidget(self.start_button)
         control_layout.addWidget(self.stop_button)
         layout.addLayout(control_layout)
@@ -285,7 +283,7 @@ class PatternSequencer(BaseEditor):
         if self.is_playing:
             logging.info("Already playing, returning")
             return
-
+            
         self.is_playing = True
         self.current_step = 0
         self.timer = QTimer()
@@ -297,21 +295,21 @@ class PatternSequencer(BaseEditor):
         """Plays the current step and advances to the next one."""
         step = self.current_step % self.total_steps
         logging.info(f"Playing step {step}")
-
+        
         # Check each row's button at the current step
         for row in range(4):
             button = self.buttons[row][step]
             if button.isChecked():
                 # Determine channel based on row
                 channel = row if row < 3 else 9  # channels 0,1,2 for synths, 9 for drums
-
+                
                 # Send Note On message for C4 (note 60)
                 if self.midi_helper:
                     logging.info(f"Row {row} active at step {step}, sending note on channel {channel}")
                     # Note On message: [Status byte (Note On + channel), note number, velocity]
                     self.midi_helper.send_message([0x90 | channel, 60, 100])  # velocity 100
                     # Note Off message after a short delay
-                    QTimer.singleShot(100, lambda ch=channel:
+                    QTimer.singleShot(100, lambda ch=channel: 
                         self.midi_helper.send_message([0x90 | ch, 60, 0]))
                 else:
                     logging.warning("MIDI helper not available")
@@ -319,7 +317,7 @@ class PatternSequencer(BaseEditor):
         # Update measure button highlighting
         for i, btn in enumerate(self.measure_buttons):
             btn.setChecked(i == step // self.beats_per_pattern)
-
+        
         # Advance to next step
         self.current_step = (self.current_step + 1) % self.total_steps
 
@@ -331,6 +329,47 @@ class PatternSequencer(BaseEditor):
             self.timer.stop()
             self.timer = None
         logging.info("Timer stopped")
+
+    def _on_drum_changed(self, index):
+        """Handle drum selection change"""
+        selected_drum = self.drum_options[index]
+        # Map drum names to MIDI note numbers (you'll need to define these mappings)
+        drum_note_map = {
+            "BD1": 36, "RIM": 37, "BD2": 38, "CLAP": 39,
+            "BD3": 40, "SD1": 41, "CHH": 42, "SD2": 43,
+            "PHH": 44, "SD3": 45, "OHH": 46, "SD4": 47,
+            "TOM1": 48, "PRC1": 49, "TOM2": 50, "PRC2": 51,
+            "TOM3": 52, "PRC3": 53, "CYM1": 54, "PRC4": 55,
+            "CYM2": 56, "PRC5": 57, "CYM3": 58, "HIT": 59,
+            "OTH1": 60, "OTH2": 61
+        }
+        
+        # Update the MIDI note for the drum row
+        note = drum_note_map.get(selected_drum, 36)  # Default to BD1 if not found
+        #for i in range(16):
+        #    self.button_notes[3][i] = note  # Update all buttons in drum row to use this note
+
+    def toggle_button(self, row, index):
+        """Toggle button state and update note mapping for drums"""
+        button = self.buttons[row][index]
+        button.setChecked(not button.isChecked())
+        #button.setStyleSheet(sequencer_button_style(button.isChecked()))
+
+        # If this is the drum row, save the currently selected drum note
+        if row == 3:  # Drum row
+            selected_drum = self.drum_options[self.drum_selector.currentIndex()]
+            drum_note_map = {
+                "BD1": 36, "RIM": 37, "BD2": 38, "CLAP": 39,
+                "BD3": 40, "SD1": 41, "CHH": 42, "SD2": 43,
+                "PHH": 44, "SD3": 45, "OHH": 46, "SD4": 47,
+                "TOM1": 48, "PRC1": 49, "TOM2": 50, "PRC2": 51,
+                "TOM3": 52, "PRC3": 53, "CYM1": 54, "PRC4": 55,
+                "CYM2": 56, "PRC5": 57, "CYM3": 58, "HIT": 59,
+                "OTH1": 60, "OTH2": 61
+            }
+            note = drum_note_map.get(selected_drum, 36)  # Default to BD1 if not found
+            self.button_notes[row][index] = note
+            logging.info(f"Set drum note {selected_drum} (note: {note}) at position {index}")
 
 
 class PatternSequencerOld(BaseEditor):
@@ -396,7 +435,7 @@ class PatternSequencerOld(BaseEditor):
     def toggle_button(self, row, index):
         button = self.buttons[row][index]
         button.setChecked(not button.isChecked())
-        button.setStyleSheet(sequencer_button_style(button.isChecked()))
+        # button.setStyleSheet(sequencer_button_style(button.isChecked()))
 
     def select_buttons(self, indices):
         for row, index in indices:
