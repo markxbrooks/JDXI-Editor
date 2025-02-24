@@ -22,8 +22,8 @@ from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.data.preset_data import ANALOG_PRESETS, DIGITAL_PRESETS
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED, DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.data.analog import AnalogCommonParameter
 from jdxi_manager.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.io.helper import MIDIHelper
@@ -103,7 +103,7 @@ class AnalogSynthEditor(BaseEditor):
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-        self.presets = ANALOG_PRESETS
+        self.presets = ANALOG_PRESETS_ENUMERATED
         self.preset_type = PresetType.ANALOG
         self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
@@ -156,7 +156,7 @@ class AnalogSynthEditor(BaseEditor):
         self.instrument_selection_label = QLabel("Select an Analog synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESETS)
+        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESETS_ENUMERATED)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image

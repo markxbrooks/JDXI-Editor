@@ -48,8 +48,8 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_manager.data.preset_data import DIGITAL_PRESETS
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_manager.midi.preset.loader import PresetLoader
@@ -101,7 +101,7 @@ class DigitalSynthEditor(BaseEditor):
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
         )
-        self.presets = DIGITAL_PRESETS
+        self.presets = DIGITAL_PRESETS_ENUMERATED
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
@@ -216,7 +216,7 @@ class DigitalSynthEditor(BaseEditor):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
         # Preset ComboBox
-        self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS)
+        self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS_ENUMERATED)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_handler.current_preset_index

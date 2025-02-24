@@ -27,9 +27,9 @@ from jdxi_manager.data.drums import (
     DRUM_ADDRESSES,
 )
 from jdxi_manager.data.parameter.drums import DrumParameter
-from jdxi_manager.data.preset_data import DRUM_PRESETS
-from jdxi_manager.data.preset_type import PresetType
-from jdxi_manager.data.presets import preset
+from jdxi_manager.data.presets.data import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.data.presets.presets import preset
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.style import Style
@@ -158,7 +158,7 @@ class DrumEditor(BaseEditor):
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
         self.title_label = QLabel(
-            f"Drum Kit:\n {DRUM_PRESETS[0]}" if DRUM_PRESETS else "Drum Kit"
+            f"Drum Kit:\n {DRUM_PRESETS_ENUMERATED[0]}" if DRUM_PRESETS_ENUMERATED else "Drum Kit"
         )
         drum_group.setStyleSheet(
             """
@@ -181,7 +181,7 @@ class DrumEditor(BaseEditor):
         drum_group_layout.addWidget(self.selection_label)
         # Drum kit selection
 
-        self.instrument_selection_combo = PresetComboBox(DRUM_PRESETS)
+        self.instrument_selection_combo = PresetComboBox(DRUM_PRESETS_ENUMERATED)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_loader.preset_number
@@ -307,744 +307,23 @@ class DrumEditor(BaseEditor):
             grid_layout = QGridLayout()
             scroll_layout.addLayout(grid_layout)
 
-            # Pitch Group
-            pitch_group = QGroupBox("Pitch")
-            pitch_layout = QFormLayout()
-            pitch_group.setLayout(pitch_layout)
+            pitch_group = self._create_pitch_group()
             grid_layout.addWidget(pitch_group, 0, 0)
 
-            # Add pitch parameters
-            partial_level_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_level_slider.setRange(0, 127)
-            pitch_layout.addRow("Partial Level", partial_level_slider)
-
-            partial_coarse_tune_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_coarse_tune_slider.setRange(0, 127)
-            pitch_layout.addRow("Partial Coarse Tune", partial_coarse_tune_slider)
-
-            partial_fine_tune_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_fine_tune_slider.setRange(14, 114)
-            pitch_layout.addRow("Partial Fine Tune", partial_fine_tune_slider)
-
-            partial_random_pitch_depth_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_random_pitch_depth_slider.setRange(0, 30)
-            pitch_layout.addRow(
-                "Partial Random Pitch Depth", partial_random_pitch_depth_slider
-            )
-
-            partial_pan_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_pan_slider.setRange(0, 127)
-            pitch_layout.addRow("Partial Pan", partial_pan_slider)
-
-            partial_random_pan_depth_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_random_pan_depth_slider.setRange(0, 63)
-            pitch_layout.addRow(
-                "Partial Random Pan Depth", partial_random_pan_depth_slider
-            )
-
-            partial_alternate_pan_depth_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_alternate_pan_depth_slider.setRange(1, 127)
-            pitch_layout.addRow(
-                "Partial Alternate Pan Depth", partial_alternate_pan_depth_slider
-            )
-
-            partial_env_mode_combo = QComboBox()
-            partial_env_mode_combo.addItems(["0", "1"])
-            pitch_layout.addRow("Partial Env Mode", partial_env_mode_combo)
-
-            # Output Group
-            output_group = QGroupBox("Output")
-            output_layout = QFormLayout()
-            output_group.setLayout(output_layout)
+            output_group = self._create_output_group()
             grid_layout.addWidget(output_group, 0, 1)
 
-            # Add output parameters
-            partial_output_level_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_output_level_slider.setRange(0, 127)
-            output_layout.addRow("Partial Output Level", partial_output_level_slider)
-
-            partial_chorus_send_level_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_chorus_send_level_slider.setRange(0, 127)
-            output_layout.addRow(
-                "Partial Chorus Send Level", partial_chorus_send_level_slider
-            )
-
-            partial_reverb_send_level_slider = QSlider(Qt.Orientation.Horizontal)
-            partial_reverb_send_level_slider.setRange(0, 127)
-            output_layout.addRow(
-                "Partial Reverb Send Level", partial_reverb_send_level_slider
-            )
-
-            partial_output_assign_combo = QComboBox()
-            partial_output_assign_combo.addItems(["EFX1", "EFX2", "DLY", "REV", "DIR"])
-            output_layout.addRow("Partial Output Assign", partial_output_assign_combo)
-
-            # Pitch Env Group
-            pitch_env_group = QGroupBox("Pitch Env")
-            pitch_env_layout = QFormLayout()
-            pitch_env_group.setLayout(pitch_env_layout)
-            grid_layout.addWidget(pitch_env_group, 1, 1)
-
-            # Add pitch env parameters
-            pitch_env_depth_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_depth_slider.setRange(52, 76)
-            pitch_env_layout.addRow("Pitch Env Depth", pitch_env_depth_slider)
-
-            pitch_env_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_velocity_sens_slider.setRange(1, 127)
-            pitch_env_layout.addRow(
-                "Pitch Env Velocity Sens", pitch_env_velocity_sens_slider
-            )
-
-            pitch_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_time1_velocity_sens_slider.setRange(1, 127)
-            pitch_env_layout.addRow(
-                "Pitch Env Time 1 Velocity Sens", pitch_env_time1_velocity_sens_slider
-            )
-
-            pitch_env_time4_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_time4_velocity_sens_slider.setRange(1, 127)
-            pitch_env_layout.addRow(
-                "Pitch Env Time 4 Velocity Sens", pitch_env_time4_velocity_sens_slider
-            )
-
-            pitch_env_time1_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_time1_slider.setRange(0, 127)
-            pitch_env_layout.addRow("Pitch Env Time 1", pitch_env_time1_slider)
-
-            pitch_env_time2_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_time2_slider.setRange(0, 127)
-            pitch_env_layout.addRow("Pitch Env Time 2", pitch_env_time2_slider)
-
-            pitch_env_time3_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_time3_slider.setRange(0, 127)
-            pitch_env_layout.addRow("Pitch Env Time 3", pitch_env_time3_slider)
-
-            pitch_env_time4_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_time4_slider.setRange(0, 127)
-            pitch_env_layout.addRow("Pitch Env Time 4", pitch_env_time4_slider)
-
-            pitch_env_level0_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_level0_slider.setRange(1, 127)
-            pitch_env_layout.addRow("Pitch Env Level 0", pitch_env_level0_slider)
-
-            pitch_env_level1_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_level1_slider.setRange(1, 127)
-            pitch_env_layout.addRow("Pitch Env Level 1", pitch_env_level1_slider)
-
-            pitch_env_level2_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_level2_slider.setRange(1, 127)
-            pitch_env_layout.addRow("Pitch Env Level 2", pitch_env_level2_slider)
-
-            pitch_env_level3_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_level3_slider.setRange(1, 127)
-            pitch_env_layout.addRow("Pitch Env Level 3", pitch_env_level3_slider)
-
-            pitch_env_level4_slider = QSlider(Qt.Orientation.Horizontal)
-            pitch_env_level4_slider.setRange(1, 127)
-            pitch_env_layout.addRow("Pitch Env Level 4", pitch_env_level4_slider)
-
-            # TVF Group
-            tvf_group = QGroupBox("TVF")
-            tvf_layout = QFormLayout()
-            tvf_group.setLayout(tvf_layout)
+            tvf_group = self._create_tvf_group()
             grid_layout.addWidget(tvf_group, 1, 2)
 
-            # Add TVF parameters
-            tvf_filter_type_combo = QComboBox()
-            tvf_filter_type_combo.addItems(
-                ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"]
-            )
-            tvf_filter_type_combo.currentIndexChanged.connect(
-                self._on_tvf_filter_type_combo_changed
-            )
-            tvf_layout.addRow("TVF Filter Type", tvf_filter_type_combo)
+            pitch_env_group = self._create_pitch_env_group()
+            grid_layout.addWidget(pitch_env_group, 1, 1)
 
-            tvf_cutoff_frequency_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_cutoff_frequency_slider.setRange(0, 127)
-            tvf_cutoff_frequency_slider.valueChanged.connect(
-                self._on_tvf_cutoff_frequency_slider_changed
-            )
-            tvf_layout.addRow("TVF Cutoff Frequency", tvf_cutoff_frequency_slider)
-
-            tvf_cutoff_velocity_curve_spin = QSpinBox()
-            tvf_cutoff_velocity_curve_spin.setRange(0, 7)
-            tvf_cutoff_velocity_curve_spin.valueChanged.connect(
-                self._on_tvf_cutoff_velocity_curve_spin_changed
-            )
-            tvf_layout.addRow(
-                "TVF Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin
-            )
-
-            tvf_cutoff_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_cutoff_velocity_sens_slider.setRange(1, 127)
-            tvf_cutoff_velocity_sens_slider.valueChanged.connect(
-                self._on_tvf_cutoff_velocity_sens_slider_changed
-            )
-            tvf_layout.addRow(
-                "TVF Cutoff Velocity Sens", tvf_cutoff_velocity_sens_slider
-            )
-
-            tvf_env_depth_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_depth_slider.setRange(1, 127)
-            tvf_env_depth_slider.valueChanged.connect(
-                self._on_tvf_env_depth_slider_changed
-            )
-            tvf_layout.addRow("TVF Env Depth", tvf_env_depth_slider)
-
-            tvf_env_velocity_curve_type_spin = QSpinBox()
-            tvf_env_velocity_curve_type_spin.setRange(0, 7)
-            tvf_env_velocity_curve_type_spin.valueChanged.connect(
-                self._on_tvf_env_velocity_curve_type_spin_changed
-            )
-            tvf_layout.addRow(
-                "TVF Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
-            )
-
-            tvf_env_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_velocity_sens_slider.setRange(1, 127)
-            tvf_env_velocity_sens_slider.valueChanged.connect(
-                self._on_tvf_env_velocity_sens_slider_changed
-            )
-            tvf_layout.addRow("TVF Env Velocity Sens", tvf_env_velocity_sens_slider)
-
-            tvf_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_time1_velocity_sens_slider.setRange(1, 127)
-            tvf_env_time1_velocity_sens_slider.valueChanged.connect(
-                self._on_tvf_env_time1_velocity_sens_slider_changed
-            )
-            tvf_layout.addRow(
-                "TVF Env Time 1 Velocity Sens", tvf_env_time1_velocity_sens_slider
-            )
-
-            tvf_env_time4_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_time4_velocity_sens_slider.setRange(1, 127)
-            tvf_layout.addRow(
-                "TVF Env Time 4 Velocity Sens", tvf_env_time4_velocity_sens_slider
-            )
-
-            tvf_env_time1_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_time1_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Time 1", tvf_env_time1_slider)
-
-            tvf_env_time2_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_time2_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Time 2", tvf_env_time2_slider)
-
-            tvf_env_time3_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_time3_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Time 3", tvf_env_time3_slider)
-
-            tvf_env_time4_slider = self._create_parameter_slider(
-                DrumParameter.TVF_ENV_TIME_4
-            )
-            # tvf_env_time4_slider = QSlider(Qt.Orientation.Horizontal)
-            # tvf_env_time4_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Time 4", tvf_env_time4_slider)
-
-            tvf_env_level0_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_level0_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Level 0", tvf_env_level0_slider)
-
-            tvf_env_level1_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_level1_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Level 1", tvf_env_level1_slider)
-
-            tvf_env_level2_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_level2_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Level 2", tvf_env_level2_slider)
-
-            tvf_env_level3_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_level3_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Level 3", tvf_env_level3_slider)
-
-            tvf_env_level4_slider = QSlider(Qt.Orientation.Horizontal)
-            tvf_env_level4_slider.setRange(0, 127)
-            tvf_layout.addRow("TVF Env Level 4", tvf_env_level4_slider)
-
-            # WMT Group
-            wmt_group = QGroupBox("WMT")
-            wmt_layout = QVBoxLayout()
-            wmt_group.setLayout(wmt_layout)
+            wmt_group = self._create_wmt_group()
             grid_layout.addWidget(wmt_group, 1, 0)
 
-            # WMT Velocity Control
-            wmt_velocity_control_combo = QComboBox()
-            wmt_velocity_control_combo.addItems(["OFF", "ON", "RANDOM"])
-            wmt_layout.addWidget(wmt_velocity_control_combo)
-
-            # WMT Tabbed Widget
-            wmt_tab_widget = QTabWidget()
-            wmt_tabs = ["WMT1", "WMT2", "WMT3", "WMT4"]
-            for wmt_tab in wmt_tabs:
-                wmt_tab_widget.addTab(QWidget(), wmt_tab)
-            wmt_layout.addWidget(wmt_tab_widget)
-
-            # Add controls to WMT1 tab
-            wmt1_tab = wmt_tab_widget.widget(0)
-            wmt1_layout = QFormLayout()
-            wmt1_tab.setLayout(wmt1_layout)
-
-            wmt1_wave_switch_combo = QComboBox()
-            wmt1_wave_switch_combo.addItems(["OFF", "ON"])
-            wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
-
-            wmt1_wave_group_type_spin = QSpinBox()
-            wmt1_wave_group_type_spin.setRange(0, 0)
-            wmt1_layout.addRow("WMT1 Wave Group Type", wmt1_wave_group_type_spin)
-
-            wmt1_wave_group_id_spin = QSpinBox()
-            wmt1_wave_group_id_spin.setRange(0, 16384)
-            wmt1_layout.addRow("WMT1 Wave Group ID", wmt1_wave_group_id_spin)
-
-            wmt1_wave_number_l_spin = QSpinBox()
-            wmt1_wave_number_l_spin.setRange(0, 16384)
-            wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_spin)
-
-            wmt1_wave_number_r_spin = QSpinBox()
-            wmt1_wave_number_r_spin.setRange(0, 16384)
-            wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_spin)
-
-            wmt1_wave_gain_spin = QSpinBox()
-            wmt1_wave_gain_spin.setRange(0, 3)
-            wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_spin)
-
-            wmt1_wave_fxm_switch_combo = QComboBox()
-            wmt1_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-            wmt1_layout.addRow("WMT1 Wave FXM Switch", wmt1_wave_fxm_switch_combo)
-
-            wmt1_wave_fxm_color_spin = QSpinBox()
-            wmt1_wave_fxm_color_spin.setRange(0, 3)
-            wmt1_layout.addRow("WMT1 Wave FXM Color", wmt1_wave_fxm_color_spin)
-
-            wmt1_wave_fxm_depth_spin = QSpinBox()
-            wmt1_wave_fxm_depth_spin.setRange(0, 16)
-            wmt1_layout.addRow("WMT1 Wave FXM Depth", wmt1_wave_fxm_depth_spin)
-
-            wmt1_wave_tempo_sync_combo = QComboBox()
-            wmt1_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-            wmt1_layout.addRow("WMT1 Wave Tempo Sync", wmt1_wave_tempo_sync_combo)
-
-            wmt1_wave_coarse_tune_spin = QSpinBox()
-            wmt1_wave_coarse_tune_spin.setRange(16, 112)
-            wmt1_layout.addRow("WMT1 Wave Coarse Tune", wmt1_wave_coarse_tune_spin)
-
-            wmt1_wave_fine_tune_spin = QSpinBox()
-            wmt1_wave_fine_tune_spin.setRange(14, 114)
-            wmt1_layout.addRow("WMT1 Wave Fine Tune", wmt1_wave_fine_tune_spin)
-
-            wmt1_wave_pan_spin = QSpinBox()
-            wmt1_wave_pan_spin.setRange(0, 127)
-            wmt1_layout.addRow("WMT1 Wave Pan", wmt1_wave_pan_spin)
-
-            wmt1_wave_random_pan_switch_combo = QComboBox()
-            wmt1_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-            wmt1_layout.addRow(
-                "WMT1 Wave Random Pan Switch", wmt1_wave_random_pan_switch_combo
-            )
-
-            wmt1_wave_alternate_pan_switch_combo = QComboBox()
-            wmt1_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-            wmt1_layout.addRow(
-                "WMT1 Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch_combo
-            )
-
-            wmt1_wave_level_spin = QSpinBox()
-            wmt1_wave_level_spin.setRange(0, 127)
-            wmt1_layout.addRow("WMT1 Wave Level", wmt1_wave_level_spin)
-
-            wmt1_velocity_range_lower_spin = QSpinBox()
-            wmt1_velocity_range_lower_spin.setRange(1, 127)
-            wmt1_layout.addRow(
-                "WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin
-            )
-
-            wmt1_velocity_range_upper_spin = QSpinBox()
-            wmt1_velocity_range_upper_spin.setRange(1, 127)
-            wmt1_layout.addRow(
-                "WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin
-            )
-
-            wmt1_velocity_fade_width_lower_spin = QSpinBox()
-            wmt1_velocity_fade_width_lower_spin.setRange(0, 127)
-            wmt1_layout.addRow(
-                "WMT1 Velocity Fade Width Lower", wmt1_velocity_fade_width_lower_spin
-            )
-
-            wmt1_velocity_fade_width_upper_spin = QSpinBox()
-            wmt1_velocity_fade_width_upper_spin.setRange(0, 127)
-            wmt1_layout.addRow(
-                "WMT1 Velocity Fade Width Upper", wmt1_velocity_fade_width_upper_spin
-            )
-
-            # TVA Group
-            tva_group = QGroupBox("TVA")
-            tva_layout = QFormLayout()
-            tva_group.setLayout(tva_layout)
+            tva_group = self._create_tva_group()
             grid_layout.addWidget(tva_group, 0, 2)
-
-            # Add TVA parameters
-            tva_level_velocity_curve_spin = QSpinBox()
-            tva_level_velocity_curve_spin.setRange(0, 7)
-            tva_layout.addRow("TVA Level Velocity Curve", tva_level_velocity_curve_spin)
-
-            tva_level_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_level_velocity_sens_slider.setRange(1, 127)
-            tva_level_velocity_sens_slider.valueChanged.connect(
-                self._on_tva_level_velocity_sens_slider_changed
-            )
-            tva_layout.addRow("TVA Level Velocity Sens", tva_level_velocity_sens_slider)
-
-            tva_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_time1_velocity_sens_slider.setRange(1, 127)
-            tva_env_time1_velocity_sens_slider.valueChanged.connect(
-                self._on_tva_env_time1_velocity_sens_slider_changed
-            )
-            tva_layout.addRow(
-                "TVA Env Time 1 Velocity Sens", tva_env_time1_velocity_sens_slider
-            )
-
-            tva_env_time4_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_time4_velocity_sens_slider.setRange(1, 127)
-            tva_env_time4_velocity_sens_slider.valueChanged.connect(
-                self._on_tva_env_time4_velocity_sens_slider_changed
-            )
-            tva_layout.addRow(
-                "TVA Env Time 4 Velocity Sens", tva_env_time4_velocity_sens_slider
-            )
-
-            tva_env_time1_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_time1_slider.setRange(0, 127)
-            tva_env_time1_slider.valueChanged.connect(
-                self._on_tva_env_time1_slider_changed
-            )
-            tva_layout.addRow("TVA Env Time 1", tva_env_time1_slider)
-
-            tva_env_time2_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_time2_slider.setRange(0, 127)
-            tva_env_time2_slider.valueChanged.connect(
-                self._on_tva_env_time2_slider_changed
-            )
-            tva_layout.addRow("TVA Env Time 2", tva_env_time2_slider)
-
-            tva_env_time3_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_time3_slider.setRange(0, 127)
-            tva_env_time3_slider.valueChanged.connect(
-                self._on_tva_env_time3_slider_changed
-            )
-            tva_layout.addRow("TVA Env Time 3", tva_env_time3_slider)
-
-            tva_env_level1_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_level1_slider.setRange(0, 127)
-            tva_env_level1_slider.valueChanged.connect(
-                self._on_tva_env_level1_slider_changed
-            )
-            tva_layout.addRow("TVA Env Level 1", tva_env_level1_slider)
-
-            tva_env_level2_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_level2_slider.setRange(0, 127)
-            tva_env_level2_slider.valueChanged.connect(
-                self._on_tva_env_level2_slider_changed
-            )
-            tva_layout.addRow("TVA Env Level 2", tva_env_level2_slider)
-
-            tva_env_level3_slider = QSlider(Qt.Orientation.Horizontal)
-            tva_env_level3_slider.setRange(0, 127)
-            tva_env_level3_slider.valueChanged.connect(
-                self._on_tva_env_level3_slider_changed
-            )
-            tva_layout.addRow("TVA Env Level 3", tva_env_level3_slider)
-
-            # Add controls to WMT2 tab
-            wmt2_tab = wmt_tab_widget.widget(1)
-            wmt2_layout = QFormLayout()
-            wmt2_tab.setLayout(wmt2_layout)
-
-            wmt2_wave_switch_combo = QComboBox()
-            wmt2_wave_switch_combo.addItems(["OFF", "ON"])
-            wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
-
-            wmt2_wave_group_type_spin = QSpinBox()
-            wmt2_wave_group_type_spin.setRange(0, 0)
-            wmt2_layout.addRow("WMT2 Wave Group Type", wmt2_wave_group_type_spin)
-
-            wmt2_wave_group_id_spin = QSpinBox()
-            wmt2_wave_group_id_spin.setRange(0, 16384)
-            wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
-
-            wmt2_wave_number_l_spin = QSpinBox()
-            wmt2_wave_number_l_spin.setRange(0, 16384)
-            wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
-
-            wmt2_wave_number_r_spin = QSpinBox()
-            wmt2_wave_number_r_spin.setRange(0, 16384)
-            wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
-
-            wmt2_wave_gain_spin = QSpinBox()
-            wmt2_wave_gain_spin.setRange(0, 3)
-            wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_spin)
-
-            wmt2_wave_fxm_switch_combo = QComboBox()
-            wmt2_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-            wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
-
-            wmt2_wave_fxm_color_spin = QSpinBox()
-            wmt2_wave_fxm_color_spin.setRange(0, 3)
-            wmt2_layout.addRow("WMT2 Wave FXM Color", wmt2_wave_fxm_color_spin)
-
-            wmt2_wave_fxm_depth_spin = QSpinBox()
-            wmt2_wave_fxm_depth_spin.setRange(0, 16)
-            wmt2_layout.addRow("WMT2 Wave FXM Depth", wmt2_wave_fxm_depth_spin)
-
-            wmt2_wave_tempo_sync_combo = QComboBox()
-            wmt2_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-            wmt2_layout.addRow("WMT2 Wave Tempo Sync", wmt2_wave_tempo_sync_combo)
-
-            wmt2_wave_coarse_tune_spin = QSpinBox()
-            wmt2_wave_coarse_tune_spin.setRange(16, 112)
-            wmt2_layout.addRow("WMT2 Wave Coarse Tune", wmt2_wave_coarse_tune_spin)
-
-            wmt2_wave_fine_tune_spin = QSpinBox()
-            wmt2_wave_fine_tune_spin.setRange(14, 114)
-            wmt2_layout.addRow("WMT2 Wave Fine Tune", wmt2_wave_fine_tune_spin)
-
-            wmt2_wave_pan_spin = QSpinBox()
-            wmt2_wave_pan_spin.setRange(0, 127)
-            wmt2_layout.addRow("WMT2 Wave Pan", wmt2_wave_pan_spin)
-
-            wmt2_wave_random_pan_switch_combo = QComboBox()
-            wmt2_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-            wmt2_layout.addRow(
-                "WMT2 Wave Random Pan Switch", wmt2_wave_random_pan_switch_combo
-            )
-
-            wmt2_wave_alternate_pan_switch_combo = QComboBox()
-            wmt2_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-            wmt2_layout.addRow(
-                "WMT2 Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch_combo
-            )
-
-            wmt2_wave_level_spin = QSpinBox()
-            wmt2_wave_level_spin.setRange(0, 127)
-            wmt2_layout.addRow("WMT2 Wave Level", wmt2_wave_level_spin)
-
-            wmt2_velocity_range_lower_spin = QSpinBox()
-            wmt2_velocity_range_lower_spin.setRange(1, 127)
-            wmt2_layout.addRow(
-                "WMT2 Velocity Range Lower", wmt2_velocity_range_lower_spin
-            )
-
-            wmt2_velocity_range_upper_spin = QSpinBox()
-            wmt2_velocity_range_upper_spin.setRange(1, 127)
-            wmt2_layout.addRow(
-                "WMT2 Velocity Range Upper", wmt2_velocity_range_upper_spin
-            )
-
-            wmt2_velocity_fade_width_lower_spin = QSpinBox()
-            wmt2_velocity_fade_width_lower_spin.setRange(0, 127)
-            wmt2_layout.addRow(
-                "WMT2 Velocity Fade Width Lower", wmt2_velocity_fade_width_lower_spin
-            )
-
-            wmt2_velocity_fade_width_upper_spin = QSpinBox()
-            wmt2_velocity_fade_width_upper_spin.setRange(0, 127)
-            wmt2_layout.addRow(
-                "WMT2 Velocity Fade Width Upper", wmt2_velocity_fade_width_upper_spin
-            )
-
-            # Add controls to WMT3 tab
-            wmt3_tab = wmt_tab_widget.widget(2)
-            wmt3_layout = QFormLayout()
-            wmt3_tab.setLayout(wmt3_layout)
-
-            wmt3_wave_switch_combo = QComboBox()
-            wmt3_wave_switch_combo.addItems(["OFF", "ON"])
-            wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
-
-            wmt3_wave_group_type_spin = QSpinBox()
-            wmt3_wave_group_type_spin.setRange(0, 0)
-            wmt3_layout.addRow("WMT3 Wave Group Type", wmt3_wave_group_type_spin)
-
-            wmt3_wave_group_id_spin = QSpinBox()
-            wmt3_wave_group_id_spin.setRange(0, 16384)
-            wmt3_layout.addRow("WMT3 Wave Group ID", wmt3_wave_group_id_spin)
-
-            wmt3_wave_number_l_spin = QSpinBox()
-            wmt3_wave_number_l_spin.setRange(0, 16384)
-            wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
-
-            wmt3_wave_number_r_spin = QSpinBox()
-            wmt3_wave_number_r_spin.setRange(0, 16384)
-            wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
-
-            wmt3_wave_gain_spin = QSpinBox()
-            wmt3_wave_gain_spin.setRange(0, 3)
-            wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_spin)
-
-            wmt3_wave_fxm_switch_combo = QComboBox()
-            wmt3_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-            wmt3_layout.addRow("WMT3 Wave FXM Switch", wmt3_wave_fxm_switch_combo)
-
-            wmt3_wave_fxm_color_spin = QSpinBox()
-            wmt3_wave_fxm_color_spin.setRange(0, 3)
-            wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_spin)
-
-            wmt3_wave_fxm_depth_spin = QSpinBox()
-            wmt3_wave_fxm_depth_spin.setRange(0, 16)
-            wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_spin)
-
-            wmt3_wave_tempo_sync_combo = QComboBox()
-            wmt3_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-            wmt3_layout.addRow("WMT3 Wave Tempo Sync", wmt3_wave_tempo_sync_combo)
-
-            wmt3_wave_coarse_tune_spin = QSpinBox()
-            wmt3_wave_coarse_tune_spin.setRange(16, 112)
-            wmt3_layout.addRow("WMT3 Wave Coarse Tune", wmt3_wave_coarse_tune_spin)
-
-            wmt3_wave_fine_tune_spin = QSpinBox()
-            wmt3_wave_fine_tune_spin.setRange(14, 114)
-            wmt3_layout.addRow("WMT3 Wave Fine Tune", wmt3_wave_fine_tune_spin)
-
-            wmt3_wave_pan_spin = QSpinBox()
-            wmt3_wave_pan_spin.setRange(0, 127)
-            wmt3_layout.addRow("WMT3 Wave Pan", wmt3_wave_pan_spin)
-
-            wmt3_wave_random_pan_switch_combo = QComboBox()
-            wmt3_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-            wmt3_layout.addRow(
-                "WMT3 Wave Random Pan Switch", wmt3_wave_random_pan_switch_combo
-            )
-
-            wmt3_wave_alternate_pan_switch_combo = QComboBox()
-            wmt3_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-            wmt3_layout.addRow(
-                "WMT3 Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch_combo
-            )
-
-            wmt3_wave_level_spin = QSpinBox()
-            wmt3_wave_level_spin.setRange(0, 127)
-            wmt3_layout.addRow("WMT3 Wave Level", wmt3_wave_level_spin)
-
-            wmt3_velocity_range_lower_spin = QSpinBox()
-            wmt3_velocity_range_lower_spin.setRange(1, 127)
-            wmt3_layout.addRow(
-                "WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin
-            )
-
-            wmt3_velocity_range_upper_spin = QSpinBox()
-            wmt3_velocity_range_upper_spin.setRange(1, 127)
-            wmt3_layout.addRow(
-                "WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin
-            )
-
-            wmt3_velocity_fade_width_lower_spin = QSpinBox()
-            wmt3_velocity_fade_width_lower_spin.setRange(0, 127)
-            wmt3_layout.addRow(
-                "WMT3 Velocity Fade Width Lower", wmt3_velocity_fade_width_lower_spin
-            )
-
-            wmt3_velocity_fade_width_upper_spin = QSpinBox()
-            wmt3_velocity_fade_width_upper_spin.setRange(0, 127)
-            wmt3_layout.addRow(
-                "WMT3 Velocity Fade Width Upper", wmt3_velocity_fade_width_upper_spin
-            )
-
-            # Add controls to WMT4 tab
-            wmt4_tab = wmt_tab_widget.widget(3)
-            wmt4_layout = QFormLayout()
-            wmt4_tab.setLayout(wmt4_layout)
-
-            wmt4_wave_switch_combo = QComboBox()
-            wmt4_wave_switch_combo.addItems(["OFF", "ON"])
-            wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
-
-            wmt4_wave_group_type_spin = QSpinBox()
-            wmt4_wave_group_type_spin.setRange(0, 0)
-            wmt4_layout.addRow("WMT4 Wave Group Type", wmt4_wave_group_type_spin)
-
-            wmt4_wave_group_id_spin = QSpinBox()
-            wmt4_wave_group_id_spin.setRange(0, 16384)
-            wmt4_layout.addRow("WMT4 Wave Group ID", wmt4_wave_group_id_spin)
-
-            wmt4_wave_number_l_spin = QSpinBox()
-            wmt4_wave_number_l_spin.setRange(0, 16384)
-            wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
-
-            wmt4_wave_number_r_spin = QSpinBox()
-            wmt4_wave_number_r_spin.setRange(0, 16384)
-            wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
-
-            wmt4_wave_gain_spin = QSpinBox()
-            wmt4_wave_gain_spin.setRange(0, 3)
-            wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_spin)
-
-            wmt4_wave_fxm_switch_combo = QComboBox()
-            wmt4_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-            wmt4_layout.addRow("WMT4 Wave FXM Switch", wmt4_wave_fxm_switch_combo)
-
-            wmt4_wave_fxm_color_spin = QSpinBox()
-            wmt4_wave_fxm_color_spin.setRange(0, 3)
-            wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_spin)
-
-            wmt4_wave_fxm_depth_spin = QSpinBox()
-            wmt4_wave_fxm_depth_spin.setRange(0, 16)
-            wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_spin)
-
-            wmt4_wave_tempo_sync_combo = QComboBox()
-            wmt4_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-            wmt4_layout.addRow("WMT4 Wave Tempo Sync", wmt4_wave_tempo_sync_combo)
-
-            wmt4_wave_coarse_tune_spin = QSpinBox()
-            wmt4_wave_coarse_tune_spin.setRange(16, 112)
-            wmt4_layout.addRow("WMT4 Wave Coarse Tune", wmt4_wave_coarse_tune_spin)
-
-            wmt4_wave_fine_tune_spin = QSpinBox()
-            wmt4_wave_fine_tune_spin.setRange(14, 114)
-            wmt4_layout.addRow("WMT4 Wave Fine Tune", wmt4_wave_fine_tune_spin)
-
-            wmt4_wave_pan_spin = QSpinBox()
-            wmt4_wave_pan_spin.setRange(0, 127)
-            wmt4_layout.addRow("WMT4 Wave Pan", wmt4_wave_pan_spin)
-
-            wmt4_wave_random_pan_switch_combo = QComboBox()
-            wmt4_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-            wmt4_layout.addRow(
-                "WMT4 Wave Random Pan Switch", wmt4_wave_random_pan_switch_combo
-            )
-
-            wmt4_wave_alternate_pan_switch_combo = QComboBox()
-            wmt4_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-            wmt4_layout.addRow(
-                "WMT4 Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch_combo
-            )
-
-            wmt4_wave_level_spin = QSpinBox()
-            wmt4_wave_level_spin.setRange(0, 127)
-            wmt4_layout.addRow("WMT4 Wave Level", wmt4_wave_level_spin)
-
-            wmt4_velocity_range_lower_spin = QSpinBox()
-            wmt4_velocity_range_lower_spin.setRange(1, 127)
-            wmt4_layout.addRow(
-                "WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin
-            )
-
-            wmt4_velocity_range_upper_spin = QSpinBox()
-            wmt4_velocity_range_upper_spin.setRange(1, 127)
-            wmt4_layout.addRow(
-                "WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin
-            )
-
-            wmt4_velocity_fade_width_lower_spin = QSpinBox()
-            wmt4_velocity_fade_width_lower_spin.setRange(0, 127)
-            wmt4_layout.addRow(
-                "WMT4 Velocity Fade Width Lower", wmt4_velocity_fade_width_lower_spin
-            )
-
-            wmt4_velocity_fade_width_upper_spin = QSpinBox()
-            wmt4_velocity_fade_width_upper_spin.setRange(0, 127)
-            wmt4_layout.addRow(
-                "WMT4 Velocity Fade Width Upper", wmt4_velocity_fade_width_upper_spin
-            )
 
             tab.setLayout(scroll_layout)
             tab.layout().addWidget(scroll_area)
@@ -1052,6 +331,719 @@ class DrumEditor(BaseEditor):
 
         self.update_instrument_image()
         self.tab_widget.currentChanged.connect(self.update_partial_num)
+
+    def _create_tva_group(self):
+        """Create the TVA group."""
+        # TVA Group
+        tva_group = QGroupBox("TVA")
+        tva_layout = QFormLayout()
+        tva_group.setLayout(tva_layout)
+
+        # Add TVA parameters
+        tva_level_velocity_curve_spin = QSpinBox()
+        tva_level_velocity_curve_spin.setRange(0, 7)
+        tva_layout.addRow("TVA Level Velocity Curve", tva_level_velocity_curve_spin)
+
+        tva_level_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_level_velocity_sens_slider.setRange(1, 127)
+        tva_level_velocity_sens_slider.valueChanged.connect(
+            self._on_tva_level_velocity_sens_slider_changed
+        )
+        tva_layout.addRow("TVA Level Velocity Sens", tva_level_velocity_sens_slider)
+
+        tva_env_time1_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_time1_velocity_sens_slider.setRange(1, 127)
+        tva_env_time1_velocity_sens_slider.valueChanged.connect(
+            self._on_tva_env_time1_velocity_sens_slider_changed
+        )
+        tva_layout.addRow(
+            "TVA Env Time 1 Velocity Sens", tva_env_time1_velocity_sens_slider
+        )
+
+        tva_env_time4_velocity_sens_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_time4_velocity_sens_slider.setRange(1, 127)
+        tva_env_time4_velocity_sens_slider.valueChanged.connect(
+            self._on_tva_env_time4_velocity_sens_slider_changed
+        )
+        tva_layout.addRow(
+            "TVA Env Time 4 Velocity Sens", tva_env_time4_velocity_sens_slider
+        )
+
+        tva_env_time1_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_time1_slider.setRange(0, 127)
+        tva_env_time1_slider.valueChanged.connect(
+            self._on_tva_env_time1_slider_changed
+        )
+        tva_layout.addRow("TVA Env Time 1", tva_env_time1_slider)
+
+        tva_env_time2_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_time2_slider.setRange(0, 127)
+        tva_env_time2_slider.valueChanged.connect(
+            self._on_tva_env_time2_slider_changed
+        )
+        tva_layout.addRow("TVA Env Time 2", tva_env_time2_slider)
+
+        tva_env_time3_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_time3_slider.setRange(0, 127)
+        tva_env_time3_slider.valueChanged.connect(
+            self._on_tva_env_time3_slider_changed
+        )
+        tva_layout.addRow("TVA Env Time 3", tva_env_time3_slider)
+
+        tva_env_level1_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_level1_slider.setRange(0, 127)
+        tva_env_level1_slider.valueChanged.connect(
+            self._on_tva_env_level1_slider_changed
+        )
+        tva_layout.addRow("TVA Env Level 1", tva_env_level1_slider)
+
+        tva_env_level2_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_level2_slider.setRange(0, 127)
+        tva_env_level2_slider.valueChanged.connect(
+            self._on_tva_env_level2_slider_changed
+        )
+        tva_layout.addRow("TVA Env Level 2", tva_env_level2_slider)
+
+        tva_env_level3_slider = QSlider(Qt.Orientation.Horizontal)
+        tva_env_level3_slider.setRange(0, 127)
+        tva_env_level3_slider.valueChanged.connect(
+            self._on_tva_env_level3_slider_changed
+        )
+        tva_layout.addRow("TVA Env Level 3", tva_env_level3_slider)
+        return tva_group
+
+    def _create_wmt_group(self):
+        """Create the WMT group."""
+
+        # WMT Group
+        wmt_group = QGroupBox("WMT")
+        wmt_layout = QVBoxLayout()
+        wmt_group.setLayout(wmt_layout)
+
+        # WMT Velocity Control
+        wmt_velocity_control_combo = QComboBox()
+        wmt_velocity_control_combo.addItems(["OFF", "ON", "RANDOM"])
+        wmt_layout.addWidget(wmt_velocity_control_combo)
+
+        # WMT Tabbed Widget
+        wmt_tab_widget = QTabWidget()
+        wmt_tabs = ["WMT1", "WMT2", "WMT3", "WMT4"]
+        for wmt_tab in wmt_tabs:
+            wmt_tab_widget.addTab(QWidget(), wmt_tab)
+        wmt_layout.addWidget(wmt_tab_widget)
+
+        # Add controls to WMT1 tab
+        wmt1_tab = wmt_tab_widget.widget(0)
+        wmt1_layout = QFormLayout()
+        wmt1_tab.setLayout(wmt1_layout)
+
+        wmt1_wave_switch_combo = QComboBox()
+        wmt1_wave_switch_combo.addItems(["OFF", "ON"])
+        wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
+
+        wmt1_wave_group_type_spin = QSpinBox()
+        wmt1_wave_group_type_spin.setRange(0, 0)
+        wmt1_layout.addRow("WMT1 Wave Group Type", wmt1_wave_group_type_spin)
+
+        wmt1_wave_group_id_spin = QSpinBox()
+        wmt1_wave_group_id_spin.setRange(0, 16384)
+        wmt1_layout.addRow("WMT1 Wave Group ID", wmt1_wave_group_id_spin)
+
+        wmt1_wave_number_l_spin = QSpinBox()
+        wmt1_wave_number_l_spin.setRange(0, 16384)
+        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_spin)
+
+        wmt1_wave_number_r_spin = QSpinBox()
+        wmt1_wave_number_r_spin.setRange(0, 16384)
+        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_spin)
+
+        wmt1_wave_gain_spin = QSpinBox()
+        wmt1_wave_gain_spin.setRange(0, 3)
+        wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_spin)
+
+        wmt1_wave_fxm_switch_combo = QComboBox()
+        wmt1_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt1_layout.addRow("WMT1 Wave FXM Switch", wmt1_wave_fxm_switch_combo)
+
+        wmt1_wave_fxm_color_spin = QSpinBox()
+        wmt1_wave_fxm_color_spin.setRange(0, 3)
+        wmt1_layout.addRow("WMT1 Wave FXM Color", wmt1_wave_fxm_color_spin)
+
+        wmt1_wave_fxm_depth_spin = QSpinBox()
+        wmt1_wave_fxm_depth_spin.setRange(0, 16)
+        wmt1_layout.addRow("WMT1 Wave FXM Depth", wmt1_wave_fxm_depth_spin)
+
+        wmt1_wave_tempo_sync_combo = QComboBox()
+        wmt1_wave_tempo_sync_combo.addItems(["OFF", "ON"])
+        wmt1_layout.addRow("WMT1 Wave Tempo Sync", wmt1_wave_tempo_sync_combo)
+
+        wmt1_wave_coarse_tune_spin = QSpinBox()
+        wmt1_wave_coarse_tune_spin.setRange(16, 112)
+        wmt1_layout.addRow("WMT1 Wave Coarse Tune", wmt1_wave_coarse_tune_spin)
+
+        wmt1_wave_fine_tune_spin = QSpinBox()
+        wmt1_wave_fine_tune_spin.setRange(14, 114)
+        wmt1_layout.addRow("WMT1 Wave Fine Tune", wmt1_wave_fine_tune_spin)
+
+        wmt1_wave_pan_spin = QSpinBox()
+        wmt1_wave_pan_spin.setRange(0, 127)
+        wmt1_layout.addRow("WMT1 Wave Pan", wmt1_wave_pan_spin)
+
+        wmt1_wave_random_pan_switch_combo = QComboBox()
+        wmt1_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt1_layout.addRow(
+            "WMT1 Wave Random Pan Switch", wmt1_wave_random_pan_switch_combo
+        )
+
+        wmt1_wave_alternate_pan_switch_combo = QComboBox()
+        wmt1_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+        wmt1_layout.addRow(
+            "WMT1 Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch_combo
+        )
+
+        wmt1_wave_level_spin = QSpinBox()
+        wmt1_wave_level_spin.setRange(0, 127)
+        wmt1_layout.addRow("WMT1 Wave Level", wmt1_wave_level_spin)
+
+        wmt1_velocity_range_lower_spin = QSpinBox()
+        wmt1_velocity_range_lower_spin.setRange(1, 127)
+        wmt1_layout.addRow(
+            "WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin
+        )
+
+        wmt1_velocity_range_upper_spin = QSpinBox()
+        wmt1_velocity_range_upper_spin.setRange(1, 127)
+        wmt1_layout.addRow(
+            "WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin
+        )
+
+        wmt1_velocity_fade_width_lower_spin = QSpinBox()
+        wmt1_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt1_layout.addRow(
+            "WMT1 Velocity Fade Width Lower", wmt1_velocity_fade_width_lower_spin
+        )
+
+        wmt1_velocity_fade_width_upper_spin = QSpinBox()
+        wmt1_velocity_fade_width_upper_spin.setRange(0, 127)
+        wmt1_layout.addRow(
+            "WMT1 Velocity Fade Width Upper", wmt1_velocity_fade_width_upper_spin
+        )
+        # Add controls to WMT2 tab
+        wmt2_tab = wmt_tab_widget.widget(1)
+        wmt2_layout = QFormLayout()
+        wmt2_tab.setLayout(wmt2_layout)
+
+        wmt2_wave_switch_combo = QComboBox()
+        wmt2_wave_switch_combo.addItems(["OFF", "ON"])
+        wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
+
+        wmt2_wave_group_type_spin = QSpinBox()
+        wmt2_wave_group_type_spin.setRange(0, 0)
+        wmt2_layout.addRow("WMT2 Wave Group Type", wmt2_wave_group_type_spin)
+
+        wmt2_wave_group_id_spin = QSpinBox()
+        wmt2_wave_group_id_spin.setRange(0, 16384)
+        wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
+
+        wmt2_wave_number_l_spin = QSpinBox()
+        wmt2_wave_number_l_spin.setRange(0, 16384)
+        wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
+
+        wmt2_wave_number_r_spin = QSpinBox()
+        wmt2_wave_number_r_spin.setRange(0, 16384)
+        wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
+
+        wmt2_wave_gain_spin = QSpinBox()
+        wmt2_wave_gain_spin.setRange(0, 3)
+        wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_spin)
+
+        wmt2_wave_fxm_switch_combo = QComboBox()
+        wmt2_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
+
+        wmt2_wave_fxm_color_spin = QSpinBox()
+        wmt2_wave_fxm_color_spin.setRange(0, 3)
+        wmt2_layout.addRow("WMT2 Wave FXM Color", wmt2_wave_fxm_color_spin)
+
+        wmt2_wave_fxm_depth_spin = QSpinBox()
+        wmt2_wave_fxm_depth_spin.setRange(0, 16)
+        wmt2_layout.addRow("WMT2 Wave FXM Depth", wmt2_wave_fxm_depth_spin)
+
+        wmt2_wave_tempo_sync_combo = QComboBox()
+        wmt2_wave_tempo_sync_combo.addItems(["OFF", "ON"])
+        wmt2_layout.addRow("WMT2 Wave Tempo Sync", wmt2_wave_tempo_sync_combo)
+
+        wmt2_wave_coarse_tune_spin = QSpinBox()
+        wmt2_wave_coarse_tune_spin.setRange(16, 112)
+        wmt2_layout.addRow("WMT2 Wave Coarse Tune", wmt2_wave_coarse_tune_spin)
+
+        wmt2_wave_fine_tune_spin = QSpinBox()
+        wmt2_wave_fine_tune_spin.setRange(14, 114)
+        wmt2_layout.addRow("WMT2 Wave Fine Tune", wmt2_wave_fine_tune_spin)
+
+        wmt2_wave_pan_spin = QSpinBox()
+        wmt2_wave_pan_spin.setRange(0, 127)
+        wmt2_layout.addRow("WMT2 Wave Pan", wmt2_wave_pan_spin)
+
+        wmt2_wave_random_pan_switch_combo = QComboBox()
+        wmt2_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt2_layout.addRow(
+            "WMT2 Wave Random Pan Switch", wmt2_wave_random_pan_switch_combo
+        )
+
+        wmt2_wave_alternate_pan_switch_combo = QComboBox()
+        wmt2_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+        wmt2_layout.addRow(
+            "WMT2 Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch_combo
+        )
+
+        wmt2_wave_level_spin = QSpinBox()
+        wmt2_wave_level_spin.setRange(0, 127)
+        wmt2_layout.addRow("WMT2 Wave Level", wmt2_wave_level_spin)
+
+        wmt2_velocity_range_lower_spin = QSpinBox()
+        wmt2_velocity_range_lower_spin.setRange(1, 127)
+        wmt2_layout.addRow(
+            "WMT2 Velocity Range Lower", wmt2_velocity_range_lower_spin
+        )
+
+        wmt2_velocity_range_upper_spin = QSpinBox()
+        wmt2_velocity_range_upper_spin.setRange(1, 127)
+        wmt2_layout.addRow(
+            "WMT2 Velocity Range Upper", wmt2_velocity_range_upper_spin
+        )
+
+        wmt2_velocity_fade_width_lower_spin = QSpinBox()
+        wmt2_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt2_layout.addRow(
+            "WMT2 Velocity Fade Width Lower", wmt2_velocity_fade_width_lower_spin
+        )
+
+        wmt2_velocity_fade_width_upper_spin = QSpinBox()
+        wmt2_velocity_fade_width_upper_spin.setRange(0, 127)
+        wmt2_layout.addRow(
+            "WMT2 Velocity Fade Width Upper", wmt2_velocity_fade_width_upper_spin
+        )
+
+        # Add controls to WMT3 tab
+        wmt3_tab = wmt_tab_widget.widget(2)
+        wmt3_layout = QFormLayout()
+        wmt3_tab.setLayout(wmt3_layout)
+
+        wmt3_wave_switch_combo = QComboBox()
+        wmt3_wave_switch_combo.addItems(["OFF", "ON"])
+        wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
+
+        wmt3_wave_group_type_spin = QSpinBox()
+        wmt3_wave_group_type_spin.setRange(0, 0)
+        wmt3_layout.addRow("WMT3 Wave Group Type", wmt3_wave_group_type_spin)
+
+        wmt3_wave_group_id_spin = QSpinBox()
+        wmt3_wave_group_id_spin.setRange(0, 16384)
+        wmt3_layout.addRow("WMT3 Wave Group ID", wmt3_wave_group_id_spin)
+
+        wmt3_wave_number_l_spin = QSpinBox()
+        wmt3_wave_number_l_spin.setRange(0, 16384)
+        wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
+
+        wmt3_wave_number_r_spin = QSpinBox()
+        wmt3_wave_number_r_spin.setRange(0, 16384)
+        wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
+
+        wmt3_wave_gain_spin = QSpinBox()
+        wmt3_wave_gain_spin.setRange(0, 3)
+        wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_spin)
+
+        wmt3_wave_fxm_switch_combo = QComboBox()
+        wmt3_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt3_layout.addRow("WMT3 Wave FXM Switch", wmt3_wave_fxm_switch_combo)
+
+        wmt3_wave_fxm_color_spin = QSpinBox()
+        wmt3_wave_fxm_color_spin.setRange(0, 3)
+        wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_spin)
+
+        wmt3_wave_fxm_depth_spin = QSpinBox()
+        wmt3_wave_fxm_depth_spin.setRange(0, 16)
+        wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_spin)
+
+        wmt3_wave_tempo_sync_combo = QComboBox()
+        wmt3_wave_tempo_sync_combo.addItems(["OFF", "ON"])
+        wmt3_layout.addRow("WMT3 Wave Tempo Sync", wmt3_wave_tempo_sync_combo)
+
+        wmt3_wave_coarse_tune_spin = QSpinBox()
+        wmt3_wave_coarse_tune_spin.setRange(16, 112)
+        wmt3_layout.addRow("WMT3 Wave Coarse Tune", wmt3_wave_coarse_tune_spin)
+
+        wmt3_wave_fine_tune_spin = QSpinBox()
+        wmt3_wave_fine_tune_spin.setRange(14, 114)
+        wmt3_layout.addRow("WMT3 Wave Fine Tune", wmt3_wave_fine_tune_spin)
+
+        wmt3_wave_pan_spin = QSpinBox()
+        wmt3_wave_pan_spin.setRange(0, 127)
+        wmt3_layout.addRow("WMT3 Wave Pan", wmt3_wave_pan_spin)
+
+        wmt3_wave_random_pan_switch_combo = QComboBox()
+        wmt3_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt3_layout.addRow(
+            "WMT3 Wave Random Pan Switch", wmt3_wave_random_pan_switch_combo
+        )
+
+        wmt3_wave_alternate_pan_switch_combo = QComboBox()
+        wmt3_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+        wmt3_layout.addRow(
+            "WMT3 Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch_combo
+        )
+
+        wmt3_wave_level_spin = QSpinBox()
+        wmt3_wave_level_spin.setRange(0, 127)
+        wmt3_layout.addRow("WMT3 Wave Level", wmt3_wave_level_spin)
+
+        wmt3_velocity_range_lower_spin = QSpinBox()
+        wmt3_velocity_range_lower_spin.setRange(1, 127)
+        wmt3_layout.addRow(
+            "WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin
+        )
+
+        wmt3_velocity_range_upper_spin = QSpinBox()
+        wmt3_velocity_range_upper_spin.setRange(1, 127)
+        wmt3_layout.addRow(
+            "WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin
+        )
+
+        wmt3_velocity_fade_width_lower_spin = QSpinBox()
+        wmt3_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt3_layout.addRow(
+            "WMT3 Velocity Fade Width Lower", wmt3_velocity_fade_width_lower_spin
+        )
+
+        wmt3_velocity_fade_width_upper_spin = QSpinBox()
+        wmt3_velocity_fade_width_upper_spin.setRange(0, 127)
+        wmt3_layout.addRow(
+            "WMT3 Velocity Fade Width Upper", wmt3_velocity_fade_width_upper_spin
+        )
+
+        # Add controls to WMT4 tab
+        wmt4_tab = wmt_tab_widget.widget(3)
+        wmt4_layout = QFormLayout()
+        wmt4_tab.setLayout(wmt4_layout)
+
+        wmt4_wave_switch_combo = QComboBox()
+        wmt4_wave_switch_combo.addItems(["OFF", "ON"])
+        wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
+
+        wmt4_wave_group_type_spin = QSpinBox()
+        wmt4_wave_group_type_spin.setRange(0, 0)
+        wmt4_layout.addRow("WMT4 Wave Group Type", wmt4_wave_group_type_spin)
+
+        wmt4_wave_group_id_spin = QSpinBox()
+        wmt4_wave_group_id_spin.setRange(0, 16384)
+        wmt4_layout.addRow("WMT4 Wave Group ID", wmt4_wave_group_id_spin)
+
+        wmt4_wave_number_l_spin = QSpinBox()
+        wmt4_wave_number_l_spin.setRange(0, 16384)
+        wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
+
+        wmt4_wave_number_r_spin = QSpinBox()
+        wmt4_wave_number_r_spin.setRange(0, 16384)
+        wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
+
+        wmt4_wave_gain_spin = QSpinBox()
+        wmt4_wave_gain_spin.setRange(0, 3)
+        wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_spin)
+
+        wmt4_wave_fxm_switch_combo = QComboBox()
+        wmt4_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt4_layout.addRow("WMT4 Wave FXM Switch", wmt4_wave_fxm_switch_combo)
+
+        wmt4_wave_fxm_color_spin = QSpinBox()
+        wmt4_wave_fxm_color_spin.setRange(0, 3)
+        wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_spin)
+
+        wmt4_wave_fxm_depth_spin = QSpinBox()
+        wmt4_wave_fxm_depth_spin.setRange(0, 16)
+        wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_spin)
+
+        wmt4_wave_tempo_sync_combo = QComboBox()
+        wmt4_wave_tempo_sync_combo.addItems(["OFF", "ON"])
+        wmt4_layout.addRow("WMT4 Wave Tempo Sync", wmt4_wave_tempo_sync_combo)
+
+        wmt4_wave_coarse_tune_spin = QSpinBox()
+        wmt4_wave_coarse_tune_spin.setRange(16, 112)
+        wmt4_layout.addRow("WMT4 Wave Coarse Tune", wmt4_wave_coarse_tune_spin)
+
+        wmt4_wave_fine_tune_spin = QSpinBox()
+        wmt4_wave_fine_tune_spin.setRange(14, 114)
+        wmt4_layout.addRow("WMT4 Wave Fine Tune", wmt4_wave_fine_tune_spin)
+
+        wmt4_wave_pan_spin = QSpinBox()
+        wmt4_wave_pan_spin.setRange(0, 127)
+        wmt4_layout.addRow("WMT4 Wave Pan", wmt4_wave_pan_spin)
+
+        wmt4_wave_random_pan_switch_combo = QComboBox()
+        wmt4_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt4_layout.addRow(
+            "WMT4 Wave Random Pan Switch", wmt4_wave_random_pan_switch_combo
+        )
+
+        wmt4_wave_alternate_pan_switch_combo = QComboBox()
+        wmt4_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+        wmt4_layout.addRow(
+            "WMT4 Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch_combo
+        )
+
+        wmt4_wave_level_spin = QSpinBox()
+        wmt4_wave_level_spin.setRange(0, 127)
+        wmt4_layout.addRow("WMT4 Wave Level", wmt4_wave_level_spin)
+
+        wmt4_velocity_range_lower_spin = QSpinBox()
+        wmt4_velocity_range_lower_spin.setRange(1, 127)
+        wmt4_layout.addRow(
+            "WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin
+        )
+
+        wmt4_velocity_range_upper_spin = QSpinBox()
+        wmt4_velocity_range_upper_spin.setRange(1, 127)
+        wmt4_layout.addRow(
+            "WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin
+        )
+
+        wmt4_velocity_fade_width_lower_spin = QSpinBox()
+        wmt4_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt4_layout.addRow(
+            "WMT4 Velocity Fade Width Lower", wmt4_velocity_fade_width_lower_spin
+        )
+
+        wmt4_velocity_fade_width_upper_spin = QSpinBox()
+        wmt4_velocity_fade_width_upper_spin.setRange(0, 127)
+        wmt4_layout.addRow(
+            "WMT4 Velocity Fade Width Upper", wmt4_velocity_fade_width_upper_spin
+        )
+        return wmt_group
+
+    def _create_pitch_group(self):
+        """Create the pitch group."""
+        # Pitch Group
+        pitch_group = QGroupBox("Pitch")
+        pitch_layout = QFormLayout()
+        pitch_group.setLayout(pitch_layout)
+        #grid_layout.addWidget(pitch_group, 0, 0)
+
+        # Add pitch parameters
+        partial_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_LEVEL, "Partial Level")
+        pitch_layout.addRow(partial_level_slider)
+
+        partial_coarse_tune_slider = self._create_parameter_slider(DrumParameter.PARTIAL_COARSE_TUNE,
+                                                                   "Partial Coarse Tune")
+        pitch_layout.addRow(partial_coarse_tune_slider)
+
+        partial_fine_tune_slider = self._create_parameter_slider(DrumParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune")
+        pitch_layout.addRow(partial_fine_tune_slider)
+
+        partial_random_pitch_depth_slider = self._create_parameter_slider(DrumParameter.PARTIAL_RANDOM_PITCH_DEPTH,
+                                                                          "Partial Random Pitch Depth")
+        pitch_layout.addRow(partial_random_pitch_depth_slider)
+
+        partial_pan_slider = self._create_parameter_slider(DrumParameter.PARTIAL_PAN, "Partial Pan")
+        pitch_layout.addRow(partial_pan_slider)
+
+        partial_random_pan_depth_slider = self._create_parameter_slider(DrumParameter.PARTIAL_RANDOM_PAN_DEPTH,
+                                                                        "Partial Random Pan Depth")
+        pitch_layout.addRow(partial_random_pan_depth_slider)
+
+        partial_alternate_pan_depth_slider = self._create_parameter_slider(DrumParameter.PARTIAL_ALTERNATE_PAN_DEPTH,
+                                                                           "Partial Alternate Pan Depth")
+        pitch_layout.addRow(partial_alternate_pan_depth_slider)
+
+        partial_env_mode_combo = QComboBox()
+        partial_env_mode_combo.addItems(["0", "1"])
+        pitch_layout.addRow("Partial Env Mode", partial_env_mode_combo)
+        partial_env_mode_combo.currentIndexChanged.connect(self.on_partial_env_mode_changed)
+
+        return pitch_group
+
+    def _create_output_group(self):
+        # Output Group
+        output_group = QGroupBox("Output")
+        output_layout = QFormLayout()
+        output_group.setLayout(output_layout)
+
+        # Add output parameters
+        partial_output_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_OUTPUT_LEVEL, "Partial Output Level")
+        output_layout.addRow(partial_output_level_slider)
+
+        partial_chorus_send_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_CHORUS_SEND_LEVEL,
+                                                                         "Partial Chorus Send Level")
+        output_layout.addRow(
+            partial_chorus_send_level_slider
+        )
+
+        partial_reverb_send_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_REVERB_SEND_LEVEL,
+                                                                         "Partial Reverb Send Level")
+        output_layout.addRow(partial_reverb_send_level_slider)
+
+        partial_output_assign_combo = QComboBox()
+        partial_output_assign_combo.addItems(["EFX1", "EFX2", "DLY", "REV", "DIR"])
+        output_layout.addRow("Partial Output Assign", partial_output_assign_combo)
+
+        return output_group
+
+    def _create_tvf_group(self):
+        """ create tvf group """
+        # TVF Group
+        tvf_group = QGroupBox("TVF")
+        tvf_layout = QFormLayout()
+        tvf_group.setLayout(tvf_layout)
+
+        # Add TVF parameters
+        tvf_filter_type_combo = QComboBox()
+        tvf_filter_type_combo.addItems(
+            ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"]
+        )
+        tvf_filter_type_combo.currentIndexChanged.connect(
+            self._on_tvf_filter_type_combo_changed
+        )
+        tvf_layout.addRow("TVF Filter Type", tvf_filter_type_combo)
+
+        tvf_cutoff_frequency_slider = (
+            self._create_parameter_slider(DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff")
+        )
+        tvf_layout.addRow(tvf_cutoff_frequency_slider)
+
+        tvf_cutoff_velocity_curve_spin = QSpinBox()
+        tvf_cutoff_velocity_curve_spin.setRange(0, 7)
+        tvf_cutoff_velocity_curve_spin.valueChanged.connect(
+            self._on_tvf_cutoff_velocity_curve_spin_changed
+        )
+        tvf_layout.addRow(
+            "TVF Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin
+        )
+
+        tvf_cutoff_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVF_CUTOFF_VELOCITY_SENS
+        )
+        tvf_layout.addRow(tvf_cutoff_velocity_sens_slider)
+
+        tvf_env_depth_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_DEPTH
+        )
+        tvf_layout.addRow(tvf_env_depth_slider)
+
+        tvf_env_velocity_curve_type_spin = QSpinBox()
+        tvf_env_velocity_curve_type_spin.setRange(0, 7)
+        tvf_env_velocity_curve_type_spin.valueChanged.connect(
+            self._on_tvf_env_velocity_curve_type_spin_changed
+        )
+        tvf_layout.addRow(
+            "TVF Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
+        )
+
+        tvf_env_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_VELOCITY_SENS, "TVF Env Velocity Sens")
+        tvf_layout.addRow(tvf_env_velocity_sens_slider)
+
+        tvf_env_time1_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "TVF Env Time 1 Velocity Sens"
+        )
+        tvf_layout.addRow(tvf_env_time1_velocity_sens_slider)
+
+        tvf_env_time4_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "TVF Env Time 4 Velocity Sens"
+        )
+        tvf_layout.addRow(tvf_env_time4_velocity_sens_slider)
+
+        tvf_env_time1_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_TIME_1, "TVF Env Time 1")
+        tvf_layout.addRow(tvf_env_time1_slider)
+
+        tvf_env_time2_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_TIME_2, "TVF Env Time 2")
+        tvf_layout.addRow(tvf_env_time2_slider)
+
+        tvf_env_time3_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_TIME_3, "TVF Env Time 3")
+        tvf_layout.addRow(tvf_env_time3_slider)
+
+        tvf_env_time4_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_TIME_4, "TVF Env Time 4"
+        )
+        tvf_layout.addRow(tvf_env_time4_slider)
+
+        tvf_env_level0_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_LEVEL_0, "TVF Env Level 0"
+        )
+        tvf_layout.addRow(tvf_env_level0_slider)
+
+        tvf_env_level1_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_LEVEL_1, "TVF Env Level 1"
+        )
+        tvf_layout.addRow(tvf_env_level1_slider)
+
+        tvf_env_level2_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_LEVEL_2, "TVF Env Level 2"
+        )
+        tvf_layout.addRow(tvf_env_level2_slider)
+
+        tvf_env_level3_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_LEVEL_3, "TVF Env Level 3")
+        tvf_layout.addRow(tvf_env_level3_slider)
+
+        tvf_env_level4_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_LEVEL_4, "TVF Env Level 4")
+        tvf_layout.addRow(tvf_env_level4_slider)
+        return tvf_group
+
+    def _create_pitch_env_group(self):
+        """ create pitch env group """
+        # Pitch Env Group
+        pitch_env_group = QGroupBox("Pitch Env")
+        pitch_env_layout = QFormLayout()
+        pitch_env_group.setLayout(pitch_env_layout)
+
+        # Add pitch env parameters
+        pitch_env_depth_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_DEPTH, "Pitch Env Depth")
+        pitch_env_layout.addRow(pitch_env_depth_slider)
+
+        pitch_env_velocity_sens_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_VELOCITY_SENS, "Pitch Env Velocity Sens")
+        pitch_env_layout.addRow(pitch_env_velocity_sens_slider)
+
+        pitch_env_time1_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_TIME_1_VELOCITY_SENS, "Pitch Env Time 1 Velocity Sens"
+        )
+        pitch_env_layout.addRow(pitch_env_time1_velocity_sens_slider
+        )
+
+        pitch_env_time4_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_TIME_4_VELOCITY_SENS, "Pitch Env Time 4 Velocity Sens"
+        )
+        pitch_env_layout.addRow(pitch_env_time4_velocity_sens_slider
+        )
+
+        pitch_env_time1_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_1, "Pitch Env Time 1")
+        pitch_env_layout.addRow(pitch_env_time1_slider)
+
+        pitch_env_time2_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_2, "Pitch Env Time 2")
+        pitch_env_layout.addRow(pitch_env_time2_slider)
+
+        pitch_env_time3_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_3, "Pitch Env Time 3")
+        pitch_env_layout.addRow(pitch_env_time3_slider)
+
+        pitch_env_time4_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_4, "Pitch Env Time 4")
+        pitch_env_layout.addRow(pitch_env_time4_slider)
+
+        pitch_env_level0_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_0, "Pitch Env Level 0")
+        pitch_env_layout.addRow(pitch_env_level0_slider)
+
+        pitch_env_level1_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_1, "Pitch Env Level 1")
+        pitch_env_layout.addRow(pitch_env_level1_slider)
+
+        pitch_env_level2_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_2, "Pitch Env Level 2")
+        pitch_env_layout.addRow(pitch_env_level2_slider)
+
+        pitch_env_level3_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_3, "Pitch Env Level 3")
+        pitch_env_layout.addRow(pitch_env_level3_slider)
+
+        pitch_env_level4_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_4, "Pitch Env Level 4")
+        pitch_env_layout.addRow(pitch_env_level4_slider)
+        return pitch_env_group
+
+    def on_partial_env_mode_changed(self, value):
+        """Handle partial envelope mode combo box value change"""
+        # Use the helper function to send the SysEx message @@ FIXME
+        self.send_sysex_message(0x0B, value)
 
     def update_instrument_title(self):
         selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
@@ -1390,6 +1382,34 @@ class DrumEditor(BaseEditor):
 
         # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max)
+
+        if isinstance(param, DrumParameter) and param in [
+            DrumParameter.PARTIAL_FINE_TUNE,
+            # Add other bipolar parameters as needed
+        ]:
+            # Set format string to show + sign for positive values
+            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
+            # Set center tick
+            # slider.setCenterMark(0)
+            # Add more prominent tick at center
+            # slider.setTickPosition(Slider.TickPosition.TicksBothSides)
+            # slider.setTickInterval((display_max - display_min) // 4)
+            """ Set the slider to the center value """
+            # Get initial MIDI value and convert to display value
+            if self.midi_helper:
+                self.part = get_address_for_partial(
+                    self.partial_num
+                ) # Get the current partial number
+                group, param_address = get_address_for_partial(self.partial_num)
+                midi_value = self.midi_helper.get_parameter(
+                    area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                    part=self.part,
+                    group=group,
+                    param=param_address
+                )
+                if midi_value is not None:
+                    display_value = param.convert_from_midi(midi_value)
+                    slider.setValue(display_value)
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))

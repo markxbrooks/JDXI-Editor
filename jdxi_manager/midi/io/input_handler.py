@@ -29,8 +29,8 @@ from PySide6.QtCore import Signal
 from pubsub import pub
 
 from jdxi_manager.data.digital import get_digital_parameter_by_address
-from jdxi_manager.data.preset_data import DIGITAL_PRESETS
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.utils.json import log_json
 from jdxi_manager.midi.utils.parsers import parse_sysex
@@ -258,7 +258,7 @@ class MIDIInHandler(MidiIOController):
             preset_data["type"] = preset_mapping[self.cc_msb_value]
             # Adjust preset number based on LSB value
             self.preset_number = program_number + (128 if self.cc_lsb_value == 65 else 0)
-            preset_name = DIGITAL_PRESETS[self.preset_number] if self.preset_number < len(DIGITAL_PRESETS) else "Unknown Preset"
+            preset_name = DIGITAL_PRESETS_ENUMERATED[self.preset_number] if self.preset_number < len(DIGITAL_PRESETS_ENUMERATED) else "Unknown Preset"
             pub.sendMessage(
                 "update_display_preset",
                 preset_number=self.preset_number,

@@ -89,7 +89,7 @@ DRUM_ADDRESSES = (
 
 def get_address_for_partial(partial_num: int) -> Tuple[int, int]:
     """Get parameter group and address adjusted for partial number"""
-    LO = DRUM_ADDRESSES[partial_num + 1][
+    LO = DRUM_ADDRESSES[partial_num][
         2
     ]  # Skip the first row (common area), then extract the 3rd byte (zero-based index)
     HI = LO + 1
