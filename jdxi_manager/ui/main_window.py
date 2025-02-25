@@ -68,11 +68,12 @@ from jdxi_manager.midi.constants import (
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_DIGITAL2,
     MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS,
+    MIDI_CHANNEL_DRUMS, DigitalParameter,
 )
-from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
+from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA
 from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
 from jdxi_manager.midi.preset.loader import PresetLoader
+from jdxi_manager.midi.constants.arpeggio import ArpParameter
 
 
 class MainWindow(JdxiWindow):
@@ -880,72 +881,47 @@ class MainWindow(JdxiWindow):
 
             # Update display
             self._update_display()
-
+            part_address = 0x01
+            group_address = 0x00
+            param_address = DigitalParameter.OCTAVE_SHIFT.value
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
-
-            # Calculate checksum
-            checksum = 0x19 + 0x01 + 0x00 + 0x15 + octave_value
-            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-
-            # Create SysEx message
-            sysex_msg = [
-                0xF0,  # Start of SysEx
-                0x41,  # Roland ID
-                0x10,  # Device ID
-                0x00,
-                0x00,
-                0x00,
-                0x0E,  # Model ID
-                0x12,  # Command ID (DT1)
-                0x19,  # Address 1
-                0x01,  # Address 2
-                0x00,  # Address 3
-                0x15,  # Address 4
-                octave_value,  # Parameter value
-                checksum,  # Checksum
-                0xF7,  # End of SysEx
-            ]
-
-            self.midi_helper.send_message(sysex_msg)
+            self.send_midi_parameter(group_address, param_address, octave_value, part_address=part_address, area=TEMPORARY_TONE_AREA)
             logging.debug(
                 f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
+
+    def send_midi_parameter(self, group_address, param_address, value, part_address=None, area=None) -> bool:
+        """Send MIDI parameter with error handling"""
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
+        try:
+            if not part_address:
+                part_address = ARP_PART
+            if not area:
+                area = TEMPORARY_PROGRAM_AREA
+            # Ensure value is included in the MIDI message
+            return self.midi_helper.send_parameter(
+                area=area,
+                part=part_address,
+                group=group_address,
+                param=param_address,
+                value=value,  # Make sure this value is being sent
+            )
+        except Exception as e:
+            logging.error(f"MIDI error setting {param_address}: {str(e)}")
+            return False
 
     def _send_arp_key_hold(self, state):
         """Send arpeggiator key hold (latch) command"""
         try:
             if self.midi_helper:
+                param = 0x02  # Key Hold parameter, maybe!
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-
-                # Create SysEx message using constants
-                sysex_msg = [
-                    START_OF_SYSEX,
-                    ROLAND_ID,
-                    DEVICE_ID,
-                    MODEL_ID_1,
-                    MODEL_ID_2,
-                    MODEL_ID_3,
-                    JD_XI_ID,
-                    DT1_COMMAND_12,
-                    TEMPORARY_PROGRAM_AREA,  # Arpeggio area
-                    0x00,  # Subgroup
-                    0x00,  # Part
-                    0x02,  # Key Hold parameter
-                    value,  # Parameter value
-                ]
-
-                # Calculate checksum (sum all data bytes)
-                checksum = sum(sysex_msg[8:-1]) & 0x7F  # From address to value
-                checksum = (128 - checksum) & 0x7F
-
-                # Add checksum and end of sysex
-                sysex_msg.extend([checksum, END_OF_SYSEX])
-
-                # Send message
-                self.midi_helper.send_message(bytes(sysex_msg))
+                self.send_midi_parameter(ARP_GROUP, param, value) # Send the parameter
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
 
         except Exception as e:
@@ -955,42 +931,10 @@ class MainWindow(JdxiWindow):
         """Send arpeggiator on/off command"""
         try:
             if self.midi_helper:
+                param_address = ArpParameter.SWITCH.value  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
-
-                # Ensure all constants are integers
-                sysex_msg = [
-                    int(START_OF_SYSEX),
-                    int(ROLAND_ID),
-                    int(DEVICE_ID),
-                    int(MODEL_ID_1),
-                    int(MODEL_ID_2),
-                    int(MODEL_ID_3),
-                    int(JD_XI_ID),
-                    int(DT1_COMMAND_12),
-                    TEMPORARY_PROGRAM_AREA,  # Temporary area
-                    ARP_PART,  # Part
-                    ARP_GROUP,  # Part
-                    0x03,  # On/Off parameter
-                    int(value),  # Parameter value
-                ]
-
-                # Calculate checksum
-                checksum = sum(sysex_msg[8:]) & 0x7F  # Sum from address to value
-                checksum = (128 - checksum) & 0x7F  # Roland's checksum formula
-
-                # Add checksum and end of sysex
-                sysex_msg.append(checksum)
-                sysex_msg.append(int(END_OF_SYSEX))
-
-                # Validate all elements are integers
-                assert all(
-                    isinstance(x, int) for x in sysex_msg
-                ), "Non-integer found in sysex_msg"
-
-                # Send message
-                self.midi_helper.send_message(sysex_msg)  # No need for bytearray()
+                self.send_midi_parameter(ARP_GROUP, param_address, value)  # Send the parameter
                 logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
-
         except Exception as e:
             logging.error(f"Error sending arp on/off: {str(e)}")
 
@@ -1510,51 +1454,6 @@ class MainWindow(JdxiWindow):
 
         except Exception as e:
             logging.error(f"Error showing Vocal FX editor: {str(e)}")
-
-    def _send_octave_bak(self, direction):
-        """Send octave change MIDI message"""
-        if self.midi_out:
-            # Update octave tracking
-            self.current_octave = max(-3, min(3, self.current_octave + direction))
-
-            # Update button states
-            self.octave_down.setChecked(self.current_octave < 0)
-            self.octave_up.setChecked(self.current_octave > 0)
-
-            # Update display
-            self._update_display()
-
-            # Map octave value to correct SysEx value
-            # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
-            octave_value = 0x40 + self.current_octave  # 0x40 is center octave
-
-            # Calculate checksum
-            checksum = 0x19 + 0x01 + 0x00 + 0x15 + octave_value
-            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-
-            # Create SysEx message
-            sysex_msg = [
-                0xF0,  # Start of SysEx
-                0x41,  # Roland ID
-                0x10,  # Device ID
-                0x00,
-                0x00,
-                0x00,
-                0x0E,  # Model ID
-                0x12,  # Command ID (DT1)
-                0x19,  # Address 1
-                0x01,  # Address 2
-                0x00,  # Address 3
-                0x15,  # Address 4
-                octave_value,  # Parameter value
-                checksum,  # Checksum
-                0xF7,  # End of SysEx
-            ]
-
-            self.midi_helper.send_message(sysex_msg)
-            logging.debug(
-                f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
-            )
 
     def _change_octave(self, direction: int):
         """Change octave up/down
