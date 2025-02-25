@@ -3,11 +3,11 @@
 from enum import Enum, IntEnum
 
 # Areas and Parts
-ARP_AREA = 0x18
+TEMPORARY_PROGRAM = 0x18
 ARP_PART = 0x00
-ARP_GROUP = 0x00
+ARP_GROUP = 0x40
 
-class ArpParameters(IntEnum):
+class ArpParameter(IntEnum):
     """Arpeggiator parameters"""
     SWITCH = 0x03      # Arpeggio on/off (0-1)
     GRID = 0x01        # Grid/timing value (0-6)

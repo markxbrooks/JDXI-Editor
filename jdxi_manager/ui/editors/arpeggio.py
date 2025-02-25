@@ -29,10 +29,10 @@ from jdxi_manager.midi.constants.arpeggio import (
     ArpGrid,
     ArpDuration,
     ArpSwitch,
-    ARP_AREA,
+    TEMPORARY_PROGRAM,
     ARP_PART,
     ARP_GROUP,
-    ArpParameters,
+    ArpParameter,
     ArpOctaveRange,
 )
 from jdxi_manager.midi.io import MIDIHelper
@@ -145,10 +145,10 @@ class ArpeggioEditor(BaseEditor):
             switch_is_on = self.switch_button.isChecked()
             self.switch_button.setText("ON" if switch_is_on else "OFF")
             logging.debug(
-                f"Sending arp switch change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={switch_address:02x}, value={switch_is_on}"
+                f"Sending arp switch change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={switch_address:02x}, value={switch_is_on}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
                 param=switch_address,
@@ -198,9 +198,9 @@ class ArpeggioEditor(BaseEditor):
             param = ArpeggioParameter.OCTAVE.value[0]
             octave = index + 61  # Convert index to -3 to +3 range
             print(f"octave value: {octave}")
-            # logging.debug(f"Sending arp octave change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
+            # logging.debug(f"Sending arp octave change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
             self.midi_helper.send_parameter(
-                area=ARP_AREA, part=ARP_PART, group=ARP_GROUP, param=param, value=octave
+                area=TEMPORARY_PROGRAM, part=ARP_PART, group=ARP_GROUP, param=param, value=octave
             )
 
     def _on_motif_changed(self, index):
@@ -212,7 +212,7 @@ class ArpeggioEditor(BaseEditor):
         address, min_val, max_val = param.value
         if min_val <= value <= max_val:
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
                 param=address,
@@ -291,7 +291,7 @@ class ArpeggioEditorOld(BaseEditor):
         main_layout.addWidget(scroll)
 
         # Set up area and part for parameter requests
-        self.area = ARP_AREA
+        self.area = TEMPORARY_PROGRAM
         self.part = ARP_PART
         self.group = ARP_GROUP
         self.start_param = 0x00
@@ -406,10 +406,10 @@ class ArpeggioEditorOld(BaseEditor):
     def _on_pattern_changed(self, index):
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.PATTERN,
+                param=ArpParameter.PATTERN,
                 value=index,
             )
 
@@ -418,13 +418,13 @@ class ArpeggioEditorOld(BaseEditor):
         if self.midi_helper:
             octave = ArpOctaveRange(index - 3)  # Convert index to -3 to +3 range
             logging.debug(
-                f"Sending arp octave change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}"
+                f"Sending arp octave change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.OCTAVE_RANGE,
+                param=ArpParameter.OCTAVE_RANGE,
                 value=octave.midi_value,
             )
 
@@ -433,13 +433,13 @@ class ArpeggioEditorOld(BaseEditor):
         if self.midi_helper:
             grid = ArpGrid(index)
             logging.debug(
-                f"Sending arp grid change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.GRID:02x}, value={grid.midi_value:02x}"
+                f"Sending arp grid change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.GRID:02x}, value={grid.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.GRID,
+                param=ArpParameter.GRID,
                 value=grid.midi_value,
             )
 
@@ -448,13 +448,13 @@ class ArpeggioEditorOld(BaseEditor):
         if self.midi_helper:
             duration = ArpDuration(index)
             logging.debug(
-                f"Sending arp duration change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.DURATION:02x}, value={duration.midi_value:02x}"
+                f"Sending arp duration change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.DURATION:02x}, value={duration.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.DURATION,
+                param=ArpParameter.DURATION,
                 value=duration.midi_value,
             )
 
@@ -462,13 +462,13 @@ class ArpeggioEditorOld(BaseEditor):
         """Handle velocity change"""
         if self.midi_helper:
             logging.debug(
-                f"Sending arp velocity change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.VELOCITY:02x}, value={value:02x}"
+                f"Sending arp velocity change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.VELOCITY:02x}, value={value:02x}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.VELOCITY,
+                param=ArpParameter.VELOCITY,
                 value=value,
             )
 
@@ -476,23 +476,23 @@ class ArpeggioEditorOld(BaseEditor):
         """Handle accent change"""
         if self.midi_helper:
             logging.debug(
-                f"Sending arp accent change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.ACCENT:02x}, value={value:02x}"
+                f"Sending arp accent change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.ACCENT:02x}, value={value:02x}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.ACCENT,
+                param=ArpParameter.ACCENT,
                 value=value,
             )
 
     def _on_swing_changed(self, value):
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.SWING,
+                param=ArpParameter.SWING,
                 value=value,
             )
 
@@ -501,13 +501,13 @@ class ArpeggioEditorOld(BaseEditor):
         if self.midi_helper:
             switch = ArpSwitch.ON if checked else ArpSwitch.OFF
             logging.debug(
-                f"Sending arp switch change: area={ARP_AREA:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameters.SWITCH:02x}, value={switch.midi_value:02x}"
+                f"Sending arp switch change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.SWITCH:02x}, value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
-                area=ARP_AREA,
+                area=TEMPORARY_PROGRAM,
                 part=ARP_PART,
                 group=ARP_GROUP,
-                param=ArpParameters.SWITCH,
+                param=ArpParameter.SWITCH,
                 value=switch.midi_value,
             )
             # Update button text
