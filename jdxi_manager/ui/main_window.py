@@ -690,30 +690,6 @@ class MainWindow(JdxiWindow):
                 )
             self.digital_synth1_editor.show()
             self.digital_synth1_editor.raise_()
-            # Send the SysEx message
-            sysex_msg = [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x00,
-                0x0E,
-                0x11,
-                0x19,
-                0x01,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x00,
-                0x40,
-                0x26,
-                0xF7,
-            ]
-            # self.midi_helper.send_message(sysex_msg)
-            logging.debug("Sent SysEx message for Digital Synth 1")
-
         except Exception as e:
             logging.error(f"Error opening Digital Synth 1 editor: {str(e)}")
 
