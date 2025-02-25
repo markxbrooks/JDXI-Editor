@@ -793,6 +793,63 @@ class Style:
             }
         """
 
+    JDXI_BUTTON = """
+                QPushButton {
+                    background-color: black;
+                    border: 4px solid #d51e35;
+                    border-radius: 15px;
+                }
+                QPushButton:hover {
+                    background-color: #1A1A1A;
+                    border-color: #ff4d4d;
+                }
+                QPushButton:pressed, QPushButton:checked {
+                    background-color: #333333;
+                    border-color: #ff6666;
+                }
+            """
+    JDXI_BUTTON_SELECTED = """
+                    QPushButton {
+                        background-color: #000000;
+                        border: 4px solid #666666;
+                        border-radius: 15px;
+                        padding: 0px;
+                    }
+                """
+
+    JDXI_SUB_LABEL = """
+            font-family: "Myriad Pro", Arial;
+            font-size: 13px;
+            color: #d51e35;
+            font-weight: bold;
+        """
+
+    JDXI_LABEL = """
+            font-family: "Myriad Pro", Arial;
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+        """
+
+
+    SEQUENCER = """
+            font-family: "Myriad Pro", Arial;
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+        """
+
+    PARTS_SELECT = """
+            font-family: "Myriad Pro", Arial;
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+            padding-bottom: 10px;
+        """
+
     # Default and active styles
     BUTTON_DEFAULT = """
          QPushButton {
