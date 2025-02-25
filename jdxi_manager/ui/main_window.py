@@ -75,6 +75,7 @@ from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.midi.constants.arpeggio import ArpParameter
 
+CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 
 class MainWindow(JdxiWindow):
     midi_program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
@@ -214,7 +215,7 @@ class MainWindow(JdxiWindow):
             self.main_layout.addWidget(self.display_label)
 
         # Load last used preset settings
-        self._load_last_preset()
+        # FIXME: self._load_last_preset()
 
         # Initialize synth type
         self.current_synth_type = PresetType.DIGITAL_1
@@ -269,7 +270,7 @@ class MainWindow(JdxiWindow):
         self.analog_preset_handler.update_display.connect(self.update_display_callback)
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.oldPos = None
-        self.get_data()
+        # self.get_data()
 
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
@@ -307,25 +308,11 @@ class MainWindow(JdxiWindow):
         for synth_type, button in buttons.items():
             if synth_type == self.current_synth_type:
                 button.setStyleSheet(
-                """
-                    QPushButton {
-                        background-color: #333333;
-                        border: 4px solid #d51e35;
-                        border-radius: 15px;
-                        padding: 0px;
-                        }
-                """
+                    Style.JDXI_BUTTON
                 )
             else:
                 button.setStyleSheet(
-                """
-                    QPushButton {
-                        background-color: #000000;
-                        border: 4px solid #666666;
-                        border-radius: 15px;
-                        padding: 0px;
-                    }
-                """
+                    Style.JDXI_BUTTON_SELECTED
                 )
 
     def _get_presets_for_current_synth(self):
@@ -724,7 +711,7 @@ class MainWindow(JdxiWindow):
                 0x26,
                 0xF7,
             ]
-            self.midi_helper.send_message(sysex_msg)
+            # self.midi_helper.send_message(sysex_msg)
             logging.debug("Sent SysEx message for Digital Synth 1")
 
         except Exception as e:
@@ -869,15 +856,22 @@ class MainWindow(JdxiWindow):
         self.log_viewer.raise_()
         logging.debug("Showing LogViewer window")
 
+    def _update_octave_ui(self):
+        """Update octave-related UI elements"""
+        self.octave_down.setChecked(self.current_octave < 0)
+        self.octave_up.setChecked(self.current_octave > 0)
+        self._update_display()
+        logging.debug(
+            f"Updated octave to: {self.current_octave} (value: {hex(CENTER_OCTAVE_VALUE + self.current_octave)})")
+
     def _send_octave(self, direction):
         """Send octave change MIDI message"""
         if self.midi_helper:
             # Update octave tracking
             self.current_octave = max(-3, min(3, self.current_octave + direction))
 
-            # Update button states
-            self.octave_down.setChecked(self.current_octave < 0)
-            self.octave_up.setChecked(self.current_octave > 0)
+            # Update UI via centralized method
+            self._update_octave_ui()
 
             # Update display
             self._update_display()
@@ -887,31 +881,7 @@ class MainWindow(JdxiWindow):
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
-
-            # Calculate checksum
-            checksum = 0x19 + 0x01 + 0x00 + 0x15 + octave_value
-            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
-
-            # Create SysEx message
-            sysex_msg = [
-                0xF0,  # Start of SysEx
-                0x41,  # Roland ID
-                0x10,  # Device ID
-                0x00,
-                0x00,
-                0x00,
-                0x0E,  # Model ID
-                0x12,  # Command ID (DT1)
-                0x19,  # Address 1
-                0x01,  # Address 2
-                0x00,  # Address 3
-                0x15,  # Address 4
-                octave_value,  # Parameter value
-                checksum,  # Checksum
-                0xF7,  # End of SysEx
-            ]
             self.send_midi_parameter(group_address, param_address, octave_value, part_address=part_address, area=TEMPORARY_TONE_AREA)
-            self.midi_helper.send_message(sysex_msg)
             logging.debug(
                 f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
@@ -1139,36 +1109,6 @@ class MainWindow(JdxiWindow):
 
         except Exception as e:
             logging.error(f"Error sending identity request: {str(e)}")
-
-    def show_digital_synth_editor(self, synth_num=1):
-        """Show digital synth editor window"""
-        try:
-            if not hasattr(self, f"digital_synth_{synth_num}_editor"):
-                # Create new editor instance
-                editor = DigitalSynthEditor(
-                    synth_num=synth_num, midi_helper=self.midi_helper, parent=self
-                )
-                if synth_num == 1:
-                    self.channel = 1
-                elif synth_num == 2:
-                    self.channel = 2
-                else:
-                    self.channel = 1
-                setattr(self, f"digital_synth_{synth_num}_editor", editor)
-
-            # Get editor instance
-            editor = getattr(self, f"digital_synth_{synth_num}_editor")
-
-            # Show editor window
-            editor.show()
-            editor.raise_()
-            editor.activateWindow()
-
-            logging.debug(f"Showing Digital Synth {synth_num} editor")
-
-        except Exception as e:
-            logging.error(f"Error showing Digital Synth {synth_num} editor: {str(e)}")
-            self.show_error("Editor Error", str(e))
 
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
@@ -1405,17 +1345,6 @@ class MainWindow(JdxiWindow):
         except Exception as e:
             logging.error(f"Error loading preset: {str(e)}")
 
-    def show_analog_editor(self):
-        """Show analog synth editor"""
-        try:
-            if not hasattr(self, "analog_editor"):
-                self.analog_editor = AnalogSynthEditor(midi_helper=self.midi_helper)
-            self.analog_editor.show()
-            self.analog_editor.raise_()
-
-        except Exception as e:
-            logging.error(f"Error showing Analog Synth editor: {str(e)}")
-
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """Set MIDI input and output ports
 
@@ -1479,61 +1408,6 @@ class MainWindow(JdxiWindow):
         except Exception as e:
             logging.error(f"Error showing Vocal FX editor: {str(e)}")
 
-    def _change_octave(self, direction: int):
-        """Change octave up/down
-
-        Args:
-            direction: +1 for up, -1 for down
-        """
-        if not self.midi_helper:
-            return
-
-        try:
-            # Get current octave from display
-            current = int(self.octave_display.text())
-
-            # Calculate new octave (-3 to +3 range)
-            new_octave = max(min(current + direction, 3), -3)
-
-            # Convert to MIDI value (61-67 range)
-            midi_value = new_octave + 64
-
-            # Send parameter change
-            self.midi_helper.send_parameter(
-                area=0x00,  # Program zone area
-                part=0x00,
-                group=0x00,
-                param=0x19,  # Zone Octave Shift parameter
-                value=midi_value,
-            )
-
-            # Update display
-            self.octave_display.setText(str(new_octave))
-
-        except Exception as e:
-            logging.error(f"Error changing octave: {str(e)}")
-
-    def _toggle_arpeggiator(self, checked: bool):
-        """Toggle arpeggiator on/off"""
-        if not self.midi_helper:
-            return
-
-        try:
-            # Send parameter change (0x00 = Program zone area, 0x03 = Arpeggio Switch)
-            self.midi_helper.send_parameter(
-                area=0x00,  # Program zone area
-                part=0x00,  # Common part
-                group=0x00,  # Common group
-                param=0x03,  # Arpeggio Switch parameter
-                value=1 if checked else 0,  # 0 = OFF, 1 = ON
-            )
-
-            # Update button text
-            self.arp_switch.setText("Off" if not checked else "On")
-
-        except Exception as e:
-            logging.error(f"Error toggling arpeggiator: {str(e)}")
-
     def _show_arpeggio_editor(self):
         """Show the arpeggio editor window"""
         try:
@@ -1550,18 +1424,3 @@ class MainWindow(JdxiWindow):
         data = self.midi_helper.send_sysex_rq1(
             self.device_id, self.address + [0x00], self.data_length
         )
-
-    def open_digital_synth_1_editor(self):
-        """Open Digital Synth 1 editor window"""
-        try:
-            if not hasattr(self, 'digital_synth_1_editor'):
-                self.digital_synth_1_editor = DigitalSynthEditor(
-                    midi_helper=self.midi_helper,  # Pass the MIDI helper
-                    synth_num=1,
-                    parent=self,
-                    preset_handler=self.digital_1_preset_handler
-                )
-            self.digital_synth_1_editor.show()
-            logging.info("Selected synth: Digital 1")
-        except Exception as e:
-            logging.error(f"Error opening Digital Synth 1 editor: {str(e)}")

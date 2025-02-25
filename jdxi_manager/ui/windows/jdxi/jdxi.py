@@ -571,15 +571,7 @@ class JdxiWindow(QMainWindow):
 
         # Add "ARPEGGIO" label at the top
         arpeggiator_label = QLabel("ARPEGGIO")
-        arpeggiator_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
+        arpeggiator_label.setStyleSheet(Style.JDXI_LABEL)
         arpeggiator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         arpeggiator_layout.addWidget(arpeggiator_label)
 
@@ -589,14 +581,7 @@ class JdxiWindow(QMainWindow):
 
         # On label
         on_label = QLabel("On")
-        on_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
+        on_label.setStyleSheet(Style.JDXI_SUB_LABEL)
         labels_row.addWidget(on_label)
 
         # Add labels row
@@ -608,14 +593,7 @@ class JdxiWindow(QMainWindow):
 
         # Down label
         key_hold_label = QLabel("Key Hold")
-        key_hold_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
+        key_hold_label.setStyleSheet(Style.JDXI_SUB_LABEL)
         labels_row.addWidget(key_hold_label)
 
         # Create and store arpeggiator  button
@@ -626,21 +604,7 @@ class JdxiWindow(QMainWindow):
             lambda checked: self._send_arp_on_off(checked)
         )
         self.arpeggiator_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
+            Style.JDXI_BUTTON
         )
         buttons_row.addWidget(self.arpeggiator_button)
 
@@ -650,21 +614,7 @@ class JdxiWindow(QMainWindow):
         self.key_hold.setCheckable(True)
         self.key_hold.clicked.connect(lambda checked: self._send_arp_key_hold(checked))
         self.key_hold.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
+            Style.JDXI_BUTTON
         )
         buttons_row.addWidget(self.key_hold)
 
@@ -701,39 +651,19 @@ class JdxiWindow(QMainWindow):
 
         # Add "OCTAVE" label at the top
         octave_label = QLabel("OCTAVE")
-        octave_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
+        octave_label.setStyleSheet(Style.JDXI_LABEL)
         octave_label.setAlignment(Qt.AlignCenter)
         octave_layout.addWidget(octave_label)
 
         # Down label
         down_label = QLabel("Down")
-        down_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
+        down_label.setStyleSheet(Style.JDXI_SUB_LABEL)
         labels_row.addWidget(down_label)
 
         # Up label
         up_label = QLabel("Up")
         up_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
+            Style.JDXI_SUB_LABEL
         )
         labels_row.addWidget(up_label)
 
@@ -749,23 +679,7 @@ class JdxiWindow(QMainWindow):
         self.octave_down.setFixedSize(30, 30)
         self.octave_down.setCheckable(True)
         self.octave_down.clicked.connect(lambda: self._send_octave(-1))
-        self.octave_down.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
-        )
+        self.octave_down.setStyleSheet(Style.JDXI_BUTTON)
         buttons_row.addWidget(self.octave_down)
 
         # Create and store octave up button
@@ -773,19 +687,7 @@ class JdxiWindow(QMainWindow):
         self.octave_up.setFixedSize(30, 30)
         self.octave_up.setCheckable(True)
         self.octave_up.clicked.connect(lambda: self._send_octave(1))
-        self.octave_up.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-        """
-        )
+        self.octave_up.setStyleSheet(Style.JDXI_BUTTON)
         buttons_row.addWidget(self.octave_up)
 
         # Add buttons row
@@ -812,16 +714,7 @@ class JdxiWindow(QMainWindow):
 
         # Add Parts Select label
         parts_label = QLabel("Parts Select")
-        parts_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-            padding-bottom: 10px;
-        """
-        )
+        parts_label.setStyleSheet(Style.PARTS_SELECT)
         parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         parts_layout.addWidget(parts_label)
 
@@ -890,15 +783,7 @@ class JdxiWindow(QMainWindow):
         tone_label_layout = QHBoxLayout()
         tone_label = QLabel("Tone")
         tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        tone_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
+        tone_label.setStyleSheet(Style.JDXI_LABEL)
         tone_label_layout.addWidget(tone_label)
         tone_container_layout.addLayout(tone_label_layout)
         tone_layout = QHBoxLayout()
@@ -913,15 +798,7 @@ class JdxiWindow(QMainWindow):
         sequencer_label_layout = QHBoxLayout()
         sequencer_label = QLabel("Sequencer")
         sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sequencer_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
+        sequencer_label.setStyleSheet(Style.SEQUENCER)
         # sequencer_label_layout.addWidget(sequencer_label)
         # sequencer_container_layout.addLayout(sequencer_label_layout)
         sequencer_layout = QHBoxLayout()
