@@ -154,7 +154,14 @@ class DrumEditor(BaseEditor):
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
         self.setMinimumSize(1000, 500)
-
+        self.midi_requests = [
+                                  "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",
+                                  "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7",
+                                  "F0 41 10 00 00 00 0E 11 19 70 30 00 00 00 01 43 03 F7",
+                                  "F0 41 10 00 00 00 0E 11 19 70 32 00 00 00 01 43 01 F7",
+                                  "F0 41 10 00 00 00 0E 11 19 70 34 00 00 00 01 43 7F F7",
+                                  "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7"
+                              ]
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
         self.title_label = QLabel(
@@ -331,6 +338,7 @@ class DrumEditor(BaseEditor):
 
         self.update_instrument_image()
         self.tab_widget.currentChanged.connect(self.update_partial_num)
+        self.data_request()
 
     def _create_tva_group(self):
         """Create the TVA group."""
@@ -1003,10 +1011,111 @@ class DrumEditor(BaseEditor):
         pitch_env_layout.addRow(pitch_env_level4_slider)
         return pitch_env_group
 
+    def _on_parameter_changed(
+        self, param: DrumParameter, display_value: int
+    ):
+        """Handle parameter value changes from UI controls"""
+        try:
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
+            logging.info(f"parameter from widget midi_value: {midi_value}")
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+
+        except Exception as e:
+            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+
     def on_partial_env_mode_changed(self, value):
         """Handle partial envelope mode combo box value change"""
         # Use the helper function to send the SysEx message @@ FIXME
         self.send_sysex_message(0x0B, value)
+
+    def _update_partial_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        debug_param_updates = True
+        debug_stats = True
+
+        try:
+            sysex_data = json.loads(json_sysex_data)
+            self.previous_data = self.current_data
+            self.current_data = sysex_data
+            self._log_changes(self.previous_data, sysex_data)
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
+            return
+
+        def _is_valid_sysex_area(sysex_data):
+            """Check if SysEx data belongs to a supported digital synth area."""
+            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+
+        def _get_partial_number(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            return {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3
+            }.get(synth_tone, None)
+
+        #if not _is_valid_sysex_area(sysex_data):
+        #    logging.warning(
+        #        "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
+        #    return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        partial_no = get_partial_number(synth_tone)
+
+        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
+
+        # osc_waveform_map = {wave.value: wave for wave in OscWave}
+
+        failures, successes = [], []
+
+        def _update_slider(param, value):
+            """Helper function to update sliders safely."""
+            slider = self.partial_editors[partial_no].controls.get(param)
+            if slider:
+                slider_value = param.convert_from_midi(value)
+                logging.info(f"midi value {value} converted to slider value {slider_value}")
+                slider.blockSignals(True)
+                slider.setValue(slider_value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+
+        def _update_waveform(param_value):
+            """Helper function to update waveform selection UI."""
+            waveform = osc_waveform_map.get(param_value)
+            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
+                button = self.partial_editors[partial_no].wave_buttons[waveform]
+                button.setChecked(True)
+                self.partial_editors[partial_no]._on_waveform_selected(waveform)
+                logging.debug(f"Updated waveform button for {waveform}")
+
+        for param_name, param_value in sysex_data.items():
+            param = DrumParameter.get_by_name(param_name)
+
+            if param:
+                _update_slider(param, param_value)
+            else:
+                failures.append(param_name)
+
+        def _log_debug_info():
+            """Helper function to log debugging statistics."""
+            if debug_stats:
+                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                logging.info(f"Successes: {successes}")
+                logging.info(f"Failures: {failures}")
+                logging.info(f"Success Rate: {success_rate:.1f}%")
+                logging.info("--------------------------------")
+
+        _log_debug_info()
 
     def update_instrument_title(self):
         selected_kit_text = self.instrument_selection_combo.combo_box.currentText()

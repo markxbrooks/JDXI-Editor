@@ -450,7 +450,7 @@ class DigitalParameter(SynthParameter):
 
     @staticmethod
     def get_by_name(param_name):
-        """Get the AnalogParameter by name."""
+        """Get the DigitalParameter by name."""
         # Return the parameter member by name, or None if not found
         return DigitalParameter.__members__.get(param_name, None)
     

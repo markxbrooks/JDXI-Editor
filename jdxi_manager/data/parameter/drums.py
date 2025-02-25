@@ -684,3 +684,9 @@ class DrumParameter(SynthParameter):
         }
         group = group_map.get(partial_num, 0x2E)  # Default to 0x20 if partial_num is not 1, 2, or 3
         return group, self.address
+
+    @staticmethod
+    def get_by_name(param_name):
+        """Get the AnalogParameter by name."""
+        # Return the parameter member by name, or None if not found
+        return DigitalParameter.__members__.get(param_name, None)

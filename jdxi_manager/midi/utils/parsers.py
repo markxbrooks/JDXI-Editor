@@ -21,6 +21,7 @@ from typing import List, Dict, Type
 from jdxi_manager.data.parameter.analog import AnalogParameter
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_manager.data.parameter.drums import DrumParameter
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:

@@ -887,7 +887,31 @@ class MainWindow(JdxiWindow):
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
+
+            # Calculate checksum
+            checksum = 0x19 + 0x01 + 0x00 + 0x15 + octave_value
+            checksum = (0x80 - (checksum & 0x7F)) & 0x7F
+
+            # Create SysEx message
+            sysex_msg = [
+                0xF0,  # Start of SysEx
+                0x41,  # Roland ID
+                0x10,  # Device ID
+                0x00,
+                0x00,
+                0x00,
+                0x0E,  # Model ID
+                0x12,  # Command ID (DT1)
+                0x19,  # Address 1
+                0x01,  # Address 2
+                0x00,  # Address 3
+                0x15,  # Address 4
+                octave_value,  # Parameter value
+                checksum,  # Checksum
+                0xF7,  # End of SysEx
+            ]
             self.send_midi_parameter(group_address, param_address, octave_value, part_address=part_address, area=TEMPORARY_TONE_AREA)
+            self.midi_helper.send_message(sysex_msg)
             logging.debug(
                 f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
