@@ -44,6 +44,7 @@ from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
 from jdxi_manager.ui.windows.patch.patch_name_editor import PatchNameEditor
 from jdxi_manager.ui.windows.patch.patch_manager import PatchManager
+from jdxi_manager.ui.windows.jdxi.jdxi import JdxiWindow
 from jdxi_manager.ui.style import Style, sequencer_button_style, toggle_button_style
 from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.button.channel import ChannelButton
@@ -74,7 +75,7 @@ from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
 from jdxi_manager.midi.preset.loader import PresetLoader
 
 
-class MainWindow(QMainWindow):
+class MainWindow(JdxiWindow):
     midi_program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
 
     def __init__(self):
@@ -122,7 +123,6 @@ class MainWindow(QMainWindow):
 
         # Initialize state variables
         self.current_synth_type = PresetType.DIGITAL_1
-        self.current_octave = 0  # Initialize octave tracking first
         self.current_preset_num = 1  # Initialize preset number
         self.current_preset_name = "JD Xi"  # Initialize preset name
         self.midi_in = None
@@ -131,8 +131,14 @@ class MainWindow(QMainWindow):
         self.midi_out_port_name = ""  # Store output port name
 
         # Initialize MIDI helper
+        if self.midi_in:
+            self.midi_in.delete()  # Use delete() instead of close()
+        if self.midi_out:
+            self.midi_out.delete()  # Use delete() instead of close()
+        if self.midi_helper:
+            self.midi_helper.close_ports()
         self.midi_helper = MIDIHelper(parent=self)
-        # self.preset_loader = PresetLoader(self.midi_helper)
+        self.preset_loader = PresetLoader(self.midi_helper)
 
         # Initialize windows to None
         self.log_viewer = None
@@ -146,12 +152,13 @@ class MainWindow(QMainWindow):
         if (
             not self.midi_helper.current_in_port
             or not self.midi_helper.current_out_port
+
         ):
             self._show_midi_config()
 
         # Initialize MIDI indicators
-        self.midi_in_indicator = MIDIIndicator()
-        self.midi_out_indicator = MIDIIndicator()
+        self.midi_in_indicator.set_state(bool(self.midi_in))
+        self.midi_out_indicator.set_state(bool(self.midi_out))
 
         pub.subscribe(self._update_display_preset, "update_display_preset")
 
@@ -160,11 +167,6 @@ class MainWindow(QMainWindow):
 
         # Load custom font
         self._load_digital_font()
-
-        # Create UI
-        self._create_menu_bar()
-        self._create_status_bar()
-        self._create_main_layout()
 
         # Load settings
         self.settings = QSettings("jdxi_manager2", "settings")
@@ -210,73 +212,40 @@ class MainWindow(QMainWindow):
         if hasattr(self, "main_layout"):
             self.main_layout.addWidget(self.display_label)
 
-        # Create channel indicator
-        self.channel_button = ChannelButton()
-
-        # Add to status bar before piano keyboard
-        self.statusBar().addPermanentWidget(self.channel_button)
-        self.statusBar().addPermanentWidget(self.piano_keyboard)
-
         # Load last used preset settings
-        # self._load_last_preset()
+        self._load_last_preset()
 
         # Initialize synth type
         self.current_synth_type = PresetType.DIGITAL_1
-
-        # Set default styles
-        self._update_synth_button_styles()
-
-        # Create favorite buttons container
-        favorites_widget = QWidget()
-        favorites_layout = QVBoxLayout(favorites_widget)
-        favorites_layout.setSpacing(4)
-        favorites_layout.setContentsMargins(0, 0, 0, 0)
-
-        # Create favorite buttons
-        self.favorite_buttons = []
-        for i in range(4):  # Create 4 favorite slots
-            button = FavoriteButton(i, self.midi_helper)
-            button.clicked.connect(lambda checked, b=button: self._load_favorite(b))
-            button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-            button.customContextMenuRequested.connect(
-                lambda pos, b=button: self._show_favorite_context_menu(pos, b)
-            )
-            favorites_layout.addWidget(button)
-            self.favorite_buttons.append(button)
-
-        # Add to status bar
-        self.statusBar().addPermanentWidget(favorites_widget)
-        self.statusBar().addPermanentWidget(self.channel_button)
-        self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load saved favorites
         self._load_saved_favorites()
 
         # Create editors menu
-        editors_menu = self.menuBar().addMenu("Editors")
+        # editors_menu = self.menuBar().addMenu("Editors")
 
         # Add menu items for each editor
-        digital1_action = editors_menu.addAction("Digital Synth 1")
-        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
+        # digital1_action = editors_menu.addAction("Digital Synth 1")
+        # digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
 
-        digital2_action = editors_menu.addAction("Digital Synth 2")
-        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
+        # digital2_action = editors_menu.addAction("Digital Synth 2")
+        # digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
 
-        analog_action = editors_menu.addAction("Analog Synth")
-        analog_action.triggered.connect(lambda: self.show_editor("analog"))
+        # analog_action = editors_menu.addAction("Analog Synth")
+        # analog_action.triggered.connect(lambda: self.show_editor("analog"))
 
-        drums_action = editors_menu.addAction("Drums")
-        drums_action.triggered.connect(lambda: self.show_editor("drums"))
+        # drums_action = editors_menu.addAction("Drums")
+        # drums_action.triggered.connect(lambda: self.show_editor("drums"))
 
-        arp_action = editors_menu.addAction("Arpeggio")
-        arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
+        # arp_action = editors_menu.addAction("Arpeggio")
+        # arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
 
-        effects_action = editors_menu.addAction("Effects")
-        effects_action.triggered.connect(lambda: self.show_editor("effects"))
+        # effects_action = editors_menu.addAction("Effects")
+        # effects_action.triggered.connect(lambda: self.show_editor("effects"))
 
         # Add Vocal FX menu item
-        vocal_fx_action = editors_menu.addAction("Vocal FX")
-        vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
+        # vocal_fx_action = editors_menu.addAction("Vocal FX")
+        # vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
 
         # Initialize current preset index
         self.current_preset_index = 0
@@ -300,6 +269,10 @@ class MainWindow(QMainWindow):
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.oldPos = None
         self.get_data()
+
+        # Set initial indicator states
+        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -333,18 +306,18 @@ class MainWindow(QMainWindow):
         for synth_type, button in buttons.items():
             if synth_type == self.current_synth_type:
                 button.setStyleSheet(
-                    """
+                """
                     QPushButton {
                         background-color: #333333;
                         border: 4px solid #d51e35;
                         border-radius: 15px;
                         padding: 0px;
-                    }
+                        }
                 """
                 )
             else:
                 button.setStyleSheet(
-                    """
+                """
                     QPushButton {
                         background-color: #000000;
                         border: 4px solid #666666;
@@ -521,126 +494,6 @@ class MainWindow(QMainWindow):
     def _open_pattern(self, editor_type: str):
         self._show_editor("Pattern", PatternSequencer)
 
-    def _create_main_layout(self):
-        """Create the main dashboard"""
-        central = QWidget()
-        self.setCentralWidget(central)
-
-        # Single layout to hold the image and overlays
-        layout = QVBoxLayout(central)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        # Create container for image and overlays
-        container = QWidget()
-        container.setLayout(QVBoxLayout())
-        container.layout().setContentsMargins(0, 0, 0, 0)
-
-        # Store reference to image label
-        self.image_label = QLabel()
-        self.image_label.setPixmap(
-            draw_instrument_pixmap(
-                (
-                    self.digital_font_family
-                    if hasattr(self, "digital_font_family")
-                    else None
-                ),
-                self.current_octave,
-            )
-        )
-        self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        container.layout().addWidget(self.image_label)
-
-        # Add overlaid controls
-        self._add_overlaid_controls(container)
-
-        layout.addWidget(container)
-
-        # Initialize current preset index
-        self.current_preset_index = 0
-
-    def _create_tone_buttons_row(self):
-        # Create Tone navigation buttons
-        self.tone_label = QLabel("Tone")
-        self.tone_down_button = QPushButton("-")
-        self.spacer = QLabel(" ")
-        self.tone_up_button = QPushButton("+")
-
-        # Calculate size for tone buttons
-        tone_button_diameter = 25
-
-        # Create tone up button
-        self.tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_up_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
-
-        # Create tone down button
-        self.tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_down_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
-
-        # Connect buttons to functions
-        self.tone_down_button.clicked.connect(self._previous_tone)
-        self.tone_up_button.clicked.connect(self._next_tone)
-
-        button_label_layout = QHBoxLayout()
-        button_label_layout.addStretch()
-        button_label_layout.addWidget(self.tone_label)
-        button_label_layout.addStretch()
-        # Button layout
-        button_layout = QHBoxLayout()
-        button_layout.addStretch()
-        button_layout.addWidget(self.tone_down_button)
-        button_layout.addWidget(self.spacer)
-        button_layout.addWidget(self.tone_up_button)
-        button_layout.addStretch()
-        return button_layout
-
-    def _create_favorite_buttons_row(self):
-        """Create a row with label and circular button"""
-        text = "Favorites"
-        row = QHBoxLayout()
-        row.setSpacing(10)
-
-        # Add label with color based on text
-        label = QLabel(text)
-        if text == "Analog Synth":
-            label.setStyleSheet(Style.ANALOG_SYNTH_PART_LABEL_STYLE)
-        else:
-            label.setStyleSheet(Style.SYNTH_PART_LABEL_STYLE)
-        # row.addWidget(label)
-        # Add spacer to push button to right
-        row.addStretch()
-        # Add button
-        self.favourites_button = QPushButton()
-        self.favourites_button.setFixedSize(30, 30)
-        self.favourites_button.setCheckable(True)
-        # button.clicked.connect(slot)
-        # Style the button with brighter hover/pressed/selected  states
-        self.favourites_button.setStyleSheet(Style.BUTTON_STYLE)
-        row.addWidget(self.favourites_button)
-        return row
-
-    def _create_sequencer_buttons_row(self):
-        """Create a row with label and circular button"""
-        row = QHBoxLayout()
-        self.sequencer_buttons = []
-
-        grid = QGridLayout()
-        for i in range(16):
-            button = QPushButton()
-            button.setFixedSize(25, 25)
-            button.setCheckable(True)  # Ensure the button is checkable
-            button.setStyleSheet(sequencer_button_style(button.isChecked()))
-            button.toggled.connect(
-                lambda checked, btn=button: toggle_button_style(btn, checked)
-            )
-            button.clicked.connect(lambda _, idx=i: self._save_favorite(idx))
-            grid.addWidget(button, 0, i)  # Row 0, column i with spacing
-            grid.setHorizontalSpacing(2)  # Add spacing between columns
-            self.sequencer_buttons.append(button)
-        row.addLayout(grid)
-
-        return row
-
     def _save_favorite(self, index):
         """Save the current preset as a favorite"""
         settings = QSettings("YourCompany", "YourApp")
@@ -715,124 +568,6 @@ class MainWindow(QMainWindow):
     def _get_current_preset_type(self):
         """Get the type of the currently selected preset"""
         return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
-
-    def _create_section(self, title):
-        """Create a section frame with title"""
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setMinimumHeight(150)
-
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-        layout.setContentsMargins(10, 10, 10, 10)
-
-        # Title
-        title_label = QLabel(title)
-        title_label.setFont(QFont(self.font().family(), 12, QFont.Bold))
-        layout.addWidget(title_label)
-
-        return frame
-
-    def _create_menu_bar(self):
-        menubar = self.menuBar()
-
-        # File menu
-        file_menu = menubar.addMenu("File")
-
-        load_action = QAction("Load Patch...", self)
-        load_action.triggered.connect(self._load_patch)
-        file_menu.addAction(load_action)
-
-        save_action = QAction("Save Patch...", self)
-        save_action.triggered.connect(self._save_patch)
-        file_menu.addAction(save_action)
-
-        file_menu.addSeparator()
-
-        quit_action = QAction("Quit", self)
-        quit_action.triggered.connect(self.close)
-        file_menu.addAction(quit_action)
-
-        # Edit menu
-        edit_menu = menubar.addMenu("Edit")
-
-        midi_config_action = QAction("MIDI Configuration...", self)
-        midi_config_action.triggered.connect(self._show_midi_config)
-        edit_menu.addAction(midi_config_action)
-
-        # Synth menu - reordered to match buttons
-        synth_menu = menubar.addMenu("Synth")
-
-        digital1_action = QAction("Digital Synth 1", self)
-        digital1_action.triggered.connect(self._open_digital_synth1)
-        synth_menu.addAction(digital1_action)
-
-        digital2_action = QAction("Digital Synth 2", self)
-        digital2_action.triggered.connect(self._open_digital_synth2)
-        synth_menu.addAction(digital2_action)
-
-        drums_action = QAction("Drums", self)
-        drums_action.triggered.connect(self._open_drums)
-        synth_menu.addAction(drums_action)
-
-        analog_action = QAction("Analog Synth", self)
-        analog_action.triggered.connect(self._open_analog_synth)
-
-        synth_menu.addAction(analog_action)
-
-        pattern_action = QAction("Pattern Sequencer", self)
-        pattern_action.triggered.connect(self._open_pattern)
-        synth_menu.addAction(pattern_action)
-
-        # Effects menu
-        fx_menu = menubar.addMenu("Effects")
-
-        arp_action = QAction("Arpeggiator", self)
-        arp_action.triggered.connect(self._open_arpeggiator)
-        fx_menu.addAction(arp_action)
-
-        effects_action = QAction("Effects", self)
-        effects_action.triggered.connect(self._open_effects)
-        fx_menu.addAction(effects_action)
-
-        # Help menu
-        help_menu = menubar.addMenu("Help")
-
-        log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._show_log_viewer)
-        help_menu.addAction(log_viewer_action)
-
-        # Add Edit menu
-        # edit_menu = menubar.addMenu("Edit")
-
-        # Add Patch Name action
-        edit_name_action = QAction("Edit Patch Name", self)
-        edit_name_action.triggered.connect(self._edit_patch_name)
-        edit_menu.addAction(edit_name_action)
-
-        # Add Presets menu
-        # presets_menu = self.menuBar().addMenu("&Presets")
-
-        presets_action = edit_menu.addAction("&Presets")
-        presets_action.triggered.connect(self._show_analog_presets)
-
-    def _create_status_bar(self):
-        """Create status bar with MIDI indicators"""
-        status_bar = self.statusBar()
-
-        # Create MIDI indicators
-        self.midi_in_indicator = LEDIndicator()
-        self.midi_out_indicator = LEDIndicator()
-
-        # Add labels and indicators
-        status_bar.addPermanentWidget(QLabel("MIDI IN:"))
-        status_bar.addPermanentWidget(self.midi_in_indicator)
-        status_bar.addPermanentWidget(QLabel("MIDI OUT:"))
-        status_bar.addPermanentWidget(self.midi_out_indicator)
-
-        # Set initial indicator states
-        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
-        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
 
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
@@ -1034,6 +769,47 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.error(f"Error showing Effects editor: {str(e)}")
 
+    def _open_midi_debugger(self):
+        """Open MIDI debugger window"""
+        if not self.midi_helper:
+            logging.error("MIDI helper not initialized")
+            return
+        """    
+        if not self.midi_helper.midi_out:
+            logging.warning("No MIDI output port set")
+            # Show MIDI config dialog
+            self._show_midi_config()
+            return
+        """
+        if not self.midi_debugger:
+            self.midi_debugger = MIDIDebugger(self.midi_helper)
+            # Clean up reference when window is closed
+            self.midi_debugger.setAttribute(Qt.WA_DeleteOnClose)
+            self.midi_debugger.destroyed.connect(self._midi_debugger_closed)
+            logging.debug("Created new MIDI debugger window")
+        self.midi_debugger.show()
+        self.midi_debugger.raise_()
+
+    def _midi_debugger_closed(self):
+        """Handle MIDI debugger window closure"""
+        self.midi_debugger = None
+
+    def _midi_message_debug_closed(self):
+        """Handle MIDI message debug window closure"""
+        self.midi_message_debug = None
+
+    def _open_log_viewer(self):
+        """Show log viewer window"""
+        if not self.log_viewer:
+            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
+        self.log_viewer.show()
+        self.log_viewer.raise_()
+        logging.debug("Showing LogViewer window")
+
+    def _log_viewer_closed(self):
+        """Handle log viewer window closure"""
+        self.log_viewer = None
+
     def _load_patch(self):
         """Show load patch dialog"""
         try:
@@ -1092,594 +868,6 @@ class MainWindow(QMainWindow):
         self.log_viewer.raise_()
         logging.debug("Showing LogViewer window")
 
-    def _create_button_row(self, text, slot):
-        """Create a row with label and circular button"""
-        row = QHBoxLayout()
-        row.setSpacing(10)
-
-        # Add label with color based on text
-        label = QLabel(text)
-        if text == "Analog Synth":
-            label.setStyleSheet(Style.ANALOG_SYNTH_PART_LABEL_STYLE)
-        else:
-            label.setStyleSheet(Style.SYNTH_PART_LABEL_STYLE)
-        row.addWidget(label)
-
-        # Add spacer to push button to right
-        row.addStretch()
-
-        # Add button
-        button = QPushButton()
-        button.setFixedSize(30, 30)
-        button.setCheckable(True)
-        button.clicked.connect(slot)
-
-        # Style the button with brighter hover/pressed/selected  states
-        button.setStyleSheet(Style.BUTTON_STYLE)
-
-        row.addWidget(button)
-        return row, button
-
-    def _add_arpeggiator_buttons(self, widget):
-        """Add arpeggiator up/down buttons to the interface"""
-        # Create container
-        arpeggiator_buttons_container = QWidget(widget)
-
-        # Position to align with sequencer but 25% higher (increased from 20%)
-        seq_y = self.height - 50 - self.height * 0.1  # Base sequencer Y position
-        offset_y = self.height * 0.25  # 25% of window height (increased from 0.2)
-        arpeggiator_x = self.width - self.width * 0.8 - 60  # Position left of sequencer
-
-        # Apply the height offset to the Y position
-        arpeggiator_buttons_container.setGeometry(
-            arpeggiator_x,
-            seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
-            100,
-            100,
-        )
-
-        arpeggiator_layout = QVBoxLayout(arpeggiator_buttons_container)
-        arpeggiator_layout.setSpacing(5)
-
-        # Add "ARPEGGIO" label at the top
-        arpeggiator_label = QLabel("ARPEGGIO")
-        arpeggiator_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
-        arpeggiator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        arpeggiator_layout.addWidget(arpeggiator_label)
-
-        # Create horizontal layout for Down/Up labels
-        labels_row = QHBoxLayout()
-        labels_row.setSpacing(20)  # Space between labels
-
-        # On label
-        on_label = QLabel("On")
-        on_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
-        labels_row.addWidget(on_label)
-
-        # Add labels row
-        arpeggiator_layout.addLayout(labels_row)
-
-        # Create horizontal layout for buttons
-        buttons_row = QHBoxLayout()
-        buttons_row.setSpacing(20)  # Space between buttons
-
-        # Down label
-        key_hold_label = QLabel("Key Hold")
-        key_hold_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
-        labels_row.addWidget(key_hold_label)
-
-        # Create and store arpeggiator  button
-        self.arpeggiator_button = QPushButton()
-        self.arpeggiator_button.setFixedSize(30, 30)
-        self.arpeggiator_button.setCheckable(True)
-        self.arpeggiator_button.clicked.connect(
-            lambda checked: self._send_arp_on_off(checked)
-        )
-        self.arpeggiator_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
-        )
-        buttons_row.addWidget(self.arpeggiator_button)
-
-        # Create and store octave down button
-        self.key_hold = QPushButton()
-        self.key_hold.setFixedSize(30, 30)
-        self.key_hold.setCheckable(True)
-        self.key_hold.clicked.connect(lambda checked: self._send_arp_key_hold(checked))
-        self.key_hold.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
-        )
-        buttons_row.addWidget(self.key_hold)
-
-        # Add buttons row
-        arpeggiator_layout.addLayout(buttons_row)
-
-        # Make container transparent
-        arpeggiator_buttons_container.setStyleSheet("background: transparent;")
-
-    def _add_octave_buttons(self, widget):
-        """Add octave up/down buttons to the interface"""
-        # Create container
-        octave_buttons_container = QWidget(widget)
-
-        # Position to align with sequencer but 25% higher (increased from 20%)
-        seq_y = self.height - 50 - self.height * 0.1  # Base sequencer Y position
-        offset_y = self.height * 0.25  # 25% of window height (increased from 0.2)
-        octave_x = self.width - self.width * 0.8 - 150  # Position left of sequencer
-
-        # Apply the height offset to the Y position
-        octave_buttons_container.setGeometry(
-            octave_x,
-            seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
-            100,
-            100,
-        )
-
-        octave_layout = QVBoxLayout(octave_buttons_container)
-        octave_layout.setSpacing(5)
-
-        # Create horizontal layout for Down/Up labels
-        labels_row = QHBoxLayout()
-        labels_row.setSpacing(20)  # Space between labels
-
-        # Add "OCTAVE" label at the top
-        octave_label = QLabel("OCTAVE")
-        octave_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
-        octave_label.setAlignment(Qt.AlignCenter)
-        octave_layout.addWidget(octave_label)
-
-        # Down label
-        down_label = QLabel("Down")
-        down_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
-        labels_row.addWidget(down_label)
-
-        # Up label
-        up_label = QLabel("Up")
-        up_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 13px;
-            color: #d51e35;
-            font-weight: bold;
-        """
-        )
-        labels_row.addWidget(up_label)
-
-        # Add labels row
-        octave_layout.addLayout(labels_row)
-
-        # Create horizontal layout for buttons
-        buttons_row = QHBoxLayout()
-        buttons_row.setSpacing(20)  # Space between buttons
-
-        # Create and store octave down button
-        self.octave_down = QPushButton()
-        self.octave_down.setFixedSize(30, 30)
-        self.octave_down.setCheckable(True)
-        self.octave_down.clicked.connect(lambda: self._send_octave(-1))
-        self.octave_down.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
-        )
-        buttons_row.addWidget(self.octave_down)
-
-        # Create and store octave up button
-        self.octave_up = QPushButton()
-        self.octave_up.setFixedSize(30, 30)
-        self.octave_up.setCheckable(True)
-        self.octave_up.clicked.connect(lambda: self._send_octave(1))
-        self.octave_up.setStyleSheet(
-            """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-        """
-        )
-        buttons_row.addWidget(self.octave_up)
-
-        # Add buttons row
-        octave_layout.addLayout(buttons_row)
-
-        # Make container transparent
-        octave_buttons_container.setStyleSheet("background: transparent;")
-
-    def _add_overlaid_controls(self, central_widget):
-        """Add interactive controls overlaid on the JD-Xi image"""
-        # Create absolute positioning layout
-        central_widget.setLayout(QVBoxLayout())
-
-        # Parts Select section with Arpeggiator
-        parts_container = QWidget(central_widget)
-        parts_x = self.display_x + self.display_width + 30
-        parts_y = self.display_y - (
-            self.height * 0.15
-        )  # Move up by 20% of window height
-
-        parts_container.setGeometry(parts_x, parts_y, 220, 250)
-        parts_layout = QVBoxLayout(parts_container)
-        parts_layout.setSpacing(15)  # Increased from 5 to 15 for more vertical spacing
-
-        # Add Parts Select label
-        parts_label = QLabel("Parts Select")
-        parts_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-            padding-bottom: 10px;
-        """
-        )
-        parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        parts_layout.addWidget(parts_label)
-
-        # Parts buttons
-        digital1_row, self.digital1_button = self._create_button_row(
-            "Digital Synth 1", self._open_digital_synth1
-        )
-        digital2_row, self.digital2_button = self._create_button_row(
-            "Digital Synth 2", self._open_digital_synth2
-        )
-        drums_row, self.drums_button = self._create_button_row(
-            "Drums", self._open_drums
-        )
-        analog_row, self.analog_button = self._create_button_row(
-            "Analog Synth", self._open_analog_synth
-        )
-        arp_row, self.arp_button = self._create_button_row(
-            "Arpeggiator", self._open_arpeggiator
-        )
-
-        self.analog_button.clicked.connect(
-            lambda: self._select_synth(PresetType.ANALOG)
-        )
-        self.digital1_button.clicked.connect(
-            lambda: self._select_synth(PresetType.DIGITAL_1)
-        )
-        self.digital2_button.clicked.connect(
-            lambda: self._select_synth(PresetType.DIGITAL_2)
-        )
-        self.drums_button.clicked.connect(lambda: self._select_synth(PresetType.DRUMS))
-
-        # Create a button group
-        button_group = QButtonGroup()
-        button_group.addButton(self.digital1_button)
-        button_group.addButton(self.digital2_button)
-        button_group.addButton(self.analog_button)
-        button_group.addButton(self.drums_button)
-
-        # Ensure only one button can be checked at a time
-        button_group.setExclusive(True)
-
-        parts_layout.addLayout(digital1_row)
-        parts_layout.addLayout(digital2_row)
-        parts_layout.addLayout(drums_row)
-        parts_layout.addLayout(analog_row)
-        parts_layout.addLayout(arp_row)
-
-        self._add_octave_buttons(central_widget)
-        self._add_arpeggiator_buttons(central_widget)
-
-        # Effects button in top row
-        fx_container = QWidget(central_widget)
-        fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
-        fx_layout = QHBoxLayout(fx_container)
-
-        effects_row, self.effects_button = self._create_button_row(
-            "Effects", self._open_effects
-        )
-        fx_layout.addLayout(effects_row)
-
-        ###### For tone buttons ######
-        # Effects button in top row
-        tone_container = QWidget(central_widget)
-        tone_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
-        tone_container_layout = QVBoxLayout(tone_container)
-        tone_label_layout = QHBoxLayout()
-        tone_label = QLabel("Tone")
-        tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        tone_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
-        tone_label_layout.addWidget(tone_label)
-        tone_container_layout.addLayout(tone_label_layout)
-        tone_layout = QHBoxLayout()
-        tone_row = self._create_tone_buttons_row()
-        tone_layout.addLayout(tone_row)
-        tone_container_layout.addLayout(tone_layout)
-
-        # Beginning of sequencer section
-        sequencer_container = QWidget(central_widget)
-        sequencer_container.setGeometry(self.width - 540, self.margin + 150, 650, 100)
-        sequencer_container_layout = QVBoxLayout(sequencer_container)
-        sequencer_label_layout = QHBoxLayout()
-        sequencer_label = QLabel("Sequencer")
-        sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sequencer_label.setStyleSheet(
-            """
-            font-family: "Myriad Pro", Arial;
-            font-size: 14px;
-            color: #d51e35;
-            font-weight: bold;
-            background: transparent;
-        """
-        )
-        # sequencer_label_layout.addWidget(sequencer_label)
-        # sequencer_container_layout.addLayout(sequencer_label_layout)
-        sequencer_layout = QHBoxLayout()
-        seq_width = 400  # Approximate width for sequencer
-        favorites_button_row = self._create_favorite_buttons_row()
-        sequencer = self._create_sequencer_buttons_row()
-        sequencer_layout.addLayout(sequencer)
-        # sequencer_container_layout.addLayout(favorites_button_row)
-        sequencer_container_layout.addLayout(sequencer_layout)
-        # End of sequencer section
-
-        # Make containers transparent
-        parts_container.setStyleSheet("background: transparent;")
-        fx_container.setStyleSheet("background: transparent;")
-
-        # Calculate keyboard dimensions
-        key_width = self.width * 0.8 / 25  # keyboard_width/25
-        key_height = 127  # white_key_height
-        keyboard_y = self.height - key_height - (self.height * 0.1) + (key_height * 0.3)
-        keyboard_start = self.width - (self.width * 0.8) - self.margin - 20
-
-        # Add white keys C1 to F5
-        white_notes = [
-            36,
-            38,
-            40,
-            41,
-            43,
-            45,
-            47,  # C1 to B1
-            48,
-            50,
-            52,
-            53,
-            55,
-            57,
-            59,  # C2 to B2
-            60,
-            62,
-            64,
-            65,
-            67,
-            69,
-            71,  # C3 to B3
-            72,
-            74,
-            76,
-            77,
-            79,
-            81,
-            83,  # C4 to B4
-            84,
-            86,
-            88,
-            89,  # C5 to F5
-        ]
-
-        # for i, note in enumerate(white_notes):
-        #    x_pos = keyboard_start + i * key_width
-        #    self._add_piano_key(widget, False, note, x_pos, keyboard_y, key_width, key_height)
-
-        # Add black keys
-        black_notes = [
-            37,
-            39,
-            None,
-            42,
-            44,
-            46,  # C#1 to B1
-            49,
-            51,
-            None,
-            54,
-            56,
-            58,  # C#2 to B2
-            61,
-            63,
-            None,
-            66,
-            68,
-            70,  # C#3 to B3
-            73,
-            75,
-            None,
-            78,
-            80,
-            82,  # C#4 to B4
-            85,
-            87,
-            None,
-            90,  # C#5 to F#5
-        ]
-
-        black_positions = [
-            0,
-            1,
-            3,
-            4,
-            5,
-            7,
-            8,
-            10,
-            11,
-            12,
-            14,
-            15,
-            17,
-            18,
-            19,
-            21,
-            22,
-            24,
-            25,
-            26,
-            28,
-            29,
-            31,
-            32,
-        ]  # Extended positions
-
-        # for pos, note in zip(black_positions, [n for n in black_notes if n is not None]):
-        #    x_pos = keyboard_start + pos * key_width + key_width/2
-        #    self._add_piano_key(widget, True, note, x_pos, keyboard_y, key_width, key_height)
-
-    def _add_piano_key(
-        self, widget, is_black, note_number, x_pos, keyboard_y, key_width, key_height
-    ):
-        """Helper to create a piano key button"""
-        button = QPushButton(widget)
-
-        if is_black:
-            width = key_width * 0.6
-            height = 80
-            style = """
-                QPushButton {
-                    background-color: black;
-                    border: 1px solid black;
-                    border-radius: 0px;
-                }
-                QPushButton:hover {
-                    background-color: #1a1a1a;
-                }
-                QPushButton:pressed {
-                    background-color: #333333;
-                }
-            """
-        else:
-            width = key_width - 1
-            height = key_height
-            style = """
-                QPushButton {
-                    background-color: white;
-                    border: 1px solid black;
-                    border-radius: 0px;
-                }
-                QPushButton:hover {
-                    background-color: #f0f0f0;
-                }
-                QPushButton:pressed {
-                    background-color: #e0e0e0;
-                }
-            """
-
-        button.setGeometry(int(x_pos), int(keyboard_y), int(width), int(height))
-        button.setStyleSheet(style)
-
-        def key_pressed():
-            if self.midi_helper:
-                handler = self._get_preset_handler_for_current_synth()
-                self.midi_helper.send_note_on(
-                    note=note_number, velocity=1, channel=handler.channel
-                )
-                logging.debug(f"Sent MIDI Note On {note_number} velocity 1")
-
-        def key_released():
-            if self.midi_helper:
-                handler = self._get_preset_handler_for_current_synth()
-                self.midi_helper.send_note_off(
-                    note=note_number, velocity=5, channel=handler.channel
-                )
-                logging.debug(f"Sent MIDI Note Off {note_number} velocity 5")
-
-        # Connect to mouse events instead of clicked
-        button.pressed.connect(key_pressed)
-        button.released.connect(key_released)
-
     def _send_octave(self, direction):
         """Send octave change MIDI message"""
         if self.midi_helper:
@@ -1724,85 +912,6 @@ class MainWindow(QMainWindow):
             logging.debug(
                 f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-
-    def _create_other(self):
-        """Create other controls section"""
-        frame = QFrame()
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-
-        # Create buttons for Effects and Vocal FX
-        others = [
-            ("Effects", self._open_effects),
-            ("Vocal FX", self._open_vocal_fx),
-        ]
-
-        for text, slot in others:
-            btn = QPushButton(text)
-            btn.setFixedHeight(40)
-            btn.clicked.connect(slot)
-            layout.addWidget(btn)
-
-        # Create horizontal layout for Arpeggiator
-        arp_row = QHBoxLayout()
-
-        # Arpeggiator button
-        arp_btn = QPushButton("Arpeggio")
-        arp_btn.setFixedHeight(40)
-        arp_btn.clicked.connect(self._open_arpeggiator)
-        arp_row.addWidget(arp_btn)
-
-        # Add the horizontal row to the main layout
-        layout.addLayout(arp_row)
-
-        # Add stretch at the bottom
-        layout.addStretch()
-
-        return frame
-
-    def _update_display(self):
-        """Update the JD-Xi display image"""
-        pixmap = draw_instrument_pixmap(
-            digital_font_family=(
-                self.digital_font_family
-                if hasattr(self, "digital_font_family")
-                else None
-            ),
-            current_octave=self.current_octave,
-            preset_num=self.current_preset_num,
-            preset_name=self.current_preset_name,
-        )
-        if hasattr(self, "image_label"):
-            self.image_label.setPixmap(pixmap)
-
-    def _load_digital_font(self):
-        """Load the digital LCD font for the display"""
-        import os
-
-        font_name = "JdLCD.ttf"
-        font_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "resources", "fonts", font_name
-        )
-        if os.path.exists(font_path):
-            logging.debug(f"Found file, Loading {font_name}font from {font_path}")
-            try:
-                font_id = QFontDatabase.addApplicationFont(font_path)
-                if font_id < 0:
-                    logging.debug("Error loading {font_name} font")
-                font_families = QFontDatabase.applicationFontFamilies(font_id)
-                if font_families:
-                    self.digital_font_family = font_families[0]
-                    logging.debug(
-                        f"Successfully loaded font family: {self.digital_font_family}"
-                    )
-                else:
-                    logging.debug("No font families found after loading font")
-            except Exception as e:
-                logging.exception(
-                    f"Error loading {font_name} font from {font_path}: {e}"
-                )
-        else:
-            logging.debug(f"File not found: {font_path}")
 
     def _send_arp_key_hold(self, state):
         """Send arpeggiator key hold (latch) command"""
@@ -1885,43 +994,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             logging.error(f"Error sending arp on/off: {str(e)}")
 
-    def _open_midi_debugger(self):
-        """Open MIDI debugger window"""
-        if not self.midi_helper:
-            logging.error("MIDI helper not initialized")
-            return
-        """    
-        if not self.midi_helper.midi_out:
-            logging.warning("No MIDI output port set")
-            # Show MIDI config dialog
-            self._show_midi_config()
-            return
-        """
-        if not self.midi_debugger:
-            self.midi_debugger = MIDIDebugger(self.midi_helper)
-            # Clean up reference when window is closed
-            self.midi_debugger.setAttribute(Qt.WA_DeleteOnClose)
-            self.midi_debugger.destroyed.connect(self._midi_debugger_closed)
-            logging.debug("Created new MIDI debugger window")
-        self.midi_debugger.show()
-        self.midi_debugger.raise_()
-
-    def _midi_debugger_closed(self):
-        """Handle MIDI debugger window closure"""
-        self.midi_debugger = None
-
-    def _open_log_viewer(self):
-        """Show log viewer window"""
-        if not self.log_viewer:
-            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
-        self.log_viewer.show()
-        self.log_viewer.raise_()
-        logging.debug("Showing LogViewer window")
-
-    def _log_viewer_closed(self):
-        """Handle log viewer window closure"""
-        self.log_viewer = None
-
     def _set_midi_ports(self, in_port, out_port):
         """Set MIDI input and output ports"""
         try:
@@ -1994,38 +1066,15 @@ class MainWindow(QMainWindow):
 
                 # Forward to MIDI helper
                 if hasattr(self, "midi_helper"):
-                    self.midi_helper.handle_midi_message(message, timestamp)
+                    self.midi_helper.handle_incoming_midi_message(message, timestamp)
 
     def _send_midi_message(self, message):
         """Send MIDI message and blink indicator"""
         if self.midi_helper:
             self.midi_helper.send_message(message)
-            # if self.midi_out:
-            #    self.midi_out.send_message(message)
             # Blink the output indicator
             if hasattr(self, "midi_out_indicator"):
                 self.midi_out_indicator.blink()
-
-    """
-    def _show_drums_editor(self):
-        ""Show the drum editor window""
-        try:
-            if not hasattr(self, "drums_editor"):
-                self.drums_editor = DrumEditor(
-                    midi_helper=self.midi_helper, parent=self
-                )  # Pass midi_helper instance
-            self.drums_editor.show()
-            self.drums_editor.raise_()
-            
-        except Exception as e:
-            logging.error(f"Error showing Drums editor: {str(e)}") 
-    """
-
-    def update_preset_display(self, preset_num, preset_name):
-        """Update the current preset display"""
-        self.current_preset_num = preset_num
-        self.current_preset_name = preset_name
-        self._update_display()
 
     def _edit_patch_name(self):
         """Edit current patch name"""
@@ -2073,33 +1122,6 @@ class MainWindow(QMainWindow):
 
         except Exception as e:
             logging.error(f"Error saving settings: {str(e)}")
-
-    def show_error(self, title: str, message: str):
-        """Show error message dialog
-
-        Args:
-            title: Dialog title
-            message: Error message
-        """
-        QMessageBox.critical(self, title, message)
-
-    def show_warning(self, title: str, message: str):
-        """Show warning message dialog
-
-        Args:
-            title: Dialog title
-            message: Warning message
-        """
-        QMessageBox.warning(self, title, message)
-
-    def show_info(self, title: str, message: str):
-        """Show info message dialog
-
-        Args:
-            title: Dialog title
-            message: Info message
-        """
-        QMessageBox.information(self, title, message)
 
     def _auto_connect_jdxi(self):
         """Attempt to automatically connect to JD-Xi MIDI ports"""
@@ -2183,7 +1205,7 @@ class MainWindow(QMainWindow):
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
         if self.midi_helper:
-            # self.channel is 0-indexed, so add 1 to match MIDI channel
+            # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
             msg = [0x90 + (self.channel), note_num, 100]
             self.midi_helper.send_message(msg)
             logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
@@ -2196,42 +1218,7 @@ class MainWindow(QMainWindow):
             status = 0x80 + (self.channel)
             msg = [status, note_num, 0]
             self.midi_helper.send_message(msg)
-            logging.info(f"Sent Note Off: {note_num} on channel {self.channel}")
-
-    def _create_midi_indicators(self):
-        """Create MIDI activity indicators"""
-        # Create indicators
-        self.midi_in_indicator = MIDIIndicator()
-        self.midi_out_indicator = MIDIIndicator()
-
-        # Create labels
-        in_label = QLabel("MIDI IN")
-        out_label = QLabel("MIDI OUT")
-        in_label.setStyleSheet("color: white; font-size: 10px;")
-        out_label.setStyleSheet("color: white; font-size: 10px;")
-
-        # Create container widget
-        indicator_widget = QWidget(self)
-        indicator_layout = QVBoxLayout(indicator_widget)
-        indicator_layout.setSpacing(4)
-        indicator_layout.setContentsMargins(0, 0, 0, 0)
-
-        # Add indicators with labels
-        for label, indicator in [
-            (in_label, self.midi_in_indicator),
-            (out_label, self.midi_out_indicator),
-        ]:
-            row = QHBoxLayout()
-            row.addWidget(label)
-            row.addWidget(indicator)
-            indicator_layout.addLayout(row)
-
-        # Position the container - moved right by 20px and down by 50px from original position
-        indicator_widget.move(
-            self.width() - 80, 120
-        )  # Original was (self.width() - 100, 70)
-
-        return indicator_widget
+            logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
 
     def _handle_octave_shift(self, direction: int):
         """Handle octave shift button press"""
@@ -2276,65 +1263,6 @@ class MainWindow(QMainWindow):
         self.preset_editor.preset_changed.connect(self._update_display_preset)
         # self.midi_helper.preset_changed.connect(self._update_display_preset)
         self.preset_editor.show()
-
-    def _update_display_preset(
-        self, preset_number: int, preset_name: str, channel: int
-    ):
-        """Update the display with the new preset information"""
-        logging.info(
-            f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
-        )
-        self.current_preset_index = preset_number
-        self.preset_name = preset_name
-        self.channel = channel
-        if re.search(r"^\d{3}:", preset_name):
-            preset_number = int(preset_name[:3])
-            preset_name = preset_name[4:]
-        try:
-            # Update display
-            self.update_preset_display(preset_number, preset_name)
-
-            # Update piano keyboard channel if it exists
-            if hasattr(self, "piano_keyboard"):
-                self.piano_keyboard.set_midi_channel(channel)
-
-            # Update channel indicator if it exists
-            if hasattr(self, "channel_button"):
-                self.channel_button.set_channel(channel)
-
-            logging.debug(
-                f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})"
-            )
-
-        except Exception as e:
-            logging.error(f"Error updating display: {str(e)}")
-
-    def _update_display_image(
-        self, preset_num: int = 1, preset_name: str = "INIT PATCH"
-    ):
-        """Update the digital display image
-
-        Args:
-            preset_num: Preset number to display (1-128)
-            preset_name: Name of preset to display
-        """
-        try:
-            # Create new image with updated preset info
-            image = draw_instrument_pixmap(
-                digital_font_family=self.digital_font_family,
-                current_octave=self.current_octave,
-                preset_num=preset_num,
-                preset_name=preset_name,
-            )
-
-            # Update display label
-            if hasattr(self, "display_label"):
-                self.display_label.setPixmap(image)
-
-            logging.debug(f"Updated display: {preset_num:03d}:{preset_name}")
-
-        except Exception as e:
-            logging.error(f"Error updating display image: {str(e)}")
 
     def _load_last_preset(self):
         """Load the last used preset from settings"""
@@ -2627,63 +1555,6 @@ class MainWindow(QMainWindow):
             logging.debug(
                 f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-
-    def _create_global_controls(self):
-        """Create global controls section"""
-        group = QGroupBox("Global Controls")
-        layout = QHBoxLayout()
-        group.setLayout(layout)
-
-        # Octave controls
-        octave_group = QGroupBox("Octave")
-        octave_layout = QHBoxLayout()
-        octave_group.setLayout(octave_layout)
-
-        self.octave_down = QPushButton("Down")
-        self.octave_up = QPushButton("Up")
-        self.octave_display = QLabel("0")  # Display current octave
-        self.octave_display.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.octave_down.clicked.connect(lambda: self._send_octave(-1))
-        self.octave_up.clicked.connect(lambda: self._send_octave(1))
-        octave_button_stylesheet = """
-            QPushButton {
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }
-            QPushButton:pressed, QPushButton:checked {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
-        self.octave_up.setStyleSheet(octave_button_stylesheet)
-        self.octave_down.setStyleSheet(octave_button_stylesheet)
-
-        octave_layout.addWidget(self.octave_down)
-        octave_layout.addWidget(self.octave_display)
-        octave_layout.addWidget(self.octave_up)
-
-        # Arpeggiator controls
-        arp_group = QGroupBox("Arpeggiator")
-        arp_layout = QHBoxLayout()
-        arp_group.setLayout(arp_layout)
-
-        self.arp_switch = QPushButton("On")
-        self.arp_switch.setCheckable(True)
-        self.arp_switch.clicked.connect(self._toggle_arpeggiator)
-
-        arp_layout.addWidget(self.arp_switch)
-
-        # Add groups to main layout
-        layout.addWidget(octave_group)
-        layout.addWidget(arp_group)
-
-        return group
 
     def _change_octave(self, direction: int):
         """Change octave up/down

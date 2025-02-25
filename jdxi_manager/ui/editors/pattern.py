@@ -49,6 +49,100 @@ from jdxi_manager.ui.style import sequencer_button_style, toggle_button_style
 
 instrument_icon_folder = "patterns"
 
+# Add white keys C1 to F5
+white_notes = [
+    36,
+    38,
+    40,
+    41,
+    43,
+    45,
+    47,  # C1 to B1
+    48,
+    50,
+    52,
+    53,
+    55,
+    57,
+    59,  # C2 to B2
+    60,
+    62,
+    64,
+    65,
+    67,
+    69,
+    71,  # C3 to B3
+    72,
+    74,
+    76,
+    77,
+    79,
+    81,
+    83,  # C4 to B4
+    84,
+    86,
+    88,
+    89,  # C5 to F5
+]
+
+black_notes = [
+    37,
+    39,
+    None,
+    42,
+    44,
+    46,  # C#1 to B1
+    49,
+    51,
+    None,
+    54,
+    56,
+    58,  # C#2 to B2
+    61,
+    63,
+    None,
+    66,
+    68,
+    70,  # C#3 to B3
+    73,
+    75,
+    None,
+    78,
+    80,
+    82,  # C#4 to B4
+    85,
+    87,
+    None,
+    90,  # C#5 to F#5
+]
+
+black_positions = [
+    0,
+    1,
+    3,
+    4,
+    5,
+    7,
+    8,
+    10,
+    11,
+    12,
+    14,
+    15,
+    17,
+    18,
+    19,
+    21,
+    22,
+    24,
+    25,
+    26,
+    28,
+    29,
+    31,
+    32,
+]  # Extended positions
+
 
 class DrumPattern(object):
     """Container and iterator for a multi-track step sequence."""
