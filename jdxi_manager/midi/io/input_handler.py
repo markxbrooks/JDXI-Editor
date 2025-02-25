@@ -67,7 +67,7 @@ class MIDIInHandler(MidiIOController):
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
         self.register_callback(self.midi_callback)
-        pub.subscribe(self._handle_incoming_midi_message, "midi_incoming_message")
+        pub.subscribe(self.handle_incoming_midi_message, "midi_incoming_message")
 
     def rtmidi_to_mido(self, rtmidi_message):
         """Convert an rtmidi message to a mido message."""
@@ -126,7 +126,7 @@ class MIDIInHandler(MidiIOController):
         """
         self.midi_in.set_callback(callback)
 
-    def _handle_incoming_midi_message(self, message: Any) -> None:
+    def handle_incoming_midi_message(self, message: Any) -> None:
         """
         Process incoming MIDI messages.
 
