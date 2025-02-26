@@ -133,7 +133,7 @@ class DrumPadEditor(BaseEditor):
 
         # Add frame to main layout
         main_layout.addWidget(group)
-        self.setStyleSheet(Style.DRUMS_STYLE)
+        self.setStyleSheet(Style.JDXI_EDITOR)
 
 
 class DrumEditor(BaseEditor):
@@ -273,7 +273,7 @@ class DrumEditor(BaseEditor):
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         main_layout.addWidget(scroll)
         self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet(Style.JDXI_DRUM_TABS_STYLE)
+        self.tab_widget.setStyleSheet(Style.JDXI_TABS_DRUMS)
         scroll.setWidget(self.tab_widget)
         partials = [
             "BD1",

@@ -27,7 +27,7 @@ from jdxi_manager.data.presets.data import (
 )
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.ui.image.instrument import draw_instrument_pixmap
-from jdxi_manager.ui.style import Style, sequencer_button_style, toggle_button_style
+from jdxi_manager.ui.style import Style, generate_sequencer_button_style, toggle_button_style
 from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.button.channel import ChannelButton
 from jdxi_manager.ui.widgets.indicator import MIDIIndicator, LEDIndicator
@@ -64,7 +64,7 @@ class JdxiWindow(QMainWindow):
         # pub.subscribe(self._update_display_preset, "update_display_preset")
 
         # Set black background for entire application
-        self.setStyleSheet(Style.JDXI_STYLE)
+        self.setStyleSheet(Style.JDXI)
 
         # Load custom font
         self._load_digital_font()
@@ -217,11 +217,11 @@ class JdxiWindow(QMainWindow):
 
         # Create tone up button
         self.tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_up_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
+        self.tone_up_button.setStyleSheet(Style.JDXI_BUTTON_TONE)
 
         # Create tone down button
         self.tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_down_button.setStyleSheet(Style.TONE_BUTTON_STYLE)
+        self.tone_down_button.setStyleSheet(Style.JDXI_BUTTON_TONE)
 
         # Connect buttons to functions
         self.tone_down_button.clicked.connect(self._previous_tone)
@@ -249,17 +249,17 @@ class JdxiWindow(QMainWindow):
         # Add label with color based on text
         label = QLabel(text)
         if text == "Analog Synth":
-            label.setStyleSheet(Style.ANALOG_SYNTH_PART_LABEL_STYLE)
+            label.setStyleSheet(Style.JDXI_LABEL_ANALOG_SYNTH_PART)
         else:
-            label.setStyleSheet(Style.SYNTH_PART_LABEL_STYLE)
+            label.setStyleSheet(Style.JDXI_LABEL_SYNTH_PART)
         # Add spacer to push button to right
         row.addStretch()
         # Add button
         self.favourites_button = QPushButton()
         self.favourites_button.setFixedSize(30, 30)
         self.favourites_button.setCheckable(True)
-        # Style the button with brighter hover/pressed/selected  states
-        self.favourites_button.setStyleSheet(Style.BUTTON_STYLE)
+        # Style the button with brighter hover/border_pressed/selected  states
+        self.favourites_button.setStyleSheet(Style.JDXI_BUTTON)
         row.addWidget(self.favourites_button)
         return row
 
@@ -273,7 +273,7 @@ class JdxiWindow(QMainWindow):
             button = QPushButton()
             button.setFixedSize(25, 25)
             button.setCheckable(True)  # Ensure the button is checkable
-            button.setStyleSheet(sequencer_button_style(button.isChecked()))
+            button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
             button.toggled.connect(
                 lambda checked, btn=button: toggle_button_style(btn, checked)
             )
@@ -442,9 +442,9 @@ class JdxiWindow(QMainWindow):
         # Add label with color based on text
         label = QLabel(text)
         if text == "Analog Synth":
-            label.setStyleSheet(Style.ANALOG_SYNTH_PART_LABEL_STYLE)
+            label.setStyleSheet(Style.JDXI_LABEL_ANALOG_SYNTH_PART)
         else:
-            label.setStyleSheet(Style.SYNTH_PART_LABEL_STYLE)
+            label.setStyleSheet(Style.JDXI_LABEL_SYNTH_PART)
         row.addWidget(label)
 
         # Add spacer to push button to right
@@ -456,8 +456,8 @@ class JdxiWindow(QMainWindow):
         button.setCheckable(True)
         button.clicked.connect(slot)
 
-        # Style the button with brighter hover/pressed/selected  states
-        button.setStyleSheet(Style.BUTTON_STYLE)
+        # Style the button with brighter hover/border_pressed/selected  states
+        button.setStyleSheet(Style.JDXI_BUTTON)
 
         row.addWidget(button)
         return row, button
@@ -495,7 +495,7 @@ class JdxiWindow(QMainWindow):
 
         # On label
         on_label = QLabel("On")
-        on_label.setStyleSheet(Style.JDXI_SUB_LABEL)
+        on_label.setStyleSheet(Style.JDXI_LABEL_SUB)
         labels_row.addWidget(on_label)
 
         # Add labels row
@@ -507,7 +507,7 @@ class JdxiWindow(QMainWindow):
 
         # Down label
         key_hold_label = QLabel("Key Hold")
-        key_hold_label.setStyleSheet(Style.JDXI_SUB_LABEL)
+        key_hold_label.setStyleSheet(Style.JDXI_LABEL_SUB)
         labels_row.addWidget(key_hold_label)
 
         # Create and store arpeggiator  button
@@ -563,12 +563,12 @@ class JdxiWindow(QMainWindow):
 
         # Down label
         down_label = QLabel("Down")
-        down_label.setStyleSheet(Style.JDXI_SUB_LABEL)
+        down_label.setStyleSheet(Style.JDXI_LABEL_SUB)
         labels_row.addWidget(down_label)
 
         # Up label
         up_label = QLabel("Up")
-        up_label.setStyleSheet(Style.JDXI_SUB_LABEL)
+        up_label.setStyleSheet(Style.JDXI_LABEL_SUB)
         labels_row.addWidget(up_label)
 
         # Add labels row
@@ -618,7 +618,7 @@ class JdxiWindow(QMainWindow):
 
         # Add Parts Select label
         parts_label = QLabel("Parts Select")
-        parts_label.setStyleSheet(Style.PARTS_SELECT)
+        parts_label.setStyleSheet(Style.JDXI_PARTS_SELECT)
         parts_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         parts_layout.addWidget(parts_label)
 
@@ -702,7 +702,7 @@ class JdxiWindow(QMainWindow):
         sequencer_label_layout = QHBoxLayout()
         sequencer_label = QLabel("Sequencer")
         sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sequencer_label.setStyleSheet(Style.SEQUENCER)
+        sequencer_label.setStyleSheet(Style.JDXI_SEQUENCER)
         # sequencer_label_layout.addWidget(sequencer_label)
         # sequencer_container_layout.addLayout(sequencer_label_layout)
         sequencer_layout = QHBoxLayout()

@@ -38,7 +38,7 @@ class LogViewer(QMainWindow):
                 background-color: #4D4D4D;
                 border: 1px solid #FF3333;
             }
-            QPushButton:pressed {
+            QPushButton:border_pressed {
                 background-color: #2D2D2D;
             }
         """)

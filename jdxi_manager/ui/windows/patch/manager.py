@@ -16,43 +16,7 @@ class PatchManager(QMainWindow):
         self.setMinimumSize(400, 200)
         
         # Apply dark theme styling
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #2E2E2E;
-            }
-            QWidget {
-                background-color: #2E2E2E;
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QLineEdit {
-                background-color: #1A1A1A;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px;
-                font-family: 'Consolas';
-            }
-            QPushButton {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
-                background-color: #4D4D4D;
-                border: 1px solid #FF3333;
-            }
-            QPushButton:pressed {
-                background-color: #2D2D2D;
-            }
-            QLabel {
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-        """)
+        self.setStyleSheet(Style.JDXI_PATCH_MANAGER)
         
         # Create central widget and layout
         main_widget = QWidget()

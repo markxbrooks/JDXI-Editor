@@ -2,6 +2,208 @@ from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
 
+def generate_sequencer_button_style(active):
+    return f"""
+        QPushButton {{
+            border: 4px solid {'#ff6666' if active else '#666666'};
+            background-color: {'#333333' if active else 'black'};
+            border-radius: 3px;
+            padding: 0px;
+        }}
+        QPushButton:hover {{
+            background-color: #1A1A1A;
+            border-color: #ff4d4d;
+        }}
+        QPushButton:border_pressed {{
+            background-color: #333333;
+            border-color: #ff6666;
+        }}
+    """
+
+
+def generate_button_style(
+    bg,
+    border,
+    radius,
+    text_color,
+    hover,
+    border_pressed,
+    background_pressed="#666666",
+    button_border_width=4,
+    font_family="Myriad Pro, Arial, sans-serif",
+    font_size="12px",
+    button_padding=8,
+):
+    """Generate a button style dynamically."""
+    return f"""
+            QPushButton {{
+                background-color: {bg};
+                border: {button_border_width}px solid {border};
+                border-radius: {radius}px;
+                color: {text_color};
+                font-family: {font_family};
+                font-size: {font_size};
+                padding: {button_padding}px;
+            }}
+            QPushButton:hover {{
+                background-color: {hover};
+            }}
+            QPushButton:border_pressed, QPushButton:checked {{
+                background-color: {background_pressed};
+                border: {button_border_width}px solid {border_pressed};
+            }}
+        """
+
+
+def generate_tab_style(
+    bg,
+    border,
+    radius,
+    text_color,
+    hover_bg,
+    hover_border,
+    selected_bg,
+    selected_border,
+    font_family="Myriad Pro, Arial, sans-serif",
+    font_size="12px",
+    padding="8px 12px",
+    margin="2px",
+):
+    """Generate a tab style dynamically."""
+    return f"""
+            QTabBar::tab {{
+                background: {bg};
+                color: {text_color};
+                padding: {padding};
+                margin: {margin};
+                border: 2px solid {border};
+                border-radius: {radius}px;
+                font-family: {font_family};
+                font-size: {font_size};
+            }}
+
+            QTabBar::tab:selected {{
+                background: {selected_bg};
+                color: {text_color};
+                border: 2px solid {selected_border};
+                font-family: {font_family};
+                font-size: {font_size};
+            }}
+
+            QTabBar::tab:hover {{
+                background: {hover_bg};
+                border: 2px solid {hover_border};
+                font-family: {font_family};
+                font-size: {font_size};
+            }}
+
+            QTabWidget::pane {{
+                border: 1px solid {selected_border};
+            }}
+        """
+
+    # Editor Styles
+
+
+def generate_editor_style(
+    accent,
+    accent_hover,
+    background,
+    foreground,
+    font_family,
+    font_size,
+    button_padding,
+    slider_handle,
+    slider_handle_border,
+    slider_groove,
+):
+    return f"""
+        QWidget {{
+            background-color: {background};
+            color: {foreground};
+            font-family: {font_family};
+            font-size: {font_size};
+            padding: 2px;
+        }}
+
+        QGroupBox {{
+            border: 1px solid {accent};
+            border-radius: 3px;
+            margin-top: 1.5ex;
+            padding: {button_padding}px;
+        }}
+        
+        QGroupBox[adsr="true"] {{
+            min-height: 400px;  /* Reduced height for horizontal layout */
+        }}
+        
+        QSlider::handle:vertical {{
+            background: {slider_handle};
+            border: 2px solid {slider_handle_border};
+            width: 18px;
+            height: 18px;
+            margin: -9px 0;
+            border-radius: 3px;
+        }}
+        
+        QSlider::handle:vertical:hover {{
+            border-color: {accent_hover};
+        }}
+
+        QGroupBox::title {{
+            subcontrol-origin: margin;
+            subcontrol-position: top center;
+            padding: 0 3px;
+            color: {foreground};
+        }}
+
+        QPushButton {{
+            background-color: {background};
+            border: 1px solid {accent};
+            border-radius: 3px;
+            padding: {button_padding}px;
+            color: {foreground};
+        }}
+
+        QPushButton:hover, QPushButton:checked {{
+            background-color: {accent};
+            color: {background};
+        }}
+
+        QComboBox, QScrollBar {{
+            background-color: {background};
+            border: 1px solid {accent};
+            border-radius: 3px;
+            padding: 3px;
+            color: {foreground};
+        }}
+
+        QScrollBar::handle {{
+            background: {slider_handle_border};
+            border-radius: 3px;
+        }}
+
+        QScrollBar::handle:hover {{
+            border: 2px solid {accent};
+        }}
+
+        QSlider::groove:horizontal {{
+            background: {slider_groove};
+            height: 2px;
+            border-radius: 1px;
+        }}
+
+        QSlider::handle:horizontal, QSlider::handle:vertical {{
+            background: {slider_handle};
+            border: 2px solid {slider_handle_border};
+            width: 18px;
+            height: 18px;
+            margin: -9px 0;
+            border-radius: 9px;
+        }}
+    """
+
+
 class Style:
     """Central style definitions for JD-Xi Manager"""
 
@@ -9,757 +211,136 @@ class Style:
     COM_BG = "#000000"
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # """"#1A1A1A"
+    BACKGROUND_PRESSED = "#666666"
     FOREGROUND = "#FFFFFF"
-    PADDING = 2 # in px
+    PADDING = 2  # in px
     BUTTON_PADDING = 3
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF2200"  # Red for hover
-    ANALOG_ACCENT = "#00A0E9"
-    ANALOG_ACCENT_HOVER = "#00A0E9"
+    ACCENT_ANALOG = "#00A0E9"
+    ACCENT_ANALOG_HOVER = "#00A0E9"
     BORDER = "#333333"
     SLIDER_HANDLE = "#000000"  # Black fill
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
     SLIDER_GROOVE = "#666666"  # grey groove
+    ACCENT_PRESSED = "#FF6666"
 
-    ICON_SIZE = 20  # Size of icons in Editor Group boxes
     # Dimensions
-    HANDLE_SIZE = "6px"  # Circle diameter
-    GROOVE_WIDTH = "2px"  # Groove thickness
+    BUTTON_RADIUS = 15
+    BUTTON_BORDER_WIDTH = 4
+    BUTTON_PADDING = 8
+    HANDLE_SIZE = "6px"
+    GROOVE_WIDTH = "2px"
+    ICON_SIZE = 20
+    TAB_BUTTON_RADIUS = 6
 
     # Fonts
     FONT_FAMILY = "Myriad Pro, Arial, sans-serif"
     FONT_SIZE = "12px"
 
-    # Common style sheet for all buttons
-    BUTTON_STYLE = f"""
-            QPushButton {{
-                background-color: black;
-                border: 4px solid #666666;
-                border-radius: 15px;
-                padding: 0px;
-            }}
-            QPushButton:hover {{
-                background-color: #1A1A1A;
-                border-color: #ff4d4d;
-            }}
-            QPushButton:pressed {{
-                background-color: #333333;
-                border-color: #ff6666;
-            }}
-            QPushButton:checked {{
-                background-color: black;
-                border: 4px solid #d51e35;
-                border-radius: 15px;
-                padding: 0px;
-            }}
-        """
-    SYNTH_PART_LABEL_STYLE = """
-                font-family: "Myriad Pro", Arial;
-                font-size: 13px;
-                color: #d51e35;  /* Base red */
-                font-weight: bold;
-            """
-    ANALOG_SYNTH_PART_LABEL_STYLE = f"""
-                font-family: "Myriad Pro", Arial;
-                font-size: 13px;
-                color: {ANALOG_ACCENT};  /* Blue for Analog */
-                font-weight: bold;
-            """
+    # Define button styles
+    JDXI_BUTTON = generate_button_style(
+        COM_BG, BORDER, BUTTON_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    )
+    JDXI_BUTTON_SELECTED = generate_button_style(
+        COM_BG, BORDER, BUTTON_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    )
+    JDXI_BUTTON_ACTIVE = generate_button_style(
+        bg="#222222",
+        border=ACCENT_HOVER,
+        radius=BUTTON_RADIUS,
+        text_color=FOREGROUND,
+        hover=ACCENT_HOVER,
+        border_pressed=ACCENT_PRESSED,
+    )
+    JDXI_BUTTON_TONE = generate_button_style(
+        bg="#333333",
+        border=BORDER,
+        radius=12,
+        text_color=FOREGROUND,
+        hover=ACCENT_HOVER,
+        border_pressed=ACCENT_PRESSED,
+    )
+
+    # Analog Button Styles
+    JDXI_BUTTON_ANALOG = generate_button_style(
+        COM_BG,
+        ACCENT_ANALOG,
+        BUTTON_RADIUS,
+        FOREGROUND,
+        ACCENT_ANALOG_HOVER,
+        ACCENT_PRESSED,
+    )
+    JDXI_BUTTON_ANALOG_ACTIVE = generate_button_style(
+        bg="#222222",
+        border=ACCENT_ANALOG,
+        radius=BUTTON_RADIUS,
+        text_color=FOREGROUND,
+        hover=ACCENT_ANALOG_HOVER,
+        border_pressed=ACCENT_PRESSED,
+    )
+
+    # Define Tab styles using get_tab_style function
+    JDXI_TABS = generate_tab_style(
+        bg="#000000",
+        border="#666666",
+        radius=TAB_BUTTON_RADIUS,
+        text_color="white",
+        hover_bg="#222222",
+        hover_border="#ff9999",
+        selected_bg="#222222",
+        selected_border="#ff6666",
+    )
+
+    JDXI_TABS_ANALOG = generate_tab_style(
+        bg="#000000",
+        border="#666666",
+        radius=TAB_BUTTON_RADIUS,
+        text_color="white",
+        hover_bg="#00A0C1",
+        hover_border="#00A0E9",
+        selected_bg="#222222",
+        selected_border="#00A0E9",
+    )
+
+    JDXI_TABS_DRUMS = generate_tab_style(
+        bg="#000000",
+        border="#666666",
+        radius=TAB_BUTTON_RADIUS,
+        text_color="white",
+        hover_bg="#222222",
+        hover_border="#ff9999",
+        selected_bg="#222222",
+        selected_border="#ff6666",
+    )
+
+    JDXI_EDITOR = generate_editor_style(
+        ACCENT,
+        ACCENT_HOVER,
+        BACKGROUND,
+        FOREGROUND,
+        FONT_FAMILY,
+        FONT_SIZE,
+        BUTTON_PADDING,
+        SLIDER_HANDLE,
+        SLIDER_HANDLE_BORDER,
+        SLIDER_GROOVE,
+    )
+
+    JDXI_EDITOR_ANALOG = generate_editor_style(
+        ACCENT_ANALOG,
+        ACCENT_ANALOG_HOVER,
+        BACKGROUND,
+        FOREGROUND,
+        FONT_FAMILY,
+        FONT_SIZE,
+        BUTTON_PADDING,
+        SLIDER_HANDLE,
+        SLIDER_HANDLE_BORDER,
+        SLIDER_GROOVE,
+    )
 
-    TONE_BUTTON_STYLE = f"""
-            QPushButton {{
-                background-color: #333333;  /* Dark grey */
-                border-radius: 12px;  /* Half of the diameter for circular shape */
-                color: white;
-                font-size: 12px;
-                font-weight: bold;
-            }}
-            QPushButton:hover {{
-                background-color: #444444;  /* Slightly lighter grey on hover */
-            }}
-            QPushButton:pressed {{
-                background-color: #555555;  /* Even lighter grey when pressed */
-            }}
-        """
-    # Common style sheet for all editors
-    EDITOR_STYLE = f"""
-        QWidget {{
-            background-color: {BACKGROUND};
-            color: {FOREGROUND};
-            font-family: {FONT_FAMILY};
-            font-size: {FONT_SIZE};
-        }}
-        
-        QGroupBox {{
-            border: 1px solid {ACCENT};
-            border-radius: 3px;
-            margin-top: 1.5ex;
-            padding: {PADDING}px;
-        }}
-        
-        QGroupBox[adsr="true"] {{
-            min-height: 400px;  /* Reduced height for horizontal layout */
-        }}
-        
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 0 3px;
-            background-color: {BACKGROUND};
-            color: {TITLE_TEXT};  /* Red text */
-        }}
-        
-        QPushButton {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 5px;
-            color: {FOREGROUND};
-        }}
-        QSpinBox {{
-            font-size: 14px;
-            
-        }}
-        QDoubleSpinBox {{
-            font-size: 14px;
-        }}
-        
-        QPushButton:hover {{
-            background-color: {ACCENT};  /* Red background on hover */
-            color: {BACKGROUND};
-        }}
-        
-        QPushButton:checked {{
-            background-color: {ACCENT};  /* Red background when checked */
-            color: {BACKGROUND};
-        }}
-        
-        QComboBox {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 3px;
-            color: {FOREGROUND};
-        }}
-        
-        QScrollBar {{
-            background: {BACKGROUND};
-            border: 1px solid {BORDER};
-        }}
-        
-        QScrollBar::handle {{
-            background: {SLIDER_HANDLE_BORDER};  /* Grey scrollbar handle */
-            border-radius: 3px;
-        }}
-        
-        QScrollBar::handle:hover {{
-            border: 2px solid {ACCENT_HOVER};
-        }}
-        
-        QLabel {{
-            color: {FOREGROUND};
-        }}
-        
-        QSlider::groove:horizontal {{
-            background: {SLIDER_GROOVE};
-            height: {GROOVE_WIDTH};
-            border-radius: 1px;
-        }}
-        
-        QSlider::handle:horizontal {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-        
-        QSlider::handle:horizontal:hover {{
-            border-color: {ACCENT_HOVER};
-        }}
-        QSlider::handle:vertical {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 6px;
-        }}
-        
-        QSlider::handle:vertical:hover {{
-            border-color: {ACCENT_HOVER};
-        }}
-        
-        QComboBox::drop-down {{
-            border: none;
-        }}
-        
-        QComboBox::down-arrow {{
-            image: none;
-        }}
-    """
-
-    ANALOG_EDITOR_STYLE_V3 = f"""
-        QWidget {{
-            background-color: {BACKGROUND};
-            color: {FOREGROUND};
-            font-family: {FONT_FAMILY};
-            font-size: {FONT_SIZE};
-        }}
-
-        QGroupBox {{
-            border: 1px solid {ANALOG_ACCENT};
-            border-radius: 3px;
-            margin-top: 1.5ex;
-            padding: {PADDING}px;
-        }}
-
-        QGroupBox[adsr="true"] {{
-            min-height: 400px;  /* Reduced height for horizontal layout */
-        }}
-
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 0 3px;
-            background-color: {BACKGROUND};
-            color: {TITLE_TEXT};  /* Red text */
-        }}
-
-        QPushButton {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ANALOG_ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: {BUTTON_PADDING}px;
-            color: {FOREGROUND};
-        }}
-
-        QPushButton:hover {{
-            background-color: {ANALOG_ACCENT};  /* Red background on hover */
-            color: {BACKGROUND};
-        }}
-
-        QPushButton:checked {{
-            background-color: {ANALOG_ACCENT};  /* Red background when checked */
-            color: {BACKGROUND};
-        }}
-
-        QComboBox {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ANALOG_ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 3px;
-            color: {FOREGROUND};
-        }}
-
-        QScrollBar {{
-            background: {BACKGROUND};
-            border: 1px solid {BORDER};
-        }}
-
-        QScrollBar::handle {{
-            background: {SLIDER_HANDLE_BORDER};  /* Grey scrollbar handle */
-            border-radius: 3px;
-        }}
-
-        QScrollBar::handle:hover {{
-            border: 2px solid {ANALOG_ACCENT_HOVER};
-        }}
-
-        QLabel {{
-            color: {FOREGROUND};
-        }}
-
-        QSlider::groove:horizontal {{
-            background: {SLIDER_GROOVE};
-            height: {GROOVE_WIDTH};
-            border-radius: 1px;
-        }}
-
-        QSlider::handle:horizontal {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-
-        QSlider::handle:horizontal:hover {{
-            border-color: {ANALOG_ACCENT_HOVER};
-        }}
-
-        QSlider::handle:vertical {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 40px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 6px;
-        }}
-
-        QSlider::handle:vertical:hover {{
-            border-color: {ANALOG_ACCENT};
-        }}
-        QSlider::tick-mark {{
-            background: #ff4500; /* Bright tick marks */
-            width: 2px;
-            height: 2px;
-        }}
-        QComboBox::drop-down {{
-            border: none;
-        }}
-
-        QComboBox::down-arrow {{
-            image: none;
-        }}
-
-    """
-
-    ANALOG_EDITOR_STYLE_V2 = f"""
-        QWidget {{
-            background-color: {BACKGROUND};
-            color: {FOREGROUND};
-            font-family: {FONT_FAMILY};
-            font-size: {FONT_SIZE};
-        }}
-
-        QGroupBox {{
-            border: 1px solid {ANALOG_ACCENT};
-            border-radius: 3px;
-            margin-top: 1.5ex;
-            padding: {PADDING}px;
-        }}
-
-        QGroupBox[adsr="true"] {{
-            min-height: 400px;  /* Reduced height for horizontal layout */
-        }}
-
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 0 3px;
-            background-color: {BACKGROUND};
-            color: {TITLE_TEXT};  /* Red text */
-        }}
-
-        QPushButton {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ANALOG_ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 5px;
-            color: {FOREGROUND};
-        }}
-
-        QPushButton:hover {{
-            background-color: {ANALOG_ACCENT};  /* Red background on hover */
-            color: {BACKGROUND};
-        }}
-
-        QPushButton:checked {{
-            background-color: {ANALOG_ACCENT};  /* Red background when checked */
-            color: {BACKGROUND};
-        }}
-
-        QComboBox {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ANALOG_ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 3px;
-            color: {FOREGROUND};
-        }}
-
-        QScrollBar {{
-            background: {BACKGROUND};
-            border: 1px solid {BORDER};
-        }}
-
-        QScrollBar::handle {{
-            background: {SLIDER_HANDLE_BORDER};  /* Grey scrollbar handle */
-            border-radius: 3px;
-        }}
-
-        QScrollBar::handle:hover {{
-            border: 2px solid {ANALOG_ACCENT_HOVER};
-        }}
-
-        QLabel {{
-            color: {FOREGROUND};
-        }}
-
-        QSlider::groove:horizontal {{
-            background: {SLIDER_GROOVE};
-            height: {GROOVE_WIDTH};
-            border-radius: 1px;
-        }}
-
-        QSlider::handle:horizontal {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-
-        QSlider::handle:horizontal:hover {{
-            border-color: {ANALOG_ACCENT_HOVER};
-        }}
-
-        QSlider::handle:vertical {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-
-        QSlider::handle:vertical:hover {{
-            border-color: {ANALOG_ACCENT_HOVER};
-        }}
-        QSlider::groove:vertical {{
-            background: {SLIDER_GROOVE};
-            width: 6px;
-            border-radius: 1px;
-        }}
-
-        QComboBox::drop-down {{
-            border: none;
-        }}
-
-        QComboBox::down-arrow {{
-            image: none;
-        }}
-    """
-
-    ANALOG_EDITOR_STYLE = f"""
-        QWidget {{
-            background-color: {BACKGROUND};
-            color: {FOREGROUND};
-            font-family: {FONT_FAMILY};
-            font-size: {FONT_SIZE};
-        }}
-
-        QGroupBox {{
-            border: 1px solid {ANALOG_ACCENT};
-            border-radius: 3px;
-            margin-top: 1.5ex;
-            padding: {PADDING}px;
-        }}
-
-        QGroupBox[adsr="true"] {{
-            min-height: 400px;  /* Reduced height for horizontal layout */
-        }}
-
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 0 3px;
-            background-color: {BACKGROUND};
-            color: {TITLE_TEXT};  /* Red text */
-        }}
-
-        QPushButton {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ANALOG_ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 5px;
-            color: {FOREGROUND};
-        }}
-
-        QPushButton:hover {{
-            background-color: {ANALOG_ACCENT};  /* Red background on hover */
-            color: {BACKGROUND};
-        }}
-
-        QPushButton:checked {{
-            background-color: {ANALOG_ACCENT};  /* Red background when checked */
-            color: {BACKGROUND};
-        }}
-
-        QComboBox {{
-            background-color: {BACKGROUND};
-            border: 1px solid {ANALOG_ACCENT};  /* Red border */
-            border-radius: 3px;
-            padding: 3px;
-            color: {FOREGROUND};
-        }}
-
-        QScrollBar {{
-            background: {BACKGROUND};
-            border: 1px solid {BORDER};
-        }}
-
-        QScrollBar::handle {{
-            background: {SLIDER_HANDLE_BORDER};  /* Grey scrollbar handle */
-            border-radius: 3px;
-        }}
-
-        QScrollBar::handle:hover {{
-            border: 2px solid {ANALOG_ACCENT};
-        }}
-        QSlider::handle:vertical {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 6px;
-        }}
-        
-        QSlider::handle:vertical:hover {{
-            border-color: {ACCENT_HOVER};
-        }}
-        QLabel {{
-            color: {FOREGROUND};
-        }}
-
-        QSlider::groove:horizontal {{
-            background: {SLIDER_GROOVE};
-            height: {GROOVE_WIDTH};
-            border-radius: 1px;
-        }}
-
-        QSlider::handle:horizontal {{
-            background: {SLIDER_HANDLE};
-            border: 2px solid {SLIDER_HANDLE_BORDER};
-            width: 18px;
-            height: 18px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-
-        QSlider::handle:horizontal:hover {{
-            border-color: {ANALOG_ACCENT};
-        }}
-
-        QComboBox::drop-down {{
-            border: none;
-        }}
-
-        QComboBox::down-arrow {{
-            image: none;
-        }}
-        QSlider::groove:vertical {{
-            background: red;
-            width: 6px;
-            border-radius: 3px;
-        }}
-        
-        QSlider::handle:vertical {{
-            background: gray;
-            border: 1px solid darkgray;
-            width: 14px;
-            height: 14px;
-            margin: -6px 0;
-            border-radius: 7px;
-        }}
-    """
-
-    DRUMS_STYLE = """
-            QMainWindow {
-                background-color: #2E2E2E;
-                color: #FFFFFF;
-            }
-            QLabel {
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QComboBox {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #555555;
-                padding: 5px;
-                font-family: 'Myriad Pro';
-            }
-            QComboBox:hover {
-                border: 1px solid #777777;
-            }
-            QPushButton {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #555555;
-                padding: 5px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
-                background-color: #4D4D4D;
-                border: 1px solid #777777;
-            }
-            QLineEdit {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #555555;
-                padding: 5px;
-                font-family: 'Myriad Pro';
-            }
-            QFrame {
-                border-radius: 3px;
-                margin-top: 0.5em;
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 3px 0 3px;
-            }
-        """
-
-    JDXI_TABS_STYLE = """
-            QTabBar::tab {
-                background: #000000;       /* Default tab background */
-                color: white;           /* Default text color */
-                padding: 8px 12px;      /* Padding for tab spacing */
-                margin: 2px;
-                border: 2px solid #666; /* Default border */
-                border-radius: 4px;
-                font-family: "Myriad Pro", "sans serif"
-            }
-
-            QTabBar::tab:selected {
-                background: #222222;    /* Selected tab background */
-                color: white;           /* Selected text color */
-                border: 2px solid #ff6666; /* Border for selected tab */
-                font-family: "Myriad Pro", "sans serif"
-            }
-
-            QTabBar::tab:hover {
-                background: #222222;       /* Hover effect */
-                border: 2px solid #ff9999;
-                font-family: "Myriad Pro", "sans serif"
-            }
-            QTabWidget::pane {
-                border: 1px solid #ff6666;
-            }
-        """
-
-    JDXI_ANALOG_TABS_STYLE = """
-            QTabBar::tab {
-                background: #000000;       /* Default tab background */
-                color: white;           /* Default text color */
-                padding: 8px 12px;      /* Padding for tab spacing */
-                margin: 2px;
-                border: 2px solid #666; /* Default border */
-                border-radius: 4px;
-                font-family: "Myriad Pro", "sans serif"
-            }
-
-            QTabBar::tab:selected {
-                background: #222222;    /* Selected tab background */
-                color: white;           /* Selected text color */
-                border: 2px solid #00A0E9; /* Border for selected tab */
-                font-family: "Myriad Pro", "sans serif"
-            }
-
-            QTabBar::tab:hover {
-                background: #00A0C1;       /* Hover effect */
-                border: 2px solid #00A0E9;
-                font-family: "Myriad Pro", "sans serif"
-            }
-            QTabWidget::pane {
-                border: 1px solid #00A0E9;
-            }
-        """
-
-    JDXI_DRUM_TABS_STYLE = """
-            QTabBar::tab {
-                background: #000000;       /* Default tab background */
-                color: white;           /* Default text color */
-                padding: 3px 3px;      /* Padding for tab spacing */
-                margin: 1px;
-                border: 1px solid #666; /* Default border */
-                border-radius: 4px;
-                font-family: "Myriad Pro", "sans serif";
-                font-size: "8pt"
-            }
-
-            QTabBar::tab:selected {
-                background: #222222;    /* Selected tab background */
-                color: white;           /* Selected text color */
-                border: 2px solid #ff6666; /* Border for selected tab */
-                font-family: "Myriad Pro", "sans serif";
-                font-size: "8pt"
-            }
-
-            QTabBar::tab:hover {
-                background: #222222;       /* Hover effect */
-                border: 2px solid #ff9999;
-                font-family: "Myriad Pro", "sans serif";
-                font-size: "8pt"
-            }
-        """
-    ADSR_STYLE = """
-    QSlider::groove:vertical {
-        background: #1A1A1A; /* Dark background */
-        width: 6px; /* Thin groove */
-        border-radius: 3px;
-    }
-
-    QSlider::handle:vertical {
-        background: black;
-        border: 2px solid #ff4500; /* Bright red/orange border */
-        width: 40px;  /* Wider handle */
-        height: 10px;  /* Shorter handle */
-        margin: -2p x -5px; /* Centers the handle */
-        border-radius: 2px;
-    }
-
-    QSlider::sub-page:vertical {
-        background: rgba(255, 69, 0, 0.5); /* Glowing effect on filled portion */
-        border-radius: 3px;
-    }
-
-    QSlider::add-page:vertical {
-        background: #333333; /* Unfilled portion */
-        border-radius: 3px;
-    }
-
-    QSlider::tick-mark {
-        background: #ff4500; /* Bright tick marks */
-        width: 2px;
-        height: 2px;
-    }
-"""
-    ADSR_STYLE_old = """
-          QSlider:vertical {
-              background: #333; /* Background of the slider */
-              width: 30px; /* Width of the fader */
-              border: 1px solid #FF6D00; /* External border color */
-              border-radius: 5px; /* Rounded edges */
-          }
-          QSlider::handle:vertical {
-              background: #FF6D00; /* Color of the fader handle */
-              width: 20px; /* Width of the handle */
-              border-radius: 5px; /* Rounded edges */
-          }
-          QSlider::handle:vertical:hover {
-              background: #FF8C00; /* Color on hover */
-          }
-          QSlider::groove:vertical {
-              background: #666; /* Color of the groove */
-              width: 10px; /* Width of the groove */
-          }
-          QSlider::sub-page:vertical {
-              background: #FF3D00; /* Color of the filled area */
-          }
-          QSlider::add-page:vertical {
-              background: #333; /* Color of the unfilled area */
-          }
-          QSlider::tick:vertical {
-              background: #FF6D00; /* Color of the tick marks */
-              width: 2px; /* Width of the tick marks */
-              margin-left: -5px; /* Positioning ticks */
-          }
-          QSlider::tick-mark:vertical {
-              width: 3px;
-              height: 3px;
-              color: #FF6D00; /* Color of the tick marks */
-          }"""
-
-    JDXI_STYLE = """
+    JDXI = """
             QMainWindow {
                 background-color: black;
             }
@@ -793,31 +374,40 @@ class Style:
             }
         """
 
-    JDXI_BUTTON = """
-                QPushButton {
-                    background-color: black;
-                    border: 4px solid #d51e35;
-                    border-radius: 15px;
-                }
-                QPushButton:hover {
-                    background-color: #1A1A1A;
-                    border-color: #ff4d4d;
-                }
-                QPushButton:pressed, QPushButton:checked {
-                    background-color: #333333;
-                    border-color: #ff6666;
-                }
-            """
-    JDXI_BUTTON_SELECTED = """
-                    QPushButton {
-                        background-color: #000000;
-                        border: 4px solid #666666;
-                        border-radius: 15px;
-                        padding: 0px;
-                    }
-                """
+    JDXI_ADSR = """
+    QSlider::groove:vertical {
+        background: #1A1A1A; /* Dark background */
+        width: 6px; /* Thin groove */
+        border-radius: 3px;
+    }
 
-    JDXI_SUB_LABEL = """
+    QSlider::handle:vertical {
+        background: black;
+        border: 2px solid #ff4500; /* Bright red/orange border */
+        width: 40px;  /* Wider handle */
+        height: 10px;  /* Shorter handle */
+        margin: -2p x -5px; /* Centers the handle */
+        border-radius: 2px;
+    }
+
+    QSlider::sub-page:vertical {
+        background: rgba(255, 69, 0, 0.5); /* Glowing effect on filled portion */
+        border-radius: 3px;
+    }
+
+    QSlider::add-page:vertical {
+        background: #333333; /* Unfilled portion */
+        border-radius: 3px;
+    }
+
+    QSlider::tick-mark {
+        background: #ff4500; /* Bright tick marks */
+        width: 2px;
+        height: 2px;
+    }
+    """
+
+    JDXI_LABEL_SUB = """
             font-family: "Myriad Pro", Arial;
             font-size: 13px;
             color: #d51e35;
@@ -832,8 +422,101 @@ class Style:
             background: transparent;
         """
 
+    JDXI_LABEL_SYNTH_PART = """
+                font-family: "Myriad Pro", Arial;
+                font-size: 13px;
+                color: #d51e35;  /* Base red */
+                font-weight: bold;
+            """
 
-    SEQUENCER = """
+    JDXI_LABEL_ANALOG_SYNTH_PART = f"""
+                font-family: "Myriad Pro", Arial;
+                font-size: 13px;
+                color: {ACCENT_ANALOG};  /* Blue for Analog */
+                font-weight: bold;
+            """
+
+    JDXI_PATCH_MANAGER = """
+            QMainWindow {
+                background-color: #2E2E2E;
+            }
+            QWidget {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QLineEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #FF3333;
+            }
+            QPushButton:border_pressed {
+                background-color: #2D2D2D;
+            }
+            QLabel {
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+        """
+
+    JDXI_DEBUGGER = """
+            QMainWindow {
+                background-color: #2E2E2E;
+            }
+            QWidget {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QPlainTextEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QTextEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #FF3333;
+            }
+            QPushButton:border_pressed {
+                background-color: #2D2D2D;
+            }
+        """
+
+    JDXI_SEQUENCER = """
             font-family: "Myriad Pro", Arial;
             font-size: 14px;
             color: #d51e35;
@@ -841,7 +524,7 @@ class Style:
             background: transparent;
         """
 
-    PARTS_SELECT = """
+    JDXI_PARTS_SELECT = """
             font-family: "Myriad Pro", Arial;
             font-size: 14px;
             color: #d51e35;
@@ -850,125 +533,12 @@ class Style:
             padding-bottom: 10px;
         """
 
-    # Default and active styles
-    BUTTON_DEFAULT = """
-         QPushButton {
-             background: #000000;       /* Default tab background */
-             color: #AAAAAA;           /* Default text color */
-             padding: 8px 12px;      /* Padding for tab spacing */
-             margin: 2px;
-             border: 2px solid #666; /* Default border */
-             border-radius: 4px;
-             font-family: "Myriad Pro", "sans serif"
-         }
-         QPushButton:hover {
-             background-color: #1A1A1A;
-             border: 2px solid #ff4d4d;
-         }
-         QPushButton:pressed {
-             background-color: #333333;
-             border: 2px solid #ff6666;
-         }
-     """
-
-    BUTTON_ACTIVE = """
-         QPushButton {
-             color: white;
-             background-color: #222222;
-             border: 2px solid #ff4d4d;
-             border-radius: 4px;
-             padding: 8px 12px;      /* Padding for tab spacing */
-         }
-         QPushButton:hover {
-             background-color: #ff8080;
-             border: 2px solid #ff9999;
-         }
-         QPushButton:pressed {
-             background-color: #ff4d4d;
-             border: 2px solid #ff3333;
-         }
-     """
-
-    # Default and active styles
-    ANALOG_BUTTON_DEFAULT = """
-         QPushButton {
-             background: #000000;       /* Default tab background */
-             color: #AAAAAA;           /* Default text color */
-             padding: 8px 12px;      /* Padding for tab spacing */
-             margin: 2px;
-             border: 2px solid #666; /* Default border */
-             border-radius: 4px;
-             font-family: "Myriad Pro", "sans serif"
-         }
-         QPushButton:hover {
-             background-color: #1A1A1A;
-             border: 2px solid #00A0E9;
-         }
-         QPushButton:pressed {
-             background-color: #333333;
-             border: 2px solid #00A0E9;
-         }
-     """
-
-    ANALOG_BUTTON_ACTIVE = """
-         QPushButton {
-             color: white;
-             background-color: #222222;
-             border: 2px solid #00A0E9;
-             border-radius: 4px;
-             padding: 8px 12px;      /* Padding for tab spacing */
-         }
-         QPushButton:hover {
-             background-color: #00A0C1;
-             border: 2px solid #00A0E9;
-         }
-         QPushButton:pressed {
-             background-color: #ff4d4d;
-             border: 2px solid #00A0E9;
-         }
-     """
-
-    ANALOG_BUTTON = """
-            QPushButton {
-                background-color: #222222;
-                color: #CCCCCC;
-                border: 1px solid #666666;
-                border-radius: 3px;
-                padding: 5px;
-            }
-            QPushButton:checked {
-                background-color: #333333;
-                color: white;
-                border: 1px solid #00A0E9;
-            }
-            QPushButton:hover {
-                background-color: #444444;
-            }
-        """
-
-
-def sequencer_button_style(active):
-    return f"""
-        QPushButton {{
-            border: 4px solid {'#ff6666' if active else '#666666'};
-            background-color: {'#333333' if active else 'black'};
-            border-radius: 3px;
-            padding: 0px;
-        }}
-        QPushButton:hover {{
-            background-color: #1A1A1A;
-            border-color: #ff4d4d;
-        }}
-        QPushButton:pressed {{
-            background-color: #333333;
-            border-color: #ff6666;
-        }}
-    """
-
 
 def toggle_button_style(button, checked):
     """Update button style based on its checked state"""
-    button.setStyleSheet(sequencer_button_style(checked))  # Example style for checked
+    button.setStyleSheet(
+        generate_sequencer_button_style(checked)
+    )  # Example style for checked
 
 
 def update_button_style(button, checked):
@@ -978,27 +548,37 @@ def update_button_style(button, checked):
 
 def get_button_styles(active):
     """Returns the appropriate style for active/inactive states"""
+    base_style = """
+        QPushButton {
+            border-radius: 15px;
+            border: 4px solid;
+        }
+        QPushButton:border_pressed {
+            background-color: #333333;
+            border: 4px solid #ff6666;
+        }
+        QPushButton:hover {
+            background-color: #1A1A1A;
+            border: 4px solid #ff4d4d;
+        }
+    """
     if active:
-        return """
+        return (
+            base_style
+            + """
             QPushButton {
                 background-color: #333333;
-                border: 4px solid #ff6666;
-                border-radius: 15px;
+                border-color: #ff6666;
             }
         """
+        )
     else:
-        return """
+        return (
+            base_style
+            + """
             QPushButton {
                 background-color: #222222;
-                border: 4px solid #666666;
-                border-radius: 15px;
-            }
-            QPushButton:hover {
-                background-color: #1A1A1A;
-                border: 4px solid #ff4d4d;
-            }
-            QPushButton:pressed {
-                background-color: #333333;
-                border: 4px solid #ff6666;
+                border-color: #666666;
             }
         """
+        )

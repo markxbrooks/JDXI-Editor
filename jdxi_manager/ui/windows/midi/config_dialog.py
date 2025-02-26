@@ -15,7 +15,7 @@ class MIDIConfigDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("MIDI Configuration")
         self.setMinimumSize(300, 300)
-        self.setStyleSheet(Style.EDITOR_STYLE)
+        self.setStyleSheet(Style.JDXI_EDITOR)
         self.input_ports = input_ports
         self.output_ports = output_ports
         self.current_in = current_in

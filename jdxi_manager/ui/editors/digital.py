@@ -140,7 +140,7 @@ class DigitalSynthEditor(BaseEditor):
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-        self.setStyleSheet(Style.JDXI_TABS_STYLE + Style.EDITOR_STYLE)
+        self.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -245,11 +245,11 @@ class DigitalSynthEditor(BaseEditor):
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
         container_layout.addWidget(self.partials_panel)
-        self.partials_panel.setStyleSheet(Style.JDXI_TABS_STYLE)
+        self.partials_panel.setStyleSheet(Style.JDXI_TABS)
 
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()
-        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS_STYLE)
+        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS)
         self.partial_editors = {}
 
         # Create editor for each partial
@@ -1234,10 +1234,10 @@ class DigitalSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.BUTTON_DEFAULT)
+            btn.setStyleSheet(Style.JDXI_BUTTON)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.BUTTON_ACTIVE)
+            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ACTIVE)

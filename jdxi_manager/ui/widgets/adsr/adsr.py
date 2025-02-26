@@ -89,7 +89,7 @@ class ADSR(QWidget):
         self.sustain_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["sustain_level"]
         )
-        self.setStyleSheet(Style.EDITOR_STYLE)
+        self.setStyleSheet(Style.JDXI_EDITOR)
 
         # Create layout
         self.layout = QGridLayout(self)
