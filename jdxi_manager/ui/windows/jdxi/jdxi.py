@@ -1,111 +1,45 @@
+import os
 import logging
 import re
-
-from jdxi_manager.midi.preset.handler import PresetHandler
-from pubsub import pub
 
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QMenu,
     QMessageBox,
     QLabel,
     QPushButton,
     QFrame,
-    QGroupBox,
     QButtonGroup,
     QGridLayout,
 )
 from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import (
     QAction,
-    QFont,
     QFontDatabase,
 )
-from jdxi_manager.data.analog import AN_PRESETS
-from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED, DIGITAL_PRESETS_ENUMERATED, DRUM_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_GROUP
-from jdxi_manager.ui.editors import (
-    AnalogSynthEditor,
-    DigitalSynthEditor,
-    DrumEditor,
-    ArpeggioEditor,
-    EffectsEditor,
-    VocalFXEditor,
+from jdxi_manager.midi.preset.handler import PresetHandler
+from jdxi_manager.data.presets.data import (
+    ANALOG_PRESETS_ENUMERATED,
+    DIGITAL_PRESETS_ENUMERATED,
+    DRUM_PRESETS_ENUMERATED,
 )
-from jdxi_manager.ui.editors.pattern import PatternSequencer
-from jdxi_manager.ui.editors.preset import PresetEditor
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.ui.image.instrument import draw_instrument_pixmap
-from jdxi_manager.ui.windows.midi.config import MIDIConfigDialog
-from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
-from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
-from jdxi_manager.ui.windows.patch.patch_name_editor import PatchNameEditor
-from jdxi_manager.ui.windows.patch.patch_manager import PatchManager
 from jdxi_manager.ui.style import Style, sequencer_button_style, toggle_button_style
 from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.button.channel import ChannelButton
-from jdxi_manager.ui.widgets.viewer.log import LogViewer
 from jdxi_manager.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_manager.ui.widgets.button.favorite import FavoriteButton
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.midi.io.connection import MIDIConnection
-from jdxi_manager.midi.constants import (
-    START_OF_SYSEX,
-    ROLAND_ID,
-    DEVICE_ID,
-    MODEL_ID_1,
-    MODEL_ID_2,
-    MODEL_ID_3,
-    MODEL_ID,
-    JD_XI_ID,
-    DT1_COMMAND_12,
-    END_OF_SYSEX,
-    ANALOG_SYNTH_AREA,
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_DIGITAL2,
-    MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS,
-)
-from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
-from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
-from jdxi_manager.midi.preset.loader import PresetLoader
 
 
 class JdxiWindow(QMainWindow):
-    midi_program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
-
+    """ JDXI UI setup, with little or no actual functionality, shich is superclassed"""
     def __init__(self):
         super().__init__()
-        self.slot_num = None
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
-
-        # Initialize attributes and SysEx settings
-        self.attributes = {
-            "ProgramBSMSB": [40, 4, 1],
-            "ProgramBSLSB": [127, 5, 1],
-            "ProgramPC": [15, 6, 1],
-        }
-        self.base_address = [0x01, 0x00, 0x00]
-        self.offset = [0x00, 0x00]
-        self.address = [
-            self.base_address[0],
-            self.base_address[1] + self.offset[0],
-            self.base_address[2] + self.offset[1],
-        ]
-        self.data_length = [0x00, 0x00, 0x00, 0x3B]
-        jd_xi_device = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]
-        self.device_id = jd_xi_device  # Ensure JDXi_device is defined elsewhere
-        self.sysex_setlist = self.device_id + [0x12] + self.address
-        self.sysex_getlist = self.device_id + [0x11]
-        self.device_status = "unknown"
-
-        self.channel = MIDI_CHANNEL_DIGITAL1
-        self.analog_editor = None
-        self.last_preset = None
-        self.preset_loader = None
         self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
         self.setMinimumSize(1000, 400)
@@ -113,7 +47,6 @@ class JdxiWindow(QMainWindow):
         self.width = 1000
         self.height = 400
         self.margin = 15
-        self.preset_type = PresetType.DIGITAL_1  # Default preset
         # Store display coordinates as class variables
         self.display_x = 35  # margin + 20
         self.display_y = 50  # margin + 20 + title height
@@ -121,34 +54,9 @@ class JdxiWindow(QMainWindow):
         self.display_height = 70
         self.digital_font_family = None
         # Initialize state variables
-        # self.current_synth_type = PresetType.DIGITAL_1
         self.current_octave = 0  # Initialize octave tracking first
-        # self.current_preset_num = 1  # Initialize preset number
-        # self.current_preset_name = "JD Xi"  # Initialize preset name
-        # self.midi_in = None
-        # self.midi_out = None
-        # self.midi_in_port_name = ""  # Store input port name
-        # self.midi_out_port_name = ""  # Store output port name
-
         # Initialize MIDI helper
         self.midi_helper = MIDIHelper(parent=self)
-        # self.preset_loader = PresetLoader(self.midi_helper)
-
-        # Initialize windows to None
-        self.log_viewer = None
-        # self.midi_debugger = None
-        # self.midi_message_debug = None
-
-        # Try to auto-connect to JD-Xi
-        # self._auto_connect_jdxi()
-
-        # Show MIDI config if auto-connect failed
-        #if (
-        #    not self.midi_helper.current_in_port
-        #    or not self.midi_helper.current_out_port
-        #):
-        #    self._show_midi_config()
-
         # Initialize MIDI indicators
         self.midi_in_indicator = MIDIIndicator()
         self.midi_out_indicator = MIDIIndicator()
@@ -165,6 +73,9 @@ class JdxiWindow(QMainWindow):
         self._create_menu_bar()
         self._create_status_bar()
         self._create_main_layout()
+        self._create_editors_menu()
+        self._create_debug_menu()
+        self._create_help_menu()
 
         # Load settings
         self.settings = QSettings("jdxi_manager2", "settings")
@@ -172,24 +83,6 @@ class JdxiWindow(QMainWindow):
 
         # Show window
         self.show()
-
-        # Add debug menu
-        debug_menu = self.menuBar().addMenu("Debug")
-
-        # Add MIDI debugger action (SysEx decoder)
-        midi_debugger_action = QAction("MIDI SysEx Debugger", self)
-        midi_debugger_action.triggered.connect(self._open_midi_debugger)
-        debug_menu.addAction(midi_debugger_action)
-
-        # Add MIDI message monitor action
-        midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._open_midi_message_debug)
-        debug_menu.addAction(midi_monitor_action)
-
-        # Add log viewer action
-        log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._show_log_viewer)
-        debug_menu.addAction(log_viewer_action)
 
         # Add preset tracking
         self.current_preset_num = 1
@@ -227,8 +120,8 @@ class JdxiWindow(QMainWindow):
         self._update_synth_button_styles()
 
         # Create favorite buttons container
-        favorites_widget = QWidget()
-        favorites_layout = QVBoxLayout(favorites_widget)
+        self.favorites_widget = QWidget()
+        favorites_layout = QVBoxLayout(self.favorites_widget)
         favorites_layout.setSpacing(4)
         favorites_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -245,38 +138,12 @@ class JdxiWindow(QMainWindow):
             self.favorite_buttons.append(button)
 
         # Add to status bar
-        self.statusBar().addPermanentWidget(favorites_widget)
+        self.statusBar().addPermanentWidget(self.favorites_widget)
         self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load saved favorites
         self._load_saved_favorites()
-
-        # Create editors menu
-        editors_menu = self.menuBar().addMenu("Editors")
-
-        # Add menu items for each editor
-        digital1_action = editors_menu.addAction("Digital Synth 1")
-        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
-
-        digital2_action = editors_menu.addAction("Digital Synth 2")
-        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
-
-        analog_action = editors_menu.addAction("Analog Synth")
-        analog_action.triggered.connect(lambda: self.show_editor("analog"))
-
-        drums_action = editors_menu.addAction("Drums")
-        drums_action.triggered.connect(lambda: self.show_editor("drums"))
-
-        arp_action = editors_menu.addAction("Arpeggio")
-        arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
-
-        effects_action = editors_menu.addAction("Effects")
-        effects_action.triggered.connect(lambda: self.show_editor("effects"))
-
-        # Add Vocal FX menu item
-        vocal_fx_action = editors_menu.addAction("Vocal FX")
-        vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
 
         # Initialize current preset index
         self.current_preset_index = 0
@@ -298,8 +165,7 @@ class JdxiWindow(QMainWindow):
         )
         self.analog_preset_handler.update_display.connect(self.update_display_callback)
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
-        self.oldPos = None
-        self.get_data()
+        self.old_pos = None
 
     def _create_main_layout(self):
         """Create the main dashboard"""
@@ -481,13 +347,6 @@ class JdxiWindow(QMainWindow):
         effects_action.triggered.connect(self._open_effects)
         fx_menu.addAction(effects_action)
 
-        # Help menu
-        help_menu = menubar.addMenu("Help")
-
-        log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._show_log_viewer)
-        help_menu.addAction(log_viewer_action)
-
         # Add Edit menu
         # edit_menu = menubar.addMenu("Edit")
 
@@ -501,6 +360,61 @@ class JdxiWindow(QMainWindow):
 
         presets_action = edit_menu.addAction("&Presets")
         presets_action.triggered.connect(self._show_analog_presets)
+
+    def _create_editors_menu(self):
+        # Create editors menu
+        editors_menu = self.menuBar().addMenu("Editors")
+
+        # Add menu items for each editor
+        digital1_action = editors_menu.addAction("Digital Synth 1")
+        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
+
+        digital2_action = editors_menu.addAction("Digital Synth 2")
+        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
+
+        analog_action = editors_menu.addAction("Analog Synth")
+        analog_action.triggered.connect(lambda: self.show_editor("analog"))
+
+        drums_action = editors_menu.addAction("Drums")
+        drums_action.triggered.connect(lambda: self.show_editor("drums"))
+
+        arp_action = editors_menu.addAction("Arpeggio")
+        arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
+
+        effects_action = editors_menu.addAction("Effects")
+        effects_action.triggered.connect(lambda: self.show_editor("effects"))
+
+        # Add Vocal FX menu item
+        vocal_fx_action = editors_menu.addAction("Vocal FX")
+        vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
+
+    def _create_debug_menu(self):
+        # Add debug menu
+        self.debug_menu = self.menuBar().addMenu("Debug")
+
+        # Add MIDI debugger action (SysEx decoder)
+        midi_debugger_action = QAction("MIDI SysEx Debugger", self)
+        midi_debugger_action.triggered.connect(self._open_midi_debugger)
+        self.debug_menu.addAction(midi_debugger_action)
+
+        # Add MIDI message monitor action
+        midi_monitor_action = QAction("MIDI Monitor", self)
+        midi_monitor_action.triggered.connect(self._open_midi_message_debug)
+        self.debug_menu.addAction(midi_monitor_action)
+
+        # Add log viewer action
+        log_viewer_action = QAction("Log Viewer", self)
+        log_viewer_action.triggered.connect(self._show_log_viewer)
+        self.debug_menu.addAction(log_viewer_action)
+
+    def _create_help_menu(self):
+        menubar = self.menuBar()
+
+        # Help menu
+        help_menu = menubar.addMenu("Help")
+        log_viewer_action = QAction("Log Viewer", self)
+        log_viewer_action.triggered.connect(self._show_log_viewer)
+        help_menu.addAction(log_viewer_action)
 
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
@@ -600,22 +514,14 @@ class JdxiWindow(QMainWindow):
         self.arpeggiator_button = QPushButton()
         self.arpeggiator_button.setFixedSize(30, 30)
         self.arpeggiator_button.setCheckable(True)
-        self.arpeggiator_button.clicked.connect(
-            lambda checked: self._send_arp_on_off(checked)
-        )
-        self.arpeggiator_button.setStyleSheet(
-            Style.JDXI_BUTTON
-        )
+        self.arpeggiator_button.setStyleSheet(Style.JDXI_BUTTON)
         buttons_row.addWidget(self.arpeggiator_button)
 
         # Create and store octave down button
         self.key_hold = QPushButton()
         self.key_hold.setFixedSize(30, 30)
         self.key_hold.setCheckable(True)
-        self.key_hold.clicked.connect(lambda checked: self._send_arp_key_hold(checked))
-        self.key_hold.setStyleSheet(
-            Style.JDXI_BUTTON
-        )
+        self.key_hold.setStyleSheet(Style.JDXI_BUTTON)
         buttons_row.addWidget(self.key_hold)
 
         # Add buttons row
@@ -662,9 +568,7 @@ class JdxiWindow(QMainWindow):
 
         # Up label
         up_label = QLabel("Up")
-        up_label.setStyleSheet(
-            Style.JDXI_SUB_LABEL
-        )
+        up_label.setStyleSheet(Style.JDXI_SUB_LABEL)
         labels_row.addWidget(up_label)
 
         # Add labels row
@@ -814,11 +718,6 @@ class JdxiWindow(QMainWindow):
         parts_container.setStyleSheet("background: transparent;")
         fx_container.setStyleSheet("background: transparent;")
 
-        # Calculate keyboard dimensions
-        key_width = self.width * 0.8 / 25  # keyboard_width/25
-        key_height = 127  # white_key_height
-        keyboard_y = self.height - key_height - (self.height * 0.1) + (key_height * 0.3)
-        keyboard_start = self.width - (self.width * 0.8) - self.margin - 20
 
     def _create_other(self):
         """Create other controls section"""
@@ -872,7 +771,6 @@ class JdxiWindow(QMainWindow):
 
     def _load_digital_font(self):
         """Load the digital LCD font for the display"""
-        import os
 
         font_name = "JdLCD.ttf"
         font_path = os.path.join(
@@ -892,9 +790,9 @@ class JdxiWindow(QMainWindow):
                     )
                 else:
                     logging.debug("No font families found after loading font")
-            except Exception as e:
+            except Exception as ex:
                 logging.exception(
-                    f"Error loading {font_name} font from {font_path}: {e}"
+                    f"Error loading {font_name} font from {font_path}: {ex}"
                 )
         else:
             logging.debug(f"File not found: {font_path}")
@@ -996,8 +894,8 @@ class JdxiWindow(QMainWindow):
                 f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})"
             )
 
-        except Exception as e:
-            logging.error(f"Error updating display: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error updating display: {str(ex)}")
 
     def _update_display_image(
         self, preset_num: int = 1, preset_name: str = "INIT PATCH"
@@ -1023,5 +921,5 @@ class JdxiWindow(QMainWindow):
 
             logging.debug(f"Updated display: {preset_num:03d}:{preset_name}")
 
-        except Exception as e:
-            logging.error(f"Error updating display image: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error updating display image: {str(ex)}")

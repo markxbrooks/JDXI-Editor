@@ -1,31 +1,17 @@
 import logging
-import re
-
-from jdxi_manager.midi.preset.handler import PresetHandler
 from pubsub import pub
-
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QMenu,
-    QMessageBox,
-    QLabel,
-    QPushButton,
-    QFrame,
-    QGroupBox,
-    QButtonGroup,
-    QGridLayout,
-)
+from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import (
     QAction,
-    QFont,
-    QFontDatabase,
 )
+from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.data.analog import AN_PRESETS
-from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED, DIGITAL_PRESETS_ENUMERATED, DRUM_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.data import (
+    ANALOG_PRESETS_ENUMERATED,
+    DIGITAL_PRESETS_ENUMERATED,
+    DRUM_PRESETS_ENUMERATED,
+)
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_GROUP
 from jdxi_manager.ui.editors import (
@@ -38,91 +24,57 @@ from jdxi_manager.ui.editors import (
 )
 from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
-from jdxi_manager.ui.image.instrument import draw_instrument_pixmap
 from jdxi_manager.ui.windows.midi.config import MIDIConfigDialog
 from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
 from jdxi_manager.ui.windows.patch.patch_name_editor import PatchNameEditor
 from jdxi_manager.ui.windows.patch.patch_manager import PatchManager
 from jdxi_manager.ui.windows.jdxi.jdxi import JdxiWindow
-from jdxi_manager.ui.style import Style, sequencer_button_style, toggle_button_style
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
-from jdxi_manager.ui.widgets.button.channel import ChannelButton
 from jdxi_manager.ui.widgets.viewer.log import LogViewer
-from jdxi_manager.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_manager.ui.widgets.button.favorite import FavoriteButton
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.io.connection import MIDIConnection
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX,
-    ROLAND_ID,
     DEVICE_ID,
     MODEL_ID_1,
     MODEL_ID_2,
-    MODEL_ID_3,
     MODEL_ID,
     JD_XI_ID,
-    DT1_COMMAND_12,
     END_OF_SYSEX,
-    ANALOG_SYNTH_AREA,
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_DIGITAL2,
     MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS, DigitalParameter,
+    MIDI_CHANNEL_DRUMS,
+    DigitalParameter,
 )
-from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA
-from jdxi_manager.midi.sysex.messages import IdentityRequest, ParameterMessage
+from jdxi_manager.midi.constants.sysex import (
+    TEMPORARY_PROGRAM_AREA,
+    TEMPORARY_TONE_AREA,
+)
+from jdxi_manager.midi.sysex.messages import IdentityRequest
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.midi.constants.arpeggio import ArpParameter
 
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 
+
 class MainWindow(JdxiWindow):
-    midi_program_changed = Signal(int, int)  # Add signal for program changes (channel, program)
+    midi_program_changed = Signal(
+        int, int
+    )  # Add signal for program changes (channel, program)
 
     def __init__(self):
         super().__init__()
         self.slot_num = None
-        self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
-
-        # Initialize attributes and SysEx settings
-        self.attributes = {
-            "ProgramBSMSB": [40, 4, 1],
-            "ProgramBSLSB": [127, 5, 1],
-            "ProgramPC": [15, 6, 1],
-        }
-        self.base_address = [0x01, 0x00, 0x00]
-        self.offset = [0x00, 0x00]
-        self.address = [
-            self.base_address[0],
-            self.base_address[1] + self.offset[0],
-            self.base_address[2] + self.offset[1],
-        ]
-        self.data_length = [0x00, 0x00, 0x00, 0x3B]
-        jd_xi_device = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]
-        self.device_id = jd_xi_device  # Ensure JDXi_device is defined elsewhere
-        self.sysex_setlist = self.device_id + [0x12] + self.address
-        self.sysex_getlist = self.device_id + [0x11]
-        self.device_status = "unknown"
-
         self.channel = MIDI_CHANNEL_DIGITAL1
         self.analog_editor = None
         self.last_preset = None
         self.preset_loader = None
         self.log_file = None
-        self.setWindowTitle("JD-Xi Manager")
-        self.setMinimumSize(1000, 400)
-        # Store window dimensions
-        self.width = 1000
-        self.height = 400
-        self.margin = 15
         self.preset_type = PresetType.DIGITAL_1  # Default preset
-        # Store display coordinates as class variables
-        self.display_x = 35  # margin + 20
-        self.display_y = 50  # margin + 20 + title height
-        self.display_width = 180
-        self.display_height = 70
-
         # Initialize state variables
         self.current_synth_type = PresetType.DIGITAL_1
         self.current_preset_num = 1  # Initialize preset number
@@ -141,7 +93,6 @@ class MainWindow(JdxiWindow):
             self.midi_helper.close_ports()
         self.midi_helper = MIDIHelper(parent=self)
         self.preset_loader = PresetLoader(self.midi_helper)
-
         # Initialize windows to None
         self.log_viewer = None
         self.midi_debugger = None
@@ -154,10 +105,8 @@ class MainWindow(JdxiWindow):
         if (
             not self.midi_helper.current_in_port
             or not self.midi_helper.current_out_port
-
         ):
             self._show_midi_config()
-
         # Initialize MIDI indicators
         self.midi_in_indicator.set_state(bool(self.midi_in))
         self.midi_out_indicator.set_state(bool(self.midi_out))
@@ -176,24 +125,6 @@ class MainWindow(JdxiWindow):
 
         # Show window
         self.show()
-
-        # Add debug menu
-        debug_menu = self.menuBar().addMenu("Debug")
-
-        # Add MIDI debugger action (SysEx decoder)
-        midi_debugger_action = QAction("MIDI SysEx Debugger", self)
-        midi_debugger_action.triggered.connect(self._open_midi_debugger)
-        debug_menu.addAction(midi_debugger_action)
-
-        # Add MIDI message monitor action
-        midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._open_midi_message_debug)
-        debug_menu.addAction(midi_monitor_action)
-
-        # Add log viewer action
-        log_viewer_action = QAction("Log Viewer", self)
-        log_viewer_action.triggered.connect(self._show_log_viewer)
-        debug_menu.addAction(log_viewer_action)
 
         # Add preset tracking
         self.current_preset_num = 1
@@ -222,32 +153,6 @@ class MainWindow(JdxiWindow):
 
         # Load saved favorites
         self._load_saved_favorites()
-
-        # Create editors menu
-        # editors_menu = self.menuBar().addMenu("Editors")
-
-        # Add menu items for each editor
-        # digital1_action = editors_menu.addAction("Digital Synth 1")
-        # digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
-
-        # digital2_action = editors_menu.addAction("Digital Synth 2")
-        # digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
-
-        # analog_action = editors_menu.addAction("Analog Synth")
-        # analog_action.triggered.connect(lambda: self.show_editor("analog"))
-
-        # drums_action = editors_menu.addAction("Drums")
-        # drums_action.triggered.connect(lambda: self.show_editor("drums"))
-
-        # arp_action = editors_menu.addAction("Arpeggio")
-        # arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
-
-        # effects_action = editors_menu.addAction("Effects")
-        # effects_action.triggered.connect(lambda: self.show_editor("effects"))
-
-        # Add Vocal FX menu item
-        # vocal_fx_action = editors_menu.addAction("Vocal FX")
-        # vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
 
         # Initialize current preset index
         self.current_preset_index = 0
@@ -307,13 +212,9 @@ class MainWindow(JdxiWindow):
 
         for synth_type, button in buttons.items():
             if synth_type == self.current_synth_type:
-                button.setStyleSheet(
-                    Style.JDXI_BUTTON
-                )
+                button.setStyleSheet(Style.JDXI_BUTTON)
             else:
-                button.setStyleSheet(
-                    Style.JDXI_BUTTON_SELECTED
-                )
+                button.setStyleSheet(Style.JDXI_BUTTON_SELECTED)
 
     def _get_presets_for_current_synth(self):
         """Return the appropriate preset list based on the current synth type."""
@@ -452,16 +353,6 @@ class MainWindow(JdxiWindow):
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
         )
-        if synth_num == 1:
-            messages = [
-                "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",
-                "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",
-                "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",
-                "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",
-                "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",
-            ]
-            for message in messages:
-                self._send_midi_message(message)
 
     def _show_analog_synth_editor(self, editor_type: str):
         self._show_editor("Analog Synth", AnalogSynthEditor)
@@ -510,8 +401,8 @@ class MainWindow(JdxiWindow):
             logging.debug(f"Current preset retrieved: {current_preset}")
             return current_preset
 
-        except Exception as e:
-            logging.error(f"Error retrieving current preset: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error retrieving current preset: {str(ex)}")
             return None
 
     def _get_current_preset_name(self):
@@ -544,9 +435,9 @@ class MainWindow(JdxiWindow):
             # Get preset name - adjust index to be 0-based
             if synth_type == PresetType.ANALOG:
                 return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
-            elif synth_type == PresetType.DIGITAL_1:
+            if synth_type == PresetType.DIGITAL_1:
                 return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
-            elif synth_type == PresetType.DIGITAL_2:
+            if synth_type == PresetType.DIGITAL_2:
                 return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
             else:
                 return DRUM_PRESETS_ENUMERATED[preset_num - 1]
@@ -621,8 +512,8 @@ class MainWindow(JdxiWindow):
 
                 logging.debug("Settings loaded successfully")
 
-        except Exception as e:
-            logging.error(f"Error loading settings: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error loading settings: {str(ex)}")
 
     def _show_editor(self, title, editor_class, **kwargs):
         """Show editor window"""
@@ -646,28 +537,28 @@ class MainWindow(JdxiWindow):
             logging.info(f"Showing {title} editor")
             # Store reference and show
             if title == "Digital Synth 1":
-                self.digital_synth1 = editor
+                self.digital_synth1_editor = editor
                 self.channel = MIDI_CHANNEL_DIGITAL1
             elif title == "Digital Synth 2":
-                self.digital_synth2 = editor
+                self.digital_synth2_editor = editor
                 self.channel = MIDI_CHANNEL_DIGITAL2
             elif title == "Analog Synth":
-                self.analog_synth = editor
+                self.analog_synth_editor = editor
                 self.channel = MIDI_CHANNEL_ANALOG
             elif title == "Drums":
-                self.drum_kit = editor
+                self.drum_kit_editor = editor
                 self.channel = MIDI_CHANNEL_DRUMS
             elif title == "Effects":
-                self.effects = editor
+                self.effects_editor = editor
             elif title == "Pattern":
-                self.effects = editor
+                self.pattern_editor = editor
             logging.info(f"midi channel: {self.channel}")
             # Show editor
             editor.show()
             editor.raise_()
 
-        except Exception as e:
-            logging.error(f"Error showing {title} editor: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error showing {title} editor: {str(ex)}")
 
     def _handle_midi_input(self, message, timestamp):
         """Handle incoming MIDI messages and flash indicator"""
@@ -690,8 +581,8 @@ class MainWindow(JdxiWindow):
                 )
             self.digital_synth1_editor.show()
             self.digital_synth1_editor.raise_()
-        except Exception as e:
-            logging.error(f"Error opening Digital Synth 1 editor: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error opening Digital Synth 1 editor: {str(ex)}")
 
     def _open_digital_synth2(self):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
@@ -716,8 +607,8 @@ class MainWindow(JdxiWindow):
             self.arpeggiator.show()
             self.arpeggiator.raise_()
 
-        except Exception as e:
-            logging.error(f"Error showing Arpeggiator editor: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
 
     def _open_effects(self):
         """Show the effects editor window"""
@@ -730,21 +621,14 @@ class MainWindow(JdxiWindow):
             self.effects_editor.show()
             self.effects_editor.raise_()
 
-        except Exception as e:
-            logging.error(f"Error showing Effects editor: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error showing Effects editor: {str(ex)}")
 
     def _open_midi_debugger(self):
         """Open MIDI debugger window"""
         if not self.midi_helper:
             logging.error("MIDI helper not initialized")
             return
-        """    
-        if not self.midi_helper.midi_out:
-            logging.warning("No MIDI output port set")
-            # Show MIDI config dialog
-            self._show_midi_config()
-            return
-        """
         if not self.midi_debugger:
             self.midi_debugger = MIDIDebugger(self.midi_helper)
             # Clean up reference when window is closed
@@ -781,8 +665,8 @@ class MainWindow(JdxiWindow):
                 midi_helper=self.midi_helper, parent=self, save_mode=False
             )
             patch_manager.show()
-        except Exception as e:
-            logging.error(f"Error loading patch: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error loading patch: {str(ex)}")
 
     def _save_patch(self):
         """Show save patch dialog"""
@@ -791,8 +675,8 @@ class MainWindow(JdxiWindow):
                 midi_helper=self.midi_helper, parent=self, save_mode=True
             )
             patch_manager.show()
-        except Exception as e:
-            logging.error(f"Error saving patch: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error saving patch: {str(ex)}")
 
     def _apply_patch(self, patch_data):
         """Apply loaded patch data"""
@@ -814,8 +698,8 @@ class MainWindow(JdxiWindow):
             # Accept the event
             event.accept()
 
-        except Exception as e:
-            logging.error(f"Error during close event: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error during close event: {str(ex)}")
             event.ignore()
 
     def set_log_file(self, log_file: str):
@@ -838,7 +722,8 @@ class MainWindow(JdxiWindow):
         self.octave_up.setChecked(self.current_octave > 0)
         self._update_display()
         logging.debug(
-            f"Updated octave to: {self.current_octave} (value: {hex(CENTER_OCTAVE_VALUE + self.current_octave)})")
+            f"Updated octave to: {self.current_octave} (value: {hex(CENTER_OCTAVE_VALUE + self.current_octave)})"
+        )
 
     def _send_octave(self, direction):
         """Send octave change MIDI message"""
@@ -857,12 +742,20 @@ class MainWindow(JdxiWindow):
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
-            self.send_midi_parameter(group_address, param_address, octave_value, part_address=part_address, area=TEMPORARY_TONE_AREA)
+            self.send_midi_parameter(
+                group_address,
+                param_address,
+                octave_value,
+                part_address=part_address,
+                area=TEMPORARY_TONE_AREA,
+            )
             logging.debug(
                 f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
 
-    def send_midi_parameter(self, group_address, param_address, value, part_address=None, area=None) -> bool:
+    def send_midi_parameter(
+        self, group_address, param_address, value, part_address=None, area=None
+    ) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
@@ -880,8 +773,8 @@ class MainWindow(JdxiWindow):
                 param=param_address,
                 value=value,  # Make sure this value is being sent
             )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param_address}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"MIDI error setting {param_address}: {str(ex)}")
             return False
 
     def _send_arp_key_hold(self, state):
@@ -891,11 +784,11 @@ class MainWindow(JdxiWindow):
                 param = 0x02  # Key Hold parameter, maybe!
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-                self.send_midi_parameter(ARP_GROUP, param, value) # Send the parameter
+                self.send_midi_parameter(ARP_GROUP, param, value)  # Send the parameter
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
 
-        except Exception as e:
-            logging.error(f"Error sending arp key hold: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error sending arp key hold: {str(ex)}")
 
     def _send_arp_on_off(self, state):
         """Send arpeggiator on/off command"""
@@ -903,19 +796,35 @@ class MainWindow(JdxiWindow):
             if self.midi_helper:
                 param_address = ArpParameter.SWITCH.value  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
-                self.send_midi_parameter(ARP_GROUP, param_address, value)  # Send the parameter
+                self.send_midi_parameter(
+                    ARP_GROUP, param_address, value
+                )  # Send the parameter
                 logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
-        except Exception as e:
-            logging.error(f"Error sending arp on/off: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error sending arp on/off: {str(ex)}")
 
     def _set_midi_ports(self, in_port, out_port):
-        """Set MIDI input and output ports"""
+        """Set MIDI input and output ports."""
         try:
-            # Close existing ports
+            # Close existing ports safely
             if self.midi_in:
-                self.midi_in.delete()  # Use delete() instead of close()
+                self.midi_in.close_port()
+                self.midi_in = None
             if self.midi_out:
-                self.midi_out.delete()  # Use delete() instead of close()
+                self.midi_out.close_port()
+                self.midi_out = None
+
+            # Check available ports before opening new ones
+            available_in_ports = MIDIHelper.get_input_ports()
+            available_out_ports = MIDIHelper.get_output_ports()
+
+            if in_port not in available_in_ports:
+                logging.warning(f"Input port '{in_port}' not found. Available: {available_in_ports}")
+                return
+
+            if out_port not in available_out_ports:
+                logging.warning(f"Output port '{out_port}' not found. Available: {available_out_ports}")
+                return
 
             # Open new ports
             self.midi_in = MIDIHelper.open_input(in_port, self)
@@ -928,7 +837,7 @@ class MainWindow(JdxiWindow):
             # Initialize singleton connection
             MIDIConnection().initialize(self.midi_in, self.midi_out, self)
 
-            # Update MIDI helper
+            # Update MIDI helper references
             self.midi_helper.midi_in = self.midi_in
             self.midi_helper.midi_out = self.midi_out
 
@@ -948,8 +857,8 @@ class MainWindow(JdxiWindow):
             else:
                 logging.warning("Failed to configure MIDI ports")
 
-        except Exception as e:
-            logging.error(f"Error setting MIDI ports: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error setting MIDI ports: {str(ex)}")
 
     def _open_midi_message_debug(self):
         """Open MIDI message debug window"""
@@ -969,7 +878,7 @@ class MainWindow(JdxiWindow):
         data = message[0]  # Get the raw MIDI data
 
         # Check if it's a SysEx message
-        if data[0] == START_OF_SYSEX and len(data) > 8:
+        if data[0] == START_OF_SYSEX and len(data) > 8 and data[-1] == END_OF_SYSEX:
             # Verify it's a Roland message for JD-Xi
             if data[1] == DEVICE_ID and data[4:8] == bytes(  # Roland ID
                 [MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID]
@@ -1014,8 +923,8 @@ class MainWindow(JdxiWindow):
                     if hasattr(self, "midi_out_indicator"):
                         self.midi_out_indicator.blink()
 
-        except Exception as e:
-            logging.error(f"Error editing patch name: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error editing patch name: {str(ex)}")
 
     def _save_settings(self):
         """Save application settings"""
@@ -1034,43 +943,55 @@ class MainWindow(JdxiWindow):
 
                 logging.debug("Settings saved successfully")
 
-        except Exception as e:
-            logging.error(f"Error saving settings: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error saving settings: {str(ex)}")
+
+    def _find_jdxi_port(self, ports, port_type):
+        """Helper function to find a JD-Xi MIDI port."""
+        jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
+        for port in ports:
+            if any(name in port.lower() for name in jdxi_names):
+                logging.info(f"Auto-detected JD-Xi {port_type}: {port}")
+                return port
+        return None
 
     def _auto_connect_jdxi(self):
-        """Attempt to automatically connect to JD-Xi MIDI ports"""
+        """Attempt to automatically connect to JD-Xi MIDI ports."""
         try:
             # Get available ports
             input_ports = self.midi_helper.get_input_ports()
             output_ports = self.midi_helper.get_output_ports()
 
-            # Look for JD-Xi in port names (case insensitive)
-            jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
+            # Find JD-Xi ports
+            selected_in_port = self._find_jdxi_port(input_ports, "input")
+            selected_out_port = self._find_jdxi_port(output_ports, "output")
 
-            # Find input port
-            for port in input_ports:
-                if any(name in port.lower() for name in jdxi_names):
-                    self.midi_helper.open_input_port(port)
-                    logging.info(f"Auto-connected to JD-Xi input: {port}")
-                    break
+            # Ensure both ports are found
+            if not selected_in_port or not selected_out_port:
+                logging.warning(
+                    f"JD-Xi MIDI auto-connect failed. Found input: {selected_in_port}, output: {selected_out_port}"
+                )
+                return False
 
-            # Find output port
-            for port in output_ports:
-                if any(name in port.lower() for name in jdxi_names):
-                    self.midi_helper.open_output_port(port)
-                    logging.info(f"Auto-connected to JD-Xi output: {port}")
-                    break
+            # Open the found ports
+            self.midi_helper.open_input_port(selected_in_port)
+            self.midi_helper.open_output_port(selected_out_port)
+
+            # Explicitly store the selected ports
+            self.midi_helper.current_in_port = selected_in_port
+            self.midi_helper.current_out_port = selected_out_port
 
             # Verify connection
-            if self.midi_helper.current_in_port and self.midi_helper.current_out_port:
-                # Send identity request to confirm it's a JD-Xi
-                self._verify_jdxi_connection()
+            if self._verify_jdxi_connection():
+                logging.info(f"Successfully connected to JD-Xi MIDI: {selected_in_port} / {selected_out_port}")
                 return True
+            else:
+                logging.warning("JD-Xi identity verification failed.")
+                return False
 
-        except Exception as e:
-            logging.error(f"Error auto-connecting to JD-Xi: {str(e)}")
-
-        return False
+        except Exception as ex:
+            logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            return False
 
     def _verify_jdxi_connection(self):
         """Verify connected device is a JD-Xi by sending identity request"""
@@ -1083,8 +1004,8 @@ class MainWindow(JdxiWindow):
                 self.midi_helper.send_message(identity_request.to_list())
                 logging.debug("Sent JD-Xi identity request")
 
-        except Exception as e:
-            logging.error(f"Error sending identity request: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error sending identity request: {str(ex)}")
 
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
@@ -1103,41 +1024,6 @@ class MainWindow(JdxiWindow):
             msg = [status, note_num, 0]
             self.midi_helper.send_message(msg)
             logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
-
-    def _handle_octave_shift(self, direction: int):
-        """Handle octave shift button press"""
-        try:
-            if self.midi_helper:
-                # Get current octave from UI (-3 to +3)
-                current = self.current_octave
-
-                # Calculate new octave value
-                new_octave = max(min(current + direction, 3), -3)
-
-                # Convert to MIDI value (61-67 maps to -3 to +3)
-                midi_value = new_octave + 64  # Center at 64
-
-                # Send parameter change using new dataclass
-                msg = ParameterMessage(
-                    area=ANALOG_SYNTH_AREA,
-                    part=0x00,
-                    group=0x00,
-                    param=0x34,  # Octave Shift parameter address
-                    value=midi_value,
-                ).to_list()
-
-                self.midi_helper.send_message(msg)
-
-                # Update UI state
-                self.current_octave = new_octave
-                self._update_octave_display()
-
-                logging.debug(
-                    f"Octave shifted to {new_octave} (MIDI value: {midi_value})"
-                )
-
-        except Exception as e:
-            logging.error(f"Error shifting octave: {str(e)}")
 
     def _show_analog_presets(self):
         """Show the analog preset editor window"""
@@ -1191,8 +1077,8 @@ class MainWindow(JdxiWindow):
 
                 logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
 
-        except Exception as e:
-            logging.error(f"Error loading last preset: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error loading last preset: {str(ex)}")
 
     def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
         """Save the last used preset to settings
@@ -1210,8 +1096,8 @@ class MainWindow(JdxiWindow):
                 f"Saved last preset: {synth_type} #{preset_num} on channel {channel}"
             )
 
-        except Exception as e:
-            logging.error(f"Error saving last preset: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error saving last preset: {str(ex)}")
 
     def _load_favorite(self, button: FavoriteButton):
         """Load preset from favorite button"""
@@ -1274,9 +1160,9 @@ class MainWindow(JdxiWindow):
                 # Update display to show the saved preset
                 self._update_display_preset(preset_num, preset_name, channel)
 
-            except Exception as e:
-                logging.error(f"Error saving to favorite: {str(e)}")
-                QMessageBox.warning(self, "Error", f"Error saving preset: {str(e)}")
+            except Exception as ex:
+                logging.error(f"Error saving to favorite: {str(ex)}")
+                QMessageBox.warning(self, "Error", f"Error saving preset: {str(ex)}")
 
     def _clear_favorite(self, button: FavoriteButton):
         """Clear favorite slot"""
@@ -1318,8 +1204,8 @@ class MainWindow(JdxiWindow):
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
 
-        except Exception as e:
-            logging.error(f"Error loading preset: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error loading preset: {str(ex)}")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """Set MIDI input and output ports
@@ -1345,8 +1231,8 @@ class MainWindow(JdxiWindow):
 
             return True
 
-        except Exception as e:
-            logging.error(f"Error setting MIDI ports: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error setting MIDI ports: {str(ex)}")
             return False
 
     def _connect_midi(self):
@@ -1359,15 +1245,15 @@ class MainWindow(JdxiWindow):
                 # Open ports
                 if self.midi_helper.open_ports(in_port, out_port):
                     logging.info(f"Connected to JD-Xi ({in_port}, {out_port})")
-                    self.statusBar().showMessage(f"Connected to JD-Xi")
+                    self.statusBar().showMessage("Connected to JD-Xi")
                     return True
 
             logging.warning("JD-Xi not found")
             self.statusBar().showMessage("JD-Xi not found")
             return False
 
-        except Exception as e:
-            logging.error(f"Error connecting to MIDI: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error connecting to MIDI: {str(ex)}")
             self.statusBar().showMessage("MIDI connection error")
             return False
 
@@ -1381,8 +1267,8 @@ class MainWindow(JdxiWindow):
             self.vocal_fx_editor.show()
             self.vocal_fx_editor.raise_()
 
-        except Exception as e:
-            logging.error(f"Error showing Vocal FX editor: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error showing Vocal FX editor: {str(ex)}")
 
     def _show_arpeggio_editor(self):
         """Show the arpeggio editor window"""
@@ -1392,11 +1278,5 @@ class MainWindow(JdxiWindow):
                 self.arpeggio_editor = ArpeggioEditor(midi_helper=self.midi_helper)
             logging.debug("Showing arpeggio editor")
             self.arpeggio_editor.show()
-        except Exception as e:
-            logging.error(f"Error showing Arpeggiator editor: {str(e)}")
-
-    def get_data(self):
-        """Retrieve data using SysEx request"""
-        data = self.midi_helper.send_sysex_rq1(
-            self.device_id, self.address + [0x00], self.data_length
-        )
+        except Exception as ex:
+            logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
