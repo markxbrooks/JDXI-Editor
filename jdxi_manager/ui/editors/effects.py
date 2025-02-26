@@ -1,3 +1,4 @@
+import os
 from functools import partial
 
 from PySide6.QtWidgets import (
@@ -11,6 +12,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 import logging
 
 from jdxi_manager.data import EffectParameter
@@ -30,9 +32,40 @@ class EffectsEditor(BaseEditor):
     def __init__(self, midi_helper: MIDIHelper, parent=None):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Effects")
-
+        self.setFixedWidth(450)
         # Main layout
         main_layout = QVBoxLayout()
+        upper_layout = QHBoxLayout()
+
+        self.title_label = QLabel(
+            "Effects"
+        )
+        """
+        drum_group.setStyleSheet(
+            ""
+            QGroupBox {
+            width: 300px;
+            }
+        ""
+        )
+        """
+        self.title_label.setStyleSheet(
+            """
+            font-size: 16px;
+            font-weight: bold;
+        """
+        )
+
+        main_layout.addLayout(upper_layout)
+        upper_layout.addWidget(self.title_label)
+
+        self.image_label = QLabel()
+        self.image_label.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )  # Center align the image
+        upper_layout.addWidget(self.image_label)
+        self.update_instrument_image()
+
         self.setLayout(main_layout)
         self.controls: Dict[Union[EffectParameter, EffectsCommonParameter], QWidget] = (
             {}
@@ -48,6 +81,27 @@ class EffectsEditor(BaseEditor):
         self.tabs.addTab(self._create_effect2_section(), "Effect 2")
         self.tabs.addTab(self._create_delay_tab(), "Delay")
         self.tabs.addTab(self._create_reverb_section(), "Reverb")
+
+    def update_instrument_image(self):
+        image_loaded = False
+
+        def load_and_set_image(image_path):
+            """Helper function to load and set the image on the label."""
+            if os.path.exists(image_path):
+                pixmap = QPixmap(image_path)
+                scaled_pixmap = pixmap.scaledToHeight(
+                    150, Qt.TransformationMode.SmoothTransformation
+                )  # Resize to 250px height
+                self.image_label.setPixmap(scaled_pixmap)
+                return True
+            return False
+
+        # Define paths
+        default_image_path = os.path.join("resources", "effects", "effects.png")
+
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect type"""

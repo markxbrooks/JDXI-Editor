@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QSpinBox,
     QSlider,
+    QPushButton
 )
 from PySide6.QtCore import Qt, Signal
 import logging
@@ -183,6 +184,11 @@ class DrumEditor(BaseEditor):
         drum_group_layout = QVBoxLayout()
         drum_group.setLayout(drum_group_layout)
         drum_group_layout.addWidget(self.title_label)
+
+        # Add the "Read Request" button
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        drum_group_layout.addWidget(self.read_request_button)
 
         self.selection_label = QLabel("Select a drum kit:")
         drum_group_layout.addWidget(self.selection_label)

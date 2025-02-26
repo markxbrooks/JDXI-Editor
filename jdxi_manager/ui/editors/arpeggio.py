@@ -12,6 +12,8 @@ from PySide6.QtWidgets import (
     QGroupBox,
 )
 from PySide6.QtCore import Qt
+from PySide6.QtGui import  QPixmap
+import os
 import logging
 from typing import Optional
 
@@ -44,10 +46,38 @@ class ArpeggioEditor(BaseEditor):
         super().__init__(parent)
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
-
+        self.setFixedWidth(450)
         # Main layout
         layout = QVBoxLayout()
         self.setLayout(layout)
+
+        # arpeggiator_group = QGroupBox("Arpeggiator")
+        self.title_label = QLabel(
+            "Arpeggiator"
+        )
+        """
+        drum_group.setStyleSheet(
+            ""
+            QGroupBox {
+            width: 300px;
+            }
+        ""
+        )
+        """
+        self.title_label.setStyleSheet(
+            """
+            font-size: 16px;
+            font-weight: bold;
+        """
+        )
+        layout.addWidget(self.title_label)
+        # Image display
+        self.image_label = QLabel()
+        self.image_label.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )  # Center align the image
+        layout.addWidget(self.image_label)
+        self.update_instrument_image()
 
         # Add on-off switch
         switch_row = QHBoxLayout()
@@ -137,6 +167,26 @@ class ArpeggioEditor(BaseEditor):
         motif_row.addWidget(motif_label)
         motif_row.addWidget(self.motif_combo)
         layout.addLayout(motif_row)
+
+    def update_instrument_image(self):
+        image_loaded = False
+        def load_and_set_image(image_path):
+            """Helper function to load and set the image on the label."""
+            if os.path.exists(image_path):
+                pixmap = QPixmap(image_path)
+                scaled_pixmap = pixmap.scaledToHeight(
+                    150, Qt.TransformationMode.SmoothTransformation
+                )  # Resize to 250px height
+                self.image_label.setPixmap(scaled_pixmap)
+                return True
+            return False
+
+        # Define paths
+        default_image_path = os.path.join("resources", "arpeggiator", "arpeggiator2.png")
+
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
 
     def _on_switch_changed(self, checked: bool):
         """Handle arpeggiator switch change"""
