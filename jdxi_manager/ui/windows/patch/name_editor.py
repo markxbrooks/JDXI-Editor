@@ -40,7 +40,7 @@ class PatchNameEditor(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(Style.EDITOR_STYLE)
+        self.setStyleSheet(Style.JDXI_EDITOR)
         
     def get_name(self):
         """Get the edited patch name"""

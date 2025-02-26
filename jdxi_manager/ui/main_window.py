@@ -24,7 +24,7 @@ from jdxi_manager.ui.editors import (
 )
 from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
-from jdxi_manager.ui.windows.midi.config import MIDIConfigDialog
+from jdxi_manager.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
 from jdxi_manager.ui.windows.patch.name_editor import PatchNameEditor
@@ -114,7 +114,7 @@ class MainWindow(JdxiWindow):
         pub.subscribe(self._update_display_preset, "update_display_preset")
 
         # Set black background for entire application
-        self.setStyleSheet(Style.JDXI_STYLE)
+        self.setStyleSheet(Style.JDXI)
 
         # Load custom font
         self._load_digital_font()

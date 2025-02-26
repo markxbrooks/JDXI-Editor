@@ -48,7 +48,7 @@ class PresetEditor(QMainWindow):
             self.parameter_handler.parameters_updated.connect(self._update_ui)
 
         # Set window style
-        self.setStyleSheet(Style.EDITOR_STYLE)
+        self.setStyleSheet(Style.JDXI_EDITOR)
 
         # Create central widget and main layout
         main_widget = QWidget()

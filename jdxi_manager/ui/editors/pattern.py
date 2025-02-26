@@ -45,7 +45,7 @@ from PySide6.QtCore import Qt, QTimer
 
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.editors.base import BaseEditor
-from jdxi_manager.ui.style import sequencer_button_style, toggle_button_style
+from jdxi_manager.ui.style import generate_sequencer_button_style, toggle_button_style
 
 instrument_icon_folder = "patterns"
 
@@ -327,7 +327,7 @@ class PatternSequencer(BaseEditor):
                 button = QPushButton()
                 button.setCheckable(True)
                 button.setFixedSize(40, 40)
-                button.setStyleSheet(sequencer_button_style(False))
+                button.setStyleSheet(generate_sequencer_button_style(False))
                 button.toggled.connect(
                     lambda checked, btn=button: toggle_button_style(btn, checked)
                 )
@@ -460,7 +460,7 @@ class PatternSequencerOld(BaseEditor):
                 button = QPushButton()
                 button.setCheckable(True)
                 button.setFixedSize(40, 40)
-                button.setStyleSheet(sequencer_button_style(False))
+                button.setStyleSheet(generate_sequencer_button_style(False))
                 # button.clicked.connect(partial(self.toggle_button, row_idx, i))
                 button.toggled.connect(
                     lambda checked, btn=button: toggle_button_style(btn, checked)
@@ -490,7 +490,7 @@ class PatternSequencerOld(BaseEditor):
     def toggle_button(self, row, index):
         button = self.buttons[row][index]
         button.setChecked(not button.isChecked())
-        button.setStyleSheet(sequencer_button_style(button.isChecked()))
+        button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
 
     def select_buttons(self, indices):
         for row, index in indices:

@@ -29,7 +29,7 @@ class BaseEditor(QWidget):
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
-        self.setStyleSheet(Style.EDITOR_STYLE)
+        self.setStyleSheet(Style.JDXI_EDITOR)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)

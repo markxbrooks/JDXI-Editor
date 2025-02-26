@@ -56,48 +56,8 @@ class MIDIDebugger(QMainWindow):
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
-        # self.setStyleSheet(Style.EDITOR_STYLE)
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #2E2E2E;
-            }
-            QWidget {
-                background-color: #2E2E2E;
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QPlainTextEdit {
-                background-color: #1A1A1A;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px;
-                font-family: 'Consolas';
-            }
-            QTextEdit {
-                background-color: #1A1A1A;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px;
-                font-family: 'Consolas';
-            }
-            QPushButton {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
-                background-color: #4D4D4D;
-                border: 1px solid #FF3333;
-            }
-            QPushButton:pressed {
-                background-color: #2D2D2D;
-            }
-        """)
+        # self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(Style.JDXI)
         
         # Create central widget
         central = QWidget()

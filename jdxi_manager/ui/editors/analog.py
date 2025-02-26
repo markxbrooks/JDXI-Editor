@@ -123,7 +123,7 @@ class AnalogSynthEditor(BaseEditor):
         container.setLayout(container_layout)
 
         # Additional styling specific to analog editor
-        self.setStyleSheet(Style.JDXI_ANALOG_TABS_STYLE + Style.ANALOG_EDITOR_STYLE_V3)
+        self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 
@@ -262,7 +262,7 @@ class AnalogSynthEditor(BaseEditor):
         self.wave_buttons = {}
         for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
             btn = AnalogWaveformButton(waveform)
-            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
 
             # Set icons for each waveform
             if waveform == Waveform.SAW:
@@ -881,7 +881,7 @@ class AnalogSynthEditor(BaseEditor):
             btn.setFixedSize(80, 40)  # Make buttons wider to accommodate text
             btn.setToolTip(name)
             btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
-            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
             self.lfo_shape_buttons[value] = btn
             shape_row.addWidget(btn)
             shape_row.addStretch(1)  # Add stretch after each button
@@ -971,13 +971,13 @@ class AnalogSynthEditor(BaseEditor):
             )
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+                btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
 
             # Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
+                selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
             self._update_pw_controls_state(waveform)
 
     def _send_cc(self, cc: AnalogToneCC, value: int):
@@ -1026,13 +1026,13 @@ class AnalogSynthEditor(BaseEditor):
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+                btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
 
             # Apply active style to the selected button
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
+                selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
 
     def _on_lfo_sync_changed(self, value: int):
         """
@@ -1345,13 +1345,13 @@ class AnalogSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
+            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
 
     def _update_lfo_shape_buttons(self, value):
         """Update the LFO shape buttons with visual feedback."""
@@ -1360,12 +1360,12 @@ class AnalogSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.ANALOG_BUTTON_DEFAULT)
+            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
 
         # Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.ANALOG_BUTTON_ACTIVE)
+            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
         else:
             logging.warning(f"Unknown LFO shape value: {value}")

@@ -40,7 +40,7 @@ class EffectsEditor(BaseEditor):
 
         # Create a tab widget
         self.tabs = QTabWidget()
-        self.tabs.setStyleSheet(Style.JDXI_TABS_STYLE)
+        self.tabs.setStyleSheet(Style.JDXI_TABS)
         main_layout.addWidget(self.tabs)
 
         # Add tabs
