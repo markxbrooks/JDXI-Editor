@@ -27,8 +27,8 @@ from jdxi_manager.ui.editors.preset import PresetEditor
 from jdxi_manager.ui.windows.midi.config import MIDIConfigDialog
 from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
-from jdxi_manager.ui.windows.patch.patch_name_editor import PatchNameEditor
-from jdxi_manager.ui.windows.patch.patch_manager import PatchManager
+from jdxi_manager.ui.windows.patch.name_editor import PatchNameEditor
+from jdxi_manager.ui.windows.patch.manager import PatchManager
 from jdxi_manager.ui.windows.jdxi.jdxi import JdxiWindow
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
