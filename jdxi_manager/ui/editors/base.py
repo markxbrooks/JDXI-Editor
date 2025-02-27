@@ -1,3 +1,5 @@
+import re
+import os
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt
@@ -95,7 +97,7 @@ class BaseEditor(QWidget):
                 file_to_load = secondary_image_path
             else:
                 file_to_load = os.path.join(
-                    "resources", instrument_icon_folder, "analog.png"
+                    "resources", self.instrument_icon_folder, "analog.png"
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
@@ -122,12 +124,12 @@ class BaseEditor(QWidget):
             logging.info(f"selected_instrument_type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
-                instrument_icon_folder,
+                self.instrument_icon_folder,
                 f"{selected_instrument_name}.png",
             )
             generic_image_path = os.path.join(
                 "resources",
-                instrument_icon_folder,
+                self.instrument_icon_folder,
                 f"{selected_instrument_type}.png",
             )
             image_loaded = load_and_set_image(specific_image_path, generic_image_path)
@@ -157,7 +159,7 @@ class BaseEditor(QWidget):
         try:
             # Get parameter group and address with partial offset
             # if isinstance(param, AnalogParameter):
-            #    group, param_address = param.get_address_for_partial(self.partial_num)
+            #    group, param_address = param.get_address_for_partial(self.partial_name)
             # else:
             group = ANALOG_OSC_GROUP  # Common parameters group
             param_address = param.address
@@ -211,6 +213,6 @@ class BaseEditor(QWidget):
         """Handle program change messages by requesting updated data"""
         logging.info(f"Program change detected on channel {channel}, requesting data update")
         self.data_request()
-        #if hasattr(self, 'part') and channel == self.part:
+        #if hasattr(self, 'address') and channel == self.address:
         #    logging.info(f"Program change detected on channel {channel}, requesting data update")
         #    self.data_request()

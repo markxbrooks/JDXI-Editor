@@ -55,8 +55,6 @@ from jdxi_manager.midi.constants.analog import (
     ANALOG_OSC_GROUP,
 )
 
-instrument_icon_folder = "analog_synths"
-
 
 def get_analog_parameter_by_address(address: int):
     """Retrieve the DigitalParameter by its address."""
@@ -97,6 +95,7 @@ class AnalogSynthEditor(BaseEditor):
         self.setMinimumSize(800, 400)
         self.resize(1000, 600)
         self.image_label = QLabel()
+        self.instrument_icon_folder = "analog_synths"
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
@@ -395,7 +394,7 @@ class AnalogSynthEditor(BaseEditor):
                 file_to_load = secondary_image_path
             else:
                 file_to_load = os.path.join(
-                    "resources", instrument_icon_folder, "analog.png"
+                    "resources", self.instrument_icon_folder, "analog.png"
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
@@ -422,12 +421,12 @@ class AnalogSynthEditor(BaseEditor):
             logging.info(f"selected instrument image type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
-                instrument_icon_folder,
+                self.instrument_icon_folder,
                 f"{selected_instrument_name}.png",
             )
             generic_image_path = os.path.join(
                 "resources",
-                instrument_icon_folder,
+                self.instrument_icon_folder,
                 f"{selected_instrument_type}.png",
             )
             image_loaded = load_and_set_image(specific_image_path, generic_image_path)
@@ -470,7 +469,7 @@ class AnalogSynthEditor(BaseEditor):
         try:
             # Get parameter group and address with partial offset
             # if isinstance(param, AnalogParameter):
-            #    group, param_address = param.get_address_for_partial(self.partial_num)
+            #    group, param_address = param.get_address_for_partial(self.partial_name)
             # else:
             group = ANALOG_OSC_GROUP  # Common parameters group
             param_address = param.address

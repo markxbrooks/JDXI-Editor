@@ -37,11 +37,11 @@ from .drums import *
 from .vocal_fx import *
 
 # Part Numbers (Legacy names)
-PART_1 = 0x00  # Analog synth part
-PART_2 = 0x01  # Digital synth 1 part
-PART_3 = 0x02  # Digital synth 2 part
-PART_4 = 0x03  # Drum part
-PART_5 = 0x04  # Vocal FX part
+PART_1 = 0x00  # Analog synth address
+PART_2 = 0x01  # Digital synth 1 address
+PART_3 = 0x02  # Digital synth 2 address
+PART_4 = 0x03  # Drum address
+PART_5 = 0x04  # Vocal FX address
 
 # Part Numbers (New names)
 ANALOG_PART = PART_1  # 0x00
@@ -405,7 +405,7 @@ ANALOG_LFO_RATE = 0x31  # LFO rate (0-127)
 
 # Analog Synth Areas and Parts
 ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
-ANALOG_PART = 0x01  # Analog synth part
+ANALOG_PART = 0x01  # Analog synth address
 
 # Analog Synth Parameter Groups
 ANALOG_OSC_GROUP = 0x00  # Oscillator parameters
@@ -701,12 +701,12 @@ VOCAL_FX_AREA = 0x14  # Vocal effects area
 SYSTEM_AREA = 0x01  # System settings area
 
 # Part numbers
-DIGITAL_PART_1 = 0x01  # Digital synth 1 part
-DIGITAL_PART_2 = 0x02  # Digital synth 2 part
-ANALOG_PART = 0x00  # Analog synth part
-DRUM_PART = 0x00  # Drum part
-VOCAL_PART = 0x00  # Vocal part
-SYSTEM_PART = 0x00  # System part
+DIGITAL_PART_1 = 0x01  # Digital synth 1 address
+DIGITAL_PART_2 = 0x02  # Digital synth 2 address
+ANALOG_PART = 0x00  # Analog synth address
+DRUM_PART = 0x00  # Drum address
+VOCAL_PART = 0x00  # Vocal address
+SYSTEM_PART = 0x00  # System address
 
 # Parameter groups
 PROGRAM_GROUP = 0x00
@@ -1077,7 +1077,7 @@ class ArpParameters(Enum):
     VELOCITY = 0x0A  # Velocity (0-127, 0=REAL)
 
 
-# SuperNATURAL presets for each part
+# SuperNATURAL presets for each address
 DIGITAL_SN_PRESETS = [
     "001: JP8 Strings1",
     "002: Soft Pad 1",
@@ -1917,7 +1917,7 @@ TEMP_DIGITAL_TONE = 0x01  # 01 00 00: Temporary SuperNATURAL Synth Tone
 TEMP_ANALOG_TONE = 0x02  # 02 00 00: Temporary Analog Synth Tone
 TEMP_DRUM_KIT = 0x10  # 10 00 00: Temporary Drum Kit
 
-# Update our existing part offsets
+# Update our existing address offsets
 DIGITAL_PART_1 = 0x01  # Digital Synth 1 (SuperNATURAL)
 DIGITAL_PART_2 = 0x02  # Digital Synth 2 (SuperNATURAL)
 ANALOG_PART = 0x02  # Analog Synth
@@ -2372,7 +2372,7 @@ class ArpParameters(Enum):
     VELOCITY = 0x0A  # Velocity (0-127, 0=REAL)
 
 
-# SuperNATURAL presets for each part
+# SuperNATURAL presets for each address
 DIGITAL_SN_PRESETS = [
     "001: JP8 Strings1",
     "002: Soft Pad 1",
@@ -3212,7 +3212,7 @@ TEMP_DIGITAL_TONE = 0x01  # 01 00 00: Temporary SuperNATURAL Synth Tone
 TEMP_ANALOG_TONE = 0x02  # 02 00 00: Temporary Analog Synth Tone
 TEMP_DRUM_KIT = 0x10  # 10 00 00: Temporary Drum Kit
 
-# Update our existing part offsets
+# Update our existing address offsets
 DIGITAL_PART_1 = 0x01  # Digital Synth 1 (SuperNATURAL)
 DIGITAL_PART_2 = 0x02  # Digital Synth 2 (SuperNATURAL)
 ANALOG_PART = 0x02  # Analog Synth
@@ -3667,7 +3667,7 @@ class ArpParameters(Enum):
     VELOCITY = 0x0A  # Velocity (0-127, 0=REAL)
 
 
-# SuperNATURAL presets for each part
+# SuperNATURAL presets for each address
 DIGITAL_SN_PRESETS = [
     "001: JP8 Strings1",
     "002: Soft Pad 1",
@@ -4507,7 +4507,7 @@ TEMP_DIGITAL_TONE = 0x01  # 01 00 00: Temporary SuperNATURAL Synth Tone
 TEMP_ANALOG_TONE = 0x02  # 02 00 00: Temporary Analog Synth Tone
 TEMP_DRUM_KIT = 0x10  # 10 00 00: Temporary Drum Kit
 
-# Update our existing part offsets
+# Update our existing address offsets
 DIGITAL_PART_1 = 0x01  # Digital Synth 1 (SuperNATURAL)
 DIGITAL_PART_2 = 0x02  # Digital Synth 2 (SuperNATURAL)
 ANALOG_PART = 0x02  # Analog Synth

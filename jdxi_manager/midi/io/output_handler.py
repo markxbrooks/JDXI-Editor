@@ -141,7 +141,7 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             True if successful, False otherwise.
         """
-        logging.debug(f"Sending parameter: area={area}, part={part}, group={group}, param={param}, value={value}")
+        logging.debug(f"Sending parameter: area={area}, address={part}, group={group}, param={param}, value={value}")
         if not self.is_output_open:
             logging.warning("MIDI output not open")
             return False
@@ -279,7 +279,7 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             Parameter value (0-127) or None if an error occurs.
         """
-        logging.debug(f"Requesting parameter: area={area}, part={part}, group={group}, param={param}")
+        logging.debug(f"Requesting parameter: area={area}, address={part}, group={group}, param={param}")
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None

@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Optional, Tuple
 from enum import Enum
 from dataclasses import dataclass
@@ -147,8 +148,86 @@ Drum Kit Parameters Reference
 |-----------+-----------+-------------------------------------------------------|
 | 00 00 01 43           |                                        Total Size     |
 +-------------------------------------------------------------------------------+
-"""
+           "COM": 0x00,  # Common parameters
+            "BD1": 0x2E,  # Drum Kit Partial (Key # 36)
+            "RIM": 0x30,  # Drum Kit Partial (Key # 37)
+            "BD2": 0x32,  # Drum Kit Partial (Key # 38)
+            "CLAP": 0x34,  # Drum Kit Partial (Key # 39)
+            "BD3": 0x36,  # Drum Kit Partial (Key # 40)
+            "SD1": 0x38,  # Drum Kit Partial (Key # 41)
+            "CHH": 0x3A,  # Drum Kit Partial (Key # 42)
+            "SD2": 0x3C,  # Drum Kit Partial (Key # 43)
+            "PHH": 0x3E,  # Drum Kit Partial (Key # 44)
+            "SD3": 0x40,  # Drum Kit Partial (Key # 45)
+            "OHH": 0x42,  # Drum Kit Partial (Key # 46)
+            "SD4": 0x44,  # Drum Kit Partial (Key # 47)
+            "TOM1": 0x46,  # Drum Kit Partial (Key # 48)
+            "PRC1": 0x48,  # Drum Kit Partial (Key # 49)
+            "TOM2": 0x4A,  # Drum Kit Partial (Key # 50)
+            "PRC2": 0x4C,  # Drum Kit Partial (Key # 51)
+            "TOM3": 0x4E,  # Drum Kit Partial (Key # 52)
+            "PRC3": 0x50,  # Drum Kit Partial (Key # 53)
+            "CYM1": 0x52,  # Drum Kit Partial (Key # 54)
+            "PRC4": 0x54,  # Drum Kit Partial (Key # 55)
+            "CYM2": 0x56,  # Drum Kit Partial (Key # 56)
+            "PRC5": 0x58,  # Drum Kit Partial (Key # 57)
+            "CYM3": 0x5A,  # Drum Kit Partial (Key # 58)
+            "HIT": 0x5C,  # Drum Kit Partial (Key # 59)
+            "OTH1": 0x5E,  # Drum Kit Partial (Key # 60)
+            "OTH2": 0x60,  # Drum Kit Partial (Key # 61)
+            "D4": 0x62,  # Drum Kit Partial (Key # 62)
+            "Eb4": 0x64,  # Drum Kit Partial (Key # 63)
+            "E4": 0x66,  # Drum Kit Partial (Key # 64)
+            "F4": 0x68,  # Drum Kit Partial (Key # 65)
+            "F#4": 0x6A,  # Drum Kit Partial (Key # 66)
+            "G4": 0x6C,  # Drum Kit Partial (Key # 67)
+            "G#4": 0x6E,  # Drum Kit Partial (Key # 68)
+            "A4": 0x70,  # Drum Kit Partial (Key # 69)
+            "Bb4": 0x72,  # Drum Kit Partial (Key # 70)
+            "B4": 0x74,  # Drum Kit Partial (Key # 71)
+            "C5": 0x76,  # Drum Kit Partial (Key # 72)
 
+"""
+DRUM_ADDRESSES = {
+    "COM": 0x00,
+    "BD1": 0x2E,
+    "RIM": 0x30,
+    "BD2": 0x32,
+    "CLAP": 0x34,
+    "BD3": 0x36,
+    "SD1": 0x38,
+    "CHH": 0x3A,
+    "SD2": 0x3C,
+    "PHH": 0x3E,
+    "SD3": 0x40,
+    "OHH": 0x42,
+    "SD4": 0x44,
+    "TOM1": 0x46,
+    "PRC1": 0x48,
+    "TOM2": 0x4A,
+    "PRC2": 0x4C,
+    "TOM3": 0x4E,
+    "PRC3": 0x50,
+    "CYM1": 0x52,
+    "PRC4": 0x54,
+    "CYM2": 0x56,
+    "PRC5": 0x58,
+    "CYM3": 0x5A,
+    "HIT": 0x5C,
+    "OTH1": 0x5E,
+    "OTH2": 0x60,
+    "D4": 0x62,
+    "Eb4": 0x64,
+    "E4": 0x66,
+    "F4": 0x68,
+    "F#4": 0x6A,
+    "G4": 0x6C,
+    "G#4": 0x6E,
+    "A4": 0x70,
+    "Bb4": 0x72,
+    "B4": 0x74,
+    "C5": 0x76,
+}
 
 class DrumParameter(SynthParameter):
     """Drum kit parameters with their addresses and value ranges"""
@@ -636,10 +715,16 @@ class DrumParameter(SynthParameter):
         """Convert from display value to MIDI value (0-127)"""
         return display_value
 
-    def get_address_for_partial(self, partial_num: int) -> Tuple[int, int]:
-        """Get parameter group and address adjusted for partial number."""
-        if partial_num is not 0 and (partial_num < 36 or partial_num > 77):
-            raise ValueError(f"Invalid partial number: {partial_num} for drums")
+    @staticmethod
+    def get_address_for_partial(partial_index: int) -> tuple:
+        """Get the address for a drum partial by index"""
+        if not isinstance(partial_index, int):
+            raise ValueError(f"Partial index must be an integer, got {type(partial_index)}")
+
+        if partial_index < 0 or partial_index >= len(DRUM_ADDRESSES):
+            raise ValueError(f"Invalid partial index: {partial_index}")
+
+        return DRUM_ADDRESSES[partial_index]
 
         group_map = {
             0: 0x00, # Common parameters
@@ -682,8 +767,55 @@ class DrumParameter(SynthParameter):
             72: 0x76, # Drum Kit Partial (Key # 72)
             
         }
-        group = group_map.get(partial_num, 0x2E)  # Default to 0x20 if partial_num is not 1, 2, or 3
+        group = group_map.get(partial_num, 0x2E)  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
+
+    @staticmethod
+    def get_address_for_partial_name(partial_name: str) -> int:
+        """Get parameter group and address adjusted for partial number."""
+
+        address_map = {
+            "COM": 0x00,  # Common parameters
+            "BD1": 0x2E,  # Drum Kit Partial (Key # 36)
+            "RIM": 0x30,  # Drum Kit Partial (Key # 37)
+            "BD2": 0x32,  # Drum Kit Partial (Key # 38)
+            "CLAP": 0x34,  # Drum Kit Partial (Key # 39)
+            "BD3": 0x36,  # Drum Kit Partial (Key # 40)
+            "SD1": 0x38,  # Drum Kit Partial (Key # 41)
+            "CHH": 0x3A,  # Drum Kit Partial (Key # 42)
+            "SD2": 0x3C,  # Drum Kit Partial (Key # 43)
+            "PHH": 0x3E,  # Drum Kit Partial (Key # 44)
+            "SD3": 0x40,  # Drum Kit Partial (Key # 45)
+            "OHH": 0x42,  # Drum Kit Partial (Key # 46)
+            "SD4": 0x44,  # Drum Kit Partial (Key # 47)
+            "TOM1": 0x46,  # Drum Kit Partial (Key # 48)
+            "PRC1": 0x48,  # Drum Kit Partial (Key # 49)
+            "TOM2": 0x4A,  # Drum Kit Partial (Key # 50)
+            "PRC2": 0x4C,  # Drum Kit Partial (Key # 51)
+            "TOM3": 0x4E,  # Drum Kit Partial (Key # 52)
+            "PRC3": 0x50,  # Drum Kit Partial (Key # 53)
+            "CYM1": 0x52,  # Drum Kit Partial (Key # 54)
+            "PRC4": 0x54,  # Drum Kit Partial (Key # 55)
+            "CYM2": 0x56,  # Drum Kit Partial (Key # 56)
+            "PRC5": 0x58,  # Drum Kit Partial (Key # 57)
+            "CYM3": 0x5A,  # Drum Kit Partial (Key # 58)
+            "HIT": 0x5C,  # Drum Kit Partial (Key # 59)
+            "OTH1": 0x5E,  # Drum Kit Partial (Key # 60)
+            "OTH2": 0x60,  # Drum Kit Partial (Key # 61)
+            "D4": 0x62,  # Drum Kit Partial (Key # 62)
+            "Eb4": 0x64,  # Drum Kit Partial (Key # 63)
+            "E4": 0x66,  # Drum Kit Partial (Key # 64)
+            "F4": 0x68,  # Drum Kit Partial (Key # 65)
+            "F#4": 0x6A,  # Drum Kit Partial (Key # 66)
+            "G4": 0x6C,  # Drum Kit Partial (Key # 67)
+            "G#4": 0x6E,  # Drum Kit Partial (Key # 68)
+            "A4": 0x70,  # Drum Kit Partial (Key # 69)
+            "Bb4": 0x72,  # Drum Kit Partial (Key # 70)
+            "B4": 0x74,  # Drum Kit Partial (Key # 71)
+            "C5": 0x76,  # Drum Kit Partial (Key # 72)
+        }
+        address = address_map.get(partial_name, 0x00)  # Default to 0x00 for common area
+        return address
 
     @staticmethod
     def get_by_name(param_name):

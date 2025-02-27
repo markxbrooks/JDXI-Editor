@@ -2,7 +2,7 @@
 
 from jdxi_manager.data.drums import (
     DR,  # Parameter definitions
-    DRUM_PARTS,  # Drum part categories
+    DRUM_PARTS,  # Drum address categories
     DrumPadSettings,  # Pad settings class
     DrumKitPatch,  # Complete patch class
     MuteGroup,  # Mute group enum

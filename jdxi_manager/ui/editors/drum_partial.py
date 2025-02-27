@@ -1,350 +1,77 @@
+import logging
 import os
 import re
-from typing import Optional, Union, Dict
+from typing import Dict
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import (
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QComboBox,
-    QFrame,
-    QGridLayout,
-    QGroupBox,
-    QScrollArea,
-    QWidget,
-    QTabWidget,
-    QFormLayout,
-    QSpinBox,
-    QSlider,
-    QPushButton
-)
-from PySide6.QtCore import Qt, Signal
-import logging
-
-from jdxi_manager.data.drums import (
-    get_address_for_partial,
-    DRUM_PARTIAL_NAMES,
-    DRUM_ADDRESSES,
-)
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QGridLayout, QGroupBox, QFormLayout, QSpinBox, \
+    QComboBox, QTabWidget
+from jdxi_manager.data.drums import get_address_for_partial, DRUM_ADDRESSES
 from jdxi_manager.data.parameter.drums import DrumParameter
-from jdxi_manager.data.presets.data import DRUM_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.data.presets.presets import preset
-from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.constants import TEMPORARY_DRUM_KIT_AREA, TEMPORARY_DIGITAL_SYNTH_1_AREA
 from jdxi_manager.midi.preset.loader import PresetLoader
-from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.editors.base import BaseEditor
-from jdxi_manager.midi.constants import (
-    TEMPORARY_DRUM_KIT_AREA,
-    DRUM_PART,
-    DRUM_LEVEL,
-    DRUM_PAN,
-    DRUM_REVERB,
-    DRUM_DELAY,
-    DRUM_GROUP,
-    DIGITAL_SYNTH_AREA,
-)
-from jdxi_manager.midi.constants.sysex import (
-    START_OF_SYSEX,
-    END_OF_SYSEX,
-    ROLAND_ID,
-    DEVICE_ID,
-    MODEL_ID,
-    DT1_COMMAND,
-    TEMPORARY_DIGITAL_SYNTH_1_AREA,
-    TEMPORARY_DIGITAL_SYNTH_2_AREA,
-    TEMPORARY_ANALOG_SYNTH_AREA,
-    TEMPORARY_DRUM_KIT_AREA,
-    EFFECTS_AREA,
-    ARPEGGIO_AREA,
-    VOCAL_FX_AREA,
-    TEMPORARY_SYSTEM_AREA,
-    JD_XI_ID,
-    MODEL_ID_1,
-    MODEL_ID_2,
-    MODEL_ID_3,
-    MODEL_ID_4,
-)
-from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 instrument_icon_folder = "drum_kits"
 
+class DrumPartialEditor(QWidget):
+    """Editor for a single partial"""
 
-class DrumPadEditor(BaseEditor):
-    """Drum pad editor"""
-
-    preset_changed = Signal(int, str, int)
-
-    def __init__(self, pad_number: int, parent=None):
+    def __init__(self, midi_helper=None, partial_num=0, address=None, parent=None):
         super().__init__(parent)
+        self.midi_helper = midi_helper
+        self.partial_num = partial_num  # This is now the numerical index
+        
+        # Calculate the address for this partial
+        try:
+            from jdxi_manager.data.drums import get_address_for_partial
+            self.group, self.address = get_address_for_partial(self.partial_num)
+            logging.info(f"Initialized partial {partial_num} with group: {hex(self.group)}, address: {hex(self.address)}")
+        except Exception as e:
+            logging.error(f"Error calculating address for partial {partial_num}: {str(e)}")
+            self.group = 0x00
+            self.address = 0x00
 
-        # Set fixed width for the entire pad editor
-        self.setFixedWidth(250)
+        # Store parameter controls for easy access
+        self.controls: Dict[DrumParameter, QWidget] = {}
 
-        # Create main layout
+        # Main layout
         main_layout = QVBoxLayout()
-        main_layout.setSpacing(0)  # Remove spacing between widgets
-        main_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
         self.setLayout(main_layout)
 
-        # Create frame with red border
-        group = QGroupBox(f"Pad {pad_number}")
-        # frame.setFrameStyle(QFrame.Box | QFrame.Plain)
-        frame_layout = QVBoxLayout()
-        frame_layout.setSpacing(0)  # Remove spacing between widgets
-        frame_layout.setContentsMargins(5, 5, 5, 5)  # Small internal margins
-        group.setLayout(frame_layout)
+        # Create scroll area
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QWidget()
+        scroll_layout = QVBoxLayout(scroll_content)
+        scroll_area.setWidget(scroll_content)
 
-        # Create pad label with string, not int
-        # pad_label = QLabel(f"Pad {pad_number}")
-        # frame_layout.addWidget(pad_label)
+        # Create grid layout for parameter groups
+        grid_layout = QGridLayout()
+        scroll_layout.addLayout(grid_layout)
 
-        # Set slider width to fit nicely in the 250px container
-        slider_width = 220  # Leave some margin for the frame
+        # Add parameter groups
+        pitch_group = self._create_pitch_group()
+        grid_layout.addWidget(pitch_group, 0, 0)
 
-        # Level control
-        self.level = Slider("Level", 0, 127)
-        self.level.setFixedWidth(slider_width)
-        frame_layout.addWidget(self.level)
+        output_group = self._create_output_group()
+        grid_layout.addWidget(output_group, 0, 1)
 
-        # Pan control (-64 to +63)
-        self.pan = Slider("Pan", -64, 63)
-        self.pan.setFixedWidth(slider_width)
-        frame_layout.addWidget(self.pan)
+        tvf_group = self._create_tvf_group()
+        grid_layout.addWidget(tvf_group, 1, 2)
 
-        # Tune control (-24 to +24 semitones)
-        self.tune = Slider("Tune", -24, 24)
-        self.tune.setFixedWidth(slider_width)
-        frame_layout.addWidget(self.tune)
+        pitch_env_group = self._create_pitch_env_group()
+        grid_layout.addWidget(pitch_env_group, 1, 1)
 
-        # Decay control
-        self.decay = Slider("Decay", 0, 127)
-        self.decay.setFixedWidth(slider_width)
-        frame_layout.addWidget(self.decay)
+        wmt_group = self._create_wmt_group()
+        grid_layout.addWidget(wmt_group, 1, 0)
 
-        # Effects sends
-        self.reverb = Slider("Reverb", 0, 127)
-        self.reverb.setFixedWidth(slider_width)
-        self.delay = Slider("Delay", 0, 127)
-        self.delay.setFixedWidth(slider_width)
-        frame_layout.addWidget(self.reverb)
-        frame_layout.addWidget(self.delay)
+        tva_group = self._create_tva_group()
+        grid_layout.addWidget(tva_group, 0, 2)
 
-        # Add frame to main layout
-        main_layout.addWidget(group)
-        self.setStyleSheet(Style.JDXI_EDITOR)
-
-
-class DrumEditor(BaseEditor):
-    """Editor for JD-Xi Drum Kit parameters"""
-
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
-        super().__init__(midi_helper, parent)
-        self.partial_num = 1  # Initialize partial_num
-        self.group = 0x00
-        self.address = 0x00 # Initialize address to common area
-        self.image_label = None
-        # Main layout
-        self.controls: Dict[DrumParameter, QWidget] = {}
-        self.preset_type = PresetType.DRUMS
-        self.preset_loader = PresetLoader(self.midi_helper)
-        self.main_window = parent
-        main_layout = QVBoxLayout(self)
-        upper_layout = QHBoxLayout()
-        main_layout.addLayout(upper_layout)
-        self.setMinimumSize(1000, 500)
-        self.midi_requests = [
-                                  "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",
-                                  "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7",
-                                  "F0 41 10 00 00 00 0E 11 19 70 30 00 00 00 01 43 03 F7",
-                                  "F0 41 10 00 00 00 0E 11 19 70 32 00 00 00 01 43 01 F7",
-                                  "F0 41 10 00 00 00 0E 11 19 70 34 00 00 00 01 43 7F F7",
-                                  "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7"
-                              ]
-        # Title and drum kit selection
-        drum_group = QGroupBox("Drum Kit")
-        self.title_label = QLabel(
-            f"Drum Kit:\n {DRUM_PRESETS_ENUMERATED[0]}" if DRUM_PRESETS_ENUMERATED else "Drum Kit"
-        )
-        drum_group.setStyleSheet(
-            """
-            QGroupBox {
-            width: 300px;
-            }
-        """
-        )
-        self.title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-        """
-        )
-        drum_group_layout = QVBoxLayout()
-        drum_group.setLayout(drum_group_layout)
-        drum_group_layout.addWidget(self.title_label)
-
-        # Add the "Read Request" button
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        drum_group_layout.addWidget(self.read_request_button)
-
-        self.selection_label = QLabel("Select a drum kit:")
-        drum_group_layout.addWidget(self.selection_label)
-        # Drum kit selection
-
-        self.instrument_selection_combo = PresetComboBox(DRUM_PRESETS_ENUMERATED)
-        self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
-        self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_loader.preset_number
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        # Connect QComboBox signal to PresetHandler
-        self.main_window.drums_preset_handler.preset_changed.connect(
-            self.update_combo_box_index
-        )
-
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        drum_group_layout.addWidget(self.instrument_selection_combo)
-        upper_layout.addWidget(drum_group)
-
-        # Image display
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
-        upper_layout.addWidget(self.image_label)
-
-        # Common controls
-        common_group = QGroupBox("Common")
-        common_layout = QFormLayout()
-
-        # Assign Type control
-        self.assign_type_combo = QComboBox()
-        self.assign_type_combo.addItems(["MULTI", "SINGLE"])
-        common_layout.addRow("Assign Type", self.assign_type_combo)
-
-        # Mute Group control
-        self.mute_group_spin = QSpinBox()
-        self.mute_group_spin.setRange(0, 31)
-        common_layout.addRow("Mute Group", self.mute_group_spin)
-
-        # Kit Level control
-        self.kit_level_slider = QSlider(Qt.Orientation.Horizontal)
-        self.kit_level_slider.setRange(0, 127)
-        self.kit_level_slider.valueChanged.connect(self.on_kit_level_changed)
-        common_layout.addRow("Kit Level", self.kit_level_slider)
-
-        # Partial Pitch Bend Range
-        self.pitch_bend_range_slider = QSlider(Qt.Orientation.Horizontal)
-        self.pitch_bend_range_slider.setRange(0, 48)
-        self.pitch_bend_range_slider.valueChanged.connect(
-            self.on_pitch_bend_range_changed
-        )
-        common_layout.addRow("Pitch Bend Range", self.pitch_bend_range_slider)
-
-        # Partial Receive Expression
-        self.receive_expression_combo = QComboBox()
-        self.receive_expression_combo.addItems(["OFF", "ON"])
-        common_layout.addRow("Receive Expression", self.receive_expression_combo)
-
-        # Partial Receive Hold-1
-        self.receive_hold_combo = QComboBox()
-        self.receive_hold_combo.addItems(["OFF", "ON"])
-        common_layout.addRow("Receive Hold-1", self.receive_hold_combo)
-
-        # One Shot Mode
-        self.one_shot_mode_combo = QComboBox()
-        self.one_shot_mode_combo.addItems(["OFF", "ON"])
-        common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
-
-        common_group.setLayout(common_layout)
-        upper_layout.addWidget(common_group)
-
-        # Tabbed widget for partials
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        main_layout.addWidget(scroll)
-        self.tab_widget = QTabWidget()
-        self.tab_widget.setStyleSheet(Style.JDXI_TABS_DRUMS)
-        scroll.setWidget(self.tab_widget)
-        partials = [
-            "BD1",
-            "RIM",
-            "BD2",
-            "CLAP",
-            "BD3",
-            "SD1",
-            "CHH",
-            "SD2",
-            "PHH",
-            "SD3",
-            "OHH",
-            "SD4",
-            "TOM1",
-            "PRC1",
-            "TOM2",
-            "PRC2",
-            "TOM3",
-            "PRC3",
-            "CYM1",
-            "PRC4",
-            "CYM2",
-            "PRC5",
-            "CYM3",
-            "HIT",
-            "OTH1",
-            "OTH2",
-        ]
-        for partial in partials:
-            tab = QWidget()
-            scroll_area = QScrollArea()
-            scroll_area.setWidgetResizable(True)
-            scroll_content = QWidget()
-            scroll_layout = QVBoxLayout(scroll_content)
-            scroll_area.setWidget(scroll_content)
-
-            grid_layout = QGridLayout()
-            scroll_layout.addLayout(grid_layout)
-
-            pitch_group = self._create_pitch_group()
-            grid_layout.addWidget(pitch_group, 0, 0)
-
-            output_group = self._create_output_group()
-            grid_layout.addWidget(output_group, 0, 1)
-
-            tvf_group = self._create_tvf_group()
-            grid_layout.addWidget(tvf_group, 1, 2)
-
-            pitch_env_group = self._create_pitch_env_group()
-            grid_layout.addWidget(pitch_env_group, 1, 1)
-
-            wmt_group = self._create_wmt_group()
-            grid_layout.addWidget(wmt_group, 1, 0)
-
-            tva_group = self._create_tva_group()
-            grid_layout.addWidget(tva_group, 0, 2)
-
-            tab.setLayout(scroll_layout)
-            tab.layout().addWidget(scroll_area)
-            self.tab_widget.addTab(tab, partial)
-
-        self.update_instrument_image()
-        self.tab_widget.currentChanged.connect(self.update_partial_num)
-        self.data_request()
+        # scroll_area.setLayout(scroll_layout)
+        main_layout.addWidget(scroll_area)
 
     def _create_tva_group(self):
         """Create the TVA group."""
@@ -1202,11 +929,11 @@ class DrumEditor(BaseEditor):
             MODEL_ID_3,
             MODEL_ID_4,
             DT1_COMMAND,
-            TEMPORARY_DIGITAL_SYNTH_1_AREA,  # Assuming this is a fixed part of the message
-            0x70,  # Assuming this is a fixed part of the message
+            TEMPORARY_DIGITAL_SYNTH_1_AREA,  # Assuming this is a fixed address of the message
+            0x70,  # Assuming this is a fixed address of the message
             address,
             value,
-            0x6C,  # Assuming this is a fixed part of the message
+            0x6C,  # Assuming this is a fixed address of the message
         ]
         """
         # sysex_message = [
@@ -1220,30 +947,6 @@ class DrumEditor(BaseEditor):
             value=value,  # Make sure this value is being sent
         )
         # self.midi_helper.send_message(checksum_message)
-
-    def on_kit_level_changed(self, value):
-        """Handle kit level slider value change"""
-        # Use the helper function to send the SysEx message
-        # self.send_sysex_message(0x0C, value)
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=0x70,
-            group=0x00,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=0x0C,
-            value=value,  # Make sure this value is being sent
-        )
-
-    def on_pitch_bend_range_changed(self, value):
-        """Handle pitch bend range value change"""
-        # Use the helper function to send the SysEx message
-        # self.send_sysex_message(0x2E, value)
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=0x70,
-            group=0x2E,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=0x1C,
-            value=value,  # Make sure this value is being sent
-        )
 
     def _on_tva_level_velocity_sens_slider_changed(self, value: int):
         """Handle TVA Level Velocity Sens change"""
@@ -1475,13 +1178,13 @@ class DrumEditor(BaseEditor):
             """ Set the slider to the center value """
             # Get initial MIDI value and convert to display value
             if self.midi_helper:
-                self.part = get_address_for_partial(
+                self.address = get_address_for_partial(
                     self.partial_num
                 ) # Get the current partial number
                 group, param_address = get_address_for_partial(self.partial_num)
                 midi_value = self.midi_helper.get_parameter(
                     area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                    part=self.part,
+                    part=self.address,
                     group=group,
                     param=param_address
                 )
@@ -1551,7 +1254,7 @@ class DrumEditor(BaseEditor):
         """Update the partial number based on the current tab index"""
         self.set_partial_num(index)
 
-        # Validate partial_num
+        # Validate partial_name
         if self.partial_num < 0 or self.partial_num >= len(DRUM_ADDRESSES):
             logging.error(f"Invalid partial number: {self.partial_num}")
             return

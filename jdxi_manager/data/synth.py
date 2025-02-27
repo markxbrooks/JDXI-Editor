@@ -170,7 +170,7 @@ class VocalFX(SynthPart):
 
 # Factory function to create synth parts
 def create_synth_part(part_type: SynthType, part_number: int = None) -> SynthPart:
-    """Create a synth part instance based on type"""
+    """Create a synth address instance based on type"""
     if part_type == SynthType.ANALOG:
         return AnalogSynth()
     elif part_type in (SynthType.DIGITAL1, SynthType.DIGITAL2):
@@ -184,4 +184,4 @@ def create_synth_part(part_type: SynthType, part_number: int = None) -> SynthPar
     elif part_type == SynthType.VOCAL_FX:
         return VocalFX()
     else:
-        raise ValueError(f"Unknown synth part type: {part_type}") 
+        raise ValueError(f"Unknown synth address type: {part_type}")
