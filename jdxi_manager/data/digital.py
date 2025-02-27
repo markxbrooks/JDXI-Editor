@@ -543,14 +543,14 @@ def send_digital_parameter(
 ):
     """Send digital synth parameter change"""
     try:
-        # Validate part number
+        # Validate address number
         if part not in [1, 2]:
             raise ValueError("Part must be 1 or 2")
 
         # Validate and convert value
         midi_value = validate_value(param, value)
 
-        # Convert part number to area
+        # Convert address number to area
         area = 0x19 if part == 1 else 0x1A  # Digital 1 or 2
 
         midi_helper.send_parameter(
@@ -563,7 +563,7 @@ def send_digital_parameter(
 
         logging.debug(
             f"Sent digital parameter {param.name}: {value} "
-            f"(MIDI value: {midi_value}) to part {part}"
+            f"(MIDI value: {midi_value}) to address {part}"
         )
 
     except Exception as e:

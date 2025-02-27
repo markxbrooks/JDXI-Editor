@@ -54,7 +54,7 @@ class DigitalPartialEditor(QWidget):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
-        # Create container widget
+        # Create container widget for the tabs
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)

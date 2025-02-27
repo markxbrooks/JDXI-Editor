@@ -79,9 +79,6 @@ from jdxi_manager.ui.widgets.switch.partial import PartialsPanel
 from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
-instrument_icon_folder = "digital_synths"
-
-
 class DigitalSynthEditor(BaseEditor):
     """class for Digital Synth Editor containing 3 partials"""
 
@@ -116,6 +113,7 @@ class DigitalSynthEditor(BaseEditor):
             "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
             "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # modify request
         ]
+        self.instrument_icon_folder = "digital_synths"
         if preset_handler:
             self.preset_handler = preset_handler
         else:
@@ -479,7 +477,7 @@ class DigitalSynthEditor(BaseEditor):
                 file_to_load = secondary_image_path
             else:
                 file_to_load = os.path.join(
-                    "resources", instrument_icon_folder, "jdxi_vector.png"
+                    "resources", self.instrument_icon_folder, "jdxi_vector.png"
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
@@ -489,7 +487,7 @@ class DigitalSynthEditor(BaseEditor):
             return True
 
         default_image_path = os.path.join(
-            "resources", instrument_icon_folder, "jdxi_vector.png"
+            "resources", self.instrument_icon_folder, "jdxi_vector.png"
         )
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
@@ -509,12 +507,12 @@ class DigitalSynthEditor(BaseEditor):
             logging.info(f"selected_instrument_type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
-                instrument_icon_folder,
+                self.instrument_icon_folder,
                 f"{selected_instrument_name}.png",
             )
             generic_image_path = os.path.join(
                 "resources",
-                instrument_icon_folder,
+                self.instrument_icon_folder,
                 f"{selected_instrument_type}.png",
             )
             image_loaded = load_and_set_image(specific_image_path, generic_image_path)

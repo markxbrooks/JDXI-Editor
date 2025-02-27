@@ -118,7 +118,7 @@ DR = {
     },
 }
 
-# Drum part categories
+# Drum address categories
 DRUM_PARTS = {
     "KICK": ["Kick 1", "Kick 2", "Kick 3", "TR-808 Kick", "TR-909 Kick"],
     "SNARE": ["Snare 1", "Snare 2", "Rim Shot", "TR-808 Snare", "TR-909 Snare"],

@@ -248,7 +248,7 @@ class ArpeggioEditor(BaseEditor):
             param = ArpeggioParameter.OCTAVE.value[0]
             octave = index + 61  # Convert index to -3 to +3 range
             print(f"octave value: {octave}")
-            # logging.debug(f"Sending arp octave change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
+            # logging.debug(f"Sending arp octave change: area={TEMPORARY_PROGRAM:02x}, address={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
             self.midi_helper.send_parameter(
                 area=TEMPORARY_PROGRAM, part=ARP_PART, group=ARP_GROUP, param=param, value=octave
             )
@@ -340,7 +340,7 @@ class ArpeggioEditorOld(BaseEditor):
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
-        # Set up area and part for parameter requests
+        # Set up area and address for parameter requests
         self.area = TEMPORARY_PROGRAM
         self.part = ARP_PART
         self.group = ARP_GROUP

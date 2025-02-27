@@ -10,7 +10,7 @@ DRUM_KITS = [
     "TECHNO", "HIP-HOP", "DANCE", "ROCK", "ELECTRONIC", "PERCUSSION", "SFX", "USER"
 ]
 
-# Drum part names
+# Drum address names
 DRUM_PARTS = [
     "KICK", "SNARE", "CLOSED HAT", "OPEN HAT", "TOM/PERC 1", 
     "TOM/PERC 2", "CRASH/PERC 3", "RIDE/PERC 4"
