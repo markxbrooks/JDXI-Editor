@@ -205,20 +205,11 @@ class DrumEditor(BaseEditor):
             "CYM3": 22, "HIT": 23, "OTH1": 24, "OTH2": 25
         }
 
+        # Create editor for each partial
         for partial_name, partial_index in partial_mapping.items():
-            try:
-                # Create editor with index instead of trying to get address directly
-                editor = DrumPartialEditor(
-                    midi_helper=self.midi_helper,
-                    partial_num=partial_index,  # Pass the numerical index
-                    address=partial_index,  # The address will be calculated in the editor
-                    parent=self
-                )
-                self.partial_editors[partial_name] = editor
-                self.partial_tab_widget.addTab(editor, partial_name)
-                logging.info(f"Created editor for {partial_name} (index {partial_index})")
-            except Exception as e:
-                logging.error(f"Error creating editor for partial {partial_name}: {str(e)}")
+            editor = DrumPartialEditor(midi_helper=self.midi_helper, partial_num=partial_index, partial_name=partial_name, parent=self)
+            self.partial_editors[partial_index] = editor
+            self.partial_tab_widget.addTab(editor, partial_name)
 
     def update_partial_num(self, index: int):
         """Update the current partial number based on tab index"""

@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QGridLayout, QG
 from jdxi_manager.data.drums import get_address_for_partial, DRUM_ADDRESSES
 from jdxi_manager.data.parameter.drums import DrumParameter
 from jdxi_manager.midi.constants import TEMPORARY_DRUM_KIT_AREA, TEMPORARY_DIGITAL_SYNTH_1_AREA
+from jdxi_manager.data.parameter.drums import get_address_for_partial_name
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.widgets.slider import Slider
 
@@ -18,19 +19,19 @@ instrument_icon_folder = "drum_kits"
 class DrumPartialEditor(QWidget):
     """Editor for a single partial"""
 
-    def __init__(self, midi_helper=None, partial_num=0, address=None, parent=None):
+    def __init__(self, midi_helper=None, partial_num=0, partial_name=None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.partial_num = partial_num  # This is now the numerical index
+        self.partial_name = partial_name  # This is now the numerical index
         
         # Calculate the address for this partial
         try:
             from jdxi_manager.data.drums import get_address_for_partial
-            self.group, self.address = get_address_for_partial(self.partial_num)
-            logging.info(f"Initialized partial {partial_num} with group: {hex(self.group)}, address: {hex(self.address)}")
+            self.address = get_address_for_partial_name(self.partial_name)
+            logging.info(f"Initialized partial {partial_num} with address: {hex(self.address)}")
         except Exception as e:
             logging.error(f"Error calculating address for partial {partial_num}: {str(e)}")
-            self.group = 0x00
             self.address = 0x00
 
         # Store parameter controls for easy access
@@ -56,19 +57,19 @@ class DrumPartialEditor(QWidget):
         grid_layout.addWidget(pitch_group, 0, 0)
 
         output_group = self._create_output_group()
-        grid_layout.addWidget(output_group, 0, 1)
+        grid_layout.addWidget(output_group, 0, 2)
 
         tvf_group = self._create_tvf_group()
         grid_layout.addWidget(tvf_group, 1, 2)
 
         pitch_env_group = self._create_pitch_env_group()
-        grid_layout.addWidget(pitch_env_group, 1, 1)
+        grid_layout.addWidget(pitch_env_group, 0, 1)
 
         wmt_group = self._create_wmt_group()
         grid_layout.addWidget(wmt_group, 1, 0)
 
         tva_group = self._create_tva_group()
-        grid_layout.addWidget(tva_group, 0, 2)
+        grid_layout.addWidget(tva_group, 1, 1)
 
         # scroll_area.setLayout(scroll_layout)
         main_layout.addWidget(scroll_area)
