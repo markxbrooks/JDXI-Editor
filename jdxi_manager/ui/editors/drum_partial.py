@@ -5,16 +5,29 @@ from typing import Dict
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QGridLayout, QGroupBox, QFormLayout, QSpinBox, \
-    QComboBox, QTabWidget
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QScrollArea,
+    QGridLayout,
+    QGroupBox,
+    QFormLayout,
+    QSpinBox,
+    QComboBox,
+    QTabWidget,
+)
 from jdxi_manager.data.drums import get_address_for_partial, DRUM_ADDRESSES
 from jdxi_manager.data.parameter.drums import DrumParameter
-from jdxi_manager.midi.constants import TEMPORARY_DRUM_KIT_AREA, TEMPORARY_DIGITAL_SYNTH_1_AREA
+from jdxi_manager.midi.constants import (
+    TEMPORARY_DRUM_KIT_AREA,
+    TEMPORARY_DIGITAL_SYNTH_1_AREA,
+)
 from jdxi_manager.data.parameter.drums import get_address_for_partial_name
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.widgets.slider import Slider
 
 instrument_icon_folder = "drum_kits"
+
 
 class DrumPartialEditor(QWidget):
     """Editor for a single partial"""
@@ -24,14 +37,19 @@ class DrumPartialEditor(QWidget):
         self.midi_helper = midi_helper
         self.partial_num = partial_num  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
-        
+
         # Calculate the address for this partial
         try:
             from jdxi_manager.data.drums import get_address_for_partial
+
             self.address = get_address_for_partial_name(self.partial_name)
-            logging.info(f"Initialized partial {partial_num} with address: {hex(self.address)}")
+            logging.info(
+                f"Initialized partial {partial_num} with address: {hex(self.address)}"
+            )
         except Exception as e:
-            logging.error(f"Error calculating address for partial {partial_num}: {str(e)}")
+            logging.error(
+                f"Error calculating address for partial {partial_num}: {str(e)}"
+            )
             self.address = 0x00
 
         # Store parameter controls for easy access
@@ -86,34 +104,54 @@ class DrumPartialEditor(QWidget):
         tva_level_velocity_curve_spin.setRange(0, 7)
         tva_layout.addRow("TVA Level Velocity Curve", tva_level_velocity_curve_spin)
 
-        tva_level_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_LEVEL_VELOCITY_SENS, "TVA Level Velocity Sens")
+        tva_level_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVA_LEVEL_VELOCITY_SENS, "TVA Level Velocity Sens"
+        )
         tva_layout.addRow(tva_level_velocity_sens_slider)
 
-        tva_env_time1_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "TVA Env Time 1 Velocity Sens")
+        tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "TVA Env Time 1 Velocity Sens"
+        )
         tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
-        tva_env_time4_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "TVA Env Time 4 Velocity Sens")
+        tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "TVA Env Time 4 Velocity Sens"
+        )
         tva_layout.addRow(tva_env_time4_velocity_sens_slider)
 
-        tva_env_time1_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_1, "TVA Env Time 1")
+        tva_env_time1_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_TIME_1, "TVA Env Time 1"
+        )
         tva_layout.addRow(tva_env_time1_slider)
 
-        tva_env_time2_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_2, "TVA Env Time 2")
+        tva_env_time2_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_TIME_2, "TVA Env Time 2"
+        )
         tva_layout.addRow(tva_env_time2_slider)
 
-        tva_env_time3_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_3, "TVA Env Time 3")
+        tva_env_time3_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_TIME_3, "TVA Env Time 3"
+        )
         tva_layout.addRow(tva_env_time3_slider)
 
-        tva_env_time4_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_4, "TVA Env Time 4")
+        tva_env_time4_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_TIME_4, "TVA Env Time 4"
+        )
         tva_layout.addRow(tva_env_time4_slider)
 
-        tva_env_level1_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_LEVEL_1, "TVA Env Level 1")
+        tva_env_level1_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_LEVEL_1, "TVA Env Level 1"
+        )
         tva_layout.addRow(tva_env_level1_slider)
 
-        tva_env_level2_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_LEVEL_2, "TVA Env Level 2")
+        tva_env_level2_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_LEVEL_2, "TVA Env Level 2"
+        )
         tva_layout.addRow(tva_env_level2_slider)
 
-        tva_env_level3_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_LEVEL_3, "TVA Env Level 3")
+        tva_env_level3_slider = self._create_parameter_slider(
+            DrumParameter.TVA_ENV_LEVEL_3, "TVA Env Level 3"
+        )
         tva_layout.addRow(tva_env_level3_slider)
         return tva_group
 
@@ -212,15 +250,11 @@ class DrumPartialEditor(QWidget):
 
         wmt1_velocity_range_lower_spin = QSpinBox()
         wmt1_velocity_range_lower_spin.setRange(1, 127)
-        wmt1_layout.addRow(
-            "WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin
-        )
+        wmt1_layout.addRow("WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin)
 
         wmt1_velocity_range_upper_spin = QSpinBox()
         wmt1_velocity_range_upper_spin.setRange(1, 127)
-        wmt1_layout.addRow(
-            "WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin
-        )
+        wmt1_layout.addRow("WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin)
 
         wmt1_velocity_fade_width_lower_spin = QSpinBox()
         wmt1_velocity_fade_width_lower_spin.setRange(0, 127)
@@ -308,15 +342,11 @@ class DrumPartialEditor(QWidget):
 
         wmt2_velocity_range_lower_spin = QSpinBox()
         wmt2_velocity_range_lower_spin.setRange(1, 127)
-        wmt2_layout.addRow(
-            "WMT2 Velocity Range Lower", wmt2_velocity_range_lower_spin
-        )
+        wmt2_layout.addRow("WMT2 Velocity Range Lower", wmt2_velocity_range_lower_spin)
 
         wmt2_velocity_range_upper_spin = QSpinBox()
         wmt2_velocity_range_upper_spin.setRange(1, 127)
-        wmt2_layout.addRow(
-            "WMT2 Velocity Range Upper", wmt2_velocity_range_upper_spin
-        )
+        wmt2_layout.addRow("WMT2 Velocity Range Upper", wmt2_velocity_range_upper_spin)
 
         wmt2_velocity_fade_width_lower_spin = QSpinBox()
         wmt2_velocity_fade_width_lower_spin.setRange(0, 127)
@@ -405,15 +435,11 @@ class DrumPartialEditor(QWidget):
 
         wmt3_velocity_range_lower_spin = QSpinBox()
         wmt3_velocity_range_lower_spin.setRange(1, 127)
-        wmt3_layout.addRow(
-            "WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin
-        )
+        wmt3_layout.addRow("WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin)
 
         wmt3_velocity_range_upper_spin = QSpinBox()
         wmt3_velocity_range_upper_spin.setRange(1, 127)
-        wmt3_layout.addRow(
-            "WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin
-        )
+        wmt3_layout.addRow("WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin)
 
         wmt3_velocity_fade_width_lower_spin = QSpinBox()
         wmt3_velocity_fade_width_lower_spin.setRange(0, 127)
@@ -502,15 +528,11 @@ class DrumPartialEditor(QWidget):
 
         wmt4_velocity_range_lower_spin = QSpinBox()
         wmt4_velocity_range_lower_spin.setRange(1, 127)
-        wmt4_layout.addRow(
-            "WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin
-        )
+        wmt4_layout.addRow("WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin)
 
         wmt4_velocity_range_upper_spin = QSpinBox()
         wmt4_velocity_range_upper_spin.setRange(1, 127)
-        wmt4_layout.addRow(
-            "WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin
-        )
+        wmt4_layout.addRow("WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin)
 
         wmt4_velocity_fade_width_lower_spin = QSpinBox()
         wmt4_velocity_fade_width_lower_spin.setRange(0, 127)
@@ -531,38 +553,50 @@ class DrumPartialEditor(QWidget):
         pitch_group = QGroupBox("Pitch")
         pitch_layout = QFormLayout()
         pitch_group.setLayout(pitch_layout)
-        #grid_layout.addWidget(pitch_group, 0, 0)
+        # grid_layout.addWidget(pitch_group, 0, 0)
 
         # Add pitch parameters
-        partial_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_LEVEL, "Partial Level")
+        partial_level_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_LEVEL, "Partial Level"
+        )
         pitch_layout.addRow(partial_level_slider)
 
-        partial_coarse_tune_slider = self._create_parameter_slider(DrumParameter.PARTIAL_COARSE_TUNE,
-                                                                   "Partial Coarse Tune")
+        partial_coarse_tune_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
+        )
         pitch_layout.addRow(partial_coarse_tune_slider)
 
-        partial_fine_tune_slider = self._create_parameter_slider(DrumParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune")
+        partial_fine_tune_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune"
+        )
         pitch_layout.addRow(partial_fine_tune_slider)
 
-        partial_random_pitch_depth_slider = self._create_parameter_slider(DrumParameter.PARTIAL_RANDOM_PITCH_DEPTH,
-                                                                          "Partial Random Pitch Depth")
+        partial_random_pitch_depth_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_RANDOM_PITCH_DEPTH, "Partial Random Pitch Depth"
+        )
         pitch_layout.addRow(partial_random_pitch_depth_slider)
 
-        partial_pan_slider = self._create_parameter_slider(DrumParameter.PARTIAL_PAN, "Partial Pan")
+        partial_pan_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_PAN, "Partial Pan"
+        )
         pitch_layout.addRow(partial_pan_slider)
 
-        partial_random_pan_depth_slider = self._create_parameter_slider(DrumParameter.PARTIAL_RANDOM_PAN_DEPTH,
-                                                                        "Partial Random Pan Depth")
+        partial_random_pan_depth_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
+        )
         pitch_layout.addRow(partial_random_pan_depth_slider)
 
-        partial_alternate_pan_depth_slider = self._create_parameter_slider(DrumParameter.PARTIAL_ALTERNATE_PAN_DEPTH,
-                                                                           "Partial Alternate Pan Depth")
+        partial_alternate_pan_depth_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_ALTERNATE_PAN_DEPTH, "Partial Alternate Pan Depth"
+        )
         pitch_layout.addRow(partial_alternate_pan_depth_slider)
 
         partial_env_mode_combo = QComboBox()
         partial_env_mode_combo.addItems(["0", "1"])
         pitch_layout.addRow("Partial Env Mode", partial_env_mode_combo)
-        partial_env_mode_combo.currentIndexChanged.connect(self.on_partial_env_mode_changed)
+        partial_env_mode_combo.currentIndexChanged.connect(
+            self.on_partial_env_mode_changed
+        )
 
         return pitch_group
 
@@ -573,17 +607,19 @@ class DrumPartialEditor(QWidget):
         output_group.setLayout(output_layout)
 
         # Add output parameters
-        partial_output_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_OUTPUT_LEVEL, "Partial Output Level")
+        partial_output_level_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_OUTPUT_LEVEL, "Partial Output Level"
+        )
         output_layout.addRow(partial_output_level_slider)
 
-        partial_chorus_send_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_CHORUS_SEND_LEVEL,
-                                                                         "Partial Chorus Send Level")
-        output_layout.addRow(
-            partial_chorus_send_level_slider
+        partial_chorus_send_level_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_CHORUS_SEND_LEVEL, "Partial Chorus Send Level"
         )
+        output_layout.addRow(partial_chorus_send_level_slider)
 
-        partial_reverb_send_level_slider = self._create_parameter_slider(DrumParameter.PARTIAL_REVERB_SEND_LEVEL,
-                                                                         "Partial Reverb Send Level")
+        partial_reverb_send_level_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_REVERB_SEND_LEVEL, "Partial Reverb Send Level"
+        )
         output_layout.addRow(partial_reverb_send_level_slider)
 
         partial_output_assign_combo = QComboBox()
@@ -593,7 +629,7 @@ class DrumPartialEditor(QWidget):
         return output_group
 
     def _create_tvf_group(self):
-        """ create tvf group """
+        """create tvf group"""
         # TVF Group
         tvf_group = QGroupBox("TVF")
         tvf_layout = QFormLayout()
@@ -609,8 +645,8 @@ class DrumPartialEditor(QWidget):
         )
         tvf_layout.addRow("TVF Filter Type", tvf_filter_type_combo)
 
-        tvf_cutoff_frequency_slider = (
-            self._create_parameter_slider(DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff")
+        tvf_cutoff_frequency_slider = self._create_parameter_slider(
+            DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff"
         )
         tvf_layout.addRow(tvf_cutoff_frequency_slider)
 
@@ -619,9 +655,7 @@ class DrumPartialEditor(QWidget):
         tvf_cutoff_velocity_curve_spin.valueChanged.connect(
             self._on_tvf_cutoff_velocity_curve_spin_changed
         )
-        tvf_layout.addRow(
-            "TVF Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin
-        )
+        tvf_layout.addRow("TVF Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin)
 
         tvf_cutoff_velocity_sens_slider = self._create_parameter_slider(
             DrumParameter.TVF_CUTOFF_VELOCITY_SENS
@@ -642,7 +676,9 @@ class DrumPartialEditor(QWidget):
             "TVF Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
         )
 
-        tvf_env_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_VELOCITY_SENS, "TVF Env Velocity Sens")
+        tvf_env_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_VELOCITY_SENS, "TVF Env Velocity Sens"
+        )
         tvf_layout.addRow(tvf_env_velocity_sens_slider)
 
         tvf_env_time1_velocity_sens_slider = self._create_parameter_slider(
@@ -655,13 +691,19 @@ class DrumPartialEditor(QWidget):
         )
         tvf_layout.addRow(tvf_env_time4_velocity_sens_slider)
 
-        tvf_env_time1_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_TIME_1, "TVF Env Time 1")
+        tvf_env_time1_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_TIME_1, "TVF Env Time 1"
+        )
         tvf_layout.addRow(tvf_env_time1_slider)
 
-        tvf_env_time2_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_TIME_2, "TVF Env Time 2")
+        tvf_env_time2_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_TIME_2, "TVF Env Time 2"
+        )
         tvf_layout.addRow(tvf_env_time2_slider)
 
-        tvf_env_time3_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_TIME_3, "TVF Env Time 3")
+        tvf_env_time3_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_TIME_3, "TVF Env Time 3"
+        )
         tvf_layout.addRow(tvf_env_time3_slider)
 
         tvf_env_time4_slider = self._create_parameter_slider(
@@ -684,70 +726,94 @@ class DrumPartialEditor(QWidget):
         )
         tvf_layout.addRow(tvf_env_level2_slider)
 
-        tvf_env_level3_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_LEVEL_3, "TVF Env Level 3")
+        tvf_env_level3_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_LEVEL_3, "TVF Env Level 3"
+        )
         tvf_layout.addRow(tvf_env_level3_slider)
 
-        tvf_env_level4_slider = self._create_parameter_slider(DrumParameter.TVF_ENV_LEVEL_4, "TVF Env Level 4")
+        tvf_env_level4_slider = self._create_parameter_slider(
+            DrumParameter.TVF_ENV_LEVEL_4, "TVF Env Level 4"
+        )
         tvf_layout.addRow(tvf_env_level4_slider)
         return tvf_group
 
     def _create_pitch_env_group(self):
-        """ create pitch env group """
+        """create pitch env group"""
         # Pitch Env Group
         pitch_env_group = QGroupBox("Pitch Env")
         pitch_env_layout = QFormLayout()
         pitch_env_group.setLayout(pitch_env_layout)
 
         # Add pitch env parameters
-        pitch_env_depth_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_DEPTH, "Pitch Env Depth")
+        pitch_env_depth_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_DEPTH, "Pitch Env Depth"
+        )
         pitch_env_layout.addRow(pitch_env_depth_slider)
 
-        pitch_env_velocity_sens_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_VELOCITY_SENS, "Pitch Env Velocity Sens")
+        pitch_env_velocity_sens_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_VELOCITY_SENS, "Pitch Env Velocity Sens"
+        )
         pitch_env_layout.addRow(pitch_env_velocity_sens_slider)
 
         pitch_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_1_VELOCITY_SENS, "Pitch Env Time 1 Velocity Sens"
+            DrumParameter.PITCH_ENV_TIME_1_VELOCITY_SENS,
+            "Pitch Env Time 1 Velocity Sens",
         )
-        pitch_env_layout.addRow(pitch_env_time1_velocity_sens_slider
-        )
+        pitch_env_layout.addRow(pitch_env_time1_velocity_sens_slider)
 
         pitch_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_4_VELOCITY_SENS, "Pitch Env Time 4 Velocity Sens"
+            DrumParameter.PITCH_ENV_TIME_4_VELOCITY_SENS,
+            "Pitch Env Time 4 Velocity Sens",
         )
-        pitch_env_layout.addRow(pitch_env_time4_velocity_sens_slider
-        )
+        pitch_env_layout.addRow(pitch_env_time4_velocity_sens_slider)
 
-        pitch_env_time1_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_1, "Pitch Env Time 1")
+        pitch_env_time1_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_TIME_1, "Pitch Env Time 1"
+        )
         pitch_env_layout.addRow(pitch_env_time1_slider)
 
-        pitch_env_time2_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_2, "Pitch Env Time 2")
+        pitch_env_time2_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_TIME_2, "Pitch Env Time 2"
+        )
         pitch_env_layout.addRow(pitch_env_time2_slider)
 
-        pitch_env_time3_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_3, "Pitch Env Time 3")
+        pitch_env_time3_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_TIME_3, "Pitch Env Time 3"
+        )
         pitch_env_layout.addRow(pitch_env_time3_slider)
 
-        pitch_env_time4_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_TIME_4, "Pitch Env Time 4")
+        pitch_env_time4_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_TIME_4, "Pitch Env Time 4"
+        )
         pitch_env_layout.addRow(pitch_env_time4_slider)
 
-        pitch_env_level0_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_0, "Pitch Env Level 0")
+        pitch_env_level0_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_LEVEL_0, "Pitch Env Level 0"
+        )
         pitch_env_layout.addRow(pitch_env_level0_slider)
 
-        pitch_env_level1_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_1, "Pitch Env Level 1")
+        pitch_env_level1_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_LEVEL_1, "Pitch Env Level 1"
+        )
         pitch_env_layout.addRow(pitch_env_level1_slider)
 
-        pitch_env_level2_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_2, "Pitch Env Level 2")
+        pitch_env_level2_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_LEVEL_2, "Pitch Env Level 2"
+        )
         pitch_env_layout.addRow(pitch_env_level2_slider)
 
-        pitch_env_level3_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_3, "Pitch Env Level 3")
+        pitch_env_level3_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_LEVEL_3, "Pitch Env Level 3"
+        )
         pitch_env_layout.addRow(pitch_env_level3_slider)
 
-        pitch_env_level4_slider = self._create_parameter_slider(DrumParameter.PITCH_ENV_LEVEL_4, "Pitch Env Level 4")
+        pitch_env_level4_slider = self._create_parameter_slider(
+            DrumParameter.PITCH_ENV_LEVEL_4, "Pitch Env Level 4"
+        )
         pitch_env_layout.addRow(pitch_env_level4_slider)
         return pitch_env_group
 
-    def _on_parameter_changed(
-        self, param: DrumParameter, display_value: int
-    ):
+    def _on_parameter_changed(self, param: DrumParameter, display_value: int):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value if needed
@@ -785,17 +851,18 @@ class DrumPartialEditor(QWidget):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to a supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in [
+                "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+            ]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
-            return {
-                "PARTIAL_1": 1,
-                "PARTIAL_2": 2,
-                "PARTIAL_3": 3
-            }.get(synth_tone, None)
+            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
+                synth_tone, None
+            )
 
-        #if not _is_valid_sysex_area(sysex_data):
+        # if not _is_valid_sysex_area(sysex_data):
         #    logging.warning(
         #        "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
         #    return
@@ -815,7 +882,9 @@ class DrumPartialEditor(QWidget):
             slider = self.partial_editors[partial_no].controls.get(param)
             if slider:
                 slider_value = param.convert_from_midi(value)
-                logging.info(f"midi value {value} converted to slider value {slider_value}")
+                logging.info(
+                    f"midi value {value} converted to slider value {slider_value}"
+                )
                 slider.blockSignals(True)
                 slider.setValue(slider_value)
                 slider.blockSignals(False)
@@ -843,7 +912,9 @@ class DrumPartialEditor(QWidget):
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
-                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                success_rate = (
+                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                )
                 logging.info(f"Successes: {successes}")
                 logging.info(f"Failures: {failures}")
                 logging.info(f"Success Rate: {success_rate:.1f}%")
@@ -882,40 +953,6 @@ class DrumPartialEditor(QWidget):
         """Updates the QComboBox to reflect the loaded preset."""
         print(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
-
-    def update_instrument_image(self):
-        def load_and_set_image(image_path):
-            """Helper function to load and set the image on the label."""
-            if os.path.exists(image_path):
-                pixmap = QPixmap(image_path)
-                scaled_pixmap = pixmap.scaledToHeight(
-                    250, Qt.TransformationMode.SmoothTransformation
-                )  # Resize to 250px height
-                self.image_label.setPixmap(scaled_pixmap)
-                return True
-            return False
-
-        # Define paths
-        default_image_path = os.path.join("resources", "drum_kits", "drums.png")
-        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
-
-        # Try to extract drum kit name from the selected text
-        image_loaded = False
-        if drum_kit_matches := re.search(
-            r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
-        ):
-            selected_kit_name = (
-                drum_kit_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            specific_image_path = os.path.join(
-                "resources", "drum_kits", f"{selected_kit_name}.png"
-            )
-            image_loaded = load_and_set_image(specific_image_path)
-
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def send_sysex_message(self, address: int, value: int):
         """Helper function to send a SysEx message with a given address and value."""
@@ -1181,13 +1218,13 @@ class DrumPartialEditor(QWidget):
             if self.midi_helper:
                 self.address = get_address_for_partial(
                     self.partial_num
-                ) # Get the current partial number
+                )  # Get the current partial number
                 group, param_address = get_address_for_partial(self.partial_num)
                 midi_value = self.midi_helper.get_parameter(
                     area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
                     part=self.address,
                     group=group,
-                    param=param_address
+                    param=param_address,
                 )
                 if midi_value is not None:
                     display_value = param.convert_from_midi(midi_value)
@@ -1224,8 +1261,8 @@ class DrumPartialEditor(QWidget):
                 param=param.address,
                 value=value,  # Make sure this value is being sent
             )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"MIDI error setting {param}: {str(ex)}")
             return False
 
     def _on_parameter_changed(self, param: DrumParameter, display_value: int):
@@ -1241,8 +1278,8 @@ class DrumPartialEditor(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
 
-        except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
 
     def set_partial_num(self, partial_num: int):
         """Set the current partial number"""
