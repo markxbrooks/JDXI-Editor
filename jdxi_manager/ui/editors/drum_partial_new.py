@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QComboBox,
     QTabWidget,
+    QCheckBox,
 )
 from jdxi_manager.data.drums import get_address_for_partial, get_address_for_partial_new, DRUM_ADDRESSES
 from jdxi_manager.data.parameter.drums import DrumParameter
@@ -28,6 +29,7 @@ from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.widgets.slider import Slider
 
 instrument_icon_folder = "drum_kits"
+
 
 RMwaves = (
     "000: --- OFF ---",
@@ -539,7 +541,6 @@ For reference:
 |-------------+-----------+----------------------------------------------------|
 """
 
-
 class DrumPartialEditor(QWidget):
     """Editor for address single partial"""
 
@@ -603,557 +604,166 @@ class DrumPartialEditor(QWidget):
         # scroll_area.setLayout(scroll_layout)
         main_layout.addWidget(scroll_area)
 
-    def _create_tva_group(self):
-        """Create the TVA group."""
-        # TVA Group
-        tva_group = QGroupBox("TVA")
-        tva_layout = QFormLayout()
-        tva_group.setLayout(tva_layout)
+    def _create_pitch_group(self) -> QGroupBox:
+        """Create and return the pitch control group"""
+        group = QGroupBox("Pitch")
+        layout = QFormLayout()
 
-        # Add TVA parameters
-        tva_level_velocity_curve_spin = QSpinBox()
-        tva_level_velocity_curve_spin.setRange(0, 7)
-        tva_layout.addRow("Level Velocity Curve", tva_level_velocity_curve_spin)
+        # Coarse Tune control
+        self.coarse_tune = QSpinBox()
+        self.coarse_tune.setRange(-48, 48)
+        self.coarse_tune.valueChanged.connect(self._on_coarse_tune_changed)
+        layout.addRow("Coarse Tune", self.coarse_tune)
 
-        tva_level_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
-        )
-        tva_layout.addRow(tva_level_velocity_sens_slider)
+        # Fine Tune control
+        self.fine_tune = QSpinBox()
+        self.fine_tune.setRange(-50, 50)
+        self.fine_tune.valueChanged.connect(self._on_fine_tune_changed)
+        layout.addRow("Fine Tune", self.fine_tune)
 
-        tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
-        )
-        tva_layout.addRow(tva_env_time1_velocity_sens_slider)
+        group.setLayout(layout)
+        return group
 
-        tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
-        )
-        tva_layout.addRow(tva_env_time4_velocity_sens_slider)
+    def _create_output_group(self) -> QGroupBox:
+        """Create and return the output control group"""
+        group = QGroupBox("Output")
+        layout = QFormLayout()
 
-        tva_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1, "Env Time 1"
-        )
-        tva_layout.addRow(tva_env_time1_slider)
+        # Level control
+        self.level = QSpinBox()
+        self.level.setRange(0, 127)
+        self.level.valueChanged.connect(self._on_level_changed)
+        layout.addRow("Level", self.level)
 
-        tva_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_2, "Env Time 2"
-        )
-        tva_layout.addRow(tva_env_time2_slider)
+        # Pan control
+        self.pan = QSpinBox()
+        self.pan.setRange(-64, 63)
+        self.pan.valueChanged.connect(self._on_pan_changed)
+        layout.addRow("Pan", self.pan)
 
-        tva_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_3, "Env Time 3"
-        )
-        tva_layout.addRow(tva_env_time3_slider)
+        group.setLayout(layout)
+        return group
 
-        tva_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4, "Env Time 4"
-        )
-        tva_layout.addRow(tva_env_time4_slider)
+    def _create_tvf_group(self) -> QGroupBox:
+        """Create and return the TVF control group"""
+        group = QGroupBox("TVF")
+        layout = QFormLayout()
 
-        tva_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_1, "Env Level 1"
-        )
-        tva_layout.addRow(tva_env_level1_slider)
+        # Cutoff control
+        self.cutoff = QSpinBox()
+        self.cutoff.setRange(0, 127)
+        self.cutoff.valueChanged.connect(self._on_cutoff_changed)
+        layout.addRow("Cutoff", self.cutoff)
 
-        tva_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_2, "Env Level 2"
-        )
-        tva_layout.addRow(tva_env_level2_slider)
+        # Resonance control
+        self.resonance = QSpinBox()
+        self.resonance.setRange(0, 127)
+        self.resonance.valueChanged.connect(self._on_resonance_changed)
+        layout.addRow("Resonance", self.resonance)
 
-        tva_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_3, "Env Level 3"
-        )
-        tva_layout.addRow(tva_env_level3_slider)
-        return tva_group
+        group.setLayout(layout)
+        return group
 
-    def _create_wmt_group(self):
-        """Create the WMT group."""
+    def _create_pitch_env_group(self) -> QGroupBox:
+        """Create and return the pitch envelope control group"""
+        group = QGroupBox("Pitch Envelope")
+        layout = QFormLayout()
 
-        # WMT Group
-        wmt_group = QGroupBox("WMT")
-        wmt_layout = QVBoxLayout()
-        wmt_group.setLayout(wmt_layout)
+        # Attack Time control
+        self.pitch_env_attack = QSpinBox()
+        self.pitch_env_attack.setRange(0, 127)
+        self.pitch_env_attack.valueChanged.connect(self._on_pitch_env_attack_changed)
+        layout.addRow("Attack Time", self.pitch_env_attack)
 
-        # WMT Velocity Control
-        wmt_velocity_control_combo = QComboBox()
-        wmt_velocity_control_combo.addItems(["OFF", "ON", "RANDOM"])
-        wmt_layout.addWidget(wmt_velocity_control_combo)
+        # Decay Time control
+        self.pitch_env_decay = QSpinBox()
+        self.pitch_env_decay.setRange(0, 127)
+        self.pitch_env_decay.valueChanged.connect(self._on_pitch_env_decay_changed)
+        layout.addRow("Decay Time", self.pitch_env_decay)
 
-        # WMT Tabbed Widget
-        wmt_tab_widget = QTabWidget()
-        wmt_tabs = ["WMT1", "WMT2", "WMT3", "WMT4"]
-        for wmt_tab in wmt_tabs:
-            wmt_tab_widget.addTab(QWidget(), wmt_tab)
-        wmt_layout.addWidget(wmt_tab_widget)
+        group.setLayout(layout)
+        return group
 
-        # Add controls to WMT1 tab
-        wmt1_tab = wmt_tab_widget.widget(0)
+    def _create_tva_group(self) -> QGroupBox:
+        """Create and return the TVA control group"""
+        group = QGroupBox("TVA")
+        layout = QFormLayout()
+
+        # Attack Time control
+        self.tva_attack = QSpinBox()
+        self.tva_attack.setRange(0, 127)
+        self.tva_attack.valueChanged.connect(self._on_tva_attack_changed)
+        layout.addRow("Attack Time", self.tva_attack)
+
+        # Decay Time control
+        self.tva_decay = QSpinBox()
+        self.tva_decay.setRange(0, 127)
+        self.tva_decay.valueChanged.connect(self._on_tva_decay_changed)
+        layout.addRow("Decay Time", self.tva_decay)
+
+        group.setLayout(layout)
+        return group
+
+    def _create_wmt_group(self) -> QGroupBox:
+        """Create and return the WMT control group"""
+        group = QGroupBox("Wave Mix Table")
+        layout = QVBoxLayout()
+
+        # WMT1 controls
+        wmt1_group = QGroupBox("WMT1")
         wmt1_layout = QFormLayout()
-        wmt1_tab.setLayout(wmt1_layout)
 
-        wmt1_wave_switch_combo = QComboBox()
-        wmt1_wave_switch_combo.addItems(["OFF", "ON"])
-        wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
-        wmt1_wave_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_switch_changed)
+        self.wmt1_wave_switch = QCheckBox()
+        self.wmt1_wave_switch.stateChanged.connect(self._on_wmt1_wave_switch_changed)
+        wmt1_layout.addRow("Wave Switch", self.wmt1_wave_switch)
 
-        # wmt1_wave_group_type_spin = QComboBox()
-        # wmt1_wave_group_type_spin.addItems(["Mono", "Poly"])
-        # wmt1_layout.addRow("WMT1 Wave Group Type", wmt1_wave_group_type_spin)
+        self.wmt1_wave_l = QSpinBox()
+        self.wmt1_wave_l.setRange(0, 16384)
+        self.wmt1_wave_l.valueChanged.connect(self._on_wmt1_wave_number_l_changed)
+        wmt1_layout.addRow("Wave L", self.wmt1_wave_l)
 
-        # wmt1_wave_group_id_spin = QSpinBox()
-        # wmt1_wave_group_id_spin.setRange(0, 16384)
-        # wmt1_layout.addRow("WMT1 Wave Group ID", wmt1_wave_group_id_spin)
+        self.wmt1_wave_r = QSpinBox()
+        self.wmt1_wave_r.setRange(0, 16384)
+        self.wmt1_wave_r.valueChanged.connect(self._on_wmt1_wave_number_r_changed)
+        wmt1_layout.addRow("Wave R", self.wmt1_wave_r)
 
-        wmt1_wave_number_l_combo = QComboBox()
-        wmt1_wave_number_l_combo.addItems(RMwaves)
-        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_combo)
-        wmt1_wave_number_l_combo.currentIndexChanged.connect(self._on_wmt1_wave_number_l_changed)
+        wmt1_group.setLayout(wmt1_layout)
+        layout.addWidget(wmt1_group)
 
-        wmt1_wave_number_r_combo = QComboBox()
-        wmt1_wave_number_r_combo.addItems(RMwaves)
-        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_combo)
-        wmt1_wave_number_r_combo.currentIndexChanged.connect(self._on_wmt1_wave_number_r_changed)
-
-        wmt1_wave_gain_combo = QComboBox()
-        wmt1_wave_gain_combo.addItems(["-6", "0", "+6", "+12"])
-        wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_combo)
-        wmt1_wave_gain_combo.currentIndexChanged.connect(self._on_wmt1_wave_gain_changed)
-
-        wmt1_wave_fxm_switch_combo = QComboBox()
-        wmt1_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-        wmt1_layout.addRow("WMT1 Wave FXM Switch", wmt1_wave_fxm_switch_combo)
-        wmt1_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_fxm_switch_changed)
-
-        wmt1_wave_fxm_color_spin = QSpinBox()
-        wmt1_wave_fxm_color_spin.setRange(0, 3)
-        wmt1_layout.addRow("WMT1 Wave FXM Color", wmt1_wave_fxm_color_spin)
-        wmt1_wave_fxm_color_spin.valueChanged.connect(self._on_wmt1_wave_fxm_color_changed)
-
-        wmt1_wave_fxm_depth_spin = QSpinBox()
-        wmt1_wave_fxm_depth_spin.setRange(0, 16)
-        wmt1_layout.addRow("WMT1 Wave FXM Depth", wmt1_wave_fxm_depth_spin)
-
-        wmt1_wave_tempo_sync_combo = QComboBox()
-        wmt1_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt1_layout.addRow("WMT1 Wave Tempo Sync", wmt1_wave_tempo_sync_combo)
-        wmt1_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt1_wave_tempo_sync_changed)
-
-        wmt1_wave_coarse_tune_spin = QSpinBox()
-        wmt1_wave_coarse_tune_spin.setRange(16, 112)
-        wmt1_layout.addRow("WMT1 Wave Coarse Tune", wmt1_wave_coarse_tune_spin)
-        wmt1_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt1_wave_coarse_tune_changed)
-
-        wmt1_wave_fine_tune_spin = QSpinBox()
-        wmt1_wave_fine_tune_spin.setRange(14, 114)
-        wmt1_layout.addRow("WMT1 Wave Fine Tune", wmt1_wave_fine_tune_spin)
-        wmt1_wave_fine_tune_spin.valueChanged.connect(self._on_wmt1_wave_fine_tune_changed)
-
-        wmt1_wave_pan_spin = QSpinBox()
-        wmt1_wave_pan_spin.setRange(0, 127)
-        wmt1_layout.addRow("WMT1 Wave Pan", wmt1_wave_pan_spin)
-        wmt1_wave_pan_spin.valueChanged.connect(self._on_wmt1_wave_pan_changed)
-
-        wmt1_wave_random_pan_switch_combo = QComboBox()
-        wmt1_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-        wmt1_layout.addRow(
-            "WMT1 Wave Random Pan Switch", wmt1_wave_random_pan_switch_combo
-        )
-        wmt1_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_random_pan_switch_changed)
-
-        wmt1_wave_alternate_pan_switch_combo = QComboBox()
-        wmt1_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-        wmt1_layout.addRow(
-            "WMT1 Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch_combo
-        )
-        wmt1_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt1_wave_alternate_pan_switch_changed)
-
-        wmt1_wave_level_spin = QSpinBox()
-        wmt1_wave_level_spin.setRange(0, 127)
-        wmt1_layout.addRow("WMT1 Wave Level", wmt1_wave_level_spin)
-        wmt1_wave_level_spin.valueChanged.connect(self._on_wmt1_wave_level_changed)
-
-        wmt1_velocity_range_lower_spin = QSpinBox()
-        wmt1_velocity_range_lower_spin.setRange(1, 127)
-        wmt1_layout.addRow("WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin)
-        wmt1_velocity_range_lower_spin.valueChanged.connect(self._on_wmt1_velocity_range_lower_changed)
-
-        wmt1_velocity_range_upper_spin = QSpinBox()
-        wmt1_velocity_range_upper_spin.setRange(1, 127)
-        wmt1_layout.addRow("WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin)
-        wmt1_velocity_range_upper_spin.valueChanged.connect(self._on_wmt1_velocity_range_upper_changed)
-
-        wmt1_velocity_fade_width_lower_spin = QSpinBox()
-        wmt1_velocity_fade_width_lower_spin.setRange(0, 127)
-        wmt1_layout.addRow(
-            "WMT1 Velocity Fade Width Lower", wmt1_velocity_fade_width_lower_spin
-        )
-        wmt1_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt1_velocity_fade_width_lower_changed)
-
-        wmt1_velocity_fade_width_upper_spin = QSpinBox()
-        wmt1_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt1_layout.addRow(
-            "WMT1 Velocity Fade Width Upper", wmt1_velocity_fade_width_upper_spin
-        )
-        wmt1_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt1_velocity_fade_width_upper_changed)
-
-        # Add controls to WMT2 tab
-        wmt2_tab = wmt_tab_widget.widget(1)
+        # WMT2 controls
+        wmt2_group = QGroupBox("WMT2")
         wmt2_layout = QFormLayout()
-        wmt2_tab.setLayout(wmt2_layout)
 
-        wmt2_wave_switch_combo = QComboBox()
-        wmt2_wave_switch_combo.addItems(["OFF", "ON"])
-        wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
-        wmt2_wave_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_switch_changed)
+        self.wmt2_wave_switch = QCheckBox()
+        self.wmt2_wave_switch.stateChanged.connect(self._on_wmt2_wave_switch_changed)
+        wmt2_layout.addRow("Wave Switch", self.wmt2_wave_switch)
 
-        wmt2_wave_group_type_spin = QSpinBox()
-        wmt2_wave_group_type_spin.setRange(0, 0)
-        wmt2_layout.addRow("WMT2 Wave Group Type", wmt2_wave_group_type_spin)
-        wmt2_wave_group_type_spin.valueChanged.connect(self._on_wmt2_wave_group_type_changed)
+        self.wmt2_wave_l = QSpinBox()
+        self.wmt2_wave_l.setRange(0, 16384)
+        self.wmt2_wave_l.valueChanged.connect(self._on_wmt2_wave_number_l_changed)
+        wmt2_layout.addRow("Wave L", self.wmt2_wave_l)
 
-        wmt2_wave_group_id_spin = QSpinBox()
-        wmt2_wave_group_id_spin.setRange(0, 16384)
-        wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
-        wmt2_wave_group_id_spin.valueChanged.connect(self._on_wmt2_wave_group_id_changed)
+        self.wmt2_wave_r = QSpinBox()
+        self.wmt2_wave_r.setRange(0, 16384)
+        self.wmt2_wave_r.valueChanged.connect(self._on_wmt2_wave_number_l_changed)
+        wmt2_layout.addRow("Wave R", self.wmt2_wave_r)
 
-        wmt2_wave_number_l_spin = QSpinBox()
-        wmt2_wave_number_l_spin.setRange(0, 16384)
-        wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
-        wmt2_wave_number_l_spin.valueChanged.connect(self._on_wmt2_wave_number_l_changed)
+        wmt2_group.setLayout(wmt2_layout)
+        layout.addWidget(wmt2_group)
 
-        wmt2_wave_number_r_spin = QSpinBox()
-        wmt2_wave_number_r_spin.setRange(0, 16384)
-        wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
-        wmt2_wave_number_r_spin.valueChanged.connect(self._on_wmt2_wave_number_r_changed)
-
-        wmt2_wave_gain_spin = QSpinBox()
-        wmt2_wave_gain_spin.setRange(0, 3)
-        wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_spin)
-        wmt2_wave_gain_spin.valueChanged.connect(self._on_wmt2_wave_gain_changed)
-
-        wmt2_wave_fxm_switch_combo = QComboBox()
-        wmt2_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-        wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
-        wmt2_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_fxm_switch_changed)
-
-        wmt2_wave_fxm_color_spin = QSpinBox()
-        wmt2_wave_fxm_color_spin.setRange(0, 3)
-        wmt2_layout.addRow("WMT2 Wave FXM Color", wmt2_wave_fxm_color_spin)
-        wmt2_wave_fxm_color_spin.valueChanged.connect(self._on_wmt2_wave_fxm_color_changed)
-
-        wmt2_wave_fxm_depth_spin = QSpinBox()
-        wmt2_wave_fxm_depth_spin.setRange(0, 16)
-        wmt2_layout.addRow("WMT2 Wave FXM Depth", wmt2_wave_fxm_depth_spin)
-
-        wmt2_wave_tempo_sync_combo = QComboBox()
-        wmt2_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt2_layout.addRow("WMT2 Wave Tempo Sync", wmt2_wave_tempo_sync_combo)
-        # wmt2_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt2_wave_tempo_sync_changed)
-
-        wmt2_wave_coarse_tune_spin = QSpinBox()
-        wmt2_wave_coarse_tune_spin.setRange(16, 112)
-        wmt2_layout.addRow("WMT2 Wave Coarse Tune", wmt2_wave_coarse_tune_spin)
-        wmt2_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt2_wave_coarse_tune_changed)
-
-        wmt2_wave_fine_tune_spin = QSpinBox()
-        wmt2_wave_fine_tune_spin.setRange(14, 114)
-        wmt2_layout.addRow("WMT2 Wave Fine Tune", wmt2_wave_fine_tune_spin)
-        wmt2_wave_fine_tune_spin.valueChanged.connect(self._on_wmt2_wave_fine_tune_changed)
-
-        wmt2_wave_pan_spin = QSpinBox()
-        wmt2_wave_pan_spin.setRange(0, 127)
-        wmt2_layout.addRow("WMT2 Wave Pan", wmt2_wave_pan_spin)
-        wmt2_wave_pan_spin.valueChanged.connect(self._on_wmt2_wave_pan_changed)
-
-        wmt2_wave_random_pan_switch_combo = QComboBox()
-        wmt2_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-        wmt2_layout.addRow(
-            "WMT2 Wave Random Pan Switch", wmt2_wave_random_pan_switch_combo
-        )
-        wmt2_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_random_pan_switch_changed)
-        wmt2_wave_alternate_pan_switch_combo = QComboBox()
-        wmt2_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-        wmt2_layout.addRow(
-            "WMT2 Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch_combo
-        )
-        wmt2_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt2_wave_alternate_pan_switch_changed)
-
-        wmt2_wave_level_spin = QSpinBox()
-        wmt2_wave_level_spin.setRange(0, 127)
-        wmt2_layout.addRow("WMT2 Wave Level", wmt2_wave_level_spin)
-        wmt2_wave_level_spin.valueChanged.connect(self._on_wmt2_wave_level_changed)
-
-        wmt2_velocity_range_lower_spin = QSpinBox()
-        wmt2_velocity_range_lower_spin.setRange(1, 127)
-        wmt2_layout.addRow("WMT2 Velocity Range Lower", wmt2_velocity_range_lower_spin)
-        wmt2_velocity_range_lower_spin.valueChanged.connect(self._on_wmt2_velocity_range_lower_changed)
-
-        wmt2_velocity_range_upper_spin = QSpinBox()
-        wmt2_velocity_range_upper_spin.setRange(1, 127)
-        wmt2_layout.addRow("WMT2 Velocity Range Upper", wmt2_velocity_range_upper_spin)
-        wmt2_velocity_range_upper_spin.valueChanged.connect(self._on_wmt2_velocity_range_upper_changed)
-
-        wmt2_velocity_fade_width_lower_spin = QSpinBox()
-        wmt2_velocity_fade_width_lower_spin.setRange(0, 127)
-        wmt2_layout.addRow(
-            "WMT2 Velocity Fade Width Lower", wmt2_velocity_fade_width_lower_spin
-        )
-        wmt2_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt2_velocity_fade_width_lower_changed)
-
-        wmt2_velocity_fade_width_upper_spin = QSpinBox()
-        wmt2_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt2_layout.addRow(
-            "WMT2 Velocity Fade Width Upper", wmt2_velocity_fade_width_upper_spin
-        )
-        wmt2_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt2_velocity_fade_width_upper_changed)
-
-        # Add controls to WMT3 tab
-        wmt3_tab = wmt_tab_widget.widget(2)
-        wmt3_layout = QFormLayout()
-        wmt3_tab.setLayout(wmt3_layout)
-
-        wmt3_wave_switch_combo = QComboBox()
-        wmt3_wave_switch_combo.addItems(["OFF", "ON"])
-        wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
-        wmt3_wave_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_switch_changed)
-
-        wmt3_wave_group_type_spin = QSpinBox()
-        wmt3_wave_group_type_spin.setRange(0, 0)
-        wmt3_layout.addRow("WMT3 Wave Group Type", wmt3_wave_group_type_spin)
-        wmt3_wave_group_type_spin.valueChanged.connect(self._on_wmt3_wave_group_type_changed)
-
-        wmt3_wave_group_id_spin = QSpinBox()
-        wmt3_wave_group_id_spin.setRange(0, 16384)
-        wmt3_layout.addRow("WMT3 Wave Group ID", wmt3_wave_group_id_spin)
-        wmt3_wave_group_id_spin.valueChanged.connect(self._on_wmt3_wave_group_id_changed)
-
-        wmt3_wave_number_l_spin = QSpinBox()
-        wmt3_wave_number_l_spin.setRange(0, 16384)
-        wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
-        wmt3_wave_number_l_spin.valueChanged.connect(self._on_wmt3_wave_number_l_changed)
-
-        wmt3_wave_number_r_spin = QSpinBox()
-        wmt3_wave_number_r_spin.setRange(0, 16384)
-        wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
-        wmt3_wave_number_r_spin.valueChanged.connect(self._on_wmt3_wave_number_r_changed)
-
-        wmt3_wave_gain_spin = QSpinBox()
-        wmt3_wave_gain_spin.setRange(0, 3)
-        wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_spin)
-        wmt3_wave_gain_spin.valueChanged.connect(self._on_wmt3_wave_gain_changed)
-
-        wmt3_wave_fxm_switch_combo = QComboBox()
-        wmt3_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-        wmt3_layout.addRow("WMT3 Wave FXM Switch", wmt3_wave_fxm_switch_combo)
-        wmt3_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_fxm_switch_changed)
-
-        wmt3_wave_fxm_color_spin = QSpinBox()
-        wmt3_wave_fxm_color_spin.setRange(0, 3)
-        wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_spin)
-        wmt3_wave_fxm_color_spin.valueChanged.connect(self._on_wmt3_wave_fxm_color_changed)
-
-        wmt3_wave_fxm_depth_spin = QSpinBox()
-        wmt3_wave_fxm_depth_spin.setRange(0, 16)
-        wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_spin)
-
-        wmt3_wave_tempo_sync_combo = QComboBox()
-        wmt3_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt3_layout.addRow("WMT3 Wave Tempo Sync", wmt3_wave_tempo_sync_combo)
-        # wmt3_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt3_wave_tempo_sync_changed)
-
-        wmt3_wave_coarse_tune_spin = QSpinBox()
-        wmt3_wave_coarse_tune_spin.setRange(16, 112)
-        wmt3_layout.addRow("WMT3 Wave Coarse Tune", wmt3_wave_coarse_tune_spin)
-        wmt3_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt3_wave_coarse_tune_changed)
-
-        wmt3_wave_fine_tune_spin = QSpinBox()
-        wmt3_wave_fine_tune_spin.setRange(14, 114)
-        wmt3_layout.addRow("WMT3 Wave Fine Tune", wmt3_wave_fine_tune_spin)
-        wmt3_wave_fine_tune_spin.valueChanged.connect(self._on_wmt3_wave_fine_tune_changed)
-
-        wmt3_wave_pan_spin = QSpinBox()
-        wmt3_wave_pan_spin.setRange(0, 127)
-        wmt3_layout.addRow("WMT3 Wave Pan", wmt3_wave_pan_spin)
-        wmt3_wave_pan_spin.valueChanged.connect(self._on_wmt3_wave_pan_changed)
-
-        wmt3_wave_random_pan_switch_combo = QComboBox()
-        wmt3_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-        wmt3_layout.addRow(
-            "WMT3 Wave Random Pan Switch", wmt3_wave_random_pan_switch_combo
-        )
-
-        wmt3_wave_alternate_pan_switch_combo = QComboBox()
-        wmt3_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-        wmt3_layout.addRow(
-            "WMT3 Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch_combo
-        )
-        wmt3_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt3_wave_alternate_pan_switch_changed)
-
-        wmt3_wave_level_spin = QSpinBox()
-        wmt3_wave_level_spin.setRange(0, 127)
-        wmt3_layout.addRow("WMT3 Wave Level", wmt3_wave_level_spin)
-        wmt3_wave_level_spin.valueChanged.connect(self._on_wmt3_wave_level_changed)
-
-        wmt3_velocity_range_lower_spin = QSpinBox()
-        wmt3_velocity_range_lower_spin.setRange(1, 127)
-        wmt3_layout.addRow("WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin)
-        wmt3_velocity_range_lower_spin.valueChanged.connect(self._on_wmt3_velocity_range_lower_changed)
-
-        wmt3_velocity_range_upper_spin = QSpinBox()
-        wmt3_velocity_range_upper_spin.setRange(1, 127)
-        wmt3_layout.addRow("WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin)
-        wmt3_velocity_range_upper_spin.valueChanged.connect(self._on_wmt3_velocity_range_upper_changed)
-
-        wmt3_velocity_fade_width_lower_spin = QSpinBox()
-        wmt3_velocity_fade_width_lower_spin.setRange(0, 127)
-        wmt3_layout.addRow(
-            "WMT3 Velocity Fade Width Lower", wmt3_velocity_fade_width_lower_spin
-        )
-        wmt3_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt3_velocity_fade_width_lower_changed)
-
-        wmt3_velocity_fade_width_upper_spin = QSpinBox()
-        wmt3_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt3_layout.addRow(
-            "WMT3 Velocity Fade Width Upper", wmt3_velocity_fade_width_upper_spin
-        )
-        wmt3_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt3_velocity_fade_width_upper_changed)
-
-        # Add controls to WMT4 tab
-        wmt4_tab = wmt_tab_widget.widget(3)
-        wmt4_layout = QFormLayout()
-        wmt4_tab.setLayout(wmt4_layout)
-
-        wmt4_wave_switch_combo = QComboBox()
-        wmt4_wave_switch_combo.addItems(["OFF", "ON"])
-        wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
-        wmt4_wave_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_switch_changed)
-
-        wmt4_wave_group_type_spin = QSpinBox()
-        wmt4_wave_group_type_spin.setRange(0, 0)
-        wmt4_layout.addRow("WMT4 Wave Group Type", wmt4_wave_group_type_spin)
-        wmt4_wave_group_type_spin.valueChanged.connect(self._on_wmt4_wave_group_type_changed)
-
-        wmt4_wave_group_id_spin = QSpinBox()
-        wmt4_wave_group_id_spin.setRange(0, 16384)
-        wmt4_layout.addRow("WMT4 Wave Group ID", wmt4_wave_group_id_spin)
-        wmt4_wave_group_id_spin.valueChanged.connect(self._on_wmt4_wave_group_id_changed)
-
-        wmt4_wave_number_l_spin = QSpinBox()
-        wmt4_wave_number_l_spin.setRange(0, 16384)
-        wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
-        wmt4_wave_number_l_spin.valueChanged.connect(self._on_wmt4_wave_number_l_changed)
-
-        wmt4_wave_number_r_spin = QSpinBox()
-        wmt4_wave_number_r_spin.setRange(0, 16384)
-        wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
-        wmt4_wave_number_r_spin.valueChanged.connect(self._on_wmt4_wave_number_r_changed)
-
-        wmt4_wave_gain_combo = QComboBox()
-        wmt4_wave_gain_combo.addItems(["-6", "0", "+6", "+12"])
-        wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_combo)
-        wmt4_wave_gain_combo.currentIndexChanged.connect(self._on_wmt4_wave_gain_changed)
-
-        wmt4_wave_fxm_switch_combo = QComboBox()
-        wmt4_wave_fxm_switch_combo.addItems(["OFF", "ON"])
-        wmt4_layout.addRow("WMT4 Wave FXM Switch", wmt4_wave_fxm_switch_combo)
-        wmt4_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_fxm_switch_changed)
-
-        wmt4_wave_fxm_color_spin = QSpinBox()
-        wmt4_wave_fxm_color_spin.setRange(0, 3)
-        wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_spin)
-        wmt4_wave_fxm_color_spin.valueChanged.connect(self._on_wmt4_wave_fxm_color_changed)
-
-        wmt4_wave_fxm_depth_spin = QSpinBox()
-        wmt4_wave_fxm_depth_spin.setRange(0, 16)
-        wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_spin)
-
-        wmt4_wave_tempo_sync_combo = QComboBox()
-        wmt4_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt4_layout.addRow("WMT4 Wave Tempo Sync", wmt4_wave_tempo_sync_combo)
-        wmt4_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt4_wave_tempo_sync_changed)
-
-        wmt4_wave_coarse_tune_spin = QSpinBox()
-        wmt4_wave_coarse_tune_spin.setRange(16, 112)
-        wmt4_layout.addRow("WMT4 Wave Coarse Tune", wmt4_wave_coarse_tune_spin)
-
-        wmt4_wave_fine_tune_spin = QSpinBox()
-        wmt4_wave_fine_tune_spin.setRange(14, 114)
-        wmt4_layout.addRow("WMT4 Wave Fine Tune", wmt4_wave_fine_tune_spin)
-        wmt4_wave_fine_tune_spin.valueChanged.connect(self._on_wmt4_wave_fine_tune_changed)
-
-        wmt4_wave_pan_spin = QSpinBox()
-        wmt4_wave_pan_spin.setRange(0, 127)
-        wmt4_layout.addRow("WMT4 Wave Pan", wmt4_wave_pan_spin)
-        wmt4_wave_pan_spin.valueChanged.connect(self._on_wmt4_wave_pan_changed)
-
-        wmt4_wave_random_pan_switch_combo = QComboBox()
-        wmt4_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
-        wmt4_layout.addRow(
-            "WMT4 Wave Random Pan Switch", wmt4_wave_random_pan_switch_combo
-        )
-        wmt4_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_random_pan_switch_changed)
-        wmt4_wave_alternate_pan_switch_combo = QComboBox()
-        wmt4_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
-        wmt4_layout.addRow(
-            "WMT4 Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch_combo
-        )
-        wmt4_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt4_wave_alternate_pan_switch_changed)
-
-        wmt4_wave_level_spin = QSpinBox()
-        wmt4_wave_level_spin.setRange(0, 127)
-        wmt4_layout.addRow("WMT4 Wave Level", wmt4_wave_level_spin)
-        wmt4_wave_level_spin.valueChanged.connect(self._on_wmt4_wave_level_changed)
-
-        wmt4_velocity_range_lower_spin = QSpinBox()
-        wmt4_velocity_range_lower_spin.setRange(1, 127)
-        wmt4_layout.addRow("WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin)
-        wmt4_velocity_range_lower_spin.valueChanged.connect(self._on_wmt4_velocity_range_lower_changed)
-
-        wmt4_velocity_range_upper_spin = QSpinBox()
-        wmt4_velocity_range_upper_spin.setRange(1, 127)
-        wmt4_layout.addRow("WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin)
-        wmt4_velocity_range_upper_spin.valueChanged.connect(self._on_wmt4_velocity_range_upper_changed)
-
-        wmt4_velocity_fade_width_lower_spin = QSpinBox()
-        wmt4_velocity_fade_width_lower_spin.setRange(0, 127)
-        wmt4_layout.addRow(
-            "WMT4 Velocity Fade Width Lower", wmt4_velocity_fade_width_lower_spin
-        )
-        wmt4_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt4_velocity_fade_width_lower_changed)
-
-        wmt4_velocity_fade_width_upper_spin = QSpinBox()
-        wmt4_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt4_layout.addRow(
-            "WMT4 Velocity Fade Width Upper", wmt4_velocity_fade_width_upper_spin
-        )
-        wmt4_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt4_velocity_fade_width_upper_changed)
-        return wmt_group
+        group.setLayout(layout)
+        return group
 
     def _on_wmt1_wave_switch_changed(self, value: int):
         """ change wmt1 wave switch value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+            group=self.partial_address, 
             param=DrumParameter.WMT1_WAVE_SWITCH.value[0],
             value=value
         )
-
-    def _on_wmt2_wave_switch_changed(self, value: int):
-        """Handle WMT2 Wave Switch parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.group,
-            param=DrumParameter.WMT2_WAVE_SWITCH.value[0],
-            value=value,
-            size=1
-        )
-
+    
     def _on_wmt1_wave_group_type_changed(self, value: int):
         """ change wmt1 wave group type value """
         return self.midi_helper.send_parameter(
@@ -1163,7 +773,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_GROUP_TYPE.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_group_id_changed(self, value: int):
         """ change wmt1 wave group id value """
         return self.midi_helper.send_parameter(
@@ -1172,21 +782,21 @@ class DrumPartialEditor(QWidget):
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_GROUP_ID.value[0],
             value=value
-        )
-
+        )           
+    
     def _on_wmt1_wave_number_l_changed(self, value: int):
         """ change wmt1 wave number l value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+            group=self.partial_address, 
             param=DrumParameter.WMT1_WAVE_NUMBER_L.value[0],
             value=value,
             size=4
         )
-
+    
     def _on_wmt1_wave_number_r_changed(self, value: int):
-        """ change wmt1 wave number r value """
+        """ change wmt1 wave number r value """ 
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
@@ -1194,8 +804,8 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
             value=value,
             size=4
-        )
-
+        )           
+    
     def _on_wmt1_wave_gain_changed(self, value: int):
         """ change wmt1 wave gain value """
         return self.midi_helper.send_parameter(
@@ -1205,7 +815,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_GAIN.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fxm_switch_changed(self, value: int):
         """ change wmt1 wave fxm switch value """
         return self.midi_helper.send_parameter(
@@ -1214,18 +824,18 @@ class DrumPartialEditor(QWidget):
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
             value=value
-        )
-
+        )                   
+    
     def _on_wmt1_wave_fxm_color_changed(self, value: int):
         """ change wmt1 wave fxm color value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+            group=self.partial_address, 
             param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fxm_depth_changed(self, value: int):
         """ change wmt1 wave fxm depth value """
         return self.midi_helper.send_parameter(
@@ -1234,8 +844,8 @@ class DrumPartialEditor(QWidget):
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
             value=value
-        )
-
+        )   
+    
     def _on_wmt1_wave_coarse_tune_changed(self, value: int):
         """ change wmt1 wave coarse tune value """
         return self.midi_helper.send_parameter(
@@ -1245,7 +855,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_tempo_sync_changed(self, value: int):
         """ change wmt1 wave tempo sync value """
         return self.midi_helper.send_parameter(
@@ -1265,7 +875,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_pan_changed(self, value: int):
         """ change wmt1 wave pan value """
         return self.midi_helper.send_parameter(
@@ -1275,7 +885,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_PAN.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
         """ change wmt1 wave random pan switch value """
         return self.midi_helper.send_parameter(
@@ -1285,7 +895,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
         """ change wmt1 wave alternate pan switch value """
         return self.midi_helper.send_parameter(
@@ -1295,7 +905,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_level_changed(self, value: int):
         """ change wmt1 wave level value """
         return self.midi_helper.send_parameter(
@@ -1305,7 +915,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_range_lower_changed(self, value: int):
         """ change wmt1 velocity range lower value """
         return self.midi_helper.send_parameter(
@@ -1315,7 +925,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_range_upper_changed(self, value: int):
         """ change wmt1 velocity range upper value """
         return self.midi_helper.send_parameter(
@@ -1325,27 +935,27 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
         """ change wmt1 velocity fade width lower value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+            group=self.partial_address, 
             param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
         """ change wmt1 velocity fade width upper value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+            group=self.partial_address, 
             param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_r_changed(self, value: int):
         """Handle WMT1 Wave R parameter change"""
         return self.midi_helper.send_parameter(
@@ -1367,7 +977,7 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=4
         )
-
+    
     def _on_wmt1_wave_gain_changed(self, value: int):
         """ change wmt1 wave gain value """
         return self.midi_helper.send_parameter(
@@ -1377,7 +987,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_GAIN.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fxm_switch_changed(self, value: int):
         """ change wmt1 wave fxm switch value """
         return self.midi_helper.send_parameter(
@@ -1387,7 +997,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fxm_color_changed(self, value: int):
         """ change wmt1 wave fxm color value """
         return self.midi_helper.send_parameter(
@@ -1397,17 +1007,17 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
             value=value
         )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):  
         """ change wmt1 wave fxm depth value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
+            value=value 
         )
-
+    
     def _on_wmt1_wave_coarse_tune_changed(self, value: int):
         """ change wmt1 wave coarse tune value """
         return self.midi_helper.send_parameter(
@@ -1417,7 +1027,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fine_tune_changed(self, value: int):
         """ change wmt1 wave fine tune value """
         return self.midi_helper.send_parameter(
@@ -1427,17 +1037,17 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
             value=value
         )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):    
         """ change wmt1 wave pan value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
+            value=value 
         )
-
+    
     def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
         """ change wmt1 wave random pan switch value """
         return self.midi_helper.send_parameter(
@@ -1447,7 +1057,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
         """ change wmt1 wave alternate pan switch value """
         return self.midi_helper.send_parameter(
@@ -1457,8 +1067,8 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
             value=value
         )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
+    
+    def _on_wmt1_wave_level_changed(self, value: int):  
         """ change wmt1 wave level value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
@@ -1467,7 +1077,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_range_lower_changed(self, value: int):
         """ change wmt1 velocity range lower value """
         return self.midi_helper.send_parameter(
@@ -1483,11 +1093,11 @@ class DrumPartialEditor(QWidget):
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+                group=self.partial_address,
             param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
         """ change wmt1 velocity fade width lower value """
         return self.midi_helper.send_parameter(
@@ -1497,7 +1107,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
         """ change wmt1 velocity fade width upper value """
         return self.midi_helper.send_parameter(
@@ -1507,7 +1117,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_r_changed(self, value: int):
         """Handle WMT1 Wave R parameter change"""
         return self.midi_helper.send_parameter(
@@ -1518,7 +1128,7 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=4
         )
-
+    
     def _on_wmt1_wave_gain_changed(self, value: int):
         """ change wmt1 wave gain value """
         return self.midi_helper.send_parameter(
@@ -1528,7 +1138,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_GAIN.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fxm_switch_changed(self, value: int):
         """ change wmt1 wave fxm switch value """
         return self.midi_helper.send_parameter(
@@ -1538,7 +1148,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fxm_color_changed(self, value: int):
         """ change wmt1 wave fxm color value """
         return self.midi_helper.send_parameter(
@@ -1548,17 +1158,17 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
             value=value
         )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):  
         """ change wmt1 wave fxm depth value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
+            value=value 
         )
-
+    
     def _on_wmt1_wave_coarse_tune_changed(self, value: int):
         """ change wmt1 wave coarse tune value """
         return self.midi_helper.send_parameter(
@@ -1568,7 +1178,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_fine_tune_changed(self, value: int):
         """ change wmt1 wave fine tune value """
         return self.midi_helper.send_parameter(
@@ -1578,17 +1188,17 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
             value=value
         )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):    
         """ change wmt1 wave pan value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
             group=self.partial_address,
             param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
+            value=value 
         )
-
+    
     def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
         """ change wmt1 wave random pan switch value """
         return self.midi_helper.send_parameter(
@@ -1598,7 +1208,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
         """ change wmt1 wave alternate pan switch value """
         return self.midi_helper.send_parameter(
@@ -1608,8 +1218,8 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
             value=value
         )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
+    
+    def _on_wmt1_wave_level_changed(self, value: int):  
         """ change wmt1 wave level value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
@@ -1618,7 +1228,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_range_lower_changed(self, value: int):
         """ change wmt1 velocity range lower value """
         return self.midi_helper.send_parameter(
@@ -1634,11 +1244,11 @@ class DrumPartialEditor(QWidget):
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=self.partial_address,
+                group=self.partial_address,
             param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
         """ change wmt1 velocity fade width lower value """
         return self.midi_helper.send_parameter(
@@ -1648,7 +1258,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
         """ change wmt1 velocity fade width upper value """
         return self.midi_helper.send_parameter(
@@ -1657,6 +1267,2282 @@ class DrumPartialEditor(QWidget):
             group=self.partial_address,
             param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
             value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt2_wave_switch_changed(self, value: int):
+        """Handle WMT2 Wave Switch parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_DRUM_KIT_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.group,
+            param=DrumParameter.WMT2_WAVE_SWITCH.value[0],
+            value=value,
+            size=1
         )
 
     def _on_wmt2_wave_group_type_changed(self, value: int):
@@ -1669,3511 +3555,6 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=1
         )
-
-    def _create_pitch_group(self):
-        """Create the pitch group."""
-        # Pitch Group
-        pitch_group = QGroupBox("Pitch")
-        pitch_layout = QFormLayout()
-        pitch_group.setLayout(pitch_layout)
-        # grid_layout.addWidget(pitch_group, 0, 0)
-
-        # Add pitch parameters
-        partial_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_LEVEL, "Partial Level"
-        )
-        pitch_layout.addRow(partial_level_slider)
-
-        partial_coarse_tune_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
-        )
-        pitch_layout.addRow(partial_coarse_tune_slider)
-
-        partial_fine_tune_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune"
-        )
-        pitch_layout.addRow(partial_fine_tune_slider)
-
-        partial_random_pitch_depth_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_RANDOM_PITCH_DEPTH, "Partial Random Pitch Depth"
-        )
-        pitch_layout.addRow(partial_random_pitch_depth_slider)
-
-        partial_pan_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_PAN, "Partial Pan"
-        )
-        pitch_layout.addRow(partial_pan_slider)
-
-        partial_random_pan_depth_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
-        )
-        pitch_layout.addRow(partial_random_pan_depth_slider)
-
-        partial_alternate_pan_depth_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_ALTERNATE_PAN_DEPTH, "Partial Alternate Pan Depth"
-        )
-        pitch_layout.addRow(partial_alternate_pan_depth_slider)
-
-        partial_env_mode_combo = QComboBox()
-        partial_env_mode_combo.addItems(["0", "1"])
-        pitch_layout.addRow("Partial Env Mode", partial_env_mode_combo)
-        partial_env_mode_combo.currentIndexChanged.connect(
-            self.on_partial_env_mode_changed
-        )
-
-        return pitch_group
-
-    def _create_output_group(self):
-        # Output Group
-        output_group = QGroupBox("Output")
-        output_layout = QFormLayout()
-        output_group.setLayout(output_layout)
-
-        # Add output parameters
-        partial_output_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_OUTPUT_LEVEL, "Partial Output Level"
-        )
-        output_layout.addRow(partial_output_level_slider)
-
-        partial_chorus_send_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_CHORUS_SEND_LEVEL, "Partial Chorus Send Level"
-        )
-        output_layout.addRow(partial_chorus_send_level_slider)
-
-        partial_reverb_send_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_REVERB_SEND_LEVEL, "Partial Reverb Send Level"
-        )
-        output_layout.addRow(partial_reverb_send_level_slider)
-
-        partial_output_assign_combo = QComboBox()
-        partial_output_assign_combo.addItems(["EFX1", "EFX2", "DLY", "REV", "DIR"])
-        output_layout.addRow("Partial Output Assign", partial_output_assign_combo)
-
-        return output_group
-
-    def _create_tvf_group(self):
-        """create tvf group"""
-        # TVF Group
-        tvf_group = QGroupBox("TVF")
-        tvf_layout = QFormLayout()
-        tvf_group.setLayout(tvf_layout)
-
-        # Add TVF parameters
-        tvf_filter_type_combo = QComboBox()
-        tvf_filter_type_combo.addItems(
-            ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"]
-        )
-        tvf_filter_type_combo.currentIndexChanged.connect(
-            self._on_tvf_filter_type_combo_changed
-        )
-        tvf_layout.addRow("Filter Type", tvf_filter_type_combo)
-
-        tvf_cutoff_frequency_slider = self._create_parameter_slider(
-            DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff"
-        )
-        tvf_layout.addRow(tvf_cutoff_frequency_slider)
-
-        tvf_cutoff_velocity_curve_spin = QSpinBox()
-        tvf_cutoff_velocity_curve_spin.setRange(0, 7)
-        tvf_cutoff_velocity_curve_spin.valueChanged.connect(
-            self._on_tvf_cutoff_velocity_curve_spin_changed
-        )
-        tvf_layout.addRow("Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin)
-
-        tvf_env_depth_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_DEPTH, "Env Depth"
-        )
-        tvf_layout.addRow(tvf_env_depth_slider)
-
-        tvf_env_velocity_curve_type_spin = QSpinBox()
-        tvf_env_velocity_curve_type_spin.setRange(0, 7)
-        tvf_env_velocity_curve_type_spin.valueChanged.connect(
-            self._on_tvf_env_velocity_curve_type_spin_changed
-        )
-        tvf_layout.addRow(
-            "Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
-        )
-
-        tvf_env_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_VELOCITY_SENS, "Env Velocity Sens"
-        )
-        tvf_layout.addRow(tvf_env_velocity_sens_slider)
-
-        tvf_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
-        )
-        tvf_layout.addRow(tvf_env_time1_velocity_sens_slider)
-
-        tvf_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
-        )
-        tvf_layout.addRow(tvf_env_time4_velocity_sens_slider)
-
-        tvf_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_1, "Env Time 1"
-        )
-        tvf_layout.addRow(tvf_env_time1_slider)
-
-        tvf_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_2, "Env Time 2"
-        )
-        tvf_layout.addRow(tvf_env_time2_slider)
-
-        tvf_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_3, "Env Time 3"
-        )
-        tvf_layout.addRow(tvf_env_time3_slider)
-
-        tvf_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_4, "Env Time 4"
-        )
-        tvf_layout.addRow(tvf_env_time4_slider)
-
-        tvf_env_level0_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_0, "Env Level 0"
-        )
-        tvf_layout.addRow(tvf_env_level0_slider)
-
-        tvf_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_1, "Env Level 1"
-        )
-        tvf_layout.addRow(tvf_env_level1_slider)
-
-        tvf_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_2, "Env Level 2"
-        )
-        tvf_layout.addRow(tvf_env_level2_slider)
-
-        tvf_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_3, "Env Level 3"
-        )
-        tvf_layout.addRow(tvf_env_level3_slider)
-
-        tvf_env_level4_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_4, "Env Level 4"
-        )
-        tvf_layout.addRow(tvf_env_level4_slider)
-        return tvf_group
-
-    def _create_pitch_env_group(self):
-        """create pitch env group"""
-        # Pitch Env Group
-        pitch_env_group = QGroupBox("Pitch Env")
-        pitch_env_layout = QFormLayout()
-        pitch_env_group.setLayout(pitch_env_layout)
-
-        # Add pitch env parameters
-        pitch_env_depth_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_DEPTH, "Pitch Env Depth"
-        )
-        pitch_env_layout.addRow(pitch_env_depth_slider)
-
-        pitch_env_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_VELOCITY_SENS, "Pitch Env Velocity Sens"
-        )
-        pitch_env_layout.addRow(pitch_env_velocity_sens_slider)
-
-        pitch_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_1_VELOCITY_SENS,
-            "Pitch Env Time 1 Velocity Sens",
-        )
-        pitch_env_layout.addRow(pitch_env_time1_velocity_sens_slider)
-
-        pitch_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_4_VELOCITY_SENS,
-            "Pitch Env Time 4 Velocity Sens",
-        )
-        pitch_env_layout.addRow(pitch_env_time4_velocity_sens_slider)
-
-        pitch_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_1, "Pitch Env Time 1"
-        )
-        pitch_env_layout.addRow(pitch_env_time1_slider)
-
-        pitch_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_2, "Pitch Env Time 2"
-        )
-        pitch_env_layout.addRow(pitch_env_time2_slider)
-
-        pitch_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_3, "Pitch Env Time 3"
-        )
-        pitch_env_layout.addRow(pitch_env_time3_slider)
-
-        pitch_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_4, "Pitch Env Time 4"
-        )
-        pitch_env_layout.addRow(pitch_env_time4_slider)
-
-        pitch_env_level0_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_0, "Pitch Env Level 0"
-        )
-        pitch_env_layout.addRow(pitch_env_level0_slider)
-
-        pitch_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_1, "Pitch Env Level 1"
-        )
-        pitch_env_layout.addRow(pitch_env_level1_slider)
-
-        pitch_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_2, "Pitch Env Level 2"
-        )
-        pitch_env_layout.addRow(pitch_env_level2_slider)
-
-        pitch_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_3, "Pitch Env Level 3"
-        )
-        pitch_env_layout.addRow(pitch_env_level3_slider)
-
-        pitch_env_level4_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_4, "Pitch Env Level 4"
-        )
-        pitch_env_layout.addRow(pitch_env_level4_slider)
-        return pitch_env_group
-
-    def _on_parameter_changed(self, param: DrumParameter, display_value: int):
-        """Handle parameter value changes from UI controls"""
-        try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-            logging.info(f"parameter from widget midi_value: {midi_value}")
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
-
-        except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
-
-    def on_partial_env_mode_changed(self, value):
-        """Handle partial envelope mode combo box value change"""
-        # Use the helper function to send the SysEx message @@ FIXME
-        self.send_sysex_message(0x0B, value)
-
-    def _update_partial_sliders_from_sysex(self, json_sysex_data: str):
-        """Update sliders and combo boxes based on parsed SysEx data."""
-        logging.info("Updating UI components from SysEx data")
-        debug_param_updates = True
-        debug_stats = True
-
-        try:
-            sysex_data = json.loads(json_sysex_data)
-            self.previous_data = self.current_data
-            self.current_data = sysex_data
-            self._log_changes(self.previous_data, sysex_data)
-        except json.JSONDecodeError as ex:
-            logging.error(f"Invalid JSON format: {ex}")
-            return
-
-        def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in [
-                "TEMPORARY_TONE_AREA",
-                "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-            ]
-
-        def _get_partial_number(synth_tone):
-            """Retrieve partial number from synth tone mapping."""
-            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
-                synth_tone, None
-            )
-
-        # if not _is_valid_sysex_area(sysex_data):
-        #    logging.warning(
-        #        "SysEx data does not belong to TEMPORARY_TONE_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
-        #    return
-
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        partial_no = get_partial_number(synth_tone)
-
-        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-
-        # osc_waveform_map = {wave.value: wave for wave in OscWave}
-
-        failures, successes = [], []
-
-        def _update_slider(param, value):
-            """Helper function to update sliders safely."""
-            slider = self.partial_editors[partial_no].controls.get(param)
-            if slider:
-                slider_value = param.convert_from_midi(value)
-                logging.info(
-                    f"midi value {value} converted to slider value {slider_value}"
-                )
-                slider.blockSignals(True)
-                slider.setValue(slider_value)
-                slider.blockSignals(False)
-                successes.append(param.name)
-                if debug_param_updates:
-                    logging.info(f"Updated: {param.name:50} {value}")
-
-        def _update_waveform(param_value):
-            """Helper function to update waveform selection UI."""
-            waveform = osc_waveform_map.get(param_value)
-            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
-                button = self.partial_editors[partial_no].wave_buttons[waveform]
-                button.setChecked(True)
-                self.partial_editors[partial_no]._on_waveform_selected(waveform)
-                logging.debug(f"Updated waveform button for {waveform}")
-
-        for param_name, param_value in sysex_data.items():
-            param = DrumParameter.get_by_name(param_name)
-
-            if param:
-                _update_slider(param, param_value)
-            else:
-                failures.append(param_name)
-
-        def _log_debug_info():
-            """Helper function to log debugging statistics."""
-            if debug_stats:
-                success_rate = (
-                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-                )
-                logging.info(f"Successes: {successes}")
-                logging.info(f"Failures: {failures}")
-                logging.info(f"Success Rate: {success_rate:.1f}%")
-                logging.info("--------------------------------")
-
-        _log_debug_info()
-
-    def update_instrument_title(self):
-        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
-        self.title_label.setText(f"Drum Kit:\n {selected_kit_text}")
-
-    def update_instrument_preset(self):
-        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
-        if digital_synth_matches := re.search(
-                r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
-        ):
-            selected_synth_padded_number = (
-                digital_synth_matches.group(1).lower().replace("&", "_").split("_")[0]
-            )
-            preset_index = int(selected_synth_padded_number)
-            print(f"preset_index: {preset_index}")
-            self.load_preset(preset_index)
-
-    def load_preset(self, preset_index):
-        preset_data = {
-            "type": self.preset_type,  # Ensure this is address valid type
-            "selpreset": preset_index,  # Convert to 1-based index
-            "modified": 0,  # or 1, depending on your logic
-        }
-        if not self.preset_loader:
-            self.preset_loader = PresetLoader(self.midi_helper)
-        if self.preset_loader:
-            self.preset_loader.load_preset(preset_data)
-
-    def update_combo_box_index(self, preset_number):
-        """Updates the QComboBox to reflect the loaded preset."""
-        print(f"Updating combo to preset {preset_number}")
-        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
-
-    def send_sysex_message(self, address: int, value: int):
-        """Helper function to send address SysEx message with address given address and value."""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=group,
-            param=address,
-            value=value,  # Make sure this value is being sent
-        )
-
-    def _on_tva_level_velocity_sens_slider_changed(self, value: int):
-        """Handle TVA Level Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_LEVEL_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVA Level Velocity Sens changed to {value}")
-
-    def _on_tva_env_time1_velocity_sens_slider_changed(self, value: int):
-        """Handle TVA Env Time 1 Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 1 Velocity Sens changed to {value}")
-
-    def _on_tva_env_time4_velocity_sens_slider_changed(self, value: int):
-        """Handle TVA Env Time 4 Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 4 Velocity Sens changed to {value}")
-
-    def _on_tva_env_time1_slider_changed(self, value: int):
-        """Handle TVA Env Time 1 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_1.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 1 changed to {value}")
-
-    def _on_tva_env_time2_slider_changed(self, value: int):
-        """Handle TVA Env Time 2 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_2.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 2 changed to {value}")
-
-    def _on_tva_env_time3_slider_changed(self, value: int):
-        """Handle TVA Env Time 3 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_3.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 3 changed to {value}")
-
-    def _on_tva_env_level1_slider_changed(self, value: int):
-        """Handle TVA Env Level 1 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_LEVEL_1.value[0],
-                value=value,
-            )
-            print(f"TVA Env Level 1 changed to {value}")
-
-    def _on_tva_env_level2_slider_changed(self, value: int):
-        """Handle TVA Env Level 2 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_LEVEL_2.value[0],
-                value=value,
-            )
-            print(f"TVA Env Level 2 changed to {value}")
-
-    def _on_tva_env_level3_slider_changed(self, value: int):
-        """Handle TVA Env Level 3 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_LEVEL_3.value[0],
-                value=value,
-            )
-            print(f"TVA Env Level 3 changed to {value}")
-
-    def _on_tvf_filter_type_combo_changed(self, index: int):
-        """Handle TVF Filter Type change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_FILTER_TYPE.value[0],
-                value=index,
-            )
-            print(f"TVF Filter Type changed to {index}")
-
-    def _on_tvf_cutoff_frequency_slider_changed(self, value: int):
-        """Handle TVF Cutoff Frequency change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_CUTOFF_FREQUENCY.value[0],
-                value=value,
-            )
-            print(f"TVF Cutoff Frequency changed to {value}")
-
-    def _on_tvf_cutoff_velocity_curve_spin_changed(self, value: int):
-        """Handle TVF Cutoff Velocity Curve change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_CUTOFF_VELOCITY_CURVE.value[0],
-                value=value,
-            )
-            print(f"TVF Cutoff Velocity Curve changed to {value}")
-
-    def _on_tvf_cutoff_velocity_sens_slider_changed(self, value: int):
-        """Handle TVF Cutoff Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_CUTOFF_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVF Cutoff Velocity Sens changed to {value}")
-
-    def _on_tvf_env_depth_slider_changed(self, value: int):
-        """Handle TVF Env Depth change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_DEPTH.value[0],
-                value=value,
-            )
-            print(f"TVF Env Depth changed to {value}")
-
-    def _on_tvf_env_velocity_curve_type_spin_changed(self, value: int):
-        """Handle TVF Env Velocity Curve Type change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE.value[0],
-                value=value,
-            )
-            print(f"TVF Env Velocity Curve Type changed to {value}")
-
-    def _on_tvf_env_velocity_sens_slider_changed(self, value: int):
-        """Handle TVF Env Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVF Env Velocity Sens changed to {value}")
-
-    def _on_tvf_env_time1_velocity_sens_slider_changed(self, value: int):
-        """Handle TVF Env Time 1 Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVF Env Time 1 Velocity Sens changed to {value}")
-
-    def _create_parameter_slider(
-            self, param: DrumParameter, label: str = None
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-        slider = Slider(label, display_min, display_max)
-
-        if isinstance(param, DrumParameter) and param in [
-            DrumParameter.PARTIAL_FINE_TUNE,
-            # Add other bipolar parameters as needed
-        ]:
-            if self.midi_helper:
-                midi_value = self.midi_helper.get_parameter(
-                    area=TEMPORARY_TONE_AREA,
-                    part=DRUM_KIT_AREA,
-                    group=self.partial_address,
-                    param=param.address,
-                )
-                if midi_value is not None:
-                    display_value = param.convert_from_midi(midi_value)
-                    slider.setValue(display_value)
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
-
-    def send_midi_parameter(self, param, value) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            logging.debug("No MIDI helper available - parameter change ignored")
-            return False
-        try:
-            # Ensure value is included in the MIDI message
-            return self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DRUM_KIT_AREA,
-                group=self.partial_address,
-                param=param.format_address,
-                value=value,  # Make sure this value is being sent
-            )
-        except Exception as ex:
-            logging.error(f"MIDI error setting {param}: {str(ex)}")
-            return False
-
-    def _on_parameter_changed(self, param: DrumParameter, display_value: int):
-        """Handle parameter value changes from UI controls"""
-        try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
-
-        except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
-
-    def set_partial_num(self, partial_num: int):
-        """Set the current partial number"""
-        if 0 <= partial_num < len(DRUM_ADDRESSES):
-            self.partial_num = partial_num
-        else:
-            raise ValueError(f"Invalid partial number: {partial_num}")
-
-    def update_partial_num(self, index: int):
-        """Update the partial number based on the current tab index"""
-        self.set_partial_num(index)
-
-        # Validate partial_name
-        if self.partial_num < 0 or self.partial_num >= len(DRUM_ADDRESSES):
-            logging.error(f"Invalid partial number: {self.partial_num}")
-            return
-
-        # Get the address for the current partial
-        try:
-            self.group, self.partial_address = get_address_for_partial(self.partial_num)
-            logging.info(
-                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.partial_address)}"
-            )
-            print(
-                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.partial_address)}"
-            )
-        except Exception as e:
-            logging.error(
-                f"Error getting address for partial {self.partial_num}: {str(e)}"
-            )
-
-            def _on_wmt1_wave_switch_changed(self, value: int):
-                """ change wmt1 wave switch value """
-                return self.midi_helper.send_parameter(
-                    area=TEMPORARY_TONE_AREA,
-                    part=DRUM_KIT_AREA,
-                    group=self.partial_address,
-                    param=DrumParameter.WMT1_WAVE_SWITCH.value[0],
-                    value=value
-                )
-
-    def _on_wmt1_wave_group_type_changed(self, value: int):
-        """ change wmt1 wave group type value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GROUP_TYPE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_group_id_changed(self, value: int):
-        """ change wmt1 wave group id value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GROUP_ID.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_number_l_changed(self, value: int):
-        """ change wmt1 wave number l value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_NUMBER_L.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_number_r_changed(self, value: int):
-        """ change wmt1 wave number r value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_tempo_sync_changed(self, value: int):
-        """ change wmt1 wave tempo sync value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_TEMPO_SYNC.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_r_changed(self, value: int):
-        """Handle WMT1 Wave R parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,  # Use self.group instead of partial_address
-            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
-            value=value,
-            size=4
-        )
-
-    def _on_wmt1_wave_gain_changed(self, value: int):
-        """ change wmt1 wave gain value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
-        """ change wmt1 wave fxm switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_color_changed(self, value: int):
-        """ change wmt1 wave fxm color value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
-        """ change wmt1 wave fxm depth value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
-        """ change wmt1 wave coarse tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_fine_tune_changed(self, value: int):
-        """ change wmt1 wave fine tune value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_pan_changed(self, value: int):
-        """ change wmt1 wave pan value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_PAN.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
-        """ change wmt1 wave random pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
-        """ change wmt1 wave alternate pan switch value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
-            value=value
-        )
-
-    def _on_wmt1_wave_level_changed(self, value: int):
-        """ change wmt1 wave level value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_lower_changed(self, value: int):
-        """ change wmt1 velocity range lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_range_upper_changed(self, value: int):
-        """ change wmt1 velocity range upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
-        """ change wmt1 velocity fade width lower value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
-            value=value
-        )
-
-    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
-        """ change wmt1 velocity fade width upper value """
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
-            value=value
-        )
-
-    def _on_wmt2_wave_switch_changed(self, value: int):
-        """Handle WMT2 Wave Switch parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.group,
-            param=DrumParameter.WMT2_WAVE_SWITCH.value[0],
-            value=value,
-            size=1
-        )
-
-
 
     def _on_wmt2_wave_group_id_changed(self, value: int):
         """Handle WMT2 Wave Group ID parameter change"""
@@ -5217,7 +3598,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_GAIN.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_fxm_switch_changed(self, value: int):
         """ change wmt2 wave fxm switch value """
         return self.midi_helper.send_parameter(
@@ -5227,7 +3608,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_FXM_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_fxm_color_changed(self, value: int):
         """ change wmt2 wave fxm color value """
         return self.midi_helper.send_parameter(
@@ -5237,7 +3618,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_FXM_COLOR.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_fxm_depth_changed(self, value: int):
         """ change wmt2 wave fxm depth value """
         return self.midi_helper.send_parameter(
@@ -5246,8 +3627,8 @@ class DrumPartialEditor(QWidget):
             group=self.group,
             param=DrumParameter.WMT2_WAVE_FXM_DEPTH.value[0],
             value=value
-        )
-
+        )   
+    
     def _on_wmt2_wave_coarse_tune_changed(self, value: int):
         """ change wmt2 wave coarse tune value """
         return self.midi_helper.send_parameter(
@@ -5257,7 +3638,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_COARSE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_fine_tune_changed(self, value: int):
         """ change wmt2 wave fine tune value """
         return self.midi_helper.send_parameter(
@@ -5267,7 +3648,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_FINE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_pan_changed(self, value: int):
         """ change wmt2 wave pan value """
         return self.midi_helper.send_parameter(
@@ -5277,7 +3658,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_PAN.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_random_pan_switch_changed(self, value: int):
         """ change wmt2 wave random pan switch value """
         return self.midi_helper.send_parameter(
@@ -5287,7 +3668,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_RANDOM_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_alternate_pan_switch_changed(self, value: int):
         """ change wmt2 wave alternate pan switch value """
         return self.midi_helper.send_parameter(
@@ -5297,7 +3678,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt2_wave_level_changed(self, value: int):
         """ change wmt2 wave level value """
         return self.midi_helper.send_parameter(
@@ -5307,7 +3688,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_WAVE_LEVEL.value[0],
             value=value
         )
-
+    
     def _on_wmt2_velocity_range_lower_changed(self, value: int):
         """ change wmt2 velocity range lower value """
         return self.midi_helper.send_parameter(
@@ -5317,7 +3698,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_VELOCITY_RANGE_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt2_velocity_range_upper_changed(self, value: int):
         """ change wmt2 velocity range upper value """
         return self.midi_helper.send_parameter(
@@ -5327,7 +3708,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_VELOCITY_RANGE_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt2_velocity_fade_width_lower_changed(self, value: int):
         """ change wmt2 velocity fade width lower value """
         return self.midi_helper.send_parameter(
@@ -5337,7 +3718,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt2_velocity_fade_width_upper_changed(self, value: int):
         """ change wmt2 velocity fade width upper value """
         return self.midi_helper.send_parameter(
@@ -5347,7 +3728,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_switch_changed(self, value: int):
         """ change wmt3 wave switch value """
         return self.midi_helper.send_parameter(
@@ -5357,7 +3738,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_group_type_changed(self, value: int):
         """ change wmt3 wave group type value """
         return self.midi_helper.send_parameter(
@@ -5367,7 +3748,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_GROUP_TYPE.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_group_id_changed(self, value: int):
         """ change wmt3 wave group id value """
         return self.midi_helper.send_parameter(
@@ -5377,7 +3758,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_GROUP_ID.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_number_l_changed(self, value: int):
         """ change wmt3 wave number l value """
         return self.midi_helper.send_parameter(
@@ -5388,7 +3769,7 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=4
         )
-
+    
     def _on_wmt3_wave_number_r_changed(self, value: int):
         """ change wmt3 wave number r value """
         return self.midi_helper.send_parameter(
@@ -5399,7 +3780,7 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=4
         )
-
+    
     def _on_wmt3_wave_gain_changed(self, value: int):
         """ change wmt3 wave gain value """
         return self.midi_helper.send_parameter(
@@ -5409,7 +3790,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_GAIN.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_fxm_switch_changed(self, value: int):
         """ change wmt3 wave fxm switch value """
         return self.midi_helper.send_parameter(
@@ -5419,7 +3800,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_FXM_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_fxm_color_changed(self, value: int):
         """ change wmt3 wave fxm color value """
         return self.midi_helper.send_parameter(
@@ -5429,7 +3810,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_FXM_COLOR.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_fxm_depth_changed(self, value: int):
         """ change wmt3 wave fxm depth value """
         return self.midi_helper.send_parameter(
@@ -5438,8 +3819,8 @@ class DrumPartialEditor(QWidget):
             group=self.group,
             param=DrumParameter.WMT3_WAVE_FXM_DEPTH.value[0],
             value=value
-        )
-
+        )   
+    
     def _on_wmt3_wave_coarse_tune_changed(self, value: int):
         """ change wmt3 wave coarse tune value """
         return self.midi_helper.send_parameter(
@@ -5449,7 +3830,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_COARSE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_fine_tune_changed(self, value: int):
         """ change wmt3 wave fine tune value """
         return self.midi_helper.send_parameter(
@@ -5459,7 +3840,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_FINE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_pan_changed(self, value: int):
         """ change wmt3 wave pan value """
         return self.midi_helper.send_parameter(
@@ -5469,7 +3850,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_PAN.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_random_pan_switch_changed(self, value: int):
         """ change wmt3 wave random pan switch value """
         return self.midi_helper.send_parameter(
@@ -5479,7 +3860,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_RANDOM_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_alternate_pan_switch_changed(self, value: int):
         """ change wmt3 wave alternate pan switch value """
         return self.midi_helper.send_parameter(
@@ -5489,7 +3870,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_ALTERNATE_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt3_wave_level_changed(self, value: int):
         """ change wmt3 wave level value """
         return self.midi_helper.send_parameter(
@@ -5499,7 +3880,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_WAVE_LEVEL.value[0],
             value=value
         )
-
+    
     def _on_wmt3_velocity_range_lower_changed(self, value: int):
         """ change wmt3 velocity range lower value """
         return self.midi_helper.send_parameter(
@@ -5509,7 +3890,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_VELOCITY_RANGE_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt3_velocity_range_upper_changed(self, value: int):
         """ change wmt3 velocity range upper value """
         return self.midi_helper.send_parameter(
@@ -5519,7 +3900,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_VELOCITY_RANGE_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt3_velocity_fade_width_lower_changed(self, value: int):
         """ change wmt3 velocity fade width lower value """
         return self.midi_helper.send_parameter(
@@ -5529,7 +3910,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_VELOCITY_FADE_WIDTH_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt3_velocity_fade_width_upper_changed(self, value: int):
         """ change wmt3 velocity fade width upper value """
         return self.midi_helper.send_parameter(
@@ -5539,7 +3920,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT3_VELOCITY_FADE_WIDTH_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_switch_changed(self, value: int):
         """ change wmt4 wave switch value """
         return self.midi_helper.send_parameter(
@@ -5549,7 +3930,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_group_type_changed(self, value: int):
         """ change wmt4 wave group type value """
         return self.midi_helper.send_parameter(
@@ -5559,7 +3940,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_GROUP_TYPE.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_group_id_changed(self, value: int):
         """ change wmt4 wave group id value """
         return self.midi_helper.send_parameter(
@@ -5569,7 +3950,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_GROUP_ID.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_number_l_changed(self, value: int):
         """ change wmt4 wave number l value """
         return self.midi_helper.send_parameter(
@@ -5580,7 +3961,7 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=4
         )
-
+    
     def _on_wmt4_wave_number_r_changed(self, value: int):
         """ change wmt4 wave number r value """
         return self.midi_helper.send_parameter(
@@ -5591,7 +3972,7 @@ class DrumPartialEditor(QWidget):
             value=value,
             size=4
         )
-
+    
     def _on_wmt4_wave_gain_changed(self, value: int):
         """ change wmt4 wave gain value """
         return self.midi_helper.send_parameter(
@@ -5601,7 +3982,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_GAIN.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_fxm_switch_changed(self, value: int):
         """ change wmt4 wave fxm switch value """
         return self.midi_helper.send_parameter(
@@ -5611,7 +3992,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_FXM_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_fxm_color_changed(self, value: int):
         """ change wmt4 wave fxm color value """
         return self.midi_helper.send_parameter(
@@ -5621,7 +4002,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_FXM_COLOR.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_fxm_depth_changed(self, value: int):
         """ change wmt4 wave fxm depth value """
         return self.midi_helper.send_parameter(
@@ -5630,8 +4011,8 @@ class DrumPartialEditor(QWidget):
             group=self.group,
             param=DrumParameter.WMT4_WAVE_FXM_DEPTH.value[0],
             value=value
-        )
-
+        )   
+    
     def _on_wmt4_wave_tempo_sync_changed(self, value: int):
         """ change wmt4 wave tempo sync value """
         return self.midi_helper.send_parameter(
@@ -5641,7 +4022,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_TEMPO_SYNC.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_coarse_tune_changed(self, value: int):
         """ change wmt4 wave coarse tune value """
         return self.midi_helper.send_parameter(
@@ -5651,7 +4032,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_COARSE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_fine_tune_changed(self, value: int):
         """ change wmt4 wave fine tune value """
         return self.midi_helper.send_parameter(
@@ -5661,7 +4042,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_FINE_TUNE.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_pan_changed(self, value: int):
         """ change wmt4 wave pan value """
         return self.midi_helper.send_parameter(
@@ -5671,7 +4052,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_PAN.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_random_pan_switch_changed(self, value: int):
         """ change wmt4 wave random pan switch value """
         return self.midi_helper.send_parameter(
@@ -5681,7 +4062,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_RANDOM_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_alternate_pan_switch_changed(self, value: int):
         """ change wmt4 wave alternate pan switch value """
         return self.midi_helper.send_parameter(
@@ -5691,7 +4072,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_ALTERNATE_PAN_SWITCH.value[0],
             value=value
         )
-
+    
     def _on_wmt4_wave_level_changed(self, value: int):
         """ change wmt4 wave level value """
         return self.midi_helper.send_parameter(
@@ -5701,7 +4082,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_WAVE_LEVEL.value[0],
             value=value
         )
-
+    
     def _on_wmt4_velocity_range_lower_changed(self, value: int):
         """ change wmt4 velocity range lower value """
         return self.midi_helper.send_parameter(
@@ -5711,7 +4092,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_VELOCITY_RANGE_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt4_velocity_range_upper_changed(self, value: int):
         """ change wmt4 velocity range upper value """
         return self.midi_helper.send_parameter(
@@ -5721,7 +4102,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_VELOCITY_RANGE_UPPER.value[0],
             value=value
         )
-
+    
     def _on_wmt4_velocity_fade_width_lower_changed(self, value: int):
         """ change wmt4 velocity fade width lower value """
         return self.midi_helper.send_parameter(
@@ -5731,7 +4112,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_VELOCITY_FADE_WIDTH_LOWER.value[0],
             value=value
         )
-
+    
     def _on_wmt4_velocity_fade_width_upper_changed(self, value: int):
         """ change wmt4 velocity fade width upper value """
         return self.midi_helper.send_parameter(
@@ -5741,7 +4122,7 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT4_VELOCITY_FADE_WIDTH_UPPER.value[0],
             value=value
         )
-
+    
     def _on_tva_level_velocity_sens_slider_changed(self, value: int):
         """Handle TVA Level Velocity Sens change"""
         if self.midi_helper:
@@ -5947,7 +4328,7 @@ class DrumPartialEditor(QWidget):
             print(f"TVF Env Time 1 Velocity Sens changed to {value}")
 
     def _create_parameter_slider(
-            self, param: DrumParameter, label: str = None
+        self, param: DrumParameter, label: str = None
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
