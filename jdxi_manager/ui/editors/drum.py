@@ -77,7 +77,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_manager.data.parameter.drums import DrumParameter
+from jdxi_manager.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_manager.data.presets.data import DRUM_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
@@ -87,6 +87,8 @@ from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.midi.constants.sysex import (
     TEMPORARY_DIGITAL_SYNTH_1_AREA,
+    TEMPORARY_TONE_AREA,
+    DRUM_KIT_AREA
 )
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -228,11 +230,21 @@ class DrumEditor(BaseEditor):
         self.assign_type_combo = QComboBox()
         self.assign_type_combo.addItems(["MULTI", "SINGLE"])
         common_layout.addRow("Assign Type", self.assign_type_combo)
+        self.assign_type_combo.currentIndexChanged.connect(self.on_assign_type_changed)
 
         # Mute Group control
         self.mute_group_spin = QSpinBox()
         self.mute_group_spin.setRange(0, 31)
         common_layout.addRow("Mute Group", self.mute_group_spin)
+        self.mute_group_spin.valueChanged.connect(self.on_mute_group_changed)
+
+        # Sustain control
+        self.sustain_combo = QComboBox()
+        self.sustain_combo.addItems(["SUSTAIN", "NO-SUSTAIN"])
+        common_layout.addRow("Partial Env Mode", self.sustain_combo)
+        self.sustain_combo.currentIndexChanged.connect(
+            self.on_sustain_changed
+        )
 
         # Kit Level control
         self.kit_level_slider = QSlider(Qt.Orientation.Horizontal)
@@ -252,16 +264,25 @@ class DrumEditor(BaseEditor):
         self.receive_expression_combo = QComboBox()
         self.receive_expression_combo.addItems(["OFF", "ON"])
         common_layout.addRow("Receive Expression", self.receive_expression_combo)
+        self.receive_expression_combo.currentIndexChanged.connect(
+            self.on_receive_expression_changed
+        )
 
         # Partial Receive Hold-1
         self.receive_hold_combo = QComboBox()
         self.receive_hold_combo.addItems(["OFF", "ON"])
         common_layout.addRow("Receive Hold-1", self.receive_hold_combo)
+        self.receive_hold_combo.currentIndexChanged.connect(
+            self.on_receive_hold_changed
+        )
 
         # One Shot Mode
         self.one_shot_mode_combo = QComboBox()
         self.one_shot_mode_combo.addItems(["OFF", "ON"])
         common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
+        self.one_shot_mode_combo.currentIndexChanged.connect(
+            self.on_one_shot_mode_changed
+        )
 
         common_group.setLayout(common_layout)
         upper_layout.addWidget(common_group)
@@ -284,6 +305,92 @@ class DrumEditor(BaseEditor):
         self.partial_tab_widget.currentChanged.connect(self.update_partial_num)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.data_request()
+
+    def on_sustain_changed(self):
+        """Handle changes to the sustain combo box."""
+        logging.info(f"Sustain changed to {self.sustain_combo.currentText()}")
+        if self.sustain_combo.currentText() == "SUSTAIN":
+            value = 0x01
+        else:
+            value = 0x00
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=0x2E,
+            param=DrumParameter.PARTIAL_ENV_MODE.value[0],
+            value=value,  # Make sure this value is being sent
+        )
+
+    def on_one_shot_mode_changed(self):
+        """Handle changes to the one shot mode combo box."""
+        logging.info(f"One shot mode changed to {self.one_shot_mode_combo.currentText()}")
+        if self.one_shot_mode_combo.currentText() == "ON":
+            value = 0x01
+        else:
+            value = 0x00    
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+            part=DRUM_KIT_AREA,
+            group=0x2E,
+            param=DrumParameter.ONE_SHOT_MODE.value[0],
+            value=value,  # Make sure this value is being sent
+        )
+    
+    def on_receive_expression_changed(self):
+        """Handle changes to the receive expression combo box."""
+        logging.info(f"Receive expression changed to {self.receive_expression_combo.currentText()}")
+        if self.receive_expression_combo.currentText() == "ON":
+            value = 0x01
+        else:
+            value = 0x00
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+            part=DRUM_KIT_AREA,
+            group=0x2E,
+            param=DrumParameter.PARTIAL_RECEIVE_EXPRESSION.value[0],
+            value=value,  # Make sure this value is being sent
+        )
+    
+    def on_receive_hold_changed(self):
+        """Handle changes to the receive hold combo box."""
+        logging.info(f"Receive hold changed to {self.receive_hold_combo.currentText()}")
+        if self.receive_hold_combo.currentText() == "ON":
+            value = 0x01
+        else:
+            value = 0x00
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+            part=DRUM_KIT_AREA,
+            group=0x2E,
+            param=DrumParameter.PARTIAL_RECEIVE_HOLD_1.value[0],
+            value=value,  # Make sure this value is being sent
+        )
+
+    def on_mute_group_changed(self):
+        """Handle changes to the mute group spin box."""
+        logging.info(f"Mute group changed to {self.mute_group_spin.value()}")
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+            part=DRUM_KIT_AREA,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
+            group=0x2E,
+            param=DrumParameter.MUTE_GROUP.value[0],
+            value=self.mute_group_spin.value(),  # Make sure this value is being sent
+        )
+
+    def on_assign_type_changed(self):
+        """Handle changes to the assign type combo box."""
+        logging.info(f"Assign type changed to {self.assign_type_combo.currentText()}")
+        if self.assign_type_combo.currentText() == "MULTI":
+            value = 0x00
+        else:
+            value = 0x01
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+            part=DRUM_KIT_AREA,
+            group=0x2E,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
+            param=DrumParameter.ASSIGN_TYPE.value[0],
+            value=value,  # Make sure this value is being sent
+        )
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
@@ -459,7 +566,7 @@ class DrumEditor(BaseEditor):
         if synth_tone == "TONE_COMMON":
             logging.info(f"\nTone common")
             for param_name, param_value in sysex_data.items():
-                param = DigitalCommonParameter.get_by_name(param_name)
+                param = DrumCommonParameter.get_by_name(param_name)
                 logging.info(f"Tone common: param_name: {param} {param_value}")
                 try:
                     if param:
@@ -605,11 +712,13 @@ class DrumEditor(BaseEditor):
         """Handle kit level slider value change"""
         # Use the helper function to send the SysEx message
         # self.send_sysex_message(0x0C, value)
+        group = DrumCommonParameter.get_address_for_partial(0)
+        logging.info(f"kit level group: {group}")
         return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=0x70,
-            group=0x00,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=0x0C,
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=group,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
+            param=DrumCommonParameter.KIT_LEVEL.value,
             value=value,  # Make sure this value is being sent
         )
 
@@ -617,10 +726,12 @@ class DrumEditor(BaseEditor):
         """Handle pitch bend range value change"""
         # Use the helper function to send the SysEx message
         # self.send_sysex_message(0x2E, value)
+        group = DrumParameter.get_address_for_partial(36)
+        logging.info(f"pitch bend group: {group}")
         return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=0x70,
-            group=0x2E,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=0x1C,
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=group,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
+            param=DrumParameter.PARTIAL_PITCH_BEND_RANGE.value[0],
             value=value,  # Make sure this value is being sent
         )

@@ -183,8 +183,9 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
     elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
         parameters.update(parse_parameters(data, AnalogParameter))
     elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
+        if synth_tone == "TONE_COMMON":
+            parameters.update(parse_parameters(data, DrumCommonParameter))
         parameters.update(parse_parameters(data, DrumParameter))
-
     logging.info(f"Address: {parameters['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")
 
