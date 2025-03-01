@@ -9,7 +9,7 @@ class SynthType(Enum):
     ANALOG = "AN"
     DIGITAL1 = "SN1"
     DIGITAL2 = "SN2"
-    DRUMS = "DR"
+    DRUMS = "drums_data"
     EFFECTS = "FX"
     ARPEGGIO = "AR"
     VOCAL_FX = "VC"
@@ -102,7 +102,7 @@ class DrumKit(SynthPart):
                 "HIT", "OTH1", "OTH2", "D4", "Eb4", "E4", "F4", "F#4", "G4", 
                 "G#4", "A4", "Bb4", "B4", "C5", "C#5"
             ],
-            file_prefix="JDXi-DR-",
+            file_prefix="JDXi-drums_data-",
             file_type="Drum Kit",
             window_title="JD-Xi Manager - Drum Kit Editor",
             window_geometry="1246x710"
@@ -170,7 +170,7 @@ class VocalFX(SynthPart):
 
 # Factory function to create synth parts
 def create_synth_part(part_type: SynthType, part_number: int = None) -> SynthPart:
-    """Create a synth address instance based on type"""
+    """Create address synth address instance based on type"""
     if part_type == SynthType.ANALOG:
         return AnalogSynth()
     elif part_type in (SynthType.DIGITAL1, SynthType.DIGITAL2):

@@ -1,7 +1,7 @@
 # Digital synth preset names
 from jdxi_manager.data.presets.data import DIGITAL_PRESETS
 
-# Create a mapping of index to name for easier lookup
+# Create address mapping of index to name for easier lookup
 PRESET_MAP = {i: name for i, name in enumerate(DIGITAL_PRESETS)}
 
 # Drum kit names
@@ -290,7 +290,7 @@ DRUM_CATEGORIES = {
     }
 }
 
-# Create a flat lookup for kit categories
+# Create address flat lookup for kit categories
 DRUM_KIT_MAP = {
     kit_name: {
         'main_category': main_cat,
@@ -348,7 +348,7 @@ DRUM_WAVES = ['000: Off',
 '120: 626 Snr 1',    '121: 626 Snr 2',    '122: 626 Snr 3',    '123: 626 Snr 1a P', '124: 626 Snr 3a P', '125: 626 Snr 1b P', '126: 626 Snr 2 P',
 '127: 626 Snr 3b P', '128: Analog Snr 1', '129: Analog Snr 2', '130: Analog Snr 3', '131: Synth Snr 1',  '132: Synth Snr 2',  '133: 106 Snr',
 '134: Sim Snare',    '135: Jungle Snr 1', '136: Jungle Snr 2', '137: Jungle Snr 3', '138: Lite Snare',   '139: Lo-Bit Snr1P', '140: Lo-Bit Snr2P',
-'141: HphpJazzSnrP', '142: PurePhatSnrP', '143: DRDisco SnrP', '144: Ragga Snr',    '145: Lo-Fi Snare',  '146: DR Snare',     '147: DanceHallSnr',
+'141: HphpJazzSnrP', '142: PurePhatSnrP', '143: DRDisco SnrP', '144: Ragga Snr',    '145: Lo-Fi Snare',  '146: drums_data Snare',     '147: DanceHallSnr',
 '148: Break Snr',    '149: Piccolo SnrP', '150: TM-2 Snr 1',   '151: TM-2 Snr 2',   '152: WoodSnr RS',   '153: LD Snr',       '154: SF Snr P',
 '155: TY Snr',       '156: WD Snr P',     '157: Tight Snr',    '158: Reg.Snr1 P',   '159: Reg.Snr2 P',   '160: Ballad Snr P', '161: Rock Snr1 P',
 '162: Rock Snr2 P',  '163: LD Rim',       '164: SF Rim',       '165: TY Rim',       '166: WD Rim P',     '167: Jazz Snr P',   '168: Jazz Rim P',

@@ -6,7 +6,7 @@ from jdxi_manager.data.digital import get_digital_parameter_by_address
 
 def get_parameter_from_address(address: List[int]):
     """
-    Map a given address to a DigitalParameter.
+    Map address given address to address DigitalParameter.
 
     Args:
         address: A list representing the address bytes.

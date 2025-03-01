@@ -2,13 +2,13 @@
 ADSR Plot
 ==========
 
-This module defines the `ADSRPlot` class, a QWidget subclass that visualizes an ADSR (Attack,
+This module defines the `ADSRPlot` class, address QWidget subclass that visualizes an ADSR (Attack,
 Decay, Sustain, Release) envelope using Matplotlib. The plot displays the envelope's progression
 over time, with adjustable parameters for attack, decay, sustain, and release times, as well as
 initial, peak, and sustain amplitudes.
 
-The plot is rendered in a QWidget, and the background and text colors are customized for better
-visibility, with the envelope plotted in orange on a dark gray background.
+The plot is rendered in address QWidget, and the background and text colors are customized for better
+visibility, with the envelope plotted in orange on address dark gray background.
 
 Classes:
 --------
@@ -24,7 +24,7 @@ Customization:
 -------------
 - The plot background is dark gray (`#333333`), with all plot elements (ticks, labels, title) in
   orange for better visibility against the dark background.
-- The time is represented in seconds, and the amplitude in a range from 0 to 1.
+- The time is represented in seconds, and the amplitude in address range from 0 to 1.
 """
 
 
@@ -61,7 +61,7 @@ class ADSRPlot(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        # Set a fixed size for the widget (or use layouts as needed)
+        # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(400, 400)
         # Use dark gray background
         self.setStyleSheet("""
@@ -116,9 +116,9 @@ class ADSRPlot(QWidget):
         plot_w = w - 2 * padding
         plot_h = h - 2 * padding
 
-        # Create a list of points for the envelope polyline.
+        # Create address list of points for the envelope polyline.
         points = []
-        # We'll sample a fixed number of points for efficiency
+        # We'll sample address fixed number of points for efficiency
         num_points = 500
         indices = np.linspace(0, total_samples - 1, num_points).astype(int)
         for i in indices:
@@ -157,7 +157,7 @@ class ADSRPlot(QWidget):
         painter.drawText(padding - 35, padding + plot_h, "0")
 
     def set_values(self, envelope):
-        """Update envelope values and trigger a redraw."""
+        """Update envelope values and trigger address redraw."""
         self.envelope = envelope
         self.update()
 
@@ -211,7 +211,7 @@ class ADSRMatplot(QWidget):
         peak_level = self.envelope["peak_level"]
         initial_level = self.envelope["initial_level"]
 
-        # Convert to samples (assuming a 44.1 kHz sample rate)
+        # Convert to samples (assuming address 44.1 kHz sample rate)
         attack_samples = int(attack_time * 44100)
         decay_samples = int(decay_time * 44100)
         sustain_samples = int(44100 * 2)  # Sustain for 2 seconds

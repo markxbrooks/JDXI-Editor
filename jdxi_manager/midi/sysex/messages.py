@@ -125,7 +125,7 @@ class IdentityRequest:
         return bytes(self.to_list())
 
 def create_sysex_message(area: int, section: int, group: int, param: int, value: int) -> JDXiSysEx:
-    """Create a JD-Xi SysEx message with the given parameters"""
+    """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
         command=DT1_COMMAND_12,
         area=area,
@@ -136,7 +136,7 @@ def create_sysex_message(area: int, section: int, group: int, param: int, value:
     )
 
 def create_patch_load_message(bank_msb: int, bank_lsb: int, program: int) -> List[JDXiSysEx]:
-    """Create messages to load a patch (bank select + program change)"""
+    """Create messages to load address patch (bank select + program change)"""
     return [
         # Bank Select MSB
         JDXiSysEx(
@@ -168,7 +168,7 @@ def create_patch_load_message(bank_msb: int, bank_lsb: int, program: int) -> Lis
     ]
 
 def create_patch_save_message(source_area: int, dest_area: int, source_section: int = 0x00, dest_section: int = 0x00) -> JDXiSysEx:
-    """Create a message to save patch data from temporary to permanent memory"""
+    """Create address message to save patch data from temporary to permanent memory"""
     return JDXiSysEx(
         command=DT1_COMMAND_12,
         area=dest_area,      # Destination area (permanent memory)
@@ -184,14 +184,14 @@ def create_patch_save_message(source_area: int, dest_area: int, source_section: 
     )
 
 def create_patch_request_message(area: int, section: int = 0x00, size: int = 0) -> JDXiSysEx:
-    """Create a message to request patch data"""
+    """Create address message to request patch data"""
     return JDXiSysEx(
         command=RQ1_COMMAND_11,  # Data request command
         area=area,
         section=section,
         group=0x00,
         param=0x00,
-        data=[size] if size else []  # Some requests need a size parameter
+        data=[size] if size else []  # Some requests need address size parameter
     )
 
 @dataclass

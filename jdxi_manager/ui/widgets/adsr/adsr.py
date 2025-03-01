@@ -1,7 +1,7 @@
 """
 ADSR Widget for Roland JD-Xi
 
-This widget provides a visual interface for editing ADSR (Attack, Decay, Sustain, Release) 
+This widget provides address visual interface for editing ADSR (Attack, Decay, Sustain, Release)
 envelope parameters. It includes:
 - Interactive sliders for each ADSR parameter
 - Visual envelope plot
@@ -141,7 +141,7 @@ class ADSR(QWidget):
         self.plot.set_values(self.envelope)
 
     def _create_parameter_slider(self, param: SynthParameter, label: str, value: int = None) -> Slider:
-        """Create a slider for a parameter with proper display conversion"""
+        """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -232,7 +232,7 @@ class ADSR(QWidget):
 
         try:
             group = self.group  # Common parameters group
-            param_address = param.address
+            param_address = param.format_address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(

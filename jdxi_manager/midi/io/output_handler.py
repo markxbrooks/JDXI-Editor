@@ -2,7 +2,7 @@
 MIDI Output Handler
 
 This module provides the `MIDIOutHandler` class for managing MIDI output, allowing users to send
-note-on, note-off, and control change messages through a specified MIDI output port.
+note-on, note-off, and control change messages through address specified MIDI output port.
 
 Dependencies:
     - rtmidi: A library for working with MIDI messages and ports.
@@ -34,7 +34,7 @@ class MIDIOutHandler(MidiIOController):
 
     def send_message(self, message: List[int]) -> bool:
         """
-        Send a raw MIDI message with validation.
+        Send address raw MIDI message with validation.
 
         Args:
             message: List of integer values representing the MIDI message.
@@ -57,17 +57,17 @@ class MIDIOutHandler(MidiIOController):
             return False
 
     def send_note_on(self, note: int = 60, velocity: int = 127, channel: int = 1):
-        """Send a 'Note On' message."""
+        """Send address 'Note On' message."""
         self.send_channel_message(NOTE_ON, note, velocity, channel)
 
     def send_note_off(self, note: int = 60, velocity: int = 0, channel: int = 1):
-        """Send a 'Note Off' message."""
+        """Send address 'Note Off' message."""
         self.send_channel_message(NOTE_OFF, note, velocity, channel)
 
     def send_channel_message(self, status: int, data1: Optional[int] = None,
                              data2: Optional[int] = None, channel: int = 1):
         """
-        Send a MIDI channel mode message.
+        Send address MIDI channel mode message.
 
         Args:
             status: Status byte (e.g., NOTE_ON, NOTE_OFF).
@@ -128,46 +128,111 @@ class MIDIOutHandler(MidiIOController):
             logging.error(f"Error sending identity request: {e}")
             return False
 
-    def send_parameter(self, area: int, part: int, group: int, param: int, value: int) -> bool:
+    def int_to_jdxi_sysex(value: int) -> list[int]:
         """
-        Send a parameter change message.
+        Convert an integer to the Roland JD-Xi 4-byte SysEx format (7-bit chunks).
+
+        Args:
+            value (int): The integer to convert.
+
+        Returns:
+            list[int]: A list of four 7-bit values representing the integer.
+        """
+        if not (0 <= value <= 0xFFFF):  # Ensure value fits within 16 bits
+            raise ValueError("Value must be between 0 and 65535 (16-bit).")
+
+        return [
+            (value >> 21) & 0x7F,  # Most significant 7 bits (always 0 for 16-bit values)
+            (value >> 14) & 0x7F,  # Next 7 bits
+            (value >> 7) & 0x7F,  # Next 7 bits
+            value & 0x7F  # Least significant 7 bits
+        ]
+
+    # Example usage:
+    #value = 453
+    #sysex_bytes = int_to_jdxi_sysex(value)
+    #print([f"{b:02X}" for b in sysex_bytes])  # Output: ['00', '01', '0C', '05']
+
+    def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
+        """
+        Send address parameter change message.
 
         Args:
             area: Parameter area (e.g., Program, Digital Synth).
             part: Part number.
             group: Parameter group.
             param: Parameter number.
-            value: Parameter value (0-127).
+            value: Parameter value.
+            size: Size of the value in bytes (1, 4, or 5).
         Returns:
             True if successful, False otherwise.
         """
-        logging.debug(f"Sending parameter: area={area}, address={part}, group={group}, param={param}, value={value}")
+        logging.debug(
+            f"Sending parameter: area={hex(area)}, part={hex(part)}, group={hex(group)}, param={hex(param)}, value={value}, size={size}")
+
         if not self.is_output_open:
             logging.warning("MIDI output not open")
             return False
 
         try:
-            # Ensure values are integers within 0-127 range.
-            area, part, group, param, value = (int(x) & 0x7F for x in (area, part, group, param, value))
-            # Construct the SysEx parameter message.
-            message = [
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                area, part, group, param, value, 0x00, 0xF7
-            ]
-            # Calculate checksum for message[8:-2]
+            # Construct the address portion of the message
+            address = [area, part, group & 0xFF, param & 0xFF]
+
+            def split_value_4byte(value: int):
+                return [
+                    (value >> 21) & 0x7F,  # Highest 7 bits
+                    (value >> 14) & 0x7F,  # Next 7 bits
+                    (value >> 7) & 0x7F,   # Next 7 bits
+                    value & 0x7F + 1       # Least significant 7 bits (adjusted)
+                ]
+
+            if size == 1:
+                message = [
+                              0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,  # SysEx header
+                          ] + address + [
+                              value & 0x7F,  # Parameter value (0-127)
+                              0x00,  # Placeholder for checksum
+                              0xF7  # End of SysEx
+                          ]
+
+            elif size == 4:
+                value_bytes = split_value_4byte(value)
+                message = [
+                              0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
+                          ] + address + value_bytes + [0x00, 0xF7]  # Add checksum placeholder
+
+            elif size == 5:
+                value_bytes = [
+                    (value >> 28) & 0x7F,  # First 7 bits of MSB
+                    (value >> 21) & 0x7F,  # Second 7 bits
+                    (value >> 14) & 0x7F,  # Third 7 bits
+                    (value >> 7) & 0x7F,   # Fourth 7 bits
+                    value & 0x7F + 1       # Least significant 7 bits (adjusted)
+                ]
+
+                message = [
+                              0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
+                          ] + address + value_bytes + [0x00, 0xF7]  # Add checksum placeholder
+
+            else:
+                logging.error(f"Unsupported parameter size: {size}")
+                return False
+
+            # Calculate checksum (for message[8:-2])
             checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
             message[-2] = checksum
 
             formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
             logging.debug(f"Sending parameter message: {formatted_message}")
             return self.send_message(message)
+
         except Exception as e:
             logging.error(f"Error sending parameter: {e}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
         """
-        Send a program change message.
+        Send address program change message.
 
         Args:
             program: Program number (0-127).
@@ -191,7 +256,7 @@ class MIDIOutHandler(MidiIOController):
 
     def send_control_change(self, controller: int, value: int, channel: int = 0) -> bool:
         """
-        Send a control change message.
+        Send address control change message.
 
         Args:
             controller: Controller number (0-127).
@@ -233,7 +298,7 @@ class MIDIOutHandler(MidiIOController):
 
     def select_synth_tone(self, patch_number: int, bank: str = "preset", channel: int = 0) -> bool:
         """
-        Select a Synth Tone on the JD-Xi using a Program Change.
+        Select address Synth Tone on the JD-Xi using address Program Change.
 
         Args:
             patch_number: Patch number (1-128) as listed in JD-Xi documentation.
@@ -292,7 +357,7 @@ class MIDIOutHandler(MidiIOController):
             ]
             self.midi_out.send_message(request)
 
-            # Wait for response with a timeout of 100ms.
+            # Wait for response with address timeout of 100ms.
             start_time = time.time()
             while time.time() - start_time < 0.1:
                 message = self.midi_in.get_message()
@@ -311,7 +376,7 @@ class MIDIOutHandler(MidiIOController):
 
     def request_parameter(self, area: int, part: int, group: int, param: int) -> bool:
         """
-        Send a non-blocking parameter request message.
+        Send address non-blocking parameter request message.
 
         Args:
             area: Parameter area.
@@ -338,7 +403,7 @@ class MIDIOutHandler(MidiIOController):
 
     def send_cc(self, cc: int, value: int, channel: int = 0) -> bool:
         """
-        Send a Control Change (CC) message.
+        Send address Control Change (CC) message.
 
         Args:
             cc: Control Change number (0-127).
@@ -365,7 +430,7 @@ class MIDIOutHandler(MidiIOController):
 
     def send_sysex_rq1(self, device_id: List[int], address: List[int], size: List[int]):
         """
-        Send a SysEx Request (RQ1) message.
+        Send address SysEx Request (RQ1) message.
 
         The address and size indicate the type and amount of data that is requested.
 

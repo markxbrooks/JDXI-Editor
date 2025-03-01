@@ -666,7 +666,7 @@ class AnalogCommonParameter(Enum):
 
     @property
     def is_switch(self) -> bool:
-        """Returns True if parameter is a binary/enum switch"""
+        """Returns True if parameter is address binary/enum switch"""
         return self in [
             self.LFO_TEMPO_SYNC_SWITCH,
             self.LFO_KEY_TRIGGER,

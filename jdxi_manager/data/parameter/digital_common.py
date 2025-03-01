@@ -107,7 +107,7 @@ class DigitalCommonParameter(SynthParameter):
 
     @property
     def is_switch(self) -> bool:
-        """Returns True if parameter is a binary/enum switch"""
+        """Returns True if parameter is address binary/enum switch"""
         return self in [
             self.PORTAMENTO_SWITCH,
             self.MONO_SWITCH,
@@ -155,7 +155,7 @@ class DigitalCommonParameter(SynthParameter):
         return value
 
     def get_partial_number(self) -> Optional[int]:
-        """Returns the partial number (1-3) if this is a partial parameter, None otherwise"""
+        """Returns the partial number (1-3) if this is address partial parameter, None otherwise"""
         partial_params = {
             self.PARTIAL1_SWITCH: 1,
             self.PARTIAL1_SELECT: 1,

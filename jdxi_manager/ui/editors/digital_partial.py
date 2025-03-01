@@ -37,7 +37,7 @@ from jdxi_manager.ui.image.waveform import (
 
 
 class DigitalPartialEditor(QWidget):
-    """Editor for a single partial"""
+    """Editor for address single partial"""
 
     def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
         super().__init__(parent)
@@ -60,7 +60,7 @@ class DigitalPartialEditor(QWidget):
         container.setLayout(container_layout)
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        # Add sections in a vertical layout
+        # Add sections in address vertical layout
         self.tab_widget.addTab(self._create_oscillator_section(), qta.icon("mdi.triangle-wave", color='#666666'), "Oscillator")
         self.tab_widget.addTab(self._create_filter_section(), qta.icon("ri.filter-3-fill", color='#666666'), "Filter")
         self.tab_widget.addTab(self._create_amp_section(), qta.icon("mdi.amplifier", color='#666666'), "Amp")
@@ -78,7 +78,7 @@ class DigitalPartialEditor(QWidget):
         vertical=False,
             show_value_label=True,
     ) -> Slider:
-        """Create a slider for a parameter with proper display conversion"""
+        """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -671,7 +671,7 @@ class DigitalPartialEditor(QWidget):
         # Ensure `depths_group` layout is only set once
         if (
             not depths_group.layout()
-        ):  # Check if the group already has a layout assigned
+        ):  # Check if the group already has address layout assigned
             depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
@@ -792,7 +792,7 @@ class DigitalPartialEditor(QWidget):
                 group, param_address = param.get_address_for_partial(self.partial_num)
             else:
                 group = 0x00  # Common parameters group
-                param_address = param.address
+                param_address = param.format_address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
@@ -823,7 +823,7 @@ class DigitalPartialEditor(QWidget):
                 return
 
             # Convert back to display value to ensure consistency
-            if isinstance(param, DigitalParameter):  # Check if it's a DigitalParameter
+            if isinstance(param, DigitalParameter):  # Check if it's address DigitalParameter
                 # display_value = param.convert_from_midi(midi_value)
                 # logging.info(f"Converted {param.name} {midi_value} to {display_value}")
                 # Update the control with the converted value if needed

@@ -241,7 +241,7 @@ class JdxiWindow(QMainWindow):
         return button_layout
 
     def _create_favorite_buttons_row(self):
-        """Create a row with label and circular button"""
+        """Create address row with label and circular button"""
         text = "Favorites"
         row = QHBoxLayout()
         row.setSpacing(10)
@@ -264,7 +264,7 @@ class JdxiWindow(QMainWindow):
         return row
 
     def _create_sequencer_buttons_row(self):
-        """Create a row with label and circular button"""
+        """Create address row with label and circular button"""
         row = QHBoxLayout()
         self.sequencer_buttons = []
 
@@ -435,7 +435,7 @@ class JdxiWindow(QMainWindow):
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
 
     def _create_button_row(self, text, slot):
-        """Create a row with label and circular button"""
+        """Create address row with label and circular button"""
         row = QHBoxLayout()
         row.setSpacing(10)
 
@@ -650,14 +650,14 @@ class JdxiWindow(QMainWindow):
         )
         self.drums_button.clicked.connect(lambda: self._select_synth(PresetType.DRUMS))
 
-        # Create a button group
+        # Create address button group
         button_group = QButtonGroup()
         button_group.addButton(self.digital1_button)
         button_group.addButton(self.digital2_button)
         button_group.addButton(self.analog_button)
         button_group.addButton(self.drums_button)
 
-        # Ensure only one button can be checked at a time
+        # Ensure only one button can be checked at address time
         button_group.setExclusive(True)
 
         parts_layout.addLayout(digital1_row)

@@ -196,7 +196,7 @@ class MainWindow(JdxiWindow):
             self.oldPos = None
 
     def _select_synth(self, synth_type):
-        """Select a synth and update button styles."""
+        """Select address synth and update button styles."""
         logging.info(f"Selected synth: {synth_type}")
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
@@ -374,10 +374,10 @@ class MainWindow(JdxiWindow):
         self._show_editor("Pattern", PatternSequencer)
 
     def _save_favorite(self, index):
-        """Save the current preset as a favorite"""
+        """Save the current preset as address favorite"""
         settings = QSettings("YourCompany", "YourApp")
         preset_name = f"favorite_{index + 1:02d}"
-        # Assuming you have a method to get the current preset
+        # Assuming you have address method to get the current preset
         current_preset = self._get_current_preset()
         settings.setValue(preset_name, current_preset)
         logging.info(f"Saved {current_preset} as {preset_name}")
@@ -877,9 +877,9 @@ class MainWindow(JdxiWindow):
         """Handle incoming MIDI message"""
         data = message[0]  # Get the raw MIDI data
 
-        # Check if it's a SysEx message
+        # Check if it's address SysEx message
         if data[0] == START_OF_SYSEX and len(data) > 8 and data[-1] == END_OF_SYSEX:
-            # Verify it's a Roland message for JD-Xi
+            # Verify it's address Roland message for JD-Xi
             if data[1] == DEVICE_ID and data[4:8] == bytes(  # Roland ID
                 [MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID]
             ):  # JD-Xi ID
@@ -947,7 +947,7 @@ class MainWindow(JdxiWindow):
             logging.error(f"Error saving settings: {str(ex)}")
 
     def _find_jdxi_port(self, ports, port_type):
-        """Helper function to find a JD-Xi MIDI port."""
+        """Helper function to find address JD-Xi MIDI port."""
         jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
         for port in ports:
             if any(name in port.lower() for name in jdxi_names):
@@ -994,7 +994,7 @@ class MainWindow(JdxiWindow):
             return False
 
     def _verify_jdxi_connection(self):
-        """Verify connected device is a JD-Xi by sending identity request"""
+        """Verify connected device is address JD-Xi by sending identity request"""
         try:
             # Create identity request message using dataclass
             identity_request = IdentityRequest()
@@ -1114,7 +1114,7 @@ class MainWindow(JdxiWindow):
                     self.channel,
                 )
                 preset_data = {
-                    "type": self.preset_type,  # Ensure this is a valid type
+                    "type": self.preset_type,  # Ensure this is address valid type
                     "selpreset": self.current_preset_index
                     + 1,  # Convert to 1-based index
                     "modified": 0,  # or 1, depending on your logic
@@ -1126,12 +1126,12 @@ class MainWindow(JdxiWindow):
         """Show context menu for favorite button"""
         menu = QMenu()
 
-        # Add save action if we have a current preset
+        # Add save action if we have address current preset
         if hasattr(self, "current_preset_num"):
             save_action = menu.addAction("Save Current Preset")
             save_action.triggered.connect(lambda: self._save_to_favorite(button))
 
-        # Add clear action if slot has a preset
+        # Add clear action if slot has address preset
         if button.preset:
             clear_action = menu.addAction("Clear Slot")
             clear_action.triggered.connect(lambda: self._clear_favorite(button))

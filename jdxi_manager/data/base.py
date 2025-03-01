@@ -30,7 +30,7 @@ class BaseParameter(Enum):
 
     @staticmethod
     def get_name_by_address(address: int):
-        """Return the parameter name for a given address."""
+        """Return the parameter name for address given address."""
         for param in BaseParameter:
             if param.address == address:
                 return param.name

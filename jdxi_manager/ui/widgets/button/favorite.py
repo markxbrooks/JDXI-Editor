@@ -48,7 +48,7 @@ class FavoriteButton(QPushButton):
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
         preset_data = {
-            'type': self.preset.synth_type,  # Ensure this is a valid type
+            'type': self.preset.synth_type,  # Ensure this is address valid type
             'selpreset': self.preset.preset_num + 1,  # Convert to 1-based index
             'modified': 0  # or 1 if modified
         }

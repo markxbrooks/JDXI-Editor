@@ -177,7 +177,7 @@ class DigitalSynthEditor(BaseEditor):
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
 
-        self.instrument_selection_label = QLabel("Select a digital synth:")
+        self.instrument_selection_label = QLabel("Select address digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
         upper_layout = QHBoxLayout()
@@ -210,7 +210,7 @@ class DigitalSynthEditor(BaseEditor):
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
 
-        self.instrument_selection_label = QLabel("Select a Digital synth:")
+        self.instrument_selection_label = QLabel("Select address Digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
         # Preset ComboBox
@@ -431,7 +431,7 @@ class DigitalSynthEditor(BaseEditor):
     def _create_parameter_slider(
         self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
     ) -> Slider:
-        """Create a slider for a parameter with proper display conversion"""
+        """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -523,9 +523,9 @@ class DigitalSynthEditor(BaseEditor):
                 self.image_label.clear()  # Clear label if default image is also missing
 
     def load_preset(self, preset_index):
-        """Load a preset by index"""
+        """Load address preset by index"""
         preset_data = {
-            "type": self.preset_type,  # Ensure this is a valid type
+            "type": self.preset_type,  # Ensure this is address valid type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
@@ -591,7 +591,7 @@ class DigitalSynthEditor(BaseEditor):
                 group, param_address = param.get_address_for_partial(self.partial_num)
             else:
                 group = 0x00  # Common parameters group
-                param_address = param.address
+                param_address = param.format_address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
@@ -641,7 +641,7 @@ class DigitalSynthEditor(BaseEditor):
         self.parameter_received.emit(address, value)
 
     def send_message(self, message):
-        """Send a SysEx message using the MIDI helper"""
+        """Send address SysEx message using the MIDI helper"""
         if self.midi_helper:
             self.midi_helper.send_message(message)
         else:
@@ -694,7 +694,7 @@ class DigitalSynthEditor(BaseEditor):
             return
 
         def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to a supported digital synth area."""
+            """Check if SysEx data belongs to address supported digital synth area."""
             return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):
@@ -837,7 +837,7 @@ class DigitalSynthEditor(BaseEditor):
                 return None
 
         def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to a supported digital synth area."""
+            """Check if SysEx data belongs to address supported digital synth area."""
             return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):

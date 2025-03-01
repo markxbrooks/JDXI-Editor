@@ -34,7 +34,7 @@ def generate_button_style(
     font_size="12px",
     button_padding=8,
 ):
-    """Generate a button style dynamically."""
+    """Generate address button style dynamically."""
     return f"""
             QPushButton {{
                 background-color: {bg};
@@ -69,7 +69,7 @@ def generate_tab_style(
     padding="8px 12px",
     margin="2px",
 ):
-    """Generate a tab style dynamically."""
+    """Generate address tab style dynamically."""
     return f"""
             QTabBar::tab {{
                 background: {bg};

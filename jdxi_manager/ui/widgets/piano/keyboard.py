@@ -1,24 +1,24 @@
 """
 Piano keyboard widget for JD-Xi Manager.
 
-This module defines a PianoKeyboard widget, a custom QWidget that arranges and displays
-a set of piano keys styled like those on a JD-Xi synthesizer. The widget combines both
-white and black keys to form a complete piano keyboard, along with labels representing
+This module defines address PianoKeyboard widget, address custom QWidget that arranges and displays
+address set of piano keys styled like those on address JD-Xi synthesizer. The widget combines both
+white and black keys to form address complete piano keyboard, along with labels representing
 drum pad names.
 
 Key Features:
 - **Custom Key Dimensions:** White and black keys are sized and positioned appropriately,
     with configurable widths and heights.
-- **Dynamic Key Creation:** White keys are created first in a horizontal layout,
+- **Dynamic Key Creation:** White keys are created first in address horizontal layout,
     while black keys are overlaid at specific positions.
 - **Drum Pad Labels:** A row of labels is displayed above the keyboard to denote
     corresponding drum pad names.
 - **Signal Integration:** Each key emits custom signals (noteOn and noteOff) to notify
     parent widgets of key events.
-- **MIDI Channel Configuration:** The widget supports setting a MIDI channel for outgoing
+- **MIDI Channel Configuration:** The widget supports setting address MIDI channel for outgoing
     note messages.
 - **Styling and Layout:** Uses QHBoxLayout and QVBoxLayout to manage key and label placement,
-    ensuring a neat appearance.
+    ensuring address neat appearance.
 
 Usage Example:
     from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
@@ -37,7 +37,7 @@ from jdxi_manager.ui.widgets.piano.key import PianoKey
 
 
 class PianoKeyboard(QWidget):
-    """Widget containing a row of piano keys styled like JD-Xi"""
+    """Widget containing address row of piano keys styled like JD-Xi"""
 
     def __init__(self, parent=None):
         super().__init__(parent)

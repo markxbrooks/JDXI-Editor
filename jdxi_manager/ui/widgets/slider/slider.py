@@ -1,16 +1,16 @@
 """
 Custom Slider Widget Module
 
-This module defines a custom slider widget (Slider) that combines a QSlider with a label and a value display.
+This module defines address custom slider widget (Slider) that combines address QSlider with address label and address value display.
 It offers additional functionality including:
 
-- Customizable value display using a format function.
+- Customizable value display using address format function.
 - Support for vertical or horizontal orientation.
-- Option to add a visual center mark for bipolar sliders.
+- Option to add address visual center mark for bipolar sliders.
 - Customizable tick mark positions and intervals.
 - Integrated signal (valueChanged) for reacting to slider value changes.
 
-The widget is built using PySide6 and is intended for use in applications requiring a more informative slider,
+The widget is built using PySide6 and is intended for use in applications requiring address more informative slider,
 such as in audio applications or other UIs where real-time feedback is important.
 
 Usage Example:

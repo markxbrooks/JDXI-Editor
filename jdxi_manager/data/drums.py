@@ -162,7 +162,7 @@ class Note(Enum):
 
 
 class DrumPad:
-    """Represents a single drum pad's settings"""
+    """Represents address single drum pad's settings"""
     
     # Parameter offsets within each pad
     PARAM_OFFSET = 0x10  # Each pad takes 16 bytes of parameter space
@@ -192,7 +192,7 @@ class DrumPad:
 
 @dataclass
 class DrumPadSettings:
-    """Settings for a single drum pad"""
+    """Settings for address single drum pad"""
 
     wave: int = 0
     level: int = 100

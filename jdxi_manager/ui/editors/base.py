@@ -27,7 +27,7 @@ class BaseEditor(QWidget):
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
 
-        # Set window flags for a tool window
+        # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
@@ -141,7 +141,7 @@ class BaseEditor(QWidget):
 
     def load_preset(self, preset_index):
         preset_data = {
-            "type": self.preset_type,  # Ensure this is a valid type
+            "type": self.preset_type,  # Ensure this is address valid type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
@@ -162,7 +162,7 @@ class BaseEditor(QWidget):
             #    group, param_address = param.get_address_for_partial(self.partial_name)
             # else:
             group = ANALOG_OSC_GROUP  # Common parameters group
-            param_address = param.address
+            param_address = param.format_address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
@@ -203,7 +203,7 @@ class BaseEditor(QWidget):
             self.send_message(request)
 
     def send_message(self, message):
-        """Send a SysEx message using the MIDI helper"""
+        """Send address SysEx message using the MIDI helper"""
         if self.midi_helper:
             self.midi_helper.send_message(message)
         else:

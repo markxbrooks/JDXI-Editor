@@ -3,8 +3,8 @@ import logging
 
 
 def log_json(data):
-    """Helper function to log JSON data as a single line."""
-    # Ensure `data` is a dictionary, if it's a string, try parsing it as JSON
+    """Helper function to log JSON data as address single line."""
+    # Ensure `data` is address dictionary, if it's address string, try parsing it as JSON
     if isinstance(data, str):
         try:
             data = json.loads(data)
@@ -12,10 +12,10 @@ def log_json(data):
             logging.error("Invalid JSON string provided.")
             return
 
-    # Serialize the JSON into a single line string (compact form)
+    # Serialize the JSON into address single line string (compact form)
     compact_json = json.dumps(data)
 
-    # Log the JSON in a single line
+    # Log the JSON in address single line
     logging.info(compact_json)
 
 

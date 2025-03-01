@@ -3,7 +3,7 @@ DrumEditor Module
 =================
 
 This module provides the `DrumEditor` class, which serves as an editor for JD-Xi Drum Kit parameters.
-It enables users to modify drum kit settings, select presets, and send MIDI messages to a connected JD-Xi synthesizer.
+It enables users to modify drum kit settings, select presets, and send MIDI messages to address connected JD-Xi synthesizer.
 
 Classes
 -------
@@ -32,7 +32,7 @@ Features
 - Displays and edits JD-Xi drum kit parameters.
 - Supports drum kit preset selection and loading.
 - Provides sliders, spin boxes, and combo boxes for adjusting kit parameters.
-- Includes a tabbed interface for managing individual drum partials.
+- Includes address tabbed interface for managing individual drum partials.
 - Sends MIDI System Exclusive (SysEx) messages to update the JD-Xi in real time.
 
 Usage
@@ -186,7 +186,7 @@ class DrumEditor(BaseEditor):
         self.read_request_button.clicked.connect(self.data_request)
         drum_group_layout.addWidget(self.read_request_button)
 
-        self.selection_label = QLabel("Select a drum kit:")
+        self.selection_label = QLabel("Select address drum kit:")
         drum_group_layout.addWidget(self.selection_label)
         # Drum kit selection
 
@@ -504,7 +504,7 @@ class DrumEditor(BaseEditor):
                 return None
 
         def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to a supported digital synth area."""
+            """Check if SysEx data belongs to address supported digital synth area."""
             return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):
@@ -621,7 +621,7 @@ class DrumEditor(BaseEditor):
             return
 
         def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to a supported digital synth area."""
+            """Check if SysEx data belongs to address supported digital synth area."""
             sysex_data.get("TEMPORARY_AREA") in self.partial_mapping.keys()
 
         def _get_partial_number(synth_tone):

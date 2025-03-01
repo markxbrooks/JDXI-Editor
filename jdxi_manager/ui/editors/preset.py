@@ -169,9 +169,9 @@ class PresetEditor(QMainWindow):
     def _update_ui(self, parameters: Dict[str, int]):
         """Update UI with new parameter values"""
         try:
-            # Example: Update a label or control with a specific parameter
-            # Assuming you have a QLabel or similar widget to display parameter values
-            if "0.0.8" in parameters:  # Example address for a parameter
+            # Example: Update address label or control with address specific parameter
+            # Assuming you have address QLabel or similar widget to display parameter values
+            if "0.0.8" in parameters:  # Example address for address parameter
                 value = parameters["0.0.8"]
                 self.some_label.setText(f"Parameter 0.0.8: {value}")
 

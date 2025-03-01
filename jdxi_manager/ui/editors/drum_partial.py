@@ -30,8 +30,518 @@ from jdxi_manager.ui.widgets.slider import Slider
 instrument_icon_folder = "drum_kits"
 
 
+RMwaves = (
+    "000: --- OFF ---",
+    "001: 78 Kick P",
+    "002: 606 Kick P",
+    "003: 808 Kick 1aP",
+    "004: 808 Kick 1bP",
+    "005: 808 Kick 1cP",
+    "006: 808 Kick 2aP",
+    "007: 808 Kick 2bP",
+    "008: 808 Kick 2cP",
+    "009: 808 Kick 3aP",
+    "010: 808 Kick 3bP",
+    "011: 808 Kick 3cP",
+    "012: 808 Kick 4aP",
+    "013: 808 Kick 4bP",
+    "014: 808 Kick 4cP",
+    "015: 808 Kick 1Lp",
+    "016: 808 Kick 2Lp",
+    "017: 909 Kick 1aP",
+    "018: 909 Kick 1bP",
+    "019: 909 Kick 1cP",
+    "020: 909 Kick 2bP",
+    "021: 909 Kick 2cP",
+    "022: 909 Kick 3P",
+    "023: 909 Kick 4",
+    "024: 909 Kick 5",
+    "025: 909 Kick 6",
+    "026: 909 DstKickP",
+    "027: 909 Kick Lp",
+    "028: 707 Kick 1 P",
+    "029: 707 Kick 2 P",
+    "030: 626 Kick 1 P",
+    "031: 626 Kick 2 P",
+    "032: Analog Kick1",
+    "033: Analog Kick2",
+    "034: Analog Kick3",
+    "035: Analog Kick4",
+    "036: Analog Kick5",
+    "037: PlasticKick1",
+    "038: PlasticKick2",
+    "039: Synth Kick 1",
+    "040: Synth Kick 2",
+    "041: Synth Kick 3",
+    "042: Synth Kick 4",
+    "043: Synth Kick 5",
+    "044: Synth Kick 6",
+    "045: Synth Kick 7",
+    "046: Synth Kick 8",
+    "047: Synth Kick 9",
+    "048: Synth Kick10",
+    "049: Synth Kick11",
+    "050: Synth Kick12",
+    "051: Synth Kick13",
+    "052: Synth Kick14",
+    "053: Synth Kick15",
+    "054: Vint Kick P",
+    "055: Jungle KickP",
+    "056: HashKick 1 P",
+    "057: HashKick 2 P",
+    "058: Lite Kick P",
+    "059: Dry Kick 1",
+    "060: Dry Kick 2",
+    "061: Tight Kick P",
+    "062: Old Kick",
+    "063: Warm Kick P",
+    "064: Hush Kick P",
+    "065: Power Kick",
+    "066: Break Kick",
+    "067: Turbo Kick",
+    "068: TM-2 Kick 1",
+    "069: TM-2 Kick 2",
+    "070: PurePhatKckP",
+    "071: Bright KickP",
+    "072: LoBit Kick1P",
+    "073: LoBit Kick2P",
+    "074: Dance Kick P",
+    "075: Hip Kick P",
+    "076: HipHop Kick",
+    "077: Mix Kick 1",
+    "078: Mix Kick 2",
+    "079: Wide Kick P",
+    "080: LD Kick P",
+    "081: SF Kick 1 P",
+    "082: SF Kick 2 P",
+    "083: TY Kick P",
+    "084: WD Kick P",
+    "085: Reg.Kick P",
+    "086: Rock Kick P",
+    "087: Jz Dry Kick",
+    "088: Jazz Kick P",
+    "089: 78 Snr",
+    "090: 606 Snr 1 P",
+    "091: 606 Snr 2 P",
+    "092: 808 Snr 1a P",
+    "093: 808 Snr 1b P",
+    "094: 808 Snr 1c P",
+    "095: 808 Snr 2a P",
+    "096: 808 Snr 2b P",
+    "097: 808 Snr 2c P",
+    "098: 808 Snr 3a P",
+    "099: 808 Snr 3b P",
+    "100: 808 Snr 3c P",
+    "101: 909 Snr 1a P",
+    "102: 909 Snr 1b P",
+    "103: 909 Snr 1c P",
+    "104: 909 Snr 1d P",
+    "105: 909 Snr 2a P",
+    "106: 909 Snr 2b P",
+    "107: 909 Snr 2c P",
+    "108: 909 Snr 2d P",
+    "109: 909 Snr 3a P",
+    "110: 909 Snr 3b P",
+    "111: 909 Snr 3c P",
+    "112: 909 Snr 3d P",
+    "113: 909 DstSnr1P",
+    "114: 909 DstSnr2P",
+    "115: 909 DstSnr3P",
+    "116: 707 Snr 1a P",
+    "117: 707 Snr 2a P",
+    "118: 707 Snr 1b P",
+    "119: 707 Snr 2b P",
+    "120: 626 Snr 1",
+    "121: 626 Snr 2",
+    "122: 626 Snr 3",
+    "123: 626 Snr 1a P",
+    "124: 626 Snr 3a P",
+    "125: 626 Snr 1b P",
+    "126: 626 Snr 2 P",
+    "127: 626 Snr 3b P",
+    "128: Analog Snr 1",
+    "129: Analog Snr 2",
+    "130: Analog Snr 3",
+    "131: Synth Snr 1",
+    "132: Synth Snr 2",
+    "133: 106 Snr",
+    "134: Sim Snare",
+    "135: Jungle Snr 1",
+    "136: Jungle Snr 2",
+    "137: Jungle Snr 3",
+    "138: Lite Snare",
+    "139: Lo-Bit Snr1P",
+    "140: Lo-Bit Snr2P",
+    "141: HphpJazzSnrP",
+    "142: PurePhatSnrP",
+    "143: DRDisco SnrP",
+    "144: Ragga Snr",
+    "145: Lo-Fi Snare",
+    "146: drums_data Snare",
+    "147: DanceHallSnr",
+    "148: Break Snr",
+    "149: Piccolo SnrP",
+    "150: TM-2 Snr 1",
+    "151: TM-2 Snr 2",
+    "152: WoodSnr RS",
+    "153: LD Snr",
+    "154: SF Snr P",
+    "155: TY Snr",
+    "156: WD Snr P",
+    "157: Tight Snr",
+    "158: Reg.Snr1 P",
+    "159: Reg.Snr2 P",
+    "160: Ballad Snr P",
+    "161: Rock Snr1 P",
+    "162: Rock Snr2 P",
+    "163: LD Rim",
+    "164: SF Rim",
+    "165: TY Rim",
+    "166: WD Rim P",
+    "167: Jazz Snr P",
+    "168: Jazz Rim P",
+    "169: Jz BrshSlapP",
+    "170: Jz BrshSwshP",
+    "171: Swish&Trn P",
+    "172: 78 Rimshot",
+    "173: 808 RimshotP",
+    "174: 909 RimshotP",
+    "175: 707 Rimshot",
+    "176: 626 Rimshot",
+    "177: Vint Stick P",
+    "178: Lo-Bit Stk P",
+    "179: Hard Stick P",
+    "180: Wild Stick P",
+    "181: LD Cstick",
+    "182: TY Cstick",
+    "183: WD Cstick",
+    "184: 606 H.Tom P",
+    "185: 808 H.Tom P",
+    "186: 909 H.Tom P",
+    "187: 707 H.Tom P",
+    "188: 626 H.Tom 1",
+    "189: 626 H.Tom 2",
+    "190: SimV Tom 1 P",
+    "191: LD H.Tom P",
+    "192: SF H.Tom P",
+    "193: TY H.Tom P",
+    "194: 808 M.Tom P",
+    "195: 909 M.Tom P",
+    "196: 707 M.Tom P",
+    "197: 626 M.Tom 1",
+    "198: 626 M.Tom 2",
+    "199: SimV Tom 2 P",
+    "200: LD M.Tom P",
+    "201: SF M.Tom P",
+    "202: TY M.Tom P",
+    "203: 606 L.Tom P",
+    "204: 808 L.Tom P",
+    "205: 909 L.Tom P",
+    "206: 707 L.Tom P",
+    "207: 626 L.Tom 1",
+    "208: 626 L.Tom 2",
+    "209: SimV Tom 3 P",
+    "210: SimV Tom 4 P",
+    "211: LD L.Tom P",
+    "212: SF L.Tom P",
+    "213: TY L.Tom P",
+    "214: 78 CHH",
+    "215: 606 CHH",
+    "216: 808 CHH",
+    "217: 909 CHH 1",
+    "218: 909 CHH 2",
+    "219: 909 CHH 3",
+    "220: 909 CHH 4",
+    "221: 707 CHH",
+    "222: 626 CHH",
+    "223: HipHop CHH",
+    "224: Lite CHH",
+    "225: Reg.CHH",
+    "226: Rock CHH",
+    "227: S13 CHH Tip",
+    "228: S14 CHH Tip",
+    "229: 606 C&OHH",
+    "230: 808 C&OHH S",
+    "231: 808 C&OHH L",
+    "232: Hip PHH",
+    "233: Reg.PHH",
+    "234: Rock PHH",
+    "235: S13 PHH",
+    "236: S14 PHH",
+    "237: 606 OHH",
+    "238: 808 OHH S",
+    "239: 808 OHH L",
+    "240: 909 OHH 1",
+    "241: 909 OHH 2",
+    "242: 909 OHH 3",
+    "243: 707 OHH",
+    "244: 626 OHH",
+    "245: HipHop OHH",
+    "246: Lite OHH",
+    "247: Reg.OHH",
+    "248: Rock OHH",
+    "249: S13 OHH Shft",
+    "250: S14 OHH Shft",
+    "251: 78 Cymbal",
+    "252: 606 Cymbal",
+    "253: 808 Cymbal 1",
+    "254: 808 Cymbal 2",
+    "255: 808 Cymbal 3",
+    "256: 909 CrashCym",
+    "257: 909 Rev Cym",
+    "258: MG Nz Cym",
+    "259: 707 CrashCym",
+    "260: 626 CrashCym",
+    "261: Crash Cym 1",
+    "262: Crash Cym 2",
+    "263: Rock Crash 1",
+    "264: Rock Crash 2",
+    "265: P17 CrashTip",
+    "266: S18 CrashTip",
+    "267: Z18kCrashSft",
+    "268: Jazz Crash",
+    "269: 909 RideCym",
+    "270: 707 RideCym",
+    "271: 626 RideCym",
+    "272: Ride Cymbal",
+    "273: 626 ChinaCym",
+    "274: China Cymbal",
+    "275: Splash Cym",
+    "276: 626 Cup",
+    "277: Rock Rd Cup",
+    "278: 808 ClapS1 P",
+    "279: 808 ClapS2 P",
+    "280: 808 ClapL1 P",
+    "281: 808 ClapL2 P",
+    "282: 909 Clap 1 P",
+    "283: 909 Clap 2 P",
+    "284: 909 Clap 3 P",
+    "285: 909 DstClapP",
+    "286: 707 Clap P",
+    "287: 626 Clap",
+    "288: R8 Clap",
+    "289: Cheap Clap",
+    "290: Old Clap P",
+    "291: Hip Clap",
+    "292: Dist Clap",
+    "293: Hand Clap",
+    "294: Club Clap",
+    "295: Real Clap",
+    "296: Funk Clap",
+    "297: Bright Clap",
+    "298: TM-2 Clap",
+    "299: Amb Clap",
+    "300: Disc Clap",
+    "301: Claptail",
+    "302: Gospel Clap",
+    "303: 78 Tamb",
+    "304: 707 Tamb P",
+    "305: 626 Tamb",
+    "306: TM-2 Tamb",
+    "307: Tamborine 1",
+    "308: Tamborine 2",
+    "309: Tamborine 3",
+    "310: 808 CowbellP",
+    "311: 707 Cowbell",
+    "312: 626 Cowbell",
+    "313: Cowbell Mute",
+    "314: 78 H.Bongo P",
+    "315: 727 H.Bongo",
+    "316: Bongo Hi Mt",
+    "317: Bongo Hi Slp",
+    "318: Bongo Hi Op",
+    "319: 78 L.Bongo P",
+    "320: 727 L.Bongo",
+    "321: Bongo Lo Op",
+    "322: Bongo Lo Slp",
+    "323: 808 H.CongaP",
+    "324: 727 H.CngOpP",
+    "325: 727 H.CngMtP",
+    "326: 626 H.CngaOp",
+    "327: 626 H.CngaMt",
+    "328: Conga Hi Mt",
+    "329: Conga 2H Mt",
+    "330: Conga Hi Slp",
+    "331: Conga 2H Slp",
+    "332: Conga Hi Op",
+    "333: Conga 2H Op",
+    "334: 808 M.CongaP",
+    "335: 78 L.Conga P",
+    "336: 808 L.CongaP",
+    "337: 727 L.CongaP",
+    "338: 626 L.Conga",
+    "339: Conga Lo Mt",
+    "340: Conga Lo Slp",
+    "341: Conga Lo Op",
+    "342: Conga 2L Mt",
+    "343: Conga 2L Op",
+    "344: Conga Slp Op",
+    "345: Conga Efx",
+    "346: Conga Thumb",
+    "347: 727 H.Timbal",
+    "348: 626 H.Timbal",
+    "349: 727 L.Timbal",
+    "350: 626 L.Timbal",
+    "351: Timbale 1",
+    "352: Timbale 2",
+    "353: Timbale 3",
+    "354: Timbale 4",
+    "355: Timbles LoOp",
+    "356: Timbles LoMt",
+    "357: TimbalesHand",
+    "358: Timbales Rim",
+    "359: TmbSideStick",
+    "360: 727 H.Agogo",
+    "361: 626 H.Agogo",
+    "362: 727 L.Agogo",
+    "363: 626 L.Agogo",
+    "364: 727 Cabasa P",
+    "365: Cabasa Up",
+    "366: Cabasa Down",
+    "367: Cabasa Cut",
+    "368: 78 Maracas P",
+    "369: 808 MaracasP",
+    "370: 727 MaracasP",
+    "371: Maracas",
+    "372: 727 WhistleS",
+    "373: 727 WhistleL",
+    "374: Whistle",
+    "375: 78 Guiro S",
+    "376: 78 Guiro L",
+    "377: Guiro",
+    "378: Guiro Long",
+    "379: 78 Claves P",
+    "380: 808 Claves P",
+    "381: 626 Claves",
+    "382: Claves",
+    "383: Wood Block",
+    "384: Triangle",
+    "385: 78 MetalBt P",
+    "386: 727 StrChime",
+    "387: 626 Shaker",
+    "388: Shaker",
+    "389: Finger Snap",
+    "390: Club FinSnap",
+    "391: Snap",
+    "392: Group Snap",
+    "393: Op Pandeiro",
+    "394: Mt Pandeiro",
+    "395: PandeiroOp",
+    "396: PandeiroMt",
+    "397: PandeiroHit",
+    "398: PandeiroRim",
+    "399: PandeiroCrsh",
+    "400: PandeiroRoll",
+    "401: 727 Quijada",
+    "402: TablaBayam 1",
+    "403: TablaBayam 2",
+    "404: TablaBayam 3",
+    "405: TablaBayam 4",
+    "406: TablaBayam 5",
+    "407: TablaBayam 6",
+    "408: TablaBayam 7",
+    "409: Udo",
+    "410: Udu Pot Hi",
+    "411: Udu Pot Slp",
+    "412: Scratch 1",
+    "413: Scratch 2",
+    "414: Scratch 3",
+    "415: Scratch 4",
+    "416: Scratch 5",
+    "417: Dance M",
+    "418: Ahh M",
+    "419: Let's Go M",
+    "420: Hah F",
+    "421: Yeah F",
+    "422: C'mon Baby F",
+    "423: Wooh F",
+    "424: White Noise",
+    "425: Pink Noise",
+    "426: Atmosphere",
+    "427: PercOrgan 1",
+    "428: PercOrgan 2",
+    "429: TB Blip",
+    "430: D.Mute Gtr",
+    "431: Flute Fx",
+    "432: Pop Brs Atk",
+    "433: Strings Hit",
+    "434: Smear Hit",
+    "435: O'Skool Hit",
+    "436: Orch. Hit",
+    "437: Punch Hit",
+    "438: Philly Hit",
+    "439: ClassicHseHt",
+    "440: Tao Hit",
+    "441: MG S Zap 1",
+    "442: MG S Zap 2",
+    "443: MG S Zap 3",
+    "444: SH2 S Zap 1",
+    "445: SH2 S Zap 2",
+    "446: SH2 S Zap 3",
+    "447: SH2 S Zap 4",
+    "448: SH2 S Zap 5",
+    "449: SH2 U Zap 1",
+    "450: SH2 U Zap 2",
+    "451: SH2 U Zap 3",
+    "452: SH2 U Zap 4",
+    "453: SH2 U Zap 5",
+)
+
+"""
+For reference:
+|-------------+-----------+----------------------------------------------------|
+| 00 20 | 0000 00aa |                             WMT Velocity Control (0 - 2) |
+|       |                                                    | OFF, ON, RANDOM |
+|-------------+-----------+----------------------------------------------------|
+| 00 21 | 0000 000a | WMT1 Wave Switch (0 - 1) |
+| | | OFF, ON |
+| 00 22 | 0000 00aa | WMT1 Wave Group Type (0) |
+|# 00 23 | 0000 aaaa | |
+| | 0000 bbbb | |
+| | 0000 cccc | |
+| | 0000 dddd | WMT1 Wave Group ID (0 - 16384) |
+| | | OFF, 1 - 16384 |
+|# 00 27 | 0000 aaaa | |
+| | 0000 bbbb | |
+| | 0000 cccc | |
+| | 0000 dddd | WMT1 Wave Number L (Mono) (0 - 16384) |
+| | | OFF, 1 - 16384 |
+|# 00 2B | 0000 aaaa | |
+| | 0000 bbbb | |
+| | 0000 cccc | |
+| | 0000 dddd | WMT1 Wave Number R (0 - 16384) |
+| | | OFF, 1 - 16384 |
+| 00 2F | 0000 00aa | WMT1 Wave Gain (0 - 3) |
+| | | -6, 0, +6, +12 [dB] |
+| 00 30 | 0000 000a | WMT1 Wave FXM Switch (0 - 1) |
+| | | OFF, ON |
+| 00 31 | 0000 00aa | WMT1 Wave FXM Color (0 - 3) |
+| | | 1 - 4 |
+| 00 32 | 000a aaaa | WMT1 Wave FXM Depth (0 - 16) |
+| 00 33 | 0000 000a | WMT1 Wave Tempo Sync (0 - 1) |
+| | | OFF, ON |
+| 00 34 | 0aaa aaaa | WMT1 Wave Coarse Tune (16 - 112) |
+| | | -48 - +48 |
+| 00 35 | 0aaa aaaa | WMT1 Wave Fine Tune (14 - 114) |
+| | | -50 - +50 |
+| 00 36 | 0aaa aaaa | WMT1 Wave Pan (0 - 127) |
+| | | L64 - 63R |
+| 00 37 | 0000 000a | WMT1 Wave Random Pan Switch (0 - 1) |
+| | | OFF, ON |
+| 00 38 | 0000 00aa | WMT1 Wave Alternate Pan Switch (0 - 2) |
+| | | OFF, ON, REVERSE |
+| 00 39 | 0aaa aaaa | WMT1 Wave Level (0 - 127) |
+| 00 3A | 0aaa aaaa | WMT1 Velocity Range Lower (1 - 127) |
+| | | 1 - UPPER |
+| 00 3B | 0aaa aaaa | WMT1 Velocity Range Upper (1 - 127) |
+| | | LOWER - 127 |
+| 00 3C | 0aaa aaaa | WMT1 Velocity Fade Width Lower (0 - 127) |
+| 00 3D | 0aaa aaaa | WMT1 Velocity Fade Width Upper (0 - 127) |
+|-------------+-----------+----------------------------------------------------|
+"""
+
 class DrumPartialEditor(QWidget):
-    """Editor for a single partial"""
+    """Editor for address single partial"""
 
     def __init__(self, midi_helper=None, partial_num=0, partial_name=None, parent=None):
         super().__init__(parent)
@@ -103,55 +613,55 @@ class DrumPartialEditor(QWidget):
         # Add TVA parameters
         tva_level_velocity_curve_spin = QSpinBox()
         tva_level_velocity_curve_spin.setRange(0, 7)
-        tva_layout.addRow("TVA Level Velocity Curve", tva_level_velocity_curve_spin)
+        tva_layout.addRow("Level Velocity Curve", tva_level_velocity_curve_spin)
 
         tva_level_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_LEVEL_VELOCITY_SENS, "TVA Level Velocity Sens"
+            DrumParameter.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
         )
         tva_layout.addRow(tva_level_velocity_sens_slider)
 
         tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "TVA Env Time 1 Velocity Sens"
+            DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
         )
         tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
         tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "TVA Env Time 4 Velocity Sens"
+            DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
         )
         tva_layout.addRow(tva_env_time4_velocity_sens_slider)
 
         tva_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1, "TVA Env Time 1"
+            DrumParameter.TVA_ENV_TIME_1, "Env Time 1"
         )
         tva_layout.addRow(tva_env_time1_slider)
 
         tva_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_2, "TVA Env Time 2"
+            DrumParameter.TVA_ENV_TIME_2, "Env Time 2"
         )
         tva_layout.addRow(tva_env_time2_slider)
 
         tva_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_3, "TVA Env Time 3"
+            DrumParameter.TVA_ENV_TIME_3, "Env Time 3"
         )
         tva_layout.addRow(tva_env_time3_slider)
 
         tva_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4, "TVA Env Time 4"
+            DrumParameter.TVA_ENV_TIME_4, "Env Time 4"
         )
         tva_layout.addRow(tva_env_time4_slider)
 
         tva_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_1, "TVA Env Level 1"
+            DrumParameter.TVA_ENV_LEVEL_1, "Env Level 1"
         )
         tva_layout.addRow(tva_env_level1_slider)
 
         tva_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_2, "TVA Env Level 2"
+            DrumParameter.TVA_ENV_LEVEL_2, "Env Level 2"
         )
         tva_layout.addRow(tva_env_level2_slider)
 
         tva_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_3, "TVA Env Level 3"
+            DrumParameter.TVA_ENV_LEVEL_3, "Env Level 3"
         )
         tva_layout.addRow(tva_env_level3_slider)
         return tva_group
@@ -184,34 +694,40 @@ class DrumPartialEditor(QWidget):
         wmt1_wave_switch_combo = QComboBox()
         wmt1_wave_switch_combo.addItems(["OFF", "ON"])
         wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
+        wmt1_wave_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_switch_changed)
 
-        wmt1_wave_group_type_spin = QSpinBox()
-        wmt1_wave_group_type_spin.setRange(0, 0)
-        wmt1_layout.addRow("WMT1 Wave Group Type", wmt1_wave_group_type_spin)
+        # wmt1_wave_group_type_spin = QComboBox()
+        # wmt1_wave_group_type_spin.addItems(["Mono", "Poly"])
+        # wmt1_layout.addRow("WMT1 Wave Group Type", wmt1_wave_group_type_spin)
 
-        wmt1_wave_group_id_spin = QSpinBox()
-        wmt1_wave_group_id_spin.setRange(0, 16384)
-        wmt1_layout.addRow("WMT1 Wave Group ID", wmt1_wave_group_id_spin)
+        # wmt1_wave_group_id_spin = QSpinBox()
+        # wmt1_wave_group_id_spin.setRange(0, 16384)
+        # wmt1_layout.addRow("WMT1 Wave Group ID", wmt1_wave_group_id_spin)
 
-        wmt1_wave_number_l_spin = QSpinBox()
-        wmt1_wave_number_l_spin.setRange(0, 16384)
-        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_spin)
+        wmt1_wave_number_l_combo = QComboBox()
+        wmt1_wave_number_l_combo.addItems(RMwaves)
+        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_combo)
+        wmt1_wave_number_l_combo.currentIndexChanged.connect(self._on_wmt1_wave_number_l_changed)
 
-        wmt1_wave_number_r_spin = QSpinBox()
-        wmt1_wave_number_r_spin.setRange(0, 16384)
-        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_spin)
+        wmt1_wave_number_r_combo = QComboBox()
+        wmt1_wave_number_r_combo.addItems(RMwaves)
+        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_combo)
+        wmt1_wave_number_r_combo.currentIndexChanged.connect(self._on_wmt1_wave_number_r_changed)
 
-        wmt1_wave_gain_spin = QSpinBox()
-        wmt1_wave_gain_spin.setRange(0, 3)
-        wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_spin)
+        wmt1_wave_gain_combo = QComboBox()
+        wmt1_wave_gain_combo.addItems(["-6", "0", "+6", "+12"])
+        wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_combo)
+        wmt1_wave_gain_combo.currentIndexChanged.connect(self._on_wmt1_wave_gain_changed)
 
         wmt1_wave_fxm_switch_combo = QComboBox()
         wmt1_wave_fxm_switch_combo.addItems(["OFF", "ON"])
         wmt1_layout.addRow("WMT1 Wave FXM Switch", wmt1_wave_fxm_switch_combo)
+        wmt1_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_fxm_switch_changed)
 
         wmt1_wave_fxm_color_spin = QSpinBox()
         wmt1_wave_fxm_color_spin.setRange(0, 3)
         wmt1_layout.addRow("WMT1 Wave FXM Color", wmt1_wave_fxm_color_spin)
+        wmt1_wave_fxm_color_spin.valueChanged.connect(self._on_wmt1_wave_fxm_color_changed)
 
         wmt1_wave_fxm_depth_spin = QSpinBox()
         wmt1_wave_fxm_depth_spin.setRange(0, 16)
@@ -220,54 +736,66 @@ class DrumPartialEditor(QWidget):
         wmt1_wave_tempo_sync_combo = QComboBox()
         wmt1_wave_tempo_sync_combo.addItems(["OFF", "ON"])
         wmt1_layout.addRow("WMT1 Wave Tempo Sync", wmt1_wave_tempo_sync_combo)
+        wmt1_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt1_wave_tempo_sync_changed)
 
         wmt1_wave_coarse_tune_spin = QSpinBox()
         wmt1_wave_coarse_tune_spin.setRange(16, 112)
         wmt1_layout.addRow("WMT1 Wave Coarse Tune", wmt1_wave_coarse_tune_spin)
-
+        wmt1_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt1_wave_coarse_tune_changed)
+        
         wmt1_wave_fine_tune_spin = QSpinBox()
         wmt1_wave_fine_tune_spin.setRange(14, 114)
         wmt1_layout.addRow("WMT1 Wave Fine Tune", wmt1_wave_fine_tune_spin)
+        wmt1_wave_fine_tune_spin.valueChanged.connect(self._on_wmt1_wave_fine_tune_changed)
 
         wmt1_wave_pan_spin = QSpinBox()
         wmt1_wave_pan_spin.setRange(0, 127)
         wmt1_layout.addRow("WMT1 Wave Pan", wmt1_wave_pan_spin)
+        wmt1_wave_pan_spin.valueChanged.connect(self._on_wmt1_wave_pan_changed)
 
         wmt1_wave_random_pan_switch_combo = QComboBox()
         wmt1_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
         wmt1_layout.addRow(
             "WMT1 Wave Random Pan Switch", wmt1_wave_random_pan_switch_combo
         )
+        wmt1_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_random_pan_switch_changed)
 
         wmt1_wave_alternate_pan_switch_combo = QComboBox()
         wmt1_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
         wmt1_layout.addRow(
             "WMT1 Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch_combo
         )
+        wmt1_wave_alternate_pan_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_alternate_pan_switch_changed)
 
         wmt1_wave_level_spin = QSpinBox()
         wmt1_wave_level_spin.setRange(0, 127)
         wmt1_layout.addRow("WMT1 Wave Level", wmt1_wave_level_spin)
+        wmt1_wave_level_spin.valueChanged.connect(self._on_wmt1_wave_level_changed)
 
         wmt1_velocity_range_lower_spin = QSpinBox()
         wmt1_velocity_range_lower_spin.setRange(1, 127)
         wmt1_layout.addRow("WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin)
+        wmt1_velocity_range_lower_spin.valueChanged.connect(self._on_wmt1_velocity_range_lower_changed)
 
         wmt1_velocity_range_upper_spin = QSpinBox()
         wmt1_velocity_range_upper_spin.setRange(1, 127)
         wmt1_layout.addRow("WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin)
+        wmt1_velocity_range_upper_spin.valueChanged.connect(self._on_wmt1_velocity_range_upper_changed)
 
         wmt1_velocity_fade_width_lower_spin = QSpinBox()
         wmt1_velocity_fade_width_lower_spin.setRange(0, 127)
         wmt1_layout.addRow(
             "WMT1 Velocity Fade Width Lower", wmt1_velocity_fade_width_lower_spin
         )
+        wmt1_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt1_velocity_fade_width_lower_changed)   
 
         wmt1_velocity_fade_width_upper_spin = QSpinBox()
         wmt1_velocity_fade_width_upper_spin.setRange(0, 127)
         wmt1_layout.addRow(
             "WMT1 Velocity Fade Width Upper", wmt1_velocity_fade_width_upper_spin
         )
+        wmt1_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt1_velocity_fade_width_upper_changed)
+
         # Add controls to WMT2 tab
         wmt2_tab = wmt_tab_widget.widget(1)
         wmt2_layout = QFormLayout()
@@ -276,91 +804,94 @@ class DrumPartialEditor(QWidget):
         wmt2_wave_switch_combo = QComboBox()
         wmt2_wave_switch_combo.addItems(["OFF", "ON"])
         wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
+        wmt2_wave_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_switch_changed)
 
         wmt2_wave_group_type_spin = QSpinBox()
         wmt2_wave_group_type_spin.setRange(0, 0)
         wmt2_layout.addRow("WMT2 Wave Group Type", wmt2_wave_group_type_spin)
+        wmt2_wave_group_type_spin.currentIndexChanged.connect(self._on_wmt2_wave_group_type_changed)
 
         wmt2_wave_group_id_spin = QSpinBox()
         wmt2_wave_group_id_spin.setRange(0, 16384)
         wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
+        wmt2_wave_group_id_spin.currentIndexChanged.connect(self._on_wmt2_wave_group_id_changed)
 
         wmt2_wave_number_l_spin = QSpinBox()
         wmt2_wave_number_l_spin.setRange(0, 16384)
         wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
-
+        wmt2_wave_number_l_spin.currentIndexChanged.connect(self._on_wmt2_wave_number_l_changed)
         wmt2_wave_number_r_spin = QSpinBox()
         wmt2_wave_number_r_spin.setRange(0, 16384)
         wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
-
+        wmt2_wave_number_r_spin.currentIndexChanged.connect(self._on_wmt2_wave_number_r_changed)
         wmt2_wave_gain_spin = QSpinBox()
         wmt2_wave_gain_spin.setRange(0, 3)
         wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_spin)
-
+        wmt2_wave_gain_spin.currentIndexChanged.connect(self._on_wmt2_wave_gain_changed)
         wmt2_wave_fxm_switch_combo = QComboBox()
         wmt2_wave_fxm_switch_combo.addItems(["OFF", "ON"])
         wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
-
+        wmt2_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_fxm_switch_changed)
         wmt2_wave_fxm_color_spin = QSpinBox()
         wmt2_wave_fxm_color_spin.setRange(0, 3)
         wmt2_layout.addRow("WMT2 Wave FXM Color", wmt2_wave_fxm_color_spin)
-
+        wmt2_wave_fxm_color_spin.currentIndexChanged.connect(self._on_wmt2_wave_fxm_color_changed)
         wmt2_wave_fxm_depth_spin = QSpinBox()
         wmt2_wave_fxm_depth_spin.setRange(0, 16)
         wmt2_layout.addRow("WMT2 Wave FXM Depth", wmt2_wave_fxm_depth_spin)
-
         wmt2_wave_tempo_sync_combo = QComboBox()
         wmt2_wave_tempo_sync_combo.addItems(["OFF", "ON"])
         wmt2_layout.addRow("WMT2 Wave Tempo Sync", wmt2_wave_tempo_sync_combo)
+        wmt2_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt2_wave_tempo_sync_changed)
 
         wmt2_wave_coarse_tune_spin = QSpinBox()
         wmt2_wave_coarse_tune_spin.setRange(16, 112)
         wmt2_layout.addRow("WMT2 Wave Coarse Tune", wmt2_wave_coarse_tune_spin)
-
+        wmt2_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt2_wave_coarse_tune_changed)
         wmt2_wave_fine_tune_spin = QSpinBox()
         wmt2_wave_fine_tune_spin.setRange(14, 114)
         wmt2_layout.addRow("WMT2 Wave Fine Tune", wmt2_wave_fine_tune_spin)
-
+        wmt2_wave_fine_tune_spin.valueChanged.connect(self._on_wmt2_wave_fine_tune_changed)
         wmt2_wave_pan_spin = QSpinBox()
         wmt2_wave_pan_spin.setRange(0, 127)
         wmt2_layout.addRow("WMT2 Wave Pan", wmt2_wave_pan_spin)
-
+        wmt2_wave_pan_spin.valueChanged.connect(self._on_wmt2_wave_pan_changed)
         wmt2_wave_random_pan_switch_combo = QComboBox()
         wmt2_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
         wmt2_layout.addRow(
             "WMT2 Wave Random Pan Switch", wmt2_wave_random_pan_switch_combo
         )
-
+        wmt2_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_random_pan_switch_changed)
         wmt2_wave_alternate_pan_switch_combo = QComboBox()
         wmt2_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
         wmt2_layout.addRow(
             "WMT2 Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch_combo
         )
-
+        wmt2_wave_alternate_pan_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_alternate_pan_switch_changed)
         wmt2_wave_level_spin = QSpinBox()
         wmt2_wave_level_spin.setRange(0, 127)
         wmt2_layout.addRow("WMT2 Wave Level", wmt2_wave_level_spin)
-
+        wmt2_wave_level_spin.valueChanged.connect(self._on_wmt2_wave_level_changed)
         wmt2_velocity_range_lower_spin = QSpinBox()
         wmt2_velocity_range_lower_spin.setRange(1, 127)
         wmt2_layout.addRow("WMT2 Velocity Range Lower", wmt2_velocity_range_lower_spin)
-
+        wmt2_velocity_range_lower_spin.valueChanged.connect(self._on_wmt2_velocity_range_lower_changed)
         wmt2_velocity_range_upper_spin = QSpinBox()
         wmt2_velocity_range_upper_spin.setRange(1, 127)
         wmt2_layout.addRow("WMT2 Velocity Range Upper", wmt2_velocity_range_upper_spin)
-
+        wmt2_velocity_range_upper_spin.valueChanged.connect(self._on_wmt2_velocity_range_upper_changed)
         wmt2_velocity_fade_width_lower_spin = QSpinBox()
         wmt2_velocity_fade_width_lower_spin.setRange(0, 127)
         wmt2_layout.addRow(
             "WMT2 Velocity Fade Width Lower", wmt2_velocity_fade_width_lower_spin
         )
-
+        wmt2_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt2_velocity_fade_width_lower_changed)
         wmt2_velocity_fade_width_upper_spin = QSpinBox()
         wmt2_velocity_fade_width_upper_spin.setRange(0, 127)
         wmt2_layout.addRow(
             "WMT2 Velocity Fade Width Upper", wmt2_velocity_fade_width_upper_spin
         )
-
+        wmt2_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt2_velocity_fade_width_upper_changed)
         # Add controls to WMT3 tab
         wmt3_tab = wmt_tab_widget.widget(2)
         wmt3_layout = QFormLayout()
@@ -369,55 +900,55 @@ class DrumPartialEditor(QWidget):
         wmt3_wave_switch_combo = QComboBox()
         wmt3_wave_switch_combo.addItems(["OFF", "ON"])
         wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
-
+        wmt3_wave_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_switch_changed)
         wmt3_wave_group_type_spin = QSpinBox()
         wmt3_wave_group_type_spin.setRange(0, 0)
         wmt3_layout.addRow("WMT3 Wave Group Type", wmt3_wave_group_type_spin)
-
+        wmt3_wave_group_type_spin.currentIndexChanged.connect(self._on_wmt3_wave_group_type_changed)
         wmt3_wave_group_id_spin = QSpinBox()
         wmt3_wave_group_id_spin.setRange(0, 16384)
         wmt3_layout.addRow("WMT3 Wave Group ID", wmt3_wave_group_id_spin)
-
+        wmt3_wave_group_id_spin.currentIndexChanged.connect(self._on_wmt3_wave_group_id_changed)
         wmt3_wave_number_l_spin = QSpinBox()
         wmt3_wave_number_l_spin.setRange(0, 16384)
         wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
-
+        wmt3_wave_number_l_spin.currentIndexChanged.connect(self._on_wmt3_wave_number_l_changed)
         wmt3_wave_number_r_spin = QSpinBox()
         wmt3_wave_number_r_spin.setRange(0, 16384)
         wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
-
+        wmt3_wave_number_r_spin.currentIndexChanged.connect(self._on_wmt3_wave_number_r_changed)
         wmt3_wave_gain_spin = QSpinBox()
         wmt3_wave_gain_spin.setRange(0, 3)
         wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_spin)
-
+        wmt3_wave_gain_spin.currentIndexChanged.connect(self._on_wmt3_wave_gain_changed)
         wmt3_wave_fxm_switch_combo = QComboBox()
         wmt3_wave_fxm_switch_combo.addItems(["OFF", "ON"])
         wmt3_layout.addRow("WMT3 Wave FXM Switch", wmt3_wave_fxm_switch_combo)
-
+        wmt3_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_fxm_switch_changed)
         wmt3_wave_fxm_color_spin = QSpinBox()
         wmt3_wave_fxm_color_spin.setRange(0, 3)
         wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_spin)
-
+        wmt3_wave_fxm_color_spin.currentIndexChanged.connect(self._on_wmt3_wave_fxm_color_changed)
         wmt3_wave_fxm_depth_spin = QSpinBox()
         wmt3_wave_fxm_depth_spin.setRange(0, 16)
         wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_spin)
-
         wmt3_wave_tempo_sync_combo = QComboBox()
         wmt3_wave_tempo_sync_combo.addItems(["OFF", "ON"])
         wmt3_layout.addRow("WMT3 Wave Tempo Sync", wmt3_wave_tempo_sync_combo)
+        wmt3_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt3_wave_tempo_sync_changed)
 
         wmt3_wave_coarse_tune_spin = QSpinBox()
         wmt3_wave_coarse_tune_spin.setRange(16, 112)
         wmt3_layout.addRow("WMT3 Wave Coarse Tune", wmt3_wave_coarse_tune_spin)
-
+        wmt3_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt3_wave_coarse_tune_changed)
         wmt3_wave_fine_tune_spin = QSpinBox()
         wmt3_wave_fine_tune_spin.setRange(14, 114)
         wmt3_layout.addRow("WMT3 Wave Fine Tune", wmt3_wave_fine_tune_spin)
-
+        wmt3_wave_fine_tune_spin.valueChanged.connect(self._on_wmt3_wave_fine_tune_changed)
         wmt3_wave_pan_spin = QSpinBox()
         wmt3_wave_pan_spin.setRange(0, 127)
         wmt3_layout.addRow("WMT3 Wave Pan", wmt3_wave_pan_spin)
-
+        wmt3_wave_pan_spin.valueChanged.connect(self._on_wmt3_wave_pan_changed)
         wmt3_wave_random_pan_switch_combo = QComboBox()
         wmt3_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
         wmt3_layout.addRow(
@@ -429,31 +960,31 @@ class DrumPartialEditor(QWidget):
         wmt3_layout.addRow(
             "WMT3 Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch_combo
         )
-
+        wmt3_wave_alternate_pan_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_alternate_pan_switch_changed)
         wmt3_wave_level_spin = QSpinBox()
         wmt3_wave_level_spin.setRange(0, 127)
         wmt3_layout.addRow("WMT3 Wave Level", wmt3_wave_level_spin)
-
+        wmt3_wave_level_spin.valueChanged.connect(self._on_wmt3_wave_level_changed)
         wmt3_velocity_range_lower_spin = QSpinBox()
         wmt3_velocity_range_lower_spin.setRange(1, 127)
         wmt3_layout.addRow("WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin)
-
+        wmt3_velocity_range_lower_spin.valueChanged.connect(self._on_wmt3_velocity_range_lower_changed)
         wmt3_velocity_range_upper_spin = QSpinBox()
         wmt3_velocity_range_upper_spin.setRange(1, 127)
         wmt3_layout.addRow("WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin)
-
+        wmt3_velocity_range_upper_spin.valueChanged.connect(self._on_wmt3_velocity_range_upper_changed)
         wmt3_velocity_fade_width_lower_spin = QSpinBox()
         wmt3_velocity_fade_width_lower_spin.setRange(0, 127)
         wmt3_layout.addRow(
             "WMT3 Velocity Fade Width Lower", wmt3_velocity_fade_width_lower_spin
         )
-
+        wmt3_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt3_velocity_fade_width_lower_changed)
         wmt3_velocity_fade_width_upper_spin = QSpinBox()
         wmt3_velocity_fade_width_upper_spin.setRange(0, 127)
         wmt3_layout.addRow(
             "WMT3 Velocity Fade Width Upper", wmt3_velocity_fade_width_upper_spin
         )
-
+        wmt3_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt3_velocity_fade_width_upper_changed)
         # Add controls to WMT4 tab
         wmt4_tab = wmt_tab_widget.widget(3)
         wmt4_layout = QFormLayout()
@@ -462,35 +993,35 @@ class DrumPartialEditor(QWidget):
         wmt4_wave_switch_combo = QComboBox()
         wmt4_wave_switch_combo.addItems(["OFF", "ON"])
         wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
-
+        wmt4_wave_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_switch_changed)
         wmt4_wave_group_type_spin = QSpinBox()
         wmt4_wave_group_type_spin.setRange(0, 0)
         wmt4_layout.addRow("WMT4 Wave Group Type", wmt4_wave_group_type_spin)
-
+        wmt4_wave_group_type_spin.currentIndexChanged.connect(self._on_wmt4_wave_group_type_changed)
         wmt4_wave_group_id_spin = QSpinBox()
         wmt4_wave_group_id_spin.setRange(0, 16384)
         wmt4_layout.addRow("WMT4 Wave Group ID", wmt4_wave_group_id_spin)
-
+        wmt4_wave_group_id_spin.currentIndexChanged.connect(self._on_wmt4_wave_group_id_changed)
         wmt4_wave_number_l_spin = QSpinBox()
         wmt4_wave_number_l_spin.setRange(0, 16384)
         wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
-
+        wmt4_wave_number_l_spin.currentIndexChanged.connect(self._on_wmt4_wave_number_l_changed)
         wmt4_wave_number_r_spin = QSpinBox()
         wmt4_wave_number_r_spin.setRange(0, 16384)
         wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
-
-        wmt4_wave_gain_spin = QSpinBox()
-        wmt4_wave_gain_spin.setRange(0, 3)
-        wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_spin)
-
+        wmt4_wave_number_r_spin.currentIndexChanged.connect(self._on_wmt4_wave_number_r_changed)
+        wmt4_wave_gain_combo = QComboBox()
+        wmt4_wave_gain_combo.addItems(["-6", "0", "+6", "+12"])
+        wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_combo)
+        wmt4_wave_gain_combo.currentIndexChanged.connect(self._on_wmt4_wave_gain_changed)
         wmt4_wave_fxm_switch_combo = QComboBox()
         wmt4_wave_fxm_switch_combo.addItems(["OFF", "ON"])
         wmt4_layout.addRow("WMT4 Wave FXM Switch", wmt4_wave_fxm_switch_combo)
-
+        wmt4_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_fxm_switch_changed)
         wmt4_wave_fxm_color_spin = QSpinBox()
         wmt4_wave_fxm_color_spin.setRange(0, 3)
         wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_spin)
-
+        wmt4_wave_fxm_color_spin.currentIndexChanged.connect(self._on_wmt4_wave_fxm_color_changed)
         wmt4_wave_fxm_depth_spin = QSpinBox()
         wmt4_wave_fxm_depth_spin.setRange(0, 16)
         wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_spin)
@@ -498,7 +1029,7 @@ class DrumPartialEditor(QWidget):
         wmt4_wave_tempo_sync_combo = QComboBox()
         wmt4_wave_tempo_sync_combo.addItems(["OFF", "ON"])
         wmt4_layout.addRow("WMT4 Wave Tempo Sync", wmt4_wave_tempo_sync_combo)
-
+        wmt4_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt4_wave_tempo_sync_changed)
         wmt4_wave_coarse_tune_spin = QSpinBox()
         wmt4_wave_coarse_tune_spin.setRange(16, 112)
         wmt4_layout.addRow("WMT4 Wave Coarse Tune", wmt4_wave_coarse_tune_spin)
@@ -506,48 +1037,565 @@ class DrumPartialEditor(QWidget):
         wmt4_wave_fine_tune_spin = QSpinBox()
         wmt4_wave_fine_tune_spin.setRange(14, 114)
         wmt4_layout.addRow("WMT4 Wave Fine Tune", wmt4_wave_fine_tune_spin)
-
+        wmt4_wave_fine_tune_spin.valueChanged.connect(self._on_wmt4_wave_fine_tune_changed)
         wmt4_wave_pan_spin = QSpinBox()
         wmt4_wave_pan_spin.setRange(0, 127)
         wmt4_layout.addRow("WMT4 Wave Pan", wmt4_wave_pan_spin)
-
+        wmt4_wave_pan_spin.valueChanged.connect(self._on_wmt4_wave_pan_changed)
         wmt4_wave_random_pan_switch_combo = QComboBox()
         wmt4_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
         wmt4_layout.addRow(
             "WMT4 Wave Random Pan Switch", wmt4_wave_random_pan_switch_combo
         )
-
+        wmt4_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_random_pan_switch_changed)
         wmt4_wave_alternate_pan_switch_combo = QComboBox()
         wmt4_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
         wmt4_layout.addRow(
             "WMT4 Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch_combo
         )
-
+        wmt4_wave_alternate_pan_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_alternate_pan_switch_changed)
         wmt4_wave_level_spin = QSpinBox()
         wmt4_wave_level_spin.setRange(0, 127)
         wmt4_layout.addRow("WMT4 Wave Level", wmt4_wave_level_spin)
-
+        wmt4_wave_level_spin.valueChanged.connect(self._on_wmt4_wave_level_changed)
         wmt4_velocity_range_lower_spin = QSpinBox()
         wmt4_velocity_range_lower_spin.setRange(1, 127)
         wmt4_layout.addRow("WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin)
-
+        wmt4_velocity_range_lower_spin.valueChanged.connect(self._on_wmt4_velocity_range_lower_changed)
         wmt4_velocity_range_upper_spin = QSpinBox()
         wmt4_velocity_range_upper_spin.setRange(1, 127)
         wmt4_layout.addRow("WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin)
-
+        wmt4_velocity_range_upper_spin.valueChanged.connect(self._on_wmt4_velocity_range_upper_changed)
         wmt4_velocity_fade_width_lower_spin = QSpinBox()
         wmt4_velocity_fade_width_lower_spin.setRange(0, 127)
         wmt4_layout.addRow(
             "WMT4 Velocity Fade Width Lower", wmt4_velocity_fade_width_lower_spin
         )
-
+        wmt4_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt4_velocity_fade_width_lower_changed)
         wmt4_velocity_fade_width_upper_spin = QSpinBox()
         wmt4_velocity_fade_width_upper_spin.setRange(0, 127)
         wmt4_layout.addRow(
             "WMT4 Velocity Fade Width Upper", wmt4_velocity_fade_width_upper_spin
         )
+        wmt4_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt4_velocity_fade_width_upper_changed)
         return wmt_group
+    
+    def _on_wmt1_wave_switch_changed(self, value: int):
+        """ change wmt1 wave switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address, 
+            param=DrumParameter.WMT1_WAVE_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_group_type_changed(self, value: int):
+        """ change wmt1 wave group type value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GROUP_TYPE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_group_id_changed(self, value: int):
+        """ change wmt1 wave group id value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GROUP_ID.value[0],
+            value=value
+        )           
+    
+    def _on_wmt1_wave_number_l_changed(self, value: int):
+        """ change wmt1 wave number l value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address, 
+            param=DrumParameter.WMT1_WAVE_NUMBER_L.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_number_r_changed(self, value: int):
+        """ change wmt1 wave number r value """ 
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )           
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )                   
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address, 
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_tempo_sync_changed(self, value: int):
+        """ change wmt1 wave tempo sync value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_TEMPO_SYNC.value[0],
+            value=value
+        )
 
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address, 
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address, 
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):  
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value 
+        )
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):    
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value 
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):  
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+                group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_r_changed(self, value: int):
+        """Handle WMT1 Wave R parameter change"""
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,  # Use self.group instead of partial_address
+            param=DrumParameter.WMT1_WAVE_NUMBER_R.value[0],
+            value=value,
+            size=4
+        )
+    
+    def _on_wmt1_wave_gain_changed(self, value: int):
+        """ change wmt1 wave gain value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_GAIN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_switch_changed(self, value: int):
+        """ change wmt1 wave fxm switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_color_changed(self, value: int):
+        """ change wmt1 wave fxm color value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_COLOR.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fxm_depth_changed(self, value: int):
+        """ change wmt1 wave fxm depth value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FXM_DEPTH.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_wave_coarse_tune_changed(self, value: int):
+        """ change wmt1 wave coarse tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_COARSE_TUNE.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_fine_tune_changed(self, value: int):
+        """ change wmt1 wave fine tune value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_FINE_TUNE.value[0],       
+            value=value
+        )
+    
+    def _on_wmt1_wave_pan_changed(self, value: int):
+        """ change wmt1 wave pan value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_PAN.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_random_pan_switch_changed(self, value: int):
+        """ change wmt1 wave random pan switch value """
+        return self.midi_helper.send_parameter(
+                area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_alternate_pan_switch_changed(self, value: int):
+        """ change wmt1 wave alternate pan switch value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_wave_level_changed(self, value: int):
+        """ change wmt1 wave level value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_WAVE_LEVEL.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_range_lower_changed(self, value: int):
+        """ change wmt1 velocity range lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_LOWER.value[0],
+            value=value
+        )
+        
+    def _on_wmt1_velocity_range_upper_changed(self, value: int):
+        """ change wmt1 velocity range upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_RANGE_UPPER.value[0],
+            value=value
+        )
+    
+    def _on_wmt1_velocity_fade_width_lower_changed(self, value: int):
+        """ change wmt1 velocity fade width lower value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER.value[0],
+            value=value
+        )   
+    
+    def _on_wmt1_velocity_fade_width_upper_changed(self, value: int):
+        """ change wmt1 velocity fade width upper value """
+        return self.midi_helper.send_parameter(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=self.partial_address,
+            param=DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER.value[0],
+            value=value
+        )
+    
+        
     def _create_pitch_group(self):
         """Create the pitch group."""
         # Pitch Group
@@ -644,7 +1692,7 @@ class DrumPartialEditor(QWidget):
         tvf_filter_type_combo.currentIndexChanged.connect(
             self._on_tvf_filter_type_combo_changed
         )
-        tvf_layout.addRow("TVF Filter Type", tvf_filter_type_combo)
+        tvf_layout.addRow("Filter Type", tvf_filter_type_combo)
 
         tvf_cutoff_frequency_slider = self._create_parameter_slider(
             DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff"
@@ -656,15 +1704,10 @@ class DrumPartialEditor(QWidget):
         tvf_cutoff_velocity_curve_spin.valueChanged.connect(
             self._on_tvf_cutoff_velocity_curve_spin_changed
         )
-        tvf_layout.addRow("TVF Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin)
-
-        tvf_cutoff_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_CUTOFF_VELOCITY_SENS
-        )
-        tvf_layout.addRow(tvf_cutoff_velocity_sens_slider)
+        tvf_layout.addRow("Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin)
 
         tvf_env_depth_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_DEPTH
+            DrumParameter.TVF_ENV_DEPTH, "Env Depth"
         )
         tvf_layout.addRow(tvf_env_depth_slider)
 
@@ -674,66 +1717,66 @@ class DrumPartialEditor(QWidget):
             self._on_tvf_env_velocity_curve_type_spin_changed
         )
         tvf_layout.addRow(
-            "TVF Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
+            "Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
         )
 
         tvf_env_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_VELOCITY_SENS, "TVF Env Velocity Sens"
+            DrumParameter.TVF_ENV_VELOCITY_SENS, "Env Velocity Sens"
         )
         tvf_layout.addRow(tvf_env_velocity_sens_slider)
 
         tvf_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "TVF Env Time 1 Velocity Sens"
+            DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
         )
         tvf_layout.addRow(tvf_env_time1_velocity_sens_slider)
 
         tvf_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "TVF Env Time 4 Velocity Sens"
+            DrumParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
         )
         tvf_layout.addRow(tvf_env_time4_velocity_sens_slider)
 
         tvf_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_1, "TVF Env Time 1"
+            DrumParameter.TVF_ENV_TIME_1, "Env Time 1"
         )
         tvf_layout.addRow(tvf_env_time1_slider)
 
         tvf_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_2, "TVF Env Time 2"
+            DrumParameter.TVF_ENV_TIME_2, "Env Time 2"
         )
         tvf_layout.addRow(tvf_env_time2_slider)
 
         tvf_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_3, "TVF Env Time 3"
+            DrumParameter.TVF_ENV_TIME_3, "Env Time 3"
         )
         tvf_layout.addRow(tvf_env_time3_slider)
 
         tvf_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_4, "TVF Env Time 4"
+            DrumParameter.TVF_ENV_TIME_4, "Env Time 4"
         )
         tvf_layout.addRow(tvf_env_time4_slider)
 
         tvf_env_level0_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_0, "TVF Env Level 0"
+            DrumParameter.TVF_ENV_LEVEL_0, "Env Level 0"
         )
         tvf_layout.addRow(tvf_env_level0_slider)
 
         tvf_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_1, "TVF Env Level 1"
+            DrumParameter.TVF_ENV_LEVEL_1, "Env Level 1"
         )
         tvf_layout.addRow(tvf_env_level1_slider)
 
         tvf_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_2, "TVF Env Level 2"
+            DrumParameter.TVF_ENV_LEVEL_2, "Env Level 2"
         )
         tvf_layout.addRow(tvf_env_level2_slider)
 
         tvf_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_3, "TVF Env Level 3"
+            DrumParameter.TVF_ENV_LEVEL_3, "Env Level 3"
         )
         tvf_layout.addRow(tvf_env_level3_slider)
 
         tvf_env_level4_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_4, "TVF Env Level 4"
+            DrumParameter.TVF_ENV_LEVEL_4, "Env Level 4"
         )
         tvf_layout.addRow(tvf_env_level4_slider)
         return tvf_group
@@ -851,7 +1894,7 @@ class DrumPartialEditor(QWidget):
             return
 
         def _is_valid_sysex_area(sysex_data):
-            """Check if SysEx data belongs to a supported digital synth area."""
+            """Check if SysEx data belongs to address supported digital synth area."""
             return sysex_data.get("TEMPORARY_AREA") in [
                 "TEMPORARY_TONE_AREA",
                 "TEMPORARY_DIGITAL_SYNTH_2_AREA",
@@ -941,7 +1984,7 @@ class DrumPartialEditor(QWidget):
 
     def load_preset(self, preset_index):
         preset_data = {
-            "type": self.preset_type,  # Ensure this is a valid type
+            "type": self.preset_type,  # Ensure this is address valid type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
@@ -956,7 +1999,7 @@ class DrumPartialEditor(QWidget):
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def send_sysex_message(self, address: int, value: int):
-        """Helper function to send a SysEx message with a given address and value."""
+        """Helper function to send address SysEx message with address given address and value."""
         return self.midi_helper.send_parameter(
             area=TEMPORARY_DRUM_KIT_AREA,
             part=DRUM_KIT_AREA,
@@ -1172,7 +2215,7 @@ class DrumPartialEditor(QWidget):
     def _create_parameter_slider(
         self, param: DrumParameter, label: str = None
     ) -> Slider:
-        """Create a slider for a parameter with proper display conversion"""
+        """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -1212,7 +2255,7 @@ class DrumPartialEditor(QWidget):
                 area=TEMPORARY_TONE_AREA,
                 part=DRUM_KIT_AREA,
                 group=self.partial_address,
-                param=param.address,
+                param=param.format_address,
                 value=value,  # Make sure this value is being sent
             )
         except Exception as ex:

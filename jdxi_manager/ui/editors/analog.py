@@ -62,7 +62,7 @@ def get_analog_parameter_by_address(address: int):
     from jdxi_manager.data.analog import AnalogParameter
 
     for param in AnalogParameter:
-        if param.address == address:
+        if param.format_address == address:
             logging.info(f"get_analog_parameter_by_address found param: {param}")
             return param
     return None
@@ -74,7 +74,7 @@ def get_analog_parameter_name_by_address(address: int):
     from jdxi_manager.data.analog import AnalogParameter
 
     for param in AnalogParameter:
-        if param.address == address:
+        if param.format_address == address:
             logging.info(f"get_analog_parameter_by_address found param: {param}")
             return param.name
     return None
@@ -197,7 +197,7 @@ class AnalogSynthEditor(BaseEditor):
         )
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         for param, slider in self.controls.items():
-            if isinstance(slider, QSlider):  # Ensure it's a slider
+            if isinstance(slider, QSlider):  # Ensure it's address slider
                 slider.setTickPosition(
                     QSlider.TickPosition.TicksBothSides
                 )  # Tick marks on both sides
@@ -438,7 +438,7 @@ class AnalogSynthEditor(BaseEditor):
 
     def load_preset(self, preset_index):
         preset_data = {
-            "type": self.preset_type,  # Ensure this is a valid type
+            "type": self.preset_type,  # Ensure this is address valid type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
@@ -472,7 +472,7 @@ class AnalogSynthEditor(BaseEditor):
             #    group, param_address = param.get_address_for_partial(self.partial_name)
             # else:
             group = ANALOG_OSC_GROUP  # Common parameters group
-            param_address = param.address
+            param_address = param.format_address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
@@ -511,7 +511,7 @@ class AnalogSynthEditor(BaseEditor):
         vertical=False,
         show_value_label=True,
     ) -> Slider:
-        """Create a slider for a parameter with proper display conversion"""
+        """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -1097,7 +1097,7 @@ class AnalogSynthEditor(BaseEditor):
             )
 
     def send_message(self, message):
-        """Send a SysEx message using the MIDI helper"""
+        """Send address SysEx message using the MIDI helper"""
         if self.midi_helper:
             self.midi_helper.send_message(message)
         else:

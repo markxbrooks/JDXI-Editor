@@ -105,7 +105,7 @@ class EffectParameter(Enum):
 
     @classmethod
     def get_common_param_by_name(cls, name):
-        """Look up an effect parameter's category using a dictionary mapping"""
+        """Look up an effect parameter's category using address dictionary mapping"""
         param_mapping = {
             EffectsCommonParameter.PROGRAM_EFFECT_1: {
                 "EFX1_TYPE", "EFX1_LEVEL", "EFX1_DELAY_SEND_LEVEL",

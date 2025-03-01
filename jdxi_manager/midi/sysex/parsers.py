@@ -7,7 +7,7 @@ address bytes to synth areas, extracting tone names, and identifying tone types.
 
 Functions:
     - safe_get: Safely retrieves values from SysEx data.
-    - extract_hex: Extracts a hex value from SysEx data.
+    - extract_hex: Extracts address hex value from SysEx data.
     - get_temporary_area: Maps SysEx address bytes to temporary areas.
     - get_synth_tone: Maps byte values to synth tone types.
     - extract_tone_name: Extracts and cleans the tone name from SysEx data.
@@ -31,7 +31,7 @@ def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) ->
 
 
 def extract_hex(data: List[int], start: int, end: int, default: str = "N/A") -> str:
-    """Extract a hex value from data safely."""
+    """Extract address hex value from data safely."""
     return data[start:end].hex() if len(data) >= end else default
 
 
@@ -148,7 +148,7 @@ def extract_tone_name(data: List[int]) -> str:
 
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
-    return {param.name: safe_get(data, param.address) for param in parameter_type}
+    return {param.name: safe_get(data, param.format_address) for param in parameter_type}
 
 
 def parse_sysex(data: List[int]) -> Dict[str, str]:

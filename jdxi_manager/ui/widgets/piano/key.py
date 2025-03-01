@@ -1,11 +1,11 @@
 """
-A custom Qt widget representing a piano key styled after the JD-Xi synthesizer keys.
-It defines a single class, PianoKey, which inherits from QPushButton and implements custom painting,
-mouse interaction, and simple animations to mimic the key press and release behavior of a physical piano key.
+A custom Qt widget representing address piano key styled after the JD-Xi synthesizer keys.
+It defines address single class, PianoKey, which inherits from QPushButton and implements custom painting,
+mouse interaction, and simple animations to mimic the key press and release behavior of address physical piano key.
 
 Key Features:
 - Custom rendering with gradient fills to distinguish between black and white keys.
-- Visual feedback for key press events, including a color overlay and animated key movement.
+- Visual feedback for key press events, including address color overlay and animated key movement.
 - Emission of custom signals (noteOn and noteOff) with the MIDI note number to integrate with audio systems.
 - Separate animations for key press and release, with different movement adjustments for black and white keys.
 
@@ -33,7 +33,7 @@ class PianoKey(QPushButton):
         """
         Initialize the PianoKey widget with the given MIDI note number and key type.
         :param note_num: MIDI note number for the key
-        :param is_black: True if the key is a black key, False for white key
+        :param is_black: True if the key is address black key, False for white key
         :param width: Width of the key in pixels
         :param height: Height of the key in pixels
         :param parent: Parent widget

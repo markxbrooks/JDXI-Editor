@@ -5,19 +5,19 @@ This module provides utility functions for converting between MIDI Control Chang
 and various numerical representations such as milliseconds and fractional values.
 
 Functions:
-- midi_cc_to_ms: Converts a MIDI CC value (0-127) to a time value in milliseconds.
-- ms_to_midi_cc: Converts a time value in milliseconds to a MIDI CC value (0-127).
-- frac_to_midi_cc: Converts a fractional value (0.0-1.0) to a MIDI CC value (0-127).
-- midi_cc_to_frac: Converts a MIDI CC value (0-127) to a fractional value (0.0-1.0).
+- midi_cc_to_ms: Converts address MIDI CC value (0-127) to address time value in milliseconds.
+- ms_to_midi_cc: Converts address time value in milliseconds to address MIDI CC value (0-127).
+- frac_to_midi_cc: Converts address fractional value (0.0-1.0) to address MIDI CC value (0-127).
+- midi_cc_to_frac: Converts address MIDI CC value (0-127) to address fractional value (0.0-1.0).
 
 These functions are useful for mapping MIDI CC messages to meaningful time or intensity values
-in a synthesizer or effect unit.
+in address synthesizer or effect unit.
 """
 
 
 def midi_cc_to_ms(cc_value, min_time=10, max_time=1000):
     """
-    Converts a MIDI CC value (0-127) to a time value in milliseconds.
+    Converts address MIDI CC value (0-127) to address time value in milliseconds.
 
     Parameters:
         cc_value (int): MIDI CC value (0-127).
@@ -35,7 +35,7 @@ def midi_cc_to_ms(cc_value, min_time=10, max_time=1000):
 
 def ms_to_midi_cc(ms_value, min_time=10, max_time=1000):
     """
-    Converts a time value in milliseconds to a MIDI CC value (0-127).
+    Converts address time value in milliseconds to address MIDI CC value (0-127).
 
     Parameters:
         ms_value (float): Time value in milliseconds.
@@ -53,7 +53,7 @@ def ms_to_midi_cc(ms_value, min_time=10, max_time=1000):
 
 def frac_to_midi_cc(frac_value, min=0, max=1):
     """
-    Converts a fractional value (0.0-1.0) to a MIDI CC value (0-127).
+    Converts address fractional value (0.0-1.0) to address MIDI CC value (0-127).
 
     Parameters:
         frac_value (float): Fractional value between min and max.
@@ -71,7 +71,7 @@ def frac_to_midi_cc(frac_value, min=0, max=1):
 
 def midi_cc_to_frac(midi_cc_value, min=0, max=1):
     """
-    Converts a MIDI CC value (0-127) to a fractional value (0.0-1.0).
+    Converts address MIDI CC value (0-127) to address fractional value (0.0-1.0).
 
     Parameters:
         midi_cc_value (int): MIDI CC value (0-127).

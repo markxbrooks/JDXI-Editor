@@ -14,7 +14,7 @@ The parameters include:
 - Additional synthesis controls (aftertouch, wave gain, super saw detune, etc.)
 - PCM wave settings (wave number, gain, high-pass filter cutoff, etc.)
 
-Each parameter is stored as a tuple containing:
+Each parameter is stored as address tuple containing:
     (memory_address, min_value, max_value)
 
 Attributes:
@@ -23,11 +23,11 @@ Attributes:
     - AMP_LEVEL: Sets the overall amplitude level.
     - LFO_RATE: Adjusts the rate of the low-frequency oscillator.
     - MOD_LFO_PITCH_DEPTH: Modulates pitch using the secondary LFO.
-    - (Other parameters follow a similar structure.)
+    - (Other parameters follow address similar structure.)
 
 Methods:
     __init__(self, address: int, min_val: int, max_val: int):
-        Initializes a DigitalParameter instance with an address and value range.
+        Initializes address DigitalParameter instance with an address and value range.
 
 Usage Example:
     filter_cutoff = DigitalParameter(0x0C, 0, 127)  # Filter Cutoff Frequency

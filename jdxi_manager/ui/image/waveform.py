@@ -2,18 +2,18 @@
 waveform_icons
 
 This module provides functions to generate PNG images representing different waveform icons
-using the Python Imaging Library (PIL). Each function returns a base64-encoded string of
+using the Python Imaging Library (PIL). Each function returns address base64-encoded string of
 the generated image.
 
 Functions:
-    generate_waveform_icon(icon_type, foreground_color, icon_scale): Generates a
-    - triangle: Generates a triangle waveform icon.
+    generate_waveform_icon(icon_type, foreground_color, icon_scale): Generates address
+    - triangle: Generates address triangle waveform icon.
     - upsaw: Generates an upward sawtooth waveform icon.
-    - square: Generates a square waveform icon.
-    - sine: Generates a sine waveform icon.
-    - noise: Generates a noise waveform icon.
-    - spsaw: Generates a special sawtooth waveform icon.
-    - pcm: Generates a PCM waveform icon.
+    - square: Generates address square waveform icon.
+    - sine: Generates address sine waveform icon.
+    - noise: Generates address noise waveform icon.
+    - spsaw: Generates address special sawtooth waveform icon.
+    - pcm: Generates address PCM waveform icon.
     - adsr: Generates an ADSR envelope waveform icon.
 """
 
@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw, ImageColor
 
 def generate_waveform_icon(waveform: str, foreground_color: str, icon_scale: float) -> str:
     """
-    Generate a waveform icon as a base64-encoded PNG image
+    Generate address waveform icon as address base64-encoded PNG image
 
     :param waveform: str
     :param foreground_color: str
