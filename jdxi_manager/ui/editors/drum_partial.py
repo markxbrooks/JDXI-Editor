@@ -16,11 +16,12 @@ from PySide6.QtWidgets import (
     QComboBox,
     QTabWidget,
 )
-from jdxi_manager.data.drums import get_address_for_partial, DRUM_ADDRESSES
+from jdxi_manager.data.drums import get_address_for_partial, get_address_for_partial_new, DRUM_ADDRESSES
 from jdxi_manager.data.parameter.drums import DrumParameter
 from jdxi_manager.midi.constants import (
-    TEMPORARY_DRUM_KIT_AREA,
-    TEMPORARY_DIGITAL_SYNTH_1_AREA,
+    TEMPORARY_DRUM_KIT_AREA)
+from jdxi_manager.midi.constants.sysex import (
+    TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 )
 from jdxi_manager.data.parameter.drums import get_address_for_partial_name
 from jdxi_manager.midi.preset.loader import PresetLoader
@@ -42,15 +43,15 @@ class DrumPartialEditor(QWidget):
         try:
             from jdxi_manager.data.drums import get_address_for_partial
 
-            self.address = get_address_for_partial_name(self.partial_name)
+            self.partial_address = get_address_for_partial_name(self.partial_name)
             logging.info(
-                f"Initialized partial {partial_num} with address: {hex(self.address)}"
+                f"Initialized partial {partial_num} with address: {hex(self.partial_address)}"
             )
         except Exception as e:
             logging.error(
                 f"Error calculating address for partial {partial_num}: {str(e)}"
             )
-            self.address = 0x00
+            self.partial_address = 0x00
 
         # Store parameter controls for easy access
         self.controls: Dict[DrumParameter, QWidget] = {}
@@ -852,7 +853,7 @@ class DrumPartialEditor(QWidget):
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to a supported digital synth area."""
             return sysex_data.get("TEMPORARY_AREA") in [
-                "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                "TEMPORARY_TONE_AREA",
                 "TEMPORARY_DIGITAL_SYNTH_2_AREA",
             ]
 
@@ -864,7 +865,7 @@ class DrumPartialEditor(QWidget):
 
         # if not _is_valid_sysex_area(sysex_data):
         #    logging.warning(
-        #        "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
+        #        "SysEx data does not belong to TEMPORARY_TONE_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
         #    return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
@@ -956,41 +957,19 @@ class DrumPartialEditor(QWidget):
 
     def send_sysex_message(self, address: int, value: int):
         """Helper function to send a SysEx message with a given address and value."""
-        # 0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, 0x6C, 0xF7
-        """
-        sysex_message = [
-            START_OF_SYSEX,
-            ROLAND_ID,
-            DEVICE_ID,
-            MODEL_ID_1,
-            MODEL_ID_2,
-            MODEL_ID_3,
-            MODEL_ID_4,
-            DT1_COMMAND,
-            TEMPORARY_DIGITAL_SYNTH_1_AREA,  # Assuming this is a fixed address of the message
-            0x70,  # Assuming this is a fixed address of the message
-            address,
-            value,
-            0x6C,  # Assuming this is a fixed address of the message
-        ]
-        """
-        # sysex_message = [
-        #     0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 0x19, 0x70, address, value, checksum, 0xF7
-        # ]
         return self.midi_helper.send_parameter(
             area=TEMPORARY_DRUM_KIT_AREA,
-            part=0x70,
+            part=DRUM_KIT_AREA,
             group=group,
             param=address,
             value=value,  # Make sure this value is being sent
         )
-        # self.midi_helper.send_message(checksum_message)
 
     def _on_tva_level_velocity_sens_slider_changed(self, value: int):
         """Handle TVA Level Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_LEVEL_VELOCITY_SENS.value[0],
@@ -1002,7 +981,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Time 1 Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS.value[0],
@@ -1014,7 +993,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Time 4 Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS.value[0],
@@ -1026,7 +1005,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Time 1 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_1.value[0],
@@ -1038,7 +1017,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Time 2 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_2.value[0],
@@ -1050,7 +1029,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Time 3 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_TIME_3.value[0],
@@ -1062,7 +1041,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Level 1 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_LEVEL_1.value[0],
@@ -1074,7 +1053,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Level 2 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_LEVEL_2.value[0],
@@ -1086,7 +1065,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVA Env Level 3 change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVA_ENV_LEVEL_3.value[0],
@@ -1098,7 +1077,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Filter Type change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_FILTER_TYPE.value[0],
@@ -1110,7 +1089,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Cutoff Frequency change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_CUTOFF_FREQUENCY.value[0],
@@ -1122,7 +1101,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Cutoff Velocity Curve change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_CUTOFF_VELOCITY_CURVE.value[0],
@@ -1134,7 +1113,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Cutoff Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_CUTOFF_VELOCITY_SENS.value[0],
@@ -1146,7 +1125,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Env Depth change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_DEPTH.value[0],
@@ -1158,7 +1137,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Env Velocity Curve Type change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE.value[0],
@@ -1170,7 +1149,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Env Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_VELOCITY_SENS.value[0],
@@ -1182,7 +1161,7 @@ class DrumPartialEditor(QWidget):
         """Handle TVF Env Time 1 Velocity Sens change"""
         if self.midi_helper:
             self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                area=TEMPORARY_TONE_AREA,
                 part=DrumParameter.DRUM_PART.value,
                 group=DrumParameter.DRUM_GROUP.value,
                 param=DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS.value[0],
@@ -1198,33 +1177,18 @@ class DrumPartialEditor(QWidget):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-
-        # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max)
 
         if isinstance(param, DrumParameter) and param in [
             DrumParameter.PARTIAL_FINE_TUNE,
             # Add other bipolar parameters as needed
         ]:
-            # Set format string to show + sign for positive values
-            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
-            # Set center tick
-            # slider.setCenterMark(0)
-            # Add more prominent tick at center
-            # slider.setTickPosition(Slider.TickPosition.TicksBothSides)
-            # slider.setTickInterval((display_max - display_min) // 4)
-            """ Set the slider to the center value """
-            # Get initial MIDI value and convert to display value
             if self.midi_helper:
-                self.address = get_address_for_partial(
-                    self.partial_num
-                )  # Get the current partial number
-                group, param_address = get_address_for_partial(self.partial_num)
                 midi_value = self.midi_helper.get_parameter(
-                    area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                    part=self.address,
-                    group=group,
-                    param=param_address,
+                    area=TEMPORARY_TONE_AREA,
+                    part=DRUM_KIT_AREA,
+                    group=self.partial_address,
+                    param=param.address,
                 )
                 if midi_value is not None:
                     display_value = param.convert_from_midi(midi_value)
@@ -1242,22 +1206,12 @@ class DrumPartialEditor(QWidget):
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
             return False
-
         try:
-            # Get parameter group and address with partial offset
-            if isinstance(param, DrumParameter):
-                partial_group, partial_address = get_address_for_partial(
-                    self.partial_num
-                )
-            else:
-                partial_group = 0x00  # Common parameters group
-                partial_address = param.address
-
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
-                area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                part=DrumParameter.DRUM_PART.value[0],
-                group=partial_group,
+                area=TEMPORARY_TONE_AREA,
+                part=DRUM_KIT_AREA,
+                group=self.partial_address,
                 param=param.address,
                 value=value,  # Make sure this value is being sent
             )
@@ -1299,12 +1253,12 @@ class DrumPartialEditor(QWidget):
 
         # Get the address for the current partial
         try:
-            self.group, self.address = get_address_for_partial(self.partial_num)
+            self.group, self.partial_address = get_address_for_partial(self.partial_num)
             logging.info(
-                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.address)}"
+                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.partial_address)}"
             )
             print(
-                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.address)}"
+                f"Updated partial number to {self.partial_num}, group: {hex(self.group)}, address: {hex(self.partial_address)}"
             )
         except Exception as e:
             logging.error(

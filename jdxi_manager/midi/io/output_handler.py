@@ -279,7 +279,7 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             Parameter value (0-127) or None if an error occurs.
         """
-        logging.debug(f"Requesting parameter: area={area}, address={part}, group={group}, param={param}")
+        logging.info(f"Requesting parameter: area={area}, address={part}, group={group}, param={param}")
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None

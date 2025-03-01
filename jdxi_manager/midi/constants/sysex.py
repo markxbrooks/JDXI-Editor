@@ -30,6 +30,7 @@ TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x19  # Digital synth 1 area
 TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x1A  # Digital synth 2 area
 TEMPORARY_ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
 TEMPORARY_DRUM_KIT_AREA = 0x1C  # Drum kit area
+DRUM_KIT_AREA = 0x70 # Determined empirically
 EFFECTS_AREA = 0x16  # Effects area
 ARPEGGIO_AREA = 0x15  # Arpeggiator area
 VOCAL_FX_AREA = 0x14  # Vocal effects area

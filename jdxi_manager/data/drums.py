@@ -95,6 +95,10 @@ def get_address_for_partial(partial_num: int) -> Tuple[int, int]:
     HI = LO + 1
     return int(f"{LO:02X}", 16), int(f"{HI:02X}", 16)
 
+def get_address_for_partial_new(partial_num: int) -> int:
+    """Get parameter group and address adjusted for partial number"""
+    address = DRUM_ADDRESSES[partial_num][2]
+    return int(f"{address:02X}", 16)
 
 # Drum parameter offsets and ranges
 DR = {
