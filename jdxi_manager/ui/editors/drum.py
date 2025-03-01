@@ -58,6 +58,7 @@ import os
 import re
 import logging
 from typing import Optional, Dict
+import json
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
@@ -111,11 +112,41 @@ class DrumEditor(BaseEditor):
         self.partial_editors = {}
         self.main_window = parent
 
+        self.current_data = None
+        self.previous_data = None
         # Create layouts
         main_layout = QVBoxLayout(self)
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
         self.setMinimumSize(1000, 500)
+        self.partial_mapping = {
+            "BD1": 0,
+            "RIM": 1,
+            "BD2": 2,
+            "CLAP": 3,
+            "BD3": 4,
+            "SD1": 5,
+            "CHH": 6,
+            "SD2": 7,
+            "PHH": 8,
+            "SD3": 9,
+            "OHH": 10,
+            "SD4": 11,
+            "TOM1": 12,
+            "PRC1": 13,
+            "TOM2": 14,
+            "PRC2": 15,
+            "TOM3": 16,
+            "PRC3": 17,
+            "CYM1": 18,
+            "PRC4": 19,
+            "CYM2": 20,
+            "PRC5": 21,
+            "CYM3": 22,
+            "HIT": 23,
+            "OTH1": 24,
+            "OTH2": 25,
+        }
         self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",
             "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7",
@@ -251,6 +282,7 @@ class DrumEditor(BaseEditor):
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_num)
+        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.data_request()
 
     def update_instrument_title(self):
@@ -261,37 +293,9 @@ class DrumEditor(BaseEditor):
     def _setup_partial_editors(self):
         """Setup all partial editors and tabs"""
         # Map of partial names to their indices
-        partial_mapping = {
-            "BD1": 0,
-            "RIM": 1,
-            "BD2": 2,
-            "CLAP": 3,
-            "BD3": 4,
-            "SD1": 5,
-            "CHH": 6,
-            "SD2": 7,
-            "PHH": 8,
-            "SD3": 9,
-            "OHH": 10,
-            "SD4": 11,
-            "TOM1": 12,
-            "PRC1": 13,
-            "TOM2": 14,
-            "PRC2": 15,
-            "TOM3": 16,
-            "PRC3": 17,
-            "CYM1": 18,
-            "PRC4": 19,
-            "CYM2": 20,
-            "PRC5": 21,
-            "CYM3": 22,
-            "HIT": 23,
-            "OTH1": 24,
-            "OTH2": 25,
-        }
 
         # Create editor for each partial
-        for partial_name, partial_index in partial_mapping.items():
+        for partial_name, partial_index in self.partial_mapping.items():
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_num=partial_index,
@@ -345,6 +349,257 @@ class DrumEditor(BaseEditor):
         if not image_loaded:
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
+
+    def _dispatch_sysex_to_area(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        failures, successes = [], []
+
+        def _parse_sysex_json(json_data):
+            """Parse JSON safely and log changes."""
+            try:
+                sysex_data = json.loads(json_data)
+                return sysex_data
+            except json.JSONDecodeError as ex:
+                logging.error(f"Invalid JSON format: {ex}")
+                return None
+
+        # Parse SysEx data
+        sysex_data = _parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+
+        if synth_tone == "TONE_COMMON":
+            logging.info(f"\nTone common")
+            self._update_common_sliders_from_sysex(json_sysex_data)
+        else:
+            self._update_partial_sliders_from_sysex(json_sysex_data)
+
+    def _update_common_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        debug_param_updates = True
+        debug_stats = True
+        failures, successes = [], []
+
+        def _parse_sysex_json(json_data):
+            """Parse JSON safely and log changes."""
+            try:
+                sysex_data = json.loads(json_data)
+                self.previous_data = self.current_data
+                self.current_data = sysex_data
+                self._log_changes(self.previous_data, sysex_data)
+                return sysex_data
+            except json.JSONDecodeError as ex:
+                logging.error(f"Invalid JSON format: {ex}")
+                return None
+
+        def _is_valid_sysex_area(sysex_data):
+            """Check if SysEx data belongs to a supported digital synth area."""
+            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+
+        def _get_partial_number(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            return {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3
+            }.get(synth_tone, None)
+
+        def _update_common_slider(param, value):
+            """Helper function to update sliders safely."""
+            logging.info(f"param: {param}")
+            slider = self.controls.get(param)
+            logging.info(f"slider: {slider}")
+            if slider:
+                slider.blockSignals(True)
+                slider.setValue(value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
+
+        def _update_common_switch(param, value):
+            """Helper function to update checkbox safely."""
+            logging.info(f"checkbox param: {param} {value}")
+            partial_switch_map = {"PARTIAL1_SWITCH": 1, "PARTIAL2_SWITCH": 2, "PARTIAL3_SWITCH": 3}
+            partial_number = partial_switch_map.get(param_name)
+            check_box = self.partials_panel.switches.get(partial_number)
+            logging.info(f"check_box: {check_box}")
+            if check_box: # and isinstance(check_box, QCheckBox):
+                check_box.blockSignals(True)
+                check_box.setState(bool(value), False)
+                check_box.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
+
+        # Parse SysEx data
+        sysex_data = _parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+
+        if not _is_valid_sysex_area(sysex_data):
+            logging.warning(
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
+            return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
+
+        common_ignored_keys = {'JD_XI_ID', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
+
+        if synth_tone == "TONE_COMMON":
+            logging.info(f"\nTone common")
+            for param_name, param_value in sysex_data.items():
+                param = DigitalCommonParameter.get_by_name(param_name)
+                logging.info(f"Tone common: param_name: {param} {param_value}")
+                try:
+                    if param:
+                        if param_name in ['PARTIAL1_SWITCH', 'PARTIAL1_SELECT', 'PARTIAL2_SWITCH', 'PARTIAL2_SELECT', 'PARTIAL3_SWITCH', 'PARTIAL3_SELECT']:
+                            _update_common_switch(param, param_value)
+                        else:
+                            _update_common_slider(param, param_value)
+                    else:
+                        failures.append(param_name)
+                except Exception as ex:
+                    logging.info(f"Error {ex} occurred")
+
+        logging.info(f"Updating sliders for Partial {partial_no}")
+
+        def _update_slider(param, value):
+            """Helper function to update sliders safely."""
+            slider = self.partial_editors[partial_no].controls.get(param)
+            if slider:
+                slider.blockSignals(True)
+                slider.setValue(value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
+
+        def _log_debug_info():
+            """Helper function to log debugging statistics."""
+            if debug_stats:
+                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                logging.info(f"successes: \t{successes}")
+                logging.info(f"failures: \t{failures}")
+                logging.info(f"success rate: \t{success_rate:.1f}%")
+                logging.info("--------------------------------")
+
+        _log_debug_info()
+
+    def _update_partial_sliders_from_sysex(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        debug_param_updates = True
+        debug_stats = True
+
+        try:
+            sysex_data = json.loads(json_sysex_data)
+            self.previous_data = self.current_data
+            self.current_data = sysex_data
+            self._log_changes(self.previous_data, sysex_data)
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
+            return
+
+        def _is_valid_sysex_area(sysex_data):
+            """Check if SysEx data belongs to a supported digital synth area."""
+            sysex_data.get("TEMPORARY_AREA") in self.partial_mapping.keys()
+
+        def _get_partial_number(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            for key, value in self.partial_mapping.items():
+                if key == synth_tone:
+                    return value
+            return None
+
+        #if not _is_valid_sysex_area(sysex_data):
+        #    logging.warning(
+        #        "SysEx data does not belong to drum area; skipping update.")
+        #    return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        partial_no = _get_partial_number(synth_tone)
+
+        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
+
+        # osc_waveform_map = {wave.value: wave for wave in OscWave}
+
+        failures, successes = [], []
+
+        def _update_slider(param, value):
+            """Helper function to update sliders safely."""
+            slider = self.partial_editors[partial_no].controls.get(param)
+            if slider:
+                slider_value = param.convert_from_midi(value)
+                logging.info(f"midi value {value} converted to slider value {slider_value}")
+                slider.blockSignals(True)
+                slider.setValue(slider_value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+
+        def _update_waveform(param_value):
+            """Helper function to update waveform selection UI."""
+            waveform = osc_waveform_map.get(param_value)
+            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
+                button = self.partial_editors[partial_no].wave_buttons[waveform]
+                button.setChecked(True)
+                self.partial_editors[partial_no]._on_waveform_selected(waveform)
+                logging.debug(f"Updated waveform button for {waveform}")
+
+        for param_name, param_value in sysex_data.items():
+            param = DrumParameter.get_by_name(param_name)
+
+            if param:
+                _update_slider(param, param_value)
+            else:
+                failures.append(param_name)
+
+        def _log_debug_info():
+            """Helper function to log debugging statistics."""
+            if debug_stats:
+                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                logging.info(f"Successes: {successes}")
+                logging.info(f"Failures: {failures}")
+                logging.info(f"Success Rate: {success_rate:.1f}%")
+                logging.info("--------------------------------")
+
+        _log_debug_info()
+
+    def _log_changes(self, previous_data, current_data):
+        """Log changes between previous and current JSON data."""
+        changes = []
+        if not current_data or not previous_data:
+            return
+        for key, current_value in current_data.items():
+            previous_value = previous_data.get(key)
+            if previous_value != current_value:
+                changes.append((key, previous_value, current_value))
+
+        changes = [
+            change for change in changes if change[0] not in ["JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+        ]
+
+        if changes:
+            logging.info("Changes detected:")
+            for key, prev, curr in changes:
+                logging.info(f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}")
+        else:
+            logging.info("No changes detected.")
 
     def on_kit_level_changed(self, value):
         """Handle kit level slider value change"""

@@ -868,4 +868,8 @@ class DrumParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the AnalogParameter by name."""
         # Return the parameter member by name, or None if not found
-        return DigitalParameter.__members__.get(param_name, None)
+        return DrumParameter.__members__.get(param_name, None)
+
+    def convert_from_midi(self, midi_value: int) -> int:
+        """Convert from MIDI value to display value"""
+        return midi_value
