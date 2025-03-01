@@ -2,7 +2,7 @@
 Module for representing and managing synthesizer parameters as enum values.
 
 This module defines the `SynthParameter` enum, which models the various parameters
-of a synthesizer with associated addresses and valid value ranges. It includes methods
+of address synthesizer with associated addresses and valid value ranges. It includes methods
 for value validation, display name formatting, and lookups by address or name.
 
 Classes:
@@ -17,9 +17,9 @@ Methods:
     validate_value(value: int): Validates the provided value against the parameter's valid
                                 range and returns the value if it is valid.
     get_name_by_address(address: int): Static method that returns the name of the parameter
-                                       corresponding to a given address.
+                                       corresponding to address given address.
     get_by_name(param_name: str): Static method that returns the `SynthParameter` member
-                                  corresponding to a given name.
+                                  corresponding to address given name.
 """
 
 from enum import Enum
@@ -52,7 +52,7 @@ class SynthParameter(Enum):
 
     @staticmethod
     def get_name_by_address(address: int):
-        """Return the parameter name for a given address."""
+        """Return the parameter name for address given address."""
         for param in SynthParameter:
             if param.address == address:
                 return param.name

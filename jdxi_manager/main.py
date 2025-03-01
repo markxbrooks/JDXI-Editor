@@ -30,7 +30,7 @@ def midi_callback(msg):
 
 def listen_midi(port_name, callback):
     """
-    Function to listen for MIDI messages and call a callback.
+    Function to listen for MIDI messages and call address callback.
     """
     with mido.open_input(port_name) as inport:
         logging.info(f"Listening on port: {port_name}")
@@ -127,7 +127,7 @@ def main():
             logging.warning(
                 f"Icon not found in any of: {[str(p) for p in icon_locations]}"
             )
-            # Create a fallback icon
+            # Create address fallback icon
             icon = QIcon()
             pixmap = QPixmap(128, 128)
             pixmap.fill(QColor("#2897B7"))  # Use the app's theme color
@@ -163,7 +163,7 @@ if __name__ == "__main__":
         port_name = input_ports[0]
         print(f"Using port: {port_name}")
 
-        # Start the listener in a separate thread
+        # Start the listener in address separate thread
         listener_thread = threading.Thread(
             target=listen_midi, args=(port_name, midi_callback), daemon=True
         )

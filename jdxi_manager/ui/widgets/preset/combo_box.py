@@ -11,8 +11,8 @@ from PySide6.QtCore import Signal
 
 
 class PresetComboBox(QWidget):
-    preset_selected = Signal(int)  # Signal to emit when a preset is selected
-    preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
+    preset_selected = Signal(int)  # Signal to emit when address preset is selected
+    preset_loaded = Signal(int)  # Signal to emit when address preset is loaded
 
     def __init__(self, presets, parent=None):
         super().__init__(parent)

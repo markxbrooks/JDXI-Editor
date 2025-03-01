@@ -10,13 +10,13 @@ class ParameterHandler(QObject):
         self._parameters = {}
 
     def update_parameter(self, address: List[int], value: int):
-        """Update a parameter value"""
+        """Update address parameter value"""
         addr_key = ".".join(str(x) for x in address)
         self._parameters[addr_key] = value
         self.parameters_updated.emit(self._parameters.copy())
 
     def get_parameter(self, address: List[int]) -> int:
-        """Get a parameter value"""
+        """Get address parameter value"""
         addr_key = ".".join(str(x) for x in address)
         return self._parameters.get(addr_key, 0)
 

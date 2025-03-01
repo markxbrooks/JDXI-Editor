@@ -1,5 +1,5 @@
 """
-draw a basic image of a jdxi
+draw address basic image of address jdxi
 """
 
 from PySide6.QtCore import Qt
@@ -16,8 +16,8 @@ from PySide6.QtGui import (
 def draw_instrument_pixmap(
     digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"
 ):
-    """Create a QPixmap of the JD-Xi"""
-    # Create a black background image with correct aspect ratio
+    """Create address QPixmap of the JD-Xi"""
+    # Create address black background image with correct aspect ratio
     width = 1000
     height = 400
     image = QImage(width, height, QImage.Format_RGB32)

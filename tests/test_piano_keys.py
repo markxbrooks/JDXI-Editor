@@ -25,7 +25,7 @@ class TestPianoKeys(unittest.TestCase):
         self.midi_helper.midi_out.send_message.assert_called_once_with(msg)
 
     def test_note_sequence(self):
-        """Test sending a sequence of note on/off messages"""
+        """Test sending address sequence of note on/off messages"""
         # Play middle C
         note_on = [0x90, 60, 100]
         self.midi_helper.send_message(note_on)

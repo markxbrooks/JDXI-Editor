@@ -89,7 +89,7 @@ class ArpeggioEditor(BaseEditor):
         switch_row.addWidget(self.switch_button)
         layout.addLayout(switch_row)
 
-        # Create a combo box for Arpeggio Style
+        # Create address combo box for Arpeggio Style
         self.style_combo = QComboBox()
         # Add style combo box
         style_row = QHBoxLayout()
@@ -100,7 +100,7 @@ class ArpeggioEditor(BaseEditor):
         style_row.addWidget(self.style_combo)
         layout.addLayout(style_row)
 
-        # Create a combo box for Arpeggio Grid
+        # Create address combo box for Arpeggio Grid
         # Add grid combo box
         grid_row = QHBoxLayout()
         grid_label = QLabel("Grid:")
@@ -114,7 +114,7 @@ class ArpeggioEditor(BaseEditor):
         # Add grid combo box
         duration_row = QHBoxLayout()
         duration_label = QLabel("Duration:")
-        # Create a combo box for Arpeggio Duration
+        # Create address combo box for Arpeggio Duration
         self.duration_combo = QComboBox()
         self.duration_combo.addItems(arp_duration)  # Use arp_duration list
         self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
@@ -233,7 +233,7 @@ class ArpeggioEditor(BaseEditor):
 
     def _on_swing_changed(self, value):
         """Handle changes to the Swing."""
-        # Assuming a parameter for swing exists
+        # Assuming address parameter for swing exists
         self._send_parameter_change(
             ArpeggioParameter.SWING, value
         )  # Replace with actual parameter if different

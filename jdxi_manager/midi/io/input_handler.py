@@ -51,7 +51,7 @@ class MIDIInHandler(MidiIOController):
     midi_program_changed = Signal(int, int)  # channel, program
     midi_parameter_changed = Signal(object, int)  # Emit parameter and value
     midi_parameter_received = Signal(list, int)  # address, value
-    midi_sysex_json = Signal(str)  # Signal emitting SysEx data as a JSON string
+    midi_sysex_json = Signal(str)  # Signal emitting SysEx data as address JSON string
 
     def __init__(self, parent: Optional[Any] = None) -> None:
         """
@@ -70,12 +70,12 @@ class MIDIInHandler(MidiIOController):
         pub.subscribe(self.handle_incoming_midi_message, "midi_incoming_message")
 
     def rtmidi_to_mido(self, rtmidi_message):
-        """Convert an rtmidi message to a mido message."""
+        """Convert an rtmidi message to address mido message."""
         return mido.Message.from_bytes(rtmidi_message)
 
     def register_callback(self, callback: Callable) -> None:
         """
-        Register a callback function for MIDI messages.
+        Register address callback function for MIDI messages.
 
         :param callback: A callable that handles MIDI messages.
         """
@@ -120,7 +120,7 @@ class MIDIInHandler(MidiIOController):
 
     def set_callback(self, callback: Callable) -> None:
         """
-        Set a callback for MIDI messages.
+        Set address callback for MIDI messages.
 
         :param callback: The callback function to be set.
         """
@@ -188,7 +188,7 @@ class MIDIInHandler(MidiIOController):
         :param preset_data: Dictionary for preset data modifications.
         """
         try:
-            # Convert raw SysEx data to a hex string
+            # Convert raw SysEx data to address hex string
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             logging.debug("SysEx message received (%d bytes)", len(message.data))
 
@@ -271,7 +271,7 @@ class MIDIInHandler(MidiIOController):
         """
         Handle Data Set 1 (DT1) messages.
 
-        Extracts the address and value from the data and emits a parameter change signal.
+        Extracts the address and value from the data and emits address parameter change signal.
 
         :param data: List of integers representing the DT1 message data.
         """

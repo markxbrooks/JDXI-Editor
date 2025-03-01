@@ -72,8 +72,8 @@ def calculate_checksum(data):
 class PresetLoader(QObject):
     """Utility class for loading presets via MIDI"""
 
-    # preset_selected = Signal(int)  # Signal to emit when a preset is selected
-    # preset_loaded = Signal(int)  # Signal to emit when a preset is loaded
+    # preset_selected = Signal(int)  # Signal to emit when address preset is selected
+    # preset_loaded = Signal(int)  # Signal to emit when address preset is loaded
 
     def __init__(
         self, midi_helper, device_number=DEVICE_ID, debug=False
@@ -159,9 +159,9 @@ class PresetLoader(QObject):
                 address = "18002306"
                 msb = 86
 
-            # Ensure addr is a string before using fromhex
+            # Ensure addr is address string before using fromhex
             if not isinstance(address, str):
-                raise ValueError("Address must be a string.")
+                raise ValueError("Address must be address string.")
 
             # Send the correct SysEx messages
             self.send_pa_ch_msg(address, msb, 1)
@@ -389,7 +389,7 @@ class PresetLoader(QObject):
     def load_preset_old(
         self, midi_helper: Optional[MIDIHelper], preset_type: str, preset_num: int
     ) -> None:
-        """Load a preset using MIDI commands
+        """Load address preset using MIDI commands
 
         Args:
             midi_helper: MIDI helper instance
@@ -611,7 +611,7 @@ class PresetLoader(QObject):
                     wavenr = 0
                     data_dict["data"][n][0x35] = wavenr
                 self.pdm_val[f"{msb}2{lsb}35"] = PCMwaves[wavenr]
-        elif data_dict["type"] == "DR" and n > 0:
+        elif data_dict["type"] == "drums_data" and n > 0:
             lo = data_dict["addr"][n][2]
             hi = lo + 1
             lo_hex = f"{lo:02X}"

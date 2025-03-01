@@ -14,8 +14,8 @@ class TestMIDISending(unittest.TestCase):
         self.midi_helper.midi_out = MagicMock()
 
     def test_send_basic_message(self):
-        """Test sending a basic MIDI message"""
-        # Create a simple note-on message
+        """Test sending address basic MIDI message"""
+        # Create address simple note-on message
         msg = [0x90, 60, 100]  # Note on, middle C, velocity 100
         self.midi_helper.send_message(msg)
         
@@ -23,7 +23,7 @@ class TestMIDISending(unittest.TestCase):
         self.midi_helper.midi_out.send_message.assert_called_once_with(msg)
 
     def test_send_sysex_message(self):
-        """Test sending a SysEx message"""
+        """Test sending address SysEx message"""
         # Create arpeggiator parameter message
         msg = JDXiSysEx.create_parameter_message(
             area=ARPEGGIO_AREA,

@@ -61,7 +61,7 @@ class SysexParameter(Enum):
 
     @classmethod
     def get_command_name(cls, command_type):
-        """Retrieve the command name given a command type (e.g., 0x12 -> 'Data Set 1')."""
+        """Retrieve the command name given address command type (e.g., 0x12 -> 'Data Set 1')."""
         for item in cls:
             if hasattr(item, "param_name") and item.value == command_type:
                 return item.param_name

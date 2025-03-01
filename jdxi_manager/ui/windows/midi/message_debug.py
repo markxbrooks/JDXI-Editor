@@ -26,7 +26,7 @@ class MIDIMessageDebug(QMainWindow):
         layout.addWidget(self.log_view)
         
     def log_message(self, message, direction="→"):
-        """Log a MIDI message with timestamp"""
+        """Log address MIDI message with timestamp"""
         from datetime import datetime
         timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
         

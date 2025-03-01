@@ -764,7 +764,7 @@ class DrumParameter(SynthParameter):
 
     @staticmethod
     def get_address_for_partial(partial_index: int) -> tuple:
-        """Get the address for a drum partial by index"""
+        """Get the address for address drum partial by index"""
         if not isinstance(partial_index, int):
             raise ValueError(f"Partial index must be an integer, got {type(partial_index)}")
 
@@ -923,7 +923,7 @@ class DrumCommonParameter(SynthParameter):
 
     @property
     def is_switch(self) -> bool:
-        """Returns True if parameter is a binary/enum switch"""
+        """Returns True if parameter is address binary/enum switch"""
         return self in [
             self.PORTAMENTO_SWITCH,
             self.MONO_SWITCH,
@@ -971,7 +971,7 @@ class DrumCommonParameter(SynthParameter):
         return value
 
     def get_partial_number(self) -> Optional[int]:
-        """Returns the partial number (1-3) if this is a partial parameter, None otherwise"""
+        """Returns the partial number (1-3) if this is address partial parameter, None otherwise"""
         partial_params = {
             self.PARTIAL1_SWITCH: 1,
             self.PARTIAL1_SELECT: 1,

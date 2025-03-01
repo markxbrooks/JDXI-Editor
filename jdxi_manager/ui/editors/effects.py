@@ -71,7 +71,7 @@ class EffectsEditor(BaseEditor):
             {}
         )
 
-        # Create a tab widget
+        # Create address tab widget
         self.tabs = QTabWidget()
         self.tabs.setStyleSheet(Style.JDXI_TABS)
         main_layout.addWidget(self.tabs)
@@ -151,7 +151,7 @@ class EffectsEditor(BaseEditor):
     def _create_parameter_slider(
         self, param_name: str, label: str, vertical=False
     ) -> Slider:
-        """Create a slider for a parameter with proper display conversion"""
+        """Create address slider for address parameter with proper display conversion"""
         param = EffectParameter.get_by_name(param_name)
         if param is None:
             logging.error(f"Parameter {param_name} not found.")
@@ -173,7 +173,7 @@ class EffectsEditor(BaseEditor):
         layout = QVBoxLayout()
         widget.setLayout(layout)
 
-        # Create a combo box for EFX1 type
+        # Create address combo box for EFX1 type
         self.efx1_type = QComboBox()
         self.efx1_type.addItems(
             ["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER", "FLANGER"]
@@ -227,7 +227,7 @@ class EffectsEditor(BaseEditor):
         layout = QVBoxLayout()
         widget.setLayout(layout)
 
-        # Create a combo box for EFX2 type
+        # Create address combo box for EFX2 type
         self.efx2_type = QComboBox()
         self.efx2_type.addItems(
             ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
@@ -268,7 +268,7 @@ class EffectsEditor(BaseEditor):
             self.midi_helper.send_parameter(
                 area=TEMPORARY_PROGRAM_AREA,  # 0x18
                 part=PROGRAM_COMMON,
-                group=common_param.address,
+                group=common_param.format_address,
                 param=address_offset,
                 value=value,
             )
@@ -281,7 +281,7 @@ class EffectsEditor(BaseEditor):
             self.midi_helper.send_parameter(
                 area=TEMPORARY_PROGRAM_AREA,  # 0x18
                 part=PROGRAM_COMMON,
-                group=common_param.address,
+                group=common_param.format_address,
                 param=address_offset,
                 value=value,
             )
@@ -296,7 +296,7 @@ class EffectsEditor(BaseEditor):
             self.midi_helper.send_parameter(
                 area=TEMPORARY_PROGRAM_AREA,  # 0x18
                 part=PROGRAM_COMMON,
-                group=common_param.address,
+                group=common_param.format_address,
                 param=address_offset,
                 value=value,
             )
@@ -307,7 +307,7 @@ class EffectsEditor(BaseEditor):
         layout = QVBoxLayout()
         widget.setLayout(layout)
 
-        # Create a combo box for Delay Type
+        # Create address combo box for Delay Type
         delay_type_combo = QComboBox()
         delay_type_combo.addItems(["OFF", "ON"])
         delay_type_combo.currentIndexChanged.connect(self._on_delay_type_changed)
@@ -337,7 +337,7 @@ class EffectsEditor(BaseEditor):
         layout = QVBoxLayout()
         widget.setLayout(layout)
 
-        # Create a combo box for Reverb Type
+        # Create address combo box for Reverb Type
         reverb_type_combo = QComboBox()
         reverb_type_combo.addItems(
             ["ROOM1", "ROOM2", "STAGE1", "STAGE2", "HALL1", "HALL2"]
@@ -363,13 +363,13 @@ class EffectsEditor(BaseEditor):
 
         address_offset, _, _ = param.value
 
-        # Ensure we get a valid common parameter
+        # Ensure we get address valid common parameter
         common_param = EffectParameter.get_common_param_by_name(param_name)
         if common_param is None:
             logging.error(f"Unknown common parameter type for: {param_name}")
             return
 
-        base_address = common_param.address
+        base_address = common_param.format_address
 
         full_address = [0x18, 0x00, base_address, address_offset]
         logging.debug(f"Full address calculated for {param.name}: {full_address}")
@@ -377,7 +377,7 @@ class EffectsEditor(BaseEditor):
         self.midi_helper.send_parameter(
             area=TEMPORARY_PROGRAM_AREA,  # 0x18
             part=PROGRAM_COMMON,
-            group=common_param.address,
+            group=common_param.format_address,
             param=address_offset,
             value=value,
         )

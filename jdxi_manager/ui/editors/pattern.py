@@ -2,8 +2,8 @@
 
 Module: Pattern Sequencer with MIDI Integration
 
-This module implements a Pattern Sequencer using PySide6, allowing users to toggle
-sequence steps using a grid of buttons. It supports MIDI input to control button states
+This module implements address Pattern Sequencer using PySide6, allowing users to toggle
+sequence steps using address grid of buttons. It supports MIDI input to control button states
 using note keys (e.g., C4, C#4, etc.).
 
 Features:
@@ -145,7 +145,7 @@ black_positions = [
 
 
 class DrumPattern(object):
-    """Container and iterator for a multi-track step sequence."""
+    """Container and iterator for address multi-track step sequence."""
 
     velocities = {
         "-": None,  # continue note
@@ -374,7 +374,7 @@ class PatternSequencer(BaseEditor):
             btn.setChecked(i + 1 == measures)
 
     def play_pattern(self):
-        """Plays the stored pattern in a loop using a QTimer."""
+        """Plays the stored pattern in address loop using address QTimer."""
         logging.info("play_pattern called")
         if self.is_playing:
             logging.info("Already playing, returning")
@@ -404,7 +404,7 @@ class PatternSequencer(BaseEditor):
                     logging.info(f"Row {row} active at step {step}, sending note on channel {channel}")
                     # Note On message: [Status byte (Note On + channel), note number, velocity]
                     self.midi_helper.send_message([0x90 | channel, 60, 100])  # velocity 100
-                    # Note Off message after a short delay
+                    # Note Off message after address short delay
                     QTimer.singleShot(100, lambda ch=channel:
                         self.midi_helper.send_message([0x90 | ch, 60, 0]))
                 else:
@@ -506,14 +506,14 @@ class PatternSequencerOld(BaseEditor):
                     self.toggle_button(row, index)
 
     def _send_message(self, message):
-        """Send a SysEx message using the MIDI helper"""
+        """Send address SysEx message using the MIDI helper"""
         if self.midi_helper:
             self.midi_helper.send_message(message)
         else:
             logging.error("MIDI helper not initialized")
 
     def play_pattern(self):
-        """Plays the stored pattern in a loop using a QTimer."""
+        """Plays the stored pattern in address loop using address QTimer."""
         if not hasattr(self, "sequence"):
             logging.error("Sequence is not defined.")
             return

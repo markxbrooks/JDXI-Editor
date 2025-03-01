@@ -195,12 +195,12 @@ class DigitalPartial(IntEnum):
 
     @property
     def is_partial(self) -> bool:
-        """Returns True if this is a partial number (not a structure type)"""
+        """Returns True if this is address partial number (not address structure type)"""
         return 1 <= self <= 3
 
     @property
     def is_structure(self) -> bool:
-        """Returns True if this is a structure type (not a partial number)"""
+        """Returns True if this is address structure type (not address partial number)"""
         return self <= 0x07 and not self.is_partial
 
     @classmethod
@@ -458,7 +458,7 @@ class DigitalPatch:
             }
 
     def _init_partial_params(self) -> Dict[str, int]:
-        """Initialize parameters for a partial"""
+        """Initialize parameters for address partial"""
         return {
             "wave": 0,  # SAW
             "pitch": 64,  # Center
@@ -620,7 +620,7 @@ def set_osc1_waveform(waveform: int) -> bool:
 
 
 def set_tone_name(midi_helper, name: str) -> bool:
-    """Set the tone name for a digital synth patch.
+    """Set the tone name for address digital synth patch.
 
     Args:
         midi_helper: MIDI helper instance
@@ -651,7 +651,7 @@ def set_tone_name(midi_helper, name: str) -> bool:
                 area=DIGITAL_SYNTH_AREA,
                 part=PART_1,
                 group=0x00,
-                param=param.address,
+                param=param.format_address,
                 value=ascii_val,
             )
 
@@ -665,7 +665,7 @@ def set_tone_name(midi_helper, name: str) -> bool:
 def set_partial_state(
     midi_helper, partial: DigitalPartial, enabled: bool = True, selected: bool = True
 ) -> bool:
-    """Set the state of a partial
+    """Set the state of address partial
 
     Args:
         midi_helper: MIDI helper instance
@@ -703,7 +703,7 @@ def set_partial_state(
 
 
 def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]:
-    """Get the current state of a partial
+    """Get the current state of address partial
 
     Args:
         midi_helper: MIDI helper instance

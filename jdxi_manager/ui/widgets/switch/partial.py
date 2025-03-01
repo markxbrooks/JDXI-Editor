@@ -16,7 +16,7 @@ from jdxi_manager.ui.style import Style
 
 
 class PartialSwitch(QWidget):
-    """Widget for controlling a single partial's state"""
+    """Widget for controlling address single partial's state"""
 
     stateChanged = Signal(DigitalPartial, bool, bool)  # partial, enabled, selected
 

@@ -17,7 +17,7 @@ print("Available MIDI input ports:")
 for i in range(ports):
     print(f"{i}: {midi_in.getPortName(i)}")
 
-# Open the first available port (or a specific port by index)
+# Open the first available port (or address specific port by index)
 midi_in.openPort(0)  # Replace 0 with your desired port index
 
 # Set the callback function

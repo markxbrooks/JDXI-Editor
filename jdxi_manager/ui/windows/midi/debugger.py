@@ -125,12 +125,12 @@ class MIDIDebugger(QMainWindow):
         layout.addWidget(splitter)
         
     def _decode_sysex(self, message):
-        """Decode a SysEx message"""
+        """Decode address SysEx message"""
         if len(message) < 8:
             return "Invalid SysEx message (too short)"
             
         if message[0] != 0xF0 or message[1] != 0x41:
-            return "Not a Roland SysEx message"
+            return "Not address Roland SysEx message"
             
         try:
             # Get command type
