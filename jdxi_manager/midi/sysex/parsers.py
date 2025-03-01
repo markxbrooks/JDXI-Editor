@@ -148,7 +148,7 @@ def extract_tone_name(data: List[int]) -> str:
 
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
-    return {param.name: safe_get(data, param.format_address) for param in parameter_type}
+    return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
 def parse_sysex(data: List[int]) -> Dict[str, str]:

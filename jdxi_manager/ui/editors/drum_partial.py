@@ -2294,22 +2294,8 @@ class DrumPartialEditor(QWidget):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-        slider = Slider(label, display_min, display_max)
 
-        if isinstance(param, DrumParameter) and param in [
-            DrumParameter.PARTIAL_FINE_TUNE,
-            # Add other bipolar parameters as needed
-        ]:
-            if self.midi_helper:
-                midi_value = self.midi_helper.get_parameter(
-                    area=TEMPORARY_TONE_AREA,
-                    part=DRUM_KIT_AREA,
-                    group=self.partial_address,
-                    param=param.address,
-                )
-                if midi_value is not None:
-                    display_value = param.convert_from_midi(midi_value)
-                    slider.setValue(display_value)
+        slider = Slider(label, display_min, display_max)
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
@@ -2318,7 +2304,7 @@ class DrumPartialEditor(QWidget):
         self.controls[param] = slider
         return slider
 
-    def send_midi_parameter(self, param, value) -> bool:
+    def send_midi_parameter(self, param: DrumParameter, value: int) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
@@ -2329,7 +2315,7 @@ class DrumPartialEditor(QWidget):
                 area=TEMPORARY_TONE_AREA,
                 part=DRUM_KIT_AREA,
                 group=self.partial_address,
-                param=param.format_address,
+                param=param.address,
                 value=value,  # Make sure this value is being sent
             )
         except Exception as ex:
@@ -5989,8 +5975,8 @@ class DrumPartialEditor(QWidget):
                 area=TEMPORARY_TONE_AREA,
                 part=DRUM_KIT_AREA,
                 group=self.partial_address,
-                param=param.format_address,
-                value=value,  # Make sure this value is being sent
+                param=param.address,
+                value=value,
             )
         except Exception as ex:
             logging.error(f"MIDI error setting {param}: {str(ex)}")

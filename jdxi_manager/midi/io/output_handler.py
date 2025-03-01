@@ -176,6 +176,10 @@ class MIDIOutHandler(MidiIOController):
 
         try:
             # Construct the address portion of the message
+            # Construct the address portion of the message
+            if param > 127:
+                group = group + 1
+                # param = param - 127
             address = [area, part, group & 0xFF, param & 0xFF]
 
             def split_value_4byte(value: int):
