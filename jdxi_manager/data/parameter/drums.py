@@ -762,6 +762,10 @@ class DrumParameter(SynthParameter):
         """Convert from display value to MIDI value (0-127)"""
         return display_value
 
+    def get_display_value(self) -> Tuple[int, int]:
+        """Get the display range for the parameter"""
+        return self.display_min, self.display_max
+
     @staticmethod
     def get_address_for_partial(partial_index: int) -> tuple:
         """Get the address for address drum partial by index"""

@@ -62,7 +62,7 @@ def get_analog_parameter_by_address(address: int):
     from jdxi_manager.data.analog import AnalogParameter
 
     for param in AnalogParameter:
-        if param.format_address == address:
+        if param.address == address:
             logging.info(f"get_analog_parameter_by_address found param: {param}")
             return param
     return None
@@ -74,7 +74,7 @@ def get_analog_parameter_name_by_address(address: int):
     from jdxi_manager.data.analog import AnalogParameter
 
     for param in AnalogParameter:
-        if param.format_address == address:
+        if param.address == address:
             logging.info(f"get_analog_parameter_by_address found param: {param}")
             return param.name
     return None
@@ -472,7 +472,7 @@ class AnalogSynthEditor(BaseEditor):
             #    group, param_address = param.get_address_for_partial(self.partial_name)
             # else:
             group = ANALOG_OSC_GROUP  # Common parameters group
-            param_address = param.format_address
+            param_address = param.address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(

@@ -505,7 +505,7 @@ class DrumEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") == DRUM_KIT_AREA
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
