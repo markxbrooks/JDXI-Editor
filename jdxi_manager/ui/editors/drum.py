@@ -727,13 +727,13 @@ class DrumEditor(BaseEditor):
         """Handle kit level slider value change"""
         # Use the helper function to send the SysEx message
         # self.send_sysex_message(0x0C, value)
-        group = DrumCommonParameter.get_address_for_partial(0)
+        group = 0x00
         logging.info(f"kit level group: {group}")
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
             group=group,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=DrumCommonParameter.KIT_LEVEL.value,
+            param=DrumCommonParameter.KIT_LEVEL.value[0],
             value=value,  # Make sure this value is being sent
         )
 
