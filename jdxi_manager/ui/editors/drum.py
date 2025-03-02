@@ -639,10 +639,10 @@ class DrumEditor(BaseEditor):
             """Check if SysEx data belongs to address supported digital synth area."""
             sysex_data.get("TEMPORARY_AREA") in self.partial_mapping.keys()
 
-        def _get_partial_number(synth_tone):
+        def _get_partial_number(tone):
             """Retrieve partial number from synth tone mapping."""
             for key, value in self.partial_mapping.items():
-                if key == synth_tone:
+                if key == tone:
                     return value
             return None
 

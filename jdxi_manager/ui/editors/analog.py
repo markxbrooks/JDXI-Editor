@@ -37,7 +37,6 @@ from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
 from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox

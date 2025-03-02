@@ -1,5 +1,4 @@
 import logging
-from functools import partial
 from typing import Dict, Union
 
 import qtawesome as qta
@@ -28,7 +27,6 @@ from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
-from jdxi_manager.ui.widgets.adsr.widget import ADSRWidget
 from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.ui.image.waveform import (
@@ -515,7 +513,6 @@ class DigitalPartialEditor(QWidget):
         for param in [
             DigitalParameter.FILTER_CUTOFF,
             DigitalParameter.FILTER_RESONANCE,
-            DigitalParameter.FILTER_KEYFOLLOW,
             DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
             DigitalParameter.FILTER_ENV_ATTACK_TIME,
             DigitalParameter.FILTER_ENV_DECAY_TIME,
@@ -547,7 +544,7 @@ class DigitalPartialEditor(QWidget):
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         amp_section_layout.addLayout(icons_hlayout)
 
@@ -583,7 +580,7 @@ class DigitalPartialEditor(QWidget):
 
         icon_label = QLabel()
         icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignHCenter)
+        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         amp_section_layout.addLayout(icons_hlayout)
@@ -627,7 +624,7 @@ class DigitalPartialEditor(QWidget):
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
             icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
@@ -824,9 +821,6 @@ class DigitalPartialEditor(QWidget):
 
             # Convert back to display value to ensure consistency
             if isinstance(param, DigitalParameter):  # Check if it's address DigitalParameter
-                # display_value = param.convert_from_midi(midi_value)
-                # logging.info(f"Converted {param.name} {midi_value} to {display_value}")
-                # Update the control with the converted value if needed
                 if param in self.controls and self.controls[param].value() != display_value:
                     self.controls[param].blockSignals(True)
                     self.controls[param].setValue(value)
