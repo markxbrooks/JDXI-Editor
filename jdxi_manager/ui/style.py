@@ -229,7 +229,7 @@ class Style:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
-    COM_BG = "#000000"
+    # COM_BG = "#000000"
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # """"#1A1A1A"
     BACKGROUND_PRESSED = "#666666"
@@ -245,9 +245,11 @@ class Style:
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
     SLIDER_GROOVE = "#666666"  # grey groove
     ACCENT_PRESSED = "#FF6666"
+    ACCENT_ANALOG_PRESSED = "#417ffa"
 
     # Dimensions
-    BUTTON_RADIUS = 15
+    BUTTON_ROUND_RADIUS = 15
+    BUTTON_RECT_RADIUS = 6
     BUTTON_BORDER_WIDTH = 4
     BUTTON_PADDING = 8
     HANDLE_SIZE = "6px"
@@ -260,34 +262,49 @@ class Style:
     FONT_SIZE = "12px"
 
     # Define button styles
-    JDXI_BUTTON = generate_button_style(
-        COM_BG, BORDER, BUTTON_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    JDXI_BUTTON_ROUND = generate_button_style(
+        BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    JDXI_BUTTON_SELECTED = generate_button_style(
-        COM_BG, BORDER, BUTTON_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    JDXI_BUTTON_ROUND_SELECTED = generate_button_style(
+        BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    JDXI_BUTTON_ACTIVE = generate_button_style(
+    JDXI_BUTTON_ROUND_ACTIVE = generate_button_style(
         bg="#222222",
         border=ACCENT_HOVER,
-        radius=BUTTON_RADIUS,
+        radius=BUTTON_ROUND_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
     )
-    JDXI_BUTTON_TONE = generate_button_style(
+    JDXI_BUTTON_ROUND_SMALL = generate_button_style(
         bg="#333333",
         border=BORDER,
         radius=12,
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
+        font_size="16px",
+    )
+    JDXI_BUTTON_RECT = generate_button_style(
+        BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    )
+    JDXI_BUTTON_RECT_SELECTED = generate_button_style(
+        BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+    )
+    JDXI_BUTTON_RECT_ACTIVE = generate_button_style(
+        bg="#222222",
+        border=ACCENT_HOVER,
+        radius=BUTTON_ROUND_RADIUS,
+        text_color=FOREGROUND,
+        hover=ACCENT_HOVER,
+        border_pressed=ACCENT_PRESSED,
     )
 
     # Analog Button Styles
-    JDXI_BUTTON_ANALOG = generate_button_style(
-        COM_BG,
+    JDXI_BUTTON_RECT_ANALOG = generate_button_style(
+        BACKGROUND,
         ACCENT_ANALOG,
-        BUTTON_RADIUS,
+        BUTTON_RECT_RADIUS,
         FOREGROUND,
         ACCENT_ANALOG_HOVER,
         ACCENT_PRESSED,
@@ -295,10 +312,10 @@ class Style:
     JDXI_BUTTON_ANALOG_ACTIVE = generate_button_style(
         bg="#222222",
         border=ACCENT_ANALOG,
-        radius=BUTTON_RADIUS,
+        radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_ANALOG_HOVER,
-        border_pressed=ACCENT_PRESSED,
+        border_pressed=ACCENT_ANALOG_PRESSED,
     )
 
     # Define Tab styles using get_tab_style function

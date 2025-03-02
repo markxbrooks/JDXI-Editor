@@ -35,8 +35,8 @@ from jdxi_manager.ui.widgets.button.favorite import FavoriteButton
 from jdxi_manager.midi.io import MIDIHelper
 
 
-class JdxiWindow(QMainWindow):
-    """ JDXI UI setup, with little or no actual functionality, shich is superclassed"""
+class JdxiUi(QMainWindow):
+    """ JDXI UI setup, with little or no actual functionality, which is superclassed"""
     def __init__(self):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
@@ -217,11 +217,11 @@ class JdxiWindow(QMainWindow):
 
         # Create tone up button
         self.tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_up_button.setStyleSheet(Style.JDXI_BUTTON_TONE)
+        self.tone_up_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
 
         # Create tone down button
         self.tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_down_button.setStyleSheet(Style.JDXI_BUTTON_TONE)
+        self.tone_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
 
         # Connect buttons to functions
         self.tone_down_button.clicked.connect(self._previous_tone)
@@ -259,7 +259,7 @@ class JdxiWindow(QMainWindow):
         self.favourites_button.setFixedSize(30, 30)
         self.favourites_button.setCheckable(True)
         # Style the button with brighter hover/border_pressed/selected  states
-        self.favourites_button.setStyleSheet(Style.JDXI_BUTTON)
+        self.favourites_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         row.addWidget(self.favourites_button)
         return row
 
@@ -457,7 +457,7 @@ class JdxiWindow(QMainWindow):
         button.clicked.connect(slot)
 
         # Style the button with brighter hover/border_pressed/selected  states
-        button.setStyleSheet(Style.JDXI_BUTTON)
+        button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
 
         row.addWidget(button)
         return row, button
@@ -514,14 +514,14 @@ class JdxiWindow(QMainWindow):
         self.arpeggiator_button = QPushButton()
         self.arpeggiator_button.setFixedSize(30, 30)
         self.arpeggiator_button.setCheckable(True)
-        self.arpeggiator_button.setStyleSheet(Style.JDXI_BUTTON)
+        self.arpeggiator_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         buttons_row.addWidget(self.arpeggiator_button)
 
         # Create and store octave down button
         self.key_hold = QPushButton()
         self.key_hold.setFixedSize(30, 30)
         self.key_hold.setCheckable(True)
-        self.key_hold.setStyleSheet(Style.JDXI_BUTTON)
+        self.key_hold.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         buttons_row.addWidget(self.key_hold)
 
         # Add buttons row
@@ -583,7 +583,7 @@ class JdxiWindow(QMainWindow):
         self.octave_down.setFixedSize(30, 30)
         self.octave_down.setCheckable(True)
         self.octave_down.clicked.connect(lambda: self._send_octave(-1))
-        self.octave_down.setStyleSheet(Style.JDXI_BUTTON)
+        self.octave_down.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         buttons_row.addWidget(self.octave_down)
 
         # Create and store octave up button
@@ -591,7 +591,7 @@ class JdxiWindow(QMainWindow):
         self.octave_up.setFixedSize(30, 30)
         self.octave_up.setCheckable(True)
         self.octave_up.clicked.connect(lambda: self._send_octave(1))
-        self.octave_up.setStyleSheet(Style.JDXI_BUTTON)
+        self.octave_up.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         buttons_row.addWidget(self.octave_up)
 
         # Add buttons row

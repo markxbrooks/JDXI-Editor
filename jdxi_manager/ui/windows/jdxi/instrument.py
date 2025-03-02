@@ -29,7 +29,7 @@ from jdxi_manager.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_manager.ui.windows.midi.message_debug import MIDIMessageDebug
 from jdxi_manager.ui.windows.patch.name_editor import PatchNameEditor
 from jdxi_manager.ui.windows.patch.manager import PatchManager
-from jdxi_manager.ui.windows.jdxi.jdxi import JdxiWindow
+from jdxi_manager.ui.windows.jdxi.ui import JdxiUi
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.viewer.log import LogViewer
@@ -61,7 +61,7 @@ from jdxi_manager.midi.constants.arpeggio import ArpParameter
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 
 
-class MainWindow(JdxiWindow):
+class JdxiInstrument(JdxiUi):
     midi_program_changed = Signal(
         int, int
     )  # Add signal for program changes (channel, program)
@@ -212,9 +212,9 @@ class MainWindow(JdxiWindow):
 
         for synth_type, button in buttons.items():
             if synth_type == self.current_synth_type:
-                button.setStyleSheet(Style.JDXI_BUTTON)
+                button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
             else:
-                button.setStyleSheet(Style.JDXI_BUTTON_SELECTED)
+                button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SELECTED)
 
     def _get_presets_for_current_synth(self):
         """Return the appropriate preset list based on the current synth type."""

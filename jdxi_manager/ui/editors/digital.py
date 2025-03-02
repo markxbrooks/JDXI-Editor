@@ -990,10 +990,10 @@ class DigitalSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON)
+            btn.setStyleSheet(Style.JDXI_BUTTON_RECT)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ACTIVE)
+            selected_btn.setStyleSheet(Style.JDXI_BUTTON_RECT)
