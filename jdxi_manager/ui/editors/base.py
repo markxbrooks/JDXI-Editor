@@ -141,14 +141,14 @@ class BaseEditor(QWidget):
 
     def load_preset(self, preset_index):
         preset_data = {
-            "type": self.preset_type,  # Ensure this is address valid type
+            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
         if not self.preset_loader:
-            self.preset_loader = PresetLoader(self.midi_helper)
-        if self.preset_loader:
-            self.preset_loader.load_preset(preset_data)
+            self.preset_handler = PresetLoader(self.midi_helper)
+        if self.preset_handler:
+            self.preset_handler.load_preset(preset_data)
 
     def send_midi_parameter(self, param, value) -> bool:
         """Send MIDI parameter with error handling"""

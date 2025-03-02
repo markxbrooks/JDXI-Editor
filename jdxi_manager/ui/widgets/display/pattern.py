@@ -110,7 +110,7 @@ class PatternDisplay(QWidget):
         steps = 16
         step_width = width / steps
         
-        # Calculate note positions based on pattern type
+        # Calculate note positions based on pattern preset_type
         if self.pattern_type == 0:  # Up
             notes = self._generate_up_pattern()
         elif self.pattern_type == 1:  # Down

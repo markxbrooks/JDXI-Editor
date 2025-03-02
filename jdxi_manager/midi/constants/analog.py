@@ -71,13 +71,13 @@ class SubOscType(Enum):
 
     @property
     def display_name(self) -> str:
-        """Get display name for sub oscillator type"""
+        """Get display name for sub oscillator preset_type"""
         names = {0x00: "OFF", 0x01: "-1 OCT", 0x02: "-2 OCT"}
         return names.get(self.value, "???")
 
     @property
     def midi_value(self) -> int:
-        """Get MIDI value for sub oscillator type"""
+        """Get MIDI value for sub oscillator preset_type"""
         return self.value
 
 
@@ -147,7 +147,7 @@ class AnalogParameters(IntEnum):
     OSC_LEVEL = 0x04  # Oscillator level (0-127)
 
     # Filter
-    FILTER_TYPE = 0x10  # Filter type (0-3)
+    FILTER_TYPE = 0x10  # Filter preset_type (0-3)
     FILTER_CUTOFF = 0x11  # Filter cutoff (0-127)
     FILTER_RESO = 0x12  # Filter resonance (0-127)
     FILTER_ENV = 0x13  # Filter envelope depth (-63 to +63)

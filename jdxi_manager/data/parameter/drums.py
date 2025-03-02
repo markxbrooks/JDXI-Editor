@@ -357,7 +357,7 @@ class DrumParameter(SynthParameter):
     WMT1_WAVE_SWITCH = (0x21, 0, 1, 0, 1)  # OFF, ON
 
     # WMT1 Wave Group Type
-    WMT1_WAVE_GROUP_TYPE = (0x22, 0, 0, 0, 0)  # Only one type
+    WMT1_WAVE_GROUP_TYPE = (0x22, 0, 0, 0, 0)  # Only one preset_type
 
     # WMT1 Wave Group ID
     WMT1_WAVE_GROUP_ID = (0x23, 0, 16384, 0, 16384)  # OFF, 1 - 16384
@@ -417,7 +417,7 @@ class DrumParameter(SynthParameter):
     WMT2_WAVE_SWITCH = (0x3E, 0, 1, 0, 1)  # OFF, ON
 
     # WMT2 Wave Group Type
-    WMT2_WAVE_GROUP_TYPE = (0x3F, 0, 0, 0, 0)  # Only one type
+    WMT2_WAVE_GROUP_TYPE = (0x3F, 0, 0, 0, 0)  # Only one preset_type
 
     # WMT2 Wave Group ID
     WMT2_WAVE_GROUP_ID = (0x40, 0, 16384, 0, 16384)  # OFF, 1 - 16384
@@ -477,7 +477,7 @@ class DrumParameter(SynthParameter):
     WMT3_WAVE_SWITCH = (0x5B, 0, 1, 0, 1)  # OFF, ON
 
     # WMT3 Wave Group Type
-    WMT3_WAVE_GROUP_TYPE = (0x5C, 0, 0, 0, 0)  # Only one type
+    WMT3_WAVE_GROUP_TYPE = (0x5C, 0, 0, 0, 0)  # Only one preset_type
 
     # WMT3 Wave Group ID
     WMT3_WAVE_GROUP_ID = (0x5D, 0, 16384, 0, 16384)  # OFF, 1 - 16384
@@ -537,7 +537,7 @@ class DrumParameter(SynthParameter):
     WMT4_WAVE_SWITCH = (0x78, 0, 1, 0, 1)  # OFF, ON
 
     # WMT4 Wave Group Type
-    WMT4_WAVE_GROUP_TYPE = (0x79, 0, 0, 0, 0)  # Only one type
+    WMT4_WAVE_GROUP_TYPE = (0x79, 0, 0, 0, 0)  # Only one preset_type
 
     # WMT4 Wave Group ID
     WMT4_WAVE_GROUP_ID = (0x7A, 0, 16384, 0, 16384)  # OFF, 1 - 16384

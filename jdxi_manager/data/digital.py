@@ -195,12 +195,12 @@ class DigitalPartial(IntEnum):
 
     @property
     def is_partial(self) -> bool:
-        """Returns True if this is address partial number (not address structure type)"""
+        """Returns True if this is address partial number (not address structure preset_type)"""
         return 1 <= self <= 3
 
     @property
     def is_structure(self) -> bool:
-        """Returns True if this is address structure type (not address partial number)"""
+        """Returns True if this is address structure preset_type (not address partial number)"""
         return self <= 0x07 and not self.is_partial
 
     @classmethod

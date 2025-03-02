@@ -18,7 +18,7 @@ Each parameter is stored as address tuple containing:
     (memory_address, min_value, max_value)
 
 Attributes:
-    - OSC_WAVE: Defines the oscillator waveform type.
+    - OSC_WAVE: Defines the oscillator waveform preset_type.
     - FILTER_CUTOFF: Controls the filter cutoff frequency.
     - AMP_LEVEL: Sets the overall amplitude level.
     - LFO_RATE: Adjusts the rate of the low-frequency oscillator.
@@ -165,7 +165,7 @@ class DigitalParameter(SynthParameter):
         return self.display_min, self.display_max
 
     # Oscillator parameters
-    OSC_WAVE = (0x00, 0, 7)  # Waveform type
+    OSC_WAVE = (0x00, 0, 7)  # Waveform preset_type
     OSC_WAVE_VARIATION = (0x01, 0, 2)  # Wave variation
     OSC_PITCH = (0x03, -24, 24)  # Coarse tune
     OSC_DETUNE = (0x04, -50, 50)  # Fine tune (-50 to +50)

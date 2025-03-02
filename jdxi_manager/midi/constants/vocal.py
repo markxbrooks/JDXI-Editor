@@ -16,14 +16,14 @@ class VocalFXCC:
     # Pitch Effects
     PITCH_CORRECT = 0x10  # Pitch correction amount (0-127)
     SCALE_KEY = 0x11      # Scale key (0-11: C to B)
-    SCALE_TYPE = 0x12     # Scale type (0-1: Major/Minor)
+    SCALE_TYPE = 0x12     # Scale preset_type (0-1: Major/Minor)
     
     # Formant Effects
     FORMANT = 0x20        # Formant shift (-63 to +63)
-    GENDER = 0x21         # Gender type (0-127)
+    GENDER = 0x21         # Gender preset_type (0-127)
     
     # Modulation Effects
-    MOD_TYPE = 0x30       # Modulation type (0-3)
+    MOD_TYPE = 0x30       # Modulation preset_type (0-3)
     MOD_DEPTH = 0x31      # Modulation depth (0-127)
     MOD_RATE = 0x32       # Modulation rate (0-127)
 

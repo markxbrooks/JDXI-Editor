@@ -18,7 +18,7 @@ Each parameter is stored as address tuple containing:
     (memory_address, min_value, max_value)
 
 Attributes:
-    - OSC_WAVE: Defines the oscillator waveform type.
+    - OSC_WAVE: Defines the oscillator waveform preset_type.
     - FILTER_CUTOFF: Controls the filter cutoff frequency.
     - AMP_LEVEL: Sets the overall amplitude level.
     - LFO_RATE: Adjusts the rate of the low-frequency oscillator.

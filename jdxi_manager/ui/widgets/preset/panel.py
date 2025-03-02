@@ -41,7 +41,7 @@ class PresetPanel(QWidget):
         save_btn.clicked.connect(self._on_save)
         layout.addWidget(save_btn)
 
-        # Create preset editors for each type
+        # Create preset editors for each preset_type
         self.analog_editor = PresetEditor(midi_helper, self, PresetType.ANALOG)
         self.digital_1_editor = PresetEditor(midi_helper, self, PresetType.DIGITAL_1)
         self.digital_2_editor = PresetEditor(midi_helper, self, PresetType.DIGITAL_2)

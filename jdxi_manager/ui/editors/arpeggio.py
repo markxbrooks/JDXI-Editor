@@ -374,7 +374,7 @@ class ArpeggioEditorOld(BaseEditor):
         layout = QVBoxLayout()
         group.setLayout(layout)
 
-        # Pattern type selection
+        # Pattern preset_type selection
         pattern_row = QHBoxLayout()
         pattern_label = QLabel("Pattern:")
         self.pattern_combo = QComboBox()

@@ -31,7 +31,7 @@ class PianoKey(QPushButton):
 
     def __init__(self, note_num, is_black=False, width=22, height=160, parent=None) -> None:
         """
-        Initialize the PianoKey widget with the given MIDI note number and key type.
+        Initialize the PianoKey widget with the given MIDI note number and key preset_type.
         :param note_num: MIDI note number for the key
         :param is_black: True if the key is address black key, False for white key
         :param width: Width of the key in pixels
@@ -92,7 +92,7 @@ class PianoKey(QPushButton):
             self.noteOn.emit(self.note_num)
             self.update()
 
-            # Adjust movement amount based on key type
+            # Adjust movement amount based on key preset_type
             move_amount = 3 if not self.is_black else 2  # Black keys move less
 
             self.press_animation.setStartValue(self.geometry())

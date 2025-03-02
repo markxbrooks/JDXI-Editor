@@ -271,7 +271,7 @@ class PartMessage(ParameterMessage):
     section: int = 0x00    # Part section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
         if self.param == 0x0B:  # Part Coarse Tune
             return [value + 64]  # Convert -48/+48 to 16-112
@@ -338,7 +338,7 @@ class ZoneMessage(ParameterMessage):
     section: int = 0x01    # Zone section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
         if self.param == 0x19:  # Zone Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
@@ -369,7 +369,7 @@ class ControllerMessage(ParameterMessage):
     section: int = 0x40    # Controller section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
         if self.param == 0x07:  # Arpeggio Octave Range
             return [value + 64]  # Convert -3/+3 to 61-67
@@ -396,7 +396,7 @@ class DigitalToneCommonMessage(ParameterMessage):
     section: int = 0x00    # Common section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
         if self.param == 0x15:  # Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
@@ -423,7 +423,7 @@ class DigitalToneModifyMessage(ParameterMessage):
     section: int = 0x50    # Modify section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # No special conversion needed for modify parameters
         return super().convert_value(value)
 
@@ -440,7 +440,7 @@ class DigitalTonePartialMessage(ParameterMessage):
     section: int = 0x20    # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
         if self.param == 0x00:  # OSC Wave
             return [value & 0x07]  # Ensure 3-bit value (0-7)
@@ -512,7 +512,7 @@ class DrumKitCommonMessage(ParameterMessage):
     group: int = 0x00      # Common group
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # No special conversion needed for drum kit common parameters
         return super().convert_value(value)
 
@@ -530,7 +530,7 @@ class DrumKitPartialMessage(ParameterMessage):
     group: int = 0x01      # Partial group
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter type"""
+        """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
         if self.param == 0x10:  # Fine Tune
             return [value + 64]  # Convert -50/+50 to 14-114

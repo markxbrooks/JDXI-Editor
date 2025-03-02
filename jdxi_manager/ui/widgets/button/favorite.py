@@ -48,7 +48,7 @@ class FavoriteButton(QPushButton):
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
         preset_data = {
-            'type': self.preset.synth_type,  # Ensure this is address valid type
+            'preset_type': self.preset.synth_type,  # Ensure this is address valid preset_type
             'selpreset': self.preset.preset_num + 1,  # Convert to 1-based index
             'modified': 0  # or 1 if modified
         }
@@ -108,7 +108,7 @@ class FavoriteButton(QPushButton):
     def _update_style(self):
         """Update button appearance"""
         if self.preset:
-            # Get color based on synth type
+            # Get color based on synth preset_type
             if self.preset.synth_type == PresetType.ANALOG:
                 color = "#00A3F0"  # Analog blue
             elif self.preset.synth_type in [PresetType.DIGITAL_1, PresetType.DIGITAL_2]:

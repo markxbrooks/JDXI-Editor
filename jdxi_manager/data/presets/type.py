@@ -7,7 +7,7 @@ class PresetType:
 
     @staticmethod
     def get_area_code(preset_type: str) -> int:
-        """Get MIDI area code for preset type"""
+        """Get MIDI area code for preset preset_type"""
         area_codes = {
             PresetType.ANALOG: 0x22,
             PresetType.DIGITAL_1: 0x20,

@@ -62,7 +62,7 @@ class PresetEditor(QMainWindow):
         preset_layout = QVBoxLayout()
         preset_group.setLayout(preset_layout)
 
-        # Create preset type selector
+        # Create preset preset_type selector
         type_row = QHBoxLayout()
         type_row.addWidget(QLabel("Type:"))
         self.type_selector = QComboBox()
@@ -102,8 +102,8 @@ class PresetEditor(QMainWindow):
         self.index_mapping = list(range(len(self.full_preset_list)))
 
     def _get_preset_list(self) -> List[str]:
-        """Get the appropriate preset list based on type"""
-        logging.debug(f"Getting preset list for type: {self.preset_type}")
+        """Get the appropriate preset list based on preset_type"""
+        logging.debug(f"Getting preset list for preset_type: {self.preset_type}")
         if self.preset_type == PresetType.ANALOG:
             return ANALOG_PRESETS_ENUMERATED
         elif self.preset_type == PresetType.DIGITAL_1:
@@ -112,12 +112,12 @@ class PresetEditor(QMainWindow):
             return DRUM_PRESETS_ENUMERATED
 
     def _on_type_changed(self, preset_type: str):
-        """Handle preset type change"""
-        logging.debug(f"Changing preset type to {preset_type}")
+        """Handle preset preset_type change"""
+        logging.debug(f"Changing preset preset_type to {preset_type}")
         self.preset_type = preset_type
         self.preset_combo_box.set_presets(self._get_preset_list())
 
-    def _on_preset_changed(self, index: int):
+    def _on_preset_changed(self, index: int, channel: int):
         """Handle preset selection changes"""
         if index < 0 or index >= len(self.index_mapping):
             logging.error(
@@ -126,6 +126,7 @@ class PresetEditor(QMainWindow):
             return
         try:
             if self.midi_helper:
+                self.midi_helper.send_program_change(index, channel)
                 # Get the original index from the mapping
                 original_index = self.index_mapping[index]
                 logging.debug(
@@ -134,7 +135,7 @@ class PresetEditor(QMainWindow):
 
                 # TODO: Add MIDI handling for preset changes using original_index
                 pass
-
+            self.channel = channel
             # Get the preset name without the number prefix
             presets = self._get_preset_list()
             if original_index >= len(presets):
@@ -149,7 +150,7 @@ class PresetEditor(QMainWindow):
             self.preset_changed.emit(
                 original_index + 1,  # original preset number (1-based)
                 preset_name,
-                self.channel,
+                channel,
             )
         except Exception as e:
             logging.error(f"Error in preset change handler: {str(e)}", exc_info=True)
@@ -158,9 +159,10 @@ class PresetEditor(QMainWindow):
         """Handle Load button click"""
         preset_loader = PresetLoader(self.midi_helper)
         preset_data = {
-            "type": self.preset_type,
+            "preset_type": self.preset_type,
             "selpreset": original_index + 1,  # Convert to 1-based index
             "modified": 0,
+            "channel": self.channel
         }
         preset_loader.load_preset(preset_data)
         self.settings.setValue("last_preset/synth_type", self.preset_type)

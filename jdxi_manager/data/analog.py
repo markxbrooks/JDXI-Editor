@@ -248,7 +248,7 @@ class AnalogSynthPatch:
                 "pwm": (0, 127),
             },
             "filter": {
-                "type": (0, 3),
+                "preset_type": (0, 3),
                 "cutoff": (0, 127),
                 "resonance": (0, 127),
                 "env_depth": (0, 127),
@@ -290,7 +290,7 @@ ANALOG_PRESETS = {
         0x1E: 64,  # Pitch env depth 0
         0x1F: 0,  # Sub osc OFF
         # Filter
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 127,  # Cutoff max
         0x22: 64,  # Keyfollow 0
         0x23: 0,  # Resonance 0
@@ -341,7 +341,7 @@ ANALOG_PRESETS = {
         0x17: 40,  # Pitch -24
         0x18: 64,  # Fine tune 0
         0x1F: 1,  # Sub osc OCT-1
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 64,  # Cutoff mid
         0x23: 100,  # Resonance high
         0x24: 84,  # Filter env velo +20
@@ -359,7 +359,7 @@ ANALOG_PRESETS = {
         0x16: 0,  # SAW wave
         0x17: 76,  # Pitch +12
         0x18: 64,  # Fine tune 0
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 100,  # Cutoff high
         0x23: 64,  # Resonance mid
         0x24: 84,  # Filter env velo +20
@@ -378,7 +378,7 @@ ANALOG_PRESETS = {
         0x16: 1,  # TRI wave
         0x17: 64,  # Pitch 0
         0x18: 64,  # Fine tune 0
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 64,  # Cutoff mid
         0x23: 32,  # Resonance low
         0x25: 100,  # Filter attack long
@@ -399,7 +399,7 @@ ANALOG_PRESETS = {
         0x16: 0,  # SAW wave
         0x17: 52,  # Pitch -12
         0x18: 64,  # Fine tune 0
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 70,  # Cutoff medium-high
         0x23: 115,  # High resonance
         0x24: 94,  # Filter env velo +30
@@ -415,7 +415,7 @@ ANALOG_PRESETS = {
         0x16: 0,  # SAW wave
         0x17: 64,  # Pitch 0
         0x18: 64,  # Fine tune 0
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 84,  # Cutoff high-mid
         0x23: 40,  # Resonance low-mid
         0x24: 84,  # Filter env velo +20
@@ -434,7 +434,7 @@ ANALOG_PRESETS = {
         0x18: 62,  # Fine tune slightly flat
         0x19: 80,  # PW wider
         0x1A: 30,  # PWM depth moderate
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 70,  # Cutoff medium-high
         0x23: 30,  # Resonance low
         0x25: 80,  # Filter attack medium-long
@@ -452,7 +452,7 @@ ANALOG_PRESETS = {
         0x16: 0,  # SAW wave
         0x17: 64,  # Pitch 0
         0x18: 64,  # Fine tune 0
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 90,  # Cutoff high
         0x23: 70,  # Resonance medium-high
         0x24: 94,  # Filter env velo +30
@@ -471,7 +471,7 @@ ANALOG_PRESETS = {
         0x17: 40,  # Pitch -24
         0x18: 64,  # Fine tune 0
         0x1F: 1,  # Sub osc OCT-1
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 70,  # Cutoff medium-high
         0x23: 110,  # Resonance very high
         0x0D: 3,  # LFO: Square
@@ -485,7 +485,7 @@ ANALOG_PRESETS = {
         0x16: 1,  # TRI wave
         0x17: 64,  # Pitch 0
         0x18: 66,  # Fine tune slightly sharp
-        0x20: 1,  # LPF type
+        0x20: 1,  # LPF preset_type
         0x21: 50,  # Cutoff medium-low
         0x23: 60,  # Resonance medium
         0x25: 120,  # Filter attack very long
