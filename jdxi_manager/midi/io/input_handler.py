@@ -43,7 +43,7 @@ class MIDIInHandler(MidiIOController):
     Helper class for MIDI communication with the JD-Xi.
 
     This class listens to incoming MIDI messages, processes them based on
-    their type, and emits corresponding signals. It handles SysEx, Control
+    their preset_type, and emits corresponding signals. It handles SysEx, Control
     Change, Program Change, Note On/Off, and Clock messages.
     """
 
@@ -92,7 +92,7 @@ class MIDIInHandler(MidiIOController):
         :param timestamp: Optional timestamp for the message.
         """
         try:
-            logging.info(f"message type: {type(event)}")
+            logging.info(f"message preset_type: {type(event)}")
             if type(event) == tuple:
                 message_data , _ = event
                 message = self.rtmidi_to_mido(message_data)
@@ -100,7 +100,7 @@ class MIDIInHandler(MidiIOController):
                     logging.info("Program Change - Channel: %d, Program: %d", message.channel, message.program)
                 if message.type != "clock":
                     self.midi_incoming_message.emit(message)
-                    logging.info("MIDI message of type %s incoming: %s", message.type, message)
+                    logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
                 preset_data: Dict[str, Any] = {"modified": 0}
                 message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
                     "sysex": self._handle_sysex_message,
@@ -114,7 +114,7 @@ class MIDIInHandler(MidiIOController):
                 if handler:
                     handler(message, preset_data)
                 else:
-                    logging.info("Unhandled MIDI message type: %s", message.type)
+                    logging.info("Unhandled MIDI message preset_type: %s", message.type)
         except Exception as exc:
             logging.error("Error handling incoming MIDI message: %s", str(exc))
 
@@ -130,14 +130,14 @@ class MIDIInHandler(MidiIOController):
         """
         Process incoming MIDI messages.
 
-        This method routes the message to the appropriate handler based on its type.
+        This method routes the message to the appropriate handler based on its preset_type.
 
         :param message: The incoming MIDI message.
         """
         # Do not process clock messages for logging/emission
         if message.type != "clock":
             self.midi_incoming_message.emit(message)
-            logging.info("MIDI message of type %s incoming: %s", message.type, message)
+            logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
 
         preset_data: Dict[str, Any] = {"modified": 0}
         message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
@@ -153,7 +153,7 @@ class MIDIInHandler(MidiIOController):
             if handler:
                 handler(message, preset_data)
             else:
-                logging.info("Unhandled MIDI message type: %s", message.type)
+                logging.info("Unhandled MIDI message preset_type: %s", message.type)
         except Exception as exc:
             logging.error("Error handling incoming MIDI message: %s", str(exc))
 
@@ -164,7 +164,7 @@ class MIDIInHandler(MidiIOController):
         :param message: The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
-        logging.info("MIDI message type: %s as %s", message.type, message)
+        logging.info("MIDI message preset_type: %s as %s", message.type, message)
 
     def _handle_clock(self, message: Any, preset_data: Dict[str, Any]) -> None:
         """
@@ -204,7 +204,7 @@ class MIDIInHandler(MidiIOController):
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
 
-            # Extract command type and parameter address
+            # Extract command preset_type and parameter address
             try:
                 command_type = message.data[6]
                 address_offset = "".join(f"{byte:02X}" for byte in message.data[7:11])
@@ -255,7 +255,7 @@ class MIDIInHandler(MidiIOController):
         }
 
         if self.cc_msb_value in preset_mapping:
-            preset_data["type"] = preset_mapping[self.cc_msb_value]
+            preset_data["preset_type"] = preset_mapping[self.cc_msb_value]
             # Adjust preset number based on LSB value
             self.preset_number = program_number + (128 if self.cc_lsb_value == 65 else 0)
             preset_name = DIGITAL_PRESETS_ENUMERATED[self.preset_number] if self.preset_number < len(DIGITAL_PRESETS_ENUMERATED) else "Unknown Preset"

@@ -33,7 +33,7 @@ from jdxi_manager.midi.utils.conversions import (
     frac_to_midi_cc,
     ms_to_midi_cc,
 )
-from jdxi_manager.midi.preset.loader import PresetLoader
+from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
@@ -54,6 +54,7 @@ from jdxi_manager.midi.constants.analog import (
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )
+from jdxi_manager.midi.constants import MIDI_CHANNEL_ANALOG
 
 
 def get_analog_parameter_by_address(address: int):
@@ -83,12 +84,12 @@ def get_analog_parameter_name_by_address(address: int):
 class AnalogSynthEditor(BaseEditor):
     """Analog Synth"""
 
-    preset_changed = Signal(int, str, int)
+    # preset_changed = Signal(int, str, int)
 
-    def __init__(self, midi_helper: Optional[MIDIHelper], parent=None):
+    def __init__(self, midi_helper: Optional[MIDIHelper], preset_handler=None, parent=None):
         super().__init__(midi_helper, parent)
         self.part = ANALOG_PART
-        self.preset_loader = None
+        self.preset_handler = preset_handler
         self.setWindowTitle("Analog Synth")
         self.previous_json_data = None
         # Allow resizing
@@ -108,6 +109,7 @@ class AnalogSynthEditor(BaseEditor):
         self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
         ]
+        self.midi_channel = MIDI_CHANNEL_ANALOG
         # Create scroll area for resizable content
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -362,7 +364,7 @@ class AnalogSynthEditor(BaseEditor):
 
         return group
 
-    def update_combo_box_index(self, preset_number):
+    def update_combo_box_index(self, preset_number, channel):
         """Updates the QComboBox to reflect the loaded preset."""
         logging.info(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
@@ -418,7 +420,7 @@ class AnalogSynthEditor(BaseEditor):
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            logging.info(f"selected instrument image type: {selected_instrument_type}")
+            logging.info(f"selected instrument image preset_type: {selected_instrument_type}")
             specific_image_path = os.path.join(
                 "resources",
                 self.instrument_icon_folder,
@@ -438,14 +440,15 @@ class AnalogSynthEditor(BaseEditor):
 
     def load_preset(self, preset_index):
         preset_data = {
-            "type": self.preset_type,  # Ensure this is address valid type
+            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
+            "channel": self.midi_channel
         }
-        if not self.preset_loader:
-            self.preset_loader = PresetLoader(self.midi_helper)
-        if self.preset_loader:
-            self.preset_loader.load_preset(preset_data)
+        if not self.preset_handler:
+            self.preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_ANALOG, preset_type=PresetType.ANALOG)
+        if self.preset_handler:
+            self.preset_handler.load_preset(preset_data)
 
     def _update_pw_controls_state(self, waveform: Waveform):
         """Enable/disable PW controls based on waveform"""
@@ -987,7 +990,7 @@ class AnalogSynthEditor(BaseEditor):
             self.midi_helper.send_cc(cc_number, value, channel=ANALOG_PART)
 
     def _on_sub_type_changed(self, value: int):
-        """Handle sub oscillator type change"""
+        """Handle sub oscillator preset_type change"""
         if self.midi_helper:
             # Convert switch position to SubOscType enum
             sub_type = SubOscType(value)

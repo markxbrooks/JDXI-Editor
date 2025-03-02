@@ -104,8 +104,8 @@ class EffectsEditor(BaseEditor):
                 self.image_label.clear()  # Clear label if default image is also missing
 
     def _update_efx2_parameters(self, effect_type: int):
-        """Show/hide parameters based on effect type"""
-        # Number of parameters for each effect type
+        """Show/hide parameters based on effect preset_type"""
+        # Number of parameters for each effect preset_type
         param_counts = {
             0: 0,  # OFF
             5: 8,  # PHASER
@@ -173,7 +173,7 @@ class EffectsEditor(BaseEditor):
         layout = QVBoxLayout()
         widget.setLayout(layout)
 
-        # Create address combo box for EFX1 type
+        # Create address combo box for EFX1 preset_type
         self.efx1_type = QComboBox()
         self.efx1_type.addItems(
             ["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER", "FLANGER"]
@@ -227,7 +227,7 @@ class EffectsEditor(BaseEditor):
         layout = QVBoxLayout()
         widget.setLayout(layout)
 
-        # Create address combo box for EFX2 type
+        # Create address combo box for EFX2 preset_type
         self.efx2_type = QComboBox()
         self.efx2_type.addItems(
             ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
@@ -366,7 +366,7 @@ class EffectsEditor(BaseEditor):
         # Ensure we get address valid common parameter
         common_param = EffectParameter.get_common_param_by_name(param_name)
         if common_param is None:
-            logging.error(f"Unknown common parameter type for: {param_name}")
+            logging.error(f"Unknown common parameter preset_type for: {param_name}")
             return
 
         base_address = common_param.format_address
@@ -383,8 +383,8 @@ class EffectsEditor(BaseEditor):
         )
 
     def _update_efx2_parameters(self, effect_type: int):
-        """Show/hide parameters based on effect type"""
-        # Number of parameters for each effect type
+        """Show/hide parameters based on effect preset_type"""
+        # Number of parameters for each effect preset_type
         param_counts = {
             0: 0,  # OFF
             5: 8,  # PHASER
@@ -426,15 +426,15 @@ class EffectsEditor(BaseEditor):
                     param.setLabel(common_params[i])
 
     def _on_efx1_type_changed(self, index):
-        """Handle changes to the EFX1 type."""
-        # Map the combo box index to the effect type value
+        """Handle changes to the EFX1 preset_type."""
+        # Map the combo box index to the effect preset_type value
         effect_type_map = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}  # FLANGER = 5
         effect_type_value = effect_type_map.get(index, 0)
 
-        # Update the effect type parameter
+        # Update the effect preset_type parameter
         self._on_parameter_changed("EFX1_TYPE", effect_type_value)
 
-        # Show/hide sliders based on the selected effect type
+        # Show/hide sliders based on the selected effect preset_type
         is_flanger = effect_type_value == 5
         self.flanger_rate.setVisible(is_flanger)
         self.flanger_depth.setVisible(is_flanger)
@@ -443,12 +443,12 @@ class EffectsEditor(BaseEditor):
         self.flanger_balance.setVisible(is_flanger)
 
     def _on_efx2_type_changed(self, index):
-        """Handle changes to the EFX2 type."""
-        # Map the combo box index to the effect type value
+        """Handle changes to the EFX2 preset_type."""
+        # Map the combo box index to the effect preset_type value
         effect_type_map = {0: 0, 1: 5, 2: 6, 3: 7, 4: 8}
         effect_type_value = effect_type_map.get(index, 0)
 
-        # Update the effect type parameter
+        # Update the effect preset_type parameter
         self._on_parameter_changed("EFX2_TYPE", effect_type_value)
 
     def _on_efx1_output_changed(self, index):
@@ -461,28 +461,28 @@ class EffectsEditor(BaseEditor):
         self._on_parameter_changed("EFX1_OUTPUT_ASSIGN", output_value)
 
     def _on_reverb_type_changed(self, index):
-        """Handle changes to the Reverb type."""
-        # Map the combo box index to the reverb type value
+        """Handle changes to the Reverb preset_type."""
+        # Map the combo box index to the reverb preset_type value
         reverb_type_map = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
         reverb_type_value = reverb_type_map.get(index, 0)
 
-        # Update the reverb type parameter
+        # Update the reverb preset_type parameter
         self._on_parameter_changed("REVERB_TYPE", reverb_type_value)
 
     def _on_delay_type_changed(self, index):
-        """Handle changes to the Delay type."""
-        # Map the combo box index to the delay type value
+        """Handle changes to the Delay preset_type."""
+        # Map the combo box index to the delay preset_type value
         delay_type_map = {0: 0, 1: 1}  # SINGLE = 0, PAN = 1
         delay_type_value = delay_type_map.get(index, 0)
 
-        # Update the delay type parameter
+        # Update the delay preset_type parameter
         self._on_parameter_changed("DELAY_TYPE", delay_type_value)
 
     def _on_reverb_off_on_changed(self, index):
-        """Handle changes to the Delay type."""
-        # Map the combo box index to the delay type value
+        """Handle changes to the Delay preset_type."""
+        # Map the combo box index to the delay preset_type value
         reverb_off_on_map = {0: 0, 1: 1}  # SINGLE = 0, PAN = 1
         reverb_off_on_value = reverb_off_on_map.get(index, 0)
 
-        # Update the delay type parameter
+        # Update the delay preset_type parameter
         self._on_parameter_changed("REVERB_OFF_ON", reverb_off_on_value)

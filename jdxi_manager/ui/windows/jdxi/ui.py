@@ -113,7 +113,7 @@ class JdxiUi(QMainWindow):
         # Load last used preset settings
         # self._load_last_preset()
 
-        # Initialize synth type
+        # Initialize synth preset_type
         self.current_synth_type = PresetType.DIGITAL_1
 
         # Set default styles
@@ -152,10 +152,10 @@ class JdxiUi(QMainWindow):
         self.current_preset_index = 0
 
         # Initialize PresetHandler with the desired preset list
-        self.digital_1_preset_handler = PresetHandler(DIGITAL_PRESETS_ENUMERATED)
-        self.digital_2_preset_handler = PresetHandler(DIGITAL_PRESETS_ENUMERATED)
-        self.analog_preset_handler = PresetHandler(ANALOG_PRESETS_ENUMERATED)
-        self.drums_preset_handler = PresetHandler(DRUM_PRESETS_ENUMERATED)
+        self.digital_1_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
+        self.digital_2_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
+        self.analog_preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED)
+        self.drums_preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED)
 
         self.digital_1_preset_handler.update_display.connect(
             self.update_display_callback

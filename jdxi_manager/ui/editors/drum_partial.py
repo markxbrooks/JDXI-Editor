@@ -18,13 +18,15 @@ from PySide6.QtWidgets import (
 )
 from jdxi_manager.data.drums import get_address_for_partial, get_address_for_partial_new, DRUM_ADDRESSES
 from jdxi_manager.data.parameter.drums import DrumParameter
+from jdxi_manager.data.presets.data import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants import (
-    TEMPORARY_DRUM_KIT_AREA)
+    TEMPORARY_DRUM_KIT_AREA, MIDI_CHANNEL_DRUMS)
 from jdxi_manager.midi.constants.sysex import (
     TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 )
 from jdxi_manager.data.parameter.drums import get_address_for_partial_name
-from jdxi_manager.midi.preset.loader import PresetLoader
+from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.widgets.slider import Slider
 
 instrument_icon_folder = "drum_kits"
@@ -548,7 +550,7 @@ class DrumPartialEditor(QWidget):
         self.midi_helper = midi_helper
         self.partial_num = partial_num  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
-
+        self.preset_handler = None
         # Calculate the address for this partial
         try:
             from jdxi_manager.data.drums import get_address_for_partial
@@ -1155,7 +1157,7 @@ class DrumPartialEditor(QWidget):
         )
 
     def _on_wmt1_wave_group_type_changed(self, value: int):
-        """ change wmt1 wave group type value """
+        """ change wmt1 wave group preset_type value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
@@ -2058,14 +2060,14 @@ class DrumPartialEditor(QWidget):
 
     def load_preset(self, preset_index):
         preset_data = {
-            "type": self.preset_type,  # Ensure this is address valid type
+            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
         }
-        if not self.preset_loader:
-            self.preset_loader = PresetLoader(self.midi_helper)
-        if self.preset_loader:
-            self.preset_loader.load_preset(preset_data)
+        if not self.preset_handler:
+            self.preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DRUMS, preset_type=PresetType.DRUMS)
+        if self.preset_handler:
+            self.preset_handler.load_preset(preset_data)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -2379,7 +2381,7 @@ class DrumPartialEditor(QWidget):
                 )
 
     def _on_wmt1_wave_group_type_changed(self, value: int):
-        """ change wmt1 wave group type value """
+        """ change wmt1 wave group preset_type value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
@@ -5345,7 +5347,7 @@ class DrumPartialEditor(QWidget):
         )
 
     def _on_wmt3_wave_group_type_changed(self, value: int):
-        """ change wmt3 wave group type value """
+        """ change wmt3 wave group preset_type value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_DRUM_KIT_AREA,
             part=DRUM_KIT_AREA,
@@ -5537,7 +5539,7 @@ class DrumPartialEditor(QWidget):
         )
 
     def _on_wmt4_wave_group_type_changed(self, value: int):
-        """ change wmt4 wave group type value """
+        """ change wmt4 wave group preset_type value """
         return self.midi_helper.send_parameter(
             area=TEMPORARY_DRUM_KIT_AREA,
             part=DRUM_KIT_AREA,

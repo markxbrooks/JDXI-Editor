@@ -32,7 +32,7 @@ from .parameter.digital import DigitalParameter
 # Import effects data
 from .effects import (
     FX,  # Parameter ranges and defaults
-    EffectType,  # Effect type enum
+    EffectType,  # Effect preset_type enum
     EffectParameter,  # Parameter enum
     EffectPatch  # Complete patch class
 ) 

@@ -51,8 +51,8 @@ import qtawesome as qta
 from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
-from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style
@@ -74,6 +74,10 @@ from jdxi_manager.midi.constants import (
     TEMPORARY_DIGITAL_SYNTH_1_AREA,
     DIGITAL_SYNTH_2_AREA,
     Waveform,
+    MIDI_CHANNEL_DIGITAL1,
+    MIDI_CHANNEL_DIGITAL2,
+    MIDI_CHANNEL_ANALOG,
+    MIDI_CHANNEL_DRUMS,
 )
 from jdxi_manager.ui.widgets.switch.partial import PartialsPanel
 from jdxi_manager.ui.widgets.switch.switch import Switch
@@ -98,6 +102,7 @@ class DigitalSynthEditor(BaseEditor):
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
         )
+        self.midi_channel = MIDI_CHANNEL_DIGITAL1
         self.presets = DIGITAL_PRESETS_ENUMERATED
         self.image_label = QLabel()
         self.image_label.setAlignment(
@@ -105,7 +110,7 @@ class DigitalSynthEditor(BaseEditor):
         )  # Center align the image
 
         self.midi_helper = midi_helper
-        self.preset_loader = PresetLoader(self.midi_helper)
+        self.preset_handler = preset_handler
         self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # common controls
             "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
@@ -525,14 +530,15 @@ class DigitalSynthEditor(BaseEditor):
     def load_preset(self, preset_index):
         """Load address preset by index"""
         preset_data = {
-            "type": self.preset_type,  # Ensure this is address valid type
+            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
+            "channel": self.midi_channel
         }
-        if not self.preset_loader:
-            self.preset_loader = PresetLoader(self.midi_helper)
-        if self.preset_loader:
-            self.preset_loader.load_preset(preset_data)
+        if not self.preset_handler:
+            self.preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DIGITAL1, preset_type=PresetType.DIGITAL_1)
+        if self.preset_handler:
+            self.preset_handler.load_preset(preset_data)
 
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int

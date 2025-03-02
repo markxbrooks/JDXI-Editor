@@ -256,7 +256,7 @@ class AnalogToneCC:
     OSC_PW_MSB = 0x24  # Pulse width
 
     # Filter Parameters
-    FILT_TYPE_MSB = 0x30  # Filter type
+    FILT_TYPE_MSB = 0x30  # Filter preset_type
     FILT_CUTOFF_MSB = 0x31  # Cutoff frequency
     FILT_RESO_MSB = 0x32  # Resonance
     FILT_ENV_MSB = 0x33  # Envelope depth
@@ -449,7 +449,7 @@ class AnalogSubType(Enum):
 
     @staticmethod
     def get_display_name(value: int) -> str:
-        """Get display name for sub oscillator type"""
+        """Get display name for sub oscillator preset_type"""
         names = {0: "OFF", 1: "-1 OCT", 2: "-2 OCT"}
         return names.get(value, "???")
 
@@ -653,7 +653,7 @@ class EffectType(Enum):
 
     @staticmethod
     def get_display_name(value: int, effect_type: str) -> str:
-        """Get display name for effect type"""
+        """Get display name for effect preset_type"""
         names = {
             "reverb": {
                 0: "Room 1",
@@ -1467,14 +1467,14 @@ class AnalogParameter(Enum):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw MIDI value to display value based on parameter type"""
+        """Convert raw MIDI value to display value based on parameter preset_type"""
         display_maps = {
             0x16: ["SAW", "TRI", "PW-SQR"],  # Direct mapping for waveforms
             0x17: lambda x: f"{x - 64:+d}",  # -24 to +24 (centered at 64)
             0x18: lambda x: f"{x - 64:+d}",  # -50 to +50 (centered at 64)
             0x1B: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
             0x1E: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
-            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc type
+            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc preset_type
         }
 
         if param in display_maps:
@@ -1679,7 +1679,7 @@ class DigitalParameter(Enum):
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x23:  # Fine tune
             return f"{value - 64:+d}"  # Convert to -50/+50
-        elif param == 0x28:  # Filter type
+        elif param == 0x28:  # Filter preset_type
             return ["OFF", "LPF", "BPF", "HPF"][value]
         elif param == 0x2B:  # Filter env
             return f"{value - 64:+d}"  # Convert to -63/+63
@@ -2107,7 +2107,7 @@ class DigitalTonePartial(Enum):
     SUSTAIN = 0x07  # Sustain level (0-127)
     RELEASE = 0x08  # Release time (0-127)
     PAN = 0x09  # Pan position (-64 to +63)
-    FILTER_TYPE = 0x0A  # Filter type (0: OFF, 1: LPF, 2: HPF)
+    FILTER_TYPE = 0x0A  # Filter preset_type (0: OFF, 1: LPF, 2: HPF)
     CUTOFF = 0x0B  # Filter cutoff (0-127)
     RESONANCE = 0x0C  # Filter resonance (0-127)
     ENV_DEPTH = 0x0D  # Filter envelope depth (-63 to +63)
@@ -2762,14 +2762,14 @@ class AnalogParameter(Enum):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw MIDI value to display value based on parameter type"""
+        """Convert raw MIDI value to display value based on parameter preset_type"""
         display_maps = {
             0x16: ["SAW", "TRI", "PW-SQR"],  # Direct mapping for waveforms
             0x17: lambda x: f"{x - 64:+d}",  # -24 to +24 (centered at 64)
             0x18: lambda x: f"{x - 64:+d}",  # -50 to +50 (centered at 64)
             0x1B: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
             0x1E: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
-            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc type
+            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc preset_type
         }
 
         if param in display_maps:
@@ -2974,7 +2974,7 @@ class DigitalParameter(Enum):
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x23:  # Fine tune
             return f"{value - 64:+d}"  # Convert to -50/+50
-        elif param == 0x28:  # Filter type
+        elif param == 0x28:  # Filter preset_type
             return ["OFF", "LPF", "BPF", "HPF"][value]
         elif param == 0x2B:  # Filter env
             return f"{value - 64:+d}"  # Convert to -63/+63
@@ -3402,7 +3402,7 @@ class DigitalTonePartial(Enum):
     SUSTAIN = 0x07  # Sustain level (0-127)
     RELEASE = 0x08  # Release time (0-127)
     PAN = 0x09  # Pan position (-64 to +63)
-    FILTER_TYPE = 0x0A  # Filter type (0: OFF, 1: LPF, 2: HPF)
+    FILTER_TYPE = 0x0A  # Filter preset_type (0: OFF, 1: LPF, 2: HPF)
     CUTOFF = 0x0B  # Filter cutoff (0-127)
     RESONANCE = 0x0C  # Filter resonance (0-127)
     ENV_DEPTH = 0x0D  # Filter envelope depth (-63 to +63)
@@ -4057,14 +4057,14 @@ class AnalogParameter(Enum):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw MIDI value to display value based on parameter type"""
+        """Convert raw MIDI value to display value based on parameter preset_type"""
         display_maps = {
             0x16: ["SAW", "TRI", "PW-SQR"],  # Direct mapping for waveforms
             0x17: lambda x: f"{x - 64:+d}",  # -24 to +24 (centered at 64)
             0x18: lambda x: f"{x - 64:+d}",  # -50 to +50 (centered at 64)
             0x1B: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
             0x1E: lambda x: f"{x - 64:+d}",  # -63 to +63 (centered at 64)
-            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc type
+            0x1F: ["OFF", "OCT-1", "OCT-2"],  # Direct mapping for sub osc preset_type
         }
 
         if param in display_maps:
@@ -4269,7 +4269,7 @@ class DigitalParameter(Enum):
             return f"{value - 64:+d}"  # Convert to -24/+24
         elif param == 0x23:  # Fine tune
             return f"{value - 64:+d}"  # Convert to -50/+50
-        elif param == 0x28:  # Filter type
+        elif param == 0x28:  # Filter preset_type
             return ["OFF", "LPF", "BPF", "HPF"][value]
         elif param == 0x2B:  # Filter env
             return f"{value - 64:+d}"  # Convert to -63/+63
@@ -4697,7 +4697,7 @@ class DigitalTonePartial(Enum):
     SUSTAIN = 0x07  # Sustain level (0-127)
     RELEASE = 0x08  # Release time (0-127)
     PAN = 0x09  # Pan position (-64 to +63)
-    FILTER_TYPE = 0x0A  # Filter type (0: OFF, 1: LPF, 2: HPF)
+    FILTER_TYPE = 0x0A  # Filter preset_type (0: OFF, 1: LPF, 2: HPF)
     CUTOFF = 0x0B  # Filter cutoff (0-127)
     RESONANCE = 0x0C  # Filter resonance (0-127)
     ENV_DEPTH = 0x0D  # Filter envelope depth (-63 to +63)
@@ -4775,7 +4775,7 @@ class AnalogToneParam(Enum):
     OSC_MOD_DEPTH = 0x13  # Oscillator modulation depth (-63 to +63)
 
     # Filter parameters (0x20-0x2F)
-    FILTER_TYPE = 0x20  # Filter type (0: LPF, 1: HPF)
+    FILTER_TYPE = 0x20  # Filter preset_type (0: LPF, 1: HPF)
     FILTER_CUTOFF = 0x21  # Filter cutoff frequency (0-127)
     FILTER_RESO = 0x22  # Filter resonance (0-127)
     FILTER_ENV = 0x23  # Filter envelope depth (-63 to +63)
@@ -4810,7 +4810,7 @@ class AnalogToneParam(Enum):
             return f"{value - 64:+d}"  # Convert to -50/+50
         elif param == 0x13:  # OSC mod depth
             return f"{value - 64:+d}"  # Convert to -63/+63
-        elif param == 0x20:  # Filter type
+        elif param == 0x20:  # Filter preset_type
             return ["LPF", "HPF"][value]
         elif param == 0x23:  # Filter envelope
             return f"{value - 64:+d}"  # Convert to -63/+63
@@ -5307,7 +5307,7 @@ msg = VocalEffectMessage(param=VocalEffect.VOCODER_ENV.value, value=1)  # SOFT
 class Effect1(Enum):
     """Program Effect 1 parameters"""
 
-    TYPE = 0x00  # Effect type (0-4)
+    TYPE = 0x00  # Effect preset_type (0-4)
     LEVEL = 0x01  # Effect level (0-127)
     DELAY_SEND = 0x02  # Delay send level (0-127)
     REVERB_SEND = 0x03  # Reverb send level (0-127)
@@ -5330,7 +5330,7 @@ class Effect1(Enum):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == 0x00:  # Effect type
+        if param == 0x00:  # Effect preset_type
             return ["OFF", "DISTORTION", "FUZZ", "COMPRESSOR", "BITCRUSHER"][value]
         elif param == 0x04:  # Output assign
             return ["DIR", "EFX2"][value]
@@ -5373,7 +5373,7 @@ class Effect1Message(RolandSysEx):
 
 
 # Example usage:
-# Set effect type
+# Set effect preset_type
 msg = Effect1Message(param=Effect1.TYPE.value, value=1)  # DISTORTION
 
 # Set effect level
@@ -5392,7 +5392,7 @@ msg = Effect1Message(param=Effect1.OUTPUT_ASSIGN.value, value=1)  # EFX2
 class Effect2(Enum):
     """Program Effect 2 parameters"""
 
-    TYPE = 0x00  # Effect type (0, 5-8: OFF, PHASER, FLANGER, DELAY, CHORUS)
+    TYPE = 0x00  # Effect preset_type (0, 5-8: OFF, PHASER, FLANGER, DELAY, CHORUS)
     LEVEL = 0x01  # Effect level (0-127)
     DELAY_SEND = 0x02  # Delay send level (0-127)
     REVERB_SEND = 0x03  # Reverb send level (0-127)
@@ -5416,7 +5416,7 @@ class Effect2(Enum):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == 0x00:  # Effect type
+        if param == 0x00:  # Effect preset_type
             if value == 0:
                 return "OFF"
             types = ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
@@ -5460,7 +5460,7 @@ class Effect2Message(RolandSysEx):
 
 
 # Example usage:
-# Set effect type
+# Set effect preset_type
 msg = Effect2Message(param=Effect2.TYPE.value, value=5)  # PHASER
 
 # Set effect level
@@ -5848,7 +5848,7 @@ class DigitalTonePartial:
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == 0x00:  # Wave type
+        if param == 0x00:  # Wave preset_type
             return DigitalTonePartial.get_wave_name(value)
         elif param == 0x01:  # Wave variation
             return DigitalTonePartial.get_variation_name(value)

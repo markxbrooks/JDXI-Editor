@@ -322,7 +322,7 @@ class MIDIOutHandler(MidiIOController):
         elif bank == "user":
             bank_msb = 93  # User Bank
         else:
-            logging.error("Invalid bank type. Use 'preset' or 'user'.")
+            logging.error("Invalid bank preset_type. Use 'preset' or 'user'.")
             return False
 
         bank_lsb = 0  # Always 0 for JD-Xi
@@ -434,7 +434,7 @@ class MIDIOutHandler(MidiIOController):
         """
         Send address SysEx Request (RQ1) message.
 
-        The address and size indicate the type and amount of data that is requested.
+        The address and size indicate the preset_type and amount of data that is requested.
 
         Args:
             device_id: List of device-specific data (e.g., [0x41, 0x10, 0x00, 0x00, 0x00, 0x0E] for Roland JD-Xi).

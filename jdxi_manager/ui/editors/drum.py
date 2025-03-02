@@ -17,7 +17,7 @@ Dependencies
 - `PySide6.QtCore` for Qt core functionality.
 - `jdxi_manager.data.parameter.drums.DrumParameter` for drum parameter definitions.
 - `jdxi_manager.data.presets.data.DRUM_PRESETS_ENUMERATED` for enumerated drum presets.
-- `jdxi_manager.data.presets.type.PresetType` for preset categorization.
+- `jdxi_manager.data.presets.preset_type.PresetType` for preset categorization.
 - `jdxi_manager.midi.io.MIDIHelper` for MIDI communication.
 - `jdxi_manager.midi.preset.loader.PresetLoader` for loading JD-Xi presets.
 - `jdxi_manager.ui.editors.drum_partial.DrumPartialEditor` for managing individual drum partials.
@@ -81,7 +81,7 @@ from jdxi_manager.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_manager.data.presets.data import DRUM_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.midi.preset.loader import PresetLoader
+from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.editors.base import BaseEditor
@@ -90,13 +90,14 @@ from jdxi_manager.midi.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA
 )
+from jdxi_manager.midi.constants import MIDI_CHANNEL_DRUMS
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 
 class DrumEditor(BaseEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None):
+    def __init__(self, midi_helper: Optional[MIDIHelper] = None, preset_handler=None, parent=None):
         super().__init__(midi_helper, parent)
 
         # Initialize class attributes
@@ -110,7 +111,7 @@ class DrumEditor(BaseEditor):
         # Main layout
         self.controls: Dict[DrumParameter, QWidget] = {}
         self.preset_type = PresetType.DRUMS
-        self.preset_loader = PresetLoader(self.midi_helper)
+        self.preset_handler = preset_handler
         self.partial_editors = {}
         self.main_window = parent
 
@@ -157,6 +158,7 @@ class DrumEditor(BaseEditor):
             "F0 41 10 00 00 00 0E 11 19 70 34 00 00 00 01 43 7F F7",
             "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7",
         ]
+        self.midi_channel = MIDI_CHANNEL_DRUMS
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
         self.instrument_title_label = QLabel(
@@ -193,7 +195,7 @@ class DrumEditor(BaseEditor):
         self.instrument_selection_combo = PresetComboBox(DRUM_PRESETS_ENUMERATED)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_loader.preset_number
+            self.preset_handler.preset_number
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -378,8 +380,8 @@ class DrumEditor(BaseEditor):
         )
 
     def on_assign_type_changed(self):
-        """Handle changes to the assign type combo box."""
-        logging.info(f"Assign type changed to {self.assign_type_combo.currentText()}")
+        """Handle changes to the assign preset_type combo box."""
+        logging.info(f"Assign preset_type changed to {self.assign_type_combo.currentText()}")
         if self.assign_type_combo.currentText() == "MULTI":
             value = 0x00
         else:
@@ -456,6 +458,19 @@ class DrumEditor(BaseEditor):
         if not image_loaded:
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
+
+    def load_preset(self, preset_index):
+        """Load address preset by index"""
+        preset_data = {
+            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
+            "selpreset": preset_index,  # Convert to 1-based index
+            "modified": 0,  # or 1, depending on your logic
+            "channel": self.midi_channel
+        }
+        if not self.preset_handler:
+            self.preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DRUMS, preset_type=PresetType.DRUMS)
+        if self.preset_handler:
+            self.preset_handler.load_preset(preset_data)
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""

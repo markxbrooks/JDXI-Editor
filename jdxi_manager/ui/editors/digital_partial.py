@@ -311,7 +311,7 @@ class DigitalPartialEditor(QWidget):
             icon_hlayout.addWidget(icon_label)
         filter_layout.addLayout(icon_hlayout)
 
-        # Filter type controls
+        # Filter preset_type controls
         type_row = QHBoxLayout()
 
         # Filter mode switch

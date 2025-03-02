@@ -1,6 +1,7 @@
 import logging
 import re
 import time
+from smtpd import program
 
 from PySide6.QtCore import Signal, QObject
 from pubsub import pub
@@ -11,55 +12,7 @@ from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants.sysex import DEVICE_ID
 from jdxi_manager.midi.sysex.sysex import XI_HEADER
 
-from PySide6.QtCore import QThread, Signal
-
-
-class PresetLoaderThread(QThread):
-    progress = Signal(str)  # Signal to update the GUI
-    success = Signal(bool)  # Signal to indicate success/failure
-
-    def __init__(self, midi_out, midi_in, preset_sysex):
-        super().__init__()
-        self.midi_out = midi_out
-        self.midi_in = midi_in
-        self.preset_sysex = preset_sysex
-        self.expected_response = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x12, 0xF7]
-        self.retry_attempts = 3
-        self.timeout = 1.0  # seconds
-
-    def send_sysex(self, data):
-        msg = mido.Message("sysex", data=data)
-        self.midi_out.send(msg)
-        self.progress.emit(f"Sent SysEx: {data}")
-
-    def receive_sysex(self):
-        if self.midi_in:
-            start_time = time.time()
-            while time.time() - start_time < self.timeout:
-                for msg in self.midi_in.iter_pending():
-                    if msg.type == "sysex":
-                        self.progress.emit(f"Received SysEx: {msg.data}")
-                        return list(msg.data)
-        return None
-
-    def validate_response(self, response):
-        return response and response[:7] == self.expected_response[:7]
-
-    def run(self):
-        for attempt in range(self.retry_attempts):
-            self.progress.emit(f"Attempt {attempt + 1}: Sending preset SysEx...")
-            self.send_sysex(self.preset_sysex)
-            response = self.receive_sysex()
-
-            if self.validate_response(response):
-                self.progress.emit("Preset load confirmed by JD-Xi.")
-                self.success.emit(True)
-                return
-            else:
-                self.progress.emit("No valid response, retrying...")
-
-        self.progress.emit("Failed to load preset after multiple attempts.")
-        self.success.emit(False)
+from PySide6.QtCore import Signal
 
 
 def calculate_checksum(data):
@@ -71,7 +24,7 @@ def calculate_checksum(data):
 
 class PresetLoader(QObject):
     """Utility class for loading presets via MIDI"""
-
+    update_display = Signal(int, int, int)
     # preset_selected = Signal(int)  # Signal to emit when address preset is selected
     # preset_loaded = Signal(int)  # Signal to emit when address preset is loaded
 
@@ -134,28 +87,32 @@ class PresetLoader(QObject):
         """Load the preset based on the provided data"""
         print(f"Loading preset with data: {preset_data}")
         response = "Yes"
+        print(preset_data)
+        program = preset_data["selpreset"]
+        channel = preset_data["channel"]
+        self.midi_helper.send_program_change(program=program, channel=channel)
         if response == "Yes" or preset_data["modified"] == 0:
             address = ""
             msb = 0
             lsb = 64
             self.preset_number = int(preset_data["selpreset"])
             # self.preset_loaded.emit(self.preset_number)
-            if preset_data["type"] == PresetType.DIGITAL_1:
+            if preset_data["preset_type"] == PresetType.DIGITAL_1:
                 address = "18002006"
                 msb = 95
                 if self.preset_number > 128:
                     lsb = 65
                     self.preset_number -= 128
-            elif preset_data["type"] == PresetType.DIGITAL_2:
+            elif preset_data["preset_type"] == PresetType.DIGITAL_2:
                 address = "18002106"
                 msb = 95
                 if self.preset_number > 128:
                     lsb = 65
                     self.preset_number -= 128
-            elif preset_data["type"] == PresetType.ANALOG:
+            elif preset_data["preset_type"] == PresetType.ANALOG:
                 address = "18002206"
                 msb = 94
-            elif preset_data["type"] == PresetType.DRUMS:
+            elif preset_data["preset_type"] == PresetType.DRUMS:
                 address = "18002306"
                 msb = 86
 
@@ -176,6 +133,10 @@ class PresetLoader(QObject):
             self.send_sysex_message("19", "01", "21", "00", "00", "00", "00", "3D")
             self.send_sysex_message("19", "01", "22", "00", "00", "00", "00", "3D")
             self.send_sysex_message("19", "01", "50", "00", "00", "00", "00", "25")
+            self.update_display.emit(
+                preset_data["preset_type"], preset_data["selpreset"], preset_data["channel"]
+            )
+            logging.info(f'Emitting update display preset_type: {preset_data["preset_type"]}, preset#: {preset_data["selpreset"]}, channel#: {preset_data["channel"]} ')
 
     def send_sysex_message(
         self, addr1, addr2, addr3, addr4, data1, data2, data3, data4
@@ -298,7 +259,7 @@ class PresetLoader(QObject):
         preset_data["modified"] = 0
         preset_data["filename"] = ""
         preset_data["window"].set_title(preset_data["titlestr"])
-        # if preset_data['type'] == 'FX':
+        # if preset_data['preset_type'] == 'FX':
         #    self.show_fx_ctrls(0)
         #    self.show_fx_ctrls(1)
         # self.set_busy(False)
@@ -403,10 +364,10 @@ class PresetLoader(QObject):
         try:
             logging.debug(f"Loading {preset_type} preset {preset_num}")
 
-            # Get the appropriate area code for the synth type
+            # Get the appropriate area code for the synth preset_type
             area = PresetType.get_area_code(preset_type)
             if area is None:
-                logging.error(f"Unknown preset type: {preset_type}")
+                logging.error(f"Unknown preset preset_type: {preset_type}")
                 return
 
             # First message - Set bank and parameters
@@ -511,10 +472,10 @@ class PresetLoader(QObject):
             return
 
         try:
-            # Get the appropriate area code for the synth type
+            # Get the appropriate area code for the synth preset_type
             area = PresetType.get_area_code(preset_type)
             if area is None:
-                logging.error(f"Unknown preset type: {preset_type}")
+                logging.error(f"Unknown preset preset_type: {preset_type}")
                 return
 
             # Request current program number
@@ -583,7 +544,7 @@ class PresetLoader(QObject):
                 data_dict["data"][n][i + 2] = dv2
                 data_dict["data"][n][i + 3] = dv3
                 tmpv = (4096 * dv) + (256 * dv1) + (16 * dv2) + dv3
-                if data_dict["type"] == "FX":
+                if data_dict["preset_type"] == "FX":
                     data_dict["data"][n][i] = tmpv - 32768
                 else:
                     data_dict["data"][n][i] = tmpv
@@ -592,9 +553,9 @@ class PresetLoader(QObject):
                 data_dict["data"][n][i] = dv
 
         # Handle specific types
-        if data_dict["type"] == "AN":
+        if data_dict["preset_type"] == "AN":
             self.pdm_val["19420011"] = sync_notes[data_dict["data"][n][0x11]]
-        elif data_dict["type"] in ["SN1", "SN2"]:
+        elif data_dict["preset_type"] in ["SN1", "SN2"]:
             msb = data_dict["msb"]
             if n == 0:
                 for tone_cat in tone_cats:
@@ -611,7 +572,7 @@ class PresetLoader(QObject):
                     wavenr = 0
                     data_dict["data"][n][0x35] = wavenr
                 self.pdm_val[f"{msb}2{lsb}35"] = PCMwaves[wavenr]
-        elif data_dict["type"] == "drums_data" and n > 0:
+        elif data_dict["preset_type"] == "drums_data" and n > 0:
             lo = data_dict["addr"][n][2]
             hi = lo + 1
             lo_hex = f"{lo:02X}"
@@ -631,7 +592,7 @@ class PresetLoader(QObject):
                     data_dict["data"][n][0x2B + a] = wavenrR
                 self.pdm_val[self.addr(0x27 + a, lo_hex, hi_hex)] = DRMwaves[wavenrL]
                 self.pdm_val[self.addr(0x2B + a, lo_hex, hi_hex)] = DRMwaves[wavenrR]
-        elif data_dict["type"] == "FX":
+        elif data_dict["preset_type"] == "FX":
             if n == 0:
                 self.pdm_val["18000200"] = fx_type[data_dict["data"][n][0]]
                 self.pdm_val["1800022D"] = coarse_tune[data_dict["data"][n][45]]
@@ -648,10 +609,10 @@ class PresetLoader(QObject):
             elif n == 3:
                 self.pdm_val["18000803"] = rev_type[data_dict["data"][n][3]]
                 self.pdm_val["1800080B"] = hf_damp[data_dict["data"][n][11]]
-        elif data_dict["type"] == "AR":
+        elif data_dict["preset_type"] == "AR":
             self.pdm_val[18004005] = arp_type[data_dict["data"][n][0x05]]
             self.pdm_val[18004006] = arp_motif[data_dict["data"][n][0x06]]
-        elif data_dict["type"] == "VC":
+        elif data_dict["preset_type"] == "VC":
             self.pdm_val[18000113] = vc_hpf[data_dict["data"][n][0x13]]
             self.pdm_val[18000108] = ap_key[data_dict["data"][n][0x08]]
 

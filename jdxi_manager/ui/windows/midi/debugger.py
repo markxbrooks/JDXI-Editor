@@ -133,7 +133,7 @@ class MIDIDebugger(QMainWindow):
             return "Not address Roland SysEx message"
             
         try:
-            # Get command type
+            # Get command preset_type
             command = message[7]
             command_str = self.COMMANDS.get(command, f"Unknown Command ({hex(command)})")
             

@@ -201,7 +201,7 @@ class FX:
 @dataclass
 class EffectPatch:
     """Effect patch data"""
-    # Effect type and common parameters
+    # Effect preset_type and common parameters
     type: EffectType = EffectType.THRU
     level: int = 100
     
@@ -230,7 +230,7 @@ class EffectParam:
     default: int = 0
     unit: str = ""
 
-# EFX1 Parameters by type
+# EFX1 Parameters by preset_type
 DISTORTION_PARAMS = [
     EffectParam("Drive", 0, 127, 64),
     EffectParam("Level", 0, 127, 100),
@@ -257,7 +257,7 @@ BITCRUSHER_PARAMS = [
     EffectParam("Drive", 0, 127, 64),
 ]
 
-# EFX2 Parameters by type
+# EFX2 Parameters by preset_type
 PHASER_PARAMS = [
     EffectParam("Rate", 0, 127, 64),
     EffectParam("Depth", 0, 127, 64),

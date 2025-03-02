@@ -156,8 +156,8 @@ class VocalFXEditor(BaseEditor):
         return group
 
     def _on_effect_type_changed(self, index: int):
-        """Handle effect type changes"""
-        # Enable/disable sections based on effect type
+        """Handle effect preset_type changes"""
+        # Enable/disable sections based on effect preset_type
         is_auto_pitch = index == 2  # AUTO-PITCH
         if hasattr(self, "auto_pitch_group"):
             self.auto_pitch_group.setEnabled(is_auto_pitch)
@@ -335,11 +335,11 @@ class VocalFXEditor(BaseEditor):
             )
 
     def _on_pitch_type_changed(self, index: int):
-        """Handle auto pitch type change"""
+        """Handle auto pitch preset_type change"""
         if self.midi_helper:
             pitch_type = AutoPitchType(index)
             logging.debug(
-                f"Sending auto pitch type change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.AUTO_PITCH_TYPE:02x}, value={pitch_type.midi_value:02x}"
+                f"Sending auto pitch preset_type change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.AUTO_PITCH_TYPE:02x}, value={pitch_type.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
