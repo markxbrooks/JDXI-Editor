@@ -149,7 +149,7 @@ class DigitalPartialEditor(QWidget):
 
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
-            btn.setStyleSheet(Style.JDXI_BUTTON)  # Apply default styles
+            btn.setStyleSheet(Style.JDXI_BUTTON_ROUND)  # Apply default styles
 
             # Set waveform icons
             wave_pixmap = base64_to_pixmap(icon_base64)
@@ -840,13 +840,13 @@ class DigitalPartialEditor(QWidget):
         # Reset all buttons to default style
         for btn in self.wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON)
+            btn.setStyleSheet(Style.JDXI_BUTTON_ROUND)
 
         # Apply active style to the selected waveform button
         selected_btn = self.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ACTIVE)
+            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ROUND_ACTIVE)
 
         # Send MIDI message
         if not self.send_midi_parameter(DigitalParameter.OSC_WAVE, waveform.value):

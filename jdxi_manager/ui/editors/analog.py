@@ -261,7 +261,7 @@ class AnalogSynthEditor(BaseEditor):
         self.wave_buttons = {}
         for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
             btn = AnalogWaveformButton(waveform)
-            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
+            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
             # Set icons for each waveform
             if waveform == Waveform.SAW:
@@ -880,7 +880,7 @@ class AnalogSynthEditor(BaseEditor):
             btn.setFixedSize(80, 40)  # Make buttons wider to accommodate text
             btn.setToolTip(name)
             btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
-            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
+            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
             self.lfo_shape_buttons[value] = btn
             shape_row.addWidget(btn)
             shape_row.addStretch(1)  # Add stretch after each button
@@ -970,7 +970,7 @@ class AnalogSynthEditor(BaseEditor):
             )
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
+                btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
             # Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
@@ -1025,7 +1025,7 @@ class AnalogSynthEditor(BaseEditor):
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
+                btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
             # Apply active style to the selected button
             selected_btn = self.lfo_shape_buttons.get(value)
@@ -1344,7 +1344,7 @@ class AnalogSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
+            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
@@ -1359,7 +1359,7 @@ class AnalogSynthEditor(BaseEditor):
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG)
+            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
         # Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)

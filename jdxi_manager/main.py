@@ -9,11 +9,12 @@ import threading
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 import mido
+from jdxi_manager.ui.windows.jdxi import JdxiInstrument
 from pubsub import pub
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPixmap, QColor
 
-from jdxi_manager.ui.main_window import MainWindow
+from jdxi_manager.ui.windows.jdxi.instrument import JdxiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -135,7 +136,7 @@ def main():
             app.setWindowIcon(icon)
             logging.info("Using fallback icon")
 
-        window = MainWindow()
+        window = JdxiInstrument()
         window.show()
         logging.info("Main window displayed")
         window.set_log_file(log_file)
