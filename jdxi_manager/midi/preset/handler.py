@@ -124,7 +124,7 @@ class PresetHandler(QObject):
             self.send_sysex_message("19", "01", "22", "00", "00", "00", "00", "3D")
             self.send_sysex_message("19", "01", "50", "00", "00", "00", "00", "25")
             self.update_display.emit(
-                preset_data["preset_type"], preset_data["selpreset"], preset_data["channel"]
+                preset_data["preset_type"], preset_data["selpreset"] - 1, preset_data["channel"]
             )
             logging.info(f'Emitting update display preset_type: {preset_data["preset_type"]}, preset#: {preset_data["selpreset"]}, channel#: {preset_data["channel"]} ')
 

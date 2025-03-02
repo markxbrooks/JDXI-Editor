@@ -116,9 +116,6 @@ class JdxiUi(QMainWindow):
         # Initialize synth preset_type
         self.current_synth_type = PresetType.DIGITAL_1
 
-        # Set default styles
-        self._update_synth_button_styles()
-
         # Create favorite buttons container
         self.favorites_widget = QWidget()
         favorites_layout = QVBoxLayout(self.favorites_widget)
@@ -150,21 +147,6 @@ class JdxiUi(QMainWindow):
 
         # Initialize current preset index
         self.current_preset_index = 0
-
-        # Initialize PresetHandler with the desired preset list
-        self.digital_1_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
-        self.digital_2_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
-        self.analog_preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED)
-        self.drums_preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED)
-
-        self.digital_1_preset_handler.update_display.connect(
-            self.update_display_callback
-        )
-        self.digital_2_preset_handler.update_display.connect(
-            self.update_display_callback
-        )
-        self.analog_preset_handler.update_display.connect(self.update_display_callback)
-        self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.old_pos = None
 
     def _create_main_layout(self):

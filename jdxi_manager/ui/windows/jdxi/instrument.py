@@ -152,6 +152,9 @@ class JdxiInstrument(JdxiUi):
         # Load saved favorites
         self._load_saved_favorites()
 
+        # Set default styles
+        self._update_synth_button_styles()
+
         # Initialize current preset index
         self.current_preset_index = 0
 
@@ -163,7 +166,6 @@ class JdxiInstrument(JdxiUi):
         self.digital_2_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DIGITAL2, preset_type=PresetType.DIGITAL_2)
         self.analog_preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_ANALOG, preset_type=PresetType.ANALOG)
         self.drums_preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DRUMS, preset_type=PresetType.DRUMS)
-
         self.digital_1_preset_handler.update_display.connect(
             self.update_display_callback
         )
@@ -178,6 +180,7 @@ class JdxiInstrument(JdxiUi):
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
