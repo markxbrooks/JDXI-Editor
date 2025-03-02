@@ -1,16 +1,16 @@
 """
 spin_box.py
-============
+===========
 
-This module provides a custom `SpinBox` widget that extends `QWidget`. 
+This module provides a custom `SpinBox` widget that extends `QWidget`.
 
-The `SpinBox` class combines a label and a dropdown menu (QSpinBox), allowing users
-to select from a list of options, where each option is mapped to a corresponding integer value.
-It emits a `valueChanged` signal whenever the selected value changes.
+The `SpinBox` class combines a label and a numerical input (QSpinBox), allowing users
+to select a value within a defined range. It emits a `valueChanged` signal whenever the
+selected value changes.
 
 Classes
 --------
-- SpinBox: A labeled combo box with a value-mapping system.
+- SpinBox: A labeled spin box for integer value selection.
 
 Example Usage
 --------------
@@ -21,13 +21,10 @@ Example Usage
 
     app = QApplication([])
 
-    options = ["Low", "Medium", "High"]
-    values = [10, 50, 100]
+    spin_box = SpinBox("Select Number:", 0, 100)
+    spin_box.valueChanged.connect(lambda v: print(f"Selected Value: {v}"))
 
-    combo = SpinBox("Select Level:", options, values)
-    combo.valueChanged.connect(lambda v: print(f"Selected Value: {v}"))
-
-    combo.show()
+    spin_box.show()
     app.exec()
 
 Attributes
@@ -36,8 +33,7 @@ Attributes
 
 Methods
 --------
-- setValue(value: int): Set the selected value in the combo box.
-- setOptions(options: list, values: list): Update the combo box options and their corresponding values.
+- setValue(value: int): Set the selected value in the spin box.
 - value() -> int: Get the currently selected value.
 - setEnabled(enabled: bool): Enable or disable the widget.
 - setVisible(visible: bool): Show or hide the widget.
@@ -45,6 +41,7 @@ Methods
 - setMaximumWidth(width: int): Set the maximum width of the label.
 
 """
+
 
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QSpinBox
@@ -60,9 +57,9 @@ class SpinBox(QWidget):
         """
         Initialize the SpinBox widget.
 
-        :param label: Label text
-        :param options: List of option strings to display
-        :param values: List of corresponding integer values
+        :param label: str Label text
+        :param low: int low limit of range of spin box
+        :param high: int high limit of range of spin box
         :param parent: Parent widget
         """
         super().__init__(parent)
