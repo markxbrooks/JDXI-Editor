@@ -2,6 +2,27 @@ from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
 
 
+def generate_polyend_sequencer_button_style(self, is_checked: bool, is_current: bool = False) -> str:
+    """Generate button style based on state and current step"""
+    base_color = "#3498db" if is_checked else "#2c3e50"
+    border_color = "#e74c3c" if is_current else base_color
+
+    return f"""
+        QPushButton {{
+            background-color: {base_color};
+            border: 2px solid {border_color};
+            border-radius: 5px;
+            color: white;
+            padding: 5px;
+        }}
+        QPushButton:hover {{
+            background-color: {'#2980b9' if is_checked else '#34495e'};
+        }}
+        QPushButton:pressed {{
+            background-color: {'#2472a4' if is_checked else '#2c3e50'};
+        }}
+    """
+
 def generate_sequencer_button_style(active):
     return f"""
         QPushButton {{
