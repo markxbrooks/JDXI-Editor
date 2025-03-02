@@ -41,6 +41,7 @@ from jdxi_manager.midi.utils.conversions import (
 # Precompile the regex pattern at module level or in the class constructor
 ENVELOPE_PATTERN = re.compile(r'(attack|decay|release)', re.IGNORECASE)
 
+
 class ADSR(QWidget):
     envelopeChanged = Signal(dict)
 
