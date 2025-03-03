@@ -610,18 +610,10 @@ class DrumPartialEditor(QWidget):
     def _create_tva_group(self):
         """Create the TVA group."""
 
-        options = ["Low", "Medium", "High"]
-        values = [10, 50, 100]
-
-        combo = ComboBox("Select Level:", options, values)
-        combo.valueChanged.connect(lambda v: print(f"Selected Value: {v}"))
-
         # TVA Group
         tva_group = QGroupBox("TVA")
         tva_layout = QFormLayout()
         tva_group.setLayout(tva_layout)
-
-        tva_layout.addRow(combo)
 
         # Add TVA parameters
         tva_level_velocity_curve_spin = QSpinBox()
@@ -828,22 +820,26 @@ class DrumPartialEditor(QWidget):
         wmt2_wave_group_type_spin.valueChanged.connect(self._on_wmt2_wave_group_type_changed)
 
         # wmt2_wave_group_id_spin = QSpinBox()
-        wmt2_wave_group_id_spin = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_NUMBER_L,
-                                                                   "WMT2 Wave Group ID",
+        wmt2_wave_number_l_spin = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_NUMBER_L,
+                                                                   "WMT2 Wave Number L/Mono",
                                                                    options=rm_waves)
+
+        wmt2_wave_number_r_spin = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_NUMBER_R,
+                                                                   "WMT2 Wave Number R",
+                                                                   options=rm_waves, values = range(1,456))
         # wmt2_wave_group_id_spin.setRange(0, 16384)
-        wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
+        # wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
         # wmt2_wave_group_id_spin.valueChanged.connect(self._on_wmt2_wave_group_id_changed)
 
-        wmt2_wave_number_l_spin = QSpinBox()
-        wmt2_wave_number_l_spin.setRange(0, 16384)
+        # wmt2_wave_number_l_spin = QSpinBox()
+        # wmt2_wave_number_l_spin.setRange(0, 16384)
         wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
-        wmt2_wave_number_l_spin.valueChanged.connect(self._on_wmt2_wave_number_l_changed)
+        # wmt2_wave_number_l_spin.valueChanged.connect(self._on_wmt2_wave_number_l_changed)
 
-        wmt2_wave_number_r_spin = QSpinBox()
-        wmt2_wave_number_r_spin.setRange(0, 16384)
+        # wmt2_wave_number_r_spin = QSpinBox()
+        # wmt2_wave_number_r_spin.setRange(0, 16384)
         wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
-        wmt2_wave_number_r_spin.valueChanged.connect(self._on_wmt2_wave_number_r_changed)
+        # wmt2_wave_number_r_spin.valueChanged.connect(self._on_wmt2_wave_number_r_changed)
 
         wmt2_wave_gain_spin = QSpinBox()
         wmt2_wave_gain_spin.setRange(0, 3)
@@ -1934,6 +1930,7 @@ class DrumPartialEditor(QWidget):
             size = 4
         else:
             size = 1
+        logging.info(f"parameter param {param} value {value} size {size} sent")
         try:
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
@@ -1956,7 +1953,7 @@ class DrumPartialEditor(QWidget):
                 midi_value = param.convert_from_display(display_value)
             else:
                 midi_value = param.validate_value(display_value)
-            print(f"parameter: {param} display {display_value} midi value {midi_value}")
+            logging.info(f"parameter: {param} display {display_value} midi value {midi_value}")
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")

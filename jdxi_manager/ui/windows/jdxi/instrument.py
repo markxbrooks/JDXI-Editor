@@ -370,9 +370,6 @@ class JdxiInstrument(JdxiUi):
         self.channel = MIDI_CHANNEL_DRUMS
         self.preset_type = PresetType.DRUMS
 
-    def _show_arpeggio_editor(self, editor_type: str):
-        self._show_editor("Arpeggio", ArpeggioEditor)
-
     def _open_effects(self, editor_type: str):
         self._show_editor("Effects", EffectsEditor)
 
