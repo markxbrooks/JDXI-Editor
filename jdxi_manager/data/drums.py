@@ -360,7 +360,7 @@ def _on_tva_level_velocity_sens_slider_changed(self, value: int):
 
 
 rm_waves = [
-    "000: --- OFF ---",
+    "000: OFF ",
     "001: 78 Kick P",
     "002: 606 Kick P",
     "003: 808 Kick 1aP",
