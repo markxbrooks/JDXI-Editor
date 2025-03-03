@@ -814,10 +814,10 @@ class DrumPartialEditor(QWidget):
         wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
         # wmt2_wave_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_switch_changed)
 
-        wmt2_wave_group_type_spin = QSpinBox()
-        wmt2_wave_group_type_spin.setRange(0, 0)
-        wmt2_layout.addRow("WMT2 Wave Group Type", wmt2_wave_group_type_spin)
-        wmt2_wave_group_type_spin.valueChanged.connect(self._on_wmt2_wave_group_type_changed)
+        # wmt2_wave_group_type_spin = QSpinBox()
+        # wmt2_wave_group_type_spin.setRange(0, 0)
+        # wmt2_layout.addRow("WMT2 Wave Group Type", wmt2_wave_group_type_spin)
+        # wmt2_wave_group_type_spin.valueChanged.connect(self._on_wmt2_wave_group_type_changed)
 
         # wmt2_wave_group_id_spin = QSpinBox()
         wmt2_wave_number_l_spin = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_NUMBER_L,
@@ -826,7 +826,7 @@ class DrumPartialEditor(QWidget):
 
         wmt2_wave_number_r_spin = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_NUMBER_R,
                                                                    "WMT2 Wave Number R",
-                                                                   options=rm_waves, values = range(1,456))
+                                                                   options=rm_waves, values=range(1, 456))
         # wmt2_wave_group_id_spin.setRange(0, 16384)
         # wmt2_layout.addRow("WMT2 Wave Group ID", wmt2_wave_group_id_spin)
         # wmt2_wave_group_id_spin.valueChanged.connect(self._on_wmt2_wave_group_id_changed)
@@ -841,15 +841,22 @@ class DrumPartialEditor(QWidget):
         wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
         # wmt2_wave_number_r_spin.valueChanged.connect(self._on_wmt2_wave_number_r_changed)
 
-        wmt2_wave_gain_spin = QSpinBox()
-        wmt2_wave_gain_spin.setRange(0, 3)
-        wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_spin)
-        wmt2_wave_gain_spin.valueChanged.connect(self._on_wmt2_wave_gain_changed)
+        # wmt2_wave_gain_spin = QSpinBox()
+        wmt2_wave_gain_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_GAIN,
+                                                                "Wave Gain",
+                                                                options=["-6", "0", "6", "12"],
+                                                                values=[0, 1, 2, 3]
+                                                                )
 
-        wmt2_wave_fxm_switch_combo = QComboBox()
-        wmt2_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_combo)
+        # wmt2_wave_gain_combo.valueChanged.connect(self._on_wmt2_wave_gain_changed)
+
+        wmt2_wave_fxm_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_GAIN,
+                                                                      "Wave FXM Switch",
+                                                                      options=["OFF", "ON"],
+                                                                      values=[0, 1]
+                                                                      )
         wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
-        wmt2_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt2_wave_fxm_switch_changed)
 
         wmt2_wave_fxm_color_spin = QSpinBox()
         wmt2_wave_fxm_color_spin.setRange(0, 3)
@@ -2000,7 +2007,6 @@ class DrumPartialEditor(QWidget):
                     param=DrumParameter.WMT1_WAVE_SWITCH.value[0],
                     value=value
                 )
-
 
     def _on_wmt2_wave_number_l_changed(self, value: int):
         """Handle WMT2 Wave Number L parameter change"""
