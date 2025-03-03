@@ -2,13 +2,16 @@
 DrumEditor Module
 =================
 
-This module provides the `DrumEditor` class, which serves as an editor for JD-Xi Drum Kit parameters.
-It enables users to modify drum kit settings, select presets, and send MIDI messages to address connected JD-Xi synthesizer.
+This module provides the `DrumEditor` class, which serves as
+an editor for JD-Xi Drum Kit parameters.
+It enables users to modify drum kit settings,
+select presets, and send MIDI messages to address connected JD-Xi synthesizer.
 
 Classes
 -------
 
-- `DrumEditor`: A graphical editor for JD-Xi drum kits, supporting preset selection, parameter adjustments, and MIDI communication.
+- `DrumEditor`: A graphical editor for JD-Xi drum kits, supporting preset
+selection, parameter adjustments, and MIDI communication.
 
 Dependencies
 ------------
@@ -57,21 +60,18 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 import os
 import re
 import logging
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 import json
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QComboBox,
     QGroupBox,
     QScrollArea,
     QWidget,
     QTabWidget,
     QFormLayout,
-    QSpinBox,
-    QSlider,
     QPushButton,
 )
 from PySide6.QtCore import Qt
@@ -86,18 +86,22 @@ from jdxi_manager.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.editors.base import BaseEditor
 from jdxi_manager.midi.constants.sysex import (
-    TEMPORARY_DIGITAL_SYNTH_1_AREA,
     TEMPORARY_TONE_AREA,
-    DRUM_KIT_AREA
+    DRUM_KIT_AREA,
 )
 from jdxi_manager.midi.constants import MIDI_CHANNEL_DRUMS
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.slider import Slider
+from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
+from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
 
 
 class DrumEditor(BaseEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, preset_handler=None, parent=None):
+    def __init__(
+        self, midi_helper: Optional[MIDIHelper] = None, preset_handler=None, parent=None
+    ):
         super().__init__(midi_helper, parent)
 
         # Initialize class attributes
@@ -119,6 +123,7 @@ class DrumEditor(BaseEditor):
         self.previous_data = None
         # Create layouts
         main_layout = QVBoxLayout(self)
+        self.partial_address = 0x2E
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
         self.setMinimumSize(1000, 500)
@@ -228,63 +233,66 @@ class DrumEditor(BaseEditor):
         common_group = QGroupBox("Common")
         common_layout = QFormLayout()
 
-        # Assign Type control
-        self.assign_type_combo = QComboBox()
-        self.assign_type_combo.addItems(["MULTI", "SINGLE"])
+        self.assign_type_combo = self._create_parameter_combo_box(
+            DrumParameter.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
+        )
         common_layout.addRow("Assign Type", self.assign_type_combo)
-        self.assign_type_combo.currentIndexChanged.connect(self.on_assign_type_changed)
 
         # Mute Group control
-        self.mute_group_spin = QSpinBox()
-        self.mute_group_spin.setRange(0, 31)
-        common_layout.addRow("Mute Group", self.mute_group_spin)
-        self.mute_group_spin.valueChanged.connect(self.on_mute_group_changed)
+        self.mute_group_combo = self._create_parameter_combo_box(
+            DrumParameter.MUTE_GROUP,
+            "Mute Group",
+            ["OFF"] + [str(i) for i in range(1, 31)],
+            list(range(0, 31)),
+        )
+
+        common_layout.addRow("Mute Group", self.mute_group_combo)
 
         # Sustain control
-        self.sustain_combo = QComboBox()
-        self.sustain_combo.addItems(["SUSTAIN", "NO-SUSTAIN"])
-        common_layout.addRow("Partial Env Mode", self.sustain_combo)
-        self.sustain_combo.currentIndexChanged.connect(
-            self.on_sustain_changed
+        self.sustain_combo = self._create_parameter_combo_box(
+            DrumParameter.PARTIAL_ENV_MODE,
+            "Partial ENV Mode",
+            ["SUSTAIN", "NO-SUSTAIN"],
+            [0, 1],
         )
 
         # Kit Level control
-        self.kit_level_slider = QSlider(Qt.Orientation.Horizontal)
-        self.kit_level_slider.setRange(0, 127)
-        self.kit_level_slider.valueChanged.connect(self.on_kit_level_changed)
-        common_layout.addRow("Kit Level", self.kit_level_slider)
+        self.kit_level_slider = self._create_parameter_slider(
+            DrumCommonParameter.KIT_LEVEL, "Kit Level"
+        )
+        common_layout.addRow(self.kit_level_slider)
 
         # Partial Pitch Bend Range
-        self.pitch_bend_range_slider = QSlider(Qt.Orientation.Horizontal)
-        self.pitch_bend_range_slider.setRange(0, 48)
-        self.pitch_bend_range_slider.valueChanged.connect(
-            self.on_pitch_bend_range_changed
+        self.pitch_bend_range_slider = self._create_parameter_slider(
+            DrumParameter.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
         )
-        common_layout.addRow("Pitch Bend Range", self.pitch_bend_range_slider)
+        common_layout.addRow(self.pitch_bend_range_slider)
 
         # Partial Receive Expression
-        self.receive_expression_combo = QComboBox()
-        self.receive_expression_combo.addItems(["OFF", "ON"])
-        common_layout.addRow("Receive Expression", self.receive_expression_combo)
-        self.receive_expression_combo.currentIndexChanged.connect(
-            self.on_receive_expression_changed
+        self.receive_expression_combo = self._create_parameter_combo_box(
+            DrumParameter.PARTIAL_RECEIVE_EXPRESSION,
+            "Receive Expression",
+            ["OFF", "ON"],
+            [0, 1],
         )
+
+        common_layout.addRow("Receive Expression", self.receive_expression_combo)
 
         # Partial Receive Hold-1
-        self.receive_hold_combo = QComboBox()
-        self.receive_hold_combo.addItems(["OFF", "ON"])
-        common_layout.addRow("Receive Hold-1", self.receive_hold_combo)
-        self.receive_hold_combo.currentIndexChanged.connect(
-            self.on_receive_hold_changed
+        self.receive_hold_combo = self._create_parameter_combo_box(
+            DrumParameter.PARTIAL_RECEIVE_HOLD_1,
+            "Receive Hold-1",
+            ["OFF", "ON"],
+            [0, 1],
         )
 
+        common_layout.addRow("Receive Hold-1", self.receive_hold_combo)
+
         # One Shot Mode
-        self.one_shot_mode_combo = QComboBox()
-        self.one_shot_mode_combo.addItems(["OFF", "ON"])
-        common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
-        self.one_shot_mode_combo.currentIndexChanged.connect(
-            self.on_one_shot_mode_changed
+        self.one_shot_mode_combo = self._create_parameter_combo_box(
+            DrumParameter.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
         )
+        common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
 
         common_group.setLayout(common_layout)
         upper_layout.addWidget(common_group)
@@ -308,91 +316,59 @@ class DrumEditor(BaseEditor):
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.data_request()
 
-    def on_sustain_changed(self):
-        """Handle changes to the sustain combo box."""
-        logging.info(f"Sustain changed to {self.sustain_combo.currentText()}")
-        if self.sustain_combo.currentText() == "SUSTAIN":
-            value = 0x01
+    def _create_parameter_slider(
+        self, param: Union[DrumParameter, DrumCommonParameter], label: str = None
+    ) -> Slider:
+        """Create address slider for address parameter with proper display conversion"""
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
         else:
-            value = 0x00
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=0x2E,
-            param=DrumParameter.PARTIAL_ENV_MODE.value[0],
-            value=value,  # Make sure this value is being sent
-        )
+            display_min, display_max = param.min_val, param.max_val
 
-    def on_one_shot_mode_changed(self):
-        """Handle changes to the one shot mode combo box."""
-        logging.info(f"One shot mode changed to {self.one_shot_mode_combo.currentText()}")
-        if self.one_shot_mode_combo.currentText() == "ON":
-            value = 0x01
-        else:
-            value = 0x00    
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=DRUM_KIT_AREA,
-            group=0x2E,
-            param=DrumParameter.ONE_SHOT_MODE.value[0],
-            value=value,  # Make sure this value is being sent
-        )
-    
-    def on_receive_expression_changed(self):
-        """Handle changes to the receive expression combo box."""
-        logging.info(f"Receive expression changed to {self.receive_expression_combo.currentText()}")
-        if self.receive_expression_combo.currentText() == "ON":
-            value = 0x01
-        else:
-            value = 0x00
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=DRUM_KIT_AREA,
-            group=0x2E,
-            param=DrumParameter.PARTIAL_RECEIVE_EXPRESSION.value[0],
-            value=value,  # Make sure this value is being sent
-        )
-    
-    def on_receive_hold_changed(self):
-        """Handle changes to the receive hold combo box."""
-        logging.info(f"Receive hold changed to {self.receive_hold_combo.currentText()}")
-        if self.receive_hold_combo.currentText() == "ON":
-            value = 0x01
-        else:
-            value = 0x00
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=DRUM_KIT_AREA,
-            group=0x2E,
-            param=DrumParameter.PARTIAL_RECEIVE_HOLD_1.value[0],
-            value=value,  # Make sure this value is being sent
-        )
+        slider = Slider(label, display_min, display_max)
 
-    def on_mute_group_changed(self):
-        """Handle changes to the mute group spin box."""
-        logging.info(f"Mute group changed to {self.mute_group_spin.value()}")
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=DRUM_KIT_AREA,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            group=0x2E,
-            param=DrumParameter.MUTE_GROUP.value[0],
-            value=self.mute_group_spin.value(),  # Make sure this value is being sent
-        )
+        # Connect value changed signal
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
 
-    def on_assign_type_changed(self):
-        """Handle changes to the assign preset_type combo box."""
-        logging.info(f"Assign preset_type changed to {self.assign_type_combo.currentText()}")
-        if self.assign_type_combo.currentText() == "MULTI":
-            value = 0x00
+        # Store control reference
+        self.controls[param] = slider
+        return slider
+
+    def _create_parameter_combo_box(
+        self,
+        param: Union[DrumParameter, DrumCommonParameter],
+        label: str = None,
+        options: list = None,
+        values: list = None,
+    ) -> ComboBox:
+        """Create address combo box for address parameter with proper display conversion"""
+
+        combo_box = ComboBox(label, options, values)
+
+        # Connect value changed signal
+        combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+
+        # Store control reference
+        self.controls[param] = combo_box
+        return combo_box
+
+    def _create_parameter_spin_box(
+        self, param: Union[DrumParameter, DrumCommonParameter], label: str = None
+    ) -> SpinBox:
+        """Create address spin box for address parameter with proper display conversion"""
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
         else:
-            value = 0x01
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            part=DRUM_KIT_AREA,
-            group=0x2E,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=DrumParameter.ASSIGN_TYPE.value[0],
-            value=value,  # Make sure this value is being sent
-        )
+            display_min, display_max = param.min_val, param.max_val
+
+        spin_box = SpinBox(label, display_min, display_max)
+
+        # Connect value changed signal
+        spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+
+        # Store control reference
+        self.controls[param] = spin_box
+        return spin_box
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
@@ -424,7 +400,7 @@ class DrumEditor(BaseEditor):
             logging.error(f"Invalid partial index: {index}")
 
     def update_instrument_image(self):
-        """ update  """
+        """update"""
 
         def load_and_set_image(image_path):
             """Helper function to load and set the image on the label."""
@@ -444,7 +420,7 @@ class DrumEditor(BaseEditor):
         # Try to extract drum kit name from the selected text
         image_loaded = False
         if drum_kit_matches := re.search(
-                r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
+            r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
         ):
             selected_kit_name = (
                 drum_kit_matches.group(2).lower().replace("&", "_").split("_")[0]
@@ -465,17 +441,22 @@ class DrumEditor(BaseEditor):
             "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
-            "channel": self.midi_channel
+            "channel": self.midi_channel,
         }
         if not self.preset_handler:
-            self.preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DRUMS, preset_type=PresetType.DRUMS)
+            self.preset_handler = PresetHandler(
+                self.midi_helper,
+                DRUM_PRESETS_ENUMERATED,
+                channel=MIDI_CHANNEL_DRUMS,
+                preset_type=PresetType.DRUMS,
+            )
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
-        failures, successes = [], []
+        # failures, successes = [], []
 
         def _parse_sysex_json(json_data):
             """Parse JSON safely and log changes."""
@@ -494,7 +475,7 @@ class DrumEditor(BaseEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if synth_tone == "TONE_COMMON":
-            logging.info(f"\nTone common")
+            logging.info("\nTone common")
             self._update_common_sliders_from_sysex(json_sysex_data)
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
@@ -524,11 +505,9 @@ class DrumEditor(BaseEditor):
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
-            return {
-                "PARTIAL_1": 1,
-                "PARTIAL_2": 2,
-                "PARTIAL_3": 3
-            }.get(synth_tone, None)
+            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
+                synth_tone, None
+            )
 
         def _update_common_slider(param, value):
             """Helper function to update sliders safely."""
@@ -548,11 +527,15 @@ class DrumEditor(BaseEditor):
         def _update_common_switch(param, value):
             """Helper function to update checkbox safely."""
             logging.info(f"checkbox param: {param} {value}")
-            partial_switch_map = {"PARTIAL1_SWITCH": 1, "PARTIAL2_SWITCH": 2, "PARTIAL3_SWITCH": 3}
+            partial_switch_map = {
+                "PARTIAL1_SWITCH": 1,
+                "PARTIAL2_SWITCH": 2,
+                "PARTIAL3_SWITCH": 3,
+            }
             partial_number = partial_switch_map.get(param_name)
             check_box = self.partials_panel.switches.get(partial_number)
             logging.info(f"check_box: {check_box}")
-            if check_box: # and isinstance(check_box, QCheckBox):
+            if check_box:  # and isinstance(check_box, QCheckBox):
                 check_box.blockSignals(True)
                 check_box.setState(bool(value), False)
                 check_box.blockSignals(False)
@@ -569,23 +552,51 @@ class DrumEditor(BaseEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
+                "SysEx data does not belong to DRUM_KIT_AREA. \nSkipping update."
+            )
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
 
-        common_ignored_keys = {'JD_XI_ID', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
+        common_ignored_keys = {
+            "JD_XI_ID",
+            "ADDRESS",
+            "TEMPORARY_AREA",
+            "SYNTH_TONE",
+            "TONE_NAME",
+            "TONE_NAME_1",
+            "TONE_NAME_2",
+            "TONE_NAME_3",
+            "TONE_NAME_4",
+            "TONE_NAME_5",
+            "TONE_NAME_6",
+            "TONE_NAME_7",
+            "TONE_NAME_8",
+            "TONE_NAME_9",
+            "TONE_NAME_10",
+            "TONE_NAME_11",
+            "TONE_NAME_12",
+        }
+        sysex_data = {
+            k: v for k, v in sysex_data.items() if k not in common_ignored_keys
+        }
 
         if synth_tone == "TONE_COMMON":
-            logging.info(f"\nTone common")
+            logging.info("\nTone common")
             for param_name, param_value in sysex_data.items():
                 param = DrumCommonParameter.get_by_name(param_name)
                 logging.info(f"Tone common: param_name: {param} {param_value}")
                 try:
                     if param:
-                        if param_name in ['PARTIAL1_SWITCH', 'PARTIAL1_SELECT', 'PARTIAL2_SWITCH', 'PARTIAL2_SELECT', 'PARTIAL3_SWITCH', 'PARTIAL3_SELECT']:
+                        if param_name in [
+                            "PARTIAL1_SWITCH",
+                            "PARTIAL1_SELECT",
+                            "PARTIAL2_SWITCH",
+                            "PARTIAL2_SELECT",
+                            "PARTIAL3_SWITCH",
+                            "PARTIAL3_SELECT",
+                        ]:
                             _update_common_switch(param, param_value)
                         else:
                             _update_common_slider(param, param_value)
@@ -612,7 +623,9 @@ class DrumEditor(BaseEditor):
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
-                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                success_rate = (
+                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                )
                 logging.info(f"successes: \t{successes}")
                 logging.info(f"failures: \t{failures}")
                 logging.info(f"success rate: \t{success_rate:.1f}%")
@@ -637,7 +650,7 @@ class DrumEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            sysex_data.get("TEMPORARY_AREA") in self.partial_mapping.keys()
+            return sysex_data.get("TEMPORARY_AREA") in self.partial_mapping
 
         def _get_partial_number(tone):
             """Retrieve partial number from synth tone mapping."""
@@ -646,19 +659,21 @@ class DrumEditor(BaseEditor):
                     return value
             return None
 
-        #if not _is_valid_sysex_area(sysex_data):
-        #    logging.warning(
-        #        "SysEx data does not belong to drum area; skipping update.")
-        #    return
+        if not _is_valid_sysex_area(sysex_data):
+            logging.warning("SysEx data does not belong to drum area; skipping update.")
+            return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(synth_tone)
 
-        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
+        ignored_keys = {
+            "JD_XI_ID",
+            "ADDRESS",
+            "TEMPORARY_AREA",
+            "TONE_NAME",
+            "SYNTH_TONE",
+        }
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-
-        # osc_waveform_map = {wave.value: wave for wave in OscWave}
-
         failures, successes = [], []
 
         def _update_slider(param, value):
@@ -666,7 +681,9 @@ class DrumEditor(BaseEditor):
             slider = self.partial_editors[partial_no].controls.get(param)
             if slider:
                 slider_value = param.convert_from_midi(value)
-                logging.info(f"midi value {value} converted to slider value {slider_value}")
+                logging.info(
+                    f"midi value {value} converted to slider value {slider_value}"
+                )
                 slider.blockSignals(True)
                 slider.setValue(slider_value)
                 slider.blockSignals(False)
@@ -674,18 +691,8 @@ class DrumEditor(BaseEditor):
                 if debug_param_updates:
                     logging.info(f"Updated: {param.name:50} {value}")
 
-        def _update_waveform(param_value):
-            """Helper function to update waveform selection UI."""
-            waveform = osc_waveform_map.get(param_value)
-            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
-                button = self.partial_editors[partial_no].wave_buttons[waveform]
-                button.setChecked(True)
-                self.partial_editors[partial_no]._on_waveform_selected(waveform)
-                logging.debug(f"Updated waveform button for {waveform}")
-
         for param_name, param_value in sysex_data.items():
             param = DrumParameter.get_by_name(param_name)
-
             if param:
                 _update_slider(param, param_value)
             else:
@@ -694,7 +701,9 @@ class DrumEditor(BaseEditor):
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
-                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                success_rate = (
+                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                )
                 logging.info(f"Successes: {successes}")
                 logging.info(f"Failures: {failures}")
                 logging.info(f"Success Rate: {success_rate:.1f}%")
@@ -713,40 +722,51 @@ class DrumEditor(BaseEditor):
                 changes.append((key, previous_value, current_value))
 
         changes = [
-            change for change in changes if change[0] not in ["JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+            change
+            for change in changes
+            if change[0] not in ["JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
         ]
 
         if changes:
             logging.info("Changes detected:")
             for key, prev, curr in changes:
-                logging.info(f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}")
+                logging.info(
+                    f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
+                )
         else:
             logging.info("No changes detected.")
 
-    def on_kit_level_changed(self, value):
-        """Handle kit level slider value change"""
-        # Use the helper function to send the SysEx message
-        # self.send_sysex_message(0x0C, value)
-        group = 0x00
-        logging.info(f"kit level group: {group}")
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=group,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=DrumCommonParameter.KIT_LEVEL.value[0],
-            value=value,  # Make sure this value is being sent
-        )
+    def _on_parameter_changed(self, param: DrumParameter, display_value: int):
+        """Handle parameter value changes from UI controls"""
+        try:
+            # Convert display value to MIDI value if needed
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(display_value)
+            else:
+                midi_value = param.validate_value(display_value)
+            logging.info(
+                f"parameter: {param} display {display_value} midi value {midi_value}"
+            )
+            if param in [
+                DrumCommonParameter.KIT_LEVEL,
+            ]:
+                group = 0x00
+            else:
+                group = self.partial_address
+            logging.info(f"parameter param {param} value {display_value} sent")
+            try:
+                # Ensure value is included in the MIDI message
+                return self.midi_helper.send_parameter(
+                    area=TEMPORARY_TONE_AREA,
+                    part=DRUM_KIT_AREA,
+                    group=group,
+                    param=param.address,
+                    value=display_value,  # Make sure this value is being sent
+                )
+            except Exception as ex:
+                logging.error(f"MIDI error setting {param}: {str(ex)}")
+                return False
 
-    def on_pitch_bend_range_changed(self, value):
-        """Handle pitch bend range value change"""
-        # Use the helper function to send the SysEx message
-        # self.send_sysex_message(0x2E, value)
-        group = DrumParameter.get_address_for_partial(36)
-        logging.info(f"pitch bend group: {group}")
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_TONE_AREA,
-            part=DRUM_KIT_AREA,
-            group=group,  # 00 0C | 0aaa aaaa | Kit Level (0 - 127)
-            param=DrumParameter.PARTIAL_PITCH_BEND_RANGE.value[0],
-            value=value,  # Make sure this value is being sent
-        )
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
+            return False
