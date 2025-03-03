@@ -71,12 +71,6 @@ class PresetHandler(QObject):
                 + data
                 + bytes([checksum, 0xF7])
             )
-
-            # Enforce 2 ms gap since last parameter change message
-            gap = time.time() - self.midi_last
-            if gap < 0.002:
-                time.sleep(0.002 - gap)
-
             # Send the MIDI data
             self.midi_out_device.send_message(sysex)
             self.midi_last = time.time()
