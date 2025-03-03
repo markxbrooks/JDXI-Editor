@@ -25,7 +25,7 @@ Example Usage
     values = [10, 50, 100]
 
     combo = ComboBox("Select Level:", options, values)
-    combo.valueChanged.connect(lambda v: print(f"Selected Value: {v}"))
+    combo.valueChanged.connect(lambda v: logging.info(f"Selected Value: {v}"))
 
     combo.show()
     app.exec()
@@ -46,7 +46,7 @@ Methods
 
 """
 
-
+import logging
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Signal, Slot
 
@@ -97,10 +97,10 @@ class ComboBox(QWidget):
         self.combo_box.currentTextChanged.connect(self.text_changed)
 
     def index_changed(self, index):  # index is an int starting from 0
-        print(index)
+        logging.info(f"index changed to: {index}")
 
     def text_changed(self, text):  # text is a str
-        print(text)
+        logging.info(f"text changed to {text}")
 
     @Slot(int)
     def _on_value_changed(self, index: int):
@@ -108,9 +108,10 @@ class ComboBox(QWidget):
         if self.values:
             if 0 <= index < len(self.values):
                 self.valueChanged.emit(self.values[index])
+                logging.info(f"_on_value_changed emitting {self.values[index]}")
         else:
-            self.valueChanged.emit(index)
-            print(f"_on_value_changed emitting {index}")
+            self.valueChanged.emit(int(index))
+            logging.info(f"_on_value_changed emitting {index}")
 
     def setValue(self, value: int):
         """Set combo box index based on the value."""

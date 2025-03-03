@@ -276,6 +276,7 @@ def get_address_for_partial_name(partial_name: str) -> int:
     address = address_map.get(partial_name, 0x00)  # Default to 0x00 for common area
     return address
 
+
 class DrumParameter(SynthParameter):
     """Drum kit parameters with their addresses and value ranges"""
 
@@ -375,7 +376,7 @@ class DrumParameter(SynthParameter):
     WMT1_WAVE_FXM_SWITCH = (0x30, 0, 1, 0, 1)  # OFF, ON
 
     # WMT1 Wave FXM Color
-    WMT1_WAVE_FXM_COLOR = (0x31, 0, 3, 0, 3)  # 1 - 4
+    WMT1_WAVE_FXM_COLOR = (0x31, 0, 3, 1, 4)  # 1 - 4
 
     # WMT1 Wave FXM Depth
     WMT1_WAVE_FXM_DEPTH = (0x32, 0, 16, 0, 16)
@@ -435,7 +436,7 @@ class DrumParameter(SynthParameter):
     WMT2_WAVE_FXM_SWITCH = (0x4D, 0, 1, 0, 1)  # OFF, ON
 
     # WMT2 Wave FXM Color
-    WMT2_WAVE_FXM_COLOR = (0x4E, 0, 3, 0, 3)  # 1 - 4
+    WMT2_WAVE_FXM_COLOR = (0x4E, 0, 3, 1, 4)  # 1 - 4
 
     # WMT2 Wave FXM Depth
     WMT2_WAVE_FXM_DEPTH = (0x4F, 0, 16, 0, 16)

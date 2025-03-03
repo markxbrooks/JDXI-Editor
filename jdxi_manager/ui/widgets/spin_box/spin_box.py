@@ -89,12 +89,12 @@ class SpinBox(QWidget):
         self.setVisible(True)
 
     @Slot(int)
-    def _on_value_changed(self, index: int):
-        """Emit the corresponding value when the selected index changes."""
-        self.valueChanged.emit(index)
+    def _on_value_changed(self, value: int):
+        """Emit the corresponding value when the selected value changes."""
+        self.valueChanged.emit(value)
 
     def setValue(self, value: int):
-        """Set combo box index based on the value."""
+        """Set spin box index based on the value."""
         self.spin_box.setValue(value)
 
     def value(self) -> int:
@@ -103,12 +103,12 @@ class SpinBox(QWidget):
         return value
 
     def setEnabled(self, enabled: bool):
-        """Enable or disable the combo box and label."""
+        """Enable or disable the sipn box and label."""
         self.spin_box.setEnabled(enabled)
         self.label_widget.setEnabled(enabled)
 
     def setVisible(self, visible: bool):
-        """Show or hide the combo box and label."""
+        """Show or hide the spin box and label."""
         self.spin_box.setVisible(visible)
         self.label_widget.setVisible(visible)
 
