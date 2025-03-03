@@ -910,14 +910,7 @@ class DrumCommonParameter(SynthParameter):
     def display_name(self) -> str:
         """Get display name for the parameter"""
         return {
-            self.RING_SWITCH: "Ring Mod",
-            self.UNISON_SWITCH: "Unison",
-            self.PORTAMENTO_MODE: "Porto Mode",
-            self.LEGATO_SWITCH: "Legato",
-            self.ANALOG_FEEL: "Analog Feel",
-            self.WAVE_SHAPE: "Wave Shape",
-            self.TONE_CATEGORY: "Category",
-            self.UNISON_SIZE: "Uni Size",
+            self.KIT_LEVEL: "Kit level",
         }.get(self, self.name.replace("_", " ").title())
 
     def get_address_for_partial(self, partial_num: int = 0) -> int:
@@ -960,11 +953,6 @@ class DrumCommonParameter(SynthParameter):
         """Validate and convert parameter value"""
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
-
-        # Special handling for ring switch
-        if self == self.RING_SWITCH and value == 1:
-            # Skip over the "---" value
-            value = 2
 
         # Regular range check
         if value < self.min_val or value > self.max_val:
