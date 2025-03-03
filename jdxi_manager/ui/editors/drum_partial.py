@@ -152,8 +152,11 @@ class DrumPartialEditor(QWidget):
         tva_group.setLayout(tva_layout)
 
         # Add TVA parameters
-        tva_level_velocity_curve_spin = QSpinBox()
-        tva_level_velocity_curve_spin.setRange(0, 7)
+        tva_level_velocity_curve_spin = self._create_parameter_combo_box(DrumParameter.TVA_LEVEL_VELOCITY_CURVE,
+                                                                         "Level Velocity Curve",
+                                                                         ["FIXED","1", "2","3","4", "5", "6", "7"],
+                                                                         [0, 1, 2, 3, 4, 5, 6, 7])
+
         tva_layout.addRow("Level Velocity Curve", tva_level_velocity_curve_spin)
 
         tva_level_velocity_sens_slider = self._create_parameter_slider(
@@ -161,14 +164,13 @@ class DrumPartialEditor(QWidget):
         )
         tva_layout.addRow(tva_level_velocity_sens_slider)
 
-        tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
-        )
+        tva_env_time1_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS,
+                                                                           "Env Time 1 Velocity Sens")
         tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
-        tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
-        )
+        tva_env_time4_velocity_sens_slider = self._create_parameter_slider(DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS,
+                                                                           "Env Time 4 Velocity Sens")
+
         tva_layout.addRow(tva_env_time4_velocity_sens_slider)
 
         tva_env_time1_slider = self._create_parameter_slider(
@@ -807,12 +809,9 @@ class DrumPartialEditor(QWidget):
         tvf_group.setLayout(tvf_layout)
 
         # Add TVF parameters
-        tvf_filter_type_combo = QComboBox()
-        tvf_filter_type_combo.addItems(
-            ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"]
-        )
-        tvf_filter_type_combo.currentIndexChanged.connect(
-            self._on_tvf_filter_type_combo_changed
+        tvf_filter_type_combo = self._create_parameter_combo_box(DrumParameter.TVF_FILTER_TYPE, "Filter Type",
+            ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"],
+            [0, 1, 2, 3, 4]
         )
         tvf_layout.addRow("Filter Type", tvf_filter_type_combo)
 
@@ -821,11 +820,10 @@ class DrumPartialEditor(QWidget):
         )
         tvf_layout.addRow(tvf_cutoff_frequency_slider)
 
-        tvf_cutoff_velocity_curve_spin = QSpinBox()
-        tvf_cutoff_velocity_curve_spin.setRange(0, 7)
-        tvf_cutoff_velocity_curve_spin.valueChanged.connect(
-            self._on_tvf_cutoff_velocity_curve_spin_changed
-        )
+        tvf_cutoff_velocity_curve_spin = self._create_parameter_combo_box(DrumParameter.TVF_CUTOFF_VELOCITY_CURVE,
+                                                                          "Cutoff Velocity Curve",
+                                                                          ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
+                                                                          [0, 1, 2, 3, 4, 5, 6, 7])
         tvf_layout.addRow("Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin)
 
         tvf_env_depth_slider = self._create_parameter_slider(
@@ -833,11 +831,10 @@ class DrumPartialEditor(QWidget):
         )
         tvf_layout.addRow(tvf_env_depth_slider)
 
-        tvf_env_velocity_curve_type_spin = QSpinBox()
-        tvf_env_velocity_curve_type_spin.setRange(0, 7)
-        tvf_env_velocity_curve_type_spin.valueChanged.connect(
-            self._on_tvf_env_velocity_curve_type_spin_changed
-        )
+        tvf_env_velocity_curve_type_spin = self._create_parameter_combo_box(DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE,
+                                                                            "Env Velocity Curve Type",
+                                                                            ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
+                                                                          [0, 1, 2, 3, 4, 5, 6, 7])
         tvf_layout.addRow(
             "Env Velocity Curve Type", tvf_env_velocity_curve_type_spin
         )
@@ -989,214 +986,10 @@ class DrumPartialEditor(QWidget):
         return self.midi_helper.send_parameter(
             area=TEMPORARY_DRUM_KIT_AREA,
             part=DRUM_KIT_AREA,
-            group=group,
+            group=self.partial_address,
             param=address,
             value=value,  # Make sure this value is being sent
         )
-
-    def _on_tva_level_velocity_sens_slider_changed(self, value: int):
-        """Handle TVA Level Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_LEVEL_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVA Level Velocity Sens changed to {value}")
-
-    def _on_tva_env_time1_velocity_sens_slider_changed(self, value: int):
-        """Handle TVA Env Time 1 Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 1 Velocity Sens changed to {value}")
-
-    def _on_tva_env_time4_velocity_sens_slider_changed(self, value: int):
-        """Handle TVA Env Time 4 Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 4 Velocity Sens changed to {value}")
-
-    def _on_tva_env_time1_slider_changed(self, value: int):
-        """Handle TVA Env Time 1 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_1.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 1 changed to {value}")
-
-    def _on_tva_env_time2_slider_changed(self, value: int):
-        """Handle TVA Env Time 2 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_2.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 2 changed to {value}")
-
-    def _on_tva_env_time3_slider_changed(self, value: int):
-        """Handle TVA Env Time 3 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_TIME_3.value[0],
-                value=value,
-            )
-            print(f"TVA Env Time 3 changed to {value}")
-
-    def _on_tva_env_level1_slider_changed(self, value: int):
-        """Handle TVA Env Level 1 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_LEVEL_1.value[0],
-                value=value,
-            )
-            print(f"TVA Env Level 1 changed to {value}")
-
-    def _on_tva_env_level2_slider_changed(self, value: int):
-        """Handle TVA Env Level 2 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_LEVEL_2.value[0],
-                value=value,
-            )
-            print(f"TVA Env Level 2 changed to {value}")
-
-    def _on_tva_env_level3_slider_changed(self, value: int):
-        """Handle TVA Env Level 3 change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVA_ENV_LEVEL_3.value[0],
-                value=value,
-            )
-            print(f"TVA Env Level 3 changed to {value}")
-
-    def _on_tvf_filter_type_combo_changed(self, index: int):
-        """Handle TVF Filter Type change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_FILTER_TYPE.value[0],
-                value=index,
-            )
-            print(f"TVF Filter Type changed to {index}")
-
-    def _on_tvf_cutoff_frequency_slider_changed(self, value: int):
-        """Handle TVF Cutoff Frequency change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_CUTOFF_FREQUENCY.value[0],
-                value=value,
-            )
-            print(f"TVF Cutoff Frequency changed to {value}")
-
-    def _on_tvf_cutoff_velocity_curve_spin_changed(self, value: int):
-        """Handle TVF Cutoff Velocity Curve change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_CUTOFF_VELOCITY_CURVE.value[0],
-                value=value,
-            )
-            print(f"TVF Cutoff Velocity Curve changed to {value}")
-
-    def _on_tvf_cutoff_velocity_sens_slider_changed(self, value: int):
-        """Handle TVF Cutoff Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_CUTOFF_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVF Cutoff Velocity Sens changed to {value}")
-
-    def _on_tvf_env_depth_slider_changed(self, value: int):
-        """Handle TVF Env Depth change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_DEPTH.value[0],
-                value=value,
-            )
-            print(f"TVF Env Depth changed to {value}")
-
-    def _on_tvf_env_velocity_curve_type_spin_changed(self, value: int):
-        """Handle TVF Env Velocity Curve Type change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE.value[0],
-                value=value,
-            )
-            print(f"TVF Env Velocity Curve Type changed to {value}")
-
-    def _on_tvf_env_velocity_sens_slider_changed(self, value: int):
-        """Handle TVF Env Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVF Env Velocity Sens changed to {value}")
-
-    def _on_tvf_env_time1_velocity_sens_slider_changed(self, value: int):
-        """Handle TVF Env Time 1 Velocity Sens change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=DrumParameter.DRUM_PART.value,
-                group=DrumParameter.DRUM_GROUP.value,
-                param=DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS.value[0],
-                value=value,
-            )
-            print(f"TVF Env Time 1 Velocity Sens changed to {value}")
 
     def _create_parameter_slider(
             self, param: DrumParameter, label: str = None
@@ -1377,72 +1170,6 @@ class DrumPartialEditor(QWidget):
             part=DRUM_KIT_AREA,
             group=self.partial_address,
             param=DrumParameter.PAN.value[0],
-            value=value,
-            size=1
-        )
-
-    def _on_cutoff_changed(self, value: int):
-        """Handle Cutoff parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.TVF_CUTOFF.value[0],
-            value=value,
-            size=1
-        )
-
-    def _on_resonance_changed(self, value: int):
-        """Handle Resonance parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.TVF_RESONANCE.value[0],
-            value=value,
-            size=1
-        )
-
-    def _on_pitch_env_attack_changed(self, value: int):
-        """Handle Pitch Envelope Attack parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.PITCH_ENV_ATTACK.value[0],
-            value=value,
-            size=1
-        )
-
-    def _on_pitch_env_decay_changed(self, value: int):
-        """Handle Pitch Envelope Decay parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.PITCH_ENV_DECAY.value[0],
-            value=value,
-            size=1
-        )
-
-    def _on_tva_attack_changed(self, value: int):
-        """Handle TVA Attack parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.TVA_ATTACK.value[0],
-            value=value,
-            size=1
-        )
-
-    def _on_tva_decay_changed(self, value: int):
-        """Handle TVA Decay parameter change"""
-        return self.midi_helper.send_parameter(
-            area=TEMPORARY_DRUM_KIT_AREA,
-            part=DRUM_KIT_AREA,
-            group=self.partial_address,
-            param=DrumParameter.TVA_DECAY.value[0],
             value=value,
             size=1
         )
