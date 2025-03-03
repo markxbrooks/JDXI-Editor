@@ -247,106 +247,119 @@ class DrumPartialEditor(QWidget):
         return wmt_group
 
     def _create_wmt1_layout(self):
-        # Add controls to WMT1 tab
         wmt1_layout = QFormLayout()
+        wmt1_wave_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_SWITCH, "WMT1 Wave Switch",
+                                                                  ["OFF", "ON"], [0, 1])
 
-        wmt1_wave_switch_combo = QComboBox()
-        wmt1_wave_switch_combo.addItems(["OFF", "ON"])
         wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
-        wmt1_wave_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_switch_changed)
 
-        wmt1_wave_number_l_combo = QComboBox()
-        wmt1_wave_number_l_combo.addItems(rm_waves)
-        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_combo)
-        wmt1_wave_number_l_combo.currentIndexChanged.connect(self._on_wmt1_wave_number_l_changed)
+        wmt1_wave_number_l_spin = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_NUMBER_L,
+                                                                   "WMT1 Wave Number L/Mono",
+                                                                   options=rm_waves,
+                                                                   values=list(range(1, 456)))
 
-        wmt1_wave_number_r_combo = QComboBox()
-        wmt1_wave_number_r_combo.addItems(rm_waves)
-        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_combo)
-        wmt1_wave_number_r_combo.currentIndexChanged.connect(self._on_wmt1_wave_number_r_changed)
+        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_spin)
 
-        wmt1_wave_gain_combo = QComboBox()
-        wmt1_wave_gain_combo.addItems(["-6", "0", "+6", "+12"])
+        wmt1_wave_number_r_spin = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_NUMBER_R,
+                                                                   "WMT1 Wave Number R",
+                                                                   options=rm_waves,
+                                                                   values=list(range(1, 456)))
+
+        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_spin)
+
+        wmt1_wave_gain_combo = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_GAIN,
+                                                                "Wave Gain",
+                                                                options=["-6", "0", "6", "12"],
+                                                                values=[0, 1, 2, 3]
+                                                                )
+
         wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_combo)
-        wmt1_wave_gain_combo.currentIndexChanged.connect(self._on_wmt1_wave_gain_changed)
 
-        wmt1_wave_fxm_switch_combo = QComboBox()
-        wmt1_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt1_wave_fxm_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_GAIN,
+                                                                      "Wave FXM Switch",
+                                                                      options=["OFF", "ON"],
+                                                                      values=[0, 1]
+                                                                      )
         wmt1_layout.addRow("WMT1 Wave FXM Switch", wmt1_wave_fxm_switch_combo)
-        wmt1_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_fxm_switch_changed)
 
-        wmt1_wave_fxm_color_spin = QSpinBox()
-        wmt1_wave_fxm_color_spin.setRange(0, 3)
-        wmt1_layout.addRow("WMT1 Wave FXM Color", wmt1_wave_fxm_color_spin)
-        wmt1_wave_fxm_color_spin.valueChanged.connect(self._on_wmt1_wave_fxm_color_changed)
+        wmt1_wave_fxm_color_slider = self._create_parameter_slider(DrumParameter.WMT1_WAVE_FXM_COLOR,
+                                                                   "Wave FXM Color",
+                                                                   )
+        wmt1_layout.addRow(wmt1_wave_fxm_color_slider)
 
-        wmt1_wave_fxm_depth_spin = QSpinBox()
-        wmt1_wave_fxm_depth_spin.setRange(0, 16)
-        wmt1_layout.addRow("WMT1 Wave FXM Depth", wmt1_wave_fxm_depth_spin)
+        wmt1_wave_fxm_depth_slider = self._create_parameter_slider(DrumParameter.WMT1_WAVE_FXM_DEPTH,
+                                                                   "Wave FXM Depth",
+                                                                   )
+        wmt1_layout.addRow(wmt1_wave_fxm_depth_slider)
 
-        wmt1_wave_tempo_sync_combo = QComboBox()
-        wmt1_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt1_layout.addRow("WMT1 Wave Tempo Sync", wmt1_wave_tempo_sync_combo)
-        wmt1_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt1_wave_tempo_sync_changed)
+        wmt1_wave_tempo_sync_slider = self._create_parameter_slider(DrumParameter.WMT1_WAVE_TEMPO_SYNC,
+                                                                    "Wave Tempo Sync"
+                                                                    )
+        wmt1_layout.addRow(wmt1_wave_tempo_sync_slider)
 
-        wmt1_wave_coarse_tune_spin = QSpinBox()
-        wmt1_wave_coarse_tune_spin.setRange(16, 112)
-        wmt1_layout.addRow("WMT1 Wave Coarse Tune", wmt1_wave_coarse_tune_spin)
-        wmt1_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt1_wave_coarse_tune_changed)
+        wmt1_wave_coarse_tune_slider = self._create_parameter_slider(DrumParameter.WMT1_WAVE_COARSE_TUNE,
+                                                                     "Wave Coarse Tune",
+                                                                     )
+        wmt1_layout.addRow(wmt1_wave_coarse_tune_slider)
 
-        wmt1_wave_fine_tune_spin = QSpinBox()
-        wmt1_wave_fine_tune_spin.setRange(14, 114)
-        wmt1_layout.addRow("WMT1 Wave Fine Tune", wmt1_wave_fine_tune_spin)
-        wmt1_wave_fine_tune_spin.valueChanged.connect(self._on_wmt1_wave_fine_tune_changed)
+        wmt1_wave_fine_tune_slider = self._create_parameter_slider(DrumParameter.WMT1_WAVE_FINE_TUNE,
+                                                                   "Wave Fine Tune"
+                                                                   )
+        wmt1_layout.addRow(wmt1_wave_fine_tune_slider)
 
-        wmt1_wave_pan_spin = QSpinBox()
-        wmt1_wave_pan_spin.setRange(0, 127)
-        wmt1_layout.addRow("WMT1 Wave Pan", wmt1_wave_pan_spin)
-        wmt1_wave_pan_spin.valueChanged.connect(self._on_wmt1_wave_pan_changed)
+        wmt1_wave_pan = self._create_parameter_slider(DrumParameter.WMT1_WAVE_PAN,
+                                                      "Wave Pan",
+                                                      )
+        wmt1_layout.addRow(wmt1_wave_pan)
 
-        wmt1_wave_random_pan_switch_combo = QComboBox()
-        wmt1_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt1_wave_random_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH,
+                                                                       "Wave Random Pan Switch",
+                                                                       ["OFF", "ON"],
+                                                                       [0, 1]
+                                                                       )
+        wmt1_layout.addRow("Wave Random Pan", wmt1_wave_random_pan_switch)
+
+        wmt1_wave_alternate_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH,
+                                                                          "Wave Alternate Pan Switch",
+                                                                          ["OFF", "ON", "REVERSE"],
+                                                                          [0, 1, 2]
+                                                                          )
+        wmt1_layout.addRow("Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch)
+
+        wmt1_wave_level_slider = self._create_parameter_slider(DrumParameter.WMT1_WAVE_LEVEL,
+                                                               "Wave Level",
+                                                               )
+        wmt1_layout.addRow(wmt1_wave_level_slider)
+
+        wmt1_velocity_range_lower_slider = self._create_parameter_slider(DrumParameter.WMT1_VELOCITY_RANGE_LOWER,
+                                                                         "Velocity Range Lower",
+                                                                         )
         wmt1_layout.addRow(
-            "WMT1 Wave Random Pan Switch", wmt1_wave_random_pan_switch_combo
+            wmt1_velocity_range_lower_slider
         )
-        wmt1_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt1_wave_random_pan_switch_changed)
 
-        wmt1_wave_alternate_pan_switch_combo = QComboBox()
-        wmt1_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+        wmt1_velocity_range_upper_slider = self._create_parameter_slider(DrumParameter.WMT1_VELOCITY_RANGE_UPPER,
+                                                                         "Velocity Range Upper",
+                                                                         )
         wmt1_layout.addRow(
-            "WMT1 Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch_combo
+            wmt1_velocity_range_upper_slider
         )
-        wmt1_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt1_wave_alternate_pan_switch_changed)
 
-        wmt1_wave_level_spin = QSpinBox()
-        wmt1_wave_level_spin.setRange(0, 127)
-        wmt1_layout.addRow("WMT1 Wave Level", wmt1_wave_level_spin)
-        wmt1_wave_level_spin.valueChanged.connect(self._on_wmt1_wave_level_changed)
-
-        wmt1_velocity_range_lower_spin = QSpinBox()
-        wmt1_velocity_range_lower_spin.setRange(1, 127)
-        wmt1_layout.addRow("WMT1 Velocity Range Lower", wmt1_velocity_range_lower_spin)
-        wmt1_velocity_range_lower_spin.valueChanged.connect(self._on_wmt1_velocity_range_lower_changed)
-
-        wmt1_velocity_range_upper_spin = QSpinBox()
-        wmt1_velocity_range_upper_spin.setRange(1, 127)
-        wmt1_layout.addRow("WMT1 Velocity Range Upper", wmt1_velocity_range_upper_spin)
-        wmt1_velocity_range_upper_spin.valueChanged.connect(self._on_wmt1_velocity_range_upper_changed)
-
-        wmt1_velocity_fade_width_lower_spin = QSpinBox()
-        wmt1_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt1_velocity_fade_width_lower_slider = self._create_parameter_slider(
+            DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER,
+            "Velocity Fade Width Lower",
+        )
         wmt1_layout.addRow(
-            "WMT1 Velocity Fade Width Lower", wmt1_velocity_fade_width_lower_spin
+            wmt1_velocity_fade_width_lower_slider
         )
-        wmt1_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt1_velocity_fade_width_lower_changed)
 
-        wmt1_velocity_fade_width_upper_spin = QSpinBox()
-        wmt1_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt1_layout.addRow(
-            "WMT1 Velocity Fade Width Upper", wmt1_velocity_fade_width_upper_spin
+        wmt1_velocity_fade_width_upper_slider = self._create_parameter_slider(
+            DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER,
+            "Velocity Fade Width Upper",
         )
-        wmt1_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt1_velocity_fade_width_upper_changed)
+        wmt1_layout.addRow(
+            wmt1_velocity_fade_width_upper_slider
+        )
         return wmt1_layout
 
     def _create_wmt2_layout(self):
@@ -385,313 +398,324 @@ class DrumPartialEditor(QWidget):
                                                                       )
         wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
 
-        wmt2_wave_fxm_color_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_FXM_COLOR,
+        wmt2_wave_fxm_color_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_FXM_COLOR,
                                                                    "Wave FXM Color",
-                                                                   options=["OFF", "ON"],
-                                                                   values=[0, 1]
                                                                    )
-        wmt2_layout.addRow("WMT2 Wave FXM Color", wmt2_wave_fxm_color_combo)
+        wmt2_layout.addRow(wmt2_wave_fxm_color_slider)
 
-        wmt2_wave_fxm_depth_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_FXM_DEPTH,
+        wmt2_wave_fxm_depth_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_FXM_DEPTH,
                                                                    "Wave FXM Depth",
-                                                                   options=["OFF", "ON"],
-                                                                   values=[0, 1]
                                                                    )
-        wmt2_layout.addRow("WMT2 Wave FXM Depth", wmt2_wave_fxm_depth_combo)
+        wmt2_layout.addRow(wmt2_wave_fxm_depth_slider)
 
-        wmt2_wave_tempo_sync_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_TEMPO_SYNC,
-                                                                      "Wave Tempo Sync",
-                                                                      options=["OFF", "ON"],
-                                                                      values=[0, 1]
-                                                                      )
-        wmt2_layout.addRow("WMT2 Wave Tempo Sync", wmt2_wave_tempo_sync_combo)
+        wmt2_wave_tempo_sync_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_TEMPO_SYNC,
+                                                                    "Wave Tempo Sync"
+                                                                    )
+        wmt2_layout.addRow(wmt2_wave_tempo_sync_slider)
 
-        wmt2_wave_coarse_tune_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_COARSE_TUNE,
-                                                                      "Wave Coarse Tune",
-                                                                      options=["OFF", "ON"],
-                                                                      values=[0, 1]
-                                                                      )
-        wmt2_layout.addRow("WMT2 Wave Coarse Tune", wmt2_wave_coarse_tune_combo)
+        wmt2_wave_coarse_tune_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_COARSE_TUNE,
+                                                                     "Wave Coarse Tune",
+                                                                     )
+        wmt2_layout.addRow(wmt2_wave_coarse_tune_slider)
 
-        wmt2_wave_fine_tune_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_FINE_TUNE,
-                                                                      "Wave Fine Tune",
-                                                                      options=["OFF", "ON"],
-                                                                      values=[0, 1]
-                                                                      )
-        wmt2_layout.addRow("WMT2 Wave Fine Tune", wmt2_wave_fine_tune_combo)
+        wmt2_wave_fine_tune_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_FINE_TUNE,
+                                                                   "Wave Fine Tune"
+                                                                   )
+        wmt2_layout.addRow(wmt2_wave_fine_tune_slider)
 
         wmt2_wave_pan = self._create_parameter_slider(DrumParameter.WMT2_WAVE_PAN,
                                                       "Wave Pan",
                                                       )
         wmt2_layout.addRow(wmt2_wave_pan)
 
-        wmt2_wave_random_pan_switch = self._create_parameter_slider(DrumParameter.WMT2_WAVE_RANDOM_PAN_SWITCH,
-                                                                   "Wave Random Pan Switch",
-                                                                   )
-        wmt2_layout.addRow(wmt2_wave_random_pan_switch)
+        wmt2_wave_random_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_RANDOM_PAN_SWITCH,
+                                                                       "Wave Random Pan Switch",
+                                                                       ["OFF", "ON"],
+                                                                       [0, 1]
+                                                                       )
+        wmt2_layout.addRow("Wave Random Pan", wmt2_wave_random_pan_switch)
 
-        wmt2_wave_alternate_pan_switch = self._create_parameter_slider(DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
-                                                                      "Wave Alternate Pan Switch",
-                                                                      )
-        wmt2_layout.addRow(wmt2_wave_alternate_pan_switch)
+        wmt2_wave_alternate_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
+                                                                          "Wave Alternate Pan Switch",
+                                                                          ["OFF", "ON", "REVERSE"],
+                                                                          [0, 1, 2]
+                                                                          )
+        wmt2_layout.addRow("Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch)
 
         wmt2_wave_level_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_LEVEL,
-                                                              "Wave Level",
-                                                              )
+                                                               "Wave Level",
+                                                               )
         wmt2_layout.addRow(wmt2_wave_level_slider)
 
         wmt2_velocity_range_lower_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_RANGE_LOWER,
-                                                                          "Velocity Range Lower",
-                                                                          )
+                                                                         "Velocity Range Lower",
+                                                                         )
         wmt2_layout.addRow(
             wmt2_velocity_range_lower_slider
         )
 
         wmt2_velocity_range_upper_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_RANGE_UPPER,
-                                                                          "Velocity Range Upper",
-                                                                          )
+                                                                         "Velocity Range Upper",
+                                                                         )
         wmt2_layout.addRow(
             wmt2_velocity_range_upper_slider
         )
 
-        wmt2_velocity_fade_width_lower_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER,
-                                                                                "Velocity Fade Width Lower",
-                                                                                )
+        wmt2_velocity_fade_width_lower_slider = self._create_parameter_slider(
+            DrumParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER,
+            "Velocity Fade Width Lower",
+        )
         wmt2_layout.addRow(
             wmt2_velocity_fade_width_lower_slider
         )
 
-        wmt2_velocity_fade_width_upper_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER,
-                                                                                "Velocity Fade Width Upper",
-                                                                                )
+        wmt2_velocity_fade_width_upper_slider = self._create_parameter_slider(
+            DrumParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER,
+            "Velocity Fade Width Upper",
+        )
         wmt2_layout.addRow(
             wmt2_velocity_fade_width_upper_slider
         )
         return wmt2_layout
 
     def _create_wmt3_layout(self):
-        # Add controls to WMT3 tab
         wmt3_layout = QFormLayout()
+        wmt3_wave_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_SWITCH, "WMT3 Wave Switch",
+                                                                  ["OFF", "ON"], [0, 1])
 
-        wmt3_wave_switch_combo = QComboBox()
-        wmt3_wave_switch_combo.addItems(["OFF", "ON"])
         wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
-        wmt3_wave_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_switch_changed)
 
-        wmt3_wave_group_type_spin = QSpinBox()
-        wmt3_wave_group_type_spin.setRange(0, 0)
-        wmt3_layout.addRow("WMT3 Wave Group Type", wmt3_wave_group_type_spin)
-        wmt3_wave_group_type_spin.valueChanged.connect(self._on_wmt3_wave_group_type_changed)
+        wmt3_wave_number_l_spin = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_NUMBER_L,
+                                                                   "WMT3 Wave Number L/Mono",
+                                                                   options=rm_waves,
+                                                                   values=list(range(1, 456)))
 
-        wmt3_wave_group_id_spin = QSpinBox()
-        wmt3_wave_group_id_spin.setRange(0, 16384)
-        wmt3_layout.addRow("WMT3 Wave Group ID", wmt3_wave_group_id_spin)
-        wmt3_wave_group_id_spin.valueChanged.connect(self._on_wmt3_wave_group_id_changed)
-
-        wmt3_wave_number_l_spin = QSpinBox()
-        wmt3_wave_number_l_spin.setRange(0, 16384)
         wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
-        wmt3_wave_number_l_spin.valueChanged.connect(self._on_wmt3_wave_number_l_changed)
 
-        wmt3_wave_number_r_spin = QSpinBox()
-        wmt3_wave_number_r_spin.setRange(0, 16384)
+        wmt3_wave_number_r_spin = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_NUMBER_R,
+                                                                   "WMT3 Wave Number R",
+                                                                   options=rm_waves,
+                                                                   values=list(range(1, 456)))
+
         wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
-        wmt3_wave_number_r_spin.valueChanged.connect(self._on_wmt3_wave_number_r_changed)
 
-        wmt3_wave_gain_spin = QSpinBox()
-        wmt3_wave_gain_spin.setRange(0, 3)
-        wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_spin)
-        wmt3_wave_gain_spin.valueChanged.connect(self._on_wmt3_wave_gain_changed)
+        wmt3_wave_gain_combo = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_GAIN,
+                                                                "Wave Gain",
+                                                                options=["-6", "0", "6", "12"],
+                                                                values=[0, 1, 2, 3]
+                                                                )
 
-        wmt3_wave_fxm_switch_combo = QComboBox()
-        wmt3_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_combo)
+
+        wmt3_wave_fxm_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_GAIN,
+                                                                      "Wave FXM Switch",
+                                                                      options=["OFF", "ON"],
+                                                                      values=[0, 1]
+                                                                      )
         wmt3_layout.addRow("WMT3 Wave FXM Switch", wmt3_wave_fxm_switch_combo)
-        wmt3_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt3_wave_fxm_switch_changed)
 
-        wmt3_wave_fxm_color_spin = QSpinBox()
-        wmt3_wave_fxm_color_spin.setRange(0, 3)
-        wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_spin)
-        wmt3_wave_fxm_color_spin.valueChanged.connect(self._on_wmt3_wave_fxm_color_changed)
+        wmt3_wave_fxm_color_combo = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_FXM_COLOR,
+                                                                     "Wave FXM Color",
+                                                                     options=["OFF", "ON"],
+                                                                     values=[0, 1]
+                                                                     )
+        wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_combo)
 
-        wmt3_wave_fxm_depth_spin = QSpinBox()
-        wmt3_wave_fxm_depth_spin.setRange(0, 16)
-        wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_spin)
+        wmt3_wave_fxm_depth_combo = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_FXM_DEPTH,
+                                                                     "Wave FXM Depth",
+                                                                     options=["OFF", "ON"],
+                                                                     values=[0, 1]
+                                                                     )
+        wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_combo)
 
-        wmt3_wave_tempo_sync_combo = QComboBox()
-        wmt3_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt3_layout.addRow("WMT3 Wave Tempo Sync", wmt3_wave_tempo_sync_combo)
-        # wmt3_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt3_wave_tempo_sync_changed)
+        wmt3_wave_tempo_sync_slider = self._create_parameter_slider(DrumParameter.WMT3_WAVE_TEMPO_SYNC,
+                                                                    "Wave Tempo Sync"
+                                                                    )
+        wmt3_layout.addRow(wmt3_wave_tempo_sync_slider)
 
-        wmt3_wave_coarse_tune_spin = QSpinBox()
-        wmt3_wave_coarse_tune_spin.setRange(16, 112)
-        wmt3_layout.addRow("WMT3 Wave Coarse Tune", wmt3_wave_coarse_tune_spin)
-        wmt3_wave_coarse_tune_spin.valueChanged.connect(self._on_wmt3_wave_coarse_tune_changed)
+        wmt3_wave_coarse_tune_slider = self._create_parameter_slider(DrumParameter.WMT3_WAVE_COARSE_TUNE,
+                                                                     "Wave Coarse Tune",
+                                                                     )
+        wmt3_layout.addRow(wmt3_wave_coarse_tune_slider)
 
-        wmt3_wave_fine_tune_spin = QSpinBox()
-        wmt3_wave_fine_tune_spin.setRange(14, 114)
-        wmt3_layout.addRow("WMT3 Wave Fine Tune", wmt3_wave_fine_tune_spin)
-        wmt3_wave_fine_tune_spin.valueChanged.connect(self._on_wmt3_wave_fine_tune_changed)
+        wmt3_wave_fine_tune_slider = self._create_parameter_slider(DrumParameter.WMT3_WAVE_FINE_TUNE,
+                                                                   "Wave Fine Tune"
+                                                                   )
+        wmt3_layout.addRow(wmt3_wave_fine_tune_slider)
 
-        wmt3_wave_pan_spin = QSpinBox()
-        wmt3_wave_pan_spin.setRange(0, 127)
-        wmt3_layout.addRow("WMT3 Wave Pan", wmt3_wave_pan_spin)
-        wmt3_wave_pan_spin.valueChanged.connect(self._on_wmt3_wave_pan_changed)
+        wmt3_wave_pan = self._create_parameter_slider(DrumParameter.WMT3_WAVE_PAN,
+                                                      "Wave Pan",
+                                                      )
+        wmt3_layout.addRow(wmt3_wave_pan)
 
-        wmt3_wave_random_pan_switch_combo = QComboBox()
-        wmt3_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt3_wave_random_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_RANDOM_PAN_SWITCH,
+                                                                       "Wave Random Pan Switch",
+                                                                       ["OFF", "ON"],
+                                                                       [0, 1]
+                                                                       )
+        wmt3_layout.addRow("Wave Random Pan", wmt3_wave_random_pan_switch)
+
+        wmt3_wave_alternate_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT3_WAVE_ALTERNATE_PAN_SWITCH,
+                                                                          "Wave Alternate Pan Switch",
+                                                                          ["OFF", "ON", "REVERSE"],
+                                                                          [0, 1, 2]
+                                                                          )
+        wmt3_layout.addRow("Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch)
+
+        wmt3_wave_level_slider = self._create_parameter_slider(DrumParameter.WMT3_WAVE_LEVEL,
+                                                               "Wave Level",
+                                                               )
+        wmt3_layout.addRow(wmt3_wave_level_slider)
+
+        wmt3_velocity_range_lower_slider = self._create_parameter_slider(DrumParameter.WMT3_VELOCITY_RANGE_LOWER,
+                                                                         "Velocity Range Lower",
+                                                                         )
         wmt3_layout.addRow(
-            "WMT3 Wave Random Pan Switch", wmt3_wave_random_pan_switch_combo
+            wmt3_velocity_range_lower_slider
         )
 
-        wmt3_wave_alternate_pan_switch_combo = QComboBox()
-        wmt3_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+        wmt3_velocity_range_upper_slider = self._create_parameter_slider(DrumParameter.WMT3_VELOCITY_RANGE_UPPER,
+                                                                         "Velocity Range Upper",
+                                                                         )
         wmt3_layout.addRow(
-            "WMT3 Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch_combo
+            wmt3_velocity_range_upper_slider
         )
-        wmt3_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt3_wave_alternate_pan_switch_changed)
 
-        wmt3_wave_level_spin = QSpinBox()
-        wmt3_wave_level_spin.setRange(0, 127)
-        wmt3_layout.addRow("WMT3 Wave Level", wmt3_wave_level_spin)
-        wmt3_wave_level_spin.valueChanged.connect(self._on_wmt3_wave_level_changed)
-
-        wmt3_velocity_range_lower_spin = QSpinBox()
-        wmt3_velocity_range_lower_spin.setRange(1, 127)
-        wmt3_layout.addRow("WMT3 Velocity Range Lower", wmt3_velocity_range_lower_spin)
-        wmt3_velocity_range_lower_spin.valueChanged.connect(self._on_wmt3_velocity_range_lower_changed)
-
-        wmt3_velocity_range_upper_spin = QSpinBox()
-        wmt3_velocity_range_upper_spin.setRange(1, 127)
-        wmt3_layout.addRow("WMT3 Velocity Range Upper", wmt3_velocity_range_upper_spin)
-        wmt3_velocity_range_upper_spin.valueChanged.connect(self._on_wmt3_velocity_range_upper_changed)
-
-        wmt3_velocity_fade_width_lower_spin = QSpinBox()
-        wmt3_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt3_velocity_fade_width_lower_slider = self._create_parameter_slider(
+            DrumParameter.WMT3_VELOCITY_FADE_WIDTH_LOWER,
+            "Velocity Fade Width Lower",
+        )
         wmt3_layout.addRow(
-            "WMT3 Velocity Fade Width Lower", wmt3_velocity_fade_width_lower_spin
+            wmt3_velocity_fade_width_lower_slider
         )
-        wmt3_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt3_velocity_fade_width_lower_changed)
 
-        wmt3_velocity_fade_width_upper_spin = QSpinBox()
-        wmt3_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt3_layout.addRow(
-            "WMT3 Velocity Fade Width Upper", wmt3_velocity_fade_width_upper_spin
+        wmt3_velocity_fade_width_upper_slider = self._create_parameter_slider(
+            DrumParameter.WMT3_VELOCITY_FADE_WIDTH_UPPER,
+            "Velocity Fade Width Upper",
         )
-        wmt3_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt3_velocity_fade_width_upper_changed)
+        wmt3_layout.addRow(
+            wmt3_velocity_fade_width_upper_slider
+        )
         return wmt3_layout
 
     def _create_wmt4_layout(self):
-        # Add controls to WMT4 tab
-        # wmt4_tab = self.wmt_tab_widget.widget(3)
         wmt4_layout = QFormLayout()
-        # wmt4_tab.setLayout(wmt4_layout)
+        wmt4_wave_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_SWITCH, "WMT4 Wave Switch",
+                                                                  ["OFF", "ON"], [0, 1])
 
-        wmt4_wave_switch_combo = QComboBox()
-        wmt4_wave_switch_combo.addItems(["OFF", "ON"])
         wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
-        wmt4_wave_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_switch_changed)
 
-        wmt4_wave_group_type_spin = QSpinBox()
-        wmt4_wave_group_type_spin.setRange(0, 0)
-        wmt4_layout.addRow("WMT4 Wave Group Type", wmt4_wave_group_type_spin)
-        wmt4_wave_group_type_spin.valueChanged.connect(self._on_wmt4_wave_group_type_changed)
+        wmt4_wave_number_l_spin = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_NUMBER_L,
+                                                                   "WMT4 Wave Number L/Mono",
+                                                                   options=rm_waves,
+                                                                   values=list(range(1, 456)))
 
-        wmt4_wave_group_id_spin = QSpinBox()
-        wmt4_wave_group_id_spin.setRange(0, 16384)
-        wmt4_layout.addRow("WMT4 Wave Group ID", wmt4_wave_group_id_spin)
-        wmt4_wave_group_id_spin.valueChanged.connect(self._on_wmt4_wave_group_id_changed)
-
-        wmt4_wave_number_l_spin = QSpinBox()
-        wmt4_wave_number_l_spin.setRange(0, 16384)
         wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
-        wmt4_wave_number_l_spin.valueChanged.connect(self._on_wmt4_wave_number_l_changed)
 
-        wmt4_wave_number_r_spin = QSpinBox()
-        wmt4_wave_number_r_spin.setRange(0, 16384)
+        wmt4_wave_number_r_spin = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_NUMBER_R,
+                                                                   "WMT4 Wave Number R",
+                                                                   options=rm_waves,
+                                                                   values=list(range(1, 456)))
+
         wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
-        wmt4_wave_number_r_spin.valueChanged.connect(self._on_wmt4_wave_number_r_changed)
 
-        wmt4_wave_gain_combo = QComboBox()
-        wmt4_wave_gain_combo.addItems(["-6", "0", "+6", "+12"])
+        wmt4_wave_gain_combo = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_GAIN,
+                                                                "Wave Gain",
+                                                                options=["-6", "0", "6", "12"],
+                                                                values=[0, 1, 2, 3]
+                                                                )
+
         wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_combo)
-        wmt4_wave_gain_combo.currentIndexChanged.connect(self._on_wmt4_wave_gain_changed)
 
-        wmt4_wave_fxm_switch_combo = QComboBox()
-        wmt4_wave_fxm_switch_combo.addItems(["OFF", "ON"])
+        wmt4_wave_fxm_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_GAIN,
+                                                                      "Wave FXM Switch",
+                                                                      options=["OFF", "ON"],
+                                                                      values=[0, 1]
+                                                                      )
         wmt4_layout.addRow("WMT4 Wave FXM Switch", wmt4_wave_fxm_switch_combo)
-        wmt4_wave_fxm_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_fxm_switch_changed)
 
-        wmt4_wave_fxm_color_spin = QSpinBox()
-        wmt4_wave_fxm_color_spin.setRange(0, 3)
-        wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_spin)
-        wmt4_wave_fxm_color_spin.valueChanged.connect(self._on_wmt4_wave_fxm_color_changed)
+        wmt4_wave_fxm_color_combo = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_FXM_COLOR,
+                                                                     "Wave FXM Color",
+                                                                     options=["OFF", "ON"],
+                                                                     values=[0, 1]
+                                                                     )
+        wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_combo)
 
-        wmt4_wave_fxm_depth_spin = QSpinBox()
-        wmt4_wave_fxm_depth_spin.setRange(0, 16)
-        wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_spin)
+        wmt4_wave_fxm_depth_combo = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_FXM_DEPTH,
+                                                                     "Wave FXM Depth",
+                                                                     options=["OFF", "ON"],
+                                                                     values=[0, 1]
+                                                                     )
+        wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_combo)
 
-        wmt4_wave_tempo_sync_combo = QComboBox()
-        wmt4_wave_tempo_sync_combo.addItems(["OFF", "ON"])
-        wmt4_layout.addRow("WMT4 Wave Tempo Sync", wmt4_wave_tempo_sync_combo)
-        wmt4_wave_tempo_sync_combo.currentIndexChanged.connect(self._on_wmt4_wave_tempo_sync_changed)
+        wmt4_wave_tempo_sync_slider = self._create_parameter_slider(DrumParameter.WMT4_WAVE_TEMPO_SYNC,
+                                                                    "Wave Tempo Sync"
+                                                                    )
+        wmt4_layout.addRow(wmt4_wave_tempo_sync_slider)
 
-        wmt4_wave_coarse_tune_spin = QSpinBox()
-        wmt4_wave_coarse_tune_spin.setRange(16, 112)
-        wmt4_layout.addRow("WMT4 Wave Coarse Tune", wmt4_wave_coarse_tune_spin)
+        wmt4_wave_coarse_tune_slider = self._create_parameter_slider(DrumParameter.WMT4_WAVE_COARSE_TUNE,
+                                                                     "Wave Coarse Tune",
+                                                                     )
+        wmt4_layout.addRow(wmt4_wave_coarse_tune_slider)
 
-        wmt4_wave_fine_tune_spin = QSpinBox()
-        wmt4_wave_fine_tune_spin.setRange(14, 114)
-        wmt4_layout.addRow("WMT4 Wave Fine Tune", wmt4_wave_fine_tune_spin)
-        wmt4_wave_fine_tune_spin.valueChanged.connect(self._on_wmt4_wave_fine_tune_changed)
+        wmt4_wave_fine_tune_slider = self._create_parameter_slider(DrumParameter.WMT4_WAVE_FINE_TUNE,
+                                                                   "Wave Fine Tune"
+                                                                   )
+        wmt4_layout.addRow(wmt4_wave_fine_tune_slider)
 
-        wmt4_wave_pan_spin = QSpinBox()
-        wmt4_wave_pan_spin.setRange(0, 127)
-        wmt4_layout.addRow("WMT4 Wave Pan", wmt4_wave_pan_spin)
-        wmt4_wave_pan_spin.valueChanged.connect(self._on_wmt4_wave_pan_changed)
+        wmt4_wave_pan = self._create_parameter_slider(DrumParameter.WMT4_WAVE_PAN,
+                                                      "Wave Pan",
+                                                      )
+        wmt4_layout.addRow(wmt4_wave_pan)
 
-        wmt4_wave_random_pan_switch_combo = QComboBox()
-        wmt4_wave_random_pan_switch_combo.addItems(["OFF", "ON"])
+        wmt4_wave_random_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_RANDOM_PAN_SWITCH,
+                                                                       "Wave Random Pan Switch",
+                                                                       ["OFF", "ON"],
+                                                                       [0, 1]
+                                                                       )
+        wmt4_layout.addRow("Wave Random Pan", wmt4_wave_random_pan_switch)
+
+        wmt4_wave_alternate_pan_switch = self._create_parameter_combo_box(DrumParameter.WMT4_WAVE_ALTERNATE_PAN_SWITCH,
+                                                                          "Wave Alternate Pan Switch",
+                                                                          ["OFF", "ON", "REVERSE"],
+                                                                          [0, 1, 2]
+                                                                          )
+        wmt4_layout.addRow("Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch)
+
+        wmt4_wave_level_slider = self._create_parameter_slider(DrumParameter.WMT4_WAVE_LEVEL,
+                                                               "Wave Level",
+                                                               )
+        wmt4_layout.addRow(wmt4_wave_level_slider)
+
+        wmt4_velocity_range_lower_slider = self._create_parameter_slider(DrumParameter.WMT4_VELOCITY_RANGE_LOWER,
+                                                                         "Velocity Range Lower",
+                                                                         )
         wmt4_layout.addRow(
-            "WMT4 Wave Random Pan Switch", wmt4_wave_random_pan_switch_combo
+            wmt4_velocity_range_lower_slider
         )
-        wmt4_wave_random_pan_switch_combo.currentIndexChanged.connect(self._on_wmt4_wave_random_pan_switch_changed)
-        wmt4_wave_alternate_pan_switch_combo = QComboBox()
-        wmt4_wave_alternate_pan_switch_combo.addItems(["OFF", "ON", "REVERSE"])
+
+        wmt4_velocity_range_upper_slider = self._create_parameter_slider(DrumParameter.WMT4_VELOCITY_RANGE_UPPER,
+                                                                         "Velocity Range Upper",
+                                                                         )
         wmt4_layout.addRow(
-            "WMT4 Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch_combo
+            wmt4_velocity_range_upper_slider
         )
-        wmt4_wave_alternate_pan_switch_combo.currentIndexChanged.connect(
-            self._on_wmt4_wave_alternate_pan_switch_changed)
 
-        wmt4_wave_level_spin = QSpinBox()
-        wmt4_wave_level_spin.setRange(0, 127)
-        wmt4_layout.addRow("WMT4 Wave Level", wmt4_wave_level_spin)
-        wmt4_wave_level_spin.valueChanged.connect(self._on_wmt4_wave_level_changed)
-
-        wmt4_velocity_range_lower_spin = QSpinBox()
-        wmt4_velocity_range_lower_spin.setRange(1, 127)
-        wmt4_layout.addRow("WMT4 Velocity Range Lower", wmt4_velocity_range_lower_spin)
-        wmt4_velocity_range_lower_spin.valueChanged.connect(self._on_wmt4_velocity_range_lower_changed)
-
-        wmt4_velocity_range_upper_spin = QSpinBox()
-        wmt4_velocity_range_upper_spin.setRange(1, 127)
-        wmt4_layout.addRow("WMT4 Velocity Range Upper", wmt4_velocity_range_upper_spin)
-        wmt4_velocity_range_upper_spin.valueChanged.connect(self._on_wmt4_velocity_range_upper_changed)
-
-        wmt4_velocity_fade_width_lower_spin = QSpinBox()
-        wmt4_velocity_fade_width_lower_spin.setRange(0, 127)
+        wmt4_velocity_fade_width_lower_slider = self._create_parameter_slider(
+            DrumParameter.WMT4_VELOCITY_FADE_WIDTH_LOWER,
+            "Velocity Fade Width Lower",
+        )
         wmt4_layout.addRow(
-            "WMT4 Velocity Fade Width Lower", wmt4_velocity_fade_width_lower_spin
+            wmt4_velocity_fade_width_lower_slider
         )
-        wmt4_velocity_fade_width_lower_spin.valueChanged.connect(self._on_wmt4_velocity_fade_width_lower_changed)
 
-        wmt4_velocity_fade_width_upper_spin = QSpinBox()
-        wmt4_velocity_fade_width_upper_spin.setRange(0, 127)
-        wmt4_layout.addRow(
-            "WMT4 Velocity Fade Width Upper", wmt4_velocity_fade_width_upper_spin
+        wmt4_velocity_fade_width_upper_slider = self._create_parameter_slider(
+            DrumParameter.WMT4_VELOCITY_FADE_WIDTH_UPPER,
+            "Velocity Fade Width Upper",
         )
-        wmt4_velocity_fade_width_upper_spin.valueChanged.connect(self._on_wmt4_velocity_fade_width_upper_changed)
+        wmt4_layout.addRow(
+            wmt4_velocity_fade_width_upper_slider
+        )
         return wmt4_layout
 
     def _on_wmt1_wave_switch_changed(self, value: int):
@@ -703,8 +727,6 @@ class DrumPartialEditor(QWidget):
             param=DrumParameter.WMT1_WAVE_SWITCH.value[0],
             value=value
         )
-
-
 
     def _on_wmt1_wave_group_type_changed(self, value: int):
         """ change wmt1 wave group preset_type value """
