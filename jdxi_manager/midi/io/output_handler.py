@@ -148,11 +148,6 @@ class MIDIOutHandler(MidiIOController):
             value & 0x7F  # Least significant 7 bits
         ]
 
-    # Example usage:
-    #value = 453
-    #sysex_bytes = int_to_jdxi_sysex(value)
-    #print([f"{b:02X}" for b in sysex_bytes])  # Output: ['00', '01', '0C', '05']
-
     def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
         """
         Send address parameter change message.
@@ -167,7 +162,7 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             True if successful, False otherwise.
         """
-        logging.debug(
+        logging.info(
             f"Sending parameter: area={hex(area)}, part={hex(part)}, group={hex(group)}, param={hex(param)}, value={value}, size={size}")
 
         if not self.is_output_open:
@@ -182,10 +177,10 @@ class MIDIOutHandler(MidiIOController):
 
             def split_value_4byte(value: int):
                 return [
-                    (value >> 21) & 0x7F,  # Highest 7 bits
-                    (value >> 14) & 0x7F,  # Next 7 bits
-                    (value >> 7) & 0x7F,   # Next 7 bits
-                    value & 0x7F + 1       # Least significant 7 bits (adjusted)
+                    (value >> 21) & 0x7F,
+                    (value >> 14) & 0x7F,
+                    (value >> 7) & 0x7F,
+                    value & 0x7F  # No +1 adjustment
                 ]
 
             if size == 1:
@@ -225,7 +220,7 @@ class MIDIOutHandler(MidiIOController):
             message[-2] = checksum
 
             formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
-            logging.debug(f"Sending parameter message: {formatted_message}")
+            logging.info(f"Sending parameter message: {formatted_message}")
             return self.send_message(message)
 
         except Exception as e:

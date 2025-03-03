@@ -31,20 +31,17 @@ def draw_instrument_pixmap(
     margin = 15
 
     # Define display position and size first
-    display_x = margin + 20
-    display_y = margin + 20
-    display_width = 220
-    display_height = 45
+    display_x = margin + 10
 
     # Title above display (moved down)
     title_x = display_x
-    title_y = margin + 15
+    title_y = margin + 60
     painter.setPen(QPen(Qt.white))
     painter.setFont(QFont("Myriad Pro, Arial", 28, QFont.Bold))
     painter.drawText(title_x, title_y, "JD-Xi Manager")
 
     # LED display area (enlarged for 2 rows)
-    display_x = margin + 20
+    display_x = margin + 10
     display_y = title_y + 30
     display_width = 215
     display_height = 70

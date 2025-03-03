@@ -2,10 +2,11 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QSize, QTimer
 from PySide6.QtGui import QPainter, QColor, QBrush, QPen
 
+
 class LEDIndicator(QWidget):
     """LED-style indicator widget"""
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,alignment_state= None):
         """Initialize LED indicator
         
         Args:
@@ -87,4 +88,4 @@ class LEDIndicator(QWidget):
             highlight = QColor(color)
             highlight.setAlpha(100)
             painter.setBrush(QBrush(highlight))
-            painter.drawEllipse(4, 4, 8, 8) 
+            painter.drawEllipse(4, 4, 8, 8)

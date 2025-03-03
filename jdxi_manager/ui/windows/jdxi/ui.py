@@ -14,16 +14,10 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
 )
-from PySide6.QtCore import Qt, QSettings, Signal
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import (
     QAction,
     QFontDatabase,
-)
-from jdxi_manager.midi.preset.handler import PresetHandler
-from jdxi_manager.data.presets.data import (
-    ANALOG_PRESETS_ENUMERATED,
-    DIGITAL_PRESETS_ENUMERATED,
-    DRUM_PRESETS_ENUMERATED,
 )
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.ui.image.instrument import draw_instrument_pixmap
@@ -33,6 +27,7 @@ from jdxi_manager.ui.widgets.button.channel import ChannelButton
 from jdxi_manager.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_manager.ui.widgets.button.favorite import FavoriteButton
 from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
 class JdxiUi(QMainWindow):
@@ -416,34 +411,6 @@ class JdxiUi(QMainWindow):
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
 
-    def _create_button_row(self, text, slot):
-        """Create address row with label and circular button"""
-        row = QHBoxLayout()
-        row.setSpacing(10)
-
-        # Add label with color based on text
-        label = QLabel(text)
-        if text == "Analog Synth":
-            label.setStyleSheet(Style.JDXI_LABEL_ANALOG_SYNTH_PART)
-        else:
-            label.setStyleSheet(Style.JDXI_LABEL_SYNTH_PART)
-        row.addWidget(label)
-
-        # Add spacer to push button to right
-        row.addStretch()
-
-        # Add button
-        button = QPushButton()
-        button.setFixedSize(30, 30)
-        button.setCheckable(True)
-        button.clicked.connect(slot)
-
-        # Style the button with brighter hover/border_pressed/selected  states
-        button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-
-        row.addWidget(button)
-        return row, button
-
     def _add_arpeggiator_buttons(self, widget):
         """Add arpeggiator up/down buttons to the interface"""
         # Create container
@@ -605,19 +572,19 @@ class JdxiUi(QMainWindow):
         parts_layout.addWidget(parts_label)
 
         # Parts buttons
-        digital1_row, self.digital1_button = self._create_button_row(
+        digital1_row, self.digital1_button = create_button_row(
             "Digital Synth 1", self._open_digital_synth1
         )
-        digital2_row, self.digital2_button = self._create_button_row(
+        digital2_row, self.digital2_button = create_button_row(
             "Digital Synth 2", self._open_digital_synth2
         )
-        drums_row, self.drums_button = self._create_button_row(
+        drums_row, self.drums_button = create_button_row(
             "Drums", self._open_drums
         )
-        analog_row, self.analog_button = self._create_button_row(
+        analog_row, self.analog_button = create_button_row(
             "Analog Synth", self._open_analog_synth
         )
-        arp_row, self.arp_button = self._create_button_row(
+        arp_row, self.arp_button = create_button_row(
             "Arpeggiator", self._open_arpeggiator
         )
 
@@ -656,7 +623,7 @@ class JdxiUi(QMainWindow):
         fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
         fx_layout = QHBoxLayout(fx_container)
 
-        effects_row, self.effects_button = self._create_button_row(
+        effects_row, self.effects_button = create_button_row(
             "Effects", self._open_effects
         )
         fx_layout.addLayout(effects_row)
