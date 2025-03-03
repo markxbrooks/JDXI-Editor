@@ -420,64 +420,52 @@ class DrumPartialEditor(QWidget):
                                                                       )
         wmt2_layout.addRow("WMT2 Wave Fine Tune", wmt2_wave_fine_tune_combo)
 
-        wmt2_wave_pan_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_PAN,
-                                                              "Wave Pan",
-                                                              options=["OFF", "ON"],
-                                                              values=[0, 1]
+        wmt2_wave_pan = self._create_parameter_slider(DrumParameter.WMT2_WAVE_PAN,
+                                                      "Wave Pan",
+                                                      )
+        wmt2_layout.addRow(wmt2_wave_pan)
+
+        wmt2_wave_random_pan_switch = self._create_parameter_slider(DrumParameter.WMT2_WAVE_RANDOM_PAN_SWITCH,
+                                                                   "Wave Random Pan Switch",
+                                                                   )
+        wmt2_layout.addRow(wmt2_wave_random_pan_switch)
+
+        wmt2_wave_alternate_pan_switch = self._create_parameter_slider(DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
+                                                                      "Wave Alternate Pan Switch",
+                                                                      )
+        wmt2_layout.addRow(wmt2_wave_alternate_pan_switch)
+
+        wmt2_wave_level_slider = self._create_parameter_slider(DrumParameter.WMT2_WAVE_LEVEL,
+                                                              "Wave Level",
                                                               )
-        wmt2_layout.addRow("WMT2 Wave Pan", wmt2_wave_pan_combo)
+        wmt2_layout.addRow(wmt2_wave_level_slider)
 
-        wmt2_wave_random_pan_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_RANDOM_PAN_SWITCH,
-                                                                            "Wave Random Pan Switch",
-                                                                            options=["OFF", "ON"],
-                                                                            values=[0, 1]
-                                                                            )
-        wmt2_layout.addRow(
-            "WMT2 Wave Random Pan Switch", wmt2_wave_random_pan_switch_combo
-        )
-
-        wmt2_wave_alternate_pan_switch_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
-                                                                                "Wave Alternate Pan Switch",
-                                                                                options=["OFF", "ON", "REVERSE"],
-                                                                                values=[0, 1, 2]
-                                                                                )
-        wmt2_layout.addRow(
-            "WMT2 Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch_combo
-        )
-
-        wmt2_wave_level_combo = self._create_parameter_combo_box(DrumParameter.WMT2_WAVE_LEVEL,
-                                                                "Wave Level",
-                                                                options=["OFF", "ON"],
-                                                                values=[0, 1]
-                                                                )
-        wmt2_layout.addRow("WMT2 Wave Level", wmt2_wave_level_combo)
-
-        wmt2_velocity_range_lower_combo = self._create_parameter_combo_box(DrumParameter.WMT2_VELOCITY_RANGE_LOWER,
+        wmt2_velocity_range_lower_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_RANGE_LOWER,
                                                                           "Velocity Range Lower",
-                                                                          options=["OFF", "ON"],
-                                                                          values=[0, 1]
                                                                           )
-        wmt2_layout.addRow("WMT2 Velocity Range Lower", wmt2_velocity_range_lower_combo)
+        wmt2_layout.addRow(
+            wmt2_velocity_range_lower_slider
+        )
 
-        wmt2_velocity_range_upper_combo = self._create_parameter_combo_box(DrumParameter.WMT2_VELOCITY_RANGE_UPPER,
+        wmt2_velocity_range_upper_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_RANGE_UPPER,
                                                                           "Velocity Range Upper",
-                                                                          options=["OFF", "ON"],
-                                                                          values=[0, 1]
                                                                           )
-        wmt2_layout.addRow("WMT2 Velocity Range Upper", wmt2_velocity_range_upper_combo)
+        wmt2_layout.addRow(
+            wmt2_velocity_range_upper_slider
+        )
 
-        wmt2_velocity_fade_width_lower_combo = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER,
+        wmt2_velocity_fade_width_lower_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER,
                                                                                 "Velocity Fade Width Lower",
                                                                                 )
         wmt2_layout.addRow(
-            wmt2_velocity_fade_width_lower_combo
+            wmt2_velocity_fade_width_lower_slider
         )
 
-        wmt2_velocity_fade_width_upper_combo = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER,
+        wmt2_velocity_fade_width_upper_slider = self._create_parameter_slider(DrumParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER,
                                                                                 "Velocity Fade Width Upper",
                                                                                 )
         wmt2_layout.addRow(
-            wmt2_velocity_fade_width_upper_combo
+            wmt2_velocity_fade_width_upper_slider
         )
         return wmt2_layout
 
