@@ -280,7 +280,7 @@ class EffectParameter(SynthParameter):
             EffectsCommonParameter.PROGRAM_EFFECT_1: {
                 "EFX1_TYPE", "EFX1_LEVEL", "EFX1_DELAY_SEND_LEVEL",
                 "EFX1_REVERB_SEND_LEVEL", "EFX1_OUTPUT_ASSIGN",
-                "EFX1_PARAM_1", "EFX1_PARAM_2"
+                "EFX1_PARAM_1", "EFX1_PARAM_2", "EFX1_PARAM_32"
             },
             EffectsCommonParameter.PROGRAM_EFFECT_2: {
                 "EFX2_TYPE", "EFX2_LEVEL", "EFX2_DELAY_SEND_LEVEL",
@@ -289,11 +289,11 @@ class EffectParameter(SynthParameter):
             EffectsCommonParameter.PROGRAM_DELAY: {
                 "DELAY_TYPE", "DELAY_TIME", "DELAY_TAP_TIME",
                 "DELAY_FEEDBACK", "DELAY_HF_DAMP", "DELAY_LEVEL",
-                "DELAY_REVERB_SEND_LEVEL"
+                "DELAY_REVERB_SEND_LEVEL", "DELAY_PARAM_1", "DELAY_PARAM_2", "DELAY_PARAM_24"
             },
             EffectsCommonParameter.PROGRAM_REVERB: {
                 "REVERB_OFF_ON", "REVERB_TYPE", "REVERB_TIME", "REVERB_HF_DAMP",
-                "REVERB_LEVEL", "REVERB_PARAM_1", "REVERB_PARAM_2"
+                "REVERB_LEVEL", "REVERB_PARAM_1", "REVERB_PARAM_2", "REVERB_PARAM_24"
             }
         }
 

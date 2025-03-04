@@ -399,8 +399,8 @@ class EffectsEditor(BaseEditor):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
+            if hasattr(param, "convert_to_midi"):
+                midi_value = param.convert_to_midi(display_value)
             else:
                 midi_value = param.validate_value(display_value)
             logging.info(
