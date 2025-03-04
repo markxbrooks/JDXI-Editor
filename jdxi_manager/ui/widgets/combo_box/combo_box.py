@@ -112,6 +112,7 @@ class ComboBox(QWidget):
         else:
             self.valueChanged.emit(int(index))
             logging.info(f"_on_value_changed emitting {index}")
+        self.combo_box.repaint()
 
     def setValue(self, value: int):
         """Set combo box index based on the value."""
