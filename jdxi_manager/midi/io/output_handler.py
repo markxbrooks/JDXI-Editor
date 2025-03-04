@@ -128,6 +128,75 @@ class MIDIOutHandler(MidiIOController):
             logging.error(f"Error sending identity request: {e}")
             return False
 
+    def send_parameter_experimental(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
+        """
+        Send address parameter change message.
+
+        Args:
+            area: Parameter area (e.g., Program, Digital Synth).
+            part: Part number.
+            group: Parameter group.
+            param: Parameter number.
+            value: Parameter value.
+            size: Size of the value in bytes (1, 4, or 5).
+        Returns:
+            True if successful, False otherwise.
+        """
+        logging.info(
+            f"Sending parameter: area={hex(area)}, part={hex(part)}, group={hex(group)}, param={hex(param)}, value={value}, size={size}")
+
+        if not self.is_output_open:
+            logging.warning("MIDI output not open")
+            return False
+
+        try:
+            # Construct the address portion of the message
+            if param > 127:
+                group = group + 1
+            address = [area, part, group & 0xFF, param & 0xFF]
+
+            def increment_byte_list(parameter_value: int, size: int):
+                """
+                Given an integer and size (4 or 5), split it into the corresponding number of bytes.
+                """
+                bytes_list = []
+                for i in range(size):
+                    # Each byte is 7 bits, so we extract the appropriate 7 bits for the current byte
+                    byte = (parameter_value >> (7 * (size - i - 1))) & 0x7F
+                    bytes_list.append(byte)
+                return bytes_list
+
+            if size == 1:
+                message = [
+                              0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,  # SysEx header
+                          ] + address + [
+                              value & 0x7F,  # Parameter value (0-127)
+                              0x00,  # Placeholder for checksum
+                              0xF7  # End of SysEx
+                          ]
+
+            elif size == 4 or size == 5:
+                byte_list = increment_byte_list(value, size)
+                message = [
+                              0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
+                          ] + address + byte_list + [0x00, 0xF7]  # Add checksum placeholder
+
+            else:
+                logging.error(f"Unsupported parameter size: {size}")
+                return False
+
+            # Calculate checksum (for message[8:-2])
+            checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
+            message[-2] = checksum
+
+            formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+            logging.info(f"Sending parameter message: {formatted_message}")
+            return self.send_message(message)
+
+        except Exception as e:
+            logging.error(f"Error sending parameter: {e}")
+            return False
+
     def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
         """
         Send address parameter change message.
