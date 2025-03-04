@@ -407,14 +407,7 @@ class AnalogParameter(SynthParameter):
         return display_value
 
     @staticmethod
-    def get_display_value_by_name(param_name: str, value: int) -> int:
-        """Get the display value for address parameter by name and value."""
-        param = AnalogParameter.get_by_name(param_name)
-        if param:
-            return param.convert_from_midi(value)
-        return value
-
-    def convert_to_display(self, value, min_val, max_val, display_min, display_max):
+    def convert_to_display(value, min_val, max_val, display_min, display_max):
         """Convert address value to address display value within address range."""
         if min_val == max_val:
             return display_min
@@ -425,7 +418,7 @@ class AnalogParameter(SynthParameter):
         # Handle special bipolar cases first
         if self == AnalogParameter.OSC_PITCH_FINE:
             return display_value + 64  # -63 to +63 -> 0 to 127
-        elif self == AnalogParameter.OSC_PITCH:
+        elif self == AnalogParameter.OSC_PITCH_COARSE:
             return display_value + 64  # -63 to +63 -> 0 to 127
         
         # For parameters with simple linear scaling
