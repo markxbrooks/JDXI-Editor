@@ -235,6 +235,44 @@ class EffectParameter(SynthParameter):
         """Look up an effect parameter by its name"""
         return cls.__members__.get(name, None)
 
+    def convert_to_midi(self, display_value: int) -> int:
+        """Convert from display value to MIDI value"""
+        # Handle special bipolar cases first
+        if self == EffectParameter.EFX1_PARAM_1:
+            return display_value + 32768  #
+        elif self == EffectParameter.EFX1_PARAM_2:
+            return display_value + 32768  #
+        elif self == EffectParameter.EFX1_PARAM_32:
+            return display_value + 32768  #
+        elif self == EffectParameter.EFX2_PARAM_1:
+            return display_value + 32768  #
+        elif self == EffectParameter.EFX2_PARAM_2:
+            return display_value + 32768  #
+        elif self == EffectParameter.EFX2_PARAM_32:
+            return display_value + 32768  #
+        elif self == EffectParameter.DELAY_PARAM_1:
+            return display_value + 32768  #
+        elif self == EffectParameter.DELAY_PARAM_2:
+            return display_value + 32768  #
+        elif self == EffectParameter.DELAY_PARAM_24:
+            return display_value + 32768  #
+        elif self == EffectParameter.REVERB_PARAM_1:
+            return display_value + 32768  #
+        elif self == EffectParameter.REVERB_PARAM_2:
+            return display_value + 32768  #
+        elif self == EffectParameter.REVERB_PARAM_24:
+            return display_value + 32768  #
+        else:
+            return display_value
+
+    @staticmethod
+    def get_midi_value(param_name, value):
+        """Get the MIDI value for address parameter by name and value."""
+        param = EffectParameter.get_by_name(param_name)
+        if param:
+            return param.convert_to_midi(value)
+        return None
+
     @classmethod
     def get_common_param_by_name(cls, name):
         """Look up an effect parameter's category using address dictionary mapping"""

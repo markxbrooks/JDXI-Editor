@@ -486,7 +486,6 @@ class DigitalParameter(SynthParameter):
                        (self.max_val - self.min_val) / (self.display_max - self.display_min))
         return display_value
 
-
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""
         if self == self.OSC_DETUNE:

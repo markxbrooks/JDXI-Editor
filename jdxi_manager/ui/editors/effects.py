@@ -319,7 +319,7 @@ class EffectsEditor(BaseEditor):
         if common_param is None:
             logging.error(f"Unknown common parameter preset_type for: {param_name}")
             return
-
+        midi_value = param.convert_to_midi(value)
         base_address = common_param.address
 
         full_address = [0x18, 0x00, base_address, address_offset]
@@ -330,7 +330,7 @@ class EffectsEditor(BaseEditor):
             part=PROGRAM_COMMON,
             group=common_param.address,
             param=address_offset,
-            value=value,
+            value=midi_value,
         )
 
     def _create_parameter_slider_new(
@@ -346,6 +346,21 @@ class EffectsEditor(BaseEditor):
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed_new(param, v))
+        """ 
+        FIXME: needs convert_from_midi in EffectParameter
+        if self.midi_helper:
+            group, param_address = param.get_address_for_partial(self.partial_num)
+            midi_value = self.midi_helper.get_parameter(
+                area=DIGITAL_SYNTH_AREA,
+                part=self.part,
+                group=group,
+                param=param_address
+            )
+            if midi_value is not None:
+                display_value = param.convert_from_midi(midi_value)
+                slider.setValue(display_value)
+        """
+
 
         # Store control reference
         self.controls[param] = slider
@@ -413,6 +428,7 @@ class EffectsEditor(BaseEditor):
             )
             # Ensure we get address valid common parameter
             common_param = EffectParameter.get_common_param_by_name(param.name)
+            midi_value = param.convert_to_midi(display_value)
             if common_param is None:
                 logging.error(f"Unknown common parameter preset_type for: {param.name}")
                 return
@@ -423,7 +439,7 @@ class EffectsEditor(BaseEditor):
                     part=PROGRAM_COMMON,
                     group=common_param.address,
                     param=param.address,
-                    value=display_value,  # Make sure this value is being sent
+                    value=midi_value,  # Make sure this value is being sent
                     size=size,
                 )
             except Exception as ex:
