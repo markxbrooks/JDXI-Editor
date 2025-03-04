@@ -22,6 +22,7 @@ from typing import List, Optional
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 from jdxi_manager.midi.io.controller import MidiIOController
+from jdxi_manager.midi.utils.byte import split_value_to_nibbles
 
 
 class MIDIOutHandler(MidiIOController):
@@ -248,14 +249,18 @@ class MIDIOutHandler(MidiIOController):
                               0xF7  # End of SysEx
                           ]
 
-            elif size == 4:
-                byte_list = increment_byte_list(value)
+            elif size in [4, 5]:
+                # byte_list = increment_byte_list(value)
+                value_byte_list = split_value_to_nibbles(value, size)
                 message = [
                               0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                          ] + address + byte_list + [0x00, 0xF7]  # Add checksum placeholder
-
+                          ] + address + value_byte_list + [0x00, 0xF7]  # Add checksum placeholder
+            else:
+                logging.error(f"Unsupported parameter size: {size}")
+                return False
+            """ 
             elif size == 5:
-                value_bytes = [
+                value_byte_list = [
                     (value >> 28) & 0x7F,  # First 7 bits of MSB
                     (value >> 21) & 0x7F,  # Second 7 bits
                     (value >> 14) & 0x7F,  # Third 7 bits
@@ -265,12 +270,8 @@ class MIDIOutHandler(MidiIOController):
 
                 message = [
                               0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                          ] + address + value_bytes + [0x00, 0xF7]  # Add checksum placeholder
-
-            else:
-                logging.error(f"Unsupported parameter size: {size}")
-                return False
-
+                          ] + address + value_byte_list + [0x00, 0xF7]  # Add checksum placeholder
+            """
             # Calculate checksum (for message[8:-2])
             checksum = (128 - (sum(message[8:-2]) & 0x7F)) & 0x7F
             message[-2] = checksum
