@@ -7,6 +7,7 @@ TEMPORARY_PROGRAM = 0x18
 ARP_PART = 0x00
 ARP_GROUP = 0x40
 
+
 class ArpParameter(IntEnum):
     """Arpeggiator parameters"""
     SWITCH = 0x03      # Arpeggio on/off (0-1)
@@ -17,6 +18,7 @@ class ArpParameter(IntEnum):
     ACCENT = 0x09      # Accent amount (0-127)
     VELOCITY = 0x0A    # Note velocity (0-127)
     SWING = 0x06       # Swing amount (0-100)
+
 
 class ArpGrid(Enum):
     """Arpeggiator grid values"""

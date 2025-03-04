@@ -85,7 +85,7 @@ class JdxiInstrument(JdxiUi):
         self.midi_out = None
         self.midi_in_port_name = ""  # Store input port name
         self.midi_out_port_name = ""  # Store output port name
-
+        self.key_hold_latched = False
         # Initialize MIDI helper
         if self.midi_in:
             self.midi_in.delete()  # Use delete() instead of close()
@@ -112,6 +112,8 @@ class JdxiInstrument(JdxiUi):
         # Initialize MIDI indicators
         self.midi_in_indicator.set_state(bool(self.midi_in))
         self.midi_out_indicator.set_state(bool(self.midi_out))
+        self.key_hold.clicked.connect(self._send_arp_key_hold)
+        self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
 
         pub.subscribe(self._update_display_preset, "update_display_preset")
 
@@ -788,6 +790,7 @@ class JdxiInstrument(JdxiUi):
         """Send arpeggiator key hold (latch) command"""
         try:
             if self.midi_helper:
+                self.key_hold_latched = not self.key_hold_latched
                 param = 0x02  # Key Hold parameter, maybe!
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
@@ -1018,7 +1021,7 @@ class JdxiInstrument(JdxiUi):
         """Handle piano key press"""
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
-            msg = [0x90 + (self.channel), note_num, 100]
+            msg = [0x90 + self.channel, note_num, 100]
             self.midi_helper.send_message(msg)
             logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
@@ -1027,10 +1030,11 @@ class JdxiInstrument(JdxiUi):
         if self.midi_helper:
             # Calculate the correct status byte for note_off:
             # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
-            status = 0x80 + (self.channel)
-            msg = [status, note_num, 0]
-            self.midi_helper.send_message(msg)
-            logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
+            if not self.key_hold_latched:
+                status = 0x80 + self.channel
+                msg = [status, note_num, 0]
+                self.midi_helper.send_message(msg)
+                logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
 
     def _show_analog_presets(self):
         """Show the analog preset editor window"""

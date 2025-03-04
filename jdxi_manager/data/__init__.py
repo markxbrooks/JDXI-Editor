@@ -33,6 +33,7 @@ from .parameter.digital import DigitalParameter
 from .effects import (
     FX,  # Parameter ranges and defaults
     EffectType,  # Effect preset_type enum
-    EffectParameter,  # Parameter enum
+    # Parameter enum
     EffectPatch  # Complete patch class
-) 
+)
+from .parameter.effects import EffectParameter

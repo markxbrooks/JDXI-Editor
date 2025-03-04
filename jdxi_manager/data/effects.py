@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from enum import Enum, auto
-from typing import Dict, List
+from enum import Enum
+
 
 class EffectType(Enum):
     """Effect types available on JD-Xi"""
@@ -25,113 +25,6 @@ class EffectsCommonParameter(Enum):
     @property
     def address(self):
         return self.value  # Access Enum value correctly
-
-
-class EffectParameter(Enum):
-    """Effect parameters with address and value range"""
-
-    # EFX1 Parameters
-    EFX1_TYPE = (0x00, 0, 4)
-    EFX1_LEVEL = (0x01, 0, 127)
-    EFX1_DELAY_SEND_LEVEL = (0x02, 0, 127)
-    EFX1_REVERB_SEND_LEVEL = (0x03, 0, 127)
-    EFX1_OUTPUT_ASSIGN = (0x04, 0, 1)
-    EFX1_PARAM_1 = (0x11, 12768, 52768)
-    EFX1_PARAM_2 = (0x15, 12768, 52768)
-
-    # EFX2 Parameters
-    EFX2_TYPE = (0x00, 0, 8)
-    EFX2_LEVEL = (0x01, 0, 127)
-    EFX2_DELAY_SEND_LEVEL = (0x02, 0, 127)
-    EFX2_REVERB_SEND_LEVEL = (0x03, 0, 127)
-    EFX2_PARAM_1 = (0x11, 12768, 52768)
-    EFX2_PARAM_2 = (0x15, 12768, 52768)
-
-    FLANGER_RATE = (0x00, 0, 8) # Fixme: These Flanger values are placeholders
-    FLANGER_DEPTH = (0x00, 0, 8)
-    FLANGER_FEEDBACK = (0x00, 0, 8)
-    FLANGER_MANUAL = (0x00, 0, 8)
-    FLANGER_BALANCE = (0x00, 0, 8)
-
-    # Delay Parameters
-    DELAY_TYPE = (0x00, 0, 1)  # Assuming 0 for SINGLE, 1 for PAN
-    DELAY_TIME = (0x01, 0, 2600)
-    DELAY_TAP_TIME = (0x02, 0, 100)
-    DELAY_FEEDBACK = (0x03, 0, 98)
-    DELAY_HF_DAMP = (0x04, 200, 8000)
-    DELAY_LEVEL = (0x05, 0, 127)
-    DELAY_REV_SEND_LEVEL = (0x06, 0, 127)
-
-    # Reverb Parameters
-    REVERB_OFF_ON = (0x00, 0, 1)
-    REVERB_TYPE = (0x00, 0, 5)  # Assuming 0 for ROOM1, 1 for ROOM2, etc.
-    REVERB_TIME = (0x01, 0, 127)
-    REVERB_HF_DAMP = (0x02, 200, 8000)
-    REVERB_LEVEL = (0x03, 0, 127)
-    REVERB_PARAM_1 = (0x04, 12768, 52768)
-    REVERB_PARAM_2 = (0x07, 12768, 52768)
-
-    # Common parameters
-    TYPE = (0x00,)
-    LEVEL = (0x01,)
-
-    # Effect-specific parameters
-    PARAM_1 = (0x02,)
-    PARAM_2 = (0x03,)
-
-    # Send levels
-    REVERB_SEND = (0x04,)
-    DELAY_SEND = (0x05,)
-    CHORUS_SEND = (0x06,)
-
-    @classmethod
-    def get_address_by_name(cls, name):
-        """Look up an effect parameter address by its name"""
-        member = cls.__members__.get(name, None)
-        return member.value[0] if member else None
-
-    @classmethod
-    def get_by_address(cls, address):
-        """Look up an effect parameter by its address"""
-        for param in cls:
-            if isinstance(param.value, tuple) and param.value[0] == address:
-                return param
-        return None  # Return None if no match is found
-
-    @classmethod
-    def get_by_name(cls, name):
-        """Look up an effect parameter by its name"""
-        return cls.__members__.get(name, None)
-
-    @classmethod
-    def get_common_param_by_name(cls, name):
-        """Look up an effect parameter's category using address dictionary mapping"""
-        param_mapping = {
-            EffectsCommonParameter.PROGRAM_EFFECT_1: {
-                "EFX1_TYPE", "EFX1_LEVEL", "EFX1_DELAY_SEND_LEVEL",
-                "EFX1_REVERB_SEND_LEVEL", "EFX1_OUTPUT_ASSIGN",
-                "EFX1_PARAM_1", "EFX1_PARAM_2"
-            },
-            EffectsCommonParameter.PROGRAM_EFFECT_2: {
-                "EFX2_TYPE", "EFX2_LEVEL", "EFX2_DELAY_SEND_LEVEL",
-                "EFX2_REVERB_SEND_LEVEL", "EFX2_PARAM_1", "EFX2_PARAM_2"
-            },
-            EffectsCommonParameter.PROGRAM_DELAY: {
-                "DELAY_TYPE", "DELAY_TIME", "DELAY_TAP_TIME",
-                "DELAY_FEEDBACK", "DELAY_HF_DAMP", "DELAY_LEVEL",
-                "DELAY_REV_SEND_LEVEL"
-            },
-            EffectsCommonParameter.PROGRAM_REVERB: {
-                "REVERB_OFF_ON", "REVERB_TYPE", "REVERB_TIME", "REVERB_HF_DAMP",
-                "REVERB_LEVEL", "REVERB_PARAM_1", "REVERB_PARAM_2"
-            }
-        }
-
-        for category, parameters in param_mapping.items():
-            if name in parameters:
-                return category
-
-        return None  # Return None if no match is found
 
 
 class FX:

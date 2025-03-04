@@ -284,6 +284,7 @@ class Style:
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
         font_size="16px",
+        button_padding=3
     )
     JDXI_BUTTON_RECT = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
