@@ -128,26 +128,6 @@ class MIDIOutHandler(MidiIOController):
             logging.error(f"Error sending identity request: {e}")
             return False
 
-    def int_to_jdxi_sysex(value: int) -> list[int]:
-        """
-        Convert an integer to the Roland JD-Xi 4-byte SysEx format (7-bit chunks).
-
-        Args:
-            value (int): The integer to convert.
-
-        Returns:
-            list[int]: A list of four 7-bit values representing the integer.
-        """
-        if not (0 <= value <= 0xFFFF):  # Ensure value fits within 16 bits
-            raise ValueError("Value must be between 0 and 65535 (16-bit).")
-
-        return [
-            (value >> 21) & 0x7F,  # Most significant 7 bits (always 0 for 16-bit values)
-            (value >> 14) & 0x7F,  # Next 7 bits
-            (value >> 7) & 0x7F,  # Next 7 bits
-            value & 0x7F  # Least significant 7 bits
-        ]
-
     def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
         """
         Send address parameter change message.
@@ -175,13 +155,20 @@ class MIDIOutHandler(MidiIOController):
                 group = group + 1
             address = [area, part, group & 0xFF, param & 0xFF]
 
-            def split_value_4byte(value: int):
-                return [
-                    (value >> 21) & 0x7F,
-                    (value >> 14) & 0x7F,
-                    (value >> 7) & 0x7F,
-                    value & 0x7F  # No +1 adjustment
-                ]
+            def increment_byte_list(parameter_value: int):
+                # Handle the 0x00 to 0x0F cycle for the last byte
+                last_byte = parameter_value % 16
+
+                # Handle the increment of the second byte after every 16 steps
+                second_byte = (parameter_value // 16) % 16
+
+                # Handle the increment of the first byte after every 256 steps
+                first_byte = (parameter_value // 256)
+
+                # Return the three incrementing bytes
+                increment_bytes = [0x00, first_byte, second_byte, last_byte]
+
+                return increment_bytes
 
             if size == 1:
                 message = [
@@ -193,10 +180,10 @@ class MIDIOutHandler(MidiIOController):
                           ]
 
             elif size == 4:
-                value_bytes = split_value_4byte(value)
+                byte_list = increment_byte_list(value)
                 message = [
                               0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12,
-                          ] + address + value_bytes + [0x00, 0xF7]  # Add checksum placeholder
+                          ] + address + byte_list + [0x00, 0xF7]  # Add checksum placeholder
 
             elif size == 5:
                 value_bytes = [

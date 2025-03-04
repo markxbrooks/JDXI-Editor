@@ -227,7 +227,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT1_WAVE_NUMBER_L,
             "WMT1 Wave Number L/Mono",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_spin)
@@ -236,7 +236,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT1_WAVE_NUMBER_R,
             "WMT1 Wave Number R",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_spin)
@@ -351,7 +351,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT2_WAVE_NUMBER_L,
             "WMT2 Wave Number L/Mono",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
@@ -360,7 +360,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT2_WAVE_NUMBER_R,
             "WMT2 Wave Number R",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
@@ -475,7 +475,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT3_WAVE_NUMBER_L,
             "WMT3 Wave Number L/Mono",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
@@ -484,7 +484,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT3_WAVE_NUMBER_R,
             "WMT3 Wave Number R",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
@@ -603,7 +603,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT4_WAVE_NUMBER_L,
             "WMT4 Wave Number L/Mono",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
@@ -612,7 +612,7 @@ class DrumPartialEditor(QWidget):
             DrumParameter.WMT4_WAVE_NUMBER_R,
             "WMT4 Wave Number R",
             options=rm_waves,
-            values=list(range(1, 456)),
+            values=list(range(0, 453)),
         )
 
         wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
