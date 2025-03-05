@@ -20,7 +20,6 @@ Dependencies:
 The `DrumPartialEditor` is designed to work within a larger system for managing drum kit tones, providing an intuitive interface for modifying various sound parameters.
 """
 
-
 import logging
 from typing import Dict
 
@@ -40,8 +39,6 @@ from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 from jdxi_manager.data.parameter.drums import get_address_for_partial_name
 from jdxi_manager.ui.editors.partial import PartialEditor
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
-from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
 
 
 class DrumPartialEditor(PartialEditor):
