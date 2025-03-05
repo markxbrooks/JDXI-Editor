@@ -20,7 +20,7 @@ MIDI_CHANNEL_DRUMS = 9  # Corresponds to channel 10
 
 # Import specific classes from analog
 from .analog import (
-    AnalogToneCC,
+    AnalogControlChange,
 )
 
 # Import other module constants as needed
@@ -290,43 +290,43 @@ class AnalogToneCC:
     def validate_msb(msb: int) -> bool:
         """Validate MSB value"""
         return msb in [
-            AnalogToneCC.LEVEL_MSB,
-            AnalogToneCC.PAN_MSB,
-            AnalogToneCC.PORTAMENTO_MSB,
-            AnalogToneCC.OSC_WAVE_MSB,
-            AnalogToneCC.OSC_RANGE_MSB,
-            AnalogToneCC.OSC_COARSE_MSB,
-            AnalogToneCC.OSC_FINE_MSB,
-            AnalogToneCC.OSC_PW_MSB,
-            AnalogToneCC.FILT_TYPE_MSB,
-            AnalogToneCC.FILT_CUTOFF_MSB,
-            AnalogToneCC.FILT_RESO_MSB,
-            AnalogToneCC.FILT_ENV_MSB,
-            AnalogToneCC.FILT_KEY_MSB,
-            AnalogToneCC.FILT_A_MSB,
-            AnalogToneCC.FILT_D_MSB,
-            AnalogToneCC.FILT_S_MSB,
-            AnalogToneCC.FILT_R_MSB,
-            AnalogToneCC.AMP_A_MSB,
-            AnalogToneCC.AMP_D_MSB,
-            AnalogToneCC.AMP_S_MSB,
-            AnalogToneCC.AMP_R_MSB,
-            AnalogToneCC.LFO_WAVE_MSB,
-            AnalogToneCC.LFO_RATE_MSB,
-            AnalogToneCC.LFO_DEPTH_MSB,
-            AnalogToneCC.LFO_DEST_MSB,
+            AnalogControlChange.LEVEL_MSB,
+            AnalogControlChange.PAN_MSB,
+            AnalogControlChange.PORTAMENTO_MSB,
+            AnalogControlChange.OSC_WAVE_MSB,
+            AnalogControlChange.OSC_RANGE_MSB,
+            AnalogControlChange.OSC_COARSE_MSB,
+            AnalogControlChange.OSC_FINE_MSB,
+            AnalogControlChange.OSC_PW_MSB,
+            AnalogControlChange.FILT_TYPE_MSB,
+            AnalogControlChange.FILT_CUTOFF_MSB,
+            AnalogControlChange.FILT_RESO_MSB,
+            AnalogControlChange.FILT_ENV_MSB,
+            AnalogControlChange.FILT_KEY_MSB,
+            AnalogControlChange.FILT_A_MSB,
+            AnalogControlChange.FILT_D_MSB,
+            AnalogControlChange.FILT_S_MSB,
+            AnalogControlChange.FILT_R_MSB,
+            AnalogControlChange.AMP_A_MSB,
+            AnalogControlChange.AMP_D_MSB,
+            AnalogControlChange.AMP_S_MSB,
+            AnalogControlChange.AMP_R_MSB,
+            AnalogControlChange.LFO_WAVE_MSB,
+            AnalogControlChange.LFO_RATE_MSB,
+            AnalogControlChange.LFO_DEPTH_MSB,
+            AnalogControlChange.LFO_DEST_MSB,
         ]
 
     @staticmethod
     def validate_value(msb: int, value: int) -> bool:
         """Validate parameter value based on MSB"""
-        if msb == AnalogToneCC.OSC_WAVE_MSB:
+        if msb == AnalogControlChange.OSC_WAVE_MSB:
             return 0 <= value <= 6
-        elif msb == AnalogToneCC.OSC_RANGE_MSB:
+        elif msb == AnalogControlChange.OSC_RANGE_MSB:
             return 0 <= value <= 3
-        elif msb == AnalogToneCC.OSC_COARSE_MSB:
+        elif msb == AnalogControlChange.OSC_COARSE_MSB:
             return 40 <= value <= 88
-        elif msb == AnalogToneCC.OSC_FINE_MSB:
+        elif msb == AnalogControlChange.OSC_FINE_MSB:
             return 14 <= value <= 114
         else:
             return 0 <= value <= 127
