@@ -63,3 +63,9 @@ class SynthParameter(Enum):
         """Get the AnalogParameter by name."""
         # Return the parameter member by name, or None if not found
         return SynthParameter.__members__.get(param_name, None)
+
+    def get_address_for_partial(self, partial_num: int = 0):
+        pass # implemented in subclasses
+
+    def convert_from_midi(self, midi_value):
+        pass

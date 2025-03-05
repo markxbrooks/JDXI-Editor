@@ -25,7 +25,7 @@ Dependencies
 - `jdxi_manager.midi.preset.loader.PresetLoader` for loading JD-Xi presets.
 - `jdxi_manager.ui.editors.drum_partial.DrumPartialEditor` for managing individual drum partials.
 - `jdxi_manager.ui.style.Style` for UI styling.
-- `jdxi_manager.ui.editors.base.BaseEditor` as the base class for the editor.
+- `jdxi_manager.ui.editors.base.SynthEditor` as the base class for the editor.
 - `jdxi_manager.midi.constants.sysex.TEMPORARY_DIGITAL_SYNTH_1_AREA` for SysEx address handling.
 - `jdxi_manager.ui.widgets.preset.combo_box.PresetComboBox` for preset selection.
 
@@ -60,7 +60,7 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 import os
 import re
 import logging
-from typing import Optional, Dict, Union
+from typing import Optional, Dict
 import json
 
 from PySide6.QtWidgets import (
@@ -84,19 +84,16 @@ from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.midi.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
 )
 from jdxi_manager.midi.constants import MIDI_CHANNEL_DRUMS
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
-from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
 
 
-class DrumEditor(BaseEditor):
+class DrumEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(
@@ -105,28 +102,19 @@ class DrumEditor(BaseEditor):
         super().__init__(midi_helper, parent)
 
         # Initialize class attributes
-        self.partial_editors = {}
-        self.partial_tab_widget = QTabWidget()
-        self.partial_num = 1
-        self.group = 0x00
-        self.address = 0x00  # Initialize address to common area
-        self.image_label = None
-        self.instrument_icon_folder = "drum_kits"
-        # Main layout
-        self.controls: Dict[DrumParameter, QWidget] = {}
+
+        # Presets
         self.preset_type = PresetType.DRUMS
         self.preset_handler = preset_handler
-        self.partial_editors = {}
-        self.main_window = parent
+        self.preset_list = DRUM_PRESETS_ENUMERATED
 
+        # midi parameters
+        self.partial_num = 1
+        self.area = TEMPORARY_TONE_AREA
+        self.part = DRUM_KIT_AREA
+        self.group = 0x2E
         self.current_data = None
         self.previous_data = None
-        # Create layouts
-        main_layout = QVBoxLayout(self)
-        self.partial_address = 0x2E
-        upper_layout = QHBoxLayout()
-        main_layout.addLayout(upper_layout)
-        self.setMinimumSize(1000, 500)
         self.partial_mapping = {
             "BD1": 0,
             "RIM": 1,
@@ -164,6 +152,22 @@ class DrumEditor(BaseEditor):
             "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7",
         ]
         self.midi_channel = MIDI_CHANNEL_DRUMS
+
+        # UI parameters
+        self.main_window = parent
+        self.partial_editors = {}
+        self.partial_tab_widget = QTabWidget()
+
+        self.image_label = None
+        self.instrument_icon_folder = "drum_kits"
+        # Main layout
+        self.controls: Dict[DrumParameter, QWidget] = {}
+
+        # Create layouts
+        main_layout = QVBoxLayout(self)
+        upper_layout = QHBoxLayout()
+        main_layout.addLayout(upper_layout)
+        self.setMinimumSize(1000, 500)
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
         self.instrument_title_label = QLabel(
@@ -172,17 +176,10 @@ class DrumEditor(BaseEditor):
             else "Drum Kit"
         )
         drum_group.setStyleSheet(
-            """
-            QGroupBox {
-            width: 300px;
-            }
-        """
+            Style.JDXI_DRUM_GROUP
         )
         self.instrument_title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-        """
+            Style.JDXI_INSTRUMENT_TITLE_LABEL
         )
         drum_group_layout = QVBoxLayout()
         drum_group.setLayout(drum_group_layout)
@@ -316,60 +313,6 @@ class DrumEditor(BaseEditor):
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.data_request()
 
-    def _create_parameter_slider(
-        self, param: Union[DrumParameter, DrumCommonParameter], label: str = None
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        slider = Slider(label, display_min, display_max)
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
-
-    def _create_parameter_combo_box(
-        self,
-        param: Union[DrumParameter, DrumCommonParameter],
-        label: str = None,
-        options: list = None,
-        values: list = None,
-    ) -> ComboBox:
-        """Create address combo box for address parameter with proper display conversion"""
-
-        combo_box = ComboBox(label, options, values)
-
-        # Connect value changed signal
-        combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = combo_box
-        return combo_box
-
-    def _create_parameter_spin_box(
-        self, param: Union[DrumParameter, DrumCommonParameter], label: str = None
-    ) -> SpinBox:
-        """Create address spin box for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        spin_box = SpinBox(label, display_min, display_max)
-
-        # Connect value changed signal
-        spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = spin_box
-        return spin_box
-
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         logging.info(f"selected_synth_text: {selected_synth_text}")
@@ -446,9 +389,9 @@ class DrumEditor(BaseEditor):
         if not self.preset_handler:
             self.preset_handler = PresetHandler(
                 self.midi_helper,
-                DRUM_PRESETS_ENUMERATED,
-                channel=MIDI_CHANNEL_DRUMS,
-                preset_type=PresetType.DRUMS,
+                self.preset_list,
+                channel=self.midi_channel,
+                preset_type=self.preset_type,
             )
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
@@ -560,7 +503,7 @@ class DrumEditor(BaseEditor):
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
 
         common_ignored_keys = {
-            "JD_XI_ID",
+            "JD_XI_HEADER",
             "ADDRESS",
             "TEMPORARY_AREA",
             "SYNTH_TONE",
@@ -650,7 +593,7 @@ class DrumEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in self.partial_mapping
+            return sysex_data.get("SYNTH_TONE") in self.partial_mapping
 
         def _get_partial_number(tone):
             """Retrieve partial number from synth tone mapping."""
@@ -667,7 +610,7 @@ class DrumEditor(BaseEditor):
         partial_no = _get_partial_number(synth_tone)
 
         ignored_keys = {
-            "JD_XI_ID",
+            "JD_XI_HEADER",
             "ADDRESS",
             "TEMPORARY_AREA",
             "TONE_NAME",
@@ -710,63 +653,3 @@ class DrumEditor(BaseEditor):
                 logging.info("--------------------------------")
 
         _log_debug_info()
-
-    def _log_changes(self, previous_data, current_data):
-        """Log changes between previous and current JSON data."""
-        changes = []
-        if not current_data or not previous_data:
-            return
-        for key, current_value in current_data.items():
-            previous_value = previous_data.get(key)
-            if previous_value != current_value:
-                changes.append((key, previous_value, current_value))
-
-        changes = [
-            change
-            for change in changes
-            if change[0] not in ["JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
-        ]
-
-        if changes:
-            logging.info("Changes detected:")
-            for key, prev, curr in changes:
-                logging.info(
-                    f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
-                )
-        else:
-            logging.info("No changes detected.")
-
-    def _on_parameter_changed(self, param: DrumParameter, display_value: int):
-        """Handle parameter value changes from UI controls"""
-        try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-            logging.info(
-                f"parameter: {param} display {display_value} midi value {midi_value}"
-            )
-            if param in [
-                DrumCommonParameter.KIT_LEVEL,
-            ]:
-                group = 0x00
-            else:
-                group = self.partial_address
-            logging.info(f"parameter param {param} value {display_value} sent")
-            try:
-                # Ensure value is included in the MIDI message
-                return self.midi_helper.send_parameter(
-                    area=TEMPORARY_TONE_AREA,
-                    part=DRUM_KIT_AREA,
-                    group=group,
-                    param=param.address,
-                    value=display_value,  # Make sure this value is being sent
-                )
-            except Exception as ex:
-                logging.error(f"MIDI error setting {param}: {str(ex)}")
-                return False
-
-        except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
-            return False

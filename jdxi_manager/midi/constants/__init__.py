@@ -1,13 +1,17 @@
-"""MIDI constants for Roland JD-Xi"""
+"""Constants for Roland JD-Xi MIDI protocol"""
 
 from enum import Enum, auto
+from dataclasses import dataclass
+
+from jdxi_manager.midi.sysex.roland import RolandSysEx
+
 
 # Memory Areas
-ANALOG_SYNTH_AREA = 0x01
-DIGITAL_SYNTH_AREA = 0x02
-DRUM_KIT_AREA = 0x03
-EFFECTS_AREA = 0x04
-VOCAL_FX_AREA = 0x05
+PROGRAM_AREA = 0x18
+DIGITAL_SYNTH_1_AREA = 0x19
+DIGITAL_SYNTH_2_AREA = 0x1A
+ANALOG_SYNTH_AREA = 0x1B
+DRUM_KIT_AREA = 0x1C
 
 MIDI_CHANNEL_DIGITAL1 = 0  # Corresponds to channel 1
 MIDI_CHANNEL_DIGITAL2 = 1  # Corresponds to channel 2
@@ -17,16 +21,6 @@ MIDI_CHANNEL_DRUMS = 9  # Corresponds to channel 10
 # Import specific classes from analog
 from .analog import (
     AnalogToneCC,
-    # AnalogOscWave,
-    # AnalogSubType,
-    # AnalogLFOShape,
-    # AnalogLFO,
-    # AnalogLFOSync,
-    # AnalogOscWaveform,
-    # AnalogSubOscType,
-    # AnalogFilterType,
-    # ANALOG_LFO_SYNC_NOTES,
-    # ANALOG_LFO_RANGES
 )
 
 # Import other module constants as needed
@@ -103,7 +97,7 @@ MODEL_ID_4 = 0x0E  # Product code
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
 
 # Device Identification
-JD_XI_ID = [
+JD_XI_HEADER = [
     ROLAND_ID,
     MODEL_ID_1,
     MODEL_ID_2,
@@ -375,103 +369,6 @@ class Waveform(Enum):
                 return waveform
         raise ValueError(f"Invalid waveform value: {value}")
 
-
-"""Constants for Roland JD-Xi MIDI protocol"""
-
-from enum import Enum, auto
-from dataclasses import dataclass
-
-from jdxi_manager.midi.sysex.roland import RolandSysEx
-from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
-
-# Analog Oscillator Parameters
-ANALOG_OSC_WAVE = 0x16  # Waveform (0-2: SAW,TRI,PW-SQR)
-ANALOG_OSC_COARSE = 0x17  # Pitch Coarse (40-88: -24 to +24)
-ANALOG_OSC_FINE = 0x18  # Pitch Fine (14-114: -50 to +50)
-ANALOG_OSC_PW = 0x19  # Pulse Width (0-127)
-ANALOG_OSC_PWM = 0x1A  # PW Mod Depth (0-127)
-ANALOG_OSC_PENV_VELO = 0x1B  # Pitch Env Velocity (1-127: -63 to +63)
-ANALOG_OSC_PENV_A = 0x1C  # Pitch Env Attack (0-127)
-ANALOG_OSC_PENV_D = 0x1D  # Pitch Env Decay (0-127)
-ANALOG_OSC_PENV_DEPTH = 0x1E  # Pitch Env Depth (1-127: -63 to +63)
-ANALOG_SUB_TYPE = 0x1F  # Sub Osc Type (0-2: OFF,OCT-1,OCT-2)
-
-# Analog Synth Parameters
-ANALOG_FILTER_CUTOFF = 0x21  # Filter cutoff frequency (0-127)
-ANALOG_FILTER_RESONANCE = 0x23  # Filter resonance (0-127)
-ANALOG_AMP_LEVEL = 0x2A  # Amplifier level (0-127)
-ANALOG_LFO_SHAPE = 0x30  # LFO waveform shape (0-5)
-ANALOG_LFO_RATE = 0x31  # LFO rate (0-127)
-
-# Analog Synth Areas and Parts
-ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
-ANALOG_PART = 0x01  # Analog synth address
-
-# Analog Synth Parameter Groups
-ANALOG_OSC_GROUP = 0x00  # Oscillator parameters
-ANALOG_FILTER_GROUP = 0x01  # Filter parameters
-ANALOG_AMP_GROUP = 0x02  # Amplifier parameters
-ANALOG_LFO_GROUP = 0x03  # LFO parameters
-
-# Analog LFO Parameters
-ANALOG_LFO_SHAPE = 0x0D  # LFO Shape (0-5: TRI,SIN,SAW,SQR,S&H,RND)
-ANALOG_LFO_RATE = 0x0E  # LFO Rate (0-127)
-ANALOG_LFO_FADE = 0x0F  # LFO Fade Time (0-127)
-ANALOG_LFO_SYNC = 0x10  # LFO Tempo Sync Switch (0-1)
-ANALOG_LFO_SYNC_NOTE = 0x11  # LFO Tempo Sync Note (0-19)
-ANALOG_LFO_PITCH = 0x12  # LFO Pitch Depth (1-127: -63 to +63)
-ANALOG_LFO_FILTER = 0x13  # LFO Filter Depth (1-127: -63 to +63)
-ANALOG_LFO_AMP = 0x14  # LFO Amp Depth (1-127: -63 to +63)
-ANALOG_LFO_KEY_TRIG = 0x15  # LFO Key Trigger (0-1)
-
-
-class AnalogOscWave(Enum):
-    """Analog oscillator waveform types"""
-
-    SAW = 0
-    TRIANGLE = 1
-    PULSE = 2
-
-    @staticmethod
-    def get_display_name(value: int) -> str:
-        """Get display name for waveform"""
-        names = {0: "SAW", 1: "TRI", 2: "P.W"}
-        return names.get(value, "???")
-
-
-# Sub oscillator types
-class AnalogSubType(Enum):
-    """Analog sub oscillator types"""
-
-    OFF = 0
-    OCT_DOWN_1 = 1  # -1 octave
-    OCT_DOWN_2 = 2  # -2 octaves
-
-    @staticmethod
-    def get_display_name(value: int) -> str:
-        """Get display name for sub oscillator preset_type"""
-        names = {0: "OFF", 1: "-1 OCT", 2: "-2 OCT"}
-        return names.get(value, "???")
-
-
-# Analog LFO Shape Values
-class AnalogLFOShape(Enum):
-    """Analog LFO waveform shapes"""
-
-    TRIANGLE = 0  # Triangle wave
-    SINE = 1  # Sine wave
-    SAW = 2  # Sawtooth wave
-    SQUARE = 3  # Square wave
-    SAMPLE_HOLD = 4  # Sample & Hold
-    RANDOM = 5  # Random
-
-    @staticmethod
-    def get_display_name(value: int) -> str:
-        """Get display name for LFO shape"""
-        names = {0: "TRI", 1: "SIN", 2: "SAW", 3: "SQR", 4: "S&H", 5: "RND"}
-        return names.get(value, "???")
-
-
 # Analog LFO Sync Note Values
 ANALOG_LFO_SYNC_NOTES = [
     "16",  # 0
@@ -496,23 +393,9 @@ ANALOG_LFO_SYNC_NOTES = [
     "1/32",  # 19
 ]
 
-# Parameter value ranges
-ANALOG_LFO_RANGES = {
-    "shape": (0, 5),
-    "rate": (0, 127),
-    "fade": (0, 127),
-    "sync": (0, 1),
-    "sync_note": (0, 19),
-    "pitch": (-63, 63),
-    "filter": (-63, 63),
-    "amp": (-63, 63),
-    "key_trig": (0, 1),
-}
-
 # JD-Xi Memory Map Areas
 SETUP_AREA = 0x01  # 01 00 00 00: Setup
 SYSTEM_AREA = 0x02  # 02 00 00 00: System
-PROGRAM_AREA = 0x18  # 18 00 00 00: Temporary Program
 
 # Synth Areas
 DIGITAL_SYNTH_1 = 0x19  # 19 00 00 00: Digital Synth Part 1
@@ -523,74 +406,17 @@ DRUM_KIT = 0x19  # 19 60 00 00: Drums Part
 # Part Offsets
 DIGITAL_PART_1 = 0x01  # Digital Synth 1 offset
 DIGITAL_PART_2 = 0x02  # Digital Synth 2 offset
-ANALOG_PART = 0x02  # Analog Synth offset
-DRUM_PART = 0x10  # Drums offset
-
-# SysEx Message Components
-START_OF_SYSEX = 0xF0
-END_OF_SYSEX = 0xF7
-PROGRAM_CHANGE = 0xC0  # Program Change status byte
-
-# MIDI Control Change Numbers
-BANK_SELECT_MSB = 0x00  # CC 0 - Bank Select MSB
-BANK_SELECT_LSB = 0x20  # CC 32 - Bank Select LSB
-
-# Bank MSB Values
-ANALOG_BANK_MSB = 0x5E  # 94 (0x5E) for Analog synth
-DIGITAL_BANK_MSB = 0x5F  # 95 (0x5F) for Digital synth (SuperNATURAL)
-DRUM_BANK_MSB = 0x56  # 86 (0x56) for Drum kits
-
-# Drum Parameters
-DRUM_LEVEL = 0x01  # Overall drum level (0-127)
-DRUM_PAN = 0x02  # Overall drum pan (L64-R63)
-DRUM_REVERB = 0x03  # Reverb send level (0-127)
-DRUM_DELAY = 0x04  # Delay send level (0-127)
-
-# Individual Drum Parameters
-DRUM_PAD_LEVEL = 0x10  # Individual pad level (0-127)
-DRUM_PAD_PAN = 0x11  # Individual pad pan (L64-R63)
-DRUM_PAD_TUNE = 0x12  # Individual pad tuning (-24/+24)
-DRUM_PAD_DECAY = 0x13  # Individual pad decay (0-127)
-DRUM_PAD_REVERB = 0x14  # Individual pad reverb send (0-127)
-DRUM_PAD_DELAY = 0x15  # Individual pad delay send (0-127)
-
-# Drum Pad Numbers
-KICK = 0x00
-SNARE = 0x01
-CLOSED_HAT = 0x02
-OPEN_HAT = 0x03
-TOM_1 = 0x04
-TOM_2 = 0x05
-CRASH = 0x06
-RIDE = 0x07
-CLAP = 0x08
-RIM = 0x09
-
-# Bank LSB Values
-PRESET_BANK_LSB = 0x40  # 64 (0x40) for preset bank
-PRESET_BANK_2_LSB = 0x41  # 65 (0x41) for second preset bank (Digital only)
-USER_BANK_LSB = 0x00  # 0 (0x00) for user bank
 
 # Roland Device IDs
 ROLAND_ID = 0x41
-DEVICE_ID = 0x10
-MODEL_ID = [0x00, 0x00, 0x00, 0x0E]  # JD-Xi model ID
 MODEL_ID_1 = 0x00
 MODEL_ID_2 = 0x00
 MODEL_ID_3 = 0x00
-JD_XI_ID = 0x0E
-DT1_COMMAND = 0x12
 
-# Roland Commands
-DT1_COMMAND_12 = 0x12  # Data Set 1
-RQ1_COMMAND_11 = 0x11  # Data Request 1
 
-# Command constants
-RQ1_COMMAND_11 = 0x11  # Data Request 1
 
 # Memory areas
 COMMON_AREA = 0x00
-DIGITAL_SYNTH_AREA = 0x19  # Base area for digital synths
 
 # Part numbers
 PART_1 = 0x01  # Part 1
@@ -1483,284 +1309,6 @@ class AnalogParameter(Enum):
                 return mapper[value] if 0 <= value < len(mapper) else str(value)
             elif callable(mapper):
                 return mapper(value)
-        return str(value)
-
-
-class DigitalParameter(Enum):
-    """Digital synth parameter addresses and ranges"""
-
-    # Tone name parameters (0x00-0x0B)
-    TONE_NAME_1 = 0x00  # ASCII 32-127
-    TONE_NAME_2 = 0x01
-    TONE_NAME_3 = 0x02
-    TONE_NAME_4 = 0x03
-    TONE_NAME_5 = 0x04
-    TONE_NAME_6 = 0x05
-    TONE_NAME_7 = 0x06
-    TONE_NAME_8 = 0x07
-    TONE_NAME_9 = 0x08
-    TONE_NAME_10 = 0x09
-    TONE_NAME_11 = 0x0A
-    TONE_NAME_12 = 0x0B
-
-    # Common parameters (0x0C-0x18)
-    TONE_LEVEL = 0x0C  # 0-127
-    PORTAMENTO_SW = 0x12  # 0-1 (OFF/ON)
-    PORTAMENTO_TIME = 0x13  # 0-127
-    MONO_SW = 0x14  # 0-1 (OFF/ON)
-    OCTAVE_SHIFT = 0x15  # 61-67 (-3 to +3)
-    BEND_RANGE_UP = 0x16  # 0-24 semitones
-    BEND_RANGE_DOWN = 0x17  # 0-24 semitones
-
-    # Partial parameters (0x20-0x2F)
-    PARTIAL_SWITCH = 0x20  # 0-1 (OFF/ON)
-    PARTIAL_LEVEL = 0x21  # 0-127
-    PARTIAL_COARSE = 0x22  # 40-88 (-24 to +24)
-    PARTIAL_FINE = 0x23  # 14-114 (-50 to +50)
-    WAVE_SHAPE = 0x24  # 0-127
-    PULSE_WIDTH = 0x25  # 0-127
-    PWM_DEPTH = 0x26  # 0-127
-    SUPER_SAW_DEPTH = 0x27  # 0-127
-    FILTER_TYPE = 0x28  # 0-3 (OFF,LPF,BPF,HPF)
-    CUTOFF = 0x29  # 0-127
-    RESONANCE = 0x2A  # 0-127
-    FILTER_ENV = 0x2B  # 1-127 (-63 to +63)
-    FILTER_KEY = 0x2C  # 0-127
-    AMP_ENV = 0x2D  # 0-127
-    PAN = 0x2E  # 0-127 (L64-63R)
-    RING_SW = 0x1F  # 0-2 (OFF, ---, ON)
-
-    # Partial switches (0x19-0x1E)
-    PARTIAL1_SWITCH = 0x19  # 0-1 (OFF/ON)
-    PARTIAL1_SELECT = 0x1A  # 0-1 (OFF/ON)
-    PARTIAL2_SWITCH = 0x1B  # 0-1 (OFF/ON)
-    PARTIAL2_SELECT = 0x1C  # 0-1 (OFF/ON)
-    PARTIAL3_SWITCH = 0x1D  # 0-1 (OFF/ON)
-    PARTIAL3_SELECT = 0x1E  # 0-1 (OFF/ON)
-
-    # Additional common parameters (0x2E-0x3C)
-    UNISON_SW = 0x2E  # 0-1 (OFF/ON)
-    PORTAMENTO_MODE = 0x31  # 0-1 (NORMAL/LEGATO)
-    LEGATO_SW = 0x32  # 0-1 (OFF/ON)
-    ANALOG_FEEL = 0x34  # 0-127
-    WAVE_SHAPE_COMMON = 0x35  # 0-127 (renamed from WAVE_SHAPE)
-    TONE_CATEGORY = 0x36  # 0-127
-    UNISON_SIZE = 0x3C  # 0-3 (2,4,6,8 voices)
-
-    # Modify parameters (0x01-0x06)
-    ATTACK_TIME_SENS = 0x01  # 0-127
-    RELEASE_TIME_SENS = 0x02  # 0-127
-    PORTA_TIME_SENS = 0x03  # 0-127
-    ENV_LOOP_MODE = 0x04  # 0-2 (OFF, FREE-RUN, TEMPO-SYNC)
-    ENV_LOOP_SYNC = 0x05  # 0-19 (sync note values)
-    CHROM_PORTA = 0x06  # 0-1 (OFF/ON)
-
-    # Partial oscillator parameters (0x00-0x09)
-    OSC_WAVE = 0x00  # 0-7 (SAW, SQR, PW-SQR, TRI, SINE, NOISE, SUPER-SAW, PCM)
-    OSC_VARIATION = 0x01  # 0-2 (A, B, C)
-    OSC_PITCH = 0x03  # 40-88 (-24 to +24)
-    OSC_DETUNE = 0x04  # 14-114 (-50 to +50)
-    OSC_PWM_DEPTH = 0x05  # 0-127
-    OSC_PW = 0x06  # 0-127
-    OSC_PITCH_ATK = 0x07  # 0-127
-    OSC_PITCH_DEC = 0x08  # 0-127
-    OSC_PITCH_DEPTH = 0x09  # 1-127 (-63 to +63)
-
-    # Filter parameters (0x0A-0x14)
-    FILTER_MODE = 0x0A  # 0-7 (BYPASS, LPF, HPF, BPF, PKG, LPF2, LPF3, LPF4)
-    FILTER_SLOPE = 0x0B  # 0-1 (-12, -24 dB)
-    FILTER_CUTOFF = 0x0C  # 0-127
-    FILTER_KEYFOLLOW = 0x0D  # 54-74 (-100 to +100)
-    FILTER_ENV_VELO = 0x0E  # 1-127 (-63 to +63)
-    FILTER_RESONANCE = 0x0F  # 0-127
-    FILTER_ENV_ATK = 0x10  # 0-127
-    FILTER_ENV_DEC = 0x11  # 0-127
-    FILTER_ENV_SUS = 0x12  # 0-127
-    FILTER_ENV_REL = 0x13  # 0-127
-    FILTER_ENV_DEPTH = 0x14  # 1-127 (-63 to +63)
-
-    # Amplifier parameters (0x15-0x1B)
-    AMP_LEVEL = 0x15  # 0-127
-    AMP_VELO_SENS = 0x16  # 1-127 (-63 to +63)
-    AMP_ENV_ATK = 0x17  # 0-127
-    AMP_ENV_DEC = 0x18  # 0-127
-    AMP_ENV_SUS = 0x19  # 0-127
-    AMP_ENV_REL = 0x1A  # 0-127
-    AMP_PAN = 0x1B  # 0-127 (L64-63R)
-
-    # LFO parameters (0x1C-0x25)
-    LFO_SHAPE = 0x1C  # 0-5 (TRI, SIN, SAW, SQR, S&H, RND)
-    LFO_RATE = 0x1D  # 0-127
-    LFO_SYNC_SW = 0x1E  # 0-1 (OFF/ON)
-    LFO_SYNC_NOTE = 0x1F  # 0-19 (sync note values)
-    LFO_FADE = 0x20  # 0-127
-    LFO_KEY_TRIG = 0x21  # 0-1 (OFF/ON)
-    LFO_PITCH_DEPTH = 0x22  # 1-127 (-63 to +63)
-    LFO_FILTER_DEPTH = 0x23  # 1-127 (-63 to +63)
-    LFO_AMP_DEPTH = 0x24  # 1-127 (-63 to +63)
-    LFO_PAN_DEPTH = 0x25  # 1-127 (-63 to +63)
-
-    # Modulation LFO parameters (0x26-0x2F)
-    MOD_LFO_SHAPE = 0x26  # 0-5 (TRI, SIN, SAW, SQR, S&H, RND)
-    MOD_LFO_RATE = 0x27  # 0-127
-    MOD_LFO_SYNC_SW = 0x28  # 0-1 (OFF/ON)
-    MOD_LFO_SYNC_NOTE = 0x29  # 0-19 (sync note values)
-    OSC_PW_SHIFT = 0x2A  # 0-127
-    MOD_LFO_PITCH = 0x2C  # 1-127 (-63 to +63)
-    MOD_LFO_FILTER = 0x2D  # 1-127 (-63 to +63)
-    MOD_LFO_AMP = 0x2E  # 1-127 (-63 to +63)
-    MOD_LFO_PAN = 0x2F  # 1-127 (-63 to +63)
-
-    # Aftertouch parameters (0x30-0x31)
-    CUTOFF_AFTERTOUCH = 0x30  # 1-127 (-63 to +63)
-    LEVEL_AFTERTOUCH = 0x31  # 1-127 (-63 to +63)
-
-    # Additional oscillator parameters (0x34-0x35)
-    WAVE_GAIN = 0x34  # 0-3 (-6, 0, +6, +12 dB)
-    WAVE_NUMBER = 0x35  # 0-16384 (OFF, 1-16384)
-
-    # Filter and modulation parameters (0x39-0x3C)
-    HPF_CUTOFF = 0x39  # 0-127
-    SUPER_SAW_DETUNE = 0x3A  # 0-127
-    MOD_LFO_RATE_CTRL = 0x3B  # 1-127 (-63 to +63)
-    AMP_LEVEL_KEYFOLLOW = 0x3C  # 54-74 (-100 to +100)
-
-    @staticmethod
-    def validate_value(param: int, value: int) -> bool:
-        """Validate parameter value is within allowed range"""
-        ranges = {
-            # Tone name (0x00-0x0B): ASCII 32-127
-            range(0x00, 0x0C): lambda v: 32 <= v <= 127,
-            # Level: 0-127
-            0x0C: lambda v: 0 <= v <= 127,
-            # Switches: 0-1
-            0x12: lambda v: v in (0, 1),  # Portamento
-            0x14: lambda v: v in (0, 1),  # Mono
-            # Portamento time: 0-127
-            0x13: lambda v: 0 <= v <= 127,
-            # Octave shift: 61-67 (-3 to +3)
-            0x15: lambda v: 61 <= v <= 67,
-            # Pitch bend ranges: 0-24
-            0x16: lambda v: 0 <= v <= 24,
-            0x17: lambda v: 0 <= v <= 24,
-        }
-
-        # Find matching range
-        for param_range, validator in ranges.items():
-            if isinstance(param_range, range):
-                if param in param_range:
-                    return validator(value)
-            elif param == param_range:
-                return validator(value)
-
-        return True  # Allow other parameters to pass through
-
-    @staticmethod
-    def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
-        if 0x00 <= param <= 0x0B:  # Tone name
-            return chr(value)
-        elif param == 0x15:  # Octave shift
-            return f"{value - 64:+d}"  # Convert to -3 to +3
-        elif param in (
-            0x12,
-            0x14,
-            0x20,
-            0x2F,
-            0x19,
-            0x1A,
-            0x1B,
-            0x1C,
-            0x1D,
-            0x1E,
-        ):  # All switches
-            return "ON" if value else "OFF"
-        elif param == 0x22:  # Coarse tune
-            return f"{value - 64:+d}"  # Convert to -24/+24
-        elif param == 0x23:  # Fine tune
-            return f"{value - 64:+d}"  # Convert to -50/+50
-        elif param == 0x28:  # Filter preset_type
-            return ["OFF", "LPF", "BPF", "HPF"][value]
-        elif param == 0x2B:  # Filter env
-            return f"{value - 64:+d}"  # Convert to -63/+63
-        elif param == 0x2E:  # Pan
-            if value < 64:
-                return f"L{64 - value}"
-            elif value > 64:
-                return f"{value - 64}R"
-            return "C"
-        elif param == 0x1F:  # Ring switch
-            return ["OFF", "---", "ON"][value]
-        elif param in (0x2E, 0x32):  # Unison and Legato switches
-            return "ON" if value else "OFF"
-        elif param == 0x31:  # Portamento mode
-            return "LEGATO" if value else "NORMAL"
-        elif param == 0x3C:  # Unison size
-            return str([2, 4, 6, 8][value])  # Convert 0-3 to actual voice count
-        elif param == 0x04:  # Envelope loop mode
-            return ["OFF", "FREE-RUN", "TEMPO-SYNC"][value]
-        elif param == 0x05:  # Envelope loop sync note
-            return [
-                "16",
-                "12",
-                "8",
-                "4",
-                "2",
-                "1",
-                "3/4",
-                "2/3",
-                "1/2",
-                "3/8",
-                "1/3",
-                "1/4",
-                "3/16",
-                "1/6",
-                "1/8",
-                "3/32",
-                "1/12",
-                "1/16",
-                "1/24",
-                "1/32",
-            ][value]
-        elif param in (0x22, 0x23, 0x24, 0x25):  # LFO depths
-            return f"{value - 64:+d}"  # Convert to -63/+63
-        elif param == 0x26:  # Mod LFO shape
-            return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
-        elif param == 0x29:  # Mod LFO sync note
-            return [
-                "16",
-                "12",
-                "8",
-                "4",
-                "2",
-                "1",
-                "3/4",
-                "2/3",
-                "1/2",
-                "3/8",
-                "1/3",
-                "1/4",
-                "3/16",
-                "1/6",
-                "1/8",
-                "3/32",
-                "1/12",
-                "1/16",
-                "1/24",
-                "1/32",
-            ][value]
-        elif param in (0x2C, 0x2D, 0x2E, 0x2F):  # Mod LFO depths
-            return f"{value - 64:+d}"  # Convert to -63/+63
-        elif param in (0x30, 0x31):  # Aftertouch sensitivities
-            return f"{value - 64:+d}"  # Convert to -63/+63
-        elif param == 0x34:  # Wave gain
-            return ["-6dB", "0dB", "+6dB", "+12dB"][value]
-        elif param == 0x35:  # Wave number
-            return "OFF" if value == 0 else str(value)
-        elif param == 0x3B:  # Mod LFO rate control
-            return f"{value - 64:+d}"  # Convert to -63/+63
-        elif param == 0x3C:  # Amp level keyfollow
-            return f"{((value - 54) * 200 / 20) - 100:+.0f}"  # Convert to -100/+100
         return str(value)
 
 
@@ -4946,7 +4494,7 @@ class DrumPadParam(Enum):
     PAN = 0x02  # Pan (-64 to +63)
     TUNE = 0x03  # Tune (-64 to +63)
     DECAY = 0x04  # Decay time (0-127)
-    MUTE_GROUP = 0x05  # Mute group (0-31, 0=OFF)
+    MUTE_GROUP = 0x05  # Mute area (0-31, 0=OFF)
     OUTPUT_EFX = 0x06  # Output/EFX select (0-3)
     REVERB_SEND = 0x07  # Reverb send level (0-127)
     DELAY_SEND = 0x08  # Delay send level (0-127)
@@ -4964,7 +4512,7 @@ class DrumPadParam(Enum):
             return "C"
         elif param in (0x03,):  # Tune
             return f"{value - 64:+d}"
-        elif param == 0x05:  # Mute group
+        elif param == 0x05:  # Mute area
             return "OFF" if value == 0 else str(value)
         elif param == 0x06:  # Output/EFX
             return ["OUTPUT", "EFX1", "EFX2", "DLY"][value]
@@ -6373,7 +5921,7 @@ PRESET_BANK_LSB = 0x40  # 64 (0x40) for preset bank
 PRESET_BANK_2_LSB = 0x41  # 65 (0x41) for second preset bank (Digital only)
 
 # Digital Synth Parameters
-DIGITAL_SYNTH_AREA = 0x19
+DIGITAL_SYNTH_1_AREA = 0x19
 PART_1 = 0x01
 OSC_PARAM_GROUP = 0x20
 
@@ -6389,7 +5937,7 @@ WAVE_PCM = 0x07
 
 # Memory Areas
 PROGRAM_AREA = 0x18
-DIGITAL_SYNTH_AREA = 0x19
+DIGITAL_SYNTH_1_AREA = 0x19
 DIGITAL_SYNTH_2_AREA = 0x1A
 ANALOG_SYNTH_AREA = 0x1B
 DRUM_KIT_AREA = 0x1C

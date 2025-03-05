@@ -42,7 +42,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QScrollArea,
     QLabel,
-    QPushButton, QCheckBox,
+    QPushButton,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
@@ -51,13 +51,11 @@ import qtawesome as qta
 from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.data.digital import (
     OscWave,
     DigitalPartial,
@@ -67,7 +65,7 @@ from jdxi_manager.data.digital import (
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.constants import (
-    DIGITAL_SYNTH_AREA,
+    DIGITAL_SYNTH_1_AREA,
     PART_1,
     PART_2,
     PART_3,
@@ -77,13 +75,13 @@ from jdxi_manager.midi.constants import (
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_DIGITAL2,
     MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS,
+    MIDI_CHANNEL_DRUMS, COMMON_AREA,
 )
 from jdxi_manager.ui.widgets.switch.partial import PartialsPanel
 from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
-class DigitalSynthEditor(BaseEditor):
+class DigitalSynthEditor(SynthEditor):
     """class for Digital Synth Editor containing 3 partials"""
 
     preset_changed = Signal(int, str, int)
@@ -102,7 +100,7 @@ class DigitalSynthEditor(BaseEditor):
         self.preset_type = (
             PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
         )
-        self.midi_channel = MIDI_CHANNEL_DIGITAL1
+
         self.presets = DIGITAL_PRESETS_ENUMERATED
         self.image_label = QLabel()
         self.image_label.setAlignment(
@@ -127,7 +125,18 @@ class DigitalSynthEditor(BaseEditor):
             else:
                 self.preset_handler = parent.digital_2_preset_handler
         self.synth_num = synth_num
+        if self.synth_num == 2:
+            self.midi_channel = MIDI_CHANNEL_DIGITAL2
+            self.area = DIGITAL_SYNTH_2_AREA
+            self.part = PART_1
+        else:
+            self.midi_channel = MIDI_CHANNEL_DIGITAL1
+            self.area = DIGITAL_SYNTH_1_AREA
+            self.part = PART_2
+        # midi message parameters
+
         self.part = PART_1 if synth_num == 1 else PART_2
+        self.group = COMMON_AREA
         self.setWindowTitle(f"Digital Synth {synth_num}")
         self.main_window = parent
 
@@ -302,7 +311,7 @@ class DigitalSynthEditor(BaseEditor):
     def _create_common_controls_section(self):
         """Create common controls section"""
         group = QWidget()
-        # group = QGroupBox("Common Controls")
+        # area = QGroupBox("Common Controls")
         layout = QVBoxLayout()
         group.setLayout(layout)
         # prettify with icons
@@ -433,25 +442,6 @@ class DigitalSynthEditor(BaseEditor):
         self.update_instrument_image()
         return group
 
-    def _create_parameter_slider(
-        self, param: Union[DigitalParameter, DigitalCommonParameter], label: str
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        # Create horizontal slider (removed vertical ADSR check)
-        slider = Slider(label, display_min, display_max)
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
-
     def update_instrument_title(self):
         """Update the instrument title label with the selected synth name."""
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
@@ -527,19 +517,6 @@ class DigitalSynthEditor(BaseEditor):
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
-    def load_preset(self, preset_index):
-        """Load address preset by index"""
-        preset_data = {
-            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
-            "selpreset": preset_index,  # Convert to 1-based index
-            "modified": 0,  # or 1, depending on your logic
-            "channel": self.midi_channel
-        }
-        if not self.preset_handler:
-            self.preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DIGITAL1, preset_type=PresetType.DIGITAL_1)
-        if self.preset_handler:
-            self.preset_handler.load_preset(preset_data)
-
     def _on_parameter_changed(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
@@ -584,74 +561,6 @@ class DigitalSynthEditor(BaseEditor):
 
         # Show first tab
         self.partial_tab_widget.setCurrentIndex(0)
-
-    def send_midi_parameter(self, param, value) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            logging.debug("No MIDI helper available - parameter change ignored")
-            return False
-
-        try:
-            # Get parameter group and address with partial offset
-            if isinstance(param, DigitalParameter):
-                group, param_address = param.get_address_for_partial(self.partial_num)
-            else:
-                group = 0x00  # Common parameters group
-                param_address = param.address
-
-            # Ensure value is included in the MIDI message
-            return self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_AREA,
-                part=self.part,
-                group=group,
-                param=param_address,
-                value=value,  # Make sure this value is being sent
-            )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
-            return False
-
-    def _update_ui(self, parameters: Dict[str, int]):
-        """Update UI with new parameter values"""
-        try:
-            # Emit the signal to update the UI
-            self.ui_update_requested.emit(parameters)
-
-        except Exception as e:
-            logging.error(f"Error updating UI: {str(e)}", exc_info=True)
-
-    def handle_midi_message(self, message):
-        """Callback for handling incoming MIDI messages"""
-        try:
-            logging.info(f"SysEx message: {message}")
-            if message[7] == 0x12:  # DT1 command
-                self._handle_dt1_message(message[8:])
-        except Exception as e:
-            logging.error(f"Error handling MIDI message: {str(e)}", exc_info=True)
-
-    def _handle_dt1_message(self, data):
-        """Handle Data Set 1 (DT1) messages
-
-        Format: aa bb cc dd ... where:
-        aa bb cc = Address
-        dd ... = Data
-        """
-        if len(data) < 4:  # Need at least address and one data byte
-            return
-
-        address = data[0:3]
-        logging.info(f"DT1 message Address: {address}")
-        value = data[3]
-        logging.info(f"DT1 message Value: {value}")
-        # Emit signal with parameter data
-        self.parameter_received.emit(address, value)
-
-    def send_message(self, message):
-        """Send address SysEx message using the MIDI helper"""
-        if self.midi_helper:
-            self.midi_helper.send_message(message)
-        else:
-            logging.error("MIDI helper not initialized")
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
@@ -701,7 +610,8 @@ class DigitalSynthEditor(BaseEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                                                        "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
@@ -742,7 +652,7 @@ class DigitalSynthEditor(BaseEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(synth_tone)
 
-        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
+        ignored_keys = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
         # osc_waveform_map = {wave.value: wave for wave in OscWave}
@@ -899,7 +809,7 @@ class DigitalSynthEditor(BaseEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
 
-        common_ignored_keys = {'JD_XI_ID', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
+        common_ignored_keys = {'JD_XI_HEADER', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
         sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
 
         if synth_tone == "TONE_COMMON":
@@ -943,27 +853,6 @@ class DigitalSynthEditor(BaseEditor):
                 logging.info("--------------------------------")
 
         _log_debug_info()
-
-    def _log_changes(self, previous_data, current_data):
-        """Log changes between previous and current JSON data."""
-        changes = []
-        if not current_data or not previous_data:
-            return
-        for key, current_value in current_data.items():
-            previous_value = previous_data.get(key)
-            if previous_value != current_value:
-                changes.append((key, previous_value, current_value))
-
-        changes = [
-            change for change in changes if change[0] not in ["JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
-        ]
-
-        if changes:
-            logging.info("Changes detected:")
-            for key, prev, curr in changes:
-                logging.info(f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}")
-        else:
-            logging.info("No changes detected.")
 
     def _update_waveform_buttons(self, partial_number, value):
         """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""

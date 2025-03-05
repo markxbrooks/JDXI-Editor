@@ -1,5 +1,6 @@
 """
 DigitalParameter: JD-Xi Digital Synthesizer Parameter Mapping
+=============================================================
 
 This class defines digital synthesizer parameters for the Roland JD-Xi, mapping
 various synthesis parameters to their corresponding memory addresses and valid
@@ -70,85 +71,6 @@ def parse_digital_parameters(data: list) -> dict:
         parameters[param.name] = safe_get(param.address)
 
     return parameters
-
-
-""" For reference:
-| 00 02 | 0000 00aa | (reserve) <*> |
-| 00 03 | 00aa aaaa | OSC Pitch (40 - 88) |
-| | | -24 - +24 |
-| 00 04 | 0aaa aaaa | OSC Detune (14 - 114) |
-| | | -50 - +50 |
-| 00 05 | 0aaa aaaa | OSC Pulse Width Mod Depth (0 - 127) |
-| 00 06 | 0aaa aaaa | OSC Pulse Width (0 - 127) |
-| 00 07 | 0aaa aaaa | OSC Pitch Env Attack Time (0 - 127) |
-| 00 08 | 0aaa aaaa | OSC Pitch Env Decay (0 - 127) |
-| 00 09 | 0aaa aaaa | OSC Pitch Env Depth (1 - 127) |
-| | | -63 - +63 |
-|-------------+-----------+----------------------------------------------------|
-| 00 0A | 0000 0aaa | FILTER Mode (0 - 7) |
-| | | BYPASS, LPF, HPF, BPF, PKG, |
-| | | LPF2, LPF3, LPF4 |
-| 00 0B | 0000 000a | FILTER Slope (0 - 1) |
-| | | -12, -24 [dB] |
-| 00 0C | 0aaa aaaa | FILTER Cutoff (0 - 127) |
-| 00 0D | 00aa aaaa | FILTER Cutoff Keyfollow (54 - 74) |
-| | | -100 - +100 |
-| 00 0E | 0aaa aaaa | FILTER Env Velocity Sens (1 - 127) |
-| | | -63 - +63 |
-| 00 0F | 0aaa aaaa | FILTER Resonance (0 - 127) |
-| 00 10 | 0aaa aaaa | FILTER Env Attack Time (0 - 127) |
-| 00 11 | 0aaa aaaa | FILTER Env Decay Time (0 - 127) |
-| 00 12 | 0aaa aaaa | FILTER Env Sustain Level (0 - 127) |
-| 00 13 | 0aaa aaaa | FILTER Env Release Time (0 - 127) |
-| 00 14 | 0aaa aaaa | FILTER Env Depth (1 - 127) |
-| | | -63 - +63 |
-|-------------+-----------+----------------------------------------------------|
-| 00 15 | 0aaa aaaa | AMP Level (0 - 127) |
-| 00 16 | 0aaa aaaa | AMP Level Velocity Sens (1 - 127) |
-| | | -63 - +63 |
-| 00 17 | 0aaa aaaa | AMP Env Attack Time (0 - 127) |
-| 00 18 | 0aaa aaaa | AMP Env Decay Time (0 - 127) |
-| 00 19 | 0aaa aaaa | AMP Env Sustain Level (0 - 127) |
-| 00 1A | 0aaa aaaa | AMP Env Release Time (0 - 127) |
-| 00 1B | 0aaa aaaa | AMP Pan (0 - 127) |
-| | | L64 - 63R |
-|-------------+-----------+----------------------------------------------------|
-| 00 1C | 0000 0aaa | LFO Shape (0 - 5) |
-| | | TRI, SIN, SAW, SQR, S&H, RND |
-| 00 1D | 0aaa aaaa | LFO Rate (0 - 127) |
-| 00 1E | 0000 000a | LFO Tempo Sync Switch (0 - 1) |
-| | | OFF, ON |
-| 00 1F | 000a aaaa | LFO Tempo Sync Note (0 - 19) |
-| | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |
-| | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |
-| | | 1/12, 1/16, 1/24, 1/32 |
-| 00 20 | 0aaa aaaa | LFO Fade Time (0 - 127) |
-| 00 21 | 0000 000a | LFO Key Trigger (0 - 1) |
-| | | OFF, ON |
-| 00 22 | 0aaa aaaa | LFO Pitch Depth (1 - 127) |
-| | | -63 - +63 |
-| 00 23 | 0aaa aaaa | LFO Filter Depth (1 - 127) |
-| | | -63 - +63 |
-| 00 24 | 0aaa aaaa | LFO Amp Depth (1 - 127) |
-| | | -63 - +63 |
-| 00 25 | 0aaa aaaa | LFO Pan Depth (1 - 127) |
-| | | -63 - +63 |
-|-------------+-----------+----------------------------------------------------|
-| 00 26 | 0000 0aaa | Modulation LFO Shape (0 - 5) |
-| | | TRI, SIN, SAW, SQR, S&H, RND |
-| 00 27 | 0aaa aaaa | Modulation LFO Rate (0 - 127) |
-| 00 28 | 0000 000a | Modulation LFO Tempo Sync Switch (0 - 1) |
-| | | OFF, ON |
-| 00 29 | 000a aaaa | Modulation LFO Tempo Sync Note (0 - 19) |
-| | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |
-| | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |
-| | | 1/12, 1/16, 1/24, 1/32 |
-| 00 2A | 0aaa aaaa | OSC Pulse Width Shift (0 - 127) |
-| 00 2B | 0000 000a | (reserve) <*> |
-| 00 2C | 0aaa aaaa | Modulation LFO Pitch Depth (1 - 127) |
-| | | -63 - +63 |
-| 00 2D |
-"""
 
 
 class DigitalParameter(SynthParameter):
@@ -443,7 +365,7 @@ class DigitalParameter(SynthParameter):
         return display_value
 
     def get_address_for_partial(self, partial_num: int) -> Tuple[int, int]:
-        """Get parameter group and address adjusted for partial number."""
+        """Get parameter area and address adjusted for partial number."""
         group_map = {1: 0x20, 2: 0x21, 3: 0x22}
         group = group_map.get(partial_num, 0x20)  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
@@ -600,6 +522,4 @@ class DigitalParameter(SynthParameter):
             return slider_value + 64  # 0 to 127 -> -63 to +63
         elif self == self.LEVEL_AFTERTOUCH:
             return slider_value + 64  # 0 to 127 -> -63 to +63
-            
-        # ... handle other parameters ...
         return slider_value

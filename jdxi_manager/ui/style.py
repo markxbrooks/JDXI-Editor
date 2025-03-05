@@ -461,6 +461,11 @@ class Style:
             background: transparent;
         """
 
+    JDXI_INSTRUMENT_TITLE_LABEL = """
+            font-size: 16px;
+            font-weight: bold;
+        """
+
     JDXI_LABEL_SYNTH_PART = """
                 font-family: "Myriad Pro", Arial;
                 font-size: 13px;
@@ -473,6 +478,12 @@ class Style:
                 font-size: 13px;
                 color: {ACCENT_ANALOG};  /* Blue for Analog */
                 font-weight: bold;
+            """
+
+    JDXI_DRUM_GROUP = """
+                QGroupBox {
+                width: 240px;
+            }
             """
 
     JDXI_PATCH_MANAGER = """

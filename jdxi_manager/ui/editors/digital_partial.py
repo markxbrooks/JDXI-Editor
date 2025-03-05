@@ -16,13 +16,15 @@ from PySide6.QtWidgets import (
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.digital import OscWave
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.midi.constants import PART_1, DIGITAL_SYNTH_AREA
+from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.constants import PART_1, DIGITAL_SYNTH_1_AREA
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_frac,
     midi_cc_to_ms,
     ms_to_midi_cc,
     frac_to_midi_cc,
 )
+from jdxi_manager.ui.editors.partial import PartialEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
@@ -34,13 +36,20 @@ from jdxi_manager.ui.image.waveform import (
 )
 
 
-class DigitalPartialEditor(QWidget):
+class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
     def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
         super().__init__(parent)
+        self.bipolar_parameters = [
+            DigitalParameter.OSC_DETUNE,
+            DigitalParameter.OSC_PITCH,
+            DigitalParameter.OSC_PITCH_ENV_DEPTH,
+            DigitalParameter.AMP_PAN,
+        ]
         self.midi_helper = midi_helper
         self.partial_num = partial_num
+        self.area = DIGITAL_SYNTH_1_AREA
         self.part = part
 
         # Store parameter controls for easy access
@@ -68,58 +77,6 @@ class DigitalPartialEditor(QWidget):
         # Add container to scroll area
         main_layout.addWidget(container)
         self.updating_from_spinbox = False
-
-    def _create_parameter_slider(
-        self,
-        param: Union[DigitalParameter, DigitalCommonParameter],
-        label: str,
-        vertical=False,
-            show_value_label=True,
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        # Create slider
-        slider = Slider(label, display_min, display_max, vertical, show_value_label)
-        
-        # Set up bipolar parameters
-        if isinstance(param, DigitalParameter) and param in [
-            DigitalParameter.OSC_DETUNE,
-            DigitalParameter.OSC_PITCH,
-            DigitalParameter.OSC_PITCH_ENV_DEPTH,
-            DigitalParameter.AMP_PAN,
-            # Add other bipolar parameters as needed
-        ]:
-            # Set format string to show + sign for positive values
-            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
-            # Set center tick
-            slider.setCenterMark(0)
-            # Add more prominent tick at center
-            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
-            slider.setTickInterval((display_max - display_min) // 4)
-
-            # Get initial MIDI value and convert to display value
-            if self.midi_helper:
-                group, param_address = param.get_address_for_partial(self.partial_num)
-                midi_value = self.midi_helper.get_parameter(
-                    area=DIGITAL_SYNTH_AREA,
-                    part=self.part,
-                    group=group,
-                    param=param_address
-                )
-                if midi_value is not None:
-                    display_value = param.convert_from_midi(midi_value)
-                    slider.setValue(display_value)
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
 
     def _create_oscillator_section(self):
         """Create the oscillator section of the partial editor"""
@@ -352,7 +309,7 @@ class DigitalPartialEditor(QWidget):
 
         # Filter envelope
         env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR group
+        env_group.setProperty("adsr", True)  # Mark as ADSR area
         env_layout = QVBoxLayout()
         env_group.setLayout(env_layout)
 
@@ -373,7 +330,7 @@ class DigitalPartialEditor(QWidget):
         # Create ADSRWidget
         # self.filter_adsr_widget = ADSRWidget()
         group_address, param_address = DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_num)
-        self.filter_adsr_widget = ADSR(DigitalParameter.FILTER_ENV_ATTACK_TIME, DigitalParameter.FILTER_ENV_DECAY_TIME, DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, DigitalParameter.FILTER_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_AREA, part=self.part, group=group_address)
+        self.filter_adsr_widget = ADSR(DigitalParameter.FILTER_ENV_ATTACK_TIME, DigitalParameter.FILTER_ENV_DECAY_TIME, DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, DigitalParameter.FILTER_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_1_AREA, part=self.part, group=group_address)
 
         adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
@@ -436,7 +393,7 @@ class DigitalPartialEditor(QWidget):
                 ms_to_midi_cc(envelope["release_time"], 10, 1000)
             )
 
-    def filterAdsrValueChanged(self):
+    def filter_adsr_value_changed(self):
         self.updating_from_spinbox = True
         self.filter_adsr_widget.envelope["attack_time"] = (
             self.filter_adsr_widget.attack_sb.value()
@@ -475,7 +432,7 @@ class DigitalPartialEditor(QWidget):
                 ms_to_midi_cc(envelope["release_time"], 10, 1000)
             )
 
-    def ampEnvAdsrValueChanged(self):
+    def amp_env_adsr_value_changed(self):
         self.updating_from_spinbox = True
         self.amp_env_adsr_widget.envelope["attack_time"] = (
             self.amp_env_adsr_widget.attack_sb.value()
@@ -569,7 +526,7 @@ class DigitalPartialEditor(QWidget):
 
         # Amp envelope
         env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR group
+        env_group.setProperty("adsr", True)  # Mark as ADSR area
         env_layout = QHBoxLayout()
         amp_env_adsr_vlayout = QVBoxLayout()
         env_group.setLayout(amp_env_adsr_vlayout)
@@ -587,7 +544,7 @@ class DigitalPartialEditor(QWidget):
 
         # Create ADSRWidget
         group_address, param_address = DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_num)
-        self.amp_env_adsr_widget = ADSR(DigitalParameter.AMP_ENV_ATTACK_TIME, DigitalParameter.AMP_ENV_DECAY_TIME, DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, DigitalParameter.AMP_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_AREA, part=self.part, group=group_address)
+        self.amp_env_adsr_widget = ADSR(DigitalParameter.AMP_ENV_ATTACK_TIME, DigitalParameter.AMP_ENV_DECAY_TIME, DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, DigitalParameter.AMP_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_1_AREA, part=self.part, group=group_address)
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
@@ -668,7 +625,7 @@ class DigitalPartialEditor(QWidget):
         # Ensure `depths_group` layout is only set once
         if (
             not depths_group.layout()
-        ):  # Check if the group already has address layout assigned
+        ):  # Check if the area already has address layout assigned
             depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
@@ -784,16 +741,16 @@ class DigitalPartialEditor(QWidget):
             return False
 
         try:
-            # Get parameter group and address with partial offset
+            # Get parameter area and address with partial offset
             if isinstance(param, DigitalParameter):
                 group, param_address = param.get_address_for_partial(self.partial_num)
             else:
-                group = 0x00  # Common parameters group
+                group = 0x00  # Common parameters area
                 param_address = param.address
 
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_AREA,
+                area=DIGITAL_SYNTH_1_AREA,
                 part=self.part,
                 group=group,
                 param=param_address,

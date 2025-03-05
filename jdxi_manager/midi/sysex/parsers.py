@@ -22,6 +22,7 @@ from jdxi_manager.data.parameter.analog import AnalogParameter
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.data.parameter.drums import DrumParameter
+from jdxi_manager.data.parameter.effects import EffectParameter
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
@@ -156,14 +157,14 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
     if len(data) <= 7:
         logging.warning("Insufficient data length for parsing.")
         return {
-            "JD_XI_ID": extract_hex(data, 0, 7),
+            "JD_XI_HEADER": extract_hex(data, 0, 7),
             "ADDRESS": extract_hex(data, 7, 11),
             "TEMPORARY_AREA": "Unknown",
             "SYNTH_TONE": "Unknown"
         }
 
     parameters = {
-        "JD_XI_ID": extract_hex(data, 0, 7),
+        "JD_XI_HEADER": extract_hex(data, 0, 7),
         "ADDRESS": extract_hex(data, 7, 11),
         "TEMPORARY_AREA": get_temporary_area(data),
         "SYNTH_TONE": get_synth_tone(data[10]) if len(data) > 10 else "Unknown",
@@ -177,7 +178,7 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DigitalCommonParameter))
         elif synth_tone == "TONE_MODIFY":
-            logging.info("Parsing for TONE_MODIFY not yet implemented.")  # FIXME
+            parameters.update(parse_parameters(data, EffectParameter))
         else:
             parameters.update(parse_parameters(data, DigitalParameter))
     elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":

@@ -136,7 +136,7 @@ class MIDIOutHandler(MidiIOController):
         Args:
             area: Parameter area (e.g., Program, Digital Synth).
             part: Part number.
-            group: Parameter group.
+            group: Parameter area.
             param: Parameter number.
             value: Parameter value.
             size: Size of the value in bytes (1, 4, or 5).
@@ -144,7 +144,7 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.info(
-            f"Sending parameter: area={hex(area)}, part={hex(part)}, group={hex(group)}, param={hex(param)}, value={value}, size={size}")
+            f"Sending parameter: area={hex(area)}, part={hex(part)}, area={hex(group)}, param={hex(param)}, value={value}, size={size}")
 
         if not self.is_output_open:
             logging.warning("MIDI output not open")
@@ -205,7 +205,7 @@ class MIDIOutHandler(MidiIOController):
         Args:
             area: Parameter area (e.g., Program, Digital Synth).
             part: Part number.
-            group: Parameter group.
+            group: Parameter area.
             param: Parameter number.
             value: Parameter value.
             size: Size of the value in bytes (1, 4, or 5).
@@ -213,7 +213,7 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.info(
-            f"Sending parameter: area={hex(area)}, part={hex(part)}, group={hex(group)}, param={hex(param)}, value={value}, size={size}")
+            f"Sending parameter: area={hex(area)}, part={hex(part)}, area={hex(group)}, param={hex(param)}, value={value}, size={size}")
 
         if not self.is_output_open:
             logging.warning("MIDI output not open")
@@ -393,12 +393,12 @@ class MIDIOutHandler(MidiIOController):
         Args:
             area: Parameter area (e.g., Digital Synth 1).
             part: Part number.
-            group: Parameter group.
+            group: Parameter area.
             param: Parameter number.
         Returns:
             Parameter value (0-127) or None if an error occurs.
         """
-        logging.info(f"Requesting parameter: area={area}, address={part}, group={group}, param={param}")
+        logging.info(f"Requesting parameter: area={area}, address={part}, area={group}, param={param}")
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None
@@ -435,7 +435,7 @@ class MIDIOutHandler(MidiIOController):
         Args:
             area: Parameter area.
             part: Part number.
-            group: Parameter group.
+            group: Parameter area.
             param: Parameter number.
         Returns:
             True if the message was sent successfully, False otherwise.

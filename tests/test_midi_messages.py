@@ -50,7 +50,7 @@ class TestWaveformMessages(unittest.TestCase):
             msg = create_parameter_message(
                 DIGITAL_SYNTH_AREA,  # Digital synth address
                 PART_1,             # Part number
-                OSC_PARAM_GROUP,    # Parameter group (OSC)
+                OSC_PARAM_GROUP,    # Parameter area (OSC)
                 value              # Waveform value
             )
             

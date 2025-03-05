@@ -599,7 +599,7 @@ class JdxiUi(QMainWindow):
         )
         self.drums_button.clicked.connect(lambda: self._select_synth(PresetType.DRUMS))
 
-        # Create address button group
+        # Create address button area
         button_group = QButtonGroup()
         button_group.addButton(self.digital1_button)
         button_group.addButton(self.digital2_button)

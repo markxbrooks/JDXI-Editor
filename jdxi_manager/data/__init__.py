@@ -5,7 +5,7 @@ from jdxi_manager.data.drums import (
     DRUM_PARTS,  # Drum address categories
     DrumPadSettings,  # Pad settings class
     DrumKitPatch,  # Complete patch class
-    MuteGroup,  # Mute group enum
+    MuteGroup,  # Mute area enum
     Note  # MIDI note enum
 )
 
@@ -25,7 +25,6 @@ from .digital import (
     DigitalSynth,  # Constants and presets
     # Parameter enum
     DigitalPartial,  # Partial constants
-    DigitalPatch  # Complete patch class
 )
 from .parameter.digital import DigitalParameter
 

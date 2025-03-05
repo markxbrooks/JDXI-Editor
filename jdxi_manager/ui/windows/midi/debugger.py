@@ -6,8 +6,8 @@ from PySide6.QtCore import Qt
 import logging
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
-    MODEL_ID, JD_XI_ID, DT1_COMMAND_12, END_OF_SYSEX,
-    DIGITAL_SYNTH_AREA, ANALOG_SYNTH_AREA, TEMPORARY_DRUM_KIT_AREA,
+    MODEL_ID, JD_XI_HEADER, DT1_COMMAND_12, END_OF_SYSEX,
+    DIGITAL_SYNTH_1_AREA, ANALOG_SYNTH_AREA, TEMPORARY_DRUM_KIT_AREA,
     EFFECTS_AREA
 )
 from jdxi_manager.ui.style import Style
@@ -16,7 +16,7 @@ from jdxi_manager.ui.style import Style
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        DIGITAL_SYNTH_AREA: "Digital Synth Area",
+        DIGITAL_SYNTH_1_AREA: "Digital Synth Area",
         EFFECTS_AREA: "System Area",
         0x20: "Pattern Area"
     }

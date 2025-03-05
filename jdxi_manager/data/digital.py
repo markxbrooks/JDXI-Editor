@@ -6,7 +6,7 @@ import logging
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.midi.constants import (
-    DIGITAL_SYNTH_AREA,
+    DIGITAL_SYNTH_1_AREA,
     PART_1,
     OSC_1_GROUP,
     OSC_WAVE_PARAM,
@@ -29,7 +29,7 @@ def get_digital_parameter_by_address(address: Tuple[int, int]):
     return None
 
 # MIDI Constants for Digital Synth
-# DIGITAL_SYNTH_AREA = 0x19  # Digital Synth 1 area
+# DIGITAL_SYNTH_1_AREA = 0x19  # Digital Synth 1 area
 
 # Parameter Groups
 OSC_GROUP = 0x20  # Oscillator parameters
@@ -424,59 +424,6 @@ DIGITAL_CATEGORIES = {
 }
 
 
-@dataclass
-class DigitalPatch:
-    """Digital synth patch data"""
-
-    # Common parameters
-    volume: int = 100
-    pan: int = 64  # Center
-    portamento: int = 0
-    porta_mode: bool = False
-
-    # Structure
-    structure: int = DigitalPartial.SINGLE
-    active_partials: List[bool] = None
-
-    # Partial parameters
-    partial_params: Dict[int, Dict[str, int]] = None
-
-    def __post_init__(self):
-        """Initialize default values"""
-        if self.active_partials is None:
-            self.active_partials = [
-                True,
-                False,
-                False,
-            ]  # Only Partial 1 active by default
-
-        if self.partial_params is None:
-            self.partial_params = {
-                1: self._init_partial_params(),
-                2: self._init_partial_params(),
-                3: self._init_partial_params(),
-            }
-
-    def _init_partial_params(self) -> Dict[str, int]:
-        """Initialize parameters for address partial"""
-        return {
-            "wave": 0,  # SAW
-            "pitch": 64,  # Center
-            "fine": 64,  # Center
-            "pwm": 0,
-            "filter_type": 0,  # LPF
-            "cutoff": 127,
-            "resonance": 0,
-            "env_depth": 64,  # Center
-            "key_follow": 0,
-            "level": 100,
-            "pan": 64,  # Center
-            "lfo_wave": 0,
-            "lfo_rate": 64,
-            "lfo_depth": 0,
-        }
-
-
 def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
     """Validate and convert parameter value"""
     if not isinstance(value, int):
@@ -538,130 +485,6 @@ def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
     return value
 
 
-def send_digital_parameter(
-    midi_helper, param: DigitalParameter, value: int, part: int = 1
-):
-    """Send digital synth parameter change"""
-    try:
-        # Validate address number
-        if part not in [1, 2]:
-            raise ValueError("Part must be 1 or 2")
-
-        # Validate and convert value
-        midi_value = validate_value(param, value)
-
-        # Convert address number to area
-        area = 0x19 if part == 1 else 0x1A  # Digital 1 or 2
-
-        midi_helper.send_parameter(
-            area=area,
-            part=0x01,
-            group=0x00,
-            param=param._value_,  # Use the enum value (address)
-            value=midi_value,
-        )
-
-        logging.debug(
-            f"Sent digital parameter {param.name}: {value} "
-            f"(MIDI value: {midi_value}) to address {part}"
-        )
-
-    except Exception as e:
-        logging.error(f"Error sending digital parameter: {str(e)}")
-        raise
-
-
-def send_parameter(self, group: int, param: int, value: int) -> bool:
-    """Send parameter change to synth
-
-    Args:
-        group: Parameter group (OSC, FILTER, etc)
-        param: Parameter number
-        value: Parameter value
-
-    Returns:
-        True if successful
-    """
-    try:
-        if not self.midi_helper:
-            logging.error("No MIDI helper available")
-            return False
-
-        return self.midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_AREA,  # 0x19 for Digital Synth 1
-            part=PART_1,  # 0x01 for Part 1
-            group=group,  # e.g. OSC_PARAM_GROUP
-            param=param,  # Parameter number
-            value=value,  # Parameter value
-        )
-
-    except Exception as e:
-        logging.error(f"Error sending digital parameter: {str(e)}")
-        return False
-
-
-def set_osc1_waveform(waveform: int) -> bool:
-    """Set Oscillator 1 waveform
-
-    Args:
-        waveform: Waveform value (0=Saw, 1=Square, etc)
-    """
-    try:
-        return self.midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_AREA,  # 0x19
-            part=PART_1,  # 0x01
-            group=OSC_1_GROUP,  # 0x20 - OSC 1
-            param=OSC_WAVE_PARAM,  # 0x00 - Waveform
-            value=waveform,  # e.g. WAVE_SAW (0x00)
-        )
-    except Exception as e:
-        logging.error(f"Error setting OSC1 waveform: {str(e)}")
-        return False
-
-
-def set_tone_name(midi_helper, name: str) -> bool:
-    """Set the tone name for address digital synth patch.
-
-    Args:
-        midi_helper: MIDI helper instance
-        name: Name string (max 12 characters)
-
-    Returns:
-        True if successful
-    """
-    if len(name) > 12:
-        logging.warning(f"Tone name '{name}' too long, truncating to 12 characters")
-        name = name[:12]
-
-    # Pad with spaces if shorter than 12 chars
-    name = name.ljust(12)
-
-    try:
-        # Send each character as ASCII value
-        for i, char in enumerate(name):
-            param = getattr(DigitalCommonParameter, f"TONE_NAME_{i + 1}")
-            ascii_val = ord(char)
-
-            # Validate ASCII range
-            if ascii_val < 32 or ascii_val > 127:
-                logging.warning(f"Invalid character '{char}' in tone name, using space")
-                ascii_val = 32  # Space
-
-            midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_AREA,
-                part=PART_1,
-                group=0x00,
-                param=param.format_address,
-                value=ascii_val,
-            )
-
-        return True
-
-    except Exception as e:
-        logging.error(f"Error setting tone name: {str(e)}")
-        return False
-
-
 def set_partial_state(
     midi_helper, partial: DigitalPartial, enabled: bool = True, selected: bool = True
 ) -> bool:
@@ -679,7 +502,7 @@ def set_partial_state(
     try:
         # Send switch state
         success = midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_AREA,
+            area=DIGITAL_SYNTH_1_AREA,
             part=PART_1,
             group=0x00,
             param=partial.switch_param.address,
@@ -690,7 +513,7 @@ def set_partial_state(
 
         # Send select state
         return midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_AREA,
+            area=DIGITAL_SYNTH_1_AREA,
             part=PART_1,
             group=0x00,
             param=partial.select_param.address,
@@ -715,7 +538,7 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
     try:
         # Get switch state
         switch_value = midi_helper.get_parameter(
-            area=DIGITAL_SYNTH_AREA,
+            area=DIGITAL_SYNTH_1_AREA,
             part=PART_1,
             group=0x00,
             param=partial.switch_param.address,
@@ -723,7 +546,7 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
 
         # Get select state
         select_value = midi_helper.get_parameter(
-            area=DIGITAL_SYNTH_AREA,
+            area=DIGITAL_SYNTH_1_AREA,
             part=PART_1,
             group=0x00,
             param=partial.select_param.address,

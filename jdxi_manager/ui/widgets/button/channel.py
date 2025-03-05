@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Qt
 import logging
 
+
 class ChannelButton(QPushButton):
     """Channel indicator button with synth-specific styling"""
     
@@ -31,20 +32,9 @@ class ChannelButton(QPushButton):
             (f"CH {self.current_channel + 1}", "#FFFFFF")
         )
         
-        # Create gradient background
-        gradient = f"""
-            background: qlineargradient(
-                x1:0, y1:0, x2:1, y2:0,
-                stop:0 {color}33,
-                stop:0.5 {color}22,
-                stop:1 {color}33
-            );
-        """
-        
         # Set button style
         self.setStyleSheet(f"""
             QPushButton {{
-                {gradient}
                 border: 1px solid red;
                 font-family: "Consolas", "Fixed";
                 border-radius: 3px;
@@ -60,4 +50,4 @@ class ChannelButton(QPushButton):
         """)
         
         # Set text
-        self.setText(style) 
+        self.setText(style)
