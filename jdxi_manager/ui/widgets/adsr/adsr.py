@@ -23,7 +23,7 @@ from jdxi_manager.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_manager.ui.widgets.slider.slider import Slider
 from jdxi_manager.ui.style import Style
 from jdxi_manager.midi.constants.analog import (
-    AnalogToneCC,
+    AnalogControlChange,
     Waveform,
     SubOscType,
     TEMPORARY_ANALOG_SYNTH_AREA,

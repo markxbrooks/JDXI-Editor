@@ -1,10 +1,53 @@
+"""
+Module: analog_synth_editor
+===========================
+
+This module defines the `AnalogSynthEditor` class, which provides a PySide6-based
+user interface for editing analog synthesizer parameters in the Roland JD-Xi synthesizer.
+It extends the `SynthEditor` base class and integrates MIDI communication for real-time
+parameter adjustments and preset management.
+
+Key Features:
+-------------
+- Provides a graphical editor for modifying analog synth parameters, including
+  oscillator, filter, amp, LFO, and envelope settings.
+- Supports MIDI communication to send and receive real-time parameter changes.
+- Allows selection of different analog synth presets from a dropdown menu.
+- Displays an instrument image that updates based on the selected preset.
+- Includes a scrollable layout for managing a variety of parameter controls.
+- Implements bipolar parameter handling for proper UI representation.
+- Supports waveform selection with custom buttons and icons.
+- Provides a "Send Read Request to Synth" button to retrieve current synth settings.
+- Enables MIDI-triggered updates via incoming program changes and parameter adjustments.
+
+Dependencies:
+-------------
+- PySide6 (for UI components and event handling)
+- MIDIHelper (for handling MIDI communication)
+- PresetHandler (for managing synth presets)
+- Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)
+
+Usage:
+------
+The `AnalogSynthEditor` class can be instantiated as part of a larger PySide6 application.
+It requires a `MIDIHelper` instance for proper communication with the synthesizer.
+
+Example:
+--------
+    midi_helper = MIDIHelper()
+    preset_handler = PresetHandler()
+    editor = AnalogSynthEditor(midi_helper, preset_handler)
+    editor.show()
+
+"""
+
+
 import logging
 import os
 import re
 import json
 from functools import partial
 from typing import Optional, Dict, Union
-import base64
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -15,14 +58,14 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QComboBox,
     QPushButton,
-    QSlider, QTabWidget,
+    QSlider,
+    QTabWidget,
 )
-from PySide6.QtCore import Qt, Signal, QSize
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED, DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.data.analog import AnalogCommonParameter
 from jdxi_manager.data.parameter.analog import AnalogParameter
@@ -41,12 +84,11 @@ from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.button.waveform import WaveformButton
 from jdxi_manager.ui.image.waveform import generate_waveform_icon
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_manager.midi.constants.analog import (
-    AnalogToneCC,
+    AnalogControlChange,
     Waveform,
     SubOscType,
     TEMPORARY_ANALOG_SYNTH_AREA,
@@ -85,7 +127,9 @@ class AnalogSynthEditor(SynthEditor):
 
     # preset_changed = Signal(int, str, int)
 
-    def __init__(self, midi_helper: Optional[MIDIHelper], preset_handler=None, parent=None):
+    def __init__(
+        self, midi_helper: Optional[MIDIHelper], preset_handler=None, parent=None
+    ):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = [
             AnalogParameter.FILTER_ENV_VELOCITY_SENS,
@@ -121,9 +165,7 @@ class AnalogSynthEditor(SynthEditor):
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS_ENUMERATED
         self.preset_type = PresetType.ANALOG
-        self.midi_requests = [
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"
-        ]
+        self.midi_requests = ["F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"]
         self.midi_channel = MIDI_CHANNEL_ANALOG
         # Create scroll area for resizable content
         scroll = QScrollArea()
@@ -196,10 +238,26 @@ class AnalogSynthEditor(SynthEditor):
         # Add sections side by side
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        self.tab_widget.addTab(self._create_oscillator_section(), qta.icon("mdi.triangle-wave", color='#666666'), "Oscillator")
-        self.tab_widget.addTab(self._create_filter_section(), qta.icon("ri.filter-3-fill", color='#666666'), "Filter")
-        self.tab_widget.addTab(self._create_amp_section(), qta.icon("mdi.amplifier", color='#666666'), "Amp")
-        self.tab_widget.addTab(self._create_lfo_section(), qta.icon("mdi.sine-wave", color='#666666'), "LFO")
+        self.tab_widget.addTab(
+            self._create_oscillator_section(),
+            qta.icon("mdi.triangle-wave", color="#666666"),
+            "Oscillator",
+        )
+        self.tab_widget.addTab(
+            self._create_filter_section(),
+            qta.icon("ri.filter-3-fill", color="#666666"),
+            "Filter",
+        )
+        self.tab_widget.addTab(
+            self._create_amp_section(),
+            qta.icon("mdi.amplifier", color="#666666"),
+            "Amp",
+        )
+        self.tab_widget.addTab(
+            self._create_lfo_section(),
+            qta.icon("mdi.sine-wave", color="#666666"),
+            "LFO",
+        )
 
         # Add container to scroll area
         scroll.setWidget(container)
@@ -207,7 +265,7 @@ class AnalogSynthEditor(SynthEditor):
 
         # Connect filter controls
         self.filter_resonance.valueChanged.connect(
-            lambda v: self._send_cc(AnalogParameter.FILTER_RESONANCE.value[0], v)
+            lambda v: self.send_control_change(AnalogParameter.FILTER_RESONANCE.value[0], v)
         )
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         for param, slider in self.controls.items():
@@ -236,14 +294,14 @@ class AnalogSynthEditor(SynthEditor):
             param = get_analog_parameter_by_address(parameter_address)
             partial_no = address[1]
             if param:
-                logging.info(
-                    f"param: \t{param} \taddress=\t{address}, Value=\t{value}"
-                )
+                logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
 
                 # Update the corresponding slider
                 if param in self.controls:
                     slider_value = param.convert_from_midi(value)
-                    logging.info(f"midi value {value} converted to slider value {slider_value}")
+                    logging.info(
+                        f"midi value {value} converted to slider value {slider_value}"
+                    )
                     slider = self.controls[param]
                     slider.blockSignals(True)  # Prevent feedback loop
                     slider.setValue(slider_value)
@@ -269,7 +327,7 @@ class AnalogSynthEditor(SynthEditor):
         layout = QVBoxLayout()
         layout.setContentsMargins(1, 1, 1, 1)  # Remove margins
         group.setLayout(layout)
-        
+
         # Waveform buttons
         wave_layout = QHBoxLayout()
         self.wave_buttons = {}
@@ -432,7 +490,9 @@ class AnalogSynthEditor(SynthEditor):
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            logging.info(f"selected instrument image preset_type: {selected_instrument_type}")
+            logging.info(
+                f"selected instrument image preset_type: {selected_instrument_type}"
+            )
             specific_image_path = os.path.join(
                 "resources",
                 self.instrument_icon_folder,
@@ -455,10 +515,15 @@ class AnalogSynthEditor(SynthEditor):
             "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
-            "channel": self.midi_channel
+            "channel": self.midi_channel,
         }
         if not self.preset_handler:
-            self.preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_ANALOG, preset_type=PresetType.ANALOG)
+            self.preset_handler = PresetHandler(
+                self.midi_helper,
+                ANALOG_PRESETS_ENUMERATED,
+                channel=MIDI_CHANNEL_ANALOG,
+                preset_type=PresetType.ANALOG,
+            )
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
 
@@ -508,7 +573,7 @@ class AnalogSynthEditor(SynthEditor):
 
         # Create horizontal slider (removed vertical ADSR check)
         slider = Slider(label, display_min, display_max, vertical, show_value_label)
-               
+
         # Set up bipolar parameters
         if param in self.bipolar_parameters:
             # Set format string to show + sign for positive values
@@ -543,18 +608,18 @@ class AnalogSynthEditor(SynthEditor):
 
     def amp_env_adsr_value_changed(self):
         self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope["attack_time"] = (
-            self.amp_env_adsr_widget.attack_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["decay_time"] = (
-            self.amp_env_adsr_widget.decay_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["release_time"] = (
-            self.amp_env_adsr_widget.release_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["sustain_level"] = (
-            self.amp_env_adsr_widget.sustain_sb.value()
-        )
+        self.amp_env_adsr_widget.envelope[
+            "attack_time"
+        ] = self.amp_env_adsr_widget.attack_sb.value()
+        self.amp_env_adsr_widget.envelope[
+            "decay_time"
+        ] = self.amp_env_adsr_widget.decay_sb.value()
+        self.amp_env_adsr_widget.envelope[
+            "release_time"
+        ] = self.amp_env_adsr_widget.release_sb.value()
+        self.amp_env_adsr_widget.envelope[
+            "sustain_level"
+        ] = self.amp_env_adsr_widget.sustain_sb.value()
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
         self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
         self.updating_from_spinbox = False
@@ -576,7 +641,7 @@ class AnalogSynthEditor(SynthEditor):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
+            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -634,11 +699,13 @@ class AnalogSynthEditor(SynthEditor):
 
         # Create ADSRWidget
         # self.filter_adsr_widget = ADSRWidget()
-        self.filter_adsr_widget = ADSR(AnalogParameter.FILTER_ENV_ATTACK_TIME,
-                                       AnalogParameter.FILTER_ENV_DECAY_TIME,
-                                       AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-                                       AnalogParameter.FILTER_ENV_RELEASE_TIME,
-                                       self.midi_helper)
+        self.filter_adsr_widget = ADSR(
+            AnalogParameter.FILTER_ENV_ATTACK_TIME,
+            AnalogParameter.FILTER_ENV_DECAY_TIME,
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            AnalogParameter.FILTER_ENV_RELEASE_TIME,
+            self.midi_helper,
+        )
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(self.filter_adsr_widget)
@@ -649,21 +716,29 @@ class AnalogSynthEditor(SynthEditor):
         adsr_vlayout.addLayout(adsr_layout)
 
         self.filter_env_attack_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_ATTACK_TIME, "A", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_ATTACK_TIME,
+            "A",
+            vertical=True,
+            show_value_label=False,
         )
         self.filter_env_decay_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_DECAY_TIME, "D", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_DECAY_TIME,
+            "D",
+            vertical=True,
+            show_value_label=False,
         )
         self.filter_env_sustain_level = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, "S", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            "S",
+            vertical=True,
+            show_value_label=False,
         )
         self.filter_env_release_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_RELEASE_TIME, "R", vertical=True, show_value_label=False
+            AnalogParameter.FILTER_ENV_RELEASE_TIME,
+            "R",
+            vertical=True,
+            show_value_label=False,
         )
-        # adsr_layout.addWidget(self.filter_env_attack_time)
-        # adsr_layout.addWidget(self.filter_env_decay_time)
-        # adsr_layout.addWidget(self.filter_env_sustain_level)
-        # adsr_layout.addWidget(self.filter_env_release_time)
         sub_layout.addWidget(env_group)
         env_group.setLayout(adsr_vlayout)
         layout.addLayout(sub_layout)
@@ -694,7 +769,6 @@ class AnalogSynthEditor(SynthEditor):
 
     def _on_filter_switch_changed(self, value):
         """Handle filter switch change"""
-        from jdxi_manager.data.parameter.analog import AnalogParameter
 
         if self.midi_helper:
             self.midi_helper.send_parameter(
@@ -738,7 +812,7 @@ class AnalogSynthEditor(SynthEditor):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
+            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -783,10 +857,13 @@ class AnalogSynthEditor(SynthEditor):
         icons_hlayout = QHBoxLayout()
         icons_hlayout.addWidget(icon_label)
         sub_layout.addLayout(icons_hlayout)
-        self.amp_env_adsr_widget = ADSR(AnalogParameter.AMP_ENV_ATTACK_TIME,
-                                        AnalogParameter.AMP_ENV_DECAY_TIME,
-                                        AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-                                        AnalogParameter.AMP_ENV_RELEASE_TIME, self.midi_helper)
+        self.amp_env_adsr_widget = ADSR(
+            AnalogParameter.AMP_ENV_ATTACK_TIME,
+            AnalogParameter.AMP_ENV_DECAY_TIME,
+            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+            AnalogParameter.AMP_ENV_RELEASE_TIME,
+            self.midi_helper,
+        )
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         sub_layout.addWidget(env_group)
         layout.addLayout(sub_layout)
@@ -842,7 +919,7 @@ class AnalogSynthEditor(SynthEditor):
             ("SAW", "mdi.sawtooth-wave", 2),
             ("SQR", "mdi.square-wave", 3),
             ("S&H", "mdi.waveform", 4),  # Sample & Hold
-            ("RND", "mdi.wave", 5),      # Random
+            ("RND", "mdi.wave", 5),  # Random
         ]
 
         for name, icon_name, value in lfo_shapes:
@@ -954,12 +1031,12 @@ class AnalogSynthEditor(SynthEditor):
                 selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
             self._update_pw_controls_state(waveform)
 
-    def _send_cc(self, cc: AnalogToneCC, value: int):
+    def send_control_change(self, control_change: AnalogControlChange, value: int):
         """Send MIDI CC message"""
         if self.midi_helper:
             # Convert enum to int if needed
-            cc_number = cc.value if isinstance(cc, AnalogToneCC) else cc
-            self.midi_helper.send_cc(cc_number, value, channel=ANALOG_PART)
+            control_change_number = control_change.value if isinstance(control_change, AnalogControlChange) else control_change
+            self.midi_helper.send_cc(control_change_number, value, channel=MIDI_CHANNEL_ANALOG)
 
     def _on_sub_type_changed(self, value: int):
         """Handle sub oscillator preset_type change"""
@@ -1077,8 +1154,8 @@ class AnalogSynthEditor(SynthEditor):
 
         try:
             current_sysex_data = json.loads(json_sysex_data)
-        except json.JSONDecodeError as e:
-            logging.error(f"Invalid JSON format: {e}")
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
             return
 
         # Compare with previous data and log changes
@@ -1089,12 +1166,22 @@ class AnalogSynthEditor(SynthEditor):
         self.previous_json_data = current_sysex_data
 
         if current_sysex_data.get("TEMPORARY_AREA") != "TEMPORARY_ANALOG_SYNTH_AREA":
-            logging.warning("SysEx data does not belong to TEMPORARY_ANALOG_SYNTH_AREA. Skipping update.")
+            logging.warning(
+                "SysEx data does not belong to TEMPORARY_ANALOG_SYNTH_AREA. Skipping update."
+            )
             return
 
         # Remove unnecessary keys
-        ignored_keys = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
-        current_sysex_data = {k: v for k, v in current_sysex_data.items() if k not in ignored_keys}
+        ignored_keys = {
+            "JD_XI_HEADER",
+            "ADDRESS",
+            "TEMPORARY_AREA",
+            "TONE_NAME",
+            "SYNTH_TONE",
+        }
+        current_sysex_data = {
+            k: v for k, v in current_sysex_data.items() if k not in ignored_keys
+        }
 
         # Define mapping dictionaries
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}
@@ -1115,10 +1202,15 @@ class AnalogSynthEditor(SynthEditor):
 
         def update_adsr_widget(param, value):
             """Helper function to update ADSR widgets."""
-            new_value = midi_cc_to_frac(value) if param in [
-                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            ] else midi_cc_to_ms(value)
+            new_value = (
+                midi_cc_to_frac(value)
+                if param
+                in [
+                    AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+                    AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                ]
+                else midi_cc_to_ms(value)
+            )
 
             adsr_mapping = {
                 AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
@@ -1141,7 +1233,10 @@ class AnalogSynthEditor(SynthEditor):
             if param:
                 if param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
                     self._update_lfo_shape_buttons(param_value)
-                elif param_name == "SUB_OSCILLATOR_TYPE" and param_value in sub_osc_type_map:
+                elif (
+                    param_name == "SUB_OSCILLATOR_TYPE"
+                    and param_value in sub_osc_type_map
+                ):
                     self.sub_type.blockSignals(True)
                     self.sub_type.setValue(sub_osc_type_map[param_value])
                     self.sub_type.blockSignals(False)
@@ -1159,7 +1254,7 @@ class AnalogSynthEditor(SynthEditor):
 
         logging.info(f"Updated {len(successes)} parameters successfully.")
         if failures:
-            logging.warning(f"Failed to update {len(failures)} parameters: {failures}")s
+            logging.warning(f"Failed to update {len(failures)} parameters: {failures}")
 
     def _update_waveform_buttons(self, value):
         """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
