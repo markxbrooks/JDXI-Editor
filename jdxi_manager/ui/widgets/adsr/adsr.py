@@ -232,7 +232,7 @@ class ADSR(QWidget):
             return False
 
         try:
-            group = self.group  # Common parameters group
+            group = self.group  # Common parameters area
             param_address = param.address
 
             # Ensure value is included in the MIDI message

@@ -57,7 +57,7 @@ class PresetEditor(QMainWindow):
         main_layout.setSpacing(10)  # Add spacing between widgets
         main_widget.setLayout(main_layout)
 
-        # Create preset control group
+        # Create preset control area
         preset_group = QGroupBox("Preset Controls")
         preset_layout = QVBoxLayout()
         preset_group.setLayout(preset_layout)
@@ -86,7 +86,7 @@ class PresetEditor(QMainWindow):
         self.preset_combo_box.preset_loaded.connect(self._on_load_clicked)
         preset_layout.addWidget(self.preset_combo_box)
 
-        # Add preset group to main layout
+        # Add preset area to main layout
         main_layout.addWidget(preset_group)
 
         # Set as central widget

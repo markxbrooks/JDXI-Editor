@@ -15,7 +15,7 @@ class EffectType(Enum):
     SLICER = 0x08
 
 
-class EffectsCommonParameter(Enum):
+class EffectCommonParameter(Enum):
     """Common parameters for Effects."""
     PROGRAM_EFFECT_1 = 0x02
     PROGRAM_EFFECT_2 = 0x04

@@ -44,7 +44,7 @@ from jdxi_manager.midi.constants import (
     MODEL_ID_1,
     MODEL_ID_2,
     MODEL_ID,
-    JD_XI_ID,
+    JD_XI_HEADER,
     END_OF_SYSEX,
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_DIGITAL2,
@@ -891,7 +891,7 @@ class JdxiInstrument(JdxiUi):
         if data[0] == START_OF_SYSEX and len(data) > 8 and data[-1] == END_OF_SYSEX:
             # Verify it's address Roland message for JD-Xi
             if data[1] == DEVICE_ID and data[4:8] == bytes(  # Roland ID
-                [MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_ID]
+                [MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER]
             ):  # JD-Xi ID
                 # Blink the input indicator
                 if hasattr(self, "midi_in_indicator"):

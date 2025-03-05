@@ -38,10 +38,10 @@ from jdxi_manager.midi.constants.arpeggio import (
     ArpOctaveRange,
 )
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 
 
-class ArpeggioEditor(BaseEditor):
+class ArpeggioEditor(SynthEditor):
     def __init__(self, midi_helper: MIDIHelper, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Arpeggio Editor")
@@ -248,7 +248,7 @@ class ArpeggioEditor(BaseEditor):
             param = ArpeggioParameter.OCTAVE.value[0]
             octave = index + 61  # Convert index to -3 to +3 range
             print(f"octave value: {octave}")
-            # logging.debug(f"Sending arp octave change: area={TEMPORARY_PROGRAM:02x}, address={ARP_PART:02x}, group={ARP_GROUP:02x}, param={ArpParameter.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
+            # logging.debug(f"Sending arp octave change: area={TEMPORARY_PROGRAM:02x}, address={ARP_PART:02x}, area={ARP_GROUP:02x}, param={ArpParameter.OCTAVE_RANGE:02x}, value={octave.midi_value:02x}")
             self.midi_helper.send_parameter(
                 area=TEMPORARY_PROGRAM, part=ARP_PART, group=ARP_GROUP, param=param, value=octave
             )
@@ -273,7 +273,7 @@ class ArpeggioEditor(BaseEditor):
             print(f"Value {value} out of range for parameter {param.name}")
 
 
-class ArpeggioEditorOld(BaseEditor):
+class ArpeggioEditorOld(SynthEditor):
     def __init__(
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):

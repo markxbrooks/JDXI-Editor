@@ -34,7 +34,7 @@ from jdxi_manager.midi.utils.conversions import (
     ms_to_midi_cc,
 )
 from jdxi_manager.midi.preset.handler import PresetHandler
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr.adsr import ADSR
@@ -80,13 +80,29 @@ def get_analog_parameter_name_by_address(address: int):
     return None
 
 
-class AnalogSynthEditor(BaseEditor):
+class AnalogSynthEditor(SynthEditor):
     """Analog Synth"""
 
     # preset_changed = Signal(int, str, int)
 
     def __init__(self, midi_helper: Optional[MIDIHelper], preset_handler=None, parent=None):
         super().__init__(midi_helper, parent)
+        self.bipolar_parameters = [
+            AnalogParameter.FILTER_ENV_VELOCITY_SENS,
+            AnalogParameter.AMP_LEVEL_KEYFOLLOW,
+            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENS,
+            AnalogParameter.OSC_PITCH_COARSE,
+            AnalogParameter.OSC_PITCH_FINE,
+            AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
+            AnalogParameter.LFO_AMP_MODULATION_CONTROL,
+            AnalogParameter.LFO_FILTER_MODULATION_CONTROL,
+            AnalogParameter.OSC_PITCH_ENV_DEPTH,
+            AnalogParameter.LFO_RATE_MODULATION_CONTROL,
+            AnalogParameter.FILTER_ENV_DEPTH
+            # Add other bipolar parameters as needed
+        ]
+        self.area = TEMPORARY_TONE_AREA
+        self.group = ANALOG_OSC_GROUP
         self.part = ANALOG_PART
         self.preset_handler = preset_handler
         self.setWindowTitle("Analog Synth")
@@ -190,9 +206,6 @@ class AnalogSynthEditor(BaseEditor):
         main_layout.addWidget(scroll)
 
         # Connect filter controls
-        self.filter_cutoff.valueChanged.connect(
-            lambda v: self._send_cc(AnalogParameter.FILTER_CUTOFF.value[0], v)
-        )
         self.filter_resonance.valueChanged.connect(
             lambda v: self._send_cc(AnalogParameter.FILTER_RESONANCE.value[0], v)
         )
@@ -462,32 +475,6 @@ class AnalogSynthEditor(BaseEditor):
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
 
-    def send_midi_parameter(self, param, value) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            logging.debug("No MIDI helper available - parameter change ignored")
-            return False
-
-        try:
-            # Get parameter group and address with partial offset
-            # if isinstance(param, AnalogParameter):
-            #    group, param_address = param.get_address_for_partial(self.partial_name)
-            # else:
-            group = ANALOG_OSC_GROUP  # Common parameters group
-            param_address = param.address
-
-            # Ensure value is included in the MIDI message
-            return self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=self.part,
-                group=group,
-                param=param_address,
-                value=value,  # Make sure this value is being sent
-            )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
-            return False
-
     def _on_parameter_changed(
         self, param: Union[AnalogParameter, AnalogCommonParameter], display_value: int
     ):
@@ -523,21 +510,7 @@ class AnalogSynthEditor(BaseEditor):
         slider = Slider(label, display_min, display_max, vertical, show_value_label)
                
         # Set up bipolar parameters
-        if isinstance(param, AnalogParameter) and param in [
-            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW,
-            AnalogParameter.FILTER_ENV_VELOCITY_SENS,
-            AnalogParameter.AMP_LEVEL_KEYFOLLOW,
-            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENS,
-            AnalogParameter.OSC_PITCH_COARSE,
-            AnalogParameter.OSC_PITCH_FINE,
-            AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
-            AnalogParameter.LFO_AMP_MODULATION_CONTROL,
-            AnalogParameter.LFO_FILTER_MODULATION_CONTROL,
-            AnalogParameter.OSC_PITCH_ENV_DEPTH,
-            AnalogParameter.LFO_RATE_MODULATION_CONTROL,
-            AnalogParameter.FILTER_ENV_DEPTH
-            # Add other bipolar parameters as needed
-        ]:
+        if param in self.bipolar_parameters:
             # Set format string to show + sign for positive values
             slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
             # Set center tick
@@ -568,7 +541,7 @@ class AnalogSynthEditor(BaseEditor):
                 ms_to_midi_cc(envelope["release_time"], 10, 1000)
             )
 
-    def ampEnvAdsrValueChanged(self):
+    def amp_env_adsr_value_changed(self):
         self.updating_from_spinbox = True
         self.amp_env_adsr_widget.envelope["attack_time"] = (
             self.amp_env_adsr_widget.attack_sb.value()
@@ -655,7 +628,7 @@ class AnalogSynthEditor(BaseEditor):
 
         # Filter envelope
         env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR group
+        env_group.setProperty("adsr", True)  # Mark as ADSR area
         env_layout = QHBoxLayout()
         env_layout.setSpacing(5)
 
@@ -789,7 +762,7 @@ class AnalogSynthEditor(BaseEditor):
 
         # Amp envelope
         env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR group
+        env_group.setProperty("adsr", True)  # Mark as ADSR area
         # env_group.setMaximumHeight(300)
         amp_env_adsr_vlayout = QVBoxLayout()
         env_layout = QHBoxLayout()
@@ -1098,13 +1071,6 @@ class AnalogSynthEditor(BaseEditor):
                 value=value,
             )
 
-    def send_message(self, message):
-        """Send address SysEx message using the MIDI helper"""
-        if self.midi_helper:
-            self.midi_helper.send_message(message)
-        else:
-            logging.error("MIDI helper not initialized")
-
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
@@ -1127,7 +1093,7 @@ class AnalogSynthEditor(BaseEditor):
             return
 
         # Remove unnecessary keys
-        ignored_keys = {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}
+        ignored_keys = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
         current_sysex_data = {k: v for k, v in current_sysex_data.items() if k not in ignored_keys}
 
         # Define mapping dictionaries
@@ -1222,7 +1188,7 @@ class AnalogSynthEditor(BaseEditor):
             return
 
         # Remove unnecessary keys
-        for key in {"JD_XI_ID", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}:
+        for key in {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"}:
             current_sysex_data.pop(key, None)
 
         # Define mapping dictionaries

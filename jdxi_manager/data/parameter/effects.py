@@ -1,145 +1,82 @@
-from enum import Enum
+"""
+EffectParameter Module
+=======================
+
+This module defines the `EffectParameter` class, which manages effect-related parameters
+for JD-Xi patch data. It provides functionality to retrieve parameter addresses, convert
+values between display and MIDI formats, and categorize parameters based on effect types.
+
+Classes
+--------
+
+.. class:: EffectParameter(address: int, min_val: int, max_val: int, display_min: Optional[int] = None, display_max: Optional[int] = None)
+
+   Represents an effect parameter with an address, value range, and optional display range.
+
+   **Methods:**
+
+   .. method:: get_display_value() -> Tuple[int, int]
+
+      Returns the display range for the parameter.
+
+   .. method:: get_address_by_name(name: str) -> Optional[int]
+
+      Looks up an effect parameter address by its name.
+
+   .. method:: get_by_address(address: int) -> Optional[EffectParameter]
+
+      Retrieves an effect parameter by its address.
+
+   .. method:: get_by_name(name: str) -> Optional[EffectParameter]
+
+      Retrieves an effect parameter by its name.
+
+   .. method:: convert_to_midi(display_value: int) -> int
+
+      Converts a display value to a corresponding MIDI value.
+
+   .. method:: get_midi_value(param_name: str, value: int) -> Optional[int]
+
+      Returns the MIDI value for an effect parameter given its name and display value.
+
+   .. method:: get_common_param_by_name(name: str) -> Optional[EffectCommonParameter]
+
+      Categorizes an effect parameter into a common effect type.
+
+Constants
+---------
+
+This class defines various constants representing effect parameters, such as:
+
+- **EFX1_TYPE**
+- **EFX1_LEVEL**
+- **DELAY_LEVEL**
+- **REVERB_LEVEL**
+
+Each parameter is defined as a tuple containing:
+
+- Address (int)
+- Minimum value (int)
+- Maximum value (int)
+- Display minimum value (Optional[int])
+- Display maximum value (Optional[int])
+
+Usage Example
+-------------
+
+.. code-block:: python
+
+   param = EffectParameter.get_by_name("EFX1_LEVEL")
+   if param:
+       midi_value = param.convert_to_midi(64)
+       print(f"MIDI Value: {midi_value}")
+
+"""
+
 from typing import Optional, Tuple
 
-from jdxi_manager.data.effects import EffectsCommonParameter
+from jdxi_manager.data.effects import EffectCommonParameter
 from jdxi_manager.data.parameter.synth import SynthParameter
-
-"""
-For reference:
-
-**Program Effect 1
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | EFX1 Type (0 - 4) |
-| 00 01 | 0aaa aaaa | EFX1 Level (0 - 127) |
-| 00 02 | 0aaa aaaa | EFX1 Delay Send Level (0 - 127) |
-| 00 03 | 0aaa aaaa | EFX1 Reverb Send Level (0 - 127) |
-| 00 04 | 0000 00aa | EFX1 Output Assign (0 - 1) |
-| | | DIR, EFX2 |
-|-------------+-----------+----------------------------------------------------|
-| 00 05 | 0aaa aaaa | (reserve) <*> |
-| 00 06 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 10 | 000a aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 11 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX1 Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 15 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX1 Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 01 0D | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX1 Parameter 32 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 01 11 | Total Size |
-+------------------------------------------------------------------------------+
-
-**Program Effect 2
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | EFX2 Type (0, 5 - 8) |
-| 00 01 | 0aaa aaaa | EFX2 Level (0 - 127) |
-| 00 02 | 0aaa aaaa | EFX2 Delay Send Level (0 - 127) |
-| 00 03 | 0aaa aaaa | EFX2 Reverb Send Level (0 - 127) |
-| 00 04 | 0000 00aa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 05 | 0aaa aaaa | (reserve) <*> |
-| 00 06 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 10 | 000a aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 11 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX2 Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 15 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX2 Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 01 0D | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX2 Parameter 32 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 01 11 | Total Size |
-+------------------------------------------------------------------------------+
-
-**Program Delay
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0000 aaaa | (reserve) <*> |
-| 00 01 | 0aaa aaaa | Delay Level (0 - 127) |
-| 00 02 | 0000 00aa | (reserve) <*> |
-| 00 03 | 0aaa aaaa | Delay Reverb Send Level (0 - 127) |
-|-------------+-----------+----------------------------------------------------|
-|# 00 04 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Delay Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 08 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Delay Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 00 60 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Delay Parameter 24 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 64 | Total Size |
-+------------------------------------------------------------------------------+
-
-**Program Reverb
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0000 aaaa | (reserve) <*> |
-| 00 01 | 0aaa aaaa | Reverb Level (0 - 127) |
-| 00 02 | 0000 00aa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 03 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Reverb Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 07 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Reverb Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 00 5F | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Reverb Parameter 24 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 63 | Total Size |
-+------------------------------------------------------------------------------+
-
-"""
 
 
 class EffectParameter(SynthParameter):
@@ -194,27 +131,10 @@ class EffectParameter(SynthParameter):
     DELAY_REVERB_SEND_LEVEL = (0x06, 0, 127, 0, 127)
 
     # Reverb Parameters
-    #REVERB_OFF_ON = (0x00, 0, 1)
-    #REVERB_TYPE = (0x00, 0, 5)  # Assuming 0 for ROOM1, 1 for ROOM2, etc.
-    #REVERB_TIME = (0x01, 0, 127)
-    #REVERB_HF_DAMP = (0x02, 200, 8000)
     REVERB_LEVEL = (0x03, 0, 127, 0, 127)
     REVERB_PARAM_1 = (0x07, 12768, 52768, -20000, 20000)
     REVERB_PARAM_2 = (0x0B, 12768, 52768, -20000, 20000)
     REVERB_PARAM_24 = (0x5F, 12768, 52768, -20000, 20000)
-
-    # Common parameters
-    #TYPE = (0x00,)
-    #LEVEL = (0x01,)
-
-    # Effect-specific parameters
-    #PARAM_1 = (0x02,)
-    #PARAM_2 = (0x03,)
-
-    # Send levels
-    #REVERB_SEND = (0x04,)
-    #DELAY_SEND = (0x05,)
-    #CHORUS_SEND = (0x06,)
 
     @classmethod
     def get_address_by_name(cls, name):
@@ -265,6 +185,8 @@ class EffectParameter(SynthParameter):
         else:
             return display_value
 
+    convert_from_display = convert_to_midi
+
     @staticmethod
     def get_midi_value(param_name, value):
         """Get the MIDI value for address parameter by name and value."""
@@ -277,21 +199,21 @@ class EffectParameter(SynthParameter):
     def get_common_param_by_name(cls, name):
         """Look up an effect parameter's category using address dictionary mapping"""
         param_mapping = {
-            EffectsCommonParameter.PROGRAM_EFFECT_1: {
+            EffectCommonParameter.PROGRAM_EFFECT_1: {
                 "EFX1_TYPE", "EFX1_LEVEL", "EFX1_DELAY_SEND_LEVEL",
                 "EFX1_REVERB_SEND_LEVEL", "EFX1_OUTPUT_ASSIGN",
                 "EFX1_PARAM_1", "EFX1_PARAM_2", "EFX1_PARAM_32"
             },
-            EffectsCommonParameter.PROGRAM_EFFECT_2: {
+            EffectCommonParameter.PROGRAM_EFFECT_2: {
                 "EFX2_TYPE", "EFX2_LEVEL", "EFX2_DELAY_SEND_LEVEL",
                 "EFX2_REVERB_SEND_LEVEL", "EFX2_PARAM_1", "EFX2_PARAM_2"
             },
-            EffectsCommonParameter.PROGRAM_DELAY: {
+            EffectCommonParameter.PROGRAM_DELAY: {
                 "DELAY_TYPE", "DELAY_TIME", "DELAY_TAP_TIME",
                 "DELAY_FEEDBACK", "DELAY_HF_DAMP", "DELAY_LEVEL",
                 "DELAY_REVERB_SEND_LEVEL", "DELAY_PARAM_1", "DELAY_PARAM_2", "DELAY_PARAM_24"
             },
-            EffectsCommonParameter.PROGRAM_REVERB: {
+            EffectCommonParameter.PROGRAM_REVERB: {
                 "REVERB_OFF_ON", "REVERB_TYPE", "REVERB_TIME", "REVERB_HF_DAMP",
                 "REVERB_LEVEL", "REVERB_PARAM_1", "REVERB_PARAM_2", "REVERB_PARAM_24"
             }

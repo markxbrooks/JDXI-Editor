@@ -5,14 +5,14 @@ from jdxi_manager.midi.sysex.roland import RolandSysEx
 from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.sysex.device import DeviceInfo
 from jdxi_manager.midi.constants import (
-    DrumKitCC, 
-    START_OF_SYSEX, 
-    END_OF_SYSEX, 
-    ROLAND_ID, 
-    DEVICE_ID, 
-    MODEL_ID, 
-    DT1_COMMAND, 
-    DIGITAL_SYNTH_AREA, 
+    DrumKitCC,
+    START_OF_SYSEX,
+    END_OF_SYSEX,
+    ROLAND_ID,
+    DEVICE_ID,
+    MODEL_ID,
+    DT1_COMMAND,
+    DIGITAL_SYNTH_1_AREA,
     PART_1,
     OSC_1_GROUP,        # Changed from OSC_PARAM_GROUP
     OSC_WAVE_PARAM,     # Changed from PARAM_NUMBER
@@ -509,7 +509,7 @@ class DrumKitCommonMessage(ParameterMessage):
     """Drum Kit Common parameter message"""
     area: int = 0x19       # Temporary area
     section: int = 0x10    # Drum Kit section
-    group: int = 0x00      # Common group
+    group: int = 0x00      # Common area
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -527,7 +527,7 @@ class DrumKitPartialMessage(ParameterMessage):
     """Drum Kit Partial parameter message"""
     area: int = 0x19       # Temporary area
     section: int = 0x10    # Drum Kit section
-    group: int = 0x01      # Partial group
+    group: int = 0x01      # Partial area
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -739,7 +739,7 @@ def create_parameter_message(area: int, part: int, group: int, param: int, value
 
 # Usage example:
 msg = create_parameter_message(
-    area=DIGITAL_SYNTH_AREA,    # 0x19
+    area=DIGITAL_SYNTH_1_AREA,    # 0x19
     part=PART_1,                # 0x01
     group=OSC_1_GROUP,          # 0x20 - Changed from OSC_PARAM_GROUP
     param=OSC_WAVE_PARAM,       # 0x00

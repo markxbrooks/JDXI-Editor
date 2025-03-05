@@ -87,7 +87,7 @@ class Slider(QWidget):
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding
             )
-            self.setMinimumHeight(125)  # 50% of 250px ADSR group height
+            self.setMinimumHeight(125)  # 50% of 250px ADSR area height
             layout.setAlignment(self.label, Qt.AlignmentFlag.AlignLeft)
             layout.setAlignment(self.slider, Qt.AlignmentFlag.AlignLeft)
             self.slider.setTickPosition(QSlider.TickPosition.TicksBothSides)

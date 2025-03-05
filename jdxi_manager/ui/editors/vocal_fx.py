@@ -13,7 +13,7 @@ import logging
 from typing import Optional
 
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.vocal_fx import (
@@ -31,7 +31,7 @@ from jdxi_manager.midi.constants.vocal_fx import (
 )
 
 
-class VocalFXEditor(BaseEditor):
+class VocalFXEditor(SynthEditor):
     def __init__(
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):

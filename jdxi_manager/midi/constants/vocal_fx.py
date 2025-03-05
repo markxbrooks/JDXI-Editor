@@ -5,7 +5,7 @@ from enum import Enum, IntEnum
 # Areas and Parts
 VOCAL_FX_AREA = 0x18
 VOCAL_FX_PART = 0x00
-VOCAL_FX_GROUP = 0x01  # Different group from arpeggiator
+VOCAL_FX_GROUP = 0x01  # Different area from arpeggiator
 
 class VocalFXParameters(IntEnum):
     """Vocal FX parameters"""

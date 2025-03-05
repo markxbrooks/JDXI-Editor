@@ -36,7 +36,7 @@ class TestParseSysex(unittest.TestCase):
         parsed_data = parse_sysex(self.sysex_message)
 
         self.assertIsInstance(parsed_data, dict)
-        self.assertIn("JD_XI_ID", parsed_data)
+        self.assertIn("JD_XI_HEADER", parsed_data)
         self.assertIn("ADDRESS", parsed_data)
         self.assertIn("TEMPORARY_AREA", parsed_data)
         self.assertIn("SYNTH_TONE", parsed_data)

@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class BaseParameter(Enum):
-    """Base class for synth parameters with group, address, and value range."""
+    """Base class for synth parameters with area, address, and value range."""
 
     def __new__(cls, address: int, min_val: int, max_val: int):
         obj = object.__new__(cls)

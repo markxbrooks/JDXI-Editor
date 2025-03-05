@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QTimer
 from midiutil import MIDIFile
 
 from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import generate_sequencer_button_style, toggle_button_style
 
 # MIDI Constants
@@ -309,7 +309,7 @@ class PatternMeasure(QWidget):
         self.setLayout(layout)
 
 
-class PatternSequencer(BaseEditor):
+class PatternSequencer(SynthEditor):
     """Pattern Sequencer with MIDI Integration"""
 
     def __init__(self, midi_helper: Optional[MIDIHelper], parent=None):
@@ -353,7 +353,7 @@ class PatternSequencer(BaseEditor):
         # Add transport and file controls at the top
         control_panel = QHBoxLayout()
         
-        # File operations group
+        # File operations area
         file_group = QGroupBox("Pattern File")
         file_layout = QHBoxLayout()
         
@@ -367,7 +367,7 @@ class PatternSequencer(BaseEditor):
         file_group.setLayout(file_layout)
         control_panel.addWidget(file_group)
         
-        # Tempo control group
+        # Tempo control area
         tempo_group = QGroupBox("Tempo")
         tempo_layout = QHBoxLayout()
         
@@ -386,7 +386,7 @@ class PatternSequencer(BaseEditor):
         tempo_group.setLayout(tempo_layout)
         control_panel.addWidget(tempo_group)
         
-        # Transport controls group
+        # Transport controls area
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
         

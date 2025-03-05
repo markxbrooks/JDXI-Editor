@@ -191,7 +191,7 @@ For reference
 """
 
 class AnalogParameter(SynthParameter):
-    """Analog synth parameters with group, address, and value range."""
+    """Analog synth parameters with area, address, and value range."""
     TONE_NAME_1 = (0x00, 32, 127)
     TONE_NAME_2 = (0x01, 32, 127)
     TONE_NAME_3 = (0x02, 32, 127)
@@ -234,9 +234,9 @@ class AnalogParameter(SynthParameter):
 
     # Filter Parameters
     FILTER_SWITCH = (0x20, 0, 1)  # BYPASS, LPF
-    FILTER_CUTOFF = (0x21, 0, 127, 54, 74)  # (54 - 74)
+    FILTER_CUTOFF = (0x21, 0, 127, 0, 127)  # 0-127
     FILTER_CUTOFF_KEYFOLLOW = (0x22, 54, 74)
-    FILTER_RESONANCE = (0x23, 0, 127)
+    FILTER_RESONANCE = (0x23, 0, 127, 0, 127)
     FILTER_ENV_VELOCITY_SENS = (0x24, 1, 127, -63, 63)  # -63 - +63
     FILTER_ENV_ATTACK_TIME = (0x25, 0, 127)
     FILTER_ENV_DECAY_TIME = (0x26, 0, 127)

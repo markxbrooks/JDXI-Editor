@@ -231,7 +231,7 @@ DRUM_ADDRESSES = {
 
 
 def get_address_for_partial_name(partial_name: str) -> int:
-    """Get parameter group and address adjusted for partial number."""
+    """Get parameter area and address adjusted for partial number."""
 
     address_map = {
         "COM": 0x00,  # Common parameters
@@ -822,7 +822,7 @@ class DrumParameter(SynthParameter):
 
     @staticmethod
     def get_address_for_partial_name(partial_name: str) -> int:
-        """Get parameter group and address adjusted for partial number."""
+        """Get parameter area and address adjusted for partial number."""
 
         address_map = {
             "COM": 0x00,  # Common parameters
@@ -914,7 +914,7 @@ class DrumCommonParameter(SynthParameter):
         }.get(self, self.name.replace("_", " ").title())
 
     def get_address_for_partial(self, partial_num: int = 0) -> int:
-        """Get parameter group and address adjusted for partial number."""
+        """Get parameter area and address adjusted for partial number."""
         group_map = {0: 0x00}
         group = group_map.get(partial_num, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group

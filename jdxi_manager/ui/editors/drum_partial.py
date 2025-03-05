@@ -38,14 +38,13 @@ from jdxi_manager.data.drums import rm_waves
 from jdxi_manager.data.parameter.drums import DrumParameter
 from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 from jdxi_manager.data.parameter.drums import get_address_for_partial_name
+from jdxi_manager.ui.editors.partial import PartialEditor
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
 
-instrument_icon_folder = "drum_kits"
 
-
-class DrumPartialEditor(QWidget):
+class DrumPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
     def __init__(self, midi_helper=None, partial_num=0, partial_name=None, parent=None):
@@ -107,7 +106,7 @@ class DrumPartialEditor(QWidget):
         main_layout.addWidget(scroll_area)
 
     def _create_tva_group(self):
-        """Create the TVA group."""
+        """Create the TVA area."""
 
         # TVA Group
         tva_group = QGroupBox("TVA")
@@ -177,7 +176,7 @@ class DrumPartialEditor(QWidget):
         return tva_group
 
     def _create_wmt_group(self):
-        """Create the WMT group."""
+        """Create the WMT area."""
 
         # WMT Group
         wmt_group = QGroupBox("WMT")
@@ -720,7 +719,7 @@ class DrumPartialEditor(QWidget):
         return wmt4_layout
 
     def _create_pitch_group(self):
-        """Create the pitch group."""
+        """Create the pitch area."""
         # Pitch Group
         pitch_group = QGroupBox("Pitch")
         pitch_layout = QFormLayout()
@@ -806,7 +805,7 @@ class DrumPartialEditor(QWidget):
         return output_group
 
     def _create_tvf_group(self):
-        """create tvf group"""
+        """create tvf area"""
         # TVF Group
         tvf_group = QGroupBox("TVF")
         tvf_layout = QFormLayout()
@@ -909,7 +908,7 @@ class DrumPartialEditor(QWidget):
         return tvf_group
 
     def _create_pitch_env_group(self):
-        """create pitch env group"""
+        """create pitch env area"""
         # Pitch Env Group
         pitch_env_group = QGroupBox("Pitch Env")
         pitch_env_layout = QFormLayout()
@@ -1001,42 +1000,6 @@ class DrumPartialEditor(QWidget):
         # Store control reference
         self.controls[param] = slider
         return slider
-
-    def _create_parameter_combo_box(
-        self,
-        param: DrumParameter,
-        label: str = None,
-        options: list = None,
-        values: list = None,
-    ) -> ComboBox:
-        """Create address combo box for address parameter with proper display conversion"""
-
-        combo_box = ComboBox(label, options, values)
-
-        # Connect value changed signal
-        combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = combo_box
-        return combo_box
-
-    def _create_parameter_spin_box(
-        self, param: DrumParameter, label: str = None
-    ) -> SpinBox:
-        """Create address spin box for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        spin_box = SpinBox(label, display_min, display_max)
-
-        # Connect value changed signal
-        spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = spin_box
-        return spin_box
 
     def _on_parameter_changed(self, param: DrumParameter, display_value: int):
         """Handle parameter value changes from UI controls"""

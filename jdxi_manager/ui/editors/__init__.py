@@ -1,7 +1,7 @@
 """Editor modules for JD-Xi parameters"""
 
 # First import base editor since others depend on it
-from jdxi_manager.ui.editors.base import BaseEditor
+from jdxi_manager.ui.editors.synth import SynthEditor
 
 # Then import specific editors
 from jdxi_manager.ui.editors.analog import AnalogSynthEditor
