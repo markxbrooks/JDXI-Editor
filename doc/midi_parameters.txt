@@ -464,49 +464,49 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 0B | 0aaa aaaa | Part Coarse Tune (RPN# 2) (16 - 112)                     |
 |       |           | -48 - +48                                                |
 | 00 0C | 0aaa aaaa | Part Fine Tune (RPN# 1) (14 - 114)                       |
-| 00 0D | 0000 00aa | Part Mono/Poly (MONO ON/POLY ON) (0 - 2) |                 |
-| MONO, POLY, TONE |                                                         |
-| 00 0E | 0000 00aa | Part Legato Switch (CC# 68) (0 - 2) |                      |
-| OFF, ON, TONE |                                                            |
-| 00 0F | 000a aaaa | Part Pitch Bend Range (RPN# 0) (0 - 25) |                  |
-| 0 - 24, TONE |                                                             |
-| 00 10 | 0000 00aa | Part Portamento Switch (CC# 65) (0 - 2) |                  |
-| OFF, ON, TONE |                                                            |
+| 00 0D | 0000 00aa | Part Mono/Poly (MONO ON/POLY ON) (0 - 2)                 |
+| MONO, POLY, TONE |                                                           |
+| 00 0E | 0000 00aa | Part Legato Switch (CC# 68) (0 - 2)                      |
+| OFF, ON, TONE |                                                              |
+| 00 0F | 000a aaaa | Part Pitch Bend Range (RPN# 0) (0 - 25)                  |
+| 0 - 24, TONE |                                                               |
+| 00 10 | 0000 00aa | Part Portamento Switch (CC# 65) (0 - 2)                  |
+| OFF, ON, TONE |                                                              |
 |# 00 11 | 0000 aaaa |                                                         |
 | 0000 bbbb | Part Portamento Time (0 - 128) |                                 |
-| 0 - 127, TONE |                                                            |
-| 00 13 | 0aaa aaaa | Part Cutoff Offset (CC# 74) (0 - 127)                      |
+| 0 - 127, TONE |                                                              |
+| 00 13 | 0aaa aaaa | Part Cutoff Offset (CC# 74) (0 - 127)                    |
 | -64 - +63 |                                                                  |
-| 00 14 | 0aaa aaaa | Part Resonance Offset (CC# 71) (0 - 127) |                 |
+| 00 14 | 0aaa aaaa | Part Resonance Offset (CC# 71) (0 - 127)                 |
 | -64 - +63 |                                                                  |
-| 00 15 | 0aaa aaaa | Part Attack Time Offset (CC# 73) (0 - 127) |               |
+| 00 15 | 0aaa aaaa | Part Attack Time Offset (CC# 73) (0 - 127)               |
 | -64 - +63 |                                                                  |
-| 00 16 | 0aaa aaaa | Part Decay Time Offset (CC# 75) (0 - 127) |                |
+| 00 16 | 0aaa aaaa | Part Decay Time Offset (CC# 75) (0 - 127)                |
 | -64 - +63 |                                                                  |
-| 00 17 | 0aaa aaaa | Part Release Time Offset (CC# 72) (0 - 127) |              |
+| 00 17 | 0aaa aaaa | Part Release Time Offset (CC# 72) (0 - 127)              |
 | -64 - +63 |                                                                  |
-| 00 18 | 0aaa aaaa | Part Vibrato Rate (CC# 76) (0 - 127) |                     |
+| 00 18 | 0aaa aaaa | Part Vibrato Rate (CC# 76) (0 - 127) |                   |
 | -64 - +63 |                                                                  |
-| 00 19 | 0aaa aaaa | Part Vibrato Depth (CC# 77) (0 - 127)                      |
+| 00 19 | 0aaa aaaa | Part Vibrato Depth (CC# 77) (0 - 127)                    |
 | -64 - +63 |                                                                  |
-| 00 1A | 0aaa aaaa | Part Vibrato Delay (CC# 78) (0 - 127)                      |
+| 00 1A | 0aaa aaaa | Part Vibrato Delay (CC# 78) (0 - 127)                    |
 | -64 - +63 |                                                                  |
 |-------------+-----------+----------------------------------------------------|
-| 00 1B | 0000 0aaa | Part Octave Shift (61 - 67) |                              |
-| -3 - +3 |                                                                  |
-| 00 1C | 0aaa aaaa | Part Velocity Sens Offset (1 - 127) |                      |
+| 00 1B | 0000 0aaa | Part Octave Shift (61 - 67) |                            |
+| -3 - +3 |                                                                    |
+| 00 1C | 0aaa aaaa | Part Velocity Sens Offset (1 - 127) |                    |
 | -63 - +63 |                                                                  |
 | 00 1D | 0000 0000 | (reserve) <*> |                                          |
 | 00 1E | 0aaa aaaa | (reserve) <*> |                                          |
 | 00 1F | 0000 0000 | (reserve) <*> |                                          |
 | 00 20 | 0000 0000 | (reserve) <*> |                                          |
-| 00 21 | 0aaa aaaa | Velocity Range Lower (1 - 127)                             |
+| 00 21 | 0aaa aaaa | Velocity Range Lower (1 - 127)                           |
 | 1 - UPPER |                                                                  |
-| 00 22 | 0aaa aaaa | Velocity Range Upper (0 - 127)                             |
-| LOWER - 127 |                                                              |
-| 00 23 | 0aaa aaaa | Velocity Fade Width Lower (0 - 127) |                      |
-| 00 24 | 0aaa aaaa | Velocity Fade Width Upper (0 - 127) |                      |
-| 00 25 | 0000 000a | Mute Switch (0 - 1) |                                      |
+| 00 22 | 0aaa aaaa | Velocity Range Upper (0 - 127)                           |
+| LOWER - 127 |                                                                |
+| 00 23 | 0aaa aaaa | Velocity Fade Width Lower (0 - 127) |                    |
+| 00 24 | 0aaa aaaa | Velocity Fade Width Upper (0 - 127) |                    |
+| 00 25 | 0000 000a | Mute Switch (0 - 1) |                                    |
 | OFF, MUTE |                                                                  |
 |-------------+-----------+----------------------------------------------------|
 | 00 26 | 0aaa aaaa | (reserve) <*> |                                          |
@@ -515,64 +515,64 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 29 | 0aaa aaaa | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
 | 00 2A | 0aaa aaaa | (reserve) <*> |                                          |
-| 00 2B | 0aaa aaaa | Part Delay Send Level (CC# 94) (0 - 127) |                 |
-| 00 2C | 0aaa aaaa | Part Reverb Send Level (CC# 91) (0 - 127) |                |
+| 00 2B | 0aaa aaaa | Part Delay Send Level (CC# 94) (0 - 127) |               |
+| 00 2C | 0aaa aaaa | Part Reverb Send Level (CC# 91) (0 - 127) |              |
 | 00 2D | 0000 0aaa | Part Output Assign (0 - 4)                               |
-| EFX1, EFX2, DLY, REV, DIR |                                                |
+| EFX1, EFX2, DLY, REV, DIR |                                                  |
 | 00 2E | 0000 000a | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
-| 00 2F | 0aaa aaaa | Part Scale Tune Type (0 - 8)                               |
-| CUSTOM, EQUAL, JUST-MAJ, JUST-MIN, |                                       |
-| PYTHAGORE, KIRNBERGE, MEANTONE, |                                          |
-| WERCKMEIS, ARABIC |                                                        |
-| 00 30 | 0aaa aaaa | Part Scale Tune Key (0 - 11)                               |
-| C, C#, D, D#, E, F, F#, G, G#, |                                           |
-| A, A#, B |                                                                 |
-| 00 31 | 0aaa aaaa | Part Scale Tune for C (0 - 127) |                      |
+| 00 2F | 0aaa aaaa | Part Scale Tune Type (0 - 8)                             |
+| CUSTOM, EQUAL, JUST-MAJ, JUST-MIN, |                                         |
+| PYTHAGORE, KIRNBERGE, MEANTONE, |                                            |
+| WERCKMEIS, ARABIC |                                                          |
+| 00 30 | 0aaa aaaa | Part Scale Tune Key (0 - 11)                             |
+| C, C#, D, D#, E, F, F#, G, G#, |                                             |
+| A, A#, B |                                                                   |
+| 00 31 | 0aaa aaaa | Part Scale Tune for C (0 - 127) |                        |
 | -64 - +63 |                                                                  |
 | 00 32 | 0aaa aaaa | Part Scale Tune for C# (0 - 127) |                       |
 | -64 - +63 |                                                                  |
-| 00 33 | 0aaa aaaa | Part Scale Tune for D (0 - 127) |                      |
+| 00 33 | 0aaa aaaa | Part Scale Tune for D (0 - 127) |                        |
 | -64 - +63 |                                                                  |
 | 00 34 | 0aaa aaaa | Part Scale Tune for D# (0 - 127) |                       |
 | -64 - +63 |                                                                  |
-| 00 35 | 0aaa aaaa | Part Scale Tune for E (0 - 127) |                      |
+| 00 35 | 0aaa aaaa | Part Scale Tune for E (0 - 127) |                        |
 | -64 - +63 |                                                                  |
-| 00 36 | 0aaa aaaa | Part Scale Tune for F (0 - 127) |                      |
+| 00 36 | 0aaa aaaa | Part Scale Tune for F (0 - 127) |                        |
 | -64 - +63 |                                                                  |
 | 00 37 | 0aaa aaaa | Part Scale Tune for F# (0 - 127) |                       |
 | -64 - +63 |                                                                  |
-| 00 38 | 0aaa aaaa | Part Scale Tune for G (0 - 127) |                      |
+| 00 38 | 0aaa aaaa | Part Scale Tune for G (0 - 127) |                        |
 | -64 - +63 |                                                                  |
 | 00 39 | 0aaa aaaa | Part Scale Tune for G# (0 - 127) |                       |
 | -64 - +63 |                                                                  |
-| 00 3A | 0aaa aaaa | Part Scale Tune for A (0 - 127) |                      |
+| 00 3A | 0aaa aaaa | Part Scale Tune for A (0 - 127) |                        |
 | -64 - +63 |                                                                  |
 | 00 3B | 0aaa aaaa | Part Scale Tune for A# (0 - 127) |                       |
 | -64 - +63 |                                                                  |
-| 00 3C | 0aaa aaaa | Part Scale Tune for B (0 - 127) |                      |
+| 00 3C | 0aaa aaaa | Part Scale Tune for B (0 - 127) |                        |
 | -64 - +63 |                                                                  |
 |-------------+-----------+----------------------------------------------------|
-| 00 3D | 0000 000a | Receive Program Change (0 - 1)                             |
-| OFF, ON |                                                                  |
-| 00 3E | 0000 000a | Receive Bank Select (0 - 1) |                              |
-| OFF, ON |                                                                  |
+| 00 3D | 0000 000a | Receive Program Change (0 - 1)                           |
+| OFF, ON |                                                                    |
+| 00 3E | 0000 000a | Receive Bank Select (0 - 1) |                            |
+| OFF, ON |                                                                    |
 | 00 3F | 0000 000a | Receive Pitch Bend (0 - 1)                               |
-| OFF, ON |                                                                  |
-| 00 40 | 0000 000a | Receive Polyphonic Key Pressure (0 - 1) |                  |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
+| 00 40 | 0000 000a | Receive Polyphonic Key Pressure (0 - 1) |                |
+| OFF, ON |                                                                    |
 | 00 41 | 0000 000a | Receive Channel Pressure (0 - 1) |                       |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
 | 00 42 | 0000 000a | Receive Modulation (0 - 1)                               |
-| OFF, ON |                                                                  |
-| 00 43 | 0000 000a | Receive Volume (0 - 1)                                     |
-| OFF, ON |                                                                  |
-| 00 44 | 0000 000a | Receive Pan (0 - 1) |                                      |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
+| 00 43 | 0000 000a | Receive Volume (0 - 1)                                   |
+| OFF, ON |                                                                    |
+| 00 44 | 0000 000a | Receive Pan (0 - 1) |                                    |
+| OFF, ON |                                                                    |
 | 00 45 | 0000 000a | Receive Expression (0 - 1)                               |
-| OFF, ON |                                                                  |
-| 00 46 | 0000 000a | Receive Hold-1 (0 - 1)                                     |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
+| 00 46 | 0000 000a | Receive Hold-1 (0 - 1)                                   |
+| OFF, ON |                                                                    |
 |-------------+-----------+----------------------------------------------------|
 | 00 47 | 0000 0aaa | (reserve) (0) |                                          |
 |-------------+-----------+----------------------------------------------------|
@@ -598,7 +598,7 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | : |                                                                          |
 | 00 02 | 0000 000a | (reserve) <*> |                                          |
 | 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
 | 00 04 | 0000 000a | (reserve) <*> |                                          |
 | 00 05 | 0000 000a | (reserve) <*> |                                          |
 | : |                                                                          |
@@ -608,8 +608,8 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 0000 bbbb | (reserve) <*> |                                                  |
 | : |                                                                          |
 | 00 18 | 0aaa aaaa | (reserve) <*> |                                          |
-| 00 19 | 0000 0aaa | Zone Octave Shift (61 - 67) |                              |
-| -3 - +3 |                                                                  |
+| 00 19 | 0000 0aaa | Zone Octave Shift (61 - 67) |                            |
+| -3 - +3 |                                                                    |
 | 00 1A | 0000 aaaa | (reserve) <*> |                                          |
 | 00 1B | 0aaa aaaa | (reserve) <*> |                                          |
 | : |                                                                          |
@@ -628,26 +628,26 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 |-------------+----------------------------------------------------------------|
 | 00 00 | 0000 000a | (reserve) <*> |                                          |
 | 00 01 | 0aaa aaaa | Arpeggio Grid (0 - 8) |                                  |
-| 04_, 08_, 08L, 08H, 08t, |                                                 |
-| 16_, 16L, 16H, 16t                                                         |
-| 00 02 | 0aaa aaaa | Arpeggio Duration (0 - 9) |                                |
-| 30, 40, 50, 60, 70, 80, 90, |                                              |
-| 100, 120, FUL |                                                            |
+| 04_, 08_, 08L, 08H, 08t, |                                                   |
+| 16_, 16L, 16H, 16t                                                           |
+| 00 02 | 0aaa aaaa | Arpeggio Duration (0 - 9) |                              |
+| 30, 40, 50, 60, 70, 80, 90, |                                                |
+| 100, 120, FUL |                                                              |
 | 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
 | 00 04 | 0aaa aaaa | (reserve) <*> |                                          |
-| 00 05 | 0aaa aaaa | Arpeggio Style (0 - 127) |                                 |
-| 1 - 128 |                                                                  |
+| 00 05 | 0aaa aaaa | Arpeggio Style (0 - 127) |                               |
+| 1 - 128 |                                                                    |
 | 00 06 | 0aaa aaaa | Arpeggio Motif (0 - 11) |                                |
-| UP/L, UP/H, UP/_, dn/L, dn/H, |                                          |
-| dn/_, Ud/L, Ud/H, Ud/_, rn/L, |                                          |
-| rn/_, PHRASE |                                                             |
-| 00 07 | 0000 0aaa | Arpeggio Octave Range (61 - 67) |                      |
-| -3 - +3 |                                                                  |
+| UP/L, UP/H, UP/_, dn/L, dn/H, |                                              |
+| dn/_, Ud/L, Ud/H, Ud/_, rn/L, |                                              |
+| rn/_, PHRASE |                                                               |
+| 00 07 | 0000 0aaa | Arpeggio Octave Range (61 - 67) |                        |
+| -3 - +3 |                                                                    |
 | 00 08 | 0000 000a | (reserve) <*> |                                          |
-| 00 09 | 0aaa aaaa | Arpeggio Accent Rate (0 - 100)                             |
-| 00 0A | 0aaa aaaa | Arpeggio Velocity (0 - 127) |                              |
-| REAL, 1 - 127 |                                                            |
+| 00 09 | 0aaa aaaa | Arpeggio Accent Rate (0 - 100)                           |
+| 00 0A | 0aaa aaaa | Arpeggio Velocity (0 - 127) |                            |
+| REAL, 1 - 127 |                                                              |
 | 00 0B | 0000 aaaa | (reserve) <*> |                                          |
 |-------------+----------------------------------------------------------------|
 | 00 00 00 0C | Total Size |                                                   |
@@ -696,14 +696,14 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 11 | 0000 000a | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
 | 00 12 | 0000 000a | Portamento Switch (0 - 1)                                |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
 | 00 13 | 0aaa aaaa | Portamento Time (CC# 5) (0 - 127) |                      |
-| 00 14 | 0000 00aa | Mono Switch (0 - 1) |                                      |
-| OFF, ON |                                                                  |
-| 00 15 | 0000 0aaa | Octave Shift (61 - 67)                                     |
-| -3 - +3 |                                                                  |
-| 00 16 | 000a aaaa | Pitch Bend Range Up (0 - 24)                               |
-| 00 17 | 000a aaaa | Pitch Bend Range Down (0 - 24)                             |
+| 00 14 | 0000 00aa | Mono Switch (0 - 1) |                                    |
+| OFF, ON |                                                                    |
+| 00 15 | 0000 0aaa | Octave Shift (61 - 67)                                   |
+| -3 - +3 |                                                                    |
+| 00 16 | 000a aaaa | Pitch Bend Range Up (0 - 24)                             |
+| 00 17 | 000a aaaa | Pitch Bend Range Down (0 - 24)                           |
 | 00 18 | 0000 0aaa | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
 | 00 19 | 0000 000a | Partial1 Switch (0 - 1) |                                |
@@ -1201,7 +1201,7 @@ Drum Kit Partial
 | 00 76  | 0aaa aaaa | WMT3 Velocity Fade Width Lower (0 - 127)           |
 | 00 77  | 0aaa aaaa | WMT3 Velocity Fade Width Upper (0 - 127)           |
 +--------+-----------+----------------------------------------------------+
-| 00 78  | 0000 00a | WMT4 Wave Switch (0 - 1)                           |
+| 00 78  | 0000 00a | WMT4 Wave Switch (0 - 1)                            |
 |        |           | OFF, ON                                            |
 | 00 79  | 0000 00aa | WMT4 Wave Group Type (0)                           |
 | 00 7A  | 0000 aaaa | WMT4 Wave Group ID (0 - 16384)                     |
