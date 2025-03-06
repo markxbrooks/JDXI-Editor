@@ -51,6 +51,7 @@ class MIDIInHandler(MidiIOController):
     midi_program_changed = Signal(int, int)  # channel, program
     midi_parameter_changed = Signal(object, int)  # Emit parameter and value
     midi_parameter_received = Signal(list, int)  # address, value
+    midi_control_changed = Signal(int, int, int) # channel, control, value
     midi_sysex_json = Signal(str)  # Signal emitting SysEx data as address JSON string
 
     def __init__(self, parent: Optional[Any] = None) -> None:
@@ -227,6 +228,7 @@ class MIDIInHandler(MidiIOController):
         control = message.control
         value = message.value
         logging.info("Control Change - Channel: %d, Control: %d, Value: %d", channel, control, value)
+        self.midi_control_changed.emit(channel, control, value)
         if control == 0:
             self.cc_msb_value = value
         elif control == 32:
