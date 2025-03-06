@@ -620,13 +620,29 @@ class JdxiUi(QMainWindow):
 
         # Effects button in top row
         fx_container = QWidget(central_widget)
-        fx_container.setGeometry(self.width - 200, self.margin + 25, 150, 50)
+        fx_container.setGeometry(self.width - 200, self.margin + 20, 150, 50)
         fx_layout = QHBoxLayout(fx_container)
 
         effects_row, self.effects_button = create_button_row(
-            "Effects", self._open_effects
+            "Effects", self._open_effects, vertical=True, spacing=0
         )
+        vocal_effects_row, self.vocal_effects_button = create_button_row(
+            "Vocoder", self._open_vocal_fx, vertical=True, spacing=0
+        )
+        fx_layout.setSpacing(15)
         fx_layout.addLayout(effects_row)
+        fx_layout.addLayout(vocal_effects_row)
+        """
+        # Effects button in top row
+        vocal_fx_container = QWidget(central_widget)
+        vocal_fx_container.setGeometry(self.width - 100, self.margin + 25, 150, 50)
+        vocal_fx_layout = QHBoxLayout()
+
+        vocal_effects_row, self.vocal_effects_button = create_button_row(
+            "Vocoder", self._open_vocal_fx
+        )
+        vocal_fx_layout.addLayout(vocal_effects_row)
+        """
 
         ###### For tone buttons ######
         # Effects button in top row
