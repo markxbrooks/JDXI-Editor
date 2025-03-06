@@ -41,9 +41,9 @@ def draw_instrument_pixmap(
     painter.drawText(title_x, title_y, "JD-Xi Manager")
 
     # LED display area (enlarged for 2 rows)
-    display_x = margin + 10
+    display_x = margin + 70
     display_y = title_y + 30
-    display_width = 215
+    display_width = 150
     display_height = 70
 
     # Draw dark grey background for display

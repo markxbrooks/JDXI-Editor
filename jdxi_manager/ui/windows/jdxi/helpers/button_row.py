@@ -1,12 +1,15 @@
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from jdxi_manager.ui.style import Style
 
 
-def create_button_row(text, slot):
+def create_button_row(text, slot, vertical=False, spacing=10):
     """Create address row with label and circular button"""
-    row = QHBoxLayout()
-    row.setSpacing(10)
+    if not vertical:
+        row = QHBoxLayout()
+    else:
+        row = QVBoxLayout()
+    row.setSpacing(spacing)
 
     # Add label with color based on text
     label = QLabel(text)
