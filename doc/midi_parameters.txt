@@ -597,7 +597,7 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 01 | 0aaa aaaa | (reserve) <*> |                                          |
 | : |                                                                          |
 | 00 02 | 0000 000a | (reserve) <*> |                                          |
-| 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                  |
+| 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                |
 | OFF, ON |                                                                  |
 | 00 04 | 0000 000a | (reserve) <*> |                                          |
 | 00 05 | 0000 000a | (reserve) <*> |                                          |
@@ -633,12 +633,12 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 02 | 0aaa aaaa | Arpeggio Duration (0 - 9) |                                |
 | 30, 40, 50, 60, 70, 80, 90, |                                              |
 | 100, 120, FUL |                                                            |
-| 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                  |
+| 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                |
 | OFF, ON |                                                                  |
 | 00 04 | 0aaa aaaa | (reserve) <*> |                                          |
 | 00 05 | 0aaa aaaa | Arpeggio Style (0 - 127) |                                 |
 | 1 - 128 |                                                                  |
-| 00 06 | 0aaa aaaa | Arpeggio Motif (0 - 11) |                                  |
+| 00 06 | 0aaa aaaa | Arpeggio Motif (0 - 11) |                                |
 | UP/L, UP/H, UP/_, dn/L, dn/H, |                                          |
 | dn/_, Ud/L, Ud/H, Ud/_, rn/L, |                                          |
 | rn/_, PHRASE |                                                             |
@@ -662,30 +662,30 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | Offset      |                                                                |
 | Address     | Description                                                    |
 |-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | Tone Name 1 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 01 | 0aaa aaaa | Tone Name 2 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 02 | 0aaa aaaa | Tone Name 3 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 03 | 0aaa aaaa | Tone Name 4 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 04 | 0aaa aaaa | Tone Name 5 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 05 | 0aaa aaaa | Tone Name 6 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 06 | 0aaa aaaa | Tone Name 7 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 07 | 0aaa aaaa | Tone Name 8 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 08 | 0aaa aaaa | Tone Name 9 (32 - 127)                                     |
-32 - 127 [ASCII] |                                                           |
-| 00 09 | 0aaa aaaa | Tone Name 10 (32 - 127) |                                  |
-32 - 127 [ASCII] |                                                           |
-| 00 0A | 0aaa aaaa | Tone Name 11 (32 - 127) |                                  |
-32 - 127 [ASCII] |                                                           |
-| 00 0B | 0aaa aaaa | Tone Name 12 (32 - 127) |                                  |
-32 - 127 [ASCII] |                                                           |
+| 00 00 | 0aaa aaaa | Tone Name 1 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 01 | 0aaa aaaa | Tone Name 2 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 02 | 0aaa aaaa | Tone Name 3 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 03 | 0aaa aaaa | Tone Name 4 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 04 | 0aaa aaaa | Tone Name 5 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 05 | 0aaa aaaa | Tone Name 6 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 06 | 0aaa aaaa | Tone Name 7 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 07 | 0aaa aaaa | Tone Name 8 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 08 | 0aaa aaaa | Tone Name 9 (32 - 127)                                   |
+| 32 - 127 [ASCII] |                                                           |
+| 00 09 | 0aaa aaaa | Tone Name 10 (32 - 127) |                                |
+| 32 - 127 [ASCII] |                                                           |
+| 00 0A | 0aaa aaaa | Tone Name 11 (32 - 127) |                                |
+| 32 - 127 [ASCII] |                                                           |
+| 00 0B | 0aaa aaaa | Tone Name 12 (32 - 127) |                                |
+| 32 - 127 [ASCII] |                                                           |
 |-------------+-----------+----------------------------------------------------|
 | 00 0C | 0aaa aaaa | Tone Level (0 - 127)                                     |
 |-------------+-----------+----------------------------------------------------|
@@ -695,7 +695,7 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 10 | 0000 000a | (reserve) <*> |                                          |
 | 00 11 | 0000 000a | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
-| 00 12 | 0000 000a | Portamento Switch (0 - 1) |                                |
+| 00 12 | 0000 000a | Portamento Switch (0 - 1)                                |
 | OFF, ON |                                                                  |
 | 00 13 | 0aaa aaaa | Portamento Time (CC# 5) (0 - 127) |                      |
 | 00 14 | 0000 00aa | Mono Switch (0 - 1) |                                      |
@@ -706,21 +706,21 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 17 | 000a aaaa | Pitch Bend Range Down (0 - 24)                             |
 | 00 18 | 0000 0aaa | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
-| 00 19 | 0000 000a | Partial1 Switch (0 - 1) |                                  |
-| OFF, ON |                                                                  |
-| 00 1A | 0000 000a | Partial1 Select (0 - 1) |                                  |
-| OFF, ON |                                                                  |
-| 00 1B | 0000 000a | Partial2 Switch (0 - 1) |                                  |
-| OFF, ON |                                                                  |
-| 00 1C | 0000 000a | Partial2 Select (0 - 1) |                                  |
-| OFF, ON |                                                                  |
-| 00 1D | 0000 000a | Partial3 Switch (0 - 1) |                                  |
-| OFF, ON |                                                                  |
-| 00 1E | 0000 000a | Partial3 Select (0 - 1) |                                  |
-| OFF, ON |                                                                  |
+| 00 19 | 0000 000a | Partial1 Switch (0 - 1) |                                |
+| OFF, ON |                                                                    |
+| 00 1A | 0000 000a | Partial1 Select (0 - 1) |                                |
+| OFF, ON |                                                                    |
+| 00 1B | 0000 000a | Partial2 Switch (0 - 1) |                                |
+| OFF, ON |                                                                    |
+| 00 1C | 0000 000a | Partial2 Select (0 - 1) |                                |
+| OFF, ON |                                                                    |
+| 00 1D | 0000 000a | Partial3 Switch (0 - 1) |                                |
+| OFF, ON |                                                                    |
+| 00 1E | 0000 000a | Partial3 Select (0 - 1) |                                |
+| OFF, ON |                                                                    |
 |-------------+-----------+----------------------------------------------------|
-| 00 1F | 0000 00aa | RING Switch (0 - 2) |                                      |
-| OFF, ---, ON |                                                             |
+| 00 1F | 0000 00aa | RING Switch (0 - 2) |                                    |
+| OFF, ---, ON |                                                               |
 |-------------+-----------+----------------------------------------------------|
 | 00 20 | 0000 000a | (reserve) <*> |                                          |
 | 00 21 | 0000 00aa | (reserve) <*> |                                          |
@@ -728,24 +728,24 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 2D | 0000 000a | (reserve) <*> |                                          |
 |-------------+-----------+----------------------------------------------------|
 | 00 2E | 0000 000a | Unison Switch (0 - 1) |                                  |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
 | 00 2F | 0000 000a | (reserve) <*> |                                          |
 | 00 30 | 0000 000a | (reserve) <*> |                                          |
-| 00 31 | 0000 000a | Portamento Mode (0 - 1) |                                  |
-| NORMAL, LEGATO |                                                           |
+| 00 31 | 0000 000a | Portamento Mode (0 - 1) |                                |
+| NORMAL, LEGATO |                                                             |
 | 00 32 | 0000 000a | Legato Switch (0 - 1) |                                  |
-| OFF, ON |                                                                  |
+| OFF, ON |                                                                    |
 | 00 33 | 0000 000a | (reserve) <*> |                                          |
 | 00 34 | 0aaa aaaa | Analog Feel (0 - 127) |                                  |
 | 00 35 | 0aaa aaaa | Wave Shape (0 - 127)                                     |
-| 00 36 | 0aaa aaaa | Tone Category (0 - 127) |                                  |
+| 00 36 | 0aaa aaaa | Tone Category (0 - 127) |                                |
 |# 00 37 | 0000 aaaa |                                                         |
 | 0000 bbbb |                                                                  |
 | 0000 cccc |                                                                  |
 | 0000 dddd | (reserve) <*> |                                                  |
 | 00 3B | 0000 0aaa | (reserve) <*> |                                          |
-| 00 3C | 0000 00aa | Unison Size (0 - 3) |                                      |
-| 2, 4, 6, 8 |                                                               |
+| 00 3C | 0000 00aa | Unison Size (0 - 3) |                                    |
+| 2, 4, 6, 8 |                                                                 |
 | 00 3D | 0aaa aaaa | (reserve) <*> |                                          |
 | 00 3E | 0aaa aaaa | (reserve) <*> |                                          |
 | 00 3F | 0aaa aaaa | (reserve) <*> |                                          |
