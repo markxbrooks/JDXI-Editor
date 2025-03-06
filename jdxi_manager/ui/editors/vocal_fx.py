@@ -1,3 +1,6 @@
+import os
+
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -6,21 +9,22 @@ from PySide6.QtWidgets import (
     QLabel,
     QComboBox,
     QScrollArea,
-    QPushButton,
+    QPushButton, QTabWidget,
 )
 from PySide6.QtCore import Qt
 import logging
 from typing import Optional
 
+from jdxi_manager.data.parameter.program_common import ProgramCommonParameter
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.editors.synth import SynthEditor
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.vocal_fx import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,
     VOCAL_FX_GROUP,
-    VocalFXParameters,
     VocalFxSwitch,
     AutoPitchType,
     OutputAssign,
@@ -29,6 +33,7 @@ from jdxi_manager.midi.constants.vocal_fx import (
     VocoderEnvelope,
     VocoderHPF,
 )
+from jdxi_manager.data.parameter.vocal_fx import VocalFXParameter
 
 
 class VocalFXEditor(SynthEditor):
@@ -37,6 +42,13 @@ class VocalFXEditor(SynthEditor):
     ):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Vocal FX")
+        self.setMinimumHeight(700)
+        self.area = VOCAL_FX_AREA
+        self.part = VOCAL_FX_PART
+        self.group = VOCAL_FX_GROUP
+
+        self.four_byte_params = [ProgramCommonParameter.PROGRAM_TEMPO]
+        self.setStyleSheet(Style.JDXI_EDITOR + Style.JDXI_TABS)
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -45,28 +57,121 @@ class VocalFXEditor(SynthEditor):
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         # Create container widget for scroll area
         container = QWidget()
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
+
+        self.title_label = QLabel(
+            "Vocal Effects"
+        )
+        self.title_label.setStyleSheet(
+            """
+            font-size: 16px;
+            font-weight: bold;
+        """
+        )
+        container_layout.addWidget(self.title_label)
+        # Image display
+        self.image_label = QLabel()
+        self.image_label.setAlignment(
+            Qt.AlignmentFlag.AlignCenter
+        )  # Center align the image
+        container_layout.addWidget(self.image_label)
+        self.update_instrument_image()
+
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(self._create_common_section(), "Common")
+        self.tab_widget.addTab(self._create_vocal_effect_section(), "Vocal FX")
+        self.tab_widget.addTab(self._create_mixer_section(), "Mixer")
+        self.tab_widget.addTab(self._create_auto_pitch_section(), "Auto Pitch")
+
         # Add sections to container
-        container_layout.addWidget(self._create_vocal_effect_section())
-        container_layout.addWidget(self._create_mixer_section())
-        container_layout.addWidget(self._create_auto_pitch_section())
+        container_layout.addWidget(self.tab_widget)
 
         # Add container to scroll area
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
+    def update_instrument_image(self):
+        image_loaded = False
+        def load_and_set_image(image_path):
+            """Helper function to load and set the image on the label."""
+            if os.path.exists(image_path):
+                pixmap = QPixmap(image_path)
+                scaled_pixmap = pixmap.scaledToHeight(
+                    150, Qt.TransformationMode.SmoothTransformation
+                )  # Resize to 250px height
+                self.image_label.setPixmap(scaled_pixmap)
+                return True
+            return False
+
+        # Define paths
+        default_image_path = os.path.join("resources", "vocal_fx", "vocal_fx.png")
+
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
+
+    def _create_common_section(self):
+        common_section = QWidget()
+        layout = QVBoxLayout()
+        common_section.setLayout(layout)
+        self.program_tempo = self._create_parameter_slider(ProgramCommonParameter.PROGRAM_TEMPO,
+                                                           "Tempo")
+        layout.addWidget(self.program_tempo)
+
+        vocal_effect_switch_row = QHBoxLayout()
+        vocal_effect_switch_label = QLabel("Effect Part:")
+        vocal_effect_switch_row.addWidget(vocal_effect_switch_label)
+        self.vocal_effect_type = self._create_parameter_combo_box(ProgramCommonParameter.VOCAL_EFFECT,
+                                                                  "Vocal Effect",
+                                                                  ["OFF", "VOCODER", "AUTO - PITCH"],
+                                                                  [0, 1, 2])
+
+        vocal_effect_switch_row.addWidget(self.vocal_effect_type)
+        layout.addLayout(vocal_effect_switch_row)
+
+        self.vocal_effect_number = self._create_parameter_slider(ProgramCommonParameter.VOCAL_EFFECT_NUMBER,
+                                                                 "Effect Number")
+        layout.addWidget(self.vocal_effect_number)
+
+        self.program_level = self._create_parameter_slider(ProgramCommonParameter.PROGRAM_LEVEL,
+                                                           "Level")
+        layout.addWidget(self.program_level)
+
+        # Add Effect Part switch
+        effect_part_switch_row = QHBoxLayout()
+        effect_part_switch_label = QLabel("Effect Part:")
+        self.effect_part_switch = QPushButton("OFF")
+        self.effect_part_switch.setCheckable(True)
+        self.effect_part_switch.clicked.connect(self._on_effect_part_switch_changed)
+        effect_part_switch_row.addWidget(effect_part_switch_label)
+        effect_part_switch_row.addWidget(self.effect_part_switch)
+        layout.addLayout(effect_part_switch_row)  # Add at bottom
+
+        # Add Auto Note switch
+        auto_note_switch_row = QHBoxLayout()
+        auto_note_switch_label = QLabel("Auto Note:")
+        self.auto_note_switch = QPushButton("OFF")
+        self.auto_note_switch.setCheckable(True)
+        self.auto_note_switch.clicked.connect(self._on_auto_note_switch_changed)
+        auto_note_switch_row.addWidget(auto_note_switch_label)
+        auto_note_switch_row.addWidget(self.auto_note_switch)
+        layout.addLayout(auto_note_switch_row)  # Add at bottom
+
+        return common_section
+
     def _create_vocal_effect_section(self):
         """Create general vocal effect controls section"""
-        group = QGroupBox("Vocal Effect")
+        vocal_effect_section = QWidget()
+        # group = QGroupBox("Vocal Effect")
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        vocal_effect_section.setLayout(layout)
 
         # Add vocoder switch
         switch_row = QHBoxLayout()
@@ -78,38 +183,6 @@ class VocalFXEditor(SynthEditor):
         switch_row.addWidget(self.vocoder_switch)
         layout.addLayout(switch_row)  # Add at top
 
-        """
-        # Effect Type selector
-        type_row = QHBoxLayout()
-        type_row.addWidget(QLabel("Type"))
-        self.effect_type = QComboBox()
-        self.effect_type.addItems(["OFF", "VOCODER", "AUTO-PITCH"])
-        self.effect_type.currentIndexChanged.connect(self._on_effect_type_changed)
-        type_row.addWidget(self.effect_type)
-        layout.addLayout(type_row)
-        
-        
-        # Effect Number and Part
-        number_row = QHBoxLayout()
-        number_row.addWidget(QLabel("Number"))
-        self.effect_number = QComboBox()
-        self.effect_number.addItems([str(i) for i in range(1, 22)])  # 1-21
-        number_row.addWidget(self.effect_number)
-        layout.addLayout(number_row)
-        
-        part_row = QHBoxLayout()
-        part_row.addWidget(QLabel("Part"))
-        self.effect_part = QComboBox()
-        self.effect_part.addItems(["1", "2"])
-        part_row.addWidget(self.effect_part)
-        layout.addLayout(part_row)
-        
-        # Auto Note Switch
-        self.auto_note = Switch("Auto Note", ["OFF", "ON"])
-        self.auto_note.valueChanged.connect(self._on_auto_note_changed)
-        layout.addWidget(self.auto_note)
-        """
-
         # Add Vocoder controls
         vocoder_group = QGroupBox("Vocoder Settings")
         vocoder_layout = QVBoxLayout()
@@ -118,130 +191,85 @@ class VocalFXEditor(SynthEditor):
         # Envelope Type
         env_row = QHBoxLayout()
         env_row.addWidget(QLabel("Envelope"))
-        self.vocoder_env = QComboBox()
-        self.vocoder_env.addItems([env.display_name for env in VocoderEnvelope])
-        self.vocoder_env.currentIndexChanged.connect(self._on_vocoder_env_changed)
+        self.vocoder_env = self._create_parameter_combo_box(VocalFXParameter.VOCODER_ENVELOPE,
+                                                            "Envelope",
+                                                            [env.display_name for env in VocoderEnvelope],
+                                                            [env.value for env in VocoderEnvelope])
         env_row.addWidget(self.vocoder_env)
         vocoder_layout.addLayout(env_row)
 
         # Level controls
-        self.vocoder_level = Slider("Level", 0, 127)
-        self.vocoder_level.valueChanged.connect(self._on_vocoder_level_changed)
-        self.vocoder_mic_sens = Slider("Mic Sensitivity", 0, 127)
-        self.vocoder_mic_sens.valueChanged.connect(self._on_vocoder_mic_sens_changed)
-        self.vocoder_synth_level = Slider("Synth Level", 0, 127)
-        self.vocoder_synth_level.valueChanged.connect(
-            self._on_vocoder_synth_level_changed
-        )
-        self.vocoder_mic_mix = Slider("Mic Mix", 0, 127)
-        self.vocoder_mic_mix.valueChanged.connect(self._on_vocoder_mic_mix_changed)
+        levels_row_layout = QHBoxLayout()
+        self.vocoder_level = self._create_parameter_slider(VocalFXParameter.VOCODER_LEVEL, "Level", 1)
+
+        self.vocoder_mic_sens = self._create_parameter_slider(VocalFXParameter.VOCODER_MIC_SENS,
+                                                              "Mic Sensitivity", 1)
+
+        self.vocoder_synth_level = self._create_parameter_slider(VocalFXParameter.VOCODER_SYNTH_LEVEL, "Synth Level", 1)
+
+        self.vocoder_mic_mix = self._create_parameter_slider(VocalFXParameter.VOCODER_MIC_MIX ,"Mic Mix", 1)
+
+        self.vocoder_hpf = self._create_parameter_combo_box(VocalFXParameter.VOCODER_MIC_HPF,
+                                                            "HPF",
+                                                            [freq.display_name for freq in VocoderHPF],
+                                                            [freq.value for freq in VocoderHPF])
 
         # HPF Frequency
         hpf_row = QHBoxLayout()
         hpf_row.addWidget(QLabel("HPF"))
-        self.vocoder_hpf = QComboBox()
-        self.vocoder_hpf.addItems([freq.display_name for freq in VocoderHPF])
-        self.vocoder_hpf.currentIndexChanged.connect(self._on_vocoder_hpf_changed)
         hpf_row.addWidget(self.vocoder_hpf)
 
         # Add all controls
-        vocoder_layout.addWidget(self.vocoder_level)
-        vocoder_layout.addWidget(self.vocoder_mic_sens)
-        vocoder_layout.addWidget(self.vocoder_synth_level)
-        vocoder_layout.addWidget(self.vocoder_mic_mix)
+        levels_row_layout.addWidget(self.vocoder_level)
+        levels_row_layout.addWidget(self.vocoder_mic_sens)
+        levels_row_layout.addWidget(self.vocoder_synth_level)
+        levels_row_layout.addWidget(self.vocoder_mic_mix)
+        vocoder_layout.addLayout(levels_row_layout)
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
 
-        return group
-
-    def _on_effect_type_changed(self, index: int):
-        """Handle effect preset_type changes"""
-        # Enable/disable sections based on effect preset_type
-        is_auto_pitch = index == 2  # AUTO-PITCH
-        if hasattr(self, "auto_pitch_group"):
-            self.auto_pitch_group.setEnabled(is_auto_pitch)
+        return vocal_effect_section
 
     def _create_mixer_section(self):
-        group = QGroupBox("Mixer")
+        # group = QGroupBox("Mixer")
+        mixer_section = QWidget()
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        mixer_section.setLayout(layout)
 
         # Level and Pan
-        self.level = Slider("Level", 0, 127)
-        self.level.valueChanged.connect(self._on_level_changed)
-        self.pan = Slider("Pan", -64, 63)  # Center at 0
-        self.pan.valueChanged.connect(self._on_pan_changed)
+        self.level = self._create_parameter_slider(VocalFXParameter.LEVEL ,"Level", )
+        self.pan = self._create_parameter_slider(VocalFXParameter.PAN,"Pan")  # Center at 0
 
         # Send Levels
-        self.delay_send = Slider("Delay Send", 0, 127)
-        self.delay_send.valueChanged.connect(self._on_delay_send_changed)
-        self.reverb_send = Slider("Reverb Send", 0, 127)
-        self.reverb_send.valueChanged.connect(self._on_reverb_send_changed)
+        self.delay_send_level_slider = self._create_parameter_slider(VocalFXParameter.DELAY_SEND_LEVEL,
+                                                                     "Delay Send")
+        self.reverb_send_level_slider = self._create_parameter_slider(VocalFXParameter.REVERB_SEND_LEVEL,
+                                                                      "Reverb Send")
 
         # Output Assign
         output_row = QHBoxLayout()
         output_row.addWidget(QLabel("Output"))
-        self.output_assign = QComboBox()
-        self.output_assign.addItems([output.display_name for output in OutputAssign])
-        self.output_assign.currentIndexChanged.connect(self._on_output_assign_changed)
+        self.output_assign = self._create_parameter_combo_box(VocalFXParameter.OUTPUT_ASSIGN,
+                                                              "Output",
+                                                              [output.display_name for output in OutputAssign],
+                                                              [output.value for output in OutputAssign])
         output_row.addWidget(self.output_assign)
         layout.addLayout(output_row)
 
         layout.addWidget(self.level)
         layout.addWidget(self.pan)
-        layout.addWidget(self.delay_send)
-        layout.addWidget(self.reverb_send)
+        layout.addWidget(self.delay_send_level_slider)
+        layout.addWidget(self.reverb_send_level_slider)
 
-        return group
-
-    def _on_level_changed(self, value: int):
-        """Handle level change"""
-        if self.midi_helper:
-            logging.debug(
-                f"Sending vocal fx level change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.LEVEL:02x}, value={value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.LEVEL,
-                value=value,
-            )
-
-    def _on_delay_send_changed(self, value: int):
-        """Handle delay send level change"""
-        if self.midi_helper:
-            logging.debug(
-                f"Sending vocal fx delay send change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.DELAY_SEND:02x}, value={value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.DELAY_SEND,
-                value=value,
-            )
-
-    def _on_reverb_send_changed(self, value: int):
-        """Handle reverb send level change"""
-        if self.midi_helper:
-            logging.debug(
-                f"Sending vocal fx reverb send change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.REVERB_SEND:02x}, value={value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.REVERB_SEND,
-                value=value,
-            )
+        return mixer_section
 
     def _create_auto_pitch_section(self):
-        group = QGroupBox("Auto Pitch")
-        self.auto_pitch_group = group  # Store reference
+        # group = QGroupBox("Auto Pitch")
+        auto_pitch_section = QWidget()
+        self.auto_pitch_group = auto_pitch_section  # Store reference
         layout = QVBoxLayout()
-        group.setLayout(layout)
+        auto_pitch_section.setLayout(layout)
 
         # Auto Pitch Switch
         self.pitch_switch = Switch("Auto Pitch", ["OFF", "ON"])
@@ -249,46 +277,48 @@ class VocalFXEditor(SynthEditor):
         # Type selector
         type_row = QHBoxLayout()
         type_row.addWidget(QLabel("Type"))
-        self.pitch_type = QComboBox()
-        self.pitch_type.addItems(
-            [pitch_type.display_name for pitch_type in AutoPitchType]
-        )
-        self.pitch_type.currentIndexChanged.connect(self._on_pitch_type_changed)
-        type_row.addWidget(self.pitch_type)
+        self.auto_pitch_type = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_TYPE,
+                                                             "Pitch Type",
+                                                             [pitch_type.display_name for pitch_type in AutoPitchType],
+                                                             [pitch_type.value for pitch_type in AutoPitchType])
+        type_row.addWidget(self.auto_pitch_type)
 
         # Scale selector
         scale_row = QHBoxLayout()
         scale_row.addWidget(QLabel("Scale"))
-        self.pitch_scale = QComboBox()
-        self.pitch_scale.addItems(["CHROMATIC", "Maj(Min)"])
+        self.pitch_scale = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_SCALE,
+                                                            "Scale",
+                                                            ["CHROMATIC", "Maj(Min)"],
+                                                            [0, 1])
         scale_row.addWidget(self.pitch_scale)
 
         # Key selector
         key_row = QHBoxLayout()
         key_row.addWidget(QLabel("Key"))
-        self.pitch_key = QComboBox()
-        self.pitch_key.addItems([key.display_name for key in AutoPitchKey])
-        self.pitch_key.currentIndexChanged.connect(self._on_pitch_key_changed)
+        self.pitch_key = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_KEY,
+                                                          "Key",
+                                                          [key.display_name for key in AutoPitchKey],
+                                                          [key.value for key in AutoPitchKey])
         key_row.addWidget(self.pitch_key)
 
         # Note selector
         note_row = QHBoxLayout()
         note_row.addWidget(QLabel("Note"))
-        self.pitch_note = QComboBox()
-        self.pitch_note.addItems([note.display_name for note in AutoPitchNote])
-        self.pitch_note.currentIndexChanged.connect(self._on_pitch_note_changed)
+        self.pitch_note = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_NOTE,
+                                                           "Note",
+                                                           [note.display_name for note in AutoPitchNote],
+                                                           [note.value for note in AutoPitchNote]
+                                                           )
         note_row.addWidget(self.pitch_note)
 
         # Gender and Octave controls
-        self.gender = Slider("Gender", -10, 10)
-        self.gender.valueChanged.connect(self._on_gender_changed)
+        self.gender = self._create_parameter_slider(VocalFXParameter.AUTO_PITCH_GENDER,"Gender")
 
         self.octave = Switch("Octave", ["-1", "0", "+1"])
         self.octave.valueChanged.connect(self._on_octave_changed)
 
         # Dry/Wet Balance
-        self.balance = Slider("D/W Balance", 0, 100)
-        self.balance.valueChanged.connect(self._on_balance_changed)
+        self.auto_pitch_balance = self._create_parameter_slider(VocalFXParameter.AUTO_PITCH_BALANCE, "D/W Balance")
 
         # Add all controls to layout
         layout.addWidget(self.pitch_switch)
@@ -298,144 +328,73 @@ class VocalFXEditor(SynthEditor):
         layout.addLayout(note_row)
         layout.addWidget(self.gender)
         layout.addWidget(self.octave)
-        layout.addWidget(self.balance)
+        layout.addWidget(self.auto_pitch_balance)
 
-        return group
+        return auto_pitch_section
 
     def _on_vocoder_switch_changed(self, checked: bool):
         """Handle vocoder switch change"""
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending vocoder switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.VOCODER_SWITCH:02x}, value={switch.midi_value:02x}"
+                f"Sending vocoder switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
                 part=VOCAL_FX_PART,
                 group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_SWITCH,
+                param=VocalFXParameter.VOCODER_SWITCH.value[0],
                 value=switch.midi_value,
             )
             # Update button text
             self.vocoder_switch.setText(switch.display_name)
 
-    def _on_auto_note_changed(self, value: int):
-        """Handle auto note switch change"""
+    def _on_auto_note_switch_changed(self, checked: bool):
+        """Handle vocoder switch change"""
         if self.midi_helper:
-            switch = VocalFxSwitch(value)
+            switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending auto note switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.AUTO_NOTE_SWITCH:02x}, value={switch.midi_value:02x}"
+                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
                 part=VOCAL_FX_PART,
                 group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.AUTO_NOTE_SWITCH,
+                param=ProgramCommonParameter.AUTO_NOTE_SWITCH.value[0],
                 value=switch.midi_value,
             )
+            # Update button text
+            self.auto_note_switch.setText(switch.display_name)
 
-    def _on_pitch_type_changed(self, index: int):
-        """Handle auto pitch preset_type change"""
+    def _on_effect_part_switch_changed(self, checked: bool):
+        """Handle vocoder switch change"""
         if self.midi_helper:
-            pitch_type = AutoPitchType(index)
+            switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending auto pitch preset_type change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.AUTO_PITCH_TYPE:02x}, value={pitch_type.midi_value:02x}"
+                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
                 part=VOCAL_FX_PART,
                 group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.AUTO_PITCH_TYPE,
-                value=pitch_type.midi_value,
+                param=ProgramCommonParameter.VOCAL_EFFECT_PART.value[0],
+                value=switch.midi_value,
             )
+            # Update button text
+            self.effect_part_switch.setText(switch.display_name)
 
-    def _on_pan_changed(self, value: int):
-        """Handle pan change"""
-        if self.midi_helper:
-            # Convert from -64/+63 to 0-127 range
-            midi_value = value + 64
-            logging.debug(
-                f"Sending vocal fx pan change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.PAN:02x}, value={midi_value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.PAN,
-                value=midi_value,
-            )
-
-    def _on_output_assign_changed(self, index: int):
-        """Handle output assignment change"""
-        if self.midi_helper:
-            output = OutputAssign(index)
-            logging.debug(
-                f"Sending output assign change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.OUTPUT_ASSIGN:02x}, value={output.midi_value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.OUTPUT_ASSIGN,
-                value=output.midi_value,
-            )
-
-    def _on_pitch_key_changed(self, index: int):
-        """Handle auto pitch key change"""
-        if self.midi_helper:
-            key = AutoPitchKey(index)
-            logging.debug(
-                f"Sending auto pitch key change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.KEY:02x}, value={key.midi_value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.KEY,
-                value=key.midi_value,
-            )
-
-    def _on_gender_changed(self, value: int):
-        """Handle gender change"""
-        if self.midi_helper:
-            # Convert from -10/+10 to 0-20 range
-            midi_value = value + 10
-            logging.debug(
-                f"Sending gender change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.GENDER:02x}, value={midi_value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.GENDER,
-                value=midi_value,
-            )
 
     def _on_octave_changed(self, value: int):
         """Handle octave change"""
         if self.midi_helper:
             logging.debug(
-                f"Sending octave change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.OCTAVE:02x}, value={value:02x}"
+                f"Sending octave change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.AUTO_PITCH_OCTAVE.value[0]:02x}, value={value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
                 part=VOCAL_FX_PART,
                 group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.OCTAVE,
-                value=value,
-            )
-
-    def _on_balance_changed(self, value: int):
-        """Handle balance change"""
-        if self.midi_helper:
-            logging.debug(
-                f"Sending balance change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.BALANCE:02x}, value={value:02x}"
-            )
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.BALANCE,
+                param=VocalFXParameter.AUTO_PITCH_OCTAVE.value[0],
                 value=value,
             )
 
@@ -444,82 +403,14 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             note = AutoPitchNote(index)
             logging.debug(
-                f"Sending auto pitch note change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.NOTE:02x}, value={note.midi_value:02x}"
+                f"Sending auto pitch note change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.AUTO_PITCH_NOTE.value[0]:02x}, value={note.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
                 part=VOCAL_FX_PART,
                 group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.NOTE,
+                param=VocalFXParameter.AUTO_PITCH_NOTE.value[0],
                 value=note.midi_value,
-            )
-
-    def _on_vocoder_env_changed(self, index: int):
-        """Handle vocoder envelope change"""
-        if self.midi_helper:
-            env = VocoderEnvelope(index)
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_ENVELOPE,
-                value=env.midi_value,
-            )
-
-    def _on_vocoder_level_changed(self, value: int):
-        """Handle vocoder level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_LEVEL,
-                value=value,
-            )
-
-    def _on_vocoder_mic_sens_changed(self, value: int):
-        """Handle vocoder mic sensitivity change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_MIC_SENS,
-                value=value,
-            )
-
-    def _on_vocoder_synth_level_changed(self, value: int):
-        """Handle vocoder synth level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_SYNTH_LEVEL,
-                value=value,
-            )
-
-    def _on_vocoder_mic_mix_changed(self, value: int):
-        """Handle vocoder mic mix level change"""
-        if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_MIC_MIX,
-                value=value,
-            )
-
-    def _on_vocoder_hpf_changed(self, index: int):
-        """Handle vocoder HPF frequency change"""
-        if self.midi_helper:
-            freq = VocoderHPF(index)
-            self.midi_helper.send_parameter(
-                area=VOCAL_FX_AREA,
-                part=VOCAL_FX_PART,
-                group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.VOCODER_MIC_HPF,
-                value=freq.midi_value,
             )
 
     def _on_pitch_switch_changed(self, checked: bool):
@@ -527,12 +418,12 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending auto pitch switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameters.AUTO_NOTE_SWITCH:02x}, value={switch.midi_value:02x}"
+                f"Sending auto pitch switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.AUTO_PITCH_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
                 part=VOCAL_FX_PART,
                 group=VOCAL_FX_GROUP,
-                param=VocalFXParameters.AUTO_NOTE_SWITCH,
+                param=VocalFXParameter.AUTO_PITCH_SWITCH.value[0],
                 value=switch.midi_value,
             )

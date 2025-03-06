@@ -55,20 +55,11 @@ class ArpeggioEditor(SynthEditor):
         self.title_label = QLabel(
             "Arpeggiator"
         )
-        """
-        drum_group.setStyleSheet(
-            ""
-            QGroupBox {
-            width: 300px;
-            }
-        ""
-        )
-        """
         self.title_label.setStyleSheet(
             """
             font-size: 16px;
             font-weight: bold;
-        """
+            """
         )
         layout.addWidget(self.title_label)
         # Image display

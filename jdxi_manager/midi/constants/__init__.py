@@ -1,10 +1,10 @@
 """Constants for Roland JD-Xi MIDI protocol"""
 
-from enum import Enum, auto
+from enum import auto
 from dataclasses import dataclass
 
 from jdxi_manager.midi.sysex.roland import RolandSysEx
-
+from ...data.parameter.program_common import ProgramCommonParameter
 
 # Memory Areas
 PROGRAM_AREA = 0x18
@@ -4610,59 +4610,10 @@ msg = SetupMessage(param=SetupParam.PROGRAM.value, value=0)  # Program 1
 
 
 # Program Common Parameters (0x18 00)
-class ProgramCommon(Enum):
-    """Program Common parameters"""
-
-    # Program name (0x00-0x0B)
-    NAME_1 = 0x00  # Character 1 of name (ASCII 32-127)
-    NAME_2 = 0x01  # Character 2 of name
-    NAME_3 = 0x02  # Character 3 of name
-    NAME_4 = 0x03  # Character 4 of name
-    NAME_5 = 0x04  # Character 5 of name
-    NAME_6 = 0x05  # Character 6 of name
-    NAME_7 = 0x06  # Character 7 of name
-    NAME_8 = 0x07  # Character 8 of name
-    NAME_9 = 0x08  # Character 9 of name
-    NAME_10 = 0x09  # Character 10 of name
-    NAME_11 = 0x0A  # Character 11 of name
-    NAME_12 = 0x0B  # Character 12 of name
-
-    # Reserved (0x0C-0x0F)
-
-    LEVEL = 0x10  # Program Level (0-127)
-    TEMPO = 0x11  # Program Tempo (500-30000: 5.00-300.00 BPM)
-
-    # Reserved (0x15)
-
-    VOCAL_EFFECT = 0x16  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
-
-    # Reserved (0x17-0x1A)
-
-    # Reserved (0x1B)
-    VOCAL_NUMBER = 0x1C  # Vocal Effect Number (0-20: 1-21)
-    VOCAL_PART = 0x1D  # Vocal Effect Part (0: Part 1, 1: Part 2)
-    AUTO_NOTE = 0x1E  # Auto Note Switch (0: OFF, 1: ON)
-
-    @staticmethod
-    def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
-        if 0x00 <= param <= 0x0B:  # Name characters
-            return chr(value) if 32 <= value <= 127 else "?"
-        elif param == 0x11:  # Tempo
-            return f"{value / 100:.2f}"  # Convert 500-30000 to 5.00-300.00
-        elif param == 0x16:  # Vocal Effect
-            return ["OFF", "VOCODER", "AUTO-PITCH"][value]
-        elif param == 0x1C:  # Vocal Number
-            return str(value + 1)  # Convert 0-20 to 1-21
-        elif param == 0x1D:  # Vocal Part
-            return f"Part {value + 1}"  # Convert 0-1 to Part 1-2
-        elif param == 0x1E:  # Auto Note
-            return "ON" if value else "OFF"
-        return str(value)
 
 
 @dataclass
-class ProgramCommonMessage(RolandSysEx):
+class ProgramCommonParameterMessage(RolandSysEx):
     """Program Common parameter message"""
 
     command: int = DT1_COMMAND_12
@@ -4685,26 +4636,26 @@ class ProgramCommonMessage(RolandSysEx):
 
 # Example usage:
 # Set program name character
-msg = ProgramCommonMessage(
-    param=ProgramCommon.NAME_1.value, value=ord("A")  # ASCII 'A'
+msg = ProgramCommonParameterMessage(
+    param=ProgramCommonParameter.NAME_1.value, value=ord("A")  # ASCII 'A'
 )
 
 # Set program level
-msg = ProgramCommonMessage(param=ProgramCommon.LEVEL.value, value=100)  # Level 100
+msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.PROGRAM_LEVEL.value, value=100)  # Level 100
 
 # Set program tempo to 120.00 BPM
-msg = ProgramCommonMessage(param=ProgramCommon.TEMPO.value, value=12000)  # 120.00 BPM
+msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.PROGRAM_TEMPO.value, value=12000)  # 120.00 BPM
 
 # Set vocal effect to VOCODER
-msg = ProgramCommonMessage(param=ProgramCommon.VOCAL_EFFECT.value, value=1)  # VOCODER
+msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.VOCAL_EFFECT.value, value=1)  # VOCODER
 
 # Set vocal effect number
-msg = ProgramCommonMessage(
-    param=ProgramCommon.VOCAL_NUMBER.value, value=0  # Vocal Effect 1
+msg = ProgramCommonParameterMessage(
+    param=ProgramCommonParameter.VOCAL_EFFECT_NUMBER.value, value=0  # Vocal Effect 1
 )
 
 # Enable auto note
-msg = ProgramCommonMessage(param=ProgramCommon.AUTO_NOTE.value, value=1)  # ON
+msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.AUTO_NOTE_SWITCH.value, value=1)  # ON
 
 
 # Program Vocal Effect Parameters (0x18 01)

@@ -30,7 +30,7 @@ class SynthEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
-        self.controls = []
+        self.controls = {}
         self.partial_num = None
         self.midi_channel = None
         self.preset_handler = None
@@ -301,8 +301,17 @@ class SynthEditor(QWidget):
                 midi_value = param.convert_to_midi(display_value)
             else:
                 midi_value = param.validate_value(display_value)
+            if param in self.four_byte_params:
+                size = 4
+            else:
+                size = 1
             logging.info(f"parameter from widget midi_value: {midi_value}")
             # Send MIDI message
+            logging.debug(
+                f"Sending: area={self.area:02x}, address={self.part:02x}, "
+                f"group={group:02x}, param={param.address:02x}, "
+                f"display_value={display_value:02x},  value={midi_value:02x}"
+            )
             try:
                 # Ensure value is included in the MIDI message
                 return self.midi_helper.send_parameter(
@@ -310,7 +319,8 @@ class SynthEditor(QWidget):
                     part=self.part,
                     group=group,
                     param=param.address,
-                    value=midi_value,  # Make sure this value is being sent
+                    value=midi_value,
+                    size=size
                 )
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")
