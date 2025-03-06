@@ -393,7 +393,10 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending vocoder switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
+                f"Sending vocoder switch change: area={VOCAL_FX_AREA:02x}, "
+                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
+                f"param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, "
+                f"value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
@@ -410,7 +413,10 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
+                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, "
+                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
+                f"param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, "
+                f"value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
@@ -427,7 +433,10 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
+                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, "
+                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
+                f"param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, "
+                f"value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
@@ -443,7 +452,10 @@ class VocalFXEditor(SynthEditor):
         """Handle octave change"""
         if self.midi_helper:
             logging.debug(
-                f"Sending octave change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.AUTO_PITCH_OCTAVE.value[0]:02x}, value={value:02x}"
+                f"Sending octave change: area={VOCAL_FX_AREA:02x}, "
+                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
+                f"param={VocalFXParameter.AUTO_PITCH_OCTAVE.value[0]:02x}, "
+                f"value={value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
@@ -458,7 +470,10 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             note = AutoPitchNote(index)
             logging.debug(
-                f"Sending auto pitch note change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.AUTO_PITCH_NOTE.value[0]:02x}, value={note.midi_value:02x}"
+                f"Sending auto pitch note change: area={VOCAL_FX_AREA:02x}, "
+                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
+                f"param={VocalFXParameter.AUTO_PITCH_NOTE.value[0]:02x}, "
+                f"value={note.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
@@ -473,7 +488,10 @@ class VocalFXEditor(SynthEditor):
         if self.midi_helper:
             switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
             logging.debug(
-                f"Sending auto pitch switch change: area={VOCAL_FX_AREA:02x}, address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, param={VocalFXParameter.AUTO_PITCH_SWITCH.value[0]:02x}, value={switch.midi_value:02x}"
+                f"Sending auto pitch switch change: area={VOCAL_FX_AREA:02x}, "
+                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
+                f"param={VocalFXParameter.AUTO_PITCH_SWITCH.value[0]:02x}, "
+                f"value={switch.midi_value:02x}"
             )
             self.midi_helper.send_parameter(
                 area=VOCAL_FX_AREA,
