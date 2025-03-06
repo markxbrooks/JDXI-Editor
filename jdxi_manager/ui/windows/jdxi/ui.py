@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
 )
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QRect
 from PySide6.QtGui import (
     QAction,
     QFontDatabase,
@@ -217,7 +217,7 @@ class JdxiUi(QMainWindow):
         button_layout.addStretch()
         return button_layout
 
-    def _create_favorite_buttons_row(self):
+    def _create_favorite_button_row(self):
         """Create address row with label and circular button"""
         text = "Favorites"
         row = QHBoxLayout()
@@ -240,12 +240,14 @@ class JdxiUi(QMainWindow):
         row.addWidget(self.favourites_button)
         return row
 
-    def _create_sequencer_buttons_row(self):
+    def _create_sequencer_buttons_row_layout(self):
         """Create address row with label and circular button"""
-        row = QHBoxLayout()
-        self.sequencer_buttons = []
+        row_layout = QHBoxLayout()
+        sequencer_buttons = []
 
         grid = QGridLayout()
+        grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        grid.setGeometry(QRect(1, 1, 300, 150))
         for i in range(16):
             button = QPushButton()
             button.setFixedSize(25, 25)
@@ -257,10 +259,11 @@ class JdxiUi(QMainWindow):
             button.clicked.connect(lambda _, idx=i: self._save_favorite(idx))
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
             grid.setHorizontalSpacing(2)  # Add spacing between columns
-            self.sequencer_buttons.append(button)
-        row.addLayout(grid)
+            sequencer_buttons.append(button)
+        row_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        row_layout.addLayout(grid)
 
-        return row
+        return row_layout, sequencer_buttons
 
     def _create_menu_bar(self):
         menubar = self.menuBar()
@@ -485,14 +488,14 @@ class JdxiUi(QMainWindow):
         octave_buttons_container = QWidget(widget)
 
         # Position to align with sequencer but 25% higher (increased from 20%)
-        seq_y = self.height - 50 - self.height * 0.1  # Base sequencer Y position
-        offset_y = self.height * 0.25  # 25% of window height (increased from 0.2)
-        octave_x = self.width - self.width * 0.8 - 150  # Position left of sequencer
+        seq_y = self.height - 50 - int(self.height * 0.1)  # Base sequencer Y position
+        offset_y = int(self.height * 0.25)  # 25% of window height (increased from 0.2)
+        octave_x = self.width - int(self.width * 0.8) - 150  # Position left of sequencer
 
         # Apply the height offset to the Y position
         octave_buttons_container.setGeometry(
             octave_x,
-            seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
+            seq_y - 60 - offset_y,  # Move up by offset_y
             100,
             100,
         )
@@ -620,32 +623,34 @@ class JdxiUi(QMainWindow):
 
         # Effects button in top row
         fx_container = QWidget(central_widget)
-        fx_container.setGeometry(self.width - 200, self.margin + 20, 150, 50)
+        fx_container.setGeometry(self.width - 200, self.margin + 20, 200, 80)
         fx_layout = QHBoxLayout(fx_container)
-
+        vocal_effects_row, self.vocal_effects_button = create_button_row(
+            "Vocoder", self._open_vocal_fx, vertical=True,
+        )
         effects_row, self.effects_button = create_button_row(
-            "Effects", self._open_effects, vertical=True, spacing=0
+            "Effects", self._open_effects, vertical=True, spacing=10
         )
-        vocal_effects_row, self.vocal_effects_button = create_button_row(
-            "Vocoder", self._open_vocal_fx, vertical=True, spacing=0
-        )
+
         fx_layout.setSpacing(15)
-        fx_layout.addLayout(effects_row)
         fx_layout.addLayout(vocal_effects_row)
-        """
-        # Effects button in top row
-        vocal_fx_container = QWidget(central_widget)
-        vocal_fx_container.setGeometry(self.width - 100, self.margin + 25, 150, 50)
-        vocal_fx_layout = QHBoxLayout()
+        fx_layout.addLayout(effects_row)
 
-        vocal_effects_row, self.vocal_effects_button = create_button_row(
-            "Vocoder", self._open_vocal_fx
-        )
-        vocal_fx_layout.addLayout(vocal_effects_row)
-        """
+        # Effects button hopefully in top left, but currently just showing a black rectangle
+        # vocal_fx_container = QWidget(central_widget)
+        # vocal_fx_container.setGeometry(self.width - 350, # top left x position of a QRect
+        #                               self.margin + 20, # top left y position of a QRect
+        #                               150, # x size
+        #                               50) # y size
+        # vocal_effects_row, self.vocal_effects_button = create_button_row(
+        #    "Vocoder", self._open_vocal_fx
+        # )
+        # vocal_fx_layout = QHBoxLayout()
+        # vocal_fx_layout.setSpacing(15)
+        # vocal_fx_layout.addLayout(vocal_effects_row)
+        # vocal_fx_layout.addLayout(vocal_effects_row)
 
-        ###### For tone buttons ######
-        # Effects button in top row
+        # For tone buttons
         tone_container = QWidget(central_widget)
         tone_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
         tone_container_layout = QVBoxLayout(tone_container)
@@ -662,8 +667,8 @@ class JdxiUi(QMainWindow):
 
         # Beginning of sequencer section
         sequencer_container = QWidget(central_widget)
-        sequencer_container.setGeometry(self.width - 540, self.margin + 150, 650, 100)
-        sequencer_container_layout = QVBoxLayout(sequencer_container)
+        sequencer_container.setGeometry(self.width - 500, self.margin + 150, 500, 100)
+        sequencer_container_layout = QHBoxLayout(sequencer_container)
         sequencer_label_layout = QHBoxLayout()
         sequencer_label = QLabel("Sequencer")
         sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -671,18 +676,18 @@ class JdxiUi(QMainWindow):
         # sequencer_label_layout.addWidget(sequencer_label)
         # sequencer_container_layout.addLayout(sequencer_label_layout)
         sequencer_layout = QHBoxLayout()
-        seq_width = 400  # Approximate width for sequencer
-        favorites_button_row = self._create_favorite_buttons_row()
-        sequencer = self._create_sequencer_buttons_row()
+        # seq_width = 400  # Approximate width for sequencer
+        favorites_button_row = self._create_favorite_button_row()
+        sequencer, self.sequencer_buttons = self._create_sequencer_buttons_row_layout()
         sequencer_layout.addLayout(sequencer)
-        # sequencer_container_layout.addLayout(favorites_button_row)
+        sequencer_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        sequencer_container_layout.addLayout(favorites_button_row)
         sequencer_container_layout.addLayout(sequencer_layout)
         # End of sequencer section
 
         # Make containers transparent
         parts_container.setStyleSheet("background: transparent;")
         fx_container.setStyleSheet("background: transparent;")
-
 
     def _create_other(self):
         """Create other controls section"""
