@@ -175,7 +175,7 @@ Drum Kit Partial
 | 00 0E  | 0aaa aaaa | Partial Level (0 - 127)                            |
 | 00 0F  | 0aaa aaaa | Partial Coarse Tune (0 - 127)                      |
 |        |           | C-1 - G9                                           |
-| 00 10  | 0aaa aaaa | Partial Fine Tune (14 - 114)                     |
+| 00 10  | 0aaa aaaa | Partial Fine Tune (14 - 114)                       |
 |        |           | -50 - +50                                          |
 | 00 11  | 000a aaaa | Partial Random Pitch Depth (0 - 30)                |
 |        |           | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,                      |
@@ -359,11 +359,11 @@ Drum Kit Partial
 | 01 14  | 0aaa aaaa | WMT4 Velocity Fade Width Upper (0 - 127)           |
 |        |           | OFF, ON                                            |
 +--------+-----------+----------------------------------------------------+
-| 01 15  | 000a aaaa | Pitch Env Depth (52 - 76)                            |
+| 01 15  | 000a aaaa | Pitch Env Depth (52 - 76)                          |
 |        |           | -12 - +12                                          |
 | 01 16  | 0aaa aaaa | Pitch Env Velocity Sens (1 - 127)                  |
 |        |           | -63 - +63                                          |
-| 01 17  | 0aaa aaaa | Pitch Env Time 1 Velocity Sens (1 - 127)            |
+| 01 17  | 0aaa aaaa | Pitch Env Time 1 Velocity Sens (1 - 127)           |
 |        |           | -63 - +63                                          |
 | 01 18  | 0aaa aaaa | Pitch Env Time 4 Velocity Sens (1 - 127)            |
 |        |           | -63 - +63                                          |
