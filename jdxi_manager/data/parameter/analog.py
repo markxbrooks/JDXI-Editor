@@ -279,13 +279,6 @@ class AnalogParameter(SynthParameter):
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
 
-    """
-    def __init__(self, address: int, min_val: int, max_val: int):
-        self.address = address
-        self.min_val = min_val
-        self.max_val = max_val
-    """
-
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
         if not isinstance(value, int):
@@ -296,7 +289,6 @@ class AnalogParameter(SynthParameter):
                 f"Value {value} out of range for {self.name} "
                 f"(valid range: {self.min_val}-{self.max_val})"
             )
-
         return value
 
     @staticmethod

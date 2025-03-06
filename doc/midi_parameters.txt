@@ -225,7 +225,6 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 
 
 **Program Common
-
 +------------------------------------------------------------------------------+
 | Offset      |                                                                |
 | Address     | Description                                                    |

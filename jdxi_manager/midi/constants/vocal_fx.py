@@ -1,34 +1,12 @@
 """Vocal FX MIDI constants"""
 
-from enum import Enum, IntEnum
+from enum import Enum
 
 # Areas and Parts
 VOCAL_FX_AREA = 0x18
 VOCAL_FX_PART = 0x00
 VOCAL_FX_GROUP = 0x01  # Different area from arpeggiator
 
-class VocalFXParameters(IntEnum):
-    """Vocal FX parameters"""
-    LEVEL = 0x00         # Level (0-127)
-    PAN = 0x01          # Pan (-64 to +63, centered at 64)
-    DELAY_SEND = 0x02    # Delay send level (0-127)
-    REVERB_SEND = 0x03   # Reverb send level (0-127)
-    OUTPUT_ASSIGN = 0x04  # Output assignment (0-4)
-    AUTO_NOTE_SWITCH = 0x05  # Auto Note on/off (0-1)
-    AUTO_PITCH_TYPE = 0x06   # Auto Pitch preset_type (0-3)
-    KEY = 0x08           # Auto Pitch key (0-23)
-    NOTE = 0x09          # Auto Pitch note (0-11)
-    GENDER = 0x0A        # Gender (-10 to +10, centered at 0)
-    OCTAVE = 0x0B        # Octave (-1 to +1: 0-2)
-    BALANCE = 0x0C       # Dry/Wet Balance (0-100)
-    VOCODER_SWITCH = 0x0D    # Vocoder on/off (0-1)
-    VOCODER_ENVELOPE = 0x0E  # Vocoder envelope preset_type (0-2)
-    VOCODER_LEVEL = 0x0F     # Vocoder level (0-127)
-    VOCODER_MIC_SENS = 0x10  # Vocoder mic sensitivity (0-127)
-    VOCODER_SYNTH_LEVEL = 0x11  # Vocoder synth level (0-127)
-    VOCODER_MIC_MIX = 0x12   # Vocoder mic mix level (0-127)
-    VOCODER_MIC_HPF = 0x13   # Vocoder mic HPF freq (0-13)
-    # ... other parameters ...
 
 class VocalFxSwitch(Enum):
     """Vocal FX switch values"""

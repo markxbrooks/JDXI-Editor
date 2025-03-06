@@ -372,8 +372,9 @@ class JdxiInstrument(JdxiUi):
         self.channel = MIDI_CHANNEL_DRUMS
         self.preset_type = PresetType.DRUMS
 
-    def _open_effects(self, editor_type: str):
+    def _open_effects(self, title, editor_type: str):
         self._show_editor("Effects", EffectsEditor)
+        # self._show_editor("Effects")
 
     def _open_pattern(self, editor_type: str):
         self._show_editor("Pattern", PatternSequencer)
