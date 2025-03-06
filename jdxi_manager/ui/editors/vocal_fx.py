@@ -1,5 +1,29 @@
-import os
+"""
+VocalFXEditor Module
 
+This module defines the `VocalFXEditor` class, a PySide6-based editor for controlling
+the Vocal FX section of the Roland JD-Xi synthesizer. It provides a graphical interface
+for adjusting various vocal effects such as vocoder settings, auto-pitch parameters,
+and mixer controls.
+
+Features:
+- Scrollable UI with multiple tabs for organizing vocal effect settings.
+- Support for vocoder controls, including envelope, mic sensitivity, and synthesis levels.
+- Auto-pitch settings with selectable pitch type, scale, key, and gender adjustment.
+- Mixer section for controlling levels, panning, reverb, and delay send levels.
+- MIDI integration for real-time parameter control using `MIDIHelper`.
+- Dynamic instrument image loading to visually represent the effect in use.
+
+Dependencies:
+- PySide6 for UI components.
+- `MIDIHelper` for sending MIDI messages to the JD-Xi.
+- `VocalFXParameter` for managing effect-specific MIDI parameters.
+
+"""
+
+import os
+import logging
+from typing import Optional
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QWidget,
@@ -7,19 +31,16 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QGroupBox,
     QLabel,
-    QComboBox,
     QScrollArea,
-    QPushButton, QTabWidget,
+    QPushButton,
+    QTabWidget,
 )
 from PySide6.QtCore import Qt
-import logging
-from typing import Optional
 
 from jdxi_manager.data.parameter.program_common import ProgramCommonParameter
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.vocal_fx import (
     VOCAL_FX_AREA,
@@ -37,6 +58,7 @@ from jdxi_manager.data.parameter.vocal_fx import VocalFXParameter
 
 
 class VocalFXEditor(SynthEditor):
+    """ Vocal Effects Window Class"""
     def __init__(
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
@@ -65,10 +87,7 @@ class VocalFXEditor(SynthEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-
-        self.title_label = QLabel(
-            "Vocal Effects"
-        )
+        self.title_label = QLabel("Vocal Effects")
         self.title_label.setStyleSheet(
             """
             font-size: 16px;
@@ -99,6 +118,7 @@ class VocalFXEditor(SynthEditor):
 
     def update_instrument_image(self):
         image_loaded = False
+
         def load_and_set_image(image_path):
             """Helper function to load and set the image on the label."""
             if os.path.exists(image_path):
@@ -121,27 +141,32 @@ class VocalFXEditor(SynthEditor):
         common_section = QWidget()
         layout = QVBoxLayout()
         common_section.setLayout(layout)
-        self.program_tempo = self._create_parameter_slider(ProgramCommonParameter.PROGRAM_TEMPO,
-                                                           "Tempo")
+        self.program_tempo = self._create_parameter_slider(
+            ProgramCommonParameter.PROGRAM_TEMPO, "Tempo"
+        )
         layout.addWidget(self.program_tempo)
 
         vocal_effect_switch_row = QHBoxLayout()
         vocal_effect_switch_label = QLabel("Effect Part:")
         vocal_effect_switch_row.addWidget(vocal_effect_switch_label)
-        self.vocal_effect_type = self._create_parameter_combo_box(ProgramCommonParameter.VOCAL_EFFECT,
-                                                                  "Vocal Effect",
-                                                                  ["OFF", "VOCODER", "AUTO - PITCH"],
-                                                                  [0, 1, 2])
+        self.vocal_effect_type = self._create_parameter_combo_box(
+            ProgramCommonParameter.VOCAL_EFFECT,
+            "Vocal Effect",
+            ["OFF", "VOCODER", "AUTO - PITCH"],
+            [0, 1, 2],
+        )
 
         vocal_effect_switch_row.addWidget(self.vocal_effect_type)
         layout.addLayout(vocal_effect_switch_row)
 
-        self.vocal_effect_number = self._create_parameter_slider(ProgramCommonParameter.VOCAL_EFFECT_NUMBER,
-                                                                 "Effect Number")
+        self.vocal_effect_number = self._create_parameter_slider(
+            ProgramCommonParameter.VOCAL_EFFECT_NUMBER, "Effect Number"
+        )
         layout.addWidget(self.vocal_effect_number)
 
-        self.program_level = self._create_parameter_slider(ProgramCommonParameter.PROGRAM_LEVEL,
-                                                           "Level")
+        self.program_level = self._create_parameter_slider(
+            ProgramCommonParameter.PROGRAM_LEVEL, "Level"
+        )
         layout.addWidget(self.program_level)
 
         # Add Effect Part switch
@@ -191,28 +216,39 @@ class VocalFXEditor(SynthEditor):
         # Envelope Type
         env_row = QHBoxLayout()
         env_row.addWidget(QLabel("Envelope"))
-        self.vocoder_env = self._create_parameter_combo_box(VocalFXParameter.VOCODER_ENVELOPE,
-                                                            "Envelope",
-                                                            [env.display_name for env in VocoderEnvelope],
-                                                            [env.value for env in VocoderEnvelope])
+        self.vocoder_env = self._create_parameter_combo_box(
+            VocalFXParameter.VOCODER_ENVELOPE,
+            "Envelope",
+            [env.display_name for env in VocoderEnvelope],
+            [env.value for env in VocoderEnvelope],
+        )
         env_row.addWidget(self.vocoder_env)
         vocoder_layout.addLayout(env_row)
 
         # Level controls
         levels_row_layout = QHBoxLayout()
-        self.vocoder_level = self._create_parameter_slider(VocalFXParameter.VOCODER_LEVEL, "Level", 1)
+        self.vocoder_level = self._create_parameter_slider(
+            VocalFXParameter.VOCODER_LEVEL, "Level", 1
+        )
 
-        self.vocoder_mic_sens = self._create_parameter_slider(VocalFXParameter.VOCODER_MIC_SENS,
-                                                              "Mic Sensitivity", 1)
+        self.vocoder_mic_sens = self._create_parameter_slider(
+            VocalFXParameter.VOCODER_MIC_SENS, "Mic Sensitivity", 1
+        )
 
-        self.vocoder_synth_level = self._create_parameter_slider(VocalFXParameter.VOCODER_SYNTH_LEVEL, "Synth Level", 1)
+        self.vocoder_synth_level = self._create_parameter_slider(
+            VocalFXParameter.VOCODER_SYNTH_LEVEL, "Synth Level", 1
+        )
 
-        self.vocoder_mic_mix = self._create_parameter_slider(VocalFXParameter.VOCODER_MIC_MIX ,"Mic Mix", 1)
+        self.vocoder_mic_mix = self._create_parameter_slider(
+            VocalFXParameter.VOCODER_MIC_MIX, "Mic Mix", 1
+        )
 
-        self.vocoder_hpf = self._create_parameter_combo_box(VocalFXParameter.VOCODER_MIC_HPF,
-                                                            "HPF",
-                                                            [freq.display_name for freq in VocoderHPF],
-                                                            [freq.value for freq in VocoderHPF])
+        self.vocoder_hpf = self._create_parameter_combo_box(
+            VocalFXParameter.VOCODER_MIC_HPF,
+            "HPF",
+            [freq.display_name for freq in VocoderHPF],
+            [freq.value for freq in VocoderHPF],
+        )
 
         # HPF Frequency
         hpf_row = QHBoxLayout()
@@ -238,22 +274,31 @@ class VocalFXEditor(SynthEditor):
         mixer_section.setLayout(layout)
 
         # Level and Pan
-        self.level = self._create_parameter_slider(VocalFXParameter.LEVEL ,"Level", )
-        self.pan = self._create_parameter_slider(VocalFXParameter.PAN,"Pan")  # Center at 0
+        self.level = self._create_parameter_slider(
+            VocalFXParameter.LEVEL,
+            "Level",
+        )
+        self.pan = self._create_parameter_slider(
+            VocalFXParameter.PAN, "Pan"
+        )  # Center at 0
 
         # Send Levels
-        self.delay_send_level_slider = self._create_parameter_slider(VocalFXParameter.DELAY_SEND_LEVEL,
-                                                                     "Delay Send")
-        self.reverb_send_level_slider = self._create_parameter_slider(VocalFXParameter.REVERB_SEND_LEVEL,
-                                                                      "Reverb Send")
+        self.delay_send_level_slider = self._create_parameter_slider(
+            VocalFXParameter.DELAY_SEND_LEVEL, "Delay Send"
+        )
+        self.reverb_send_level_slider = self._create_parameter_slider(
+            VocalFXParameter.REVERB_SEND_LEVEL, "Reverb Send"
+        )
 
         # Output Assign
         output_row = QHBoxLayout()
         output_row.addWidget(QLabel("Output"))
-        self.output_assign = self._create_parameter_combo_box(VocalFXParameter.OUTPUT_ASSIGN,
-                                                              "Output",
-                                                              [output.display_name for output in OutputAssign],
-                                                              [output.value for output in OutputAssign])
+        self.output_assign = self._create_parameter_combo_box(
+            VocalFXParameter.OUTPUT_ASSIGN,
+            "Output",
+            [output.display_name for output in OutputAssign],
+            [output.value for output in OutputAssign],
+        )
         output_row.addWidget(self.output_assign)
         layout.addLayout(output_row)
 
@@ -277,48 +322,59 @@ class VocalFXEditor(SynthEditor):
         # Type selector
         type_row = QHBoxLayout()
         type_row.addWidget(QLabel("Type"))
-        self.auto_pitch_type = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_TYPE,
-                                                             "Pitch Type",
-                                                             [pitch_type.display_name for pitch_type in AutoPitchType],
-                                                             [pitch_type.value for pitch_type in AutoPitchType])
+        self.auto_pitch_type = self._create_parameter_combo_box(
+            VocalFXParameter.AUTO_PITCH_TYPE,
+            "Pitch Type",
+            [pitch_type.display_name for pitch_type in AutoPitchType],
+            [pitch_type.value for pitch_type in AutoPitchType],
+        )
         type_row.addWidget(self.auto_pitch_type)
 
         # Scale selector
         scale_row = QHBoxLayout()
         scale_row.addWidget(QLabel("Scale"))
-        self.pitch_scale = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_SCALE,
-                                                            "Scale",
-                                                            ["CHROMATIC", "Maj(Min)"],
-                                                            [0, 1])
+        self.pitch_scale = self._create_parameter_combo_box(
+            VocalFXParameter.AUTO_PITCH_SCALE,
+            "Scale",
+            ["CHROMATIC", "Maj(Min)"],
+            [0, 1],
+        )
         scale_row.addWidget(self.pitch_scale)
 
         # Key selector
         key_row = QHBoxLayout()
         key_row.addWidget(QLabel("Key"))
-        self.pitch_key = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_KEY,
-                                                          "Key",
-                                                          [key.display_name for key in AutoPitchKey],
-                                                          [key.value for key in AutoPitchKey])
+        self.pitch_key = self._create_parameter_combo_box(
+            VocalFXParameter.AUTO_PITCH_KEY,
+            "Key",
+            [key.display_name for key in AutoPitchKey],
+            [key.value for key in AutoPitchKey],
+        )
         key_row.addWidget(self.pitch_key)
 
         # Note selector
         note_row = QHBoxLayout()
         note_row.addWidget(QLabel("Note"))
-        self.pitch_note = self._create_parameter_combo_box(VocalFXParameter.AUTO_PITCH_NOTE,
-                                                           "Note",
-                                                           [note.display_name for note in AutoPitchNote],
-                                                           [note.value for note in AutoPitchNote]
-                                                           )
+        self.pitch_note = self._create_parameter_combo_box(
+            VocalFXParameter.AUTO_PITCH_NOTE,
+            "Note",
+            [note.display_name for note in AutoPitchNote],
+            [note.value for note in AutoPitchNote],
+        )
         note_row.addWidget(self.pitch_note)
 
         # Gender and Octave controls
-        self.gender = self._create_parameter_slider(VocalFXParameter.AUTO_PITCH_GENDER,"Gender")
+        self.gender = self._create_parameter_slider(
+            VocalFXParameter.AUTO_PITCH_GENDER, "Gender"
+        )
 
         self.octave = Switch("Octave", ["-1", "0", "+1"])
         self.octave.valueChanged.connect(self._on_octave_changed)
 
         # Dry/Wet Balance
-        self.auto_pitch_balance = self._create_parameter_slider(VocalFXParameter.AUTO_PITCH_BALANCE, "D/W Balance")
+        self.auto_pitch_balance = self._create_parameter_slider(
+            VocalFXParameter.AUTO_PITCH_BALANCE, "D/W Balance"
+        )
 
         # Add all controls to layout
         layout.addWidget(self.pitch_switch)
@@ -382,7 +438,6 @@ class VocalFXEditor(SynthEditor):
             )
             # Update button text
             self.effect_part_switch.setText(switch.display_name)
-
 
     def _on_octave_changed(self, value: int):
         """Handle octave change"""
