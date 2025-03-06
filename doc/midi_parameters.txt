@@ -53,10 +53,10 @@ Effects
 
 
 5. Parameter Address Map
-**Transmission of “#” marked address is divided to some packets. For
+**Transmission of "#" marked address is divided to some packets. For
 example, ABH in hexadecimal notation will be divided to 0AH and
 0BH, and is sent/received in this order.
-**“<*>” marked address or parameters are ignored when the JD-Xi
+**"<*>" marked address or parameters are ignored when the JD-Xi
 received them.
 JD-Xi (ModelID = 00H 00H 00H 0EH)
 +------------------------------------------------------------------------------+
@@ -221,563 +221,558 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 |-------------+----------------------------------------------------------------|
 | 00 00 00 11 | Total Size                                                     |
 +------------------------------------------------------------------------------+
+
+
 **Program Common
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | Program Name 1 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 01 | 0aaa aaaa | Program Name 2 (
-|-------------+-----------+----------------------------------------------------|
-| 00 10 | 0aaa aaaa | Program Level (0 - 127) |
-|# 00 11 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Program Tempo (500 - 30000) |
-| | | 5.00 - 300.00 |
-| 00 15 | 0000 aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 16 | 0000 aaaa | Vocal Effect (0 - 2) |
-| | | OFF, VOCODER, AUTO-PITCH |
-|-------------+-----------+----------------------------------------------------|
-| 00 17 | 0000 000a | (reserve) <*> |
-| 00 18 | 0000 000a | (reserve) <*> |
-| : | | |
-| 00 1A | 0000 000a | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 1B | 0000 00aa | (reserve) <*> |
-| 00 1C | 0aaa aaaa | Vocal Effect Number (0 - 20) |
-| | | 1 - 21 |
-| 00 1D | 0000 aaaa | Vocal Effect Part (0 - 1) |
-| | | 1 - 2 |
-|-------------+-----------+----------------------------------------------------|
-| 00 1E | 0000 000a | Auto Note Switch (0 - 1) |
-| | | OFF, ON |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 1F | Total Size |
-+------------------------------------------------------------------------------+
+|----------------------------------------------------------------------------------|
+| +------------------------------------------------------------------------------+ |
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0aaa aaaa | Program Name 1 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 01 | 0aaa aaaa | Program Name 2 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 02 | 0aaa aaaa | Program Name 3 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 04 | 0aaa aaaa | Program Name 4 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 06 | 0aaa aaaa | Program Name 5 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 08 | 0aaa aaaa | Program Name 6 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 0A | 0aaa aaaa | Program Name 7 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 0C | 0aaa aaaa | Program Name 8 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 0E | 0aaa aaaa | Program Name 9 (32 - 127) |                                |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 10 | 0aaa aaaa | Program Name 10 (32 - 127) |                               |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 12 | 0aaa aaaa | Program Name 11 (32 - 127) |                               |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 14 | 0aaa aaaa | Program Name 12 (32 - 127) |                               |
+| | | | 32 - 127 [ASCII] |                                                         |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 16 | 0000 aaaa | Program Level (0 - 127) |                                  |
+| |# 00 17 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | Program Tempo (500 - 30000) |                                    |
+| | | | 5.00 - 300.00 |                                                            |
+| | 00 1B | 0000 000a | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 1C | 0aaa aaaa | Vocal Effect (0 - 2) |                                     |
+| | | | OFF, VOCODER, AUTO-PITCH |                                                 |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 1D | 0000 aaaa | Vocal Effect Part (0 - 1) |                                |
+| | | | 1 - 2 |                                                                    |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 1E | 0000 000a | Auto Note Switch (0 - 1) |                                 |
+| | | | OFF, ON |                                                                  |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 1F | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
+
+
 
 **Program Vocal Effect
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | Level (0 - 127) |
-| 00 01 | 0aaa aaaa | Pan (0 - 127) |
-| | | L64 - 63R |
-| 00 02 | 0aaa aaaa | Delay Send Level (0 - 127) |
-| 00 03 | 0aaa aaaa | Reverb Send Level (0 - 127) |
-| 00 04 | 0000 0aaa | Output Assign (0 - 4) |
-| | | EFX1, EFX2, DLY, REV, DIR |
-| 00 05 | 0000 000a | Auto Pitch Switch (0 - 1) |
-| | | OFF, ON |
-| 00 06 | 0000 0aaa | Auto Pitch Type (0 - 3) |
-| | | SOFT, HARD, ELECTRIC1, ELECTRIC2 |
-| 00 07 | 0000 000a | Auto Pitch Scale (0 - 1) |
-| | | CHROMATIC, Maj(Min) |
-| 00 08 | 000a aaaa | Auto Pitch Key (0 - 23) |
-| | | C, Db, D, Eb, E, F, F#, G, |
-| | | Ab, A, Bb, B, Cm, C#m, Dm, D#m, |
-| | | Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm |
-| 00 09 | 0000 aaaa | Auto Pitch Note (0 - 11) |
-| | | C, C#, D, D#, E, F, |
-| | | F#, G, G#, A, A#, B |
-| 00 0A | 000a aaaa | Auto Pitch Gender (0 - 20) |
-| | | -10 - +10 |
-| 00 0B | 0000 00aa | Auto Pitch Octave (0 - 2) |
-| | | -1 - +1 |
-| 00 0C | 0aaa aaaa | Auto Pitch Balance (0 - 100) |
-| | | D100:0W - D0:100W |
-|-------------+-----------+----------------------------------------------------|
-| 00 0D | 0000 000a | Vocoder Switch (0 - 1) |
-| | | OFF, ON |
-| 00 0E | 0000 00aa | Vocoder Envelope (0 - 2) |
-| | | SHARP, SOFT, LONG |
-| 00 0F | 0aaa aaaa | (0 - 127) |
-| 00 10 | 0aaa aaaa | Vocoder Mic Sens (0 - 127) |
-| 00 11 | 0aaa aaaa | Vocoder Synth Level (0 - 127) |
-| 00 12 | 0aaa aaaa | Vocoder Mic Mix Level (0 - 127) |
-| 00 13 | 0000 aaaa | Vocoder Mic HPF (0 - 13) |
-| | | BYPASS, |
-| | | 1000, 1250, 1600, 2000, 2500, |
-| | | 3150, 4000, 5000, 6300, 8000, |
-| | | 10000, 12500, 16000 [Hz] |
-| 00 14 | 0aaa aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 15 | 0000 000a | (reserve) <*> |
-| 00 16 | 0aaa aaaa | (reserve) <*> |
-| 00 17 | 0aaa aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 18 | Total Size |
-+------------------------------------------------------------------------------+
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0aaa aaaa | Level (0 - 127) |                                          |
+| | 00 01 | 0aaa aaaa | Pan (0 - 127) |                                            |
+| | | | L64 - 63R |                                                                |
+| | 00 02 | 0aaa aaaa | Delay Send Level (0 - 127) |                               |
+| | 00 03 | 0aaa aaaa | Reverb Send Level (0 - 127) |                              |
+| | 00 04 | 0000 0aaa | Output Assign (0 - 4) |                                    |
+| | | | EFX1, EFX2, DLY, REV, DIR |                                                |
+| | 00 05 | 0000 000a | Auto Pitch Switch (0 - 1) |                                |
+| | | | OFF, ON |                                                                  |
+| | 00 06 | 0000 0aaa | Auto Pitch Type (0 - 3) |                                  |
+| | | | SOFT, HARD, ELECTRIC1, ELECTRIC2 |                                         |
+| | 00 07 | 0000 000a | Auto Pitch Scale (0 - 1) |                                 |
+| | | | CHROMATIC, Maj(Min) |                                                      |
+| | 00 08 | 000a aaaa | Auto Pitch Key (0 - 23) |                                  |
+| | | | C, Db, D, Eb, E, F, F#, G, |                                               |
+| | | | Ab, A, Bb, B, Cm, C#m, Dm, D#m, |                                          |
+| | | | Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm |                                        |
+| | 00 09 | 0000 aaaa | Auto Pitch Note (0 - 11) |                                 |
+| | | | C, C#, D, D#, E, F, |                                                      |
+| | | | F#, G, G#, A, A#, B |                                                      |
+| | 00 0A | 000a aaaa | Auto Pitch Gender (0 - 20) |                               |
+| | | | -10 - +10 |                                                                |
+| | 00 0B | 0000 00aa | Auto Pitch Octave (0 - 2) |                                |
+| | | | -1 - +1 |                                                                  |
+| | 00 0C | 0aaa aaaa | Auto Pitch Balance (0 - 100) |                             |
+| | | | D100:0W - D0:100W |                                                        |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 0D | 0000 000a | Vocoder Switch (0 - 1) |                                   |
+| | | | OFF, ON |                                                                  |
+| | 00 0E | 0000 00aa | Vocoder Envelope (0 - 2) |                                 |
+| | | | SHARP, SOFT, LONG |                                                        |
+| | 00 0F | 0aaa aaaa | (0 - 127) |                                                |
+| | 00 10 | 0aaa aaaa | Vocoder Mic Sens (0 - 127) |                               |
+| | 00 11 | 0aaa aaaa | Vocoder Synth Level (0 - 127) |                            |
+| | 00 12 | 0aaa aaaa | Vocoder Mic Mix Level (0 - 127) |                          |
+| | 00 13 | 0000 aaaa | Vocoder Mic HPF (0 - 13) |                                 |
+| | | | BYPASS, |                                                                  |
+| | | | 1000, 1250, 1600, 2000, 2500, |                                            |
+| | | | 3150, 4000, 5000, 6300, 8000, |                                            |
+| | | | 10000, 12500, 16000 [Hz] |                                                 |
+| | 00 14 | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 15 | 0000 000a | (reserve) <*> |                                            |
+| | 00 16 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 17 | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 18 | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
+
+
 
 **Program Effect 1
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | EFX1 Type (0 - 4) |
-| 00 01 | 0aaa aaaa | EFX1 Level (0 - 127) |
-| 00 02 | 0aaa aaaa | EFX1 Delay Send Level (0 - 127) |
-| 00 03 | 0aaa aaaa | EFX1 Reverb Send Level (0 - 127) |
-| 00 04 | 0000 00aa | EFX1 Output Assign (0 - 1) |
-| | | DIR, EFX2 |
-|-------------+-----------+----------------------------------------------------|
-| 00 05 | 0aaa aaaa | (reserve) <*> |
-| 00 06 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 10 | 000a aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 11 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX1 Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 15 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX1 Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 01 0D | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX1 Parameter 32 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 01 11 | Total Size |
-+------------------------------------------------------------------------------+
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0aaa aaaa | EFX1 Type (0 - 4) |                                        |
+| | 00 01 | 0aaa aaaa | EFX1 Level (0 - 127) |                                     |
+| | 00 02 | 0aaa aaaa | EFX1 Delay Send Level (0 - 127) |                          |
+| | 00 03 | 0aaa aaaa | EFX1 Reverb Send Level (0 - 127) |                         |
+| | 00 04 | 0000 00aa | EFX1 Output Assign (0 - 1) |                               |
+| | | | DIR, EFX2 |                                                                |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 05 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 06 | 0aaa aaaa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 10 | 000a aaaa | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| |# 00 11 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | EFX1 Parameter 1 (12768 - 52768) |                               |
+| | | | -20000 - +20000 |                                                          |
+| |# 00 15 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | EFX1 Parameter 2 (12768 - 52768) |                               |
+| | | | -20000 - +20000 |                                                          |
+| | : | | |                                                                        |
+| |# 01 0D | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | EFX1 Parameter 32 (12768 - 52768) |                              |
+| | | | -20000 - +20000 |                                                          |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 01 11 | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
+
 **Program Effect 2
 +------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
+| Offset |                                                                     |
+| Address| Description                                                         |
 |-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | EFX2 Type (0, 5 - 8) |
-| 00 01 | 0aaa aaaa | EFX2 Level (0 - 127) |
-| 00 02 | 0aaa aaaa | EFX2 Delay Send Level (0 - 127) |
-| 00 03 | 0aaa aaaa | EFX2 Reverb Send Level (0 - 127) |
-| 00 04 | 0000 00aa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 05 | 0aaa aaaa | (reserve) <*> |
-| 00 06 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 10 | 000a aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 11 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX2 Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 15 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX2 Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 01 0D | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | EFX2 Parameter 32 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 01 11 | Total Size |
-+------------------------------------------------------------------------------+
-**Program Delay
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0000 aaaa | (reserve) <*> |
-| 00 01 | 0aaa aaaa | Delay Level (0 - 127) |
-| 00 02 | 0000 00aa | (reserve) <*> |
-| 00 03 | 0aaa aaaa | Delay Reverb Send Level (0 - 127) |
-|-------------+-----------+----------------------------------------------------|
-|# 00 04 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Delay Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 08 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Delay Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 00 60 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Delay Parameter 24 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 64 | Total Size |
+| 00 00  | 0aaa aaaa | EFX2 Type (0, 5 - 8)                                    |
+| 00 01  | 0aaa aaaa | EFX2 Level (0 - 127)                                    |
+| 00 02  | 0aaa aaaa | EFX2 Delay Send Level (0 - 127)                         |
+| 00 03  | 0aaa aaaa | EFX2 Reverb Send Level (0 - 127)                        |
++--------+---------+-----------------------------------------------------------+
+| 00 00 01 11 | Total Size                                                     |
 +------------------------------------------------------------------------------+
 
+**Program Delay
+
+
 **Program Reverb
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0000 aaaa | (reserve) <*> |
-| 00 01 | 0aaa aaaa | Reverb Level (0 - 127) |
-| 00 02 | 0000 00aa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 03 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Reverb Parameter 1 (12768 - 52768) |
-| | | -20000 - +20000 |
-|# 00 07 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Reverb Parameter 2 (12768 - 52768) |
-| | | -20000 - +20000 |
-| : | | |
-|# 00 5F | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | Reverb Parameter 24 (12768 - 52768) |
-| | | -20000 - +20000 |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 63 | Total Size |
-+------------------------------------------------------------------------------+
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0000 aaaa | (reserve) <*> |                                            |
+| | 00 01 | 0aaa aaaa | Delay Level (0 - 127) |                                    |
+| | 00 02 | 0000 00aa | (reserve) <*> |                                            |
+| | 00 03 | 0aaa aaaa | Delay Reverb Send Level (0 - 127) |                        |
+| |-------------+-----------+----------------------------------------------------| |
+| |# 00 04 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | Delay Parameter 1 (12768 - 52768) |                              |
+| | | | -20000 - +20000 |                                                          |
+| |# 00 08 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | Delay Parameter 2 (12768 - 52768) |                              |
+| | | | -20000 - +20000 |                                                          |
+| | : | | |                                                                        |
+| |# 00 60 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | Delay Parameter 24 (12768 - 52768) |                             |
+| | | | -20000 - +20000 |                                                          |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 64 |  Total Size                                                      |
+| +------------------------------------------------------------------------------+ |
+
 
 **Program Part
 +------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
+| Offset            |                                                          |
+| Address           | Description                                              |
 |-------------+----------------------------------------------------------------|
-| 00 00 | 0000 aaaa | Receive Channel (0 - 15) |
-| | | 1 - 16 |
-| 00 01 | 0000 000a | Part Switch (0 - 1) |
-| | | OFF, ON |
-| 00 02 | 0000 000a | (reserve) (1) |
-| 00 03 | 0000 000a | (reserve) (1) |
-| 00 04 | 0000 000a | (reserve) (1) |
-| 00 05 | 0000 000a | (reserve) (1) |
+| 00 00 | 0000 aaaa | Receive Channel (0 - 15)                                 |
+|       |           | 1 - 16                                                   |
+| 00 01 | 0000 000a | Part Switch (0 - 1)                                      |
+|       |           | OFF, ON                                                  |
+| 00 02 | 0000 000a | (reserve) (1)                                            |
+| 00 03 | 0000 000a | (reserve) (1)                                            |
+| 00 04 | 0000 000a | (reserve) (1)                                            |
+| 00 05 | 0000 000a | (reserve) (1)                                            |
 |-------------+-----------+----------------------------------------------------|
-| 00 06 | 0aaa aaaa | Tone Bank Select MSB (CC# 0) (0 - 127) |
-| 00 07 | 0aaa aaaa | Tone Bank Select LSB (CC# 32) (0 - 127) |
-| 00 08 | 0aaa aaaa | Tone Program Number (PC) (0 - 127) |
+| 00 06 | 0aaa aaaa | Tone Bank Select MSB (CC# 0) (0 - 127)                   |
+| 00 07 | 0aaa aaaa | Tone Bank Select LSB (CC# 32) (0 - 127)                  |
+| 00 08 | 0aaa aaaa | Tone Program Number (PC) (0 - 127)                       |
 |-------------+-----------+----------------------------------------------------|
-| 00 09 | 0aaa aaaa | Part Level (CC# 7) (0 - 127) |
-| 00 0A | 0aaa aaaa | Part Pan (CC# 10) (0 - 127) |
-| | | L64 - 63R |
-| 00 0B | 0aaa aaaa | Part Coarse Tune (RPN# 2) (16 - 112) |
-| | | -48 - +48 |
-| 00 0C | 0aaa aaaa | Part Fine Tune (RPN# 1) (14 - 114) |
-| | | -50 - +50 |
-| 00 0D | 0000 00aa | Part Mono/Poly (MONO ON/POLY ON) (0 - 2) |
-| | | MONO, POLY, TONE |
-| 00 0E | 0000 00aa | Part Legato Switch (CC# 68) (0 - 2) |
-| | | OFF, ON, TONE |
-| 00 0F | 000a aaaa | Part Pitch Bend Range (RPN# 0) (0 - 25) |
-| | | 0 - 24, TONE |
-| 00 10 | 0000 00aa | Part Portamento Switch (CC# 65) (0 - 2) |
-| | | OFF, ON, TONE |
-|# 00 11 | 0000 aaaa | |
-| | 0000 bbbb | Part Portamento Time (0 - 128) |
-| | | 0 - 127, TONE |
-| 00 13 | 0aaa aaaa | Part Cutoff Offset (CC# 74) (0 - 127) |
-| | | -64 - +63 |
-| 00 14 | 0aaa aaaa | Part Resonance Offset (CC# 71) (0 - 127) |
-| | | -64 - +63 |
-| 00 15 | 0aaa aaaa | Part Attack Time Offset (CC# 73) (0 - 127) |
-| | | -64 - +63 |
-| 00 16 | 0aaa aaaa | Part Decay Time Offset (CC# 75) (0 - 127) |
-| | | -64 - +63 |
-| 00 17 | 0aaa aaaa | Part Release Time Offset (CC# 72) (0 - 127) |
-| | | -64 - +63 |
-| 00 18 | 0aaa aaaa | Part Vibrato Rate (CC# 76) (0 - 127) |
-| | | -64 - +63 |
-| 00 19 | 0aaa aaaa | Part Vibrato Depth (CC# 77) (0 - 127) |
-| | | -64 - +63 |
-| 00 1A | 0aaa aaaa | Part Vibrato Delay (CC# 78) (0 - 127) |
-| | | -64 - +63 |
-|-------------+-----------+----------------------------------------------------|
-| 00 1B | 0000 0aaa | Part Octave Shift (61 - 67) |
-| | | -3 - +3 |
-| 00 1C | 0aaa aaaa | Part Velocity Sens Offset (1 - 127) |
-| | | -63 - +63 |
-| 00 1D | 0000 0000 | (reserve) <*> |
-| 00 1E | 0aaa aaaa | (reserve) <*> |
-| 00 1F | 0000 0000 | (reserve) <*> |
-| 00 20 | 0000 0000 | (reserve) <*> |
-| 00 21 | 0aaa aaaa | Velocity Range Lower (1 - 127) |
-| | | 1 - UPPER |
-| 00 22 | 0aaa aaaa | Velocity Range Upper (0 - 127) |
-| | | LOWER - 127 |
-| 00 23 | 0aaa aaaa | Velocity Fade Width Lower (0 - 127) |
-| 00 24 | 0aaa aaaa | Velocity Fade Width Upper (0 - 127) |
-| 00 25 | 0000 000a | Mute Switch (0 - 1) |
-| | | OFF, MUTE |
-|-------------+-----------+----------------------------------------------------|
-| 00 26 | 0aaa aaaa | (reserve) <*> |
-| 00 27 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 29 | 0aaa aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 2A | 0aaa aaaa | (reserve) <*> |
-| 00 2B | 0aaa aaaa | Part Delay Send Level (CC# 94) (0 - 127) |
-| 00 2C | 0aaa aaaa | Part Reverb Send Level (CC# 91) (0 - 127) |
-| 00 2D | 0000 0aaa | Part Output Assign (0 - 4) |
-| | | EFX1, EFX2, DLY, REV, DIR |
-| 00 2E | 0000 000a | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 2F | 0aaa aaaa | Part Scale Tune Type (0 - 8) |
-| | | CUSTOM, EQUAL, JUST-MAJ, JUST-MIN, |
-| | | PYTHAGORE, KIRNBERGE, MEANTONE, |
-| | | WERCKMEIS, ARABIC |
-| 00 30 | 0aaa aaaa | Part Scale Tune Key (0 - 11) |
-| | | C, C#, D, D#, E, F, F#, G, G#, |
-| | | A, A#, B |
-| 00 31 | 0aaa aaaa | Part Scale Tune for C (0 - 127) |
-| | | -64 - +63 |
-| 00 32 | 0aaa aaaa | Part Scale Tune for C# (0 - 127) |
-| | | -64 - +63 |
-| 00 33 | 0aaa aaaa | Part Scale Tune for D (0 - 127) |
-| | | -64 - +63 |
-| 00 34 | 0aaa aaaa | Part Scale Tune for D# (0 - 127) |
-| | | -64 - +63 |
-| 00 35 | 0aaa aaaa | Part Scale Tune for E (0 - 127) |
-| | | -64 - +63 |
-| 00 36 | 0aaa aaaa | Part Scale Tune for F (0 - 127) |
-| | | -64 - +63 |
-| 00 37 | 0aaa aaaa | Part Scale Tune for F# (0 - 127) |
-| | | -64 - +63 |
-| 00 38 | 0aaa aaaa | Part Scale Tune for G (0 - 127) |
-| | | -64 - +63 |
-| 00 39 | 0aaa aaaa | Part Scale Tune for G# (0 - 127) |
-| | | -64 - +63 |
-| 00 3A | 0aaa aaaa | Part Scale Tune for A (0 - 127) |
-| | | -64 - +63 |
-| 00 3B | 0aaa aaaa | Part Scale Tune for A# (0 - 127) |
-| | | -64 - +63 |
-| 00 3C | 0aaa aaaa | Part Scale Tune for B (0 - 127) |
-| | | -64 - +63 |
-|-------------+-----------+----------------------------------------------------|
-| 00 3D | 0000 000a | Receive Program Change (0 - 1) |
-| | | OFF, ON |
-| 00 3E | 0000 000a | Receive Bank Select (0 - 1) |
-| | | OFF, ON |
-| 00 3F | 0000 000a | Receive Pitch Bend (0 - 1) |
-| | | OFF, ON |
-| 00 40 | 0000 000a | Receive Polyphonic Key Pressure (0 - 1) |
-| | | OFF, ON |
-| 00 41 | 0000 000a | Receive Channel Pressure (0 - 1) |
-| | | OFF, ON |
-| 00 42 | 0000 000a | Receive Modulation (0 - 1) |
-| | | OFF, ON |
-| 00 43 | 0000 000a | Receive Volume (0 - 1) |
-| | | OFF, ON |
-| 00 44 | 0000 000a | Receive Pan (0 - 1) |
-| | | OFF, ON |
-| 00 45 | 0000 000a | Receive Expression (0 - 1) |
-| | | OFF, ON |
-| 00 46 | 0000 000a | Receive Hold-1 (0 - 1) |
-| | | OFF, ON |
-|-------------+-----------+----------------------------------------------------|
-| 00 47 | 0000 0aaa | (reserve) (0) |
-|-------------+-----------+----------------------------------------------------|
-| 00 48 | 0aaa aaaa | (reserve) <*> |
-| 00 49 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 4B | 0aaa aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 4C | Total Size |
-+------------------------------------------------------------------------------+
+| 00 09 | 0aaa aaaa | Part Level (CC# 7) (0 - 127)                             |
+| 00 0A | 0aaa aaaa | Part Pan (CC# 10) (0 - 127)                              |
+|       |           | L64 - 63R                                                |
+| 00 0B | 0aaa aaaa | Part Coarse Tune (RPN# 2) (16 - 112)                     |
+|       |           | -48 - +48                                                |
+| 00 0C | 0aaa aaaa | Part Fine Tune (RPN# 1) (14 - 114)                       |
+| | 00 0D | 0000 00aa | Part Mono/Poly (MONO ON/POLY ON) (0 - 2) |                 |
+| | | | MONO, POLY, TONE |                                                         |
+| | 00 0E | 0000 00aa | Part Legato Switch (CC# 68) (0 - 2) |                      |
+| | | | OFF, ON, TONE |                                                            |
+| | 00 0F | 000a aaaa | Part Pitch Bend Range (RPN# 0) (0 - 25) |                  |
+| | | | 0 - 24, TONE |                                                             |
+| | 00 10 | 0000 00aa | Part Portamento Switch (CC# 65) (0 - 2) |                  |
+| | | | OFF, ON, TONE |                                                            |
+| |# 00 11 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | Part Portamento Time (0 - 128) |                                 |
+| | | | 0 - 127, TONE |                                                            |
+| | 00 13 | 0aaa aaaa | Part Cutoff Offset (CC# 74) (0 - 127) |                    |
+| | | | -64 - +63 |                                                                |
+| | 00 14 | 0aaa aaaa | Part Resonance Offset (CC# 71) (0 - 127) |                 |
+| | | | -64 - +63 |                                                                |
+| | 00 15 | 0aaa aaaa | Part Attack Time Offset (CC# 73) (0 - 127) |               |
+| | | | -64 - +63 |                                                                |
+| | 00 16 | 0aaa aaaa | Part Decay Time Offset (CC# 75) (0 - 127) |                |
+| | | | -64 - +63 |                                                                |
+| | 00 17 | 0aaa aaaa | Part Release Time Offset (CC# 72) (0 - 127) |              |
+| | | | -64 - +63 |                                                                |
+| | 00 18 | 0aaa aaaa | Part Vibrato Rate (CC# 76) (0 - 127) |                     |
+| | | | -64 - +63 |                                                                |
+| | 00 19 | 0aaa aaaa | Part Vibrato Depth (CC# 77) (0 - 127) |                    |
+| | | | -64 - +63 |                                                                |
+| | 00 1A | 0aaa aaaa | Part Vibrato Delay (CC# 78) (0 - 127) |                    |
+| | | | -64 - +63 |                                                                |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 1B | 0000 0aaa | Part Octave Shift (61 - 67) |                              |
+| | | | -3 - +3 |                                                                  |
+| | 00 1C | 0aaa aaaa | Part Velocity Sens Offset (1 - 127) |                      |
+| | | | -63 - +63 |                                                                |
+| | 00 1D | 0000 0000 | (reserve) <*> |                                            |
+| | 00 1E | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 1F | 0000 0000 | (reserve) <*> |                                            |
+| | 00 20 | 0000 0000 | (reserve) <*> |                                            |
+| | 00 21 | 0aaa aaaa | Velocity Range Lower (1 - 127) |                           |
+| | | | 1 - UPPER |                                                                |
+| | 00 22 | 0aaa aaaa | Velocity Range Upper (0 - 127) |                           |
+| | | | LOWER - 127 |                                                              |
+| | 00 23 | 0aaa aaaa | Velocity Fade Width Lower (0 - 127) |                      |
+| | 00 24 | 0aaa aaaa | Velocity Fade Width Upper (0 - 127) |                      |
+| | 00 25 | 0000 000a | Mute Switch (0 - 1) |                                      |
+| | | | OFF, MUTE |                                                                |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 26 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 27 | 0aaa aaaa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 29 | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 2A | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 2B | 0aaa aaaa | Part Delay Send Level (CC# 94) (0 - 127) |                 |
+| | 00 2C | 0aaa aaaa | Part Reverb Send Level (CC# 91) (0 - 127) |                |
+| | 00 2D | 0000 0aaa | Part Output Assign (0 - 4) |                               |
+| | | | EFX1, EFX2, DLY, REV, DIR |                                                |
+| | 00 2E | 0000 000a | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 2F | 0aaa aaaa | Part Scale Tune Type (0 - 8) |                             |
+| | | | CUSTOM, EQUAL, JUST-MAJ, JUST-MIN, |                                       |
+| | | | PYTHAGORE, KIRNBERGE, MEANTONE, |                                          |
+| | | | WERCKMEIS, ARABIC |                                                        |
+| | 00 30 | 0aaa aaaa | Part Scale Tune Key (0 - 11) |                             |
+| | | | C, C#, D, D#, E, F, F#, G, G#, |                                           |
+| | | | A, A#, B |                                                                 |
+| | 00 31 | 0aaa aaaa | Part Scale Tune for C (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| | 00 32 | 0aaa aaaa | Part Scale Tune for C# (0 - 127) |                         |
+| | | | -64 - +63 |                                                                |
+| | 00 33 | 0aaa aaaa | Part Scale Tune for D (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| | 00 34 | 0aaa aaaa | Part Scale Tune for D# (0 - 127) |                         |
+| | | | -64 - +63 |                                                                |
+| | 00 35 | 0aaa aaaa | Part Scale Tune for E (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| | 00 36 | 0aaa aaaa | Part Scale Tune for F (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| | 00 37 | 0aaa aaaa | Part Scale Tune for F# (0 - 127) |                         |
+| | | | -64 - +63 |                                                                |
+| | 00 38 | 0aaa aaaa | Part Scale Tune for G (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| | 00 39 | 0aaa aaaa | Part Scale Tune for G# (0 - 127) |                         |
+| | | | -64 - +63 |                                                                |
+| | 00 3A | 0aaa aaaa | Part Scale Tune for A (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| | 00 3B | 0aaa aaaa | Part Scale Tune for A# (0 - 127) |                         |
+| | | | -64 - +63 |                                                                |
+| | 00 3C | 0aaa aaaa | Part Scale Tune for B (0 - 127) |                          |
+| | | | -64 - +63 |                                                                |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 3D | 0000 000a | Receive Program Change (0 - 1) |                           |
+| | | | OFF, ON |                                                                  |
+| | 00 3E | 0000 000a | Receive Bank Select (0 - 1) |                              |
+| | | | OFF, ON |                                                                  |
+| | 00 3F | 0000 000a | Receive Pitch Bend (0 - 1) |                               |
+| | | | OFF, ON |                                                                  |
+| | 00 40 | 0000 000a | Receive Polyphonic Key Pressure (0 - 1) |                  |
+| | | | OFF, ON |                                                                  |
+| | 00 41 | 0000 000a | Receive Channel Pressure (0 - 1) |                         |
+| | | | OFF, ON |                                                                  |
+| | 00 42 | 0000 000a | Receive Modulation (0 - 1) |                               |
+| | | | OFF, ON |                                                                  |
+| | 00 43 | 0000 000a | Receive Volume (0 - 1) |                                   |
+| | | | OFF, ON |                                                                  |
+| | 00 44 | 0000 000a | Receive Pan (0 - 1) |                                      |
+| | | | OFF, ON |                                                                  |
+| | 00 45 | 0000 000a | Receive Expression (0 - 1) |                               |
+| | | | OFF, ON |                                                                  |
+| | 00 46 | 0000 000a | Receive Hold-1 (0 - 1) |                                   |
+| | | | OFF, ON |                                                                  |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 47 | 0000 0aaa | (reserve) (0) |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 48 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 49 | 0aaa aaaa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 4B | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 4C | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
+
+
 
 
 **Program Zone
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | (reserve) <*> |
-| 00 01 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 02 | 0000 000a | (reserve) <*> |
-| 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |
-| | | OFF, ON |
-| 00 04 | 0000 000a | (reserve) <*> |
-| 00 05 | 0000 000a | (reserve) <*> |
-| : | | |
-| 00 0D | 0000 000a | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-|# 00 0E | 0000 aaaa | |
-| | 0000 bbbb | (reserve) <*> |
-| : | | |
-| 00 18 | 0aaa aaaa | (reserve) <*> |
-| 00 19 | 0000 0aaa | Zone Octave Shift (61 - 67) |
-| | | -3 - +3 |
-| 00 1A | 0000 aaaa | (reserve) <*> |
-| 00 1B | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 22 | 0aaa aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 23 | Total Size |
-+------------------------------------------------------------------------------+
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 01 | 0aaa aaaa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 02 | 0000 000a | (reserve) <*> |                                            |
+| | 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 04 | 0000 000a | (reserve) <*> |                                            |
+| | 00 05 | 0000 000a | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 0D | 0000 000a | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| |# 00 0E | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | (reserve) <*> |                                                  |
+| | : | | |                                                                        |
+| | 00 18 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 19 | 0000 0aaa | Zone Octave Shift (61 - 67) |                              |
+| | | | -3 - +3 |                                                                  |
+| | 00 1A | 0000 aaaa | (reserve) <*> |                                            |
+| | 00 1B | 0aaa aaaa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 22 | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 23 | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
+
+
 
 
 **Program Controller
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0000 000a | (reserve) <*> |
-| 00 01 | 0aaa aaaa | Arpeggio Grid (0 - 8) |
-| | | 04_, 08_, 08L, 08H, 08t, |
-| | | 16_, 16L, 16H, 16t |
-| 00 02 | 0aaa aaaa | Arpeggio Duration (0 - 9) |
-| | | 30, 40, 50, 60, 70, 80, 90, |
-| | | 100, 120, FUL |
-| 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |
-| | | OFF, ON |
-| 00 04 | 0aaa aaaa | (reserve) <*> |
-| 00 05 | 0aaa aaaa | Arpeggio Style (0 - 127) |
-| | | 1 - 128 |
-| 00 06 | 0aaa aaaa | Arpeggio Motif (0 - 11) |
-| | | UP/L, UP/H, UP/_, dn/L, dn/H, |
-| | | dn/_, Ud/L, Ud/H, Ud/_, rn/L, |
-| | | rn/_, PHRASE |
-| 00 07 | 0000 0aaa | Arpeggio Octave Range (61 - 67) |
-| | | -3 - +3 |
-| 00 08 | 0000 000a | (reserve) <*> |
-| 00 09 | 0aaa aaaa | Arpeggio Accent Rate (0 - 100) |
-| 00 0A | 0aaa aaaa | Arpeggio Velocity (0 - 127) |
-| | | REAL, 1 - 127 |
-| 00 0B | 0000 aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 0C | Total Size |
-+------------------------------------------------------------------------------+
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0000 000a | (reserve) <*> |                                            |
+| | 00 01 | 0aaa aaaa | Arpeggio Grid (0 - 8) |                                    |
+| | | | 04_, 08_, 08L, 08H, 08t, |                                                 |
+| | | | 16_, 16L, 16H, 16t |                                                       |
+| | 00 02 | 0aaa aaaa | Arpeggio Duration (0 - 9) |                                |
+| | | | 30, 40, 50, 60, 70, 80, 90, |                                              |
+| | | | 100, 120, FUL |                                                            |
+| | 00 03 | 0000 000a | Arpeggio Switch (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 04 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 05 | 0aaa aaaa | Arpeggio Style (0 - 127) |                                 |
+| | | | 1 - 128 |                                                                  |
+| | 00 06 | 0aaa aaaa | Arpeggio Motif (0 - 11) |                                  |
+| | | | UP/L, UP/H, UP/_, dn/L, dn/H, |                                            |
+| | | | dn/_, Ud/L, Ud/H, Ud/_, rn/L, |                                            |
+| | | | rn/_, PHRASE |                                                             |
+| | 00 07 | 0000 0aaa | Arpeggio Octave Range (61 - 67) |                          |
+| | | | -3 - +3 |                                                                  |
+| | 00 08 | 0000 000a | (reserve) <*> |                                            |
+| | 00 09 | 0aaa aaaa | Arpeggio Accent Rate (0 - 100) |                           |
+| | 00 0A | 0aaa aaaa | Arpeggio Velocity (0 - 127) |                              |
+| | | | REAL, 1 - 127 |                                                            |
+| | 00 0B | 0000 aaaa | (reserve) <*> |                                            |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 0C | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
+
+
 
 
 **SuperNATURAL Synth Tone Common
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | Tone Name 1 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 01 | 0aaa aaaa | Tone Name 2 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 02 | 0aaa aaaa | Tone Name 3 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 03 | 0aaa aaaa | Tone Name 4 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 04 | 0aaa aaaa | Tone Name 5 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 05 | 0aaa aaaa | Tone Name 6 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 06 | 0aaa aaaa | Tone Name 7 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 07 | 0aaa aaaa | Tone Name 8 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 08 | 0aaa aaaa | Tone Name 9 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 09 | 0aaa aaaa | Tone Name 10 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 0A | 0aaa aaaa | Tone Name 11 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-| 00 0B | 0aaa aaaa | Tone Name 12 (32 - 127) |
-| | | 32 - 127 [ASCII] |
-|-------------+-----------+----------------------------------------------------|
-| 00 0C | 0aaa aaaa | Tone Level (0 - 127) |
-|-------------+-----------+----------------------------------------------------|
-|# 00 0D | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | (reserve) <*> |
-| 00 10 | 0000 000a | (reserve) <*> |
-| 00 11 | 0000 000a | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 12 | 0000 000a | Portamento Switch (0 - 1) |
-| | | OFF, ON |
-| 00 13 | 0aaa aaaa | Portamento Time (CC# 5) (0 - 127) |
-| 00 14 | 0000 00aa | Mono Switch (0 - 1) |
-| | | OFF, ON |
-| 00 15 | 0000 0aaa | Octave Shift (61 - 67) |
-| | | -3 - +3 |
-| 00 16 | 000a aaaa | Pitch Bend Range Up (0 - 24) |
-| 00 17 | 000a aaaa | Pitch Bend Range Down (0 - 24) |
-| 00 18 | 0000 0aaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 19 | 0000 000a | Partial1 Switch (0 - 1) |
-| | | OFF, ON |
-| 00 1A | 0000 000a | Partial1 Select (0 - 1) |
-| | | OFF, ON |
-| 00 1B | 0000 000a | Partial2 Switch (0 - 1) |
-| | | OFF, ON |
-| 00 1C | 0000 000a | Partial2 Select (0 - 1) |
-| | | OFF, ON |
-| 00 1D | 0000 000a | Partial3 Switch (0 - 1) |
-| | | OFF, ON |
-| 00 1E | 0000 000a | Partial3 Select (0 - 1) |
-| | | OFF, ON |
-|-------------+-----------+----------------------------------------------------|
-| 00 1F | 0000 00aa | RING Switch (0 - 2) |
-| | | OFF, ---, ON |
-|-------------+-----------+----------------------------------------------------|
-| 00 20 | 0000 000a | (reserve) <*> |
-| 00 21 | 0000 00aa | (reserve) <*> |
-| : | | |
-| 00 2D | 0000 000a | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 2E | 0000 000a | Unison Switch (0 - 1) |
-| | | OFF, ON |
-| 00 2F | 0000 000a | (reserve) <*> |
-| 00 30 | 0000 000a | (reserve) <*> |
-| 00 31 | 0000 000a | Portamento Mode (0 - 1) |
-| | | NORMAL, LEGATO |
-| 00 32 | 0000 000a | Legato Switch (0 - 1) |
-| | | OFF, ON |
-| 00 33 | 0000 000a | (reserve) <*> |
-| 00 34 | 0aaa aaaa | Analog Feel (0 - 127) |
-| 00 35 | 0aaa aaaa | Wave Shape (0 - 127) |
-| 00 36 | 0aaa aaaa | Tone Category (0 - 127) |
-|# 00 37 | 0000 aaaa | |
-| | 0000 bbbb | |
-| | 0000 cccc | |
-| | 0000 dddd | (reserve) <*> |
-| 00 3B | 0000 0aaa | (reserve) <*> |
-| 00 3C | 0000 00aa | Unison Size (0 - 3) |
-| | | 2, 4, 6, 8 |
-| 00 3D | 0aaa aaaa | (reserve) <*> |
-| 00 3E | 0aaa aaaa | (reserve) <*> |
-| 00 3F | 0aaa aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 40 | Total Size |
-|-------------+----------------------------------------------------------------|
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0aaa aaaa | Tone Name 1 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 01 | 0aaa aaaa | Tone Name 2 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 02 | 0aaa aaaa | Tone Name 3 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 03 | 0aaa aaaa | Tone Name 4 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 04 | 0aaa aaaa | Tone Name 5 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 05 | 0aaa aaaa | Tone Name 6 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 06 | 0aaa aaaa | Tone Name 7 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 07 | 0aaa aaaa | Tone Name 8 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 08 | 0aaa aaaa | Tone Name 9 (32 - 127) |                                   |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 09 | 0aaa aaaa | Tone Name 10 (32 - 127) |                                  |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 0A | 0aaa aaaa | Tone Name 11 (32 - 127) |                                  |
+| | | | 32 - 127 [ASCII] |                                                         |
+| | 00 0B | 0aaa aaaa | Tone Name 12 (32 - 127) |                                  |
+| | | | 32 - 127 [ASCII] |                                                         |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 0C | 0aaa aaaa | Tone Level (0 - 127) |                                     |
+| |-------------+-----------+----------------------------------------------------| |
+| |# 00 0D | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | (reserve) <*> |                                                  |
+| | 00 10 | 0000 000a | (reserve) <*> |                                            |
+| | 00 11 | 0000 000a | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 12 | 0000 000a | Portamento Switch (0 - 1) |                                |
+| | | | OFF, ON |                                                                  |
+| | 00 13 | 0aaa aaaa | Portamento Time (CC# 5) (0 - 127) |                        |
+| | 00 14 | 0000 00aa | Mono Switch (0 - 1) |                                      |
+| | | | OFF, ON |                                                                  |
+| | 00 15 | 0000 0aaa | Octave Shift (61 - 67) |                                   |
+| | | | -3 - +3 |                                                                  |
+| | 00 16 | 000a aaaa | Pitch Bend Range Up (0 - 24) |                             |
+| | 00 17 | 000a aaaa | Pitch Bend Range Down (0 - 24) |                           |
+| | 00 18 | 0000 0aaa | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 19 | 0000 000a | Partial1 Switch (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 1A | 0000 000a | Partial1 Select (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 1B | 0000 000a | Partial2 Switch (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 1C | 0000 000a | Partial2 Select (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 1D | 0000 000a | Partial3 Switch (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| | 00 1E | 0000 000a | Partial3 Select (0 - 1) |                                  |
+| | | | OFF, ON |                                                                  |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 1F | 0000 00aa | RING Switch (0 - 2) |                                      |
+| | | | OFF, ---, ON |                                                             |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 20 | 0000 000a | (reserve) <*> |                                            |
+| | 00 21 | 0000 00aa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 2D | 0000 000a | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 2E | 0000 000a | Unison Switch (0 - 1) |                                    |
+| | | | OFF, ON |                                                                  |
+| | 00 2F | 0000 000a | (reserve) <*> |                                            |
+| | 00 30 | 0000 000a | (reserve) <*> |                                            |
+| | 00 31 | 0000 000a | Portamento Mode (0 - 1) |                                  |
+| | | | NORMAL, LEGATO |                                                           |
+| | 00 32 | 0000 000a | Legato Switch (0 - 1) |                                    |
+| | | | OFF, ON |                                                                  |
+| | 00 33 | 0000 000a | (reserve) <*> |                                            |
+| | 00 34 | 0aaa aaaa | Analog Feel (0 - 127) |                                    |
+| | 00 35 | 0aaa aaaa | Wave Shape (0 - 127) |                                     |
+| | 00 36 | 0aaa aaaa | Tone Category (0 - 127) |                                  |
+| |# 00 37 | 0000 aaaa | |                                                         |
+| | | 0000 bbbb | |                                                                |
+| | | 0000 cccc | |                                                                |
+| | | 0000 dddd | (reserve) <*> |                                                  |
+| | 00 3B | 0000 0aaa | (reserve) <*> |                                            |
+| | 00 3C | 0000 00aa | Unison Size (0 - 3) |                                      |
+| | | | 2, 4, 6, 8 |                                                               |
+| | 00 3D | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 3E | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 3F | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 40 | Total Size |                                                     |
+| |-------------+----------------------------------------------------------------| |
+
+
 
 **SuperNATURAL Synth Tone Modify
-+------------------------------------------------------------------------------+
-| Offset |                                                                     |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 01 | 0aaa aaaa | Attack Time Interval Sens (0 - 127) |
-| 00 02 | 0aaa aaaa | Release Time Interval Sens (0 - 127) |
-| 00 03 | 0aaa aaaa | Portamento Time Interval Sens (0 - 127) |
-| 00 04 | 0000 00aa | Envelope Loop Mode (0 - 2) |
-| | | OFF, FREE-RUN, TEMPO-SYNC |
-| 00 05 | 000a aaaa | Envelope Loop Sync Note (0 - 19) |
-| | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |
-| | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |
-| | | 1/12, 1/16, 1/24, 1/32 |
-| 00 06 | 0000 000a | Chromatic Portamento (0 - 1) |
-| | | OFF, ON |
-| 00 07 | 0aaa aaaa | (reserve) <*> |
-| 00 08 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 24 | 0aaa aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 25 | Total Size |
-+------------------------------------------------------------------------------+
+
+| +------------------------------------------------------------------------------+ |
+|----------------------------------------------------------------------------------|
+| | Offset | |                                                                     |
+| | Address | Description |                                                        |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+-----------+----------------------------------------------------| |
+| | 00 01 | 0aaa aaaa | Attack Time Interval Sens (0 - 127) |                      |
+| | 00 02 | 0aaa aaaa | Release Time Interval Sens (0 - 127) |                     |
+| | 00 03 | 0aaa aaaa | Portamento Time Interval Sens (0 - 127) |                  |
+| | 00 04 | 0000 00aa | Envelope Loop Mode (0 - 2) |                               |
+| | | | OFF, FREE-RUN, TEMPO-SYNC |                                                |
+| | 00 05 | 000a aaaa | Envelope Loop Sync Note (0 - 19) |                         |
+| | | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |                                       |
+| | | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |                                     |
+| | | | 1/12, 1/16, 1/24, 1/32 |                                                   |
+| | 00 06 | 0000 000a | Chromatic Portamento (0 - 1) |                             |
+| | | | OFF, ON |                                                                  |
+| | 00 07 | 0aaa aaaa | (reserve) <*> |                                            |
+| | 00 08 | 0aaa aaaa | (reserve) <*> |                                            |
+| | : | | |                                                                        |
+| | 00 24 | 0aaa aaaa | (reserve) <*> |                                            |
+| |-------------+----------------------------------------------------------------| |
+| | 00 00 00 25 | Total Size |                                                     |
+| +------------------------------------------------------------------------------+ |
 
 **SuperNATURAL Synth Tone Partial
-+--------+---------+------------------------------------------------+
-| Offset | Address | Description                                    |
-+--------+---------+------------------------------------------------+
++--------+-----------+----------------------------------------------+
+| Offset | Address   | Description                                  |
++--------+-----------+----------------------------------------------+
 | 00 00  | 0000 0aaa | OSC Wave (0 - 7): SAW, SQR, PW-SQR, TRI,     |
 |        |           | SINE, NOISE, SUPER-SAW, PCM                  |
 | 00 01  | 00aa aaaa | OSC Wave Variation (0 - 2): A, B, C          |
@@ -788,7 +783,7 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 07  | 0aaa aaaa | OSC Pitch Env Attack Time (0 - 127)          |
 | 00 08  | 0aaa aaaa | OSC Pitch Env Decay (0 - 127)                |
 | 00 09  | 0aaa aaaa | OSC Pitch Env Depth (1 - 127): -63 - +63     |
-+--------+---------+------------------------------------------------+
++--------+-----------+----------------------------------------------+
 | 00 0A  | 0000 0aaa | FILTER Mode (0 - 7): BYPASS, LPF, HPF, BPF,  |
 |        |           | PKG, LPF2, LPF3, LPF4                        |
 | 00 0B  | 0000 000a | FILTER Slope (0 - 1): -12, -24 dB            |
@@ -849,10 +844,9 @@ JD-Xi (ModelID = 00H 00H 00H 0EH)
 | 00 3B  | 0aaa aaaa | Modulation LFO Rate Control (1 - 127): -63 - |
 |        |           | +63                                          |
 | 00 3C  | 000a aaaa | AMP Level Keyfollow (54 - 74): -100 - +100   |
-+--------+---------+------------------------------------------------+
-| 00 00 00 3D | Total Size                                          |
++--------+-----------+----------------------------------------------+
+| 00 00 00 3D        | Total Size                                   |
 +-------------------------------------------------------------------+
-
 
 **Analog Synth Tone
 +-------------------------------------------------------------------------------+
