@@ -33,11 +33,12 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QSpinBox,
     QTabWidget,
-    QWidget
+    QWidget, QMessageBox
 )
 from PySide6.QtCore import Qt, QTimer
 
 from midiutil import MIDIFile
+from mido import tempo2bpm
 from rtmidi.midiconstants import CONTROLLER_CHANGE, CHANNEL_PRESSURE
 
 from jdxi_manager.midi.io import MIDIHelper
@@ -587,16 +588,17 @@ class PatternSequencer(SynthEditor):
             "",
             "MIDI Files (*.mid);;All Files (*.*)"
         )
-        
+
         if filename:
             try:
                 self.load_pattern(filename)
                 logging.info(f"Pattern loaded from {filename}")
+
                 # Update tempo from loaded file
                 if self.midi_file and self.midi_file.tracks:
                     for event in self.midi_file.tracks[0]:
-                        if event.type == SET_TEMPO:
-                            bpm = int(tempo2bpm(event.data))
+                        if event.type == "set_tempo":  # Compare with the string "set_tempo"
+                            bpm = int(tempo2bpm(event.tempo))  # Use .tempo instead of .data
                             self.tempo_spinbox.setValue(bpm)
                             break
             except Exception as e:
@@ -656,62 +658,48 @@ class PatternSequencer(SynthEditor):
         with open(filename, 'wb') as output_file:
             self.midi_file.writeFile(output_file)
 
+    def clear_pattern(self):
+        """Clear the current pattern, resetting all steps."""
+        for row in range(4):
+            for step in range(self.total_steps):
+                self.buttons[row][step].setChecked(False)
+                self.buttons[row][step].note = None
+                self.buttons[row][step].setStyleSheet(self.generate_sequencer_button_style(False))
+
     def load_pattern(self, filename: str):
         """Load a pattern from a MIDI file"""
         import mido
         
         try:
-            # Clear current pattern
-            for row in range(4):
-                for step in range(self.total_steps):
-                    self.buttons[row][step].setChecked(False)
-                    self.buttons[row][step].note = None
+            self.clear_pattern()
             
-            # Load and parse MIDI file
             midi_file = mido.MidiFile(filename)
             ppq = midi_file.ticks_per_beat
             
-            # Process each track
-            for track_num, track in enumerate(midi_file.tracks):
-                if track_num >= 4:  # Only handle first 4 tracks
-                    break
-                
+            for track_num, track in enumerate(midi_file.tracks[:4]):
+                if not isinstance(track, mido.MidiTrack):
+                    logging.error(f"Track {track_num} is not a MIDITrack")
+                    continue
                 absolute_time = 0
-                for msg in track:
+                for msg in track:  # Correctly iterate over messages in the track
                     absolute_time += msg.time
-                    
                     if msg.type == 'note_on' and msg.velocity > 0:
-                        # Convert absolute time to step number (16th notes)
-                        step = int((absolute_time / ppq) * 4)  # 4 steps per beat
-                        if step < self.total_steps:
-                            button = self.buttons[track_num][step]
-                            button.setChecked(True)
-                            button.note = msg.note
-                            button.setStyleSheet(self.generate_sequencer_button_style(True, False))
-                            
-                            # Update the appropriate note selector
-                            note_name = self._midi_to_note_name(msg.note)
-                            if track_num == 0 and note_name in self.digital_options:
-                                self.digital1_selector.setCurrentText(note_name)
-                            elif track_num == 1 and note_name in self.digital_options:
-                                self.digital2_selector.setCurrentText(note_name)
-                            elif track_num == 2 and note_name in self.analog_options:
-                                self.analog_selector.setCurrentText(note_name)
-                            elif track_num == 3:
-                                drum_index = max(0, msg.note - 36)  # Convert MIDI note to drum index
-                                if drum_index < len(self.drum_options):
-                                    self.drum_selector.setCurrentIndex(drum_index)
-                    
-                    elif msg.type == 'set_tempo':
-                        tempo = mido.tempo2bpm(msg.tempo)
-                        self.bpm = int(tempo)
-                        self.tempo_spinbox.setValue(self.bpm)
+                        step = int((absolute_time / ppq) * 4) % self.total_steps
+                        row = track_num
+                        
+                        button = self.buttons[row][step]
+                        button.setChecked(True)
+                        button.note = msg.note
             
-            logging.info(f"Pattern loaded from {filename}")
+            # Extract tempo if present
+            for msg in midi_file.tracks[0]:
+                if msg.type == 'set_tempo':
+                    bpm = int(mido.tempo2bpm(msg.tempo))
+                    self.tempo_spinbox.setValue(bpm)
+                    break
             
         except Exception as e:
-            logging.error(f"Error loading pattern: {str(e)}")
-            from PySide6.QtWidgets import QMessageBox
+            logging.error(f"Error loading pattern: {e}")
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(e)}")
 
     def play_pattern(self):
