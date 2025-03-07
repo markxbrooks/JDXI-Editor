@@ -38,8 +38,11 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QTimer
 
 from midiutil import MIDIFile
+from rtmidi.midiconstants import CONTROLLER_CHANGE, CHANNEL_PRESSURE
 
 from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.preset.handler import PresetHandler
+from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import generate_sequencer_button_style, toggle_button_style
 
@@ -312,10 +315,12 @@ class PatternMeasure(QWidget):
 class PatternSequencer(SynthEditor):
     """Pattern Sequencer with MIDI Integration"""
 
-    def __init__(self, midi_helper: Optional[MIDIHelper], parent=None):
+    def __init__(self, midi_helper: Optional[MIDIHelper], preset_handler: Optional[PresetHandler],  parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
+        self.preset_handler = preset_handler
         self.buttons = []
+        self.measures = []
         self.timer = None
         self.current_step = 0
         self.total_steps = 16

@@ -33,6 +33,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QPen
 
+from jdxi_manager.ui.style import Style
+
 
 class Slider(QWidget):
     """Custom slider widget with label and value display"""
