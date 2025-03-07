@@ -211,11 +211,11 @@ class MIDIInHandler(MidiIOController):
                 address_offset = "".join(f"{byte:02X}" for byte in message.data[7:11])
                 command_name = SysexParameter.get_command_name(command_type)
                 logging.debug("Command: %s (0x%02X), Address Offset: %s", command_name, command_type, address_offset)
-            except Exception:
-                logging.warning("Unable to extract command or parameter address", exc_info=True)
+            except Exception as ex:
+                logging.warning("Unable to extract command or parameter address due to {ex}")
 
-        except Exception:
-            logging.error("Unexpected error while handling SysEx message", exc_info=True)
+        except Exception as ex:
+            logging.error(f"Unexpected error {ex} while handling SysEx message")
 
     def _handle_control_change(self, message: Any, preset_data: Dict[str, Any]) -> None:
         """

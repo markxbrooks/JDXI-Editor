@@ -63,3 +63,10 @@ def validate_sysex_message(message: List[int]) -> bool:
     except Exception as e:
         logging.error(f"Error validating SysEx message: {str(e)}")
         return False
+
+
+def calculate_checksum(data):
+    """Calculate Roland checksum for parameter messages"""
+    checksum = sum(data) & 0x7F
+    result = (128 - checksum) & 0x7F
+    return result

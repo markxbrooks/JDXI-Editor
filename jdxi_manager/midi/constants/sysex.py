@@ -12,6 +12,12 @@ MODEL_ID_2 = 0x00  # Device family code MSB
 MODEL_ID_3 = 0x00  # Device family code LSB
 MODEL_ID_4 = 0x0E  # Product code
 
+PROGRAM_COMMON = 0x00
+
+# Roland Commands
+DT1_COMMAND_12 = 0x12  # Data Set 1
+RQ1_COMMAND_11 = 0x11  # Data Request 1
+
 # Full Model ID array
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
 

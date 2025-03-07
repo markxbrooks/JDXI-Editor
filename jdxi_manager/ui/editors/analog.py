@@ -42,10 +42,10 @@ Example:
 """
 
 
-import logging
 import os
 import re
 import json
+import logging
 from functools import partial
 from typing import Optional, Dict, Union
 
@@ -65,9 +65,9 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
+from jdxi_manager.data.analog import AnalogCommonParameter
 from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.data.analog import AnalogCommonParameter
 from jdxi_manager.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.utils.conversions import (
@@ -77,15 +77,6 @@ from jdxi_manager.midi.utils.conversions import (
     ms_to_midi_cc,
 )
 from jdxi_manager.midi.preset.handler import PresetHandler
-from jdxi_manager.ui.editors.synth import SynthEditor
-from jdxi_manager.ui.image.utils import base64_to_pixmap
-from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.adsr.adsr import ADSR
-from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
-from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.image.waveform import generate_waveform_icon
-from jdxi_manager.ui.widgets.switch.switch import Switch
 from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_manager.midi.constants.analog import (
     AnalogControlChange,
@@ -96,29 +87,24 @@ from jdxi_manager.midi.constants.analog import (
     ANALOG_OSC_GROUP,
 )
 from jdxi_manager.midi.constants import MIDI_CHANNEL_ANALOG
+from jdxi_manager.ui.editors.synth import SynthEditor
+from jdxi_manager.ui.image.utils import base64_to_pixmap
+from jdxi_manager.ui.style import Style
+from jdxi_manager.ui.widgets.adsr.adsr import ADSR
+from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
+from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
+from jdxi_manager.ui.widgets.slider import Slider
+from jdxi_manager.ui.image.waveform import generate_waveform_icon
+from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
 def get_analog_parameter_by_address(address: int):
     """Retrieve the DigitalParameter by its address."""
     logging.info(f"address: {address}")
-    from jdxi_manager.data.analog import AnalogParameter
-
     for param in AnalogParameter:
         if param.address == address:
             logging.info(f"get_analog_parameter_by_address found param: {param}")
             return param
-    return None
-
-
-def get_analog_parameter_name_by_address(address: int):
-    """Retrieve the DigitalParameter by its address."""
-    logging.info(f"address: {address}")
-    from jdxi_manager.data.analog import AnalogParameter
-
-    for param in AnalogParameter:
-        if param.address == address:
-            logging.info(f"get_analog_parameter_by_address found param: {param}")
-            return param.name
     return None
 
 

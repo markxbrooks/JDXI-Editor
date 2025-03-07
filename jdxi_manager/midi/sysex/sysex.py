@@ -7,33 +7,19 @@ print(SysexParameter.get_address_by_name("TONE_1_LEVEL"))  # Outputs: 16 (0x10)
 print(SysexParameter.get_name_by_address(0x11))           # Outputs: "TONE_2_LEVEL"
 
 """
-
 from enum import Enum
+
+from jdxi_manager.midi.constants import MODEL_ID
+from jdxi_manager.midi.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, ROLAND_ID, JD_XI_ID, MODEL_ID_1, MODEL_ID_2, \
+    MODEL_ID_3, DEVICE_ID, PROGRAM_COMMON, DT1_COMMAND_12, RQ1_COMMAND_11
 
 # MIDI Constants
-START_OF_SYSEX = 0xF0
-END_OF_SYSEX = 0xF7
-ROLAND_ID = 0x41
-JD_XI_ID = 0x00
-XI_HEADER = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E])
-
-# Roland Commands
-DT1_COMMAND_12 = 0x12  # Data Set 1
-RQ1_COMMAND_11 = 0x11  # Data Request 1
-
-PROGRAM_COMMON = 0x00
-
-
-from enum import Enum
+XI_HEADER = bytes([START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID])
 
 
 class SysexParameter(Enum):
     # MIDI Constants (Single Values)
-    START_OF_SYSEX = 0xF0
-    END_OF_SYSEX = 0xF7
-    ROLAND_ID = 0x41
-    JD_XI_ID = 0x00
-    XI_HEADER = bytes([0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E])
+    XI_HEADER = bytes([START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID])
 
     # Roland Commands (Command Type → Name Mapping)
     DT1_COMMAND_12 = ("Data Set 1", 0x12)
