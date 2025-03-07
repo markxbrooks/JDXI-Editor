@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 from PySide6.QtCore import Qt
+from matplotlib.pyplot import title
 
 from jdxi_manager.data.parameter.program_common import ProgramCommonParameter
 from jdxi_manager.midi.io import MIDIHelper
@@ -94,7 +95,9 @@ class VocalFXEditor(SynthEditor):
             font-weight: bold;
         """
         )
-        container_layout.addWidget(self.title_label)
+        title_layout = QHBoxLayout()
+        title_layout.addWidget(self.title_label)
+        container_layout.addLayout(title_layout)
         # Image display
         self.image_label = QLabel()
         self.image_label.setAlignment(
@@ -102,7 +105,7 @@ class VocalFXEditor(SynthEditor):
         )  # Center align the image
         container_layout.addWidget(self.image_label)
         self.update_instrument_image()
-
+        title_layout.addWidget(self.image_label)
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(self._create_common_section(), "Common")
         self.tab_widget.addTab(self._create_vocal_effect_section(), "Vocal FX")
@@ -124,7 +127,7 @@ class VocalFXEditor(SynthEditor):
             if os.path.exists(image_path):
                 pixmap = QPixmap(image_path)
                 scaled_pixmap = pixmap.scaledToHeight(
-                    150, Qt.TransformationMode.SmoothTransformation
+                    200, Qt.TransformationMode.SmoothTransformation
                 )  # Resize to 250px height
                 self.image_label.setPixmap(scaled_pixmap)
                 return True

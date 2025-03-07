@@ -308,10 +308,7 @@ class JdxiInstrument(JdxiUi):
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth preset_type and preset index."""
         logging.info(
-            "update_display_callback: synth_type, preset_index, channel",
-            synth_type,
-            preset_index,
-            channel,
+            f"update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
         )
         preset_map = {
             PresetType.ANALOG: ANALOG_PRESETS_ENUMERATED,

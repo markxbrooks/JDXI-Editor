@@ -162,9 +162,9 @@ def generate_editor_style(
             background: {slider_handle};
             border: 2px solid {slider_handle_border};
             width: 18px;
-            height: 18px;
+            height: 12px;
             margin: -9px 0;
-            border-radius: 3px;
+            border-radius: 5px;
         }}
         
         QSlider::handle:vertical:hover {{
@@ -214,11 +214,19 @@ def generate_editor_style(
             border-radius: 1px;
         }}
 
-        QSlider::handle:horizontal, QSlider::handle:vertical {{
+        QSlider::handle:horizontal{{
             background: {slider_handle};
             border: 2px solid {slider_handle_border};
             width: 18px;
-            height: 18px;
+            height: 14px;
+            margin: -9px 0;
+            border-radius: 9px;
+        }}
+        QSlider::handle:vertical {{
+            background: {slider_handle};
+            border: 2px solid {slider_handle_border};
+            width: 18px;
+            height: 12px;
             margin: -9px 0;
             border-radius: 9px;
         }}
@@ -417,16 +425,16 @@ class Style:
     QSlider::groove:vertical {
         background: #1A1A1A; /* Dark background */
         width: 6px; /* Thin groove */
-        border-radius: 3px;
+        border-radius: 5px;
     }
 
     QSlider::handle:vertical {
         background: black;
         border: 2px solid #ff4500; /* Bright red/orange border */
         width: 40px;  /* Wider handle */
-        height: 10px;  /* Shorter handle */
+        height: 12px;  /* Shorter handle */
         margin: -2p x -5px; /* Centers the handle */
-        border-radius: 2px;
+        border-radius: 5px;
     }
 
     QSlider::sub-page:vertical {
