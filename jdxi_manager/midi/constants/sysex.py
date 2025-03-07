@@ -10,7 +10,7 @@ DEVICE_ID = 0x10
 MODEL_ID_1 = 0x00  # Manufacturer ID extension
 MODEL_ID_2 = 0x00  # Device family code MSB
 MODEL_ID_3 = 0x00  # Device family code LSB
-MODEL_ID_4 = 0x0E  # Product code
+MODEL_ID_4 = 0x0E  # JD-XI Product code
 
 PROGRAM_COMMON = 0x00
 
@@ -22,7 +22,8 @@ RQ1_COMMAND_11 = 0x11  # Data Request 1
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
 
 # Device Identification
-JD_XI_ID = [ROLAND_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
+JD_XI_ID_LIST = [ROLAND_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
+JD_XI_HEADER_LIST = [START_OF_SYSEX] + JD_XI_ID_LIST
 
 # SysEx Commands
 DT1_COMMAND = 0x12  # Data Set 1

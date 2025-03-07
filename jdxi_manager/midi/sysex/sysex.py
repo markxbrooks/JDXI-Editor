@@ -9,17 +9,17 @@ print(SysexParameter.get_name_by_address(0x11))           # Outputs: "TONE_2_LEV
 """
 from enum import Enum
 
-from jdxi_manager.midi.constants import MODEL_ID
-from jdxi_manager.midi.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, ROLAND_ID, JD_XI_ID, MODEL_ID_1, MODEL_ID_2, \
-    MODEL_ID_3, DEVICE_ID, PROGRAM_COMMON, DT1_COMMAND_12, RQ1_COMMAND_11
+from jdxi_manager.midi.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, ROLAND_ID, JD_XI_ID_LIST, MODEL_ID_1, \
+    MODEL_ID_2, \
+    MODEL_ID_3, MODEL_ID_4, DEVICE_ID, PROGRAM_COMMON, DT1_COMMAND_12, RQ1_COMMAND_11, JD_XI_HEADER_LIST
 
 # MIDI Constants
-XI_HEADER = bytes([START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID])
+XI_HEADER_BYTES = bytes([START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4])
 
 
 class SysexParameter(Enum):
     # MIDI Constants (Single Values)
-    XI_HEADER = bytes([START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID])
+    XI_HEADER_BYTES = bytes(JD_XI_HEADER_LIST)
 
     # Roland Commands (Command Type → Name Mapping)
     DT1_COMMAND_12 = ("Data Set 1", 0x12)
