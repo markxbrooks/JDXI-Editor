@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from jdxi_manager.midi.sysex.sysex import (START_OF_SYSEX, END_OF_SYSEX,
-                                   ROLAND_ID, JD_XI_ID)
+                                           ROLAND_ID, JD_XI_ID_LIST)
 
 @dataclass
 class RolandSysEx:
@@ -33,7 +33,7 @@ class RolandSysEx:
         msg = [
             START_OF_SYSEX,
             ROLAND_ID,
-            JD_XI_ID,
+            JD_XI_ID_LIST,
             self.command,
             *self.address,
             *self.data,
@@ -47,7 +47,7 @@ class RolandSysEx:
         if (len(data) < 8 or
             data[0] != START_OF_SYSEX or
             data[1] != ROLAND_ID or
-            data[2] != JD_XI_ID):
+            data[2] != JD_XI_ID_LIST):
             raise ValueError("Invalid Roland SysEx message")
 
         command = data[3]
