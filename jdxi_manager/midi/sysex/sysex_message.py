@@ -21,8 +21,8 @@ class SysExMessage:
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10  # Default device ID
     MODEL_ID = [0x00, 0x00, 0x00, 0x0E]  # JD-Xi Model ID
-    DT1_COMMAND = 0x11  # Data Set 1 (write)
-    RQ1_COMMAND = 0x01  # Data Request 1 (read)
+    DT1_COMMAND = 0x12  # Data Set 1 (write)
+    RQ1_COMMAND = 0x11  # Data Request 1 (read)
     END_OF_SYSEX = 0xF7
 
     def __init__(self, midi_helper, device_id=DEVICE_ID):
@@ -34,18 +34,19 @@ class SysExMessage:
         """Calculate Roland checksum for parameter messages."""
         return (128 - (sum(data) & 0x7F)) & 0x7F
 
-    def construct_sysex(self, address, *data_bytes, command=None):
+    def construct_sysex(self, address, *data_bytes, request=False):
         """
         Construct a SysEx message with a checksum.
 
         :param address: Address bytes in hex string format.
         :param data_bytes: Data bytes in hex string format.
-        :param command: SysEx command type (DT1 for write, RQ1 for read).
+        :param request: SysEx command type (DT1 for write, RQ1 for read).
         :return: A complete SysEx message as a list of integers.
         """
-        if command is None:
+        if not request:
             command = self.DT1_COMMAND  # Default to DT1 if not specified
-
+        else:
+            command = self.RQ1_COMMAND
         sysex_msg = (
                 [self.START_OF_SYSEX, self.ROLAND_ID, self.device_id] +
                 self.MODEL_ID +
@@ -54,23 +55,22 @@ class SysExMessage:
                 ([int(byte, 16) for byte in data_bytes] if data_bytes else [])
         )
 
-        # If using DT1 (write), append checksum; for RQ1 (read), no checksum is needed
-        if command == self.DT1_COMMAND:
-            checksum = self.calculate_checksum(sysex_msg[8:])
-            sysex_msg.append(checksum)
+        # append checksum
+        checksum = self.calculate_checksum(sysex_msg[8:])
+        sysex_msg.append(checksum)
 
         sysex_msg.append(self.END_OF_SYSEX)
         return sysex_msg
 
-    def send_sysex(self, address, *data_bytes, command=None):
+    def send_sysex(self, address, *data_bytes, request=False):
         """
         Construct and send a SysEx message.
 
         :param address: Address bytes in hex string format.
         :param data_bytes: Data bytes in hex string format.
-        :param command: SysEx command type (DT1 for write, RQ1 for read).
+        :param request: SysEx command type (DT1 for write, RQ1 for read).
         """
-        message = self.construct_sysex(address, *data_bytes, command=command)
+        message = self.construct_sysex(address, *data_bytes, request=request)
         self.midi_helper.send_message(message)
         logging.debug(f"Sent SysEx: {message}")
 

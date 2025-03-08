@@ -68,9 +68,9 @@ class PresetEditor(QMainWindow):
         self.type_selector = QComboBox()
         self.type_selector.addItems(
             [
-                PresetType.ANALOG,
                 PresetType.DIGITAL_1,
                 PresetType.DIGITAL_2,
+                PresetType.ANALOG,
                 PresetType.DRUMS,
             ]
         )

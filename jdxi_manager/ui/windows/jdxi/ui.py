@@ -368,6 +368,9 @@ class JdxiUi(QMainWindow):
         vocal_fx_action = editors_menu.addAction("Vocal FX")
         vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
 
+        program_action = editors_menu.addAction("Program")
+        program_action.triggered.connect(lambda: self.show_editor("program"))
+
     def _create_debug_menu(self):
         # Add debug menu
         self.debug_menu = self.menuBar().addMenu("Debug")
