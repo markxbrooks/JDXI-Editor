@@ -692,6 +692,19 @@ class JdxiUi(QMainWindow):
         parts_container.setStyleSheet("background: transparent;")
         fx_container.setStyleSheet("background: transparent;")
 
+        margin = 15
+
+        # LED display area (enlarged for 2 rows)
+        display_x = margin + 70
+        display_y = margin + 90
+        display_width = 150
+        display_height = 70
+
+        # Create digital display QLabel
+        self.digital_display = QLabel(central_widget)
+        self.digital_display.setGeometry(display_x, display_y, display_width, display_height)
+
+
     def _create_other(self):
         """Create other controls section"""
         frame = QFrame()
