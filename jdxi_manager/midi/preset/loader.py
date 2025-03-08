@@ -46,7 +46,7 @@ from jdxi_manager.midi.sysex.utils import calculate_checksum
 from jdxi_manager.midi.sysex.sysex_message import SysExMessage
 
 
-class PresetLoaderNew(QObject):
+class PresetLoader(QObject):
     """Utility class for loading presets via MIDI"""
     update_display = Signal(int, int, int)
 
@@ -66,7 +66,8 @@ class PresetLoaderNew(QObject):
         # addr_bytes = bytes.fromhex(address)
 
         # Use SysExMessage helper to construct and send the SysEx message
-        self.sysex_helper.send_sysex([address[i:i + 2] for i in range(0, len(address), 2)], *[f"{b:02X}" for b in data])
+        self.sysex_helper.send_sysex([address[i:i + 2] for i in range(0, len(address), 2)], *[f"{b:02X}" for b in data],
+                                     request=False)
 
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
@@ -114,10 +115,10 @@ class PresetLoaderNew(QObject):
             (["19", "01", "50", "00"], "00", "00", "00", "25"),
         ]
         for address, *data in sysex_data:
-            self.sysex_helper.send_sysex(address, *data)
+            self.sysex_helper.send_sysex(address, *data, request=True)
 
 
-class PresetLoader(QObject):
+class PresetLoaderOld(QObject):
     """Utility class for loading presets via MIDI"""
     update_display = Signal(int, int, int)
 

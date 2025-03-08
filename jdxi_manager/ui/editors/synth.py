@@ -76,6 +76,8 @@ class SynthEditor(QWidget):
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+        #if self.midi_helper:
+        #    self.midi_helper.midi_control_changed.connect(self._handle_program_change)
 
     def _create_parameter_combo_box(
         self,
@@ -347,6 +349,13 @@ class SynthEditor(QWidget):
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
         logging.info(f"Program change detected on channel {channel}, requesting data update")
+        self.data_request()
+        if hasattr(self, 'address') and channel == self.midi_channel:
+            self.data_request()
+
+    def _handle_control_change(self, channel: int, control: int, value: int):
+        """Handle program change messages by requesting updated data"""
+        logging.info(f"Control change detected on channel {channel}, requesting data update")
         self.data_request()
         if hasattr(self, 'address') and channel == self.midi_channel:
             self.data_request()

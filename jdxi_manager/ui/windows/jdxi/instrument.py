@@ -23,6 +23,7 @@ from jdxi_manager.ui.editors import (
     ArpeggioEditor,
     EffectsEditor,
     VocalFXEditor,
+    ProgramEditor,
 )
 from jdxi_manager.ui.editors.pattern import PatternSequencer
 from jdxi_manager.ui.editors.preset import PresetEditor
@@ -337,6 +338,7 @@ class JdxiInstrument(JdxiUi):
             "arpeggio": self._show_arpeggio_editor,
             "effects": self._open_effects,
             "pattern": self._open_pattern,
+            "program": self._open_program,
         }
         self._select_synth(self.preset_type)
         if editor_type in editor_map:
@@ -375,6 +377,12 @@ class JdxiInstrument(JdxiUi):
 
     def _open_pattern(self, editor_type: str):
         self._show_editor("Pattern", PatternSequencer)
+
+    def _open_program(self, editor_type: str):
+        try:
+            self._show_editor("Program", ProgramEditor)
+        except Exception as ex:
+            logging.error(f"Error showing Program editor: {str(ex)}")
 
     def _save_favorite(self, index):
         """Save the current preset as address favorite"""
@@ -527,6 +535,7 @@ class JdxiInstrument(JdxiUi):
                 DrumEditor,
                 AnalogSynthEditor,
                 PatternSequencer,
+                ProgramEditor
             ]:
                 preset_handler = self._get_preset_handler_for_current_synth()
                 editor = editor_class(

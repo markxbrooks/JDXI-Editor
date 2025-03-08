@@ -69,3 +69,16 @@ class PresetHandler(PresetLoader):
             "preset": self.presets[self.current_preset_index],
             "channel": self.channel,
         }
+
+    def get_available_presets(self):
+        """Get the available presets."""
+        return self.presets
+
+    def save_preset(self, program_number: int, params):
+        """Save the current preset to the preset list."""
+        name = self.presets[program_number]
+        print(f"name: \t{name}")
+        print(f"params: \t{params}")
+        self.preset_changed.emit(self.current_preset_index, self.channel)
+        self.update_display.emit(self.type, self.current_preset_index, self.channel)
+        return self.get_current_preset()
