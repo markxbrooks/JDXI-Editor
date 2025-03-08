@@ -6,6 +6,8 @@ from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import (
     QAction,
+    QFont,
+    QPen,
 )
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.data.analog import AN_PRESETS
@@ -183,7 +185,7 @@ class JdxiInstrument(JdxiUi):
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-
+        self.digital_display.mousePressEvent = self._open_program_editor
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -1298,3 +1300,11 @@ class JdxiInstrument(JdxiUi):
             self.arpeggio_editor.show()
         except Exception as ex:
             logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
+
+    def _open_program_editor(self, event):
+        """Open the ProgramEditor when the digital display is clicked."""
+        if event.button() == Qt.MouseButton.LeftButton:
+            try:
+                self._show_editor("Program", ProgramEditor)
+            except Exception as ex:
+                logging.error(f"Error opening Program editor: {str(ex)}")
