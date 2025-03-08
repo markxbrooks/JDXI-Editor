@@ -39,6 +39,26 @@ class MIDIHelper(MIDIInHandler, MIDIOutHandler):
         :param parent: Optional parent widget or object.
         """
         super().__init__(parent)
+        self.midi_messages = []
         self.parent = parent
+
+    def load_patch(self, file_path):
+        try:
+            with open(file_path, "rb") as file:
+                sysex_data = file.read()
+
+            if not sysex_data.startswith(b'\xF0') or not sysex_data.endswith(b'\xF7'):
+                logging.error("Invalid SysEx file format")
+                return
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred opening file")
+
+        self.midi_messages.append(sysex_data)
+        try:
+            logging.info(f"attempting to send message: {sysex_data}")
+            sysex_list = list(sysex_data)
+            self.send_message(sysex_list)
+        except Exception as ex:
+            logging.info(f"Error {ex} sending sysex list")
 
 

@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 from typing import List
 
+from jdxi_manager.midi.constants.sysex import DT1_COMMAND_12
 from jdxi_manager.midi.sysex.sysex import (START_OF_SYSEX, END_OF_SYSEX,
                                            ROLAND_ID, JD_XI_ID_LIST)
 
 @dataclass
 class RolandSysEx:
     """Base class for Roland System Exclusive messages"""
-    command: int = 0x12  # Default to Data Set 1 (DT1)
+    command: int = DT1_COMMAND_12  # Default to Data Set 1 (DT1)
     area: int = 0x00     # Memory area
     section: int = 0x00  # Section within area
     group: int = 0x00    # Group within section

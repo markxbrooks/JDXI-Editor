@@ -190,7 +190,7 @@ DIGITAL_PRESET_TONE_DICT = {
 }
 
 # Example usage:
-#p atch_number = 230
+# patch_number = 230
 # print(f"Patch {patch_number}: {DIGITAL_PRESET_TONE_DICT[patch_number]}")
 
 

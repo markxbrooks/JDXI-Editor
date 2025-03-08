@@ -14,10 +14,11 @@ from jdxi_manager.midi.constants import (
     DT1_COMMAND,
     DIGITAL_SYNTH_1_AREA,
     PART_1,
-    OSC_1_GROUP,        # Changed from OSC_PARAM_GROUP
-    OSC_WAVE_PARAM,     # Changed from PARAM_NUMBER
-    WAVE_SAW
+    OSC_1_GROUP,  # Changed from OSC_PARAM_GROUP
+    OSC_WAVE_PARAM,  # Changed from PARAM_NUMBER
+    WAVE_SAW, SETUP_AREA
 )
+
 
 @dataclass
 class JDXiSysEx(RolandSysEx):
@@ -49,15 +50,15 @@ class JDXiSysEx(RolandSysEx):
     def to_bytes(self) -> bytes:
         """Convert message to bytes for sending"""
         msg = [
-            0xF0,           # Start of SysEx
-            0x41,           # Roland ID
+            START_OF_SYSEX,           # Start of SysEx
+            ROLAND_ID,           # Roland ID
             self.device_id, # Device ID
             *self.model_id, # Model ID (4 bytes)
             self.command,   # Command ID
             *self.address,  # Address (4 bytes)
             *self.data,     # Data bytes
             self.calculate_checksum(),  # Checksum
-            0xF7            # End of SysEx
+            END_OF_SYSEX            # End of SysEx
         ]
         return bytes(msg)
 
@@ -124,6 +125,7 @@ class IdentityRequest:
         """
         return bytes(self.to_list())
 
+
 def create_sysex_message(area: int, section: int, group: int, param: int, value: int) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
@@ -135,13 +137,14 @@ def create_sysex_message(area: int, section: int, group: int, param: int, value:
         value=value
     )
 
+
 def create_patch_load_message(bank_msb: int, bank_lsb: int, program: int) -> List[JDXiSysEx]:
     """Create messages to load address patch (bank select + program change)"""
     return [
         # Bank Select MSB
         JDXiSysEx(
             command=DT1_COMMAND_12,
-            area=0x01,  # Setup area
+            area=SETUP_AREA,  # Setup area 0x01
             section=0x00,
             group=0x00,
             param=0x04,  # Bank MSB parameter
@@ -167,6 +170,7 @@ def create_patch_load_message(bank_msb: int, bank_lsb: int, program: int) -> Lis
         )
     ]
 
+
 def create_patch_save_message(source_area: int, dest_area: int, source_section: int = 0x00, dest_section: int = 0x00) -> JDXiSysEx:
     """Create address message to save patch data from temporary to permanent memory"""
     return JDXiSysEx(
@@ -182,6 +186,7 @@ def create_patch_save_message(source_area: int, dest_area: int, source_section: 
             0x00           # Start from beginning
         ]
     )
+
 
 def create_patch_request_message(area: int, section: int = 0x00, size: int = 0) -> JDXiSysEx:
     """Create address message to request patch data"""
