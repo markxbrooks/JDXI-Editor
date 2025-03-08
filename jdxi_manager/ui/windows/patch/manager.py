@@ -1,3 +1,5 @@
+from typing import Optional
+
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QLabel, QPushButton, QFileDialog, QLineEdit
@@ -5,8 +7,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 import logging
 
+from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.ui.style import Style
+
+
 class PatchManager(QMainWindow):
-    def __init__(self, midi_helper=None, parent=None, save_mode=False):
+    def __init__(self, midi_helper=Optional[MIDIHelper], parent=None, save_mode=False):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.save_mode = save_mode
@@ -53,14 +59,14 @@ class PatchManager(QMainWindow):
                     self,
                     "Save Patch File",
                     "",
-                    "Patch Files (*.jdxipatch);;All Files (*.*)"
+                    "Patch Files (*.syx);;All Files (*.*)"
                 )
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Load Patch File",
                     "",
-                    "Patch Files (*.jdxipatch);;All Files (*.*)"
+                    "Patch Files (*.syx);;All Files (*.*)"
                 )
                 
             if file_path:

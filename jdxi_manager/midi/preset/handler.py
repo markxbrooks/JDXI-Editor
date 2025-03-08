@@ -82,3 +82,5 @@ class PresetHandler(PresetLoader):
         self.preset_changed.emit(self.current_preset_index, self.channel)
         self.update_display.emit(self.type, self.current_preset_index, self.channel)
         return self.get_current_preset()
+
+

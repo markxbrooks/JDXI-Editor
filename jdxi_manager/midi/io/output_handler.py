@@ -36,6 +36,40 @@ class MIDIOutHandler(MidiIOController):
 
     def send_message(self, message: List[int]) -> bool:
         """
+        Send a raw MIDI message with validation.
+
+        Args:
+            message: List of integer values representing the MIDI message.
+
+        Returns:
+            True if the message was sent successfully, False otherwise.
+        """
+        logging.info(f"attempting to send message: {message}")
+        if not message:
+            logging.info("MIDI message is empty.")
+            return False
+
+        if any(not (0 <= x <= 255) for x in message):
+            logging.info(f"Invalid MIDI value detected: {message}")
+            return False
+
+        formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+        logging.info(f"Sending MIDI message: {formatted_message}")
+
+        if not self.midi_out.is_port_open():
+            logging.info("MIDI output port is not open.")
+            return False
+
+        try:
+            logging.info(f"Validation passed, sending MIDI message: {formatted_message}")
+            self.midi_out.send_message(message)
+            return True
+        except Exception as ex:
+            logging.info(f"Error sending MIDI message: {ex}")
+            return False
+
+    def send_message_old(self, message: List[int]) -> bool:
+        """
         Send address raw MIDI message with validation.
 
         Args:
@@ -44,7 +78,7 @@ class MIDIOutHandler(MidiIOController):
             True if the message was sent successfully, False otherwise.
         """
         formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
-        logging.debug(f"Sending MIDI message: {formatted_message}")
+        logging.info(f"Sending MIDI message: {formatted_message}")
 
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
@@ -237,6 +271,7 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             True if successful, False otherwise.
         """
+        logging.info(f"Attempting to send control change: controller {controller} value {value} channel {channel}")
         if not self.midi_out.is_port_open():
             logging.error("MIDI output port not open")
             return False
