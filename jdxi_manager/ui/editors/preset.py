@@ -165,8 +165,8 @@ class PresetEditor(QMainWindow):
             "channel": self.channel
         }
         preset_loader.load_preset(preset_data)
-        self.settings.setValue("last_preset/synth_type", self.preset_type)
-        self.settings.setValue("last_preset/preset_num", original_index + 1)
+        # self.settings.setValue("last_preset/synth_type", self.preset_type)
+        # self.settings.setValue("last_preset/preset_num", original_index + 1)
 
     def _update_ui(self, parameters: Dict[str, int]):
         """Update UI with new parameter values"""

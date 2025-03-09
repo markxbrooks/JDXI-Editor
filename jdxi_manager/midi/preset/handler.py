@@ -44,29 +44,29 @@ class PresetHandler(PresetLoader):
         self.presets = presets
         self.channel = channel
         self.type = preset_type
-        self.current_preset_index = 0
+        self.current_preset_zero_based_index = 0
 
     def next_tone(self):
         """Increase the tone index and return the new preset."""
-        if self.current_preset_index < len(self.presets) - 1:
-            self.current_preset_index += 1
-            self.preset_changed.emit(self.current_preset_index, self.channel)
-            self.update_display.emit(self.type, self.current_preset_index, self.channel)
+        if self.current_preset_zero_based_index < len(self.presets) - 1:
+            self.current_preset_zero_based_index += 1
+            # self.preset_changed.emit(self.current_preset_zero_based_index, self.channel)
+            # self.update_display.emit(self.type, self.current_preset_zero_based_index, self.channel)  # convert to 1-based index
         return self.get_current_preset()
 
     def previous_tone(self):
         """Decrease the tone index and return the new preset."""
-        if self.current_preset_index > 0:
-            self.current_preset_index -= 1
-            self.preset_changed.emit(self.current_preset_index, self.channel)
-            self.update_display.emit(self.type, self.current_preset_index, self.channel)
+        if self.current_preset_zero_based_index > 0:
+            self.current_preset_zero_based_index -= 1
+            # self.preset_changed.emit(self.current_preset_zero_based_index, self.channel)
+            # self.update_display.emit(self.type, self.current_preset_zero_based_index, self.channel)  # convert to 1-based index
         return self.get_current_preset()
 
     def get_current_preset(self):
         """Get the current preset details."""
         return {
-            "index": self.current_preset_index,
-            "preset": self.presets[self.current_preset_index],
+            "index": self.current_preset_zero_based_index,
+            "preset": self.presets[self.current_preset_zero_based_index],
             "channel": self.channel,
         }
 
@@ -79,8 +79,8 @@ class PresetHandler(PresetLoader):
         name = self.presets[program_number]
         print(f"name: \t{name}")
         print(f"params: \t{params}")
-        self.preset_changed.emit(self.current_preset_index, self.channel)
-        self.update_display.emit(self.type, self.current_preset_index, self.channel)
+        self.preset_changed.emit(self.current_preset_zero_based_index, self.channel)
+        self.update_display.emit(self.type, self.current_preset_zero_based_index, self.channel)
         return self.get_current_preset()
 
 
