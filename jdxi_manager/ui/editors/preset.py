@@ -1,3 +1,50 @@
+"""
+Preset Editor Module
+
+This module defines the `PresetEditor` class, a PySide6-based GUI component for managing and editing
+synthesizer presets. The `PresetEditor` allows users to select, load, and modify presets, integrating
+MIDI communication for real-time parameter updates.
+
+Classes:
+    - PresetEditor: A `QMainWindow` subclass that provides an interface for selecting and managing
+      synthesizer presets, handling MIDI interactions, and updating UI elements accordingly.
+
+Signals:
+    - preset_changed(int, str, int): Emitted when a preset is selected or changed.
+      It provides the preset index, name, and MIDI channel.
+
+Features:
+    - Preset selection via a combo box categorized by preset type (Analog, Digital 1, Digital 2, Drums).
+    - Integration with a `MIDIHelper` for sending and receiving MIDI messages.
+    - Dynamic UI updates based on MIDI parameter changes.
+    - Saves user-selected preset type and preset number using `QSettings`.
+    - Supports different preset lists based on the selected preset type.
+
+Usage:
+    ```python
+    from PySide6.QtWidgets import QApplication
+    from midi_helper import MIDIHelper
+    import sys
+
+    app = QApplication(sys.argv)
+    midi_helper = MIDIHelper()
+    editor = PresetEditor(midi_helper)
+    editor.show()
+    sys.exit(app.exec())
+    ```
+
+Dependencies:
+    - PySide6 (for UI components)
+    - MIDIHelper (for MIDI communication)
+    - ParameterHandler (for handling and updating MIDI parameters)
+    - PresetLoader (for loading preset data)
+    - QSettings (for storing user preferences)
+"""
+
+
+import logging
+from typing import Optional, List, Dict
+
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -5,26 +52,25 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QComboBox,
     QLabel,
-    QPushButton,
-    QLineEdit,
     QGroupBox,
-    QMessageBox,
 )
 from PySide6.QtCore import Signal, QSettings
-from PySide6.QtGui import QFont
-from typing import Optional, List, Dict
-import logging
 
-from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.ui.style import Style
+from jdxi_manager.data.presets.data import (
+    DIGITAL_PRESETS_ENUMERATED,
+    ANALOG_PRESETS_ENUMERATED,
+    DRUM_PRESETS_ENUMERATED,
+)
 from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.midi.preset.parameter_handler import ParameterHandler
-from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED, ANALOG_PRESETS_ENUMERATED, DRUM_PRESETS_ENUMERATED
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 
 class PresetEditor(QMainWindow):
+    """ Editor window for Presets """
     preset_changed = Signal(int, str, int)
 
     def __init__(
@@ -106,7 +152,7 @@ class PresetEditor(QMainWindow):
         logging.debug(f"Getting preset list for preset_type: {self.preset_type}")
         if self.preset_type == PresetType.ANALOG:
             return ANALOG_PRESETS_ENUMERATED
-        elif self.preset_type == PresetType.DIGITAL_1:
+        if self.preset_type == PresetType.DIGITAL_1:
             return DIGITAL_PRESETS_ENUMERATED
         else:
             return DRUM_PRESETS_ENUMERATED
@@ -140,7 +186,8 @@ class PresetEditor(QMainWindow):
             presets = self._get_preset_list()
             if original_index >= len(presets):
                 logging.error(
-                    f"Original index {original_index} out of range for presets list (max {len(presets)-1})"
+                    f"Original index {original_index} out of range for presets list "
+                    f"(max {len(presets)-1})"
                 )
                 return
 
@@ -152,8 +199,9 @@ class PresetEditor(QMainWindow):
                 preset_name,
                 channel,
             )
-        except Exception as e:
-            logging.error(f"Error in preset change handler: {str(e)}", exc_info=True)
+        except Exception as ex:
+            logging.error(f"Error in preset change handler: "
+                          f"{str(ex)}", exc_info=True)
 
     def _on_load_clicked(self, original_index: int):
         """Handle Load button click"""
@@ -162,7 +210,7 @@ class PresetEditor(QMainWindow):
             "preset_type": self.preset_type,
             "selpreset": original_index,
             "modified": 0,
-            "channel": self.channel
+            "channel": self.channel,
         }
         preset_loader.load_preset(preset_data)
         # self.settings.setValue("last_preset/synth_type", self.preset_type)
@@ -170,17 +218,11 @@ class PresetEditor(QMainWindow):
 
     def _update_ui(self, parameters: Dict[str, int]):
         """Update UI with new parameter values"""
+        # not implemented
         try:
             # Example: Update address label or control with address specific parameter
-            # Assuming you have address QLabel or similar widget to display parameter values
             if "0.0.8" in parameters:  # Example address for address parameter
                 value = parameters["0.0.8"]
                 self.some_label.setText(f"Parameter 0.0.8: {value}")
-
-            # Update other UI elements as needed
-            # if '0.1.0' in parameters:
-            #     value = parameters['0.1.0']
-            #     self.another_control.setValue(value)
-
-        except Exception as e:
-            logging.error(f"Error updating UI: {str(e)}", exc_info=True)
+        except Exception as ex:
+            logging.error(f"Error updating UI: {str(ex)}", exc_info=True)

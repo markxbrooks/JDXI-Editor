@@ -21,6 +21,7 @@ Features:
     - Supports updating instrument images dynamically.
     - Sends MIDI messages to update effect settings in real-time.
     - Organizes effect parameters into categorized tabs.
+
 """
 
 import os

@@ -1,3 +1,41 @@
+"""
+Digital Partial Editor Module
+
+This module defines the `DigitalPartialEditor` class, a specialized editor for managing a single
+digital partial in a synthesizer. It extends the `PartialEditor` class, providing a structured UI
+to control and modify parameters related to oscillators, filters, amplifiers, and modulation sources.
+
+Classes:
+    - DigitalPartialEditor: A `QWidget` subclass that allows users to modify digital synthesis
+      parameters using a tabbed interface with various control sections.
+
+Features:
+    - Supports editing a single partial within a digital synth part.
+    - Provides categorized parameter sections: Oscillator, Filter, Amp, LFO, and Mod LFO.
+    - Integrates with `MIDIHelper` for real-time MIDI parameter updates.
+    - Uses icons for waveform selection, filter controls, and modulation settings.
+    - Stores UI controls for easy access and interaction.
+
+Usage:
+    ```python
+    from PySide6.QtWidgets import QApplication
+    from midi_helper import MIDIHelper
+
+    app = QApplication([])
+    midi_helper = MIDIHelper()
+    editor = DigitalPartialEditor(midi_helper=midi_helper)
+    editor.show()
+    app.exec()
+    ```
+
+Dependencies:
+    - PySide6 (for UI components)
+    - MIDIHelper (for MIDI communication)
+    - DigitalParameter, DigitalCommonParameter (for parameter management)
+    - WaveformButton (for waveform selection UI)
+    - QIcons generated from waveform base64 data
+"""
+
 import logging
 from typing import Dict, Union
 
@@ -16,18 +54,15 @@ from PySide6.QtWidgets import (
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.digital import OscWave
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.data.parameter.synth import SynthParameter
 from jdxi_manager.midi.constants import PART_1, DIGITAL_SYNTH_1_AREA
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_frac,
     midi_cc_to_ms,
     ms_to_midi_cc,
-    frac_to_midi_cc,
 )
 from jdxi_manager.ui.editors.partial import PartialEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
 from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.switch.switch import Switch

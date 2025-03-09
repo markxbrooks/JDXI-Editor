@@ -4,6 +4,7 @@ from pubsub import pub
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
+import qtawesome as qta
 
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.data.analog import AN_PRESETS
@@ -268,6 +269,11 @@ class JdxiInstrument(JdxiUi):
         """Decrement the tone index and update the display."""
         if self.current_preset_index <= 0:
             logging.info("Already at the first preset.")
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)  # Use QMessageBox.Warning, Information, or Question as needed
+            msg_box.setWindowTitle("First preset")
+            msg_box.setText("Already at the first preset")
+            msg_box.exec()
             return
 
         self.current_preset_index -= 1
@@ -286,13 +292,18 @@ class JdxiInstrument(JdxiUi):
             "modified": 0,  # or 1, depending on your logic
             "channel": self.channel
         }
-        self.load_preset(preset_data)
+        preset_handler.load_preset(preset_data)
 
     def _next_tone(self):
         """Increment the tone index and update the display."""
         max_index = len(self._get_presets_for_current_synth()) - 1
         if self.current_preset_index >= max_index:
             logging.info("Already at the last preset.")
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)  # Use QMessageBox.Warning, Information, or Question as needed
+            msg_box.setWindowTitle("Last preset")
+            msg_box.setText("already at the last preset")
+            msg_box.exec()
             return
 
         self.current_preset_index += 1
@@ -311,7 +322,7 @@ class JdxiInstrument(JdxiUi):
             "modified": 0,  # or 1, depending on your logic
             "channel": self.channel
         }
-        self.load_preset(preset_data)
+        preset_handler.load_preset(preset_data)
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth preset_type and preset index."""
