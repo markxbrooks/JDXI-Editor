@@ -344,7 +344,7 @@ class PatternSequencer(SynthEditor):
             
 
     def _setup_ui(self):
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
         row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
         self.buttons = [[] for _ in range(4)]
         self.mute_buttons = []  # List to store mute buttons
@@ -380,6 +380,9 @@ class PatternSequencer(SynthEditor):
         # Add the Clear Learned Pattern button
         self.clear_learn_button = QPushButton(qta.icon("ei.broom"),"Clear")
         self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
+        self.drum_selector = QComboBox()
+        self.drum_selector.addItems(self.drum_options)
+        self.drum_selector.currentIndexChanged.connect(self._update_drum_rows)
         
         file_layout.addWidget(self.load_button)
         file_layout.addWidget(self.save_button)
@@ -433,7 +436,7 @@ class PatternSequencer(SynthEditor):
         transport_group.setLayout(transport_layout)
         control_panel.addWidget(transport_group)
         
-        layout.addLayout(control_panel)
+        self.layout.addLayout(control_panel)
         self.midi_helper.midi_incoming_message.connect(self._update_combo_boxes)
 
         for row_idx, label_text in enumerate(row_labels):
@@ -472,8 +475,6 @@ class PatternSequencer(SynthEditor):
                 self.analog_selector.addItems(self.analog_options)
                 header_layout.addWidget(self.analog_selector)
             elif row_idx == 3:  # Drums
-                self.drum_selector = QComboBox()
-                self.drum_selector.addItems(self.drum_options)
                 header_layout.addWidget(self.drum_selector)
             
             row_layout.addLayout(header_layout)
@@ -487,6 +488,7 @@ class PatternSequencer(SynthEditor):
             self.mute_buttons.append(mute_button)
             button_layout.addWidget(mute_button)
 
+            # Create buttons for each step
             for i in range(16):
                 button = QPushButton()
                 button.setCheckable(True)
@@ -506,9 +508,23 @@ class PatternSequencer(SynthEditor):
                 button_layout.addWidget(button)
 
             row_layout.addLayout(button_layout)
-            layout.addLayout(row_layout)
-
-        self.setLayout(layout)
+            self.layout.addLayout(row_layout)
+            self.drum_row_layouts = {}
+            for drum_option in self.drum_options:
+                self.drum_row_layouts[drum_option] = QHBoxLayout()
+                for i in range(16):
+                    drum_button = QPushButton()
+                    drum_button.setCheckable(True)
+                    drum_button.setFixedSize(40, 40)
+                    drum_button.setStyleSheet(self.generate_sequencer_button_style(False))
+                    drum_button.clicked.connect(
+                        lambda checked, btn=drum_button: self._on_button_clicked(btn, checked)
+                    )
+                    drum_button.setVisible(False)  # Initially hide all drum buttons
+                    self.drum_row_layouts[drum_option].addWidget(drum_button)
+                # row_layout.addLayout(self.drum_row_layouts[drum_option])
+            self._update_drum_rows()
+        self.setLayout(self.layout)
 
     def on_learn_pattern_button_clicked(self):
         """Connect the MIDI input to the learn pattern function."""
@@ -1090,3 +1106,19 @@ class PatternSequencer(SynthEditor):
         # For example, you might want to disable the buttons in the row
         for button in self.buttons[row]:
             button.setEnabled(not checked)
+
+    def _update_drum_rows(self):
+        """Update displayed buttons based on the selected drum option."""
+        selected_option = self.drum_selector.currentText()
+
+        for option, layout in self.drum_row_layouts.items():
+            is_visible = (option == selected_option)
+
+            # Iterate over widgets inside the QHBoxLayout
+            for i in range(layout.count()):
+                button = layout.itemAt(i).widget()
+                if button:
+                    button.setVisible(is_visible)
+
+        # Ensure UI updates properly
+        self.update()
