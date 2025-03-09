@@ -136,9 +136,9 @@ class MIDIInHandler(MidiIOController):
         :param message: The incoming MIDI message.
         """
         # Do not process clock messages for logging/emission
-        if message.type != "clock":
-            self.midi_incoming_message.emit(message)
-            logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
+        #if message.type != "clock":
+        #    self.midi_incoming_message.emit(message)
+        #    logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
 
         preset_data: Dict[str, Any] = {"modified": 0}
         message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {

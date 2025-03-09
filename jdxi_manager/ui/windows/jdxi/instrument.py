@@ -1,23 +1,41 @@
 import logging
 
-from jdxi_manager.data.presets.presets import presets
 from pubsub import pub
+
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
-from PySide6.QtGui import (
-    QAction,
-    QFont,
-    QPen,
-)
-from jdxi_manager.midi.preset.handler import PresetHandler
+
+from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.data.analog import AN_PRESETS
 from jdxi_manager.data.presets.data import (
     ANALOG_PRESETS_ENUMERATED,
     DIGITAL_PRESETS_ENUMERATED,
     DRUM_PRESETS_ENUMERATED,
 )
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_GROUP
+from jdxi_manager.midi.constants import (
+    START_OF_SYSEX,
+    DEVICE_ID,
+    MODEL_ID_1,
+    MODEL_ID_2,
+    MODEL_ID,
+    JD_XI_HEADER,
+    END_OF_SYSEX,
+    MIDI_CHANNEL_DIGITAL1,
+    MIDI_CHANNEL_DIGITAL2,
+    MIDI_CHANNEL_ANALOG,
+    MIDI_CHANNEL_DRUMS,
+    DigitalParameter,
+)
+from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
+from jdxi_manager.midi.constants.sysex import (
+    TEMPORARY_PROGRAM_AREA,
+    TEMPORARY_TONE_AREA,
+)
+from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.io.connection import MIDIConnection
+from jdxi_manager.midi.sysex.messages import IdentityRequest
+from jdxi_manager.midi.preset.handler import PresetHandler
+from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -36,32 +54,8 @@ from jdxi_manager.ui.windows.patch.name_editor import PatchNameEditor
 from jdxi_manager.ui.windows.patch.manager import PatchManager
 from jdxi_manager.ui.windows.jdxi.ui import JdxiUi
 from jdxi_manager.ui.style import Style
-from jdxi_manager.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_manager.ui.widgets.viewer.log import LogViewer
 from jdxi_manager.ui.widgets.button.favorite import FavoriteButton
-from jdxi_manager.midi.io import MIDIHelper
-from jdxi_manager.midi.io.connection import MIDIConnection
-from jdxi_manager.midi.constants import (
-    START_OF_SYSEX,
-    DEVICE_ID,
-    MODEL_ID_1,
-    MODEL_ID_2,
-    MODEL_ID,
-    JD_XI_HEADER,
-    END_OF_SYSEX,
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_DIGITAL2,
-    MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS,
-    DigitalParameter,
-)
-from jdxi_manager.midi.constants.sysex import (
-    TEMPORARY_PROGRAM_AREA,
-    TEMPORARY_TONE_AREA,
-)
-from jdxi_manager.midi.sysex.messages import IdentityRequest
-from jdxi_manager.midi.preset.loader import PresetLoader
-from jdxi_manager.midi.constants.arpeggio import ArpParameter
 
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 

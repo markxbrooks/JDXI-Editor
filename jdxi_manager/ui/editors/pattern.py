@@ -22,6 +22,7 @@ import threading
 from random import gauss
 from time import sleep
 from typing import Optional
+import qtawesome as qta
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
@@ -35,17 +36,20 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QWidget, QMessageBox
 )
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QEvent
 
 from midiutil import MIDIFile
-from mido import tempo2bpm
+import mido
+from mido import tempo2bpm, MidiFile, MidiTrack, Message
 from rtmidi.midiconstants import CONTROLLER_CHANGE, CHANNEL_PRESSURE
 
+from jdxi_manager.midi.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_ANALOG, MIDI_CHANNEL_DIGITAL2, \
+    MIDI_CHANNEL_DRUMS
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors.synth import SynthEditor
-from jdxi_manager.ui.style import generate_sequencer_button_style, toggle_button_style
+from jdxi_manager.ui.style import generate_sequencer_button_style, toggle_button_style, Style
 
 # MIDI Constants
 NOTE_OFF = 0x80
@@ -53,7 +57,7 @@ NOTE_ON = 0x90
 POLY_AFTERTOUCH = 0xA0
 CONTROL_CHANGE = 0xB0
 PROGRAM_CHANGE = 0xC0
-CHANNEL_AFTERTOUCH = 0xD0
+CHANNEL_PRESSURE = 0xD0
 PITCH_BEND = 0xE0
 SYSTEM_MESSAGE = 0xF0
 
@@ -329,8 +333,14 @@ class PatternSequencer(SynthEditor):
         self.bpm = 120
         self.last_tap_time = None
         self.tap_times = []
+        self.learned_pattern = [[None] * self.total_steps for _ in range(4)]
+        self.active_notes = {}  # Track active notes
+        self.midi_file = MidiFile()  # Initialize a new MIDI file
+        self.midi_track = MidiTrack()  # Create a new track
+        self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self._setup_ui()
         self._init_midi_file()
+            
 
     def _setup_ui(self):
         layout = QVBoxLayout()
@@ -340,13 +350,11 @@ class PatternSequencer(SynthEditor):
         # Define synth options
         self.digital_options = [
             "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
-            "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5"
+            "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
+            "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6", "C7"
         ]
         
-        self.analog_options = [
-            "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
-            "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3"
-        ]
+        self.analog_options = self.digital_options
 
         # Define drum kit options
         self.drum_options = [
@@ -360,18 +368,35 @@ class PatternSequencer(SynthEditor):
         control_panel = QHBoxLayout()
         
         # File operations area
-        file_group = QGroupBox("Pattern File")
+        file_group = QGroupBox("Pattern")
         file_layout = QHBoxLayout()
         
-        self.load_button = QPushButton("Load Pattern")
+        self.load_button = QPushButton(qta.icon("mdi.file-music-outline"), "Load")
         self.load_button.clicked.connect(self._load_pattern_dialog)
-        self.save_button = QPushButton("Save Pattern")
+        self.save_button = QPushButton(qta.icon("fa.save"), "Save")
         self.save_button.clicked.connect(self._save_pattern_dialog)
+        # Add the Clear Learned Pattern button
+        self.clear_learn_button = QPushButton(qta.icon("ei.broom"),"Clear")
+        self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
         
         file_layout.addWidget(self.load_button)
         file_layout.addWidget(self.save_button)
+        file_layout.addWidget(self.clear_learn_button)
         file_group.setLayout(file_layout)
         control_panel.addWidget(file_group)
+
+        learn_group = QGroupBox("Learn Pattern")
+        learn_layout = QHBoxLayout()
+        
+        # Add the Clear Learned Pattern button
+        self.learn_button = QPushButton(qta.icon("ri.play-line"), "Start")
+        self.learn_button.clicked.connect(self.on_learn_pattern_button_clicked)
+        self.stop_learn_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
+        self.stop_learn_button.clicked.connect(self.on_stop_learn_pattern_button_clicked)
+        learn_layout.addWidget(self.learn_button)
+        learn_layout.addWidget(self.stop_learn_button)
+        learn_group.setLayout(learn_layout)
+        control_panel.addWidget(learn_group)
         
         # Tempo control area
         tempo_group = QGroupBox("Tempo")
@@ -383,7 +408,7 @@ class PatternSequencer(SynthEditor):
         self.tempo_spinbox.setValue(120)
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
         
-        self.tap_tempo_button = QPushButton("Tap")
+        self.tap_tempo_button = QPushButton(qta.icon("fa5s.drum"), "Tap")
         self.tap_tempo_button.clicked.connect(self._on_tap_tempo)
         
         tempo_layout.addWidget(self.tempo_label)
@@ -396,8 +421,8 @@ class PatternSequencer(SynthEditor):
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
         
-        self.start_button = QPushButton("Play")
-        self.stop_button = QPushButton("Stop")
+        self.start_button = QPushButton(qta.icon("ri.play-line"),"Play")
+        self.stop_button = QPushButton(qta.icon("ri.stop-line"),"Stop")
         self.start_button.clicked.connect(self.play_pattern)
         self.stop_button.clicked.connect(self.stop_pattern)
         
@@ -407,13 +432,27 @@ class PatternSequencer(SynthEditor):
         control_panel.addWidget(transport_group)
         
         layout.addLayout(control_panel)
+        self.midi_helper.midi_incoming_message.connect(self._update_combo_boxes)
 
         for row_idx, label_text in enumerate(row_labels):
             row_layout = QVBoxLayout()
             header_layout = QHBoxLayout()
-            
+
+            if label_text == "Drums":
+                icon_name = "fa5s.drum"
+            else:
+                icon_name = "msc.piano"
             # Create and add label
+            icon_label = QLabel()
+            icon_label.setPixmap(qta.icon(icon_name).pixmap(40, 40))
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            header_layout.addWidget(icon_label)
             label = QLabel(label_text)
+            if label_text == "Analog Synth":
+                color = Style.ACCENT_ANALOG
+            else:
+                color = Style.ACCENT
+            label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}")
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             header_layout.addWidget(label)
             
@@ -461,6 +500,52 @@ class PatternSequencer(SynthEditor):
 
         self.setLayout(layout)
 
+    def on_learn_pattern_button_clicked(self):
+        """Connect the MIDI input to the learn pattern function."""
+        self.midi_helper.midi_incoming_message.connect(self._learn_pattern)
+        self.midi_helper.midi_incoming_message.disconnect(self._update_combo_boxes)
+
+    def on_stop_learn_pattern_button_clicked(self):
+        """Disconnect the MIDI input from the learn pattern function and update combo boxes."""
+        self.midi_helper.midi_incoming_message.disconnect(self._learn_pattern)
+        self.midi_helper.midi_incoming_message.connect(self._update_combo_boxes)
+
+    def _update_combo_boxes(self, message):
+        """Update the combo box index to match the note for each channel."""
+        logging.info(f"message note: {message.note} channel: {message.channel}")
+        if message.type == "note_on":
+            if message.channel == MIDI_CHANNEL_DIGITAL1:
+                self.digital1_selector.setCurrentIndex(message.note - 36)
+            elif message.channel == MIDI_CHANNEL_DIGITAL2:
+                self.digital2_selector.setCurrentIndex(message.note - 36)
+            elif message.channel == MIDI_CHANNEL_ANALOG:
+                self.analog_selector.setCurrentIndex(message.note - 36)
+            elif message.channel == MIDI_CHANNEL_DRUMS:
+                self.drum_selector.setCurrentIndex(message.note - 36)
+
+    def _midi_note_to_combo_index(self, row, midi_note):
+        """Convert a MIDI note number to the corresponding combo box index."""
+        if row == 0 or row == 1:  # Digital Synths
+            note_list = self.digital_options
+        elif row == 2:  # Analog Synth
+            note_list = self.analog_options
+        else:  # Drums
+            return midi_note - 36  # Drum notes start at MIDI note 36
+
+        note_name = self._midi_to_note_name(midi_note)
+        return note_list.index(note_name)
+
+    def _set_combo_box_index(self, row, index):
+        """Set the combo box index for the specified row."""
+        if row == 0:
+            self.digital1_selector.setCurrentIndex(index)
+        elif row == 1:
+            self.digital2_selector.setCurrentIndex(index)
+        elif row == 2:
+            self.analog_selector.setCurrentIndex(index)
+        elif row == 3:
+            self.drum_selector.setCurrentIndex(index)
+
     def _add_measure(self):
         """Add a new measure tab"""
         measure = PatternMeasure()
@@ -474,6 +559,19 @@ class PatternSequencer(SynthEditor):
                 )
         
         self.tab_widget.addTab(measure, f"Measure {len(self.measures)}")
+
+    def _clear_learned_pattern(self):
+        """Clear the learned pattern and reset button states."""
+        self.learned_pattern = [[None] * self.total_steps for _ in range(4)]
+        
+        # Reset the UI buttons
+        for row in range(4):
+            for button in self.buttons[row]:
+                button.setChecked(False)
+                button.note = None
+                button.setStyleSheet(self.generate_sequencer_button_style(False))
+        
+        logging.info("Cleared learned pattern.")
 
     def _on_measure_count_changed(self, count: int):
         """Handle measure count changes"""
@@ -512,6 +610,12 @@ class PatternSequencer(SynthEditor):
                 button.note = self._note_name_to_midi(note_name)
             else:  # Drums
                 button.note = 36 + self.drum_selector.currentIndex()
+            note_name = self._midi_to_note_name(button.note)
+            if button.row == 3:
+                drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                button.setToolTip(f"Note: {drums_note_name}")
+            else:
+                button.setToolTip(f"Note: {note_name}")
         
         # Update button style
         button.setStyleSheet(self.generate_sequencer_button_style(checked, 
@@ -651,6 +755,12 @@ class PatternSequencer(SynthEditor):
                     if button.isChecked() and button.note is not None:
                         time = (measure_index * 16 + step) * 0.25
                         self.midi_file.addNote(row, channel, button.note, time, 0.25, 100)
+                        if row == 3:
+                            drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                            button.setToolTip(f"Note: {drums_note_name}")
+                        else:
+                            note_name = self._midi_to_note_name(button.note)
+                            button.setToolTip(f"Note: {note_name}")
 
     def save_pattern(self, filename: str):
         """Save the current pattern to a MIDI file"""
@@ -665,10 +775,33 @@ class PatternSequencer(SynthEditor):
                 self.buttons[row][step].setChecked(False)
                 self.buttons[row][step].note = None
                 self.buttons[row][step].setStyleSheet(self.generate_sequencer_button_style(False))
+                self.buttons[row][step].setToolTip(f"Note: {self.buttons[row][step].note}")
+
+    # Your method that loads the pattern
+    def load_pattern_old(self, filename: str):
+        try:
+            self.clear_pattern()
+
+            self.midi_file = MidiFile(filename)
+            # Check if the MIDI file is loaded and has tracks
+            if self.midi_file and self.midi_file.tracks:
+                # Iterate through the events in the first track
+                for event in self.midi_file.tracks[0]:
+                    if event.type == "set_tempo":  # Check for tempo event
+                        # Convert microseconds per beat to BPM
+                        microseconds_per_beat = event.tempo
+                        bpm = 60000000 / microseconds_per_beat  # 60 million / tempo in microseconds
+                        self.tempo_spinbox.setValue(int(bpm))  # Set BPM to the spinbox
+                        break  # Stop after finding the first tempo change event
+        except Exception as e:
+            # Log the error if it occurs
+            logging.error(f"Error loading pattern: {e}")
+            from PySide6.QtWidgets import QMessageBox
+            # Show an error message box
+            QMessageBox.critical(self, "Error", f"Could not load pattern: {str(e)}")
 
     def load_pattern(self, filename: str):
         """Load a pattern from a MIDI file"""
-        import mido
         
         try:
             self.clear_pattern()
@@ -690,13 +823,19 @@ class PatternSequencer(SynthEditor):
                         button = self.buttons[row][step]
                         button.setChecked(True)
                         button.note = msg.note
-            
-            # Extract tempo if present
-            for msg in midi_file.tracks[0]:
-                if msg.type == 'set_tempo':
-                    bpm = int(mido.tempo2bpm(msg.tempo))
-                    self.tempo_spinbox.setValue(bpm)
-                    break
+                        if row == 3:
+                            drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                            button.setToolTip(f"Note: {drums_note_name}")
+                        else:
+                            note_name = self._midi_to_note_name(button.note)
+                            button.setToolTip(f"Note: {note_name}")
+
+            for event in self.midi_file.tracks[0]:
+                if event.type == "set_tempo":  # Check for tempo event
+                    # Convert microseconds per beat to BPM
+                    microseconds_per_beat = event.tempo
+                    bpm = 60000000 / microseconds_per_beat  # 60 million / tempo in microseconds
+                    self.tempo_spinbox.setValue(int(bpm))  # Set BPM to the spinbox
             
         except Exception as e:
             logging.error(f"Error loading pattern: {e}")
@@ -777,7 +916,7 @@ class PatternSequencer(SynthEditor):
         
         return midi_note
 
-    def _midi_to_note_name(self, midi_note: int) -> str:
+    def _midi_to_note_name(self, midi_note: int, drums=False) -> str:
         """Convert MIDI note number to note name (e.g., 60 -> 'C4')"""
         # Note mapping (reverse of note_to_semitone)
         semitone_to_note = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -786,7 +925,10 @@ class PatternSequencer(SynthEditor):
         octave = (midi_note // 12) - 1
         note = semitone_to_note[midi_note % 12]
         
-        return f"{note}{octave}"
+        if drums:
+            return self.drum_options[midi_note - 36]
+        else:
+            return f"{note}{octave}"
 
     def _play_step(self):
         """Plays the current step and advances to the next one."""
@@ -842,3 +984,91 @@ class PatternSequencer(SynthEditor):
                 background-color: {'#2472a4' if is_checked else '#2c3e50'};
             }}
         """
+
+    def _learn_pattern(self, message):
+        """Learn the pattern of incoming MIDI notes, preserving rests."""
+        if message.type == 'note_on' and message.velocity > 0:
+            note = message.note
+
+            # Determine the correct row for the note
+            for row in range(4):
+                if note in self._get_note_range_for_row(row):
+                    # Record the note in the current step
+                    logging.info(f"Recording note: {note} at step {self.current_step}")
+                    self.learned_pattern[row][self.current_step] = note
+                    self.active_notes[note] = row  # Mark the note as active
+                    self._apply_learned_pattern()
+
+                    # Add the note_on message to the MIDI track
+                    self.midi_track.append(Message('note_on', note=note, velocity=message.velocity, time=0))
+                    break  # Stop checking once the note is assigned
+
+        elif message.type == 'note_off':
+            note = message.note
+            if note in self.active_notes:
+                # Advance step only if the note was previously turned on
+                logging.info(f"Note off: {note} at step {self.current_step}")
+                del self.active_notes[note]  # Remove the note from active notes
+
+                # Add the note_off message to the MIDI track
+                self.midi_track.append(Message('note_off', note=note, velocity=0, time=0))
+                self.current_step = (self.current_step + 1) % self.total_steps
+
+    def _apply_learned_pattern(self):
+        """Apply the learned pattern to the sequencer UI."""
+        for row in range(4):
+            # Clear current button states for the row
+            for button in self.buttons[row]:
+                button.setChecked(False)
+                button.note = None
+                button.setStyleSheet(self.generate_sequencer_button_style(False))
+                if row == 3:
+                    drums_note_name = self._midi_to_note_name(button.note, drums=True)  
+                    button.setToolTip(f"Note: {drums_note_name}")
+                else:
+                    note_name = self._midi_to_note_name(button.note)
+                    button.setToolTip(f"Note: {note_name}")
+
+            # Apply the learned pattern
+            for time, note in enumerate(self.learned_pattern[row]):
+                # Ensure only one button is activated per note
+                if note is not None and 0 <= time < len(self.buttons[row]):
+                    button = self.buttons[row][time]
+                    button.setChecked(True)
+                    button.note = note
+                    button.setStyleSheet(self.generate_sequencer_button_style(True))
+                    if row == 3:
+                        drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                        button.setToolTip(f"Note: {drums_note_name}")
+                    else:
+                        note_name = self._midi_to_note_name(button.note)
+                        button.setToolTip(f"Note: {note_name}")
+
+    def _get_note_range_for_row(self, row):
+        """Get the note range for a specific row."""
+        if row == 0 or row == 1:
+            return range(60, 72)  # C4 to B4
+        elif row == 2:
+            return range(48, 60)  # C3 to B3
+        else:
+            return range(36, 48)  # C2 to B2
+
+    def _move_to_next_step(self):
+        """Move to the next step in the pattern."""
+        # Move to the next step
+        self.current_step = (self.current_step + 1) % self.total_steps
+
+        # Stop learning after 16 steps
+        if self.current_step == 0:
+            logging.info("Learning complete after 16 steps.")
+            self.on_stop_learn_pattern_button_clicked()
+            self.timer.stop()
+            del self.timer
+        else:
+            logging.info(f"Moved to step {self.current_step}")
+
+    def save_midi_file(self, filename: str):
+        """Save the recorded MIDI messages to a file."""
+        with open(filename, 'wb') as output_file:
+            self.midi_file.save(output_file)
+        logging.info(f"MIDI file saved to {filename}")

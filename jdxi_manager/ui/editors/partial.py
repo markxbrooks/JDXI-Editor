@@ -76,6 +76,7 @@ class PartialEditor(QWidget):
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
 
         # Get initial MIDI value and convert to display value
+        """
         if self.midi_helper:
             group, _ = param.get_address_for_partial(self.partial_num)
             midi_value = self.midi_helper.get_parameter(
@@ -84,7 +85,7 @@ class PartialEditor(QWidget):
             if midi_value is not None:
                 display_value = param.convert_from_midi(midi_value)
                 slider.setValue(display_value)
-
+        """
         # Store control reference
         self.controls[param] = slider
         return slider
