@@ -5,16 +5,11 @@ Sysex Message
 # sysex = SysExMessage(midi_helper)
 
 # Send a Data Set 1 (DT1) message
-# sysex.send_sysex(["19", "01", "00", "00"], "00", "00", "00", "40", command=SysExMessage.DT1_COMMAND)
-
-# Send a Data Request 1 (RQ1) message
-# sysex.send_sysex(["19", "01", "00", "00"], command=SysExMessage.RQ1_COMMAND)
+# sysex.construct(["19", "01", "00", "00"], "00", "00", "00", "40", request=True)
 """
 
-import logging
 
-
-class SysExMessage:
+class SysExMessage():
     """Helper class for constructing and sending Roland JD-Xi SysEx messages."""
 
     START_OF_SYSEX = 0xF0
@@ -24,10 +19,6 @@ class SysExMessage:
     DT1_COMMAND = 0x12  # Data Set 1 (write)
     RQ1_COMMAND = 0x11  # Data Request 1 (read)
     END_OF_SYSEX = 0xF7
-
-    def __init__(self, midi_helper, device_id=DEVICE_ID):
-        self.midi_helper = midi_helper
-        self.device_id = device_id
 
     @staticmethod
     def calculate_checksum(data):
@@ -48,8 +39,8 @@ class SysExMessage:
         else:
             command = self.RQ1_COMMAND
         sysex_msg = (
-                [self.START_OF_SYSEX, self.ROLAND_ID, self.device_id] +
-                self.MODEL_ID +
+                [self.START_OF_SYSEX, self.ROLAND_ID, self.DEVICE_ID] +
+                [addr for addr in self.MODEL_ID] +
                 [command] +
                 [int(addr, 16) for addr in address] +
                 ([int(byte, 16) for byte in data_bytes] if data_bytes else [])
@@ -61,17 +52,3 @@ class SysExMessage:
 
         sysex_msg.append(self.END_OF_SYSEX)
         return sysex_msg
-
-    def send_sysex(self, address, *data_bytes, request=False):
-        """
-        Construct and send a SysEx message.
-
-        :param address: Address bytes in hex string format.
-        :param data_bytes: Data bytes in hex string format.
-        :param request: SysEx command type (DT1 for write, RQ1 for read).
-        """
-        message = self.construct_sysex(address, *data_bytes, request=request)
-        self.midi_helper.send_message(message)
-        logging.debug(f"Sent SysEx: {message}")
-
-
