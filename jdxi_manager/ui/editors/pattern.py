@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QTimer, QEvent
 
 from midiutil import MIDIFile
 import mido
-from mido import tempo2bpm, MidiFile, MidiTrack, Message
+from mido import tempo2bpm, MidiFile, MidiTrack, Message, open_input, open_output, MetaMessage
 from rtmidi.midiconstants import CONTROLLER_CHANGE, CHANNEL_PRESSURE
 
 from jdxi_manager.midi.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_ANALOG, MIDI_CHANNEL_DIGITAL2, \
@@ -205,10 +205,10 @@ class DrumPattern(object):
                 if velocity > 0:
                     if self.humanize:
                         velocity += int(round(gauss(0, velocity * self.humanize)))
-
-                    midi_helper.send_message(
-                        [NOTE_ON | channel, note, max(1, velocity)]
-                    )
+                    if not channel in self.muted_channels:
+                        midi_helper.send_message(
+                            [NOTE_ON | channel, note, max(1, velocity)]
+                        )
                     self._notes[note] = velocity
 
         self.step += 1
@@ -318,10 +318,11 @@ class PatternMeasure(QWidget):
 
 
 class PatternSequencer(SynthEditor):
-    """Pattern Sequencer with MIDI Integration"""
+    """Pattern Sequencer with MIDI Integration using mido"""
 
-    def __init__(self, midi_helper: Optional[MIDIHelper], preset_handler: Optional[PresetHandler],  parent=None):
+    def __init__(self, midi_helper: Optional[MIDIHelper], preset_handler: Optional[PresetHandler], parent=None):
         super().__init__(parent)
+        self.muted_channels = []
         self.midi_helper = midi_helper
         self.preset_handler = preset_handler
         self.buttons = []
@@ -346,6 +347,7 @@ class PatternSequencer(SynthEditor):
         layout = QVBoxLayout()
         row_labels = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
         self.buttons = [[] for _ in range(4)]
+        self.mute_buttons = []  # List to store mute buttons
 
         # Define synth options
         self.digital_options = [
@@ -476,6 +478,14 @@ class PatternSequencer(SynthEditor):
             
             row_layout.addLayout(header_layout)
             button_layout = QHBoxLayout()
+
+            # Add mute button
+            mute_button = QPushButton("Mute")
+            mute_button.setCheckable(True)
+            mute_button.setFixedSize(60, 40)
+            mute_button.toggled.connect(lambda checked, row=row_idx: self._toggle_mute(row, checked))
+            self.mute_buttons.append(mute_button)
+            button_layout.addWidget(mute_button)
 
             for i in range(16):
                 button = QPushButton()
@@ -711,10 +721,17 @@ class PatternSequencer(SynthEditor):
                 QMessageBox.critical(self, "Error", f"Could not load pattern: {str(e)}")
 
     def set_tempo(self, bpm: int):
-        """Set the pattern tempo in BPM"""
+        """Set the pattern tempo in BPM using mido."""
         self.bpm = bpm
-        if hasattr(self, 'midi_file'):
-            self.midi_file.addTempo(0, 0, bpm)
+        # Calculate microseconds per beat
+        microseconds_per_beat = int(60000000 / bpm)
+        
+        # Create a set_tempo MetaMessage
+        tempo_message = MetaMessage('set_tempo', tempo=microseconds_per_beat)
+        
+        # Add the tempo message to the first track
+        if self.midi_file.tracks:
+            self.midi_file.tracks[0].insert(0, tempo_message)
         
         # Update playback speed if sequence is running
         if hasattr(self, 'timer') and self.timer and self.timer.isActive():
@@ -725,25 +742,14 @@ class PatternSequencer(SynthEditor):
 
     def _init_midi_file(self):
         """Initialize a new MIDI file with 4 tracks"""
-        # Create MIDI file with 4 tracks (0-3)
-        self.midi_file = MIDIFile(4, adjust_origin=True)
-        
-        # Set tempo
-        self.midi_file.addTempo(0, 0, self.bpm)
-        
-        # Set time signature
-        self.midi_file.addTimeSignature(0, 0, 4, 2, 24, 8)
-        
-        # Initialize track names
-        track_names = ["Digital Synth 1", "Digital Synth 2", "Analog Synth", "Drums"]
-        for i, name in enumerate(track_names):
-            self.midi_file.addTrackName(i, 0, name)
-            # Set initial program
-            self.midi_file.addProgramChange(i, i if i < 3 else 9, 0, 0)
+        self.midi_file = MidiFile()
+        for _ in range(4):
+            track = MidiTrack()
+            self.midi_file.tracks.append(track)
 
     def update_pattern(self):
         """Update the MIDI file with current pattern state"""
-        self.midi_file = MIDIFile(4, adjust_origin=True)
+        self.midi_file = MidiFile()
         self.midi_file.addTempo(0, 0, self.bpm)
         self.midi_file.addTimeSignature(0, 0, 4, 2, 24, 8)
         
@@ -763,10 +769,30 @@ class PatternSequencer(SynthEditor):
                             button.setToolTip(f"Note: {note_name}")
 
     def save_pattern(self, filename: str):
-        """Save the current pattern to a MIDI file"""
-        self.update_pattern()
-        with open(filename, 'wb') as output_file:
-            self.midi_file.writeFile(output_file)
+        """Save the current pattern to a MIDI file using mido."""
+        midi_file = MidiFile()
+        
+        # Create tracks for each row
+        for row in range(4):
+            track = MidiTrack()
+            midi_file.tracks.append(track)
+            
+            # Add track name and program change
+            track.append(Message('program_change', program=0, time=0))
+            
+            # Add notes to the track
+            for step in range(self.total_steps):
+                button = self.buttons[row][step]
+                if button.isChecked() and button.note is not None:
+                    # Calculate the time for the note_on event
+                    time = step * 480  # Assuming 480 ticks per beat
+                    track.append(Message('note_on', note=button.note, velocity=100, time=time))
+                    # Add a note_off event after a short duration
+                    track.append(Message('note_off', note=button.note, velocity=0, time=time + 120))
+        
+        # Save the MIDI file
+        midi_file.save(filename)
+        logging.info(f"Pattern saved to {filename}")
 
     def clear_pattern(self):
         """Clear the current pattern, resetting all steps."""
@@ -777,65 +803,41 @@ class PatternSequencer(SynthEditor):
                 self.buttons[row][step].setStyleSheet(self.generate_sequencer_button_style(False))
                 self.buttons[row][step].setToolTip(f"Note: {self.buttons[row][step].note}")
 
-    # Your method that loads the pattern
-    def load_pattern_old(self, filename: str):
-        try:
-            self.clear_pattern()
-
-            self.midi_file = MidiFile(filename)
-            # Check if the MIDI file is loaded and has tracks
-            if self.midi_file and self.midi_file.tracks:
-                # Iterate through the events in the first track
-                for event in self.midi_file.tracks[0]:
-                    if event.type == "set_tempo":  # Check for tempo event
-                        # Convert microseconds per beat to BPM
-                        microseconds_per_beat = event.tempo
-                        bpm = 60000000 / microseconds_per_beat  # 60 million / tempo in microseconds
-                        self.tempo_spinbox.setValue(int(bpm))  # Set BPM to the spinbox
-                        break  # Stop after finding the first tempo change event
-        except Exception as e:
-            # Log the error if it occurs
-            logging.error(f"Error loading pattern: {e}")
-            from PySide6.QtWidgets import QMessageBox
-            # Show an error message box
-            QMessageBox.critical(self, "Error", f"Could not load pattern: {str(e)}")
-
     def load_pattern(self, filename: str):
         """Load a pattern from a MIDI file"""
-        
         try:
             self.clear_pattern()
-            
-            midi_file = mido.MidiFile(filename)
+            midi_file = MidiFile(filename)
             ppq = midi_file.ticks_per_beat
             
             for track_num, track in enumerate(midi_file.tracks[:4]):
-                if not isinstance(track, mido.MidiTrack):
-                    logging.error(f"Track {track_num} is not a MIDITrack")
+                if track_num >= len(self.buttons):
+                    logging.error(f"Track {track_num} exceeds available button rows.")
                     continue
+
                 absolute_time = 0
-                for msg in track:  # Correctly iterate over messages in the track
+                for msg in track:
                     absolute_time += msg.time
                     if msg.type == 'note_on' and msg.velocity > 0:
                         step = int((absolute_time / ppq) * 4) % self.total_steps
-                        row = track_num
-                        
-                        button = self.buttons[row][step]
+                        if step >= len(self.buttons[track_num]):
+                            logging.error(f"Step {step} exceeds available buttons in row {track_num}.")
+                            continue
+
+                        button = self.buttons[track_num][step]
                         button.setChecked(True)
                         button.note = msg.note
-                        if row == 3:
+                        if track_num == 3:
                             drums_note_name = self._midi_to_note_name(button.note, drums=True)
                             button.setToolTip(f"Note: {drums_note_name}")
                         else:
                             note_name = self._midi_to_note_name(button.note)
                             button.setToolTip(f"Note: {note_name}")
 
-            for event in self.midi_file.tracks[0]:
-                if event.type == "set_tempo":  # Check for tempo event
-                    # Convert microseconds per beat to BPM
-                    microseconds_per_beat = event.tempo
-                    bpm = 60000000 / microseconds_per_beat  # 60 million / tempo in microseconds
-                    self.tempo_spinbox.setValue(int(bpm))  # Set BPM to the spinbox
+            for event in midi_file.tracks[0]:
+                if event.type == "set_tempo":
+                    bpm = int(tempo2bpm(event.tempo))
+                    self.tempo_spinbox.setValue(bpm)
             
         except Exception as e:
             logging.error(f"Error loading pattern: {e}")
@@ -944,10 +946,11 @@ class PatternSequencer(SynthEditor):
                 
                 # Send Note On message using the stored note
                 if self.midi_helper:
-                    logging.info(f"Row {row} active at step {step}, sending note {button.note} on channel {channel}")
-                    self.midi_helper.send_message([NOTE_ON | channel, button.note, 100])  # velocity 100
-                    # Note Off message after a short delay
-                    QTimer.singleShot(100, lambda ch=channel, n=button.note:
+                    if not channel in self.muted_channels:
+                        logging.info(f"Row {row} active at step {step}, sending note {button.note} on channel {channel}")
+                        self.midi_helper.send_message([NOTE_ON | channel, button.note, 100])  # velocity 100
+                        # Note Off message after a short delay
+                        QTimer.singleShot(100, lambda ch=channel, n=button.note:
                         self.midi_helper.send_message([NOTE_ON | ch, n, 0]))
                 else:
                     logging.warning("MIDI helper not available")
@@ -1072,3 +1075,18 @@ class PatternSequencer(SynthEditor):
         with open(filename, 'wb') as output_file:
             self.midi_file.save(output_file)
         logging.info(f"MIDI file saved to {filename}")
+
+    def _toggle_mute(self, row, checked):
+        """Toggle mute for a specific row."""
+        channel = row if row < 3 else 9  # channels 0,1,2 for synths, 9 for drums
+        if checked:
+            logging.info(f"Row {row} muted")
+            self.muted_channels.append(channel)
+        else:
+            logging.info(f"Row {row} unmuted")
+            self.muted_channels.remove(channel)
+        
+        # Update the UI or internal state to reflect the mute status
+        # For example, you might want to disable the buttons in the row
+        for button in self.buttons[row]:
+            button.setEnabled(not checked)
