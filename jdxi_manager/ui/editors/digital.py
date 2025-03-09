@@ -231,7 +231,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS_ENUMERATED)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_handler.current_preset_index
+            self.preset_handler.current_preset_zero_based_index
         )
 
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
@@ -450,7 +450,7 @@ class DigitalSynthEditor(SynthEditor):
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
-        def load_and_set_image(image_path, secondary_image_path):
+        def load_and_set_image(image_path, secondary_image_path=None):
             """Helper function to load and set the image on the label."""
             file_to_load = ""
             if os.path.exists(image_path):

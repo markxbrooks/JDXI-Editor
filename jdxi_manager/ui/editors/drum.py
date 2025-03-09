@@ -175,12 +175,8 @@ class DrumEditor(SynthEditor):
             if DRUM_PRESETS_ENUMERATED
             else "Drum Kit"
         )
-        drum_group.setStyleSheet(
-            Style.JDXI_DRUM_GROUP
-        )
-        self.instrument_title_label.setStyleSheet(
-            Style.JDXI_INSTRUMENT_TITLE_LABEL
-        )
+        drum_group.setStyleSheet(Style.JDXI_DRUM_GROUP)
+        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         drum_group_layout = QVBoxLayout()
         drum_group.setLayout(drum_group_layout)
         drum_group_layout.addWidget(self.instrument_title_label)

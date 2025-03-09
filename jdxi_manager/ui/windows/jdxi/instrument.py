@@ -282,7 +282,7 @@ class JdxiInstrument(JdxiUi):
 
         preset_data = {
             "preset_type": self.current_synth_type,
-            "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
+            "selpreset": self.current_preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
             "channel": self.channel
         }
@@ -307,7 +307,7 @@ class JdxiInstrument(JdxiUi):
 
         preset_data = {
             "preset_type": self.current_synth_type,
-            "selpreset": self.current_preset_index + 1,  # Convert to 1-based index
+            "selpreset": self.current_preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
             "channel": self.channel
         }

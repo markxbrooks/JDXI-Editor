@@ -1,20 +1,41 @@
+"""
+synth_editor.py
+
+This module defines the `SynthEditor` class, a base class for all editor windows in the JD-Xi Manager application.
+It provides an interface for editing synthesizer parameters, handling MIDI messages, and updating UI components.
+
+Key Features:
+- UI Elements: Uses PySide6 widgets, including ComboBoxes, Sliders, and SpinBoxes, to adjust synthesizer parameters.
+- MIDI Integration: Sends and receives MIDI messages via `MIDIHelper`, supporting parameter changes, SysEx communication,
+  and program change handling.
+- Preset Management: Loads, updates, and applies instrument presets with `PresetHandler` and `PresetLoader`.
+- Parameter Control: Dynamically creates UI controls for synthesizer parameters, supporting bipolar values and display conversion.
+- Shortcuts: Implements keyboard shortcuts for refreshing data and closing the window.
+
+Dependencies:
+- PySide6 for the UI components.
+- `jdxi_manager.midi` for MIDI communication.
+- `jdxi_manager.data.parameter` for synthesizer parameter handling.
+- `jdxi_manager.ui.style` for applying UI styles.
+
+"""
+
 import re
 import os
 import logging
-from typing import Optional, Union
+from typing import Optional
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.data.parameter.drums import DrumParameter, DrumCommonParameter
+from jdxi_manager.data.parameter.drums import DrumCommonParameter
 from jdxi_manager.data.parameter.synth import SynthParameter
 from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler
-from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_manager.ui.widgets.slider import Slider
@@ -30,6 +51,7 @@ class SynthEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
+        self.instrument_icon_folder = None
         self.controls = {}
         self.partial_num = None
         self.midi_channel = None
@@ -54,8 +76,8 @@ class SynthEditor(QWidget):
             ANALOG_SYNTH_AREA, 
             DRUM_KIT_AREA
         """
-        self.part = None #
-        self.group = None # ANALOG_OSC_GROUP
+        self.part = None  #
+        self.group = None  # ANALOG_OSC_GROUP
         # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 
@@ -76,7 +98,7 @@ class SynthEditor(QWidget):
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-        #if self.midi_helper:
+        # if self.midi_helper:
         #    self.midi_helper.midi_control_changed.connect(self._handle_program_change)
 
     def _create_parameter_combo_box(
@@ -92,7 +114,9 @@ class SynthEditor(QWidget):
         self.controls[param] = combo_box
         return combo_box
 
-    def _create_parameter_spin_box(self, param: SynthParameter, label: str = None) -> SpinBox:
+    def _create_parameter_spin_box(
+        self, param: SynthParameter, label: str = None
+    ) -> SpinBox:
         """Create address spin box for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
@@ -109,11 +133,11 @@ class SynthEditor(QWidget):
         return spin_box
 
     def _create_parameter_slider(
-            self,
-            param: SynthParameter,
-            label: str,
-            vertical=False,
-            show_value_label=True,
+        self,
+        param: SynthParameter,
+        label: str,
+        vertical=False,
+        show_value_label=True,
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
@@ -160,15 +184,6 @@ class SynthEditor(QWidget):
         """Set MIDI helper instance"""
         self.midi_helper = midi_helper
 
-    def handle_midi_message(self, message):
-        """Callback for handling incoming MIDI messages"""
-        try:
-            logging.info(f"SysEx message: {message}")
-            if message[7] == 0x12:  # DT1 command
-                self._handle_dt1_message(message[8:])
-        except Exception as e:
-            logging.error(f"Error handling MIDI message: {str(e)}", exc_info=True)
-
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
         logging.info(f"Updating combo to preset {preset_number}")
@@ -192,9 +207,13 @@ class SynthEditor(QWidget):
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def update_instrument_image(self):
-        def load_and_set_image(image_path, secondary_image_path):
+        class_name = self.__class__.__name__.lower()  # Get class name in lowercase
+        default_image_path = os.path.join("resources", class_name, f"{class_name}.png")
+
+        def load_and_set_image(image_path, secondary_image_path=None):
             """Helper function to load and set the image on the label."""
             file_to_load = ""
+
             if os.path.exists(image_path):
                 file_to_load = image_path
             elif os.path.exists(secondary_image_path):
@@ -216,8 +235,9 @@ class SynthEditor(QWidget):
 
         # Try to extract synth name from the selected text
         image_loaded = False
-        if instrument_matches := re.search(r"(\d{3}): (\S+)\s(\S+)+",
-                                           selected_instrument_text, re.IGNORECASE):
+        if instrument_matches := re.search(
+            r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+        ):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
@@ -248,13 +268,15 @@ class SynthEditor(QWidget):
             "preset_type": self.preset_type,  # Ensure this is address valid preset_type
             "selpreset": preset_index,  # Convert to 1-based index
             "modified": 0,  # or 1, depending on your logic
-            "channel": self.midi_channel
+            "channel": self.midi_channel,
         }
         if not self.preset_handler:
-            self.preset_handler = PresetHandler(self.midi_helper,
-                                                DIGITAL_PRESETS_ENUMERATED,
-                                                channel=MIDI_CHANNEL_DIGITAL1,
-                                                preset_type=PresetType.DIGITAL_1)
+            self.preset_handler = PresetHandler(
+                self.midi_helper,
+                DIGITAL_PRESETS_ENUMERATED,
+                channel=MIDI_CHANNEL_DIGITAL1,
+                preset_type=PresetType.DIGITAL_1,
+            )
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
 
@@ -282,13 +304,11 @@ class SynthEditor(QWidget):
                 param=param.address,
                 value=value,  # Make sure this value is being sent
             )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"MIDI error setting {param}: {str(ex)}")
             return False
 
-    def _on_parameter_changed(
-        self, param: SynthParameter, display_value: int
-    ):
+    def _on_parameter_changed(self, param: SynthParameter, display_value: int):
         """Handle parameter value changes from UI controls"""
         try:
             # Get parameter area and address with partial offset
@@ -327,14 +347,14 @@ class SynthEditor(QWidget):
                     group=group,
                     param=param.address,
                     value=midi_value,
-                    size=size
+                    size=size,
                 )
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")
                 return False
 
-        except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
 
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""
@@ -353,16 +373,20 @@ class SynthEditor(QWidget):
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
-        logging.info(f"Program change detected on channel {channel}, requesting data update")
+        logging.info(
+            f"Program change detected on channel {channel}, requesting data update"
+        )
         self.data_request()
-        if hasattr(self, 'address') and channel == self.midi_channel:
+        if hasattr(self, "address") and channel == self.midi_channel:
             self.data_request()
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
-        logging.info(f"Control change detected on channel {channel}, requesting data update")
+        logging.info(
+            f"Control change detected on channel {channel}, requesting data update"
+        )
         self.data_request()
-        if hasattr(self, 'address') and channel == self.midi_channel:
+        if hasattr(self, "address") and channel == self.midi_channel:
             self.data_request()
 
     def _handle_dt1_message(self, data):
@@ -393,12 +417,17 @@ class SynthEditor(QWidget):
                 changes.append((key, previous_value, current_value))
 
         changes = [
-            change for change in changes if change[0] not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+            change
+            for change in changes
+            if change[0]
+            not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
         ]
 
         if changes:
             logging.info("Changes detected:")
             for key, prev, curr in changes:
-                logging.info(f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}")
+                logging.info(
+                    f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
+                )
         else:
             logging.info("No changes detected.")
