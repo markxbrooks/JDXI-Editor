@@ -26,8 +26,8 @@ Dependencies:
     - qtawesome for icons
     - Custom MIDI handling classes
     - Digital synth parameter definitions
-"""
 
+"""
 
 import os
 import json

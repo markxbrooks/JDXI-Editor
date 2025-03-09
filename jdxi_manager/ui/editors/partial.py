@@ -17,9 +17,8 @@ Dependencies:
     - jdxi_manager.ui.widgets.slider (Slider)
     - jdxi_manager.ui.widgets.combo_box.combo_box (ComboBox)
     - jdxi_manager.ui.widgets.spin_box.spin_box (SpinBox)
+
 """
-
-
 
 import logging
 from typing import Dict
@@ -74,18 +73,6 @@ class PartialEditor(QWidget):
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Get initial MIDI value and convert to display value
-        """
-        if self.midi_helper:
-            group, _ = param.get_address_for_partial(self.partial_num)
-            midi_value = self.midi_helper.get_parameter(
-                area=self.area, part=self.part, group=group, param=param.address
-            )
-            if midi_value is not None:
-                display_value = param.convert_from_midi(midi_value)
-                slider.setValue(display_value)
-        """
         # Store control reference
         self.controls[param] = slider
         return slider

@@ -49,7 +49,9 @@ class PresetLoader(QObject):
     update_display = Signal(int, int, int)
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper], device_number=DEVICE_ID, debug=False
+        self, midi_helper: Optional[MIDIHelper],
+            device_number: int = DEVICE_ID,
+            debug: bool = False
     ):
         super().__init__()
         self.preset_number = 1  # Default preset

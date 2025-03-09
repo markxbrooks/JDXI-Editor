@@ -41,7 +41,6 @@ Example:
 
 """
 
-
 import os
 import re
 import json
@@ -76,7 +75,6 @@ from jdxi_manager.midi.utils.conversions import (
     frac_to_midi_cc,
     ms_to_midi_cc,
 )
-from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_manager.midi.constants.analog import (
     AnalogControlChange,
