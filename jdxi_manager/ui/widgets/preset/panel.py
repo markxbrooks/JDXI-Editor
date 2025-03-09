@@ -50,7 +50,7 @@ class PresetPanel(QWidget):
     def _on_load(self):
         """Handle load button click"""
         preset_num = self.preset_combo.currentIndex()
-        self.load_clicked.emit(preset_num)
+        self.load_clicked.emit(preset_num)  # convert from 0-based index
 
     def _on_save(self):
         """Handle save button click"""

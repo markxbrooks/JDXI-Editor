@@ -202,6 +202,9 @@ class DrumEditor(SynthEditor):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
         # Connect QComboBox signal to PresetHandler
         self.main_window.drums_preset_handler.preset_changed.connect(
             self.update_combo_box_index
@@ -378,7 +381,7 @@ class DrumEditor(SynthEditor):
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
-    def load_preset(self, preset_index):
+    def load_preset_old(self, preset_index):
         """Load address preset by index"""
         preset_data = {
             "preset_type": self.preset_type,  # Ensure this is address valid preset_type

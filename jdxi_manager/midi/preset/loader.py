@@ -77,6 +77,7 @@ class PresetLoader(QObject):
 
         if preset_data.get("modified", 0) == 0:
             address, msb, lsb = self.get_preset_address(preset_data)
+            logging.info(f"address msb lsb {address} {msb} {lsb} self.preset_number: {self.preset_number}")
             self.preset_number = program if program <= 128 else program - 128
 
             self.send_parameter_change_message(address, msb, 1)

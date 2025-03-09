@@ -160,7 +160,7 @@ class PresetEditor(QMainWindow):
         preset_loader = PresetLoader(self.midi_helper)
         preset_data = {
             "preset_type": self.preset_type,
-            "selpreset": original_index + 1,  # Convert to 1-based index
+            "selpreset": original_index,
             "modified": 0,
             "channel": self.channel
         }

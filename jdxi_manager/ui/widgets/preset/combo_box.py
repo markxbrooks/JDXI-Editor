@@ -1,3 +1,5 @@
+import logging
+
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -50,9 +52,11 @@ class PresetComboBox(QWidget):
 
     def _on_load_clicked(self):
         current_index = self.combo_box.currentIndex()
-        if current_index >= 0 and current_index < len(self.index_mapping):
+        logging.info(f"current index: {current_index}")
+        if 0 <= current_index < len(self.index_mapping):
             original_index = self.index_mapping[current_index]
-            self.preset_loaded.emit(original_index)
+            logging.info(f"original index: {original_index}")
+            self.preset_loaded.emit(original_index - 1)
 
     def _filter_presets(self, search_text: str):
         filtered_presets = []
