@@ -448,19 +448,6 @@ class DigitalSynthEditor(SynthEditor):
         logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
 
-    def update_instrument_preset(self):
-        """Update the instrument preset based on the selected preset."""
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        if synth_matches := re.search(
-            r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
-        ):
-            selected_synth_padded_number = (
-                synth_matches.group(1).lower().replace("&", "_").split("_")[0]
-            )
-            preset_index = int(selected_synth_padded_number)
-            logging.info(f"preset_index: {preset_index}")
-            self.load_preset(preset_index)
-
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
         def load_and_set_image(image_path, secondary_image_path):

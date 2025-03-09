@@ -187,9 +187,9 @@ class SynthEditor(QWidget):
             selected_synth_padded_number = (
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
-            preset_index = int(selected_synth_padded_number)
-            logging.info(f"preset_index: {preset_index}")
-            self.load_preset(preset_index)
+            one_based_preset_index = int(selected_synth_padded_number)
+            logging.info(f"preset_index: {one_based_preset_index}")
+            self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def update_instrument_image(self):
         def load_and_set_image(image_path, secondary_image_path):
@@ -251,7 +251,10 @@ class SynthEditor(QWidget):
             "channel": self.midi_channel
         }
         if not self.preset_handler:
-            self.preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DIGITAL1, preset_type=PresetType.DIGITAL_1)
+            self.preset_handler = PresetHandler(self.midi_helper,
+                                                DIGITAL_PRESETS_ENUMERATED,
+                                                channel=MIDI_CHANNEL_DIGITAL1,
+                                                preset_type=PresetType.DIGITAL_1)
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
 

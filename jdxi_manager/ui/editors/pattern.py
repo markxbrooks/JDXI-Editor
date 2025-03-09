@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QTimer, QEvent
 
 from midiutil import MIDIFile
 import mido
-from mido import tempo2bpm, MidiFile, MidiTrack, Message, open_input, open_output, MetaMessage
+from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage
 from rtmidi.midiconstants import CONTROLLER_CHANGE, CHANNEL_PRESSURE
 
 from jdxi_manager.midi.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_ANALOG, MIDI_CHANNEL_DIGITAL2, \
@@ -341,7 +341,9 @@ class PatternSequencer(SynthEditor):
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self._setup_ui()
         self._init_midi_file()
-            
+
+    def _init_midi_file(self):
+        pass
 
     def _setup_ui(self):
         self.layout = QVBoxLayout()
@@ -478,7 +480,7 @@ class PatternSequencer(SynthEditor):
                 header_layout.addWidget(self.drum_selector)
             
             row_layout.addLayout(header_layout)
-            button_layout = QHBoxLayout()
+            button_row_layout = QHBoxLayout()
 
             # Add mute button
             mute_button = QPushButton("Mute")
@@ -486,45 +488,49 @@ class PatternSequencer(SynthEditor):
             mute_button.setFixedSize(60, 40)
             mute_button.toggled.connect(lambda checked, row=row_idx: self._toggle_mute(row, checked))
             self.mute_buttons.append(mute_button)
-            button_layout.addWidget(mute_button)
-
+            button_row_layout.addWidget(mute_button)
+            button_row_layout = self.ui_generate_button_row(row_idx, True)
+            """ 
             # Create buttons for each step
             for i in range(16):
                 button = QPushButton()
                 button.setCheckable(True)
                 button.setFixedSize(40, 40)
                 button.setStyleSheet(self.generate_sequencer_button_style(False))
-                
                 # Store the row and column indices in the button
                 button.row = row_idx
                 button.column = i
                 button.note = None
-                
                 button.clicked.connect(
                     lambda checked, btn=button: self._on_button_clicked(btn, checked)
                 )
                 
                 self.buttons[row_idx].append(button)
-                button_layout.addWidget(button)
-
-            row_layout.addLayout(button_layout)
+                button_row_layout.addWidget(button)
+            """
+            row_layout.addLayout(button_row_layout)
             self.layout.addLayout(row_layout)
-            self.drum_row_layouts = {}
-            for drum_option in self.drum_options:
-                self.drum_row_layouts[drum_option] = QHBoxLayout()
-                for i in range(16):
-                    drum_button = QPushButton()
-                    drum_button.setCheckable(True)
-                    drum_button.setFixedSize(40, 40)
-                    drum_button.setStyleSheet(self.generate_sequencer_button_style(False))
-                    drum_button.clicked.connect(
-                        lambda checked, btn=drum_button: self._on_button_clicked(btn, checked)
-                    )
-                    drum_button.setVisible(False)  # Initially hide all drum buttons
-                    self.drum_row_layouts[drum_option].addWidget(drum_button)
-                # row_layout.addLayout(self.drum_row_layouts[drum_option])
-            self._update_drum_rows()
-        self.setLayout(self.layout)
+            self.setLayout(self.layout)
+
+    def ui_generate_button_row(self, row_index: int, visible: bool = False):
+        """ generate sequencer button row"""
+        button_row_layout = QHBoxLayout()
+        for i in range(16):
+            button = QPushButton()
+            button.setCheckable(True)
+            button.setFixedSize(40, 40)
+            button.setStyleSheet(self.generate_sequencer_button_style(False))
+            # Store the row and column indices in the button
+            button.row = row_index
+            button.column = i
+            button.note = None
+            button.clicked.connect(
+                lambda checked, btn=button: self._on_button_clicked(btn, checked)
+            )
+            self.buttons[row_index].append(button)
+            button.setVisible(visible)  # Initially hide all drum buttons
+            button_row_layout.addWidget(button)
+        return button_row_layout
 
     def on_learn_pattern_button_clicked(self):
         """Connect the MIDI input to the learn pattern function."""

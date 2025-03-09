@@ -161,10 +161,21 @@ class JdxiInstrument(JdxiUi):
         self.current_preset_index = 0
 
         # Initialize PresetHandler with the desired preset list
-        self.digital_1_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DIGITAL1, preset_type=PresetType.DIGITAL_1)
-        self.digital_2_preset_handler = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DIGITAL2, preset_type=PresetType.DIGITAL_2)
-        self.analog_preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_ANALOG, preset_type=PresetType.ANALOG)
-        self.drums_preset_handler = PresetHandler(self.midi_helper, DRUM_PRESETS_ENUMERATED, channel=MIDI_CHANNEL_DRUMS, preset_type=PresetType.DRUMS)
+        self.digital_1_preset_handler = PresetHandler(self.midi_helper,
+                                                      DIGITAL_PRESETS_ENUMERATED,
+                                                      channel=MIDI_CHANNEL_DIGITAL1,
+                                                      preset_type=PresetType.DIGITAL_1)
+        self.digital_2_preset_handler = PresetHandler(self.midi_helper,
+                                                      DIGITAL_PRESETS_ENUMERATED,
+                                                      channel=MIDI_CHANNEL_DIGITAL2,
+                                                      preset_type=PresetType.DIGITAL_2)
+        self.analog_preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED,
+                                                   channel=MIDI_CHANNEL_ANALOG,
+                                                   preset_type=PresetType.ANALOG)
+        self.drums_preset_handler = PresetHandler(self.midi_helper,
+                                                  DRUM_PRESETS_ENUMERATED,
+                                                  channel=MIDI_CHANNEL_DRUMS,
+                                                  preset_type=PresetType.DRUMS)
         self.digital_1_preset_handler.update_display.connect(
             self.update_display_callback
         )
@@ -314,8 +325,16 @@ class JdxiInstrument(JdxiUi):
             PresetType.DRUMS: DRUM_PRESETS_ENUMERATED,
         }
 
+        preset_channel_map = {
+            MIDI_CHANNEL_ANALOG: ANALOG_PRESETS_ENUMERATED,
+            MIDI_CHANNEL_DIGITAL1: DIGITAL_PRESETS_ENUMERATED,
+            MIDI_CHANNEL_DIGITAL2: DIGITAL_PRESETS_ENUMERATED,
+            MIDI_CHANNEL_DRUMS: DRUM_PRESETS_ENUMERATED,
+        }
+
         # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
-        presets = preset_map.get(synth_type, DIGITAL_PRESETS_ENUMERATED)
+        # presets = preset_map.get(synth_type, DIGITAL_PRESETS_ENUMERATED)
+        presets = preset_channel_map.get(channel, DIGITAL_PRESETS_ENUMERATED)
 
         self._update_display_preset(
             preset_index,

@@ -207,13 +207,16 @@ class AnalogSynthEditor(SynthEditor):
             self.update_instrument_image
         )
         # Connect QComboBox signal to PresetHandler
-        self.main_window.analog_preset_handler.preset_changed.connect(
-            self.update_combo_box_index
-        )
+        #self.main_window.analog_preset_handler.preset_changed.connect(
+        #    self.update_combo_box_index
+        #)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+        #self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+        #    self.update_instrument_preset
+        #)
+        self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
@@ -430,7 +433,8 @@ class AnalogSynthEditor(SynthEditor):
         logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
 
-    def update_instrument_preset(self):
+    """
+    def update_instrument_preset_old(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
@@ -438,9 +442,10 @@ class AnalogSynthEditor(SynthEditor):
             selected_synth_padded_number = (
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
-            preset_index = int(selected_synth_padded_number)
-            logging.info(f"preset_index: {preset_index}")
-            self.load_preset(preset_index)
+            one_based_preset = int(selected_synth_padded_number)
+            logging.info(f"preset_index: {one_based_preset}")
+            self.load_preset(one_based_preset)  # use 0-based index
+    """
 
     def update_instrument_image(self):
         def load_and_set_image(image_path, secondary_image_path):
@@ -495,23 +500,6 @@ class AnalogSynthEditor(SynthEditor):
         if not image_loaded:
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
-
-    def load_preset(self, preset_index):
-        preset_data = {
-            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
-            "selpreset": preset_index,  # Convert to 1-based index
-            "modified": 0,  # or 1, depending on your logic
-            "channel": self.midi_channel,
-        }
-        if not self.preset_handler:
-            self.preset_handler = PresetHandler(
-                self.midi_helper,
-                ANALOG_PRESETS_ENUMERATED,
-                channel=MIDI_CHANNEL_ANALOG,
-                preset_type=PresetType.ANALOG,
-            )
-        if self.preset_handler:
-            self.preset_handler.load_preset(preset_data)
 
     def _update_pw_controls_state(self, waveform: Waveform):
         """Enable/disable PW controls based on waveform"""
