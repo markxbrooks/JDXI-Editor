@@ -48,13 +48,14 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QSpinBox, QTabWidget,
+    QSpinBox,
+    QTabWidget,
 )
 
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.digital import OscWave
 from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.midi.constants import PART_1, DIGITAL_SYNTH_1_AREA
+from jdxi_manager.midi.constants import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_frac,
     midi_cc_to_ms,
@@ -74,7 +75,7 @@ from jdxi_manager.ui.image.waveform import (
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
+    def __init__(self, midi_helper=None, partial_num=1, part=DIGITAL_PART_1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = [
             DigitalParameter.OSC_DETUNE,
@@ -82,9 +83,15 @@ class DigitalPartialEditor(PartialEditor):
             DigitalParameter.OSC_PITCH_ENV_DEPTH,
             DigitalParameter.AMP_PAN,
         ]
+        self.four_byte_params = [
+            DigitalParameter.WAVE_NUMBER_1,
+            DigitalParameter.WAVE_NUMBER_2,
+            DigitalParameter.WAVE_NUMBER_3,
+            DigitalParameter.WAVE_NUMBER_4,
+        ]
         self.midi_helper = midi_helper
         self.partial_num = partial_num
-        self.area = DIGITAL_SYNTH_1_AREA
+        self.area = DIGITAL_SYNTH_1_AREA if part == DIGITAL_PART_1 else DIGITAL_SYNTH_2_AREA
         self.part = part
 
         # Store parameter controls for easy access
@@ -103,11 +110,31 @@ class DigitalPartialEditor(PartialEditor):
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
         # Add sections in address vertical layout
-        self.tab_widget.addTab(self._create_oscillator_section(), qta.icon("mdi.triangle-wave", color='#666666'), "Oscillator")
-        self.tab_widget.addTab(self._create_filter_section(), qta.icon("ri.filter-3-fill", color='#666666'), "Filter")
-        self.tab_widget.addTab(self._create_amp_section(), qta.icon("mdi.amplifier", color='#666666'), "Amp")
-        self.tab_widget.addTab(self._create_lfo_section(), qta.icon("mdi.sine-wave", color='#666666'), "LFO")
-        self.tab_widget.addTab(self._create_mod_lfo_section(), qta.icon("mdi.waveform", color='#666666'), "Mod LFO")
+        self.tab_widget.addTab(
+            self._create_oscillator_section(),
+            qta.icon("mdi.triangle-wave", color="#666666"),
+            "Oscillator",
+        )
+        self.tab_widget.addTab(
+            self._create_filter_section(),
+            qta.icon("ri.filter-3-fill", color="#666666"),
+            "Filter",
+        )
+        self.tab_widget.addTab(
+            self._create_amp_section(),
+            qta.icon("mdi.amplifier", color="#666666"),
+            "Amp",
+        )
+        self.tab_widget.addTab(
+            self._create_lfo_section(),
+            qta.icon("mdi.sine-wave", color="#666666"),
+            "LFO",
+        )
+        self.tab_widget.addTab(
+            self._create_mod_lfo_section(),
+            qta.icon("mdi.waveform", color="#666666"),
+            "Mod LFO",
+        )
 
         # Add container to scroll area
         main_layout.addWidget(container)
@@ -179,7 +206,9 @@ class DigitalPartialEditor(PartialEditor):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        self.pw_slider = self._create_parameter_slider(DigitalParameter.OSC_PULSE_WIDTH, "Width")
+        self.pw_slider = self._create_parameter_slider(
+            DigitalParameter.OSC_PULSE_WIDTH, "Width"
+        )
         self.pwm_slider = self._create_parameter_slider(
             DigitalParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
         )
@@ -192,12 +221,15 @@ class DigitalPartialEditor(PartialEditor):
         pcm_layout = QVBoxLayout()
         pcm_group.setLayout(pcm_layout)
 
-       
-        self.pcm_wave_number = self._create_parameter_slider(DigitalParameter.PCM_WAVE_NUMBER, "Number")
+        self.pcm_wave_number = self._create_parameter_slider(
+            DigitalParameter.PCM_WAVE_NUMBER, "Number"
+        )
         pcm_layout.addWidget(self.pcm_wave_number)
         layout.addWidget(pcm_group)
-        self.pcm_group = pcm_group  # Store reference for visibility control        
-        self.pcm_wave_gain = self._create_parameter_slider(DigitalParameter.PCM_WAVE_GAIN, "Gain")
+        self.pcm_group = pcm_group  # Store reference for visibility control
+        self.pcm_wave_gain = self._create_parameter_slider(
+            DigitalParameter.PCM_WAVE_GAIN, "Gain"
+        )
         pcm_layout.addWidget(self.pcm_wave_gain)
         layout.addWidget(pcm_group)
 
@@ -207,10 +239,14 @@ class DigitalPartialEditor(PartialEditor):
         pitch_env_group.setLayout(pitch_env_layout)
 
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack")
+            self._create_parameter_slider(
+                DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
+            )
         )
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_DECAY_TIME, "Decay")
+            self._create_parameter_slider(
+                DigitalParameter.OSC_PITCH_ENV_DECAY_TIME, "Decay"
+            )
         )
         pitch_env_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_DEPTH, "Depth")
@@ -233,7 +269,7 @@ class DigitalPartialEditor(PartialEditor):
         # Update PW controls enabled state when waveform changes
         self._update_pw_controls_state(OscWave.SAW)  # Initial state
         self._update_pcm_controls_state(OscWave.PCM)  # Initial state
-        
+
         # PCM Wave number selector (only for PCM wave)
         pcm_group = QGroupBox("PCM Wave")
         pcm_layout = QVBoxLayout()
@@ -294,7 +330,7 @@ class DigitalPartialEditor(PartialEditor):
         icon_hlayout = QHBoxLayout()
         for icon in ["mdi.sine-wave", "ri.filter-3-fill", "mdi.waveform"]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
+            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
             pixmap = icon.pixmap(30, 30)  # Set the desired size
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -338,7 +374,9 @@ class DigitalPartialEditor(PartialEditor):
             )
         )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity")
+            self._create_parameter_slider(
+                DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"
+            )
         )
         filter_layout.addWidget(controls_group_box)
 
@@ -364,8 +402,21 @@ class DigitalPartialEditor(PartialEditor):
 
         # Create ADSRWidget
         # self.filter_adsr_widget = ADSRWidget()
-        group_address, param_address = DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_num)
-        self.filter_adsr_widget = ADSR(DigitalParameter.FILTER_ENV_ATTACK_TIME, DigitalParameter.FILTER_ENV_DECAY_TIME, DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL, DigitalParameter.FILTER_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_1_AREA, part=self.part, group=group_address)
+        group_address, param_address = (
+            DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+                self.partial_num
+            )
+        )
+        self.filter_adsr_widget = ADSR(
+            DigitalParameter.FILTER_ENV_ATTACK_TIME,
+            DigitalParameter.FILTER_ENV_DECAY_TIME,
+            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.FILTER_ENV_RELEASE_TIME,
+            self.midi_helper,
+            area=DIGITAL_SYNTH_1_AREA,
+            part=self.part,
+            group=group_address,
+        )
 
         adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
@@ -439,12 +490,12 @@ class DigitalPartialEditor(PartialEditor):
         self.filter_adsr_widget.envelope["release_time"] = (
             self.filter_adsr_widget.release_sb.value()
         )
-        #self.filter_adsr_widget.envelope["initial_level"] = (
+        # self.filter_adsr_widget.envelope["initial_level"] = (
         #    self.filter_adsr_widget.initial_sb.value()
-        #)
-        #self.filter_adsr_widget.envelope["peak_level"] = (
+        # )
+        # self.filter_adsr_widget.envelope["peak_level"] = (
         #    self.filter_adsr_widget.peak_sb.value()
-        #)
+        # )
         self.filter_adsr_widget.envelope["sustain_level"] = (
             self.filter_adsr_widget.sustain_sb.value()
         )
@@ -468,6 +519,7 @@ class DigitalPartialEditor(PartialEditor):
             )
 
     def amp_env_adsr_value_changed(self):
+        """dynamic updates of ADSR values"""
         self.updating_from_spinbox = True
         self.amp_env_adsr_widget.envelope["attack_time"] = (
             self.amp_env_adsr_widget.attack_sb.value()
@@ -478,12 +530,12 @@ class DigitalPartialEditor(PartialEditor):
         self.amp_env_adsr_widget.envelope["release_time"] = (
             self.amp_env_adsr_widget.release_sb.value()
         )
-        #self.amp_env_adsr_widget.envelope["initial_level"] = (
+        # self.amp_env_adsr_widget.envelope["initial_level"] = (
         #    self.amp_env_adsr_widget.initial_sb.value()
-        #)
-        #self.amp_env_adsr_widget.envelope["peak_level"] = (
+        # )
+        # self.amp_env_adsr_widget.envelope["peak_level"] = (
         #    self.amp_env_adsr_widget.peak_sb.value()
-        #)
+        # )
         self.amp_env_adsr_widget.envelope["sustain_level"] = (
             self.amp_env_adsr_widget.sustain_sb.value()
         )
@@ -531,7 +583,7 @@ class DigitalPartialEditor(PartialEditor):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
+            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -578,8 +630,21 @@ class DigitalPartialEditor(PartialEditor):
         amp_section_layout.addLayout(icons_hlayout)
 
         # Create ADSRWidget
-        group_address, param_address = DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_num)
-        self.amp_env_adsr_widget = ADSR(DigitalParameter.AMP_ENV_ATTACK_TIME, DigitalParameter.AMP_ENV_DECAY_TIME, DigitalParameter.AMP_ENV_SUSTAIN_LEVEL, DigitalParameter.AMP_ENV_RELEASE_TIME, self.midi_helper, area=DIGITAL_SYNTH_1_AREA, part=self.part, group=group_address)
+        group_address, param_address = (
+            DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+                self.partial_num
+            )
+        )
+        self.amp_env_adsr_widget = ADSR(
+            DigitalParameter.AMP_ENV_ATTACK_TIME,
+            DigitalParameter.AMP_ENV_DECAY_TIME,
+            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalParameter.AMP_ENV_RELEASE_TIME,
+            self.midi_helper,
+            area=DIGITAL_SYNTH_1_AREA,
+            part=self.part,
+            group=group_address,
+        )
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
@@ -588,7 +653,9 @@ class DigitalPartialEditor(PartialEditor):
 
         # Keyfollow and aftertouch
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_LEVEL_KEYFOLLOW, "KeyFollow")
+            self._create_parameter_slider(
+                DigitalParameter.AMP_LEVEL_KEYFOLLOW, "KeyFollow"
+            )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens")
@@ -611,7 +678,7 @@ class DigitalPartialEditor(PartialEditor):
             "mdi.waveform",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')  # Set icon color to grey
+            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -633,7 +700,9 @@ class DigitalPartialEditor(PartialEditor):
         # Sync switch
         self.lfo_tempo_sync_switch = Switch("Tempo Sync", ["OFF", "ON"])
         self.lfo_tempo_sync_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.LFO_TEMPO_SYNC_SWITCH, v)
+            lambda v: self._on_parameter_changed(
+                DigitalParameter.LFO_TEMPO_SYNC_SWITCH, v
+            )
         )
         top_row.addWidget(self.lfo_tempo_sync_switch)
         layout.addLayout(top_row)
@@ -698,7 +767,9 @@ class DigitalPartialEditor(PartialEditor):
         # Sync switch
         self.mod_lfo_sync = Switch("Sync", ["OFF", "ON"])
         self.mod_lfo_sync.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v)
+            lambda v: self._on_parameter_changed(
+                DigitalParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v
+            )
         )
         top_row.addWidget(self.mod_lfo_sync)
         mod_lfo_layout.addLayout(top_row)
@@ -736,7 +807,9 @@ class DigitalPartialEditor(PartialEditor):
             ],
         )
         self.mod_lfo_note.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_TEMPO_SYNC_NOTE, v)
+            lambda v: self._on_parameter_changed(
+                DigitalParameter.MOD_LFO_TEMPO_SYNC_NOTE, v
+            )
         )
         rate_row.addWidget(self.mod_lfo_note)
         mod_lfo_layout.addLayout(rate_row)
@@ -750,7 +823,9 @@ class DigitalPartialEditor(PartialEditor):
             self._create_parameter_slider(DigitalParameter.MOD_LFO_PITCH_DEPTH, "Pitch")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_FILTER_DEPTH, "Filter")
+            self._create_parameter_slider(
+                DigitalParameter.MOD_LFO_FILTER_DEPTH, "Filter"
+            )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.MOD_LFO_AMP_DEPTH, "Amp")
@@ -783,16 +858,22 @@ class DigitalPartialEditor(PartialEditor):
                 group = 0x00  # Common parameters area
                 param_address = param.address
 
+            if DigitalParameter in self.four_byte_params:
+                size = 4
+            else:
+                size = 1
+
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
-                area=DIGITAL_SYNTH_1_AREA,
+                area=self.area,
                 part=self.part,
                 group=group,
                 param=param_address,
                 value=value,  # Make sure this value is being sent
+                size=size
             )
-        except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"MIDI error setting {param}: {str(ex)}")
             return False
 
     def _on_parameter_changed(
@@ -812,10 +893,15 @@ class DigitalPartialEditor(PartialEditor):
                 return
 
             # Convert back to display value to ensure consistency
-            if isinstance(param, DigitalParameter):  # Check if it's address DigitalParameter
-                if param in self.controls and self.controls[param].value() != display_value:
+            if isinstance(
+                param, DigitalParameter
+            ):  # Check if it's address DigitalParameter
+                if (
+                    param in self.controls
+                    and self.controls[param].value() != display_value
+                ):
                     self.controls[param].blockSignals(True)
-                    self.controls[param].setValue(value)
+                    self.controls[param].setValue(midi_value)
                     self.controls[param].blockSignals(False)
 
         except Exception as ex:

@@ -126,7 +126,7 @@ class AnalogSynthEditor(SynthEditor):
             AnalogParameter.LFO_FILTER_MODULATION_CONTROL,
             AnalogParameter.OSC_PITCH_ENV_DEPTH,
             AnalogParameter.LFO_RATE_MODULATION_CONTROL,
-            AnalogParameter.FILTER_ENV_DEPTH
+            AnalogParameter.FILTER_ENV_DEPTH,
             # Add other bipolar parameters as needed
         ]
         self.area = TEMPORARY_TONE_AREA
@@ -205,15 +205,15 @@ class AnalogSynthEditor(SynthEditor):
             self.update_instrument_image
         )
         # Connect QComboBox signal to PresetHandler
-        #self.main_window.analog_preset_handler.preset_changed.connect(
+        # self.main_window.analog_preset_handler.preset_changed.connect(
         #    self.update_combo_box_index
-        #)
+        # )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        #self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+        # self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
         #    self.update_instrument_preset
-        #)
+        # )
         self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
@@ -252,7 +252,9 @@ class AnalogSynthEditor(SynthEditor):
 
         # Connect filter controls
         self.filter_resonance.valueChanged.connect(
-            lambda v: self.send_control_change(AnalogParameter.FILTER_RESONANCE.value[0], v)
+            lambda v: self.send_control_change(
+                AnalogParameter.FILTER_RESONANCE.value[0], v
+            )
         )
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         for param, slider in self.controls.items():
@@ -421,7 +423,7 @@ class AnalogSynthEditor(SynthEditor):
 
         return group
 
-    def update_combo_box_index(self, preset_number, channel):
+    def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
         logging.info(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
@@ -431,24 +433,11 @@ class AnalogSynthEditor(SynthEditor):
         logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
 
-    """
-    def update_instrument_preset_old(self):
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        if synth_matches := re.search(
-            r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE
-        ):
-            selected_synth_padded_number = (
-                synth_matches.group(1).lower().replace("&", "_").split("_")[0]
-            )
-            one_based_preset = int(selected_synth_padded_number)
-            logging.info(f"preset_index: {one_based_preset}")
-            self.load_preset(one_based_preset)  # use 0-based index
-    """
-
     def update_instrument_image(self):
         def load_and_set_image(image_path, secondary_image_path):
             """Helper function to load and set the image on the label."""
             file_to_load = ""
+
             if os.path.exists(image_path):
                 file_to_load = image_path
             elif os.path.exists(secondary_image_path):
@@ -494,6 +483,7 @@ class AnalogSynthEditor(SynthEditor):
             )
             image_loaded = load_and_set_image(specific_image_path, generic_image_path)
 
+        default_image_path = os.path.join("resources", "drum_kits", "drums.png")
         # Fallback to default image if no specific image is found
         if not image_loaded:
             if not load_and_set_image(default_image_path):
@@ -527,8 +517,8 @@ class AnalogSynthEditor(SynthEditor):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
 
-        except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
 
     def _create_parameter_slider(
         self,
@@ -564,6 +554,7 @@ class AnalogSynthEditor(SynthEditor):
         return slider
 
     def on_amp_env_adsr_envelope_changed(self, envelope):
+        """ Updating ADSR envelope controls"""
         if not self.updating_from_spinbox:
             self.controls[AnalogParameter.AMP_ENV_ATTACK_TIME].setValue(
                 ms_to_midi_cc(envelope["attack_time"], 10, 1000)
@@ -580,18 +571,18 @@ class AnalogSynthEditor(SynthEditor):
 
     def amp_env_adsr_value_changed(self):
         self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope[
-            "attack_time"
-        ] = self.amp_env_adsr_widget.attack_sb.value()
-        self.amp_env_adsr_widget.envelope[
-            "decay_time"
-        ] = self.amp_env_adsr_widget.decay_sb.value()
-        self.amp_env_adsr_widget.envelope[
-            "release_time"
-        ] = self.amp_env_adsr_widget.release_sb.value()
-        self.amp_env_adsr_widget.envelope[
-            "sustain_level"
-        ] = self.amp_env_adsr_widget.sustain_sb.value()
+        self.amp_env_adsr_widget.envelope["attack_time"] = (
+            self.amp_env_adsr_widget.attack_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["decay_time"] = (
+            self.amp_env_adsr_widget.decay_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["release_time"] = (
+            self.amp_env_adsr_widget.release_sb.value()
+        )
+        self.amp_env_adsr_widget.envelope["sustain_level"] = (
+            self.amp_env_adsr_widget.sustain_sb.value()
+        )
         self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
         self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
         self.updating_from_spinbox = False
@@ -1007,8 +998,14 @@ class AnalogSynthEditor(SynthEditor):
         """Send MIDI CC message"""
         if self.midi_helper:
             # Convert enum to int if needed
-            control_change_number = control_change.value if isinstance(control_change, AnalogControlChange) else control_change
-            self.midi_helper.send_cc(control_change_number, value, channel=MIDI_CHANNEL_ANALOG)
+            control_change_number = (
+                control_change.value
+                if isinstance(control_change, AnalogControlChange)
+                else control_change
+            )
+            self.midi_helper.send_cc(
+                control_change_number, value, channel=MIDI_CHANNEL_ANALOG
+            )
 
     def _on_sub_type_changed(self, value: int):
         """Handle sub oscillator preset_type change"""
@@ -1116,7 +1113,7 @@ class AnalogSynthEditor(SynthEditor):
                 area=TEMPORARY_ANALOG_SYNTH_AREA,
                 part=ANALOG_PART,
                 group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_KEY_TRIG.value[0],
+                param=AnalogParameter.LFO_KEY_TRIGGER.value[0],
                 value=value,
             )
 

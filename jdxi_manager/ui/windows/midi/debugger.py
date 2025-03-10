@@ -56,8 +56,7 @@ class MIDIDebugger(QMainWindow):
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
-        # self.setStyleSheet(Style.JDXI_EDITOR)
-        self.setStyleSheet(Style.JDXI)
+        self.setStyleSheet(Style.JDXI_DEBUGGER)
         
         # Create central widget
         central = QWidget()
@@ -158,21 +157,21 @@ class MIDIDebugger(QMainWindow):
             
             # Format the output
             decoded = (
-                "| Byte | Description                | Value  | Notes                        |\n"
-                "|------|----------------------------|--------|------------------------------|\n"
-                f"| 0    | Start of SysEx             | {hex(message[0])}     |                              |\n"
-                f"| 1    | Manufacturer ID            | {hex(message[1])}     | Roland                       |\n"
-                f"| 2    | Device ID                  | {hex(message[2])}     |                              |\n"
-                f"| 3-6  | Model ID                   | {' '.join(hex(x) for x in message[3:7])} |                          |\n"
-                f"| 7    | Command ID                 | {hex(command)}     | {command_str}           |\n"
-                f"| 8    | Area                       | {hex(area)}     | {area_str}           |\n"
-                f"| 9    | Synth                      | {hex(synth)}     | {synth_str}              |\n"
-                f"| 10-13| Section                    | {' '.join(hex(x) for x in message[10:14])} | {section_str}          |\n"
-                f"| 14-15| Parameter                  | {' '.join(hex(x) for x in message[14:16])}  | {param_str}                    |\n"
-                f"| 16   | Value                      | {hex(value)}     | {value} ({hex(value)})                         |\n"
-                f"| 17   | End of SysEx               | {hex(message[-1])}     |                              |\n"
+                f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+                f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
+                f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
+                f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
+                f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
+                f"| {7:<5} | {'Command ID':<28} | {hex(command):<17} | {command_str:<30} |\n"
+                f"| {8:<5} | {'Area':<28} | {hex(area):<17} | {area_str:<30} |\n"
+                f"| {9:<5} | {'Synth':<28} | {hex(synth):<17} | {synth_str:<30} |\n"
+                f"| {'10-13':<5} | {'Section':<28} | {' '.join(hex(x) for x in message[10:14]):<17} | {section_str:<30} |\n"
+                f"| {'14-15':<5} | {'Parameter':<28} | {' '.join(hex(x) for x in message[14:16]):<17} | {param_str:<30} |\n"
+                f"| {16:<5} | {'Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<10} |\n"
+                f"| {17:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
             )
-            
+
             return decoded
             
         except Exception as e:

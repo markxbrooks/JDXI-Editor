@@ -19,5 +19,5 @@ __all__ = [
     "ArpeggioEditor",
     "EffectsEditor",
     "VocalFXEditor",
-    "ProgramEditor"
+    "ProgramEditor",
 ]

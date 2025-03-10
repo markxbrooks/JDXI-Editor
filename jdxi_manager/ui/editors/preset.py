@@ -41,7 +41,6 @@ Dependencies:
     - QSettings (for storing user preferences)
 """
 
-
 import logging
 from typing import Optional, List, Dict
 
@@ -70,7 +69,8 @@ from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 
 class PresetEditor(QMainWindow):
-    """ Editor window for Presets """
+    """Editor window for Presets"""
+
     preset_changed = Signal(int, str, int)
 
     def __init__(
@@ -154,8 +154,7 @@ class PresetEditor(QMainWindow):
             return ANALOG_PRESETS_ENUMERATED
         if self.preset_type == PresetType.DIGITAL_1:
             return DIGITAL_PRESETS_ENUMERATED
-        else:
-            return DRUM_PRESETS_ENUMERATED
+        return DRUM_PRESETS_ENUMERATED
 
     def _on_type_changed(self, preset_type: str):
         """Handle preset preset_type change"""
@@ -178,9 +177,6 @@ class PresetEditor(QMainWindow):
                 logging.debug(
                     f"Selected preset index {index} maps to original index {original_index}"
                 )
-
-                # TODO: Add MIDI handling for preset changes using original_index
-                pass
             self.channel = channel
             # Get the preset name without the number prefix
             presets = self._get_preset_list()
@@ -200,8 +196,9 @@ class PresetEditor(QMainWindow):
                 channel,
             )
         except Exception as ex:
-            logging.error(f"Error in preset change handler: "
-                          f"{str(ex)}", exc_info=True)
+            logging.error(
+                f"Error in preset change handler: " f"{str(ex)}", exc_info=True
+            )
 
     def _on_load_clicked(self, original_index: int):
         """Handle Load button click"""
