@@ -61,7 +61,7 @@ from jdxi_manager.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.loader import PresetLoader
-from jdxi_manager.midi.preset.parameter_handler import ParameterHandler
+from jdxi_manager.midi.parameter.handler import ParameterHandler
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
