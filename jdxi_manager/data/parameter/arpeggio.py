@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 from jdxi_manager.data.parameter.synth import SynthParameter
 
+
 class ArpeggioParameter(SynthParameter):
     """Arpeggiator parameters with address and range"""
 

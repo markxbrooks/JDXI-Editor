@@ -47,6 +47,8 @@ Methods
 """
 
 import logging
+
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Signal, Slot
 
@@ -56,7 +58,11 @@ class ComboBox(QWidget):
 
     valueChanged = Signal(int)  # Define signal to emit selected value
 
-    def __init__(self, label: str, options: list, values: list = None, parent=None):
+    def __init__(self, label: str,
+                 options: list,
+                 values: list = None,
+                 parent=None,
+                 show_label: bool = True):
         """
         Initialize the ComboBox widget.
 
@@ -75,7 +81,9 @@ class ComboBox(QWidget):
 
         # Create label
         self.label_widget = QLabel(label)  # Store label separately to avoid conflict
-        layout.addWidget(self.label_widget)
+        if show_label:
+            # Create label
+            layout.addWidget(self.label_widget)
 
         # Create combo box
         self.combo_box = QComboBox()
@@ -90,11 +98,14 @@ class ComboBox(QWidget):
         # Connect combo box index change to emit mapped value
         self.combo_box.currentIndexChanged.connect(self._on_value_changed)
         self.setVisible(True)
-                # The default signal from currentIndexChanged sends the index
+        # The default signal from currentIndexChanged sends the index
         self.combo_box.currentIndexChanged.connect(self.index_changed)
 
         # The same signal can send a text string
         self.combo_box.currentTextChanged.connect(self.text_changed)
+
+        layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def index_changed(self, index):  # index is an int starting from 0
         logging.info(f"index changed to: {index}")

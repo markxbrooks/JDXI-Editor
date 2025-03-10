@@ -29,7 +29,7 @@ from PySide6.QtCore import Signal
 from pubsub import pub
 
 from jdxi_manager.data.digital import get_digital_parameter_by_address
-from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.utils.json import log_json

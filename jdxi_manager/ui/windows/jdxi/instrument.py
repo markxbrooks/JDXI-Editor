@@ -7,12 +7,9 @@ from PySide6.QtCore import Qt, QSettings, Signal
 import qtawesome as qta
 
 from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.data.analog import AN_PRESETS
-from jdxi_manager.data.presets.data import (
-    ANALOG_PRESETS_ENUMERATED,
-    DIGITAL_PRESETS_ENUMERATED,
-    DRUM_PRESETS_ENUMERATED,
-)
+from jdxi_manager.data.presets.drum import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
 from jdxi_manager.midi.constants import (
     START_OF_SYSEX,
     DEVICE_ID,

@@ -1,6 +1,6 @@
 """Data structures and constants for JD-Xi parameters"""
 
-from jdxi_manager.data.drums import (
+from jdxi_manager.data.drum import (
     DR,  # Parameter definitions
     DRUM_PARTS,  # Drum address categories
     DrumPadSettings,  # Pad settings class

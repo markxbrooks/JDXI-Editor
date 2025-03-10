@@ -49,7 +49,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac

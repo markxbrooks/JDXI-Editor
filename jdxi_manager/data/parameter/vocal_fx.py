@@ -2,64 +2,6 @@ from typing import Optional, Tuple
 
 from jdxi_manager.data.parameter.synth import SynthParameter
 
-"""
-For reference:
-
-**Program Vocal Effect
-+------------------------------------------------------------------------------+
-| Offset      |                                                                |
-| Address     |           Description                                          |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | Level (0 - 127) |                                        |
-| 00 01 | 0aaa aaaa | Pan (0 - 127) |                                          |
-| L64 - 63R |                                                                  |
-| 00 02 | 0aaa aaaa | Delay Send Level (0 - 127)                               |
-| 00 03 | 0aaa aaaa | Reverb Send Level (0 - 127) |                            |
-| 00 04 | 0000 0aaa | Output Assign (0 - 4) |                                  |
-| EFX1, EFX2, DLY, REV, DIR |                                                  |
-| 00 05 | 0000 000a | Auto Pitch Switch (0 - 1) |                              |
-| OFF, ON |                                                                    |
-| 00 06 | 0000 0aaa | Auto Pitch Type (0 - 3) |                                |
-| SOFT, HARD, ELECTRIC1, ELECTRIC2 |                                           |
-| 00 07 | 0000 000a | Auto Pitch Scale (0 - 1) |                               |
-| CHROMATIC, Maj(Min) |                                                        |
-| 00 08 | 000a aaaa | Auto Pitch Key (0 - 23) |                                |
-| C, Db, D, Eb, E, F, F#, G, |                                                 |
-| Ab, A, Bb, B, Cm, C#m, Dm, D#m, |                                            |
-| Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm |                                          |
-| 00 09 | 0000 aaaa | Auto Pitch Note (0 - 11) |                               |
-| C, C#, D, D#, E, F, |                                                        |
-| F#, G, G#, A, A#, B |                                                        |
-| 00 0A | 000a aaaa | Auto Pitch Gender (0 - 20)                               |
-| -10 - +10 |                                                                  |
-| 00 0B | 0000 00aa | Auto Pitch Octave (0 - 2) |                              |
-| -1 - +1 |                                                                    |
-| 00 0C | 0aaa aaaa | Auto Pitch Balance (0 - 100)                             |
-| D100:0W - D0:100W |                                                          |
-|-------------+-----------+----------------------------------------------------|
-| 00 0D | 0000 000a | Vocoder Switch (0 - 1) |                                 |
-| OFF, ON |                                                                    |
-| 00 0E | 0000 00aa | Vocoder Envelope (0 - 2) |                               |
-| SHARP, SOFT, LONG |                                                          |
-| 00 0F | 0aaa aaaa | (0 - 127) |                                              |
-| 00 10 | 0aaa aaaa | Vocoder Mic Sens (0 - 127)                               |
-| 00 11 | 0aaa aaaa | Vocoder Synth Level (0 - 127) |                          |
-| 00 12 | 0aaa aaaa | Vocoder Mic Mix Level (0 - 127) |                        |
-| 00 13 | 0000 aaaa | Vocoder Mic HPF (0 - 13) |                               |
-| BYPASS, |                                                                    |
-| 1000, 1250, 1600, 2000, 2500, |                                              |
-| 3150, 4000, 5000, 6300, 8000, |                                              |
-| 10000, 12500, 16000 [Hz] |                                                   |
-| 00 14 | 0aaa aaaa | (reserve) <*> |                                          |
-|-------------+-----------+----------------------------------------------------|
-| 00 15 | 0000 000a | (reserve) <*> |                                          |
-| 00 16 | 0aaa aaaa | (reserve) <*> |                                          |
-| 00 17 | 0aaa aaaa | (reserve) <*> |                                          |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 18 | Total Size                                                     |
-+------------------------------------------------------------------------------+
-"""
-
 
 class VocalFXParameter(SynthParameter):
     """Vocal FX parameters"""

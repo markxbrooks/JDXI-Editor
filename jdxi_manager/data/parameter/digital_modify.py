@@ -1,35 +1,31 @@
-from enum import Enum
-from typing import Optional, Tuple
+"""
+Defines the DigitalModifyParameter class for modifying parameters of
+Digital/SuperNATURAL synth tones in the JD-Xi.
+
+This class provides attributes and methods to manage various modulation
+parameters shared across all partials of a digital synth tone. It also
+includes methods for retrieving display text representations of switch
+values, parameter lookup by name, and value validation.
+
+Example usage:
+
+# Create a DigitalModifyParameter instance for Attack Time Interval Sensitivity
+attack_time_param = DigitalModifyParameter(*DigitalModifyParameter.ATTACK_TIME_INTERVAL_SENS)
+
+# Validate a value
+validated_value = attack_time_param.validate_value(100)
+
+# Get display text for a switch value
+text = attack_time_param.get_switch_text(1)  # For ENVELOPE_LOOP_MODE, returns "FREE-RUN"
+
+# Retrieve parameter by name
+param = DigitalModifyParameter.get_by_name("ENVELOPE_LOOP_MODE")
+if param:
+    print(param.name, param.min_val, param.max_val)
+
+"""
 
 from jdxi_manager.data.parameter.synth import SynthParameter
-
-"""
-For reference:
-**SuperNATURAL Synth Tone Modify
-+------------------------------------------------------------------------------+
-| Offset | |
-| Address | Description |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | (reserve) <*> |
-|-------------+-----------+----------------------------------------------------|
-| 00 01 | 0aaa aaaa | Attack Time Interval Sens (0 - 127) |
-| 00 02 | 0aaa aaaa | Release Time Interval Sens (0 - 127) |
-| 00 03 | 0aaa aaaa | Portamento Time Interval Sens (0 - 127) |
-| 00 04 | 0000 00aa | Envelope Loop Mode (0 - 2) |
-| | | OFF, FREE-RUN, TEMPO-SYNC |
-| 00 05 | 000a aaaa | Envelope Loop Sync Note (0 - 19) |
-| | | 16, 12, 8, 4, 2, 1, 3/4, 2/3, 1/2, |
-| | | 3/8, 1/3, 1/4, 3/16, 1/6, 1/8, 3/32, |
-| | | 1/12, 1/16, 1/24, 1/32 |
-| 00 06 | 0000 000a | Chromatic Portamento (0 - 1) |
-| | | OFF, ON |
-| 00 07 | 0aaa aaaa | (reserve) <*> |
-| 00 08 | 0aaa aaaa | (reserve) <*> |
-| : | | |
-| 00 24 | 0aaa aaaa | (reserve) <*> |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 25 | Total Size |
-"""
 
 
 class DigitalModifyParameter(SynthParameter):
