@@ -29,11 +29,11 @@ Dependencies:
 - MIDIHelper for MIDI message handling
 - PresetHandler for managing program presets
 - PROGRAM_LIST for predefined program data
+
 """
 
-
-import logging
 import os
+import logging
 from typing import Optional, Dict
 
 from PySide6.QtGui import QPixmap
@@ -56,6 +56,7 @@ from jdxi_manager.ui.style import Style
 
 
 class ProgramEditor(QMainWindow):
+    """ Program Editor Window """
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
 
     def __init__(
@@ -147,16 +148,10 @@ class ProgramEditor(QMainWindow):
         self.load_button = QPushButton("Load Program")
         self.load_button.clicked.connect(self.load_program)
         layout.addWidget(self.load_button)
-
-        # Save button
-        # I don't see any MIDI commands for saving a Program onto the instrument
-        # self.save_button = QPushButton("Save")
-        # self.save_button.clicked.connect(self.on_save_clicked)
-        # layout.addWidget(self.save_button)
-
         self.setLayout(layout)
 
     def update_instrument_image(self):
+        """ tart up the UI with a picture """
         image_loaded = False
 
         def load_and_set_image(image_path):
@@ -219,7 +214,7 @@ class ProgramEditor(QMainWindow):
                         "lsb": "64",  # TODO: Get the correct LSB for user banks
                         "pc": "128",  # TODO: Get the correct PC for user banks
                     }
-                    if user_bank == bank or bank == "No Bank Selected":
+                    if bank in [user_bank, "No Bank Selected"]:
                         updated_list.append(program)
                         self.program_number_combo_box.addItem(
                             program["id"] + " - " + program["name"], number
@@ -297,9 +292,9 @@ class ProgramEditor(QMainWindow):
     def get_msb_lsb_pc(self, program_number: int):
         """Get MSB, LSB, and PC based on bank and program number."""
         msb, lsb, pc = (
-            PROGRAM_LIST[program_number]["msb"], # Tone Bank Select MSB (CC# 0)
-            PROGRAM_LIST[program_number]["lsb"], # Tone Bank Select LSB (CC# 32)
-            PROGRAM_LIST[program_number]["pc"], # Tone Program Number (PC)
+            PROGRAM_LIST[program_number]["msb"],  # Tone Bank Select MSB (CC# 0)
+            PROGRAM_LIST[program_number]["lsb"],  # Tone Bank Select LSB (CC# 32)
+            PROGRAM_LIST[program_number]["pc"],  # Tone Program Number (PC)
         )
         return int(msb), int(lsb), int(pc)
 
@@ -331,6 +326,7 @@ class ProgramEditor(QMainWindow):
         raise IndexError("Program number out of range")
 
     def send_midi_message(self, channel, control, value):
+        """ convenience function to send message to midi helper """
         # Ensure the value is within the valid MIDI range
         if not (0 <= value <= 127):
             raise ValueError(f"Value {value} is out of range for MIDI message")
@@ -356,6 +352,6 @@ class ProgramEditor(QMainWindow):
         logging.warning(f"Program with ID {program_id} not found.")
         return None
 
-    def on_genre_changed(self, index):
+    def on_genre_changed(self, _):
         """Handle genre selection change."""
         self.populate_programs()

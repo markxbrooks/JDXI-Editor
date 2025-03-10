@@ -34,6 +34,7 @@ import json
 import re
 import logging
 from typing import Dict, Optional, Union
+
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -68,14 +69,11 @@ from jdxi_manager.midi.constants import (
     DIGITAL_SYNTH_1_AREA,
     PART_1,
     PART_2,
-    PART_3,
     TEMPORARY_DIGITAL_SYNTH_1_AREA,
     DIGITAL_SYNTH_2_AREA,
-    Waveform,
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_DIGITAL2,
-    MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS, COMMON_AREA,
+    COMMON_AREA,
 )
 from jdxi_manager.ui.widgets.switch.partial import PartialsPanel
 from jdxi_manager.ui.widgets.switch.switch import Switch
@@ -269,7 +267,9 @@ class DigitalSynthEditor(SynthEditor):
             editor = DigitalPartialEditor(midi_helper, i, self.part)
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
-        self.partial_tab_widget.addTab(self._create_common_controls_section(), "Common Controls")
+        self.partial_tab_widget.addTab(
+            self._create_common_controls_section(), "Common Controls"
+        )
 
         container_layout.addWidget(self.partial_tab_widget)
 
@@ -325,7 +325,7 @@ class DigitalSynthEditor(SynthEditor):
             "mdi.piano",
         ]:
             icon_label = QLabel()
-            icon = qta.icon(icon, color='#666666')
+            icon = qta.icon(icon, color="#666666")
             pixmap = icon.pixmap(
                 Style.ICON_SIZE, Style.ICON_SIZE
             )  # Set the desired size
@@ -335,7 +335,7 @@ class DigitalSynthEditor(SynthEditor):
         layout.addLayout(icons_hlayout)
 
         mono_row = QHBoxLayout()
-        
+
         self.mono_switch = Switch("Mono", ["OFF", "ON"])
         self.mono_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalCommonParameter.MONO_SWITCH, v)
@@ -345,15 +345,21 @@ class DigitalSynthEditor(SynthEditor):
         layout.addLayout(mono_row)
 
         self.pitch_bend_row = QHBoxLayout()
-        self.pitch_bend_up = self._create_parameter_slider(DigitalCommonParameter.PITCH_BEND_UP, "Pitch Bend Up")   
-        self.pitch_bend_down = self._create_parameter_slider(DigitalCommonParameter.PITCH_BEND_DOWN, "Pitch Bend Down")
+        self.pitch_bend_up = self._create_parameter_slider(
+            DigitalCommonParameter.PITCH_BEND_UP, "Pitch Bend Up"
+        )
+        self.pitch_bend_down = self._create_parameter_slider(
+            DigitalCommonParameter.PITCH_BEND_DOWN, "Pitch Bend Down"
+        )
         self.pitch_bend_row.addWidget(self.pitch_bend_up)
         self.pitch_bend_row.addWidget(self.pitch_bend_down)
         layout.addLayout(self.pitch_bend_row)
 
         # Create tone level row
         self.tone_level_row = QHBoxLayout()
-        self.tone_level = self._create_parameter_slider(DigitalCommonParameter.TONE_LEVEL, "Tone Level")
+        self.tone_level = self._create_parameter_slider(
+            DigitalCommonParameter.TONE_LEVEL, "Tone Level"
+        )
         self.tone_level_row.addWidget(self.tone_level)
         layout.addLayout(self.tone_level_row)
 
@@ -390,14 +396,18 @@ class DigitalSynthEditor(SynthEditor):
         self.portamento_row = QHBoxLayout()
         self.portamento_switch = Switch("Portamento", ["OFF", "ON"])
         self.portamento_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.PORTAMENTO_SWITCH, v)
+            lambda v: self._on_parameter_changed(
+                DigitalCommonParameter.PORTAMENTO_SWITCH, v
+            )
         )
         self.controls[DigitalCommonParameter.PORTAMENTO_SWITCH] = self.portamento_switch
         self.portamento_row.addWidget(self.portamento_switch)
         layout.addLayout(self.portamento_row)
 
         self.portamento_time_row = QHBoxLayout()
-        self.portamento_time = self._create_parameter_slider(DigitalCommonParameter.PORTAMENTO_TIME, "Portamento Time")
+        self.portamento_time = self._create_parameter_slider(
+            DigitalCommonParameter.PORTAMENTO_TIME, "Portamento Time"
+        )
         self.portamento_time_row.addWidget(self.portamento_time)
         self.controls[DigitalCommonParameter.PORTAMENTO_TIME] = self.portamento_time
         layout.addLayout(self.portamento_time_row)
@@ -450,6 +460,7 @@ class DigitalSynthEditor(SynthEditor):
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
+
         def load_and_set_image(image_path, secondary_image_path=None):
             """Helper function to load and set the image on the label."""
             file_to_load = ""
@@ -519,8 +530,8 @@ class DigitalSynthEditor(SynthEditor):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
 
-        except Exception as e:
-            logging.error(f"Error handling parameter {param.name}: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
 
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool
@@ -560,14 +571,14 @@ class DigitalSynthEditor(SynthEditor):
             param = get_digital_parameter_by_address(parameter_address)
             partial_no = address[1]
             if param:
-                logging.info(
-                    f"param: \t{param} \taddress=\t{address}, Value=\t{value}"
-                )
+                logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
 
                 # Update the corresponding slider
                 if param in self.partial_editors[partial_no].controls:
                     slider_value = param.convert_from_midi(value)
-                    logging.info(f"midi value {value} converted to slider value {slider_value}")
+                    logging.info(
+                        f"midi value {value} converted to slider value {slider_value}"
+                    )
                     slider = self.partial_editors[partial_no].controls[param]
                     slider.blockSignals(True)  # Prevent feedback loop
                     slider.setValue(slider_value)
@@ -597,34 +608,54 @@ class DigitalSynthEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA",
-                                                        "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in [
+                "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+            ]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
-            return {
-                "PARTIAL_1": 1,
-                "PARTIAL_2": 2,
-                "PARTIAL_3": 3
-            }.get(synth_tone, None)
-
+            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
+                synth_tone, None
+            )
 
         def update_adsr_widget(param, value):
             """Helper function to update ADSR widgets."""
-            new_value = midi_cc_to_frac(value) if param in [
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            ] else midi_cc_to_ms(value)
+            new_value = (
+                midi_cc_to_frac(value)
+                if param
+                in [
+                    DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+                    DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                ]
+                else midi_cc_to_ms(value)
+            )
 
             adsr_mapping = {
-                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.attack_sb,
-                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.decay_sb,
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].amp_env_adsr_widget.sustain_sb,
-                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[partial_no].amp_env_adsr_widget.release_sb,
-                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[partial_no].filter_adsr_widget.attack_sb,
-                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[partial_no].filter_adsr_widget.decay_sb,
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[partial_no].filter_adsr_widget.sustain_sb,
-                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[partial_no].filter_adsr_widget.release_sb,
+                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.attack_sb,
+                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.decay_sb,
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.sustain_sb,
+                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.release_sb,
+                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.attack_sb,
+                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.decay_sb,
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.sustain_sb,
+                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.release_sb,
             }
 
             if param in adsr_mapping:
@@ -633,13 +664,20 @@ class DigitalSynthEditor(SynthEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
+            )
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(synth_tone)
 
-        ignored_keys = {"JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME", "SYNTH_TONE"}
+        ignored_keys = {
+            "JD_XI_HEADER",
+            "ADDRESS",
+            "TEMPORARY_AREA",
+            "TONE_NAME",
+            "SYNTH_TONE",
+        }
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
         # osc_waveform_map = {wave.value: wave for wave in OscWave}
@@ -651,7 +689,9 @@ class DigitalSynthEditor(SynthEditor):
             slider = self.partial_editors[partial_no].controls.get(param)
             if slider:
                 slider_value = param.convert_from_midi(value)
-                logging.info(f"midi value {value} converted to slider value {slider_value}")
+                logging.info(
+                    f"midi value {value} converted to slider value {slider_value}"
+                )
                 slider.blockSignals(True)
                 slider.setValue(slider_value)
                 slider.blockSignals(False)
@@ -683,7 +723,9 @@ class DigitalSynthEditor(SynthEditor):
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
-                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                success_rate = (
+                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                )
                 logging.info(f"Successes: {successes}")
                 logging.info(f"Failures: {failures}")
                 logging.info(f"Success Rate: {success_rate:.1f}%")
@@ -713,7 +755,7 @@ class DigitalSynthEditor(SynthEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if synth_tone == "TONE_COMMON":
-            logging.info(f"\nTone common")
+            logging.info("\nTone common")
             self._update_common_sliders_from_sysex(json_sysex_data)
         elif synth_tone == "TONE_MODIFY":
             pass  # not yet implemented
@@ -741,15 +783,16 @@ class DigitalSynthEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]
+            return sysex_data.get("TEMPORARY_AREA") in [
+                "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+            ]
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
-            return {
-                "PARTIAL_1": 1,
-                "PARTIAL_2": 2,
-                "PARTIAL_3": 3
-            }.get(synth_tone, None)
+            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
+                synth_tone, None
+            )
 
         def _update_common_slider(param, value):
             """Helper function to update sliders safely."""
@@ -769,11 +812,15 @@ class DigitalSynthEditor(SynthEditor):
         def _update_common_switch(param, value):
             """Helper function to update checkbox safely."""
             logging.info(f"checkbox param: {param} {value}")
-            partial_switch_map = {"PARTIAL1_SWITCH": 1, "PARTIAL2_SWITCH": 2, "PARTIAL3_SWITCH": 3}
+            partial_switch_map = {
+                "PARTIAL1_SWITCH": 1,
+                "PARTIAL2_SWITCH": 2,
+                "PARTIAL3_SWITCH": 3,
+            }
             partial_number = partial_switch_map.get(param_name)
             check_box = self.partials_panel.switches.get(partial_number)
             logging.info(f"check_box: {check_box}")
-            if check_box: # and isinstance(check_box, QCheckBox):
+            if check_box:  # and isinstance(check_box, QCheckBox):
                 check_box.blockSignals(True)
                 check_box.setState(bool(value), False)
                 check_box.blockSignals(False)
@@ -790,23 +837,51 @@ class DigitalSynthEditor(SynthEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update.")
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
+            )
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
 
-        common_ignored_keys = {'JD_XI_HEADER', 'ADDRESS', 'TEMPORARY_AREA', 'SYNTH_TONE', 'TONE_NAME', 'TONE_NAME_1', 'TONE_NAME_2', 'TONE_NAME_3', 'TONE_NAME_4', 'TONE_NAME_5', 'TONE_NAME_6', 'TONE_NAME_7', 'TONE_NAME_8', 'TONE_NAME_9', 'TONE_NAME_10', 'TONE_NAME_11', 'TONE_NAME_12',}
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in common_ignored_keys}
+        common_ignored_keys = {
+            "JD_XI_HEADER",
+            "ADDRESS",
+            "TEMPORARY_AREA",
+            "SYNTH_TONE",
+            "TONE_NAME",
+            "TONE_NAME_1",
+            "TONE_NAME_2",
+            "TONE_NAME_3",
+            "TONE_NAME_4",
+            "TONE_NAME_5",
+            "TONE_NAME_6",
+            "TONE_NAME_7",
+            "TONE_NAME_8",
+            "TONE_NAME_9",
+            "TONE_NAME_10",
+            "TONE_NAME_11",
+            "TONE_NAME_12",
+        }
+        sysex_data = {
+            k: v for k, v in sysex_data.items() if k not in common_ignored_keys
+        }
 
         if synth_tone == "TONE_COMMON":
-            logging.info(f"\nTone common")
+            logging.info("\nTone common")
             for param_name, param_value in sysex_data.items():
                 param = DigitalCommonParameter.get_by_name(param_name)
                 logging.info(f"Tone common: param_name: {param} {param_value}")
                 try:
                     if param:
-                        if param_name in ['PARTIAL1_SWITCH', 'PARTIAL1_SELECT', 'PARTIAL2_SWITCH', 'PARTIAL2_SELECT', 'PARTIAL3_SWITCH', 'PARTIAL3_SELECT']:
+                        if param_name in [
+                            "PARTIAL1_SWITCH",
+                            "PARTIAL1_SELECT",
+                            "PARTIAL2_SWITCH",
+                            "PARTIAL2_SELECT",
+                            "PARTIAL3_SWITCH",
+                            "PARTIAL3_SELECT",
+                        ]:
                             _update_common_switch(param, param_value)
                         else:
                             _update_common_slider(param, param_value)
@@ -833,7 +908,9 @@ class DigitalSynthEditor(SynthEditor):
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
-                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                success_rate = (
+                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                )
                 logging.info(f"successes: \t{successes}")
                 logging.info(f"failures: \t{failures}")
                 logging.info(f"success rate: \t{success_rate:.1f}%")

@@ -49,12 +49,15 @@ from jdxi_manager.midi.io.helper import MIDIHelper
 
 
 class EffectsEditor(SynthEditor):
-    """ Effects Editor Window"""
+    """Effects Editor Window"""
+
     def __init__(self, midi_helper: MIDIHelper, parent=None):
         super().__init__(midi_helper, parent)
-        self.efx2_additional_params = [EffectParameter.EFX2_PARAM_1,
-                                       EffectParameter.EFX2_PARAM_2,
-                                       EffectParameter.EFX2_PARAM_32]
+        self.efx2_additional_params = [
+            EffectParameter.EFX2_PARAM_1,
+            EffectParameter.EFX2_PARAM_2,
+            EffectParameter.EFX2_PARAM_32,
+        ]
         self.setWindowTitle("Effects")
         self.setFixedWidth(450)
         # Main layout

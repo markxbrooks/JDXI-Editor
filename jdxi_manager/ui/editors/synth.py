@@ -51,6 +51,7 @@ class SynthEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
+        self.four_byte_params = None
         self.instrument_icon_folder = None
         self.controls = {}
         self.partial_num = None
@@ -207,6 +208,7 @@ class SynthEditor(QWidget):
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def update_instrument_image(self):
+        """ tart up ui with image """
         class_name = self.__class__.__name__.lower()  # Get class name in lowercase
         default_image_path = os.path.join("resources", class_name, f"{class_name}.png")
 
@@ -374,7 +376,7 @@ class SynthEditor(QWidget):
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
         logging.info(
-            f"Program change detected on channel {channel}, requesting data update"
+            f"Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request()
         if hasattr(self, "address") and channel == self.midi_channel:
@@ -383,7 +385,7 @@ class SynthEditor(QWidget):
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
         logging.info(
-            f"Control change detected on channel {channel}, requesting data update"
+            f"Control change {control} detected on channel {channel}, value {value} requesting data update"
         )
         self.data_request()
         if hasattr(self, "address") and channel == self.midi_channel:

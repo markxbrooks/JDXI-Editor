@@ -36,7 +36,6 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 from PySide6.QtCore import Qt
-from matplotlib.pyplot import title
 
 from jdxi_manager.data.parameter.program_common import ProgramCommonParameter
 from jdxi_manager.midi.io import MIDIHelper
@@ -59,7 +58,8 @@ from jdxi_manager.data.parameter.vocal_fx import VocalFXParameter
 
 
 class VocalFXEditor(SynthEditor):
-    """ Vocal Effects Window Class"""
+    """Vocal Effects Window Class"""
+
     def __init__(
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
