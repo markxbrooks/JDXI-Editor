@@ -4,7 +4,7 @@ from enum import auto
 from dataclasses import dataclass
 
 from jdxi_manager.midi.sysex.roland import RolandSysEx
-from ...data.parameter.program_common import ProgramCommonParameter
+from jdxi_manager.midi.data.parameter.program_common import ProgramCommonParameter
 
 # Memory Areas
 PROGRAM_AREA = 0x18

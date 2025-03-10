@@ -63,10 +63,10 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_manager.data.analog import AnalogCommonParameter
-from jdxi_manager.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.data.parameter.analog import AnalogParameter
+from jdxi_manager.midi.data.analog import AnalogCommonParameter
+from jdxi_manager.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.type import PresetType
+from jdxi_manager.midi.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_ms,
@@ -74,15 +74,15 @@ from jdxi_manager.midi.utils.conversions import (
     frac_to_midi_cc,
     ms_to_midi_cc,
 )
-from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
-from jdxi_manager.midi.constants.analog import (
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
+from jdxi_manager.midi.data.constants.analog import (
     AnalogControlChange,
     Waveform,
     SubOscType,
     ANALOG_PART,
     ANALOG_OSC_GROUP, LFO_TEMPO_SYNC_NOTES,
 )
-from jdxi_manager.midi.constants import MIDI_CHANNEL_ANALOG
+from jdxi_manager.midi.data.constants import MIDI_CHANNEL_ANALOG
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
 from jdxi_manager.ui.image.waveform import generate_waveform_icon

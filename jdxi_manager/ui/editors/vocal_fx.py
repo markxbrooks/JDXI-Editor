@@ -37,12 +37,12 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_manager.data.parameter.program_common import ProgramCommonParameter
+from jdxi_manager.midi.data.parameter.program_common import ProgramCommonParameter
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.switch.switch import Switch
-from jdxi_manager.midi.constants.vocal_fx import (
+from jdxi_manager.midi.data.constants.vocal_fx import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,
     VOCAL_FX_GROUP,
@@ -54,7 +54,7 @@ from jdxi_manager.midi.constants.vocal_fx import (
     VocoderEnvelope,
     VocoderHPF,
 )
-from jdxi_manager.data.parameter.vocal_fx import VocalFXParameter
+from jdxi_manager.midi.data.parameter.vocal_fx import VocalFXParameter
 
 
 class VocalFXEditor(SynthEditor):

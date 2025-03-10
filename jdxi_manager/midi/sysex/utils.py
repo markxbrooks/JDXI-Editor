@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from jdxi_manager.data.digital import get_digital_parameter_by_address
+from jdxi_manager.midi.data.digital import get_digital_parameter_by_address
 
 
 def get_parameter_from_address(address: List[int]):

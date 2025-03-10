@@ -1,33 +1,46 @@
-"""Drum kit MIDI constants"""
+"""
+Drum Kit MIDI Constants Module
+
+This module defines MIDI constants, enumerations, and validation functions
+for controlling the JD-Xi’s drum kit via MIDI. It provides:
+
+- MIDI parameter groups for common and drum-specific settings
+- MIDI note numbers mapped to drum sounds
+- Drum pad numbers and corresponding parameters
+- Drum kit sections and offsets based on MIDI note numbers
+- Common drum kit parameters, including naming and levels
+- Parameter value ranges for level, pan, tuning, filters, and envelopes
+- A validation function to ensure parameter values are within the allowed range
+
+Constants:
+----------
+- `COMMON_GROUP` – Group identifier for common drum kit parameters
+- `DRUM_GROUP` – Group identifier for drum-specific parameters
+- `LEVEL_RANGE`, `PAN_RANGE`, `TUNE_RANGE`, etc. – Valid value ranges
+
+Classes:
+--------
+- `DrumNote` – Enumeration of MIDI note numbers mapped to drum sounds
+- `DrumPad` – Enumeration of drum pad numbers and adjustable pad parameters
+- `DrumKitSection` – Enumeration of drum kit sections with a method to determine offsets
+- `DrumKitCommon` – Enumeration of common drum kit parameters
+
+Functions:
+----------
+- `validate_value(param, value)` – Ensures a given MIDI parameter value is within its valid range
+
+This module is designed to facilitate structured MIDI communication with the
+JD-Xi’s drum kit, ensuring consistency and correctness in parameter handling.
+"""
+
 
 from enum import Enum, IntEnum
-from .sysex import TEMPORARY_DRUM_KIT_AREA, DRUM_PART
 
-class DrumToneCC(IntEnum):
-    """Drum kit CC parameters"""
-    # Level and Pan
-    LEVEL = 0x01        # Level (0-127)
-    PAN = 0x02         # Pan (0-127 = L64-63R)
-    
-    # Pitch
-    COARSE_TUNE = 0x03  # Coarse tune (16-112 = -48 to +48)
-    FINE_TUNE = 0x04    # Fine tune (14-114 = -50 to +50)
-    
-    # Filter
-    CUTOFF = 0x05      # Filter cutoff (0-127)
-    RESONANCE = 0x06   # Filter resonance (0-127)
-    
-    # Envelope
-    ATTACK = 0x07      # Attack time (0-127)
-    DECAY = 0x08       # Decay time (0-127)
-    
-    # Effects Send
-    REVERB_SEND = 0x09  # Reverb send level (0-127)
-    DELAY_SEND = 0x0A   # Delay send level (0-127)
 
 # Parameter Groups
 COMMON_GROUP = 0x00    # Common parameters
 DRUM_GROUP = 0x10      # Drum kit parameters
+
 
 # Drum Note Numbers (MIDI note numbers for drum sounds)
 class DrumNote(IntEnum):
@@ -45,6 +58,7 @@ class DrumNote(IntEnum):
     RIMSHOT = 37       # Side Stick
     TAMBOURINE = 54    # Tambourine
     COWBELL = 56       # Cowbell
+
 
 class DrumPad(Enum):
     """Drum pad numbers and parameters"""
@@ -77,6 +91,7 @@ class DrumPad(Enum):
     DELAY_SEND = 0x07
     FX_SEND = 0x08
 
+
 class DrumKitSection(Enum):
     """Drum Kit sections"""
     COMMON = 0x00      # 00 00 00: Common parameters
@@ -91,6 +106,7 @@ class DrumKitSection(Enum):
         if 36 <= note <= 72:
             return 0x2E + ((note - 36) * 2)
         return 0x00
+
 
 class DrumKitCommon(Enum):
     """Common parameters for Drum Kit"""

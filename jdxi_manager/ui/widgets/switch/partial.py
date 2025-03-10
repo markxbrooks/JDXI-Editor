@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 import qtawesome as qta
-from jdxi_manager.data.digital import DigitalPartial
+from jdxi_manager.midi.data.digital import DigitalPartial
 from jdxi_manager.ui.style import Style
 
 

@@ -52,10 +52,10 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.data.digital import OscWave
-from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.midi.constants import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1
+from jdxi_manager.midi.data.parameter.digital import DigitalParameter
+from jdxi_manager.midi.data.digital import OscWave
+from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_manager.midi.data.constants import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_frac,
     midi_cc_to_ms,

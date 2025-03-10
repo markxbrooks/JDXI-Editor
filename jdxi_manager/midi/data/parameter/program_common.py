@@ -32,7 +32,7 @@ switch_text = program_level.get_switch_text(1)  # "ON" or "---"
 
 from typing import Tuple, Optional
 
-from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
 
 
 class ProgramCommonParameter(SynthParameter):

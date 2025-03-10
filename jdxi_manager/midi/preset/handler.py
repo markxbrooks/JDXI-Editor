@@ -12,7 +12,7 @@ Classes:
 Dependencies:
 -------------
 - `PySide6.QtCore` (Signal, QObject) for event-driven UI interaction.
-- `jdxi_manager.data.presets.type.PresetType` for managing preset types.
+- `jdxi_manager.midi.data.presets.type.PresetType` for managing preset types.
 - `jdxi_manager.midi.preset.loader.PresetLoader` as the base class for preset loading.
 
 Functionality:
@@ -31,7 +31,7 @@ preset changes and communicate them to the UI and MIDI engine.
 
 from PySide6.QtCore import Signal
 
-from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.preset.loader import PresetLoader
 
 

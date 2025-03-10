@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_manager.midi.constants.sysex import DT1_COMMAND_12
+from jdxi_manager.midi.data.constants.sysex import DT1_COMMAND_12
 from jdxi_manager.midi.sysex.sysex import (START_OF_SYSEX, END_OF_SYSEX,
                                            ROLAND_ID, JD_XI_ID_LIST)
 

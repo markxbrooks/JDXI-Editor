@@ -2,9 +2,9 @@ import unittest
 from unittest.mock import Mock, call
 import time
 
-from jdxi_manager.midi.constants import DT1_COMMAND_12, RQ1_COMMAND_11
+from jdxi_manager.midi.data.constants import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.preset_loader import PresetLoader
-from jdxi_manager.data.preset_type import PresetType
+from jdxi_manager.midi.data.preset_type import PresetType
 
 class TestPresetLoader(unittest.TestCase):
     def setUp(self):

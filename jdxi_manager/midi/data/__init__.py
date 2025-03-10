@@ -1,6 +1,6 @@
 """Data structures and constants for JD-Xi parameters"""
 
-from jdxi_manager.data.drum import (
+from jdxi_manager.midi.data.drum import (
     DR,  # Parameter definitions
     DRUM_PARTS,  # Drum address categories
     DrumPadSettings,  # Pad settings class
@@ -9,7 +9,7 @@ from jdxi_manager.data.drum import (
     Note  # MIDI note enum
 )
 
-from jdxi_manager.data.analog import (
+from jdxi_manager.midi.data.analog import (
     # Parameter enum
     AnalogOscillator,  # Oscillator settings
     AnalogFilter,  # Filter settings

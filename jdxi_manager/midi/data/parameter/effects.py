@@ -75,8 +75,8 @@ Usage Example
 
 from typing import Optional, Tuple
 
-from jdxi_manager.data.effects import EffectCommonParameter
-from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.effects import EffectCommonParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
 
 
 class EffectParameter(SynthParameter):

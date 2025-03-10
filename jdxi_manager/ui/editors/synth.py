@@ -15,7 +15,7 @@ Key Features:
 Dependencies:
 - PySide6 for the UI components.
 - `jdxi_manager.midi` for MIDI communication.
-- `jdxi_manager.data.parameter` for synthesizer parameter handling.
+- `jdxi_manager.midi.data.parameter` for synthesizer parameter handling.
 - `jdxi_manager.ui.style` for applying UI styles.
 
 """
@@ -28,12 +28,12 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
-from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.data.parameter.drums import DrumCommonParameter
-from jdxi_manager.data.parameter.synth import SynthParameter
-from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.midi.constants import MIDI_CHANNEL_DIGITAL1
+from jdxi_manager.midi.data.parameter.digital import DigitalParameter
+from jdxi_manager.midi.data.parameter.drums import DrumCommonParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.type import PresetType
+from jdxi_manager.midi.data.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.style import Style

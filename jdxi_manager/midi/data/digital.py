@@ -3,20 +3,9 @@ from enum import IntEnum
 from typing import Dict, List, Tuple, Optional
 import logging
 
-from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.midi.constants import (
-    DIGITAL_SYNTH_1_AREA,
-    PART_1,
-    OSC_1_GROUP,
-    OSC_WAVE_PARAM,
-)
-from jdxi_manager.midi.constants.digital import (
-    DIGITAL_SYNTH_AREA,
-    PART_1,
-    OSC_1_GROUP,
-    OSC_WAVE_PARAM,
-)
+from jdxi_manager.midi.data.parameter.digital import DigitalParameter
+from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_manager.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA, PART_1, OSC_1_GROUP
 
 
 def get_digital_parameter_by_address(address: Tuple[int, int]):
@@ -28,22 +17,12 @@ def get_digital_parameter_by_address(address: Tuple[int, int]):
             return param
     return None
 
-# MIDI Constants for Digital Synth
-# DIGITAL_SYNTH_1_AREA = 0x19  # Digital Synth 1 area
-
-# Parameter Groups
-OSC_GROUP = 0x20  # Oscillator parameters
-FILTER_GROUP = 0x21  # Filter parameters
-AMP_GROUP = 0x22  # Amplifier parameters
-LFO_GROUP = 0x23  # LFO parameters
-MOD_LFO_GROUP = 0x24  # Modulation LFO parameters
-
 
 class WaveGain(IntEnum):
     """Wave gain values in dB"""
 
     DB_MINUS_6 = 0  # -6 dB
-    DB_0 = 1  #  0 dB
+    DB_0 = 1  # 0 dB
     DB_PLUS_6 = 2  # +6 dB
     DB_PLUS_12 = 3  # +12 dB
 
@@ -486,7 +465,7 @@ def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
 
 
 def set_partial_state(
-    midi_helper, partial: DigitalPartial, enabled: bool = True, selected: bool = True
+        midi_helper, partial: DigitalPartial, enabled: bool = True, selected: bool = True
 ) -> bool:
     """Set the state of address partial
 

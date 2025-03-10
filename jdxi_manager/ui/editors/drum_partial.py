@@ -12,9 +12,9 @@ Key functionalities of the module include:
 Dependencies:
 - `logging`: For logging initialization and error handling.
 - `PySide6.QtWidgets`: For GUI components such as `QWidget`, `QVBoxLayout`, `QScrollArea`, etc.
-- `jdxi_manager.data.drums`: For drum-related data and operations like retrieving drum waves.
-- `jdxi_manager.data.parameter.drums`: For specific drum parameter definitions and utilities.
-- `jdxi_manager.midi.constants.sysex`: For MIDI-related constants like `TEMPORARY_TONE_AREA` and `DRUM_KIT_AREA`.
+- `jdxi_manager.midi.data.drums`: For drum-related data and operations like retrieving drum waves.
+- `jdxi_manager.midi.data.parameter.drums`: For specific drum parameter definitions and utilities.
+- `jdxi_manager.midi.data.constants.sysex`: For MIDI-related constants like `TEMPORARY_TONE_AREA` and `DRUM_KIT_AREA`.
 - `jdxi_manager.ui.widgets`: For custom UI widgets such as `Slider`, `ComboBox`, and `SpinBox`.
 
 The `DrumPartialEditor` is designed to work within a larger system for managing drum kit tones, providing an intuitive interface for modifying various sound parameters.
@@ -34,10 +34,10 @@ from PySide6.QtWidgets import (
     QComboBox,
     QTabWidget,
 )
-from jdxi_manager.data.drum import rm_waves
-from jdxi_manager.data.parameter.drums import DrumParameter
-from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
-from jdxi_manager.data.parameter.drums import get_address_for_partial_name
+from jdxi_manager.midi.data.drum import rm_waves
+from jdxi_manager.midi.data.parameter.drums import DrumParameter
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
+from jdxi_manager.midi.data.parameter.drums import get_address_for_partial_name
 from jdxi_manager.ui.editors.partial import PartialEditor
 from jdxi_manager.ui.widgets.slider import Slider
 

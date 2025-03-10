@@ -18,12 +18,12 @@ import re
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 from typing import Dict, Union
-from jdxi_manager.data.parameter.synth import SynthParameter
-from jdxi_manager.midi.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_manager.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_manager.ui.widgets.slider.slider import Slider
 from jdxi_manager.ui.style import Style
-from jdxi_manager.midi.constants.analog import (
+from jdxi_manager.midi.data.constants.analog import (
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )

@@ -1,4 +1,27 @@
-"""Vocal FX MIDI constants"""
+"""
+Vocal FX MIDI Constants Module
+
+This module defines MIDI constants and enumerations for controlling vocal effects
+on Roland JD-Xi and similar synthesizers. It includes:
+
+- Memory area, part, and group identifiers for vocal FX processing
+- Enumerations for various vocal FX parameters, including:
+  - Vocal FX switch states
+  - Auto Note and Auto Pitch settings
+  - Output assignments
+  - Auto Pitch key and note values
+  - Octave range settings
+  - Vocoder envelope types
+  - Vocoder high-pass filter (HPF) frequency settings
+
+Each enumeration provides:
+- `display_name`: A human-readable label for the parameter value
+- `midi_value`: The corresponding MIDI value for the parameter
+
+These constants and enums help structure MIDI control over vocal FX, ensuring
+consistent and manageable parameter adjustments.
+"""
+
 
 from enum import Enum
 
@@ -23,6 +46,7 @@ class VocalFxSwitch(Enum):
         """Get MIDI value for switch"""
         return self.value
 
+
 class AutoNoteSwitch(Enum):
     """Auto Note switch values"""
     OFF = 0
@@ -37,6 +61,7 @@ class AutoNoteSwitch(Enum):
     def midi_value(self) -> int:
         """Get MIDI value for switch"""
         return self.value
+
 
 class AutoPitchType(Enum):
     """Auto Pitch preset_type values"""
@@ -61,6 +86,7 @@ class AutoPitchType(Enum):
         """Get MIDI value for pitch preset_type"""
         return self.value 
 
+
 class OutputAssign(Enum):
     """Output assignment values"""
     EFX1 = 0
@@ -78,6 +104,7 @@ class OutputAssign(Enum):
     def midi_value(self) -> int:
         """Get MIDI value for output assignment"""
         return self.value 
+
 
 class AutoPitchKey(Enum):
     """Auto Pitch key values"""
@@ -123,6 +150,7 @@ class AutoPitchKey(Enum):
         """Get MIDI value for key"""
         return self.value 
 
+
 class OctaveRange(Enum):
     """Octave range values"""
     MINUS_ONE = 0
@@ -139,6 +167,7 @@ class OctaveRange(Enum):
     def midi_value(self) -> int:
         """Get MIDI value for octave"""
         return self.value 
+
 
 class AutoPitchNote(Enum):
     """Auto Pitch note values"""
@@ -179,6 +208,7 @@ class AutoPitchNote(Enum):
         """Get MIDI value for note"""
         return self.value 
 
+
 class VocoderEnvelope(Enum):
     """Vocoder envelope types"""
     SHARP = 0
@@ -194,6 +224,7 @@ class VocoderEnvelope(Enum):
     def midi_value(self) -> int:
         """Get MIDI value for envelope preset_type"""
         return self.value
+
 
 class VocoderHPF(Enum):
     """Vocoder HPF frequencies"""

@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
 
 
 class VocalFXParameter(SynthParameter):

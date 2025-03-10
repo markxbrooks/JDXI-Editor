@@ -38,8 +38,8 @@ from typing import Optional
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_manager.midi.io.helper import MIDIHelper
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.midi.constants.sysex import DEVICE_ID
+from jdxi_manager.midi.data.presets.type import PresetType
+from jdxi_manager.midi.data.constants.sysex import DEVICE_ID
 from jdxi_manager.midi.sysex.sysex_message import SysExMessage
 
 

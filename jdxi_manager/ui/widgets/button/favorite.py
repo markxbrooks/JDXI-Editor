@@ -5,7 +5,7 @@ import logging
 
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.loader import PresetLoader
-from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.midi.data.presets.type import PresetType
 
 
 @dataclass

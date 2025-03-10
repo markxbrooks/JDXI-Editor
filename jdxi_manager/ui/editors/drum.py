@@ -18,15 +18,15 @@ Dependencies
 
 - `PySide6.QtWidgets` for UI components.
 - `PySide6.QtCore` for Qt core functionality.
-- `jdxi_manager.data.parameter.drums.DrumParameter` for drum parameter definitions.
-- `jdxi_manager.data.presets.data.DRUM_PRESETS_ENUMERATED` for enumerated drum presets.
-- `jdxi_manager.data.presets.preset_type.PresetType` for preset categorization.
+- `jdxi_manager.midi.data.parameter.drums.DrumParameter` for drum parameter definitions.
+- `jdxi_manager.midi.data.presets.data.DRUM_PRESETS_ENUMERATED` for enumerated drum presets.
+- `jdxi_manager.midi.data.presets.preset_type.PresetType` for preset categorization.
 - `jdxi_manager.midi.io.MIDIHelper` for MIDI communication.
 - `jdxi_manager.midi.preset.loader.PresetLoader` for loading JD-Xi presets.
 - `jdxi_manager.ui.editors.drum_partial.DrumPartialEditor` for managing individual drum partials.
 - `jdxi_manager.ui.style.Style` for UI styling.
 - `jdxi_manager.ui.editors.base.SynthEditor` as the base class for the editor.
-- `jdxi_manager.midi.constants.sysex.TEMPORARY_DIGITAL_SYNTH_1_AREA` for SysEx address handling.
+- `jdxi_manager.midi.data.constants.sysex.TEMPORARY_DIGITAL_SYNTH_1_AREA` for SysEx address handling.
 - `jdxi_manager.ui.widgets.preset.combo_box.PresetComboBox` for preset selection.
 
 Features
@@ -77,19 +77,19 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_manager.data.parameter.drums import DrumParameter, DrumCommonParameter
-from jdxi_manager.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
+from jdxi_manager.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.editors.synth import SynthEditor
-from jdxi_manager.midi.constants.sysex import (
+from jdxi_manager.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
 )
-from jdxi_manager.midi.constants import MIDI_CHANNEL_DRUMS
+from jdxi_manager.midi.data.constants import MIDI_CHANNEL_DRUMS
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 
 
