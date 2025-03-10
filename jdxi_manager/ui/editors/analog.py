@@ -204,16 +204,9 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
-        # Connect QComboBox signal to PresetHandler
-        # self.main_window.analog_preset_handler.preset_changed.connect(
-        #    self.update_combo_box_index
-        # )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
-        # self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-        #    self.update_instrument_preset
-        # )
         self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
