@@ -16,26 +16,20 @@ import logging
 import re
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QWidget, QLabel, QSpinBox, QDoubleSpinBox, QGridLayout, QHBoxLayout
-from typing import Dict, List, Union
+from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
+from typing import Dict, Union
 from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_manager.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_manager.ui.widgets.slider.slider import Slider
 from jdxi_manager.ui.style import Style
 from jdxi_manager.midi.constants.analog import (
-    AnalogControlChange,
-    Waveform,
-    SubOscType,
-    TEMPORARY_ANALOG_SYNTH_AREA,
     ANALOG_PART,
     ANALOG_OSC_GROUP,
 )
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_ms,
-    midi_cc_to_frac,
     ms_to_midi_cc,
-    ms_to_midi_cc,
-    frac_to_midi_cc
 )
 
 # Precompile the regex pattern at module level or in the class constructor
@@ -118,8 +112,6 @@ class ADSR(QWidget):
         self.layout.setColumnMinimumWidth(4, 150)
 
         # Connect signals
-        # for slider in self.controls.values():
-        #    slider.valueChanged.connect(self.valueChanged)
         spin_boxes = [ self.attack_sb, self.decay_sb, self.sustain_sb, self.release_sb ]
         for sb in spin_boxes:
             sb.valueChanged.connect(self.valueChanged)

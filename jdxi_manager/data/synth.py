@@ -1,4 +1,30 @@
-"""Data structures for JD-Xi synth parts"""
+"""
+Data structures for JD-Xi synth parts.
+
+This module defines the data structures used to represent different synth parts
+of the Roland JD-Xi synthesizer. It includes definitions for analog synths,
+digital synths, drum kits, effects, arpeggios, and vocal effects. Each synth
+part is represented as a dataclass, storing relevant MIDI communication details
+such as addresses, request lengths, and data lengths.
+
+A factory function `create_synth_part` is provided to instantiate the correct
+synth part based on the specified type.
+
+Example usage:
+
+# Create an Analog Synth part
+analog_synth = create_synth_part(SynthType.ANALOG)
+print(analog_synth.name)  # Output: ['AN Name']
+
+# Create a Digital Synth part for part 1
+digital_synth_1 = create_synth_part(SynthType.DIGITAL1, part_number=1)
+print(digital_synth_1.name)  # Output: ['SN1 Name', '', '', '', '']
+
+# Create a Drum Kit part
+drum_kit = create_synth_part(SynthType.DRUMS)
+print(drum_kit.name[0])  # Output: 'KIT Name'
+
+"""
 
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
@@ -31,6 +57,7 @@ class SynthPart:
     window_title: str = ""
     window_geometry: str = ""
 
+
 @dataclass
 class AnalogSynth(SynthPart):
     def __init__(self):
@@ -47,6 +74,7 @@ class AnalogSynth(SynthPart):
             window_title="JD-Xi Manager - Analog Synth Editor",
             window_geometry="900x612"
         )
+
 
 @dataclass
 class DigitalSynth(SynthPart):
@@ -79,6 +107,7 @@ class DigitalSynth(SynthPart):
         )
         self.part_number = part_number 
 
+
 @dataclass
 class DrumKit(SynthPart):
     def __init__(self):
@@ -108,6 +137,7 @@ class DrumKit(SynthPart):
             window_geometry="1246x710"
         )
 
+
 @dataclass
 class Effects(SynthPart):
     def __init__(self):
@@ -134,6 +164,7 @@ class Effects(SynthPart):
             window_geometry="740x610"
         )
 
+
 @dataclass
 class Arpeggio(SynthPart):
     def __init__(self):
@@ -151,6 +182,7 @@ class Arpeggio(SynthPart):
             window_geometry="480x340"
         )
 
+
 @dataclass
 class VocalFX(SynthPart):
     def __init__(self):
@@ -167,6 +199,7 @@ class VocalFX(SynthPart):
             window_title="JD-Xi Manager - Vocal Effects Editor",
             window_geometry="750x340"
         )
+
 
 # Factory function to create synth parts
 def create_synth_part(part_type: SynthType, part_number: int = None) -> SynthPart:

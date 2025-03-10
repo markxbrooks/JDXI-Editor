@@ -306,3 +306,5 @@ class AnalogParameter(SynthParameter):
         if param:
             return param.convert_to_midi(value)
         return None
+
+

@@ -78,7 +78,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from jdxi_manager.data.parameter.drums import DrumParameter, DrumCommonParameter
-from jdxi_manager.data.presets.data import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler

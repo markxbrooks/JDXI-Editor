@@ -111,20 +111,8 @@ class EffectParameter(SynthParameter):
     EFX2_PARAM_2 = (0x15, 12768, 52768, -20000, 20000)
     EFX2_PARAM_32 = (0x0D, 12768, 52768, -20000, 20000)
 
-    #FLANGER_RATE = (0x00, 0, 8) # Fixme: These Flanger values are placeholders
-    #FLANGER_DEPTH = (0x00, 0, 8)
-    #FLANGER_FEEDBACK = (0x00, 0, 8)
-    #FLANGER_MANUAL = (0x00, 0, 8)
-    #FLANGER_BALANCE = (0x00, 0, 8)
-
     # Delay Parameters
-    # DELAY_TYPE = (0x00, 0, 1)  # Assuming 0 for SINGLE, 1 for PAN
     DELAY_LEVEL = (0x01, 0, 127, 0, 127)
-    # DELAY_TIME = (0x02, 0, 2600)
-    # DELAY_TAP_TIME = (0x03, 0, 100)
-    # DELAY_FEEDBACK = (0x04, 0, 98)
-    # DELAY_HF_DAMP = (0x04, 200, 8000)
-    # DELAY_LEVEL = (0x05, 0, 127)
     DELAY_PARAM_1 = (0x08, 12768, 52768, -20000, 20000)
     DELAY_PARAM_2 = (0x0C, 12768, 52768, -20000, 20000)
     DELAY_PARAM_24 = (0x60, 12768, 52768, -20000, 20000)

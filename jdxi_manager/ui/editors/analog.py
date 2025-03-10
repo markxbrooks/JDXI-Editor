@@ -55,7 +55,6 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QLabel,
     QScrollArea,
-    QComboBox,
     QPushButton,
     QSlider,
     QTabWidget,
@@ -65,7 +64,7 @@ from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_manager.data.analog import AnalogCommonParameter
-from jdxi_manager.data.presets.data import ANALOG_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.io.helper import MIDIHelper
@@ -75,24 +74,23 @@ from jdxi_manager.midi.utils.conversions import (
     frac_to_midi_cc,
     ms_to_midi_cc,
 )
-from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA
+from jdxi_manager.midi.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_manager.midi.constants.analog import (
     AnalogControlChange,
     Waveform,
     SubOscType,
-    TEMPORARY_ANALOG_SYNTH_AREA,
     ANALOG_PART,
-    ANALOG_OSC_GROUP,
+    ANALOG_OSC_GROUP, LFO_TEMPO_SYNC_NOTES,
 )
 from jdxi_manager.midi.constants import MIDI_CHANNEL_ANALOG
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.image.utils import base64_to_pixmap
+from jdxi_manager.ui.image.waveform import generate_waveform_icon
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.image.waveform import generate_waveform_icon
 from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
@@ -909,33 +907,12 @@ class AnalogSynthEditor(SynthEditor):
         self.lfo_sync_switch.valueChanged.connect(self._on_lfo_sync_changed)
         sync_row.addWidget(self.lfo_sync_switch)
 
-        self.sync_note = QComboBox()
-        self.sync_note.addItems(
-            [
-                "16",
-                "12",
-                "8",
-                "4",
-                "2",
-                "1",
-                "3/4",
-                "2/3",
-                "1/2",
-                "3/8",
-                "1/3",
-                "1/4",
-                "3/16",
-                "1/6",
-                "1/8",
-                "3/32",
-                "1/12",
-                "1/16",
-                "1/24",
-                "1/32",
-            ]
+        self.lfo_sync_note_label = QLabel("Sync note")
+        self.lfo_sync_note = self._create_parameter_combo_box(
+            AnalogParameter.LFO_TEMPO_SYNC_NOTE, "", options=LFO_TEMPO_SYNC_NOTES, show_label = False
         )
-        self.sync_note.currentIndexChanged.connect(self._on_lfo_sync_note_changed)
-        sync_row.addWidget(self.sync_note)
+        sync_row.addWidget(self.lfo_sync_note_label)
+        sync_row.addWidget(self.lfo_sync_note)
 
         # Depth controls
         self.lfo_pitch = self._create_parameter_slider(

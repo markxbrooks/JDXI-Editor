@@ -31,7 +31,7 @@ from PySide6.QtCore import Qt, Signal
 from jdxi_manager.data.parameter.digital import DigitalParameter
 from jdxi_manager.data.parameter.drums import DrumCommonParameter
 from jdxi_manager.data.parameter.synth import SynthParameter
-from jdxi_manager.data.presets.data import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.data.presets.type import PresetType
 from jdxi_manager.midi.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_manager.midi.io.helper import MIDIHelper
@@ -106,9 +106,10 @@ class SynthEditor(QWidget):
         label: str = None,
         options: list = None,
         values: list = None,
+        show_label = True
     ) -> ComboBox:
         """Create a combo box for a parameter with proper display conversion"""
-        combo_box = ComboBox(label, options, values)
+        combo_box = ComboBox(label, options, values, show_label=show_label)
         combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = combo_box
         return combo_box

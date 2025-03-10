@@ -1,59 +1,38 @@
+"""
+Defines the ProgramCommonParameter class for managing common program-level
+parameters in the JD-Xi synthesizer.
+
+This class provides attributes and methods for handling program-wide settings,
+such as program name, level, tempo, and vocal effects. It also includes
+methods for retrieving display values, validating parameter values, and
+handling partial-specific addressing.
+
+Example usage:
+
+# Create an instance for Program Level
+program_level = ProgramCommonParameter(*ProgramCommonParameter.PROGRAM_LEVEL)
+
+# Validate a value within range
+validated_value = program_level.validate_value(100)
+
+# Get the display name of a parameter
+display_name = program_level.display_name  # "Program Level"
+
+# Get display value range
+display_range = program_level.get_display_value()  # (0, 127)
+
+# Retrieve a parameter by name
+param = ProgramCommonParameter.get_by_name("PROGRAM_TEMPO")
+if param:
+    print(param.name, param.min_val, param.max_val)
+
+# Get switch text representation
+switch_text = program_level.get_switch_text(1)  # "ON" or "---"
+"""
+
 from typing import Tuple, Optional
 
 from jdxi_manager.data.parameter.synth import SynthParameter
-
-"""
-For Reference:
-
-+------------------------------------------------------------------------------+
-| Offset      |                                                                |
-| Address     | Description                                                    |
-|-------------+----------------------------------------------------------------|
-| 00 00 | 0aaa aaaa | Program Name 1 (32 - 127)                                |
-| 32 - 127 [ASCII]                                                             |
-| 00 01 | 0aaa aaaa | Program Name 2 (32 - 127)                                |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 02 | 0aaa aaaa | Program Name 3 (32 - 127) |                              |
-|  32 - 127 [ASCII] |                                                          |
-| 00 04 | 0aaa aaaa | Program Name 4 (32 - 127) |                              |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 06 | 0aaa aaaa | Program Name 5 (32 - 127) |                              |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 08 | 0aaa aaaa | Program Name 6 (32 - 127) |                              |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 0A | 0aaa aaaa | Program Name 7 (32 - 127) |                              |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 0C | 0aaa aaaa | Program Name 8 (32 - 127) |                              |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 0E | 0aaa aaaa | Program Name 9 (32 - 127) |                              |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 10 | 0aaa aaaa | Program Name 10 (32 - 127)                               |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 12 | 0aaa aaaa | Program Name 11 (32 - 127)                               |
-| 32 - 127 [ASCII]  |                                                          |
-| 00 14 | 0aaa aaaa | Program Name 12 (32 - 127)                               |
-| 32 - 127 [ASCII]  |                                                          |
-|-------------+-----------+----------------------------------------------------|
-| 00 16 | 0000 aaaa | Program Level (0 - 127) |                                |
-|# 00 17 | 0000 aaaa |                                                         |
-| 0000 bbbb |                                                                  |
-| 0000 cccc |                                                                  |
-| 0000 dddd | Program Tempo (500 - 30000) |                                    |
-| 5.00 - 300.00 |                                                              |
-| 00 1B | 0000 000a | (reserve) <*> |                                          |
-|-------------+-----------+----------------------------------------------------|
-| 00 1C | 0aaa aaaa | Vocal Effect (0 - 2)                                     |
-| OFF, VOCODER, AUTO-PITCH |                                                   |
-|-------------+-----------+----------------------------------------------------|
-| 00 1D | 0000 aaaa | Vocal Effect Part (0 - 1) |                              |
-| 1 - 2 |                                                                      |
-|-------------+-----------+----------------------------------------------------|
-| 00 1E | 0000 000a | Auto Note Switch (0 - 1) |                               |
-| OFF, ON |                                                                    |
-|-------------+----------------------------------------------------------------|
-| 00 00 00 1F | Total Size |                                                   |
-+------------------------------------------------------------------------------+
-"""
 
 
 class ProgramCommonParameter(SynthParameter):
