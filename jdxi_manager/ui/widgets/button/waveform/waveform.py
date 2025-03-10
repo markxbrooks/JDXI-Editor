@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Signal
-from jdxi_manager.midi.constants import Waveform
+from jdxi_manager.midi.data.constants import Waveform
 from PIL import Image, ImageDraw
 import base64
 from io import BytesIO

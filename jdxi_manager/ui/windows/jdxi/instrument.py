@@ -6,11 +6,11 @@ from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
 import qtawesome as qta
 
-from jdxi_manager.data.presets.type import PresetType
-from jdxi_manager.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi.data.presets.type import PresetType
+from jdxi_manager.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
+from jdxi_manager.midi.data.constants import (
     START_OF_SYSEX,
     DEVICE_ID,
     MODEL_ID_1,
@@ -24,8 +24,8 @@ from jdxi_manager.midi.constants import (
     MIDI_CHANNEL_DRUMS,
     DigitalParameter,
 )
-from jdxi_manager.midi.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
-from jdxi_manager.midi.constants.sysex import (
+from jdxi_manager.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
+from jdxi_manager.midi.data.constants.sysex import (
     TEMPORARY_PROGRAM_AREA,
     TEMPORARY_TONE_AREA,
 )

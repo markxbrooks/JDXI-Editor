@@ -49,23 +49,23 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_manager.data.digital import (
+from jdxi_manager.midi.data.digital import (
     OscWave,
     DigitalPartial,
     set_partial_state,
     get_digital_parameter_by_address,
 )
-from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_manager.midi.data.parameter.digital import DigitalParameter
+from jdxi_manager.midi.data.constants import (
     DIGITAL_SYNTH_1_AREA,
     PART_1,
     PART_2,

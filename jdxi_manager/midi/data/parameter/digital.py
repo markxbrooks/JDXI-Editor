@@ -42,7 +42,7 @@ import logging
 from typing import Tuple, Optional, Union
 from enum import Enum
 from dataclasses import dataclass
-from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
 # from jdxi_manager.ui.widgets.slider import Slider
 
 

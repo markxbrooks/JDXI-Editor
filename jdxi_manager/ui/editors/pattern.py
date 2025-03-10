@@ -39,7 +39,7 @@ from PySide6.QtCore import Qt, QTimer
 from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage, bpm2tempo
 from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi.data.constants import (
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_ANALOG,
     MIDI_CHANNEL_DIGITAL2,

@@ -49,13 +49,13 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_manager.data.arpeggio import (
+from jdxi_manager.midi.data.arpeggio import (
     arp_style,
     arp_grid,
     arp_duration,
 )
-from jdxi_manager.data.parameter.arpeggio import ArpeggioParameter
-from jdxi_manager.midi.constants.arpeggio import (
+from jdxi_manager.midi.data.parameter.arpeggio import ArpeggioParameter
+from jdxi_manager.midi.data.constants.arpeggio import (
     TEMPORARY_PROGRAM,
     ARP_PART,
     ARP_GROUP,

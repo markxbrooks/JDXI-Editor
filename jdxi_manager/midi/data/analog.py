@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 import logging
 
-from jdxi_manager.midi.constants import ANALOG_SYNTH_AREA, ANALOG_PART
+from jdxi_manager.midi.data.constants.analog import ANALOG_PART, ANALOG_SYNTH_AREA
 
 
 # Analog preset categories

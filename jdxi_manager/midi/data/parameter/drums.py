@@ -3,7 +3,7 @@ import re
 from typing import Optional, Tuple
 from enum import Enum
 from dataclasses import dataclass
-from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
 
 
 DRUM_ADDRESSES = {

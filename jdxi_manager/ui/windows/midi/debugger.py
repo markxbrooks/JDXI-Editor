@@ -4,10 +4,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 import logging
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi.data.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_HEADER, DT1_COMMAND_12, END_OF_SYSEX,
-    DIGITAL_SYNTH_1_AREA, ANALOG_SYNTH_AREA, TEMPORARY_DRUM_KIT_AREA,
+    DIGITAL_SYNTH_1_AREA, ANALOG_SYNTH_AREA,
     EFFECTS_AREA
 )
 from jdxi_manager.ui.style import Style

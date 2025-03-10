@@ -39,9 +39,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_manager.data.parameter.effects import EffectParameter
-from jdxi_manager.data.effects import EffectCommonParameter
-from jdxi_manager.midi.constants.sysex import TEMPORARY_PROGRAM_AREA
+from jdxi_manager.midi.data.parameter.effects import EffectParameter
+from jdxi_manager.midi.data.effects import EffectCommonParameter
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA
 from jdxi_manager.midi.sysex.sysex import PROGRAM_COMMON
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import Style

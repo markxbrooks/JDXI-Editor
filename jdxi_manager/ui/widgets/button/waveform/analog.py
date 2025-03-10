@@ -5,7 +5,7 @@ AnalogWaveformButton
 """
 
 from PySide6.QtCore import Signal
-from jdxi_manager.midi.constants import Waveform
+from jdxi_manager.midi.data.constants import Waveform
 
 from jdxi_manager.ui.widgets.button.waveform import WaveformButton
 

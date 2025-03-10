@@ -55,10 +55,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal, QSettings
 
-from jdxi_manager.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_manager.data.presets.type import PresetType
+from jdxi_manager.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
+from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.midi.parameter.handler import ParameterHandler

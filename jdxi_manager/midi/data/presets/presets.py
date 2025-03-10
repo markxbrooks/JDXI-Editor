@@ -1,5 +1,5 @@
 # Digital synth preset names
-from jdxi_manager.data.presets.digital import DIGITAL_PRESETS
+from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS
 
 # Create address mapping of index to name for easier lookup
 PRESET_MAP = {i: name for i, name in enumerate(DIGITAL_PRESETS)}

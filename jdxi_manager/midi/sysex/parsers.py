@@ -18,11 +18,11 @@ Functions:
 
 import logging
 from typing import List, Dict, Type
-from jdxi_manager.data.parameter.analog import AnalogParameter
-from jdxi_manager.data.parameter.digital import DigitalParameter
-from jdxi_manager.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.data.parameter.drums import DrumParameter
-from jdxi_manager.data.parameter.effects import EffectParameter
+from jdxi_manager.midi.data.parameter.analog import AnalogParameter
+from jdxi_manager.midi.data.parameter.digital import DigitalParameter
+from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_manager.midi.data.parameter.drums import DrumParameter
+from jdxi_manager.midi.data.parameter.effects import EffectParameter
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:

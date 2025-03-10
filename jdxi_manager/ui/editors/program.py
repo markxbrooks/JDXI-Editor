@@ -48,8 +48,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal, Qt
 
-from jdxi_manager.data.programs.programs import PROGRAM_LIST
-from jdxi_manager.midi.constants import MIDI_CHANNEL_PROGRAMS
+from jdxi_manager.midi.data.programs.programs import PROGRAM_LIST
+from jdxi_manager.midi.data.constants import MIDI_CHANNEL_PROGRAMS
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.style import Style

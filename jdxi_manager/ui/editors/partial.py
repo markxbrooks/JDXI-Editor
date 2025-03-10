@@ -12,8 +12,8 @@ Dependencies:
     - PySide6.QtWidgets (QWidget)
     - logging
     - typing (Dict)
-    - jdxi_manager.data.parameter.synth (SynthParameter)
-    - jdxi_manager.midi.constants (PART_1)
+    - jdxi_manager.midi.data.parameter.synth (SynthParameter)
+    - jdxi_manager.midi.data.constants (PART_1)
     - jdxi_manager.ui.widgets.slider (Slider)
     - jdxi_manager.ui.widgets.combo_box.combo_box (ComboBox)
     - jdxi_manager.ui.widgets.spin_box.spin_box (SpinBox)
@@ -26,8 +26,8 @@ from typing import Dict
 from PySide6.QtWidgets import (
     QWidget,
 )
-from jdxi_manager.data.parameter.synth import SynthParameter
-from jdxi_manager.midi.constants import PART_1
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.constants import PART_1
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox

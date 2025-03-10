@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Tuple
 
-from jdxi_manager.data.parameter.synth import SynthParameter
+from jdxi_manager.midi.data.parameter.synth import SynthParameter
 
 
 def parse_digital_common_parameters(data: list) -> dict:

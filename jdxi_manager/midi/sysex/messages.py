@@ -4,7 +4,7 @@ from typing import List, Optional
 from jdxi_manager.midi.sysex.roland import RolandSysEx
 from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.sysex.device import DeviceInfo
-from jdxi_manager.midi.constants import (
+from jdxi_manager.midi.data.constants import (
     DrumKitCC,
     START_OF_SYSEX,
     END_OF_SYSEX,
