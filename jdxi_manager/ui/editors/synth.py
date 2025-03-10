@@ -99,8 +99,6 @@ class SynthEditor(QWidget):
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-        # if self.midi_helper:
-        #    self.midi_helper.midi_control_changed.connect(self._handle_program_change)
 
     def _create_parameter_combo_box(
         self,
