@@ -31,7 +31,6 @@ from jdxi_manager.midi.data.constants.sysex import DT1_COMMAND_12, RQ1_COMMAND_1
 from jdxi_manager.midi.sysex.sysex import SysExMessage
 
 
-
 @dataclass
 class RolandSysEx(SysExMessage):
     """Specialized class for Roland JD-Xi SysEx messages."""
