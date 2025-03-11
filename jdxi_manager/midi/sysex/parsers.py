@@ -18,6 +18,7 @@ Functions:
 
 import logging
 from typing import List, Dict, Type
+
 from jdxi_manager.midi.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
