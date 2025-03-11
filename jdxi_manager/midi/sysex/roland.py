@@ -1,3 +1,28 @@
+
+"""
+roland_sysex.py
+
+This module provides a class for constructing and parsing Roland System Exclusive (SysEx) messages. The `RolandSysEx` class allows for easy creation of messages to be sent to Roland devices, as well as the ability to parse incoming SysEx messages.
+
+Usage Example:
+
+```python
+from roland_sysex import RolandSysEx
+
+# Creating a SysEx message
+message = RolandSysEx(command=0x12, area=0x01, section=0x02, group=0x03, param=0x04, value=0x05)
+message_bytes = message.to_bytes()
+print("Generated SysEx Message (bytes):", message_bytes)
+
+# Parsing a SysEx message from bytes
+received_bytes = b'\xF0\x41\x10\x12\x00\x01\x02\x03\x04\x05\xF7'  # Example received SysEx message
+parsed_message = RolandSysEx.from_bytes(received_bytes)
+print("Parsed Command:", parsed_message.command)
+print("Parsed Address:", parsed_message.address)
+print("Parsed Value:", parsed_message.value)
+
+"""
+
 from dataclasses import dataclass
 from typing import List
 
