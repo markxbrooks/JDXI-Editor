@@ -60,6 +60,9 @@ DT1_COMMAND = 0x12  # Data Set 1
 RQ1_COMMAND = 0x11  # Data Request 1
 COMMAND_IDS = [DT1_COMMAND, RQ1_COMMAND]  # Roland Exclusive messages
 
+TONE_1_LEVEL = 0x10
+TONE_2_LEVEL = 0x11
+
 # Memory Areas
 TEMPORARY_PROGRAM_AREA = 0x18  # Temporary Program area
 TEMPORARY_TONE_AREA = 0x19  # Temporary Digital Synth area

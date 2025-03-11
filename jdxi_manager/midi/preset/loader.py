@@ -40,7 +40,8 @@ from PySide6.QtCore import Signal, QObject
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.data.constants.sysex import DEVICE_ID
-from jdxi_manager.midi.sysex.sysex_message import SysExMessage
+from jdxi_manager.midi.sysex.sysex import SysExMessage
+# from jdxi_manager.midi.sysex.sysex_message import SysExMessage
 
 
 class PresetLoader(QObject):
@@ -137,3 +138,30 @@ class PresetLoader(QObject):
         ]
         for address, *data in sysex_data:
             self.send_sysex(address, *data, request=True)
+
+    def send_preset_sysex_messages_new(self):
+        """Send additional SysEx messages for preset initialization."""
+        sysex_data = [
+            ([0x19, 0x01, 0x00, 0x00], [0x00, 0x00, 0x00, 0x40]),
+            ([0x19, 0x01, 0x20, 0x00], [0x00, 0x00, 0x00, 0x3D]),
+            ([0x19, 0x01, 0x21, 0x00], [0x00, 0x00, 0x00, 0x3D]),
+            ([0x19, 0x01, 0x22, 0x00], [0x00, 0x00, 0x00, 0x3D]),
+            ([0x19, 0x01, 0x50, 0x00], [0x00, 0x00, 0x00, 0x25]),
+        ]
+
+        for address, *data in sysex_data:
+            self.send_sysex(address, *data, request=True)  # Set request=False for DT1
+
+    def send_sysex_new(self, address, data_bytes, request=False):
+        """
+        Construct and send a SysEx message.
+
+        :param address: List of integer bytes representing the address.
+        :param data_bytes: List of integer bytes representing the data.
+        :param request: Boolean indicating if this is an RQ1 (True) or DT1 (False) message.
+        """
+        message = self.sysex_message.construct_sysex(address, *data_bytes, request=request)
+        self.midi_helper.send_message(message)
+        logging.debug(f"Sent SysEx: {message}")
+
+

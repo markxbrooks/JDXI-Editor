@@ -16,7 +16,9 @@ def get_parameter_from_address(address: List[int]):
         The DigitalParameter corresponding to the address.
     """
     if len(address) < 2:
-        raise ValueError(f"Address must contain at least 2 elements, got {len(address)}")
+        raise ValueError(
+            f"Address must contain at least 2 elements, got {len(address)}"
+        )
 
     # Assuming address structure [area, address, ...]
     parameter_address = tuple(address[1:2])
@@ -25,7 +27,9 @@ def get_parameter_from_address(address: List[int]):
     if param:
         return param
     else:
-        raise ValueError(f"Invalid address {parameter_address} - no corresponding DigitalParameter found.")
+        raise ValueError(
+            f"Invalid address {parameter_address} - no corresponding DigitalParameter found."
+        )
 
 
 def validate_sysex_message(message: List[int]) -> bool:
