@@ -98,11 +98,11 @@ class PresetLoader(QObject):
             )
             self.preset_number = program if program <= 128 else program - 128
             self.midi_helper.send_program_change(program, channel)
-            self.send_parameter_change_message(address, msb, 1)
-            self.send_parameter_change_message(f"{int(address, 16) + 1:08X}", lsb, 1)
-            self.send_parameter_change_message(
-                f"{int(address, 16) + 2:08X}", self.preset_number, 1
-            )
+            # self.send_parameter_change_message(address, msb, 1)
+            # self.send_parameter_change_message(f"{int(address, 16) + 1:08X}", lsb, 1)
+            # self.send_parameter_change_message(
+            #     f"{int(address, 16) + 2:08X}", self.preset_number, 1
+            # )
 
             # Send additional SysEx messages for preset loading
             self.send_preset_sysex_messages()

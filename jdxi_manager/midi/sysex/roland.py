@@ -28,81 +28,8 @@ from typing import List
 
 from jdxi_manager.midi.data.constants.sysex import DT1_COMMAND_12, RQ1_COMMAND_11, MODEL_ID_1, \
     MODEL_ID_2, MODEL_ID_3, MODEL_ID_4, ROLAND_ID, DEVICE_ID
-# from jdxi_manager.midi.sysex.sysex import SysExMessage
+from jdxi_manager.midi.sysex.sysex import SysExMessage
 
-# from dataclasses import dataclass
-# from typing import List
-
-from jdxi_manager.midi.data.constants.sysex import START_OF_SYSEX, END_OF_SYSEX
-
-
-@dataclass
-class SysExMessage:
-    """Base class for MIDI System Exclusive (SysEx) messages."""
-
-    start_of_sysex: int = START_OF_SYSEX  # Start of SysEx
-    manufacturer_id: List[int] = None  # Manufacturer ID (e.g., [0x41] for Roland)
-    device_id: int = 0x10  # Default device ID
-    model_id: List[int] = None  # Model ID (4 bytes)
-    command: int = 0x00  # SysEx command (DT1, RQ1, etc.)
-    address: List[int] = None  # Address (4 bytes)
-    data: List[int] = None  # Data payload
-    end_of_sysex: int = END_OF_SYSEX  # End of SysEx
-
-    def __post_init__(self):
-        """Ensure proper initialization of address, model_id, and data fields."""
-        if self.manufacturer_id is None:
-            raise ValueError("manufacturer_id must be provided.")
-        if self.model_id is None or len(self.model_id) != 4:
-            raise ValueError("model_id must be a list of exactly 4 bytes.")
-        if self.address is None:
-            self.address = [0x00] * 4  # Default to an empty address
-        if self.data is None:
-            self.data = []
-
-    def calculate_checksum(self) -> int:
-        """Calculate Roland-style checksum (if applicable)."""
-        if not self.address and not self.data:
-            return 0
-        return (128 - (sum(self.address + self.data) & 0x7F)) & 0x7F
-
-    def to_bytes(self) -> bytes:
-        """Convert the SysEx message to a byte sequence."""
-        msg = (
-            [self.start_of_sysex]
-            + self.manufacturer_id
-            + [self.device_id]
-            + self.model_id
-            + [self.command]
-            + self.address
-            + self.data
-        )
-        if self.manufacturer_id == [0x41]:  # Roland messages require checksum
-            msg.append(self.calculate_checksum())
-        msg.append(self.end_of_sysex)
-        return bytes(msg)
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Parse a received SysEx message into an instance."""
-        if len(data) < 12 or data[0] != 0xF0 or data[-1] != 0xF7:
-            raise ValueError("Invalid SysEx message format.")
-
-        manufacturer_id = [data[1]]
-        device_id = data[2]
-        model_id = list(data[3:7])  # Extract model_id (4 bytes)
-        command = data[7]
-        address = list(data[8:12])  # Extract address (4 bytes)
-        message_data = list(data[12:-2])  # Extract data before checksum and EOX
-
-        return cls(
-            manufacturer_id=manufacturer_id,
-            device_id=device_id,
-            model_id=model_id,
-            command=command,
-            address=address,
-            data=message_data,
-        )
 
 
 @dataclass
@@ -111,7 +38,7 @@ class RolandSysEx(SysExMessage):
 
     manufacturer_id: int = ROLAND_ID # List[int] = (0x41,)  # Roland Manufacturer ID
     device_id: int = DEVICE_ID  # Default device ID
-    model_id: [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4] # (0x00, 0x00, 0x00, 0x0E)  # Default JD-Xi Model ID
+    model_id: list[int] = (MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4) # (0x00, 0x00, 0x00, 0x0E)  # Default JD-Xi Model ID
     command: int = DT1_COMMAND_12  # Default to Data Set 1 (DT1)
     area: int = 0x00
     section: int = 0x00
@@ -168,10 +95,28 @@ class RolandSysEx(SysExMessage):
 
         command = self.rq1_command if request else self.dt1_command
 
+        # Ensure no required attributes are None
+        required_values = {
+            "start_of_sysex": self.start_of_sysex,
+            "manufacturer_id": self.manufacturer_id,
+            "device_id": self.device_id,
+            "model_id": self.model_id,
+            "command": self.command,
+            "address": address,
+            "parameter": self.parameter,
+            "value": self.value
+        }
+
+        for key, value in required_values.items():
+            if value is None:
+                raise ValueError(f"Missing required value: {key} cannot be None.")
+            else:
+                print(f"key {key} id {value}")
+
         # Construct SysEx message
         sysex_msg = (
             [self.start_of_sysex, self.manufacturer_id, self.device_id]
-            + self.model_id
+            + list(self.model_id)
             + [command]
             + address
             + self.parameter
