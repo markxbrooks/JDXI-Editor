@@ -42,9 +42,11 @@ def get_temporary_area(data: List[int]) -> str:
         (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
         (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
         (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-        (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA"
+        (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA",
     }
-    return area_mapping.get(tuple(data[8:10]), "Unknown") if len(data) >= 10 else "Unknown"
+    return (
+        area_mapping.get(tuple(data[8:10]), "Unknown") if len(data) >= 10 else "Unknown"
+    )
 
 
 def get_synth_tone(byte_value: int) -> str:
@@ -101,7 +103,7 @@ def extract_tone_name(data: List[int]) -> str:
     """Extract and clean the tone name from SysEx data."""
     if len(data) < 12:
         return "Unknown"
-    raw_name = bytes(data[11:min(23, len(data) - 1)]).decode(errors="ignore").strip()
+    raw_name = bytes(data[11 : min(23, len(data) - 1)]).decode(errors="ignore").strip()
     return raw_name.replace("\u0000", "")  # Remove null characters
 
 
@@ -118,7 +120,7 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
             "JD_XI_HEADER": extract_hex(data, 0, 7),
             "ADDRESS": extract_hex(data, 7, 11),
             "TEMPORARY_AREA": "Unknown",
-            "SYNTH_TONE": "Unknown"
+            "SYNTH_TONE": "Unknown",
         }
 
     parameters = {
@@ -132,7 +134,10 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
     temporary_area = parameters["TEMPORARY_AREA"]
     synth_tone = parameters["SYNTH_TONE"]
 
-    if temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
+    if temporary_area in [
+        "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+    ]:
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DigitalCommonParameter))
         elif synth_tone == "TONE_MODIFY":
@@ -149,4 +154,3 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
     logging.info(f"Temporary Area: {temporary_area}")
 
     return parameters
-

@@ -1,14 +1,16 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class DeviceInfo:
     """JD-Xi device information"""
+
     device_id: int
     manufacturer: List[int]  # Roland = [0x41, 0x00, 0x00]
-    family: List[int]       # JD-Xi = [0x00, 0x0E]
+    family: List[int]  # JD-Xi = [0x00, 0x0E]
     model: List[int]
-    version: List[int]      # e.g. [0x01, 0x00, 0x00] = v1.00
+    version: List[int]  # e.g. [0x01, 0x00, 0x00] = v1.00
 
     @property
     def is_roland(self) -> bool:
@@ -28,14 +30,16 @@ class DeviceInfo:
         return "unknown"
 
     @classmethod
-    def from_identity_reply(cls, data: bytes) -> Optional['DeviceInfo']:
+    def from_identity_reply(cls, data: bytes) -> Optional["DeviceInfo"]:
         """Create DeviceInfo from Identity Reply message"""
         try:
-            if (len(data) < 15 or
-                data[0] != 0xF0 or
-                data[1] != 0x7E or
-                data[3] != 0x06 or
-                data[4] != 0x02):  # Identity Reply
+            if (
+                len(data) < 15
+                or data[0] != 0xF0
+                or data[1] != 0x7E
+                or data[3] != 0x06
+                or data[4] != 0x02
+            ):  # Identity Reply
                 return None
 
             return cls(
@@ -43,7 +47,7 @@ class DeviceInfo:
                 manufacturer=list(data[5:8]),
                 family=list(data[8:10]),
                 model=list(data[10:12]),
-                version=list(data[12:15])
+                version=list(data[12:15]),
             )
         except:
-            return None 
+            return None
