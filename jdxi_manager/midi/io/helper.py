@@ -17,9 +17,9 @@ Dependencies:
     - jdxi_manager.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
 """
 
+import logging
 from jdxi_manager.midi.io.input_handler import MIDIInHandler
 from jdxi_manager.midi.io.output_handler import MIDIOutHandler
-import logging
 
 
 class MIDIHelper(MIDIInHandler, MIDIOutHandler):
@@ -59,5 +59,3 @@ class MIDIHelper(MIDIInHandler, MIDIOutHandler):
             self.send_message(sysex_list)
         except Exception as ex:
             logging.info(f"Error {ex} sending sysex list")
-
-

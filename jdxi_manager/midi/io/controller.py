@@ -1,3 +1,29 @@
+"""
+MIDI I/O Controller for JD-Xi
+
+This module provides the `MidiIOController` class, which facilitates MIDI communication
+with the Roland JD-Xi synthesizer. It allows users to list, open, and manage MIDI input
+and output ports, automatically detect JD-Xi ports, and handle MIDI message reception.
+
+Features:
+- Retrieve available MIDI input and output ports.
+- Automatically detect JD-Xi MIDI ports.
+- Open and close MIDI input and output ports by name or index.
+- Check the status of open MIDI ports.
+- Set a callback for incoming MIDI messages.
+
+Dependencies:
+- `rtmidi` for MIDI communication.
+- `PyQt6.QtCore` for QObject-based structure.
+
+Example Usage:
+    controller = MidiIOController()
+    controller.open_ports("JD-Xi MIDI IN", "JD-Xi MIDI OUT")
+    print(controller.current_in_port, controller.current_out_port)
+
+"""
+
+
 import logging
 from typing import Optional, List, Tuple
 
