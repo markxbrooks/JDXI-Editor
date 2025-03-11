@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from jdxi_manager.midi.data.constants.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.sysex.roland import RolandSysEx
-from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
+# from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.sysex.device import DeviceInfo
 from jdxi_manager.midi.data.constants import (
     DrumKitCC,
@@ -19,6 +20,92 @@ from jdxi_manager.midi.data.constants import (
     WAVE_SAW,
     SETUP_AREA,
 )
+
+from dataclasses import dataclass, field
+from typing import List
+
+# Roland SysEx Constants
+# START_OF_SYSEX = 0xF0
+# END_OF_SYSEX = 0xF7
+# ROLAND_ID = 0x41  # Roland Manufacturer ID
+JD_XI_MODEL_ID = [0x00, 0x00, 0x00, 0x0E]  # JD-Xi Model ID
+# DT1_COMMAND_12 = 0x12  # Data Set 1 (DT1) command
+# RQ1_COMMAND_11 = 0x11  # Data Request 1 (RQs1) command
+
+@dataclass
+class JDXiSysExNew:
+    """JD-Xi specific SysEx message handler."""
+
+    device_id: int = 0x10  # Default device ID (0x10)
+    model_id: List[int] = field(default_factory=lambda: JD_XI_MODEL_ID)  # 4-byte Model ID
+    command: int = DT1_COMMAND_12  # Default to DT1 command (Data Set 1)
+    address: List[int] = field(default_factory=lambda: [0x00, 0x00, 0x00, 0x00])  # 4-byte address
+    data: List[int] = field(default_factory=list)  # Data bytes
+
+    def __post_init__(self):
+        """Validate JD-Xi SysEx fields."""
+        # Validate Device ID (0x00 - 0x1F or 0x7F for broadcast)
+        if not (0x00 <= self.device_id <= 0x1F or self.device_id == 0x7F):
+            raise ValueError(f"Invalid device ID: {self.device_id:02X}")
+
+        # Validate Model ID (should always be [0x00, 0x00, 0x00, 0x0E])
+        if self.model_id != JD_XI_MODEL_ID:
+            raise ValueError(f"Invalid model ID: {[f'{x:02X}' for x in self.model_id]}")
+
+        # Validate Address (must be 4 bytes)
+        if len(self.address) != 4:
+            raise ValueError("Address must be exactly 4 bytes.")
+
+        # Validate Data Length
+        if len(self.data) > 128:
+            raise ValueError("Data section is too large (max 128 bytes).")
+
+    def to_bytes(self) -> bytes:
+        """Convert SysEx message to a MIDI byte sequence."""
+        msg = [
+            START_OF_SYSEX,
+            ROLAND_ID,
+            self.device_id,  # Device ID
+            *self.model_id,  # JD-Xi Model ID
+            self.command,  # SysEx Command
+            *self.address,  # 4-byte Address
+            *self.data,  # Data bytes
+            self.calculate_checksum(),  # Roland Checksum
+            END_OF_SYSEX,
+        ]
+        return bytes(msg)
+
+    def calculate_checksum(self) -> int:
+        """Calculate Roland checksum for SysEx validation."""
+        checksum = (128 - (sum(self.address) + sum(self.data)) % 128) & 0x7F
+        return checksum
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Parse a SysEx message from received bytes."""
+        if (
+            len(data) < 12  # Minimum length required
+            or data[0] != START_OF_SYSEX
+            or data[1] != ROLAND_ID
+            or list(data[3:7]) != JD_XI_MODEL_ID
+        ):
+            raise ValueError("Invalid JD-Xi SysEx message format.")
+
+        device_id = data[2]
+        command = data[7]
+        address = list(data[8:12])
+        message_data = list(data[12:-2])  # Extract data (ignoring checksum and F7)
+        received_checksum = data[-2]
+
+        # Create SysEx object and verify checksum
+        message = cls(
+            device_id=device_id, command=command, address=address, data=message_data
+        )
+
+        if message.calculate_checksum() != received_checksum:
+            raise ValueError("Checksum mismatch! Message may be corrupted.")
+
+        return message
 
 
 @dataclass

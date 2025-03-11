@@ -1,5 +1,6 @@
 """
 MIDI Output Handler
+===================
 
 This module provides the `MIDIOutHandler` class for managing MIDI output, allowing users to send
 note-on, note-off, and control change messages through address specified MIDI output port.

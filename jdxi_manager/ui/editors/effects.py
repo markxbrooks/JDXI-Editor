@@ -41,8 +41,8 @@ from PySide6.QtGui import QPixmap
 
 from jdxi_manager.midi.data.parameter.effects import EffectParameter
 from jdxi_manager.midi.data.effects import EffectCommonParameter
-from jdxi_manager.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA
-from jdxi_manager.midi.sysex.sysex import PROGRAM_COMMON
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRAM_COMMON
+# from jdxi_manager.midi.sysex.sysex import PROGRAM_COMMON
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.midi.io.helper import MIDIHelper
