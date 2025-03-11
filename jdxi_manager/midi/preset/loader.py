@@ -1,5 +1,5 @@
 """
-Module: preset_loader
+Module: preset loader
 =====================
 
 This module provides the `PresetLoader` class, which handles loading and managing
@@ -40,8 +40,7 @@ from PySide6.QtCore import Signal, QObject
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.data.constants.sysex import DEVICE_ID
-from jdxi_manager.midi.sysex.sysex import SysExMessage
-# from jdxi_manager.midi.sysex.sysex_message import SysExMessage
+from jdxi_manager.midi.sysex.roland import RolandSysEx
 
 
 class PresetLoader(QObject):
@@ -59,7 +58,7 @@ class PresetLoader(QObject):
         self.midi_helper = midi_helper
         self.device_number = device_number
         self.debug = debug
-        self.sysex_message = SysExMessage()
+        self.sysex_message = RolandSysEx()
         pub.subscribe(self.load_preset, "request_load_preset")
 
     def send_parameter_change_message(self, address, value, nr):
@@ -98,7 +97,7 @@ class PresetLoader(QObject):
                 f"address msb lsb {address} {msb} {lsb} self.preset_number: {self.preset_number}"
             )
             self.preset_number = program if program <= 128 else program - 128
-
+            self.midi_helper.send_program_change(program, channel)
             self.send_parameter_change_message(address, msb, 1)
             self.send_parameter_change_message(f"{int(address, 16) + 1:08X}", lsb, 1)
             self.send_parameter_change_message(
@@ -129,39 +128,12 @@ class PresetLoader(QObject):
 
     def send_preset_sysex_messages(self):
         """Send additional SysEx messages for preset initialization."""
-        sysex_data = [
+        sysex_rq1_data = [
             (["19", "01", "00", "00"], "00", "00", "00", "40"),
             (["19", "01", "20", "00"], "00", "00", "00", "3D"),
             (["19", "01", "21", "00"], "00", "00", "00", "3D"),
             (["19", "01", "22", "00"], "00", "00", "00", "3D"),
             (["19", "01", "50", "00"], "00", "00", "00", "25"),
         ]
-        for address, *data in sysex_data:
+        for address, *data in sysex_rq1_data:
             self.send_sysex(address, *data, request=True)
-
-    def send_preset_sysex_messages_new(self):
-        """Send additional SysEx messages for preset initialization."""
-        sysex_data = [
-            ([0x19, 0x01, 0x00, 0x00], [0x00, 0x00, 0x00, 0x40]),
-            ([0x19, 0x01, 0x20, 0x00], [0x00, 0x00, 0x00, 0x3D]),
-            ([0x19, 0x01, 0x21, 0x00], [0x00, 0x00, 0x00, 0x3D]),
-            ([0x19, 0x01, 0x22, 0x00], [0x00, 0x00, 0x00, 0x3D]),
-            ([0x19, 0x01, 0x50, 0x00], [0x00, 0x00, 0x00, 0x25]),
-        ]
-
-        for address, *data in sysex_data:
-            self.send_sysex(address, *data, request=True)  # Set request=False for DT1
-
-    def send_sysex_new(self, address, data_bytes, request=False):
-        """
-        Construct and send a SysEx message.
-
-        :param address: List of integer bytes representing the address.
-        :param data_bytes: List of integer bytes representing the data.
-        :param request: Boolean indicating if this is an RQ1 (True) or DT1 (False) message.
-        """
-        message = self.sysex_message.construct_sysex(address, *data_bytes, request=request)
-        self.midi_helper.send_message(message)
-        logging.debug(f"Sent SysEx: {message}")
-
-

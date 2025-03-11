@@ -34,7 +34,7 @@ from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.utils.json import log_json
 from jdxi_manager.midi.sysex.parsers import parse_sysex
-from jdxi_manager.midi.sysex.sysex import SysexParameter
+# from jdxi_manager.midi.sysex.sysex import SysexParameter
 from jdxi_manager.midi.sysex.utils import get_parameter_from_address
 
 
@@ -209,7 +209,7 @@ class MIDIInHandler(MidiIOController):
             try:
                 command_type = message.data[6]
                 address_offset = "".join(f"{byte:02X}" for byte in message.data[7:11])
-                command_name = SysexParameter.get_command_name(command_type)
+                # command_name = SysexParameter.get_command_name(command_type)
                 logging.debug("Command: %s (0x%02X), Address Offset: %s", command_name, command_type, address_offset)
             except Exception as ex:
                 logging.warning("Unable to extract command or parameter address due to {ex}")
