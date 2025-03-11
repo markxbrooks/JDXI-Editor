@@ -193,7 +193,7 @@ class JDXiSysEx(RolandSysEx):
 
 
 @dataclass
-class IdentityRequest:
+class IdentityRequest():
     """MIDI Identity Request message"""
 
     device_id: int = 0x10  # Default device ID

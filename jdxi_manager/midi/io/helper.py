@@ -46,7 +46,7 @@ class MIDIHelper(MIDIInHandler, MIDIOutHandler):
             with open(file_path, "rb") as file:
                 sysex_data = file.read()
 
-            if not sysex_data.startswith(b'\xF0') or not sysex_data.endswith(b'\xF7'):
+            if not sysex_data.startswith(b"\xF0") or not sysex_data.endswith(b"\xF7"):
                 logging.error("Invalid SysEx file format")
                 return
         except Exception as ex:

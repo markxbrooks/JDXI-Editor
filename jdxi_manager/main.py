@@ -9,7 +9,6 @@ import threading
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 import mido
-from jdxi_manager.ui.windows.jdxi import JdxiInstrument
 from pubsub import pub
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPixmap, QColor

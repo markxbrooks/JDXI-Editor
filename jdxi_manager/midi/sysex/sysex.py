@@ -137,6 +137,22 @@ class SysExMessage:
         msg.append(self.end_of_sysex)
         return bytes(msg)
 
+    def to_int_list(self) -> list[int]:
+        """Convert the SysEx message to a list of integers."""
+        msg = (
+                [self.start_of_sysex]  # Wrap integer in a list
+                + [self.manufacturer_id]
+                + [self.device_id]  # Wrap integer in a list
+                + list(self.model_id)
+                + [self.command]  # Wrap integer in a list
+                + self.address
+                + self.data
+        )
+        if self.manufacturer_id == [0x41]:  # Roland messages require checksum
+            msg.append(self.calculate_checksum())
+        msg.append(self.end_of_sysex)  # Append integer directly
+        return msg
+
     @classmethod
     def from_bytes(cls, data: bytes):
         """Parse a received SysEx message into an instance."""

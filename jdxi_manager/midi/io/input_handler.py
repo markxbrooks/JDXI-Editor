@@ -24,7 +24,14 @@ import json
 import logging
 import mido
 from typing import Any, Callable, Dict, List, Optional, Tuple
-from rtmidi.midiconstants import NOTE_ON, NOTE_OFF, PROGRAM_CHANGE, CONTROL_CHANGE, SYSTEM_EXCLUSIVE, TIMING_CLOCK
+from rtmidi.midiconstants import (
+    NOTE_ON,
+    NOTE_OFF,
+    PROGRAM_CHANGE,
+    CONTROL_CHANGE,
+    SYSTEM_EXCLUSIVE,
+    TIMING_CLOCK,
+)
 from PySide6.QtCore import Signal
 from pubsub import pub
 
@@ -35,6 +42,7 @@ from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.sysex.sysex import SysexParameter
 from jdxi_manager.midi.utils.json import log_json
 from jdxi_manager.midi.sysex.parsers import parse_sysex
+
 # from jdxi_manager.midi.sysex.sysex import SysexParameter
 from jdxi_manager.midi.sysex.utils import get_parameter_from_address
 
@@ -52,7 +60,7 @@ class MIDIInHandler(MidiIOController):
     midi_program_changed = Signal(int, int)  # channel, program
     midi_parameter_changed = Signal(object, int)  # Emit parameter and value
     midi_parameter_received = Signal(list, int)  # address, value
-    midi_control_changed = Signal(int, int, int) # channel, control, value
+    midi_control_changed = Signal(int, int, int)  # channel, control, value
     midi_sysex_json = Signal(str)  # Signal emitting SysEx data as address JSON string
 
     def __init__(self, parent: Optional[Any] = None) -> None:
@@ -96,13 +104,21 @@ class MIDIInHandler(MidiIOController):
         try:
             logging.info(f"message preset_type: {type(event)}")
             if type(event) == tuple:
-                message_data , _ = event
+                message_data, _ = event
                 message = self.rtmidi_to_mido(message_data)
                 if message.type == "program_change":
-                    logging.info("Program Change - Channel: %d, Program: %d", message.channel, message.program)
+                    logging.info(
+                        "Program Change - Channel: %d, Program: %d",
+                        message.channel,
+                        message.program,
+                    )
                 if message.type != "clock":
                     self.midi_incoming_message.emit(message)
-                    logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
+                    logging.info(
+                        "MIDI message of preset_type %s incoming: %s",
+                        message.type,
+                        message,
+                    )
                 preset_data: Dict[str, Any] = {"modified": 0}
                 message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
                     "sysex": self._handle_sysex_message,
@@ -137,7 +153,7 @@ class MIDIInHandler(MidiIOController):
         :param message: The incoming MIDI message.
         """
         # Do not process clock messages for logging/emission
-        #if message.type != "clock":
+        # if message.type != "clock":
         #    self.midi_incoming_message.emit(message)
         #    logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
 
@@ -190,12 +206,17 @@ class MIDIInHandler(MidiIOController):
         :param preset_data: Dictionary for preset data modifications.
         """
         try:
+            if message.type == 'sysex' and len(message.data) > 6 and message.data[4] == 0x02:  # Identity request
+                self._handle_identity_request(message)
+                return
             # Convert raw SysEx data to address hex string
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             logging.debug("SysEx message received (%d bytes)", len(message.data))
 
             # Reconstruct SysEx message bytes
-            sysex_message_bytes = bytes([0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7])
+            sysex_message_bytes = bytes(
+                [0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7]
+            )
 
             # If the message contains tone data, attempt to parse it
             if len(message.data) > 63:
@@ -211,12 +232,35 @@ class MIDIInHandler(MidiIOController):
                 command_type = message.data[6]
                 address_offset = "".join(f"{byte:02X}" for byte in message.data[7:11])
                 command_name = SysexParameter.get_command_name(command_type)
-                logging.debug("Command: %s (0x%02X), Address Offset: %s", command_name, command_type, address_offset)
+                logging.debug(
+                    "Command: %s (0x%02X), Address Offset: %s",
+                    command_name,
+                    command_type,
+                    address_offset,
+                )
             except Exception as ex:
-                logging.warning(f"Unable to extract command or parameter address due to {ex}")
+                logging.warning(
+                    f"Unable to extract command or parameter address due to {ex}"
+                )
 
         except Exception as ex:
             logging.error(f"Unexpected error {ex} while handling SysEx message")
+
+    def _handle_identity_request(self, message):
+        """Handles an incoming Identity Request and sends an Identity Reply."""
+        device_id = message.data[1]
+        manufacturer_id = message.data[5:8]
+        version = message.data[12:16]  # Extract firmware version bytes
+
+        version_str = ".".join(str(byte) for byte in version)
+        print(f"🎹 Device ID: {hex(device_id)}")
+        print(f"🏭 Manufacturer ID: {manufacturer_id}")
+        print(f"🔄 Firmware Version: {version_str}")
+        return {
+            "device_id": device_id,
+            "manufacturer_id": manufacturer_id,
+            "firmware_version": version_str
+        }
 
     def _handle_control_change(self, message: Any, preset_data: Dict[str, Any]) -> None:
         """
@@ -228,7 +272,12 @@ class MIDIInHandler(MidiIOController):
         channel = message.channel + 1
         control = message.control
         value = message.value
-        logging.info("Control Change - Channel: %d, Control: %d, Value: %d", channel, control, value)
+        logging.info(
+            "Control Change - Channel: %d, Control: %d, Value: %d",
+            channel,
+            control,
+            value,
+        )
         self.midi_control_changed.emit(channel, control, value)
         if control == 0:
             self.cc_msb_value = value
@@ -247,7 +296,9 @@ class MIDIInHandler(MidiIOController):
         """
         channel = message.channel + 1
         program_number = message.program
-        logging.info("Program Change - Channel: %d, Program: %d", channel, program_number)
+        logging.info(
+            "Program Change - Channel: %d, Program: %d", channel, program_number
+        )
 
         self.midi_program_changed.emit(channel, program_number)
 
@@ -260,8 +311,14 @@ class MIDIInHandler(MidiIOController):
         if self.cc_msb_value in preset_mapping:
             preset_data["preset_type"] = preset_mapping[self.cc_msb_value]
             # Adjust preset number based on LSB value
-            self.preset_number = program_number + (128 if self.cc_lsb_value == 65 else 0)
-            preset_name = DIGITAL_PRESETS_ENUMERATED[self.preset_number] if self.preset_number < len(DIGITAL_PRESETS_ENUMERATED) else "Unknown Preset"
+            self.preset_number = program_number + (
+                128 if self.cc_lsb_value == 65 else 0
+            )
+            preset_name = (
+                DIGITAL_PRESETS_ENUMERATED[self.preset_number]
+                if self.preset_number < len(DIGITAL_PRESETS_ENUMERATED)
+                else "Unknown Preset"
+            )
             pub.sendMessage(
                 "update_display_preset",
                 preset_number=self.preset_number,

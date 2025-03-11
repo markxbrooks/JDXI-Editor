@@ -109,8 +109,6 @@ class RolandSysEx(SysExMessage):
         for key, value in required_values.items():
             if value is None:
                 raise ValueError(f"Missing required value: {key} cannot be None.")
-            else:
-                print(f"key {key} id {value}")
 
         # Construct SysEx message
         sysex_msg = (
