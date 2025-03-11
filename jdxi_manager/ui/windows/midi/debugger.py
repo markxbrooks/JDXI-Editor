@@ -1,9 +1,11 @@
+import logging
+from tabulate import tabulate
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
     QPushButton, QTextEdit, QLabel, QPlainTextEdit
 )
 from PySide6.QtCore import Qt
-import logging
+
 from jdxi_manager.midi.data.constants import (
     START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2,
     MODEL_ID, JD_XI_HEADER, DT1_COMMAND_12, END_OF_SYSEX,
@@ -11,6 +13,7 @@ from jdxi_manager.midi.data.constants import (
     EFFECTS_AREA
 )
 from jdxi_manager.ui.style import Style
+from jdxi_manager.midi.sysex.parsers import parse_sysex
 
 
 class MIDIDebugger(QMainWindow):
@@ -115,6 +118,9 @@ class MIDIDebugger(QMainWindow):
         self.response_log = QTextEdit()
         self.response_log.setReadOnly(True)
         bottom_layout.addWidget(self.response_log)
+
+        self.clear_button.clicked.connect(self.decoded_text.clear)
+        self.clear_button.clicked.connect(self.response_log.clear)
         
         # Add widgets to splitter
         splitter.addWidget(top_widget)
@@ -122,41 +128,63 @@ class MIDIDebugger(QMainWindow):
         
         # Add splitter to main layout
         layout.addWidget(splitter)
-        
-    def _decode_sysex(self, message):
+
+    def _decode_sysex_new(self, message):
         """Decode address SysEx message"""
         if len(message) < 8:
             return "Invalid SysEx message (too short)"
             
         if message[0] != 0xF0 or message[1] != 0x41:
-            return "Not address Roland SysEx message"
+            return "Not a Roland SysEx message"
+        
+        try:
+            # Use the parse_sysex function to decode the message
+            decoded_parameters = parse_sysex(message)
+            print(decoded_parameters)
             
+            # Format the output using the decoded parameters
+            table_data = [[key, value] for key, value in decoded_parameters.items()]
+            decoded = tabulate(table_data, headers=["Parameter", "Value"], tablefmt="grid")
+            return decoded
+            
+        except Exception as e:
+            return f"Error decoding message: {str(e)}"
+
+    def _decode_sysex(self, message):
+        """Decode address SysEx message"""
+        if len(message) < 8:
+            return "Invalid SysEx message (too short)"
+
+        if message[0] != 0xF0 or message[1] != 0x41:
+            return "Not address Roland SysEx message"
+
         try:
             # Get command preset_type
             command = message[7]
             command_str = self.COMMANDS.get(command, f"Unknown Command ({hex(command)})")
-            
+
             # Get area
             area = message[8]
             area_str = self.SYSEX_AREAS.get(area, f"Unknown Area ({hex(area)})")
-            
+
             # Get synth number
             synth = message[9]
             synth_str = f"Digital Synth {synth}" if synth in [1, 2] else f"Unknown Synth ({hex(synth)})"
-            
+
             # Get section
             section = message[10]
             section_str = self.SECTIONS.get(section, f"Unknown Section ({hex(section)})")
-            
+
             # Get parameter
             param = message[11]
             param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({hex(param)})")
-            
+
             # Get value
             value = message[12]
-            
+
             # Format the output
             decoded = (
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
                 f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
                 f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
@@ -168,15 +196,16 @@ class MIDIDebugger(QMainWindow):
                 f"| {9:<5} | {'Synth':<28} | {hex(synth):<17} | {synth_str:<30} |\n"
                 f"| {'10-13':<5} | {'Section':<28} | {' '.join(hex(x) for x in message[10:14]):<17} | {section_str:<30} |\n"
                 f"| {'14-15':<5} | {'Parameter':<28} | {' '.join(hex(x) for x in message[14:16]):<17} | {param_str:<30} |\n"
-                f"| {16:<5} | {'Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<10} |\n"
+                f"| {16:<5} | {'Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
                 f"| {17:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
             )
 
             return decoded
-            
+
         except Exception as e:
             return f"Error decoding message: {str(e)}"
-            
+
     def _decode_current(self):
         """Decode the currently entered message"""
         text = self.command_input.toPlainText().strip()
@@ -187,7 +216,7 @@ class MIDIDebugger(QMainWindow):
                 # Convert hex string to bytes
                 hex_values = text.split()
                 message = [int(x, 16) for x in hex_values]
-                
+                # message = bytes(int(byte, 16) for byte in text.split())
                 # Decode and display
                 decoded = self._decode_sysex(message)
                 self.decoded_text.append(decoded)

@@ -21,7 +21,7 @@ from typing import List, Dict, Type
 from jdxi_manager.midi.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_manager.midi.data.parameter.drums import DrumParameter
+from jdxi_manager.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_manager.midi.data.parameter.effects import EffectParameter
 
 
@@ -45,49 +45,7 @@ def get_temporary_area(data: List[int]) -> str:
         (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA"
     }
     return area_mapping.get(tuple(data[8:10]), "Unknown") if len(data) >= 10 else "Unknown"
-"""
-DRUM_PARTIAL_NAMES = [
-    "COM",
-    "BD1",
-    "RIM",
-    "BD2",
-    "CLAP",
-    "BD3",
-    "SD1",
-    "CHH",
-    "SD2",
-    "PHH",
-    "SD3",
-    "OHH",
-    "SD4",
-    "TOM1",
-    "PRC1",
-    "TOM2",
-    "PRC2",
-    "TOM3",
-    "PRC3",
-    "CYM1",
-    "PRC4",
-    "CYM2",
-    "PRC5",
-    "CYM3",
-    "HIT",
-    "OTH1",
-    "OTH2",
-    "D4",
-    "Eb4",
-    "E4",
-    "F4",
-    "F#4",
-    "G4",
-    "G#4",
-    "A4",
-    "Bb4",
-    "B4",
-    "C5",
-    "C#5",
-]
-"""
+
 
 def get_synth_tone(byte_value: int) -> str:
     """Map byte value to corresponding synth tone."""
