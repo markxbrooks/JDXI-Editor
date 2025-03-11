@@ -17,7 +17,6 @@ Dependencies:
     - jdxi_manager.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
 """
 
-from PySide6.QtCore import Signal
 from jdxi_manager.midi.io.input_handler import MIDIInHandler
 from jdxi_manager.midi.io.output_handler import MIDIOutHandler
 import logging
