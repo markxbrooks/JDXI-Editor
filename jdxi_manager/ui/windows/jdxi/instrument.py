@@ -97,6 +97,7 @@ class JdxiInstrument(JdxiUi):
 
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
+        self.midi_helper.identify_device()
 
         # Show MIDI config if auto-connect failed
         if (
@@ -876,6 +877,7 @@ class JdxiInstrument(JdxiUi):
 
             # Initialize singleton connection
             MIDIConnection().initialize(self.midi_in, self.midi_out, self)
+            MIDIConnection().identify_device()
 
             # Update MIDI helper references
             self.midi_helper.midi_in = self.midi_in
