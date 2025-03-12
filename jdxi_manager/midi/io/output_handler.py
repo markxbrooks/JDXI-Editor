@@ -26,7 +26,7 @@ from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 from jdxi_manager.midi.data.constants import START_OF_SYSEX, DEVICE_ID, MODEL_ID_1, END_OF_SYSEX
 from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4
 from jdxi_manager.midi.io.controller import MidiIOController
-from jdxi_manager.midi.sysex.messages import IdentityRequest, ControlChangeMessage
+from jdxi_manager.midi.sysex.messages import IdentityRequestMessage, ControlChangeMessage, ProgramChangeMessage
 from jdxi_manager.midi.sysex.roland import RolandSysEx
 from jdxi_manager.midi.sysex.sysex import SysExMessage
 from jdxi_manager.midi.sysex.utils import calculate_checksum
@@ -166,12 +166,12 @@ class MIDIOutHandler(MidiIOController):
         """
         logging.debug("Sending identity request")
         try:
-            request = IdentityRequest()
+            request = IdentityRequestMessage()
             request_bytes_list = request.to_list()
             logging.info(f"sending identity request message: {type(request_bytes_list)} {request_bytes_list}")
             self.send_message(request_bytes_list)
-        except Exception as e:
-            logging.error(f"Error sending identity request: {e}")
+        except Exception as ex:
+            logging.error(f"Error sending identity request: {ex}")
             return False
 
     def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
@@ -209,11 +209,6 @@ class MIDIOutHandler(MidiIOController):
             # Create a RolandSysEx message
             sysex_message = RolandSysEx()
             message = sysex_message.construct_sysex(address, *data_bytes)
-
-            # Convert to a readable format for logging
-            formatted_message = format_midi_message_to_hex_string(message)
-            logging.info(f"Sending SysEx message: {formatted_message}")
-
             return self.send_message(message)
 
         except Exception as ex:
@@ -231,15 +226,10 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.debug(f"Sending program change: program={program}, channel={channel}")
-        if not self.midi_out.is_port_open():
-            logging.error("MIDI output port not open")
-            return False
-
         try:
-            msg = [0xC0 + channel, program & 0x7F]
-            formatted_msg = format_midi_message_to_hex_string(msg)
-            logging.debug(f"Sending program change message: {formatted_msg}")
-            return self.send_message(msg)
+            program_change_message = ProgramChangeMessage(channel=channel, program=program)
+            message = program_change_message.to_list()
+            return self.send_message(message)
         except Exception as e:
             logging.error(f"Error sending program change: {e}")
             return False
@@ -277,7 +267,7 @@ class MIDIOutHandler(MidiIOController):
             logging.error(f"send_control_change: Error sending control change: {ex}")
             return False
 
-    def send_bank_and_program_change(
+    def send_bank_select_and_program_change(
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
     ) -> bool:
         """
@@ -390,80 +380,3 @@ class MIDIOutHandler(MidiIOController):
         except Exception as ex:
             logging.error(f"Error getting parameter: {ex}")
             return None
-
-    def request_parameter(self, area: int, part: int, group: int, param: int) -> bool:
-        """
-        Send address non-blocking parameter request message.
-
-        Args:
-            area: Parameter area.
-            part: Part number.
-            group: Parameter area.
-            param: Parameter number.
-        Returns:
-            True if the message was sent successfully, False otherwise.
-        """
-        if not self.midi_out.is_port_open():
-            logging.error("MIDI output port not open")
-            return False
-
-        try:
-            request = [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x3B,
-                area,
-                part,
-                group,
-                param,
-                0xF7,
-            ]
-            return self.send_message(request)
-        except Exception as e:
-            logging.error(f"Error requesting parameter: {e}")
-            return False
-
-    def send_cc(self, cc: int, value: int, channel: int = 0) -> bool:
-        """
-        Send address Control Change (CC) message.
-
-        Args:
-            cc: Control Change number (0-127).
-            value: Control Change value (0-127).
-            channel: MIDI channel (0-15).
-        Returns:
-            True if the message was sent successfully, False otherwise.
-        """
-        logging.debug(f"Sending CC: cc={cc}, value={value}, channel={channel}")
-        try:
-            if not self.is_output_open:
-                logging.warning("MIDI output not open")
-                return False
-
-            msg = [0xB0 + channel, cc & 0x7F, value & 0x7F]
-            formatted_msg = format_midi_message_to_hex_string(msg)
-            logging.debug(f"Sending CC message: {formatted_msg}")
-            self.midi_out.send_message(msg)
-            logging.debug(f"Sent CC {cc}={value} on ch{channel}")
-            return True
-        except Exception as e:
-            logging.error(f"Error sending CC message: {e}")
-            return False
-
-    def send_sysex_rq1(self, device_id: List[int], address: List[int], size: List[int]):
-        """
-        Send address SysEx Request (RQ1) message.
-
-        The address and size indicate the preset_type and amount of data that is requested.
-
-        Args:
-            device_id: List of device-specific data (e.g., [0x41, 0x10, 0x00, 0x00, 0x00, 0x0E] for Roland JD-Xi).
-            address: Base address where to save data.
-            size: List of four bytes representing the size (e.g., [MSB, second, third, LSB]).
-        """
-        sysex_data = device_id + [0x11] + address + size + [0]
-        logging.debug(f"Sending SysEx message: {type(sysex_data)} {sysex_data}")
-        self.midi_out.send_message(sysex_data)

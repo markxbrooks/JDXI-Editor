@@ -1,3 +1,31 @@
+"""
+MIDI Message Classes for MIDI Communication
+===========================================
+
+This module defines several classes for constructing and handling different types of MIDI messages,
+including Control Change, Program Change, and Identity Request messages. Each class inherits from a
+common `Message` base class, which provides methods for converting the message to a byte list, bytes,
+and a formatted hexadecimal string.
+
+Classes:
+    Message: The base class for all MIDI messages, providing common methods for byte conversion and
+             validation.
+    ControlChangeMessage: Represents a MIDI Control Change message, including channel, controller,
+                          and value parameters. It converts the message to a byte list and ensures
+                          that the MIDI values are within valid ranges.
+    ProgramChangeMessage: Represents a MIDI Program Change message, which includes a channel and
+                           program number. It ensures the program number is within the valid MIDI
+                           range (0-127).
+    IdentityRequestMessage: Represents a MIDI Identity Request message, which is typically used for
+                             querying information from a connected MIDI device. It converts the
+                             identity request message to the appropriate byte list for transmission.
+
+Constants:
+    JD_XI_MODEL_ID: The JD-Xi model ID used in system exclusive messages.
+
+"""
+
+
 from jdxi_manager.midi.data.constants.sysex import DT1_COMMAND_12
 from jdxi_manager.midi.sysex.jdxi import JDXiSysEx
 from jdxi_manager.midi.data.constants import (
@@ -21,40 +49,70 @@ JD_XI_MODEL_ID = [0x00, 0x00, 0x00, 0x0E]  # JD-Xi Model ID
 
 
 @dataclass
-class ControlChangeMessage:
-    """MIDI Control Change message"""
-
-    channel: int = 0  # Default channel 1, 0-index
-    controller: int = 0
-    value: int = 0
+class Message:
+    """MIDI message base class"""
+    MAX_MIDI_VALUE = 0x7F
 
     def to_list(self) -> List[int]:
-        """Convert to list of bytes for sending
-
-        Returns:
-            List of integers representing the MIDI message
-        """
-        return [0xB0 + self.channel, self.controller & 0x7F, self.value & 0x7F]
+        """Convert to list of bytes for sending, to be implemented in subclass"""
+        raise NotImplementedError("Subclasses should implement this method.")
 
     def to_bytes(self) -> bytes:
-        """Convert to bytes for sending
-
-        Returns:
-            Bytes object containing the MIDI message
-        """
+        """Convert to bytes for sending"""
         return bytes(self.to_list())
 
     def to_hex_string(self) -> str:
-        """Convert message to a formatted hexadecimal string.
-
-        Returns:
-            A string representing the message in hexadecimal format.
-        """
+        """Convert message to a formatted hexadecimal string."""
         return " ".join(f"{x:02X}" for x in self.to_list())
 
 
 @dataclass
-class IdentityRequest:
+class ControlChangeMessage(Message):
+    """MIDI Control Change message"""
+    CONTROL_CHANGE_STATUS_BYTE = 0xB0
+    channel: int = 0  # Default channel 1 (0-indexed)
+    controller: int = 0
+    value: int = 0
+
+    def to_list(self) -> List[int]:
+        """Convert to list of bytes for sending"""
+        # Ensure valid MIDI ranges
+        if not (0 <= self.channel <= 15):
+            raise ValueError(f"Channel {self.channel} is out of valid MIDI range (0-15).")
+        if not (0 <= self.controller <= 127):
+            raise ValueError(f"Controller {self.controller} is out of valid MIDI range (0-127).")
+        if not (0 <= self.value <= 127):
+            raise ValueError(f"Value {self.value} is out of valid MIDI range (0-127).")
+
+        return [self.CONTROL_CHANGE_STATUS_BYTE +
+                self.channel,
+                self.controller & self.MAX_MIDI_VALUE,
+                self.value & self.MAX_MIDI_VALUE]
+
+
+@dataclass
+class ProgramChangeMessage(Message):
+    """MIDI Program Change message"""
+
+    PROGRAM_CHANGE_STATUS_BYTE = 0xC0  # Program Change status byte for channel 1
+    MAX_PROGRAM_VALUE = 0x7F  # Maximum Program value (127, or 0x7F in hexadecimal)
+
+    channel: int = 0  # Default channel 1 (0-indexed)
+    program: int = 0
+
+    def to_list(self) -> List[int]:
+        """Convert to list of bytes for sending"""
+        # Ensure valid MIDI ranges
+        if not (0 <= self.channel <= 15):
+            raise ValueError(f"Channel {self.channel} is out of valid MIDI range (0-15).")
+        if not (0 <= self.program <= self.MAX_PROGRAM_VALUE):
+            raise ValueError(f"Program {self.program} is out of valid range (0-127).")
+
+        return [self.PROGRAM_CHANGE_STATUS_BYTE + self.channel, self.program & self.MAX_PROGRAM_VALUE]
+
+
+@dataclass
+class IdentityRequestMessage(Message):
     """MIDI Identity Request message"""
 
     device_id: int = 0x10  # Default device ID
@@ -71,14 +129,6 @@ class IdentityRequest:
                 SUB_ID_1,
                 SUB_ID_2,
                 END_OF_SYSEX]
-
-    def to_bytes(self) -> bytes:
-        """Convert to bytes for sending
-
-        Returns:
-            Bytes object containing the MIDI message
-        """
-        return bytes(self.to_list())
 
 
 @dataclass
