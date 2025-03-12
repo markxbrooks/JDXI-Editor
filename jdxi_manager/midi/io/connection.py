@@ -29,7 +29,7 @@ Example Usage:
 import logging
 from typing import Optional
 from jdxi_manager.midi.sysex.device import DeviceInfo
-from jdxi_manager.midi.sysex.messages import IdentityRequestMessage
+from jdxi_manager.midi.message.identity_request import IdentityRequestMessage
 
 
 class MIDIConnection:

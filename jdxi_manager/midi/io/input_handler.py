@@ -33,7 +33,7 @@ from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.sysex.device import DeviceInfo
-from jdxi_manager.midi.sysex.sysex import SysexParameter
+from jdxi_manager.midi.message.sysex import SysexParameter
 from jdxi_manager.midi.utils.json import log_json
 from jdxi_manager.midi.sysex.parsers import parse_sysex
 from jdxi_manager.midi.sysex.utils import get_parameter_from_address

@@ -3,8 +3,9 @@
 from enum import auto
 from dataclasses import dataclass
 
-from jdxi_manager.midi.sysex.roland import RolandSysEx
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.midi.data.parameter.program_common import ProgramCommonParameter
+from .sysex import SETUP_AREA
 
 # Memory Areas
 PROGRAM_AREA = 0x18
@@ -88,7 +89,6 @@ END_OF_SYSEX = 0xF7
 ROLAND_ID = 0x41
 DEVICE_ID = 0x10  # Device ID (dev: 10H - 1FH, 7FH)
 
-ID_NUMBER = 0x7E  # 7EH ID number (Universal Non-realtime Message)
 
 # Model ID bytes
 MODEL_ID_1 = 0x00  # Manufacturer ID extension
@@ -96,9 +96,7 @@ MODEL_ID_2 = 0x00  # Device family code MSB
 MODEL_ID_3 = 0x00  # Device family code LSB
 MODEL_ID_4 = 0x0E  # Product code
 
-DEVICE = 0x7F
-SUB_ID_1 = 0x06
-SUB_ID_2 = 0x01
+
 
 # Full Model ID array
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
@@ -400,9 +398,7 @@ ANALOG_LFO_SYNC_NOTES = [
     "1/32",  # 19
 ]
 
-# JD-Xi Memory Map Areas
-SETUP_AREA = 0x01  # 01 00 00 00: Setup
-SYSTEM_AREA = 0x02  # 02 00 00 00: System
+
 
 # Synth Areas
 DIGITAL_SYNTH_1 = 0x19  # 19 00 00 00: Digital Synth Part 1

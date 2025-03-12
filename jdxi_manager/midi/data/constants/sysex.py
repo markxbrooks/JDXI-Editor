@@ -36,13 +36,27 @@ END_OF_SYSEX = 0xF7
 ROLAND_ID = 0x41
 DEVICE_ID = 0x10
 
+ID_NUMBER = 0x7E  # 7EH ID number (Universal Non-realtime Message)
+
+DEVICE = 0x7F
+SUB_ID_1 = 0x06
+SUB_ID_2 = 0x01
+
+PLACEHOLDER_BYTE = 0x00
+
 # Model ID bytes
 MODEL_ID_1 = 0x00  # Manufacturer ID extension
 MODEL_ID_2 = 0x00  # Device family code MSB
 MODEL_ID_3 = 0x00  # Device family code LSB
 MODEL_ID_4 = 0x0E  # JD-XI Product code
 
+JD_XI_MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]  # JD-Xi Model ID
+
 PROGRAM_COMMON = 0x00
+
+# JD-Xi Memory Map Areas
+SETUP_AREA = 0x01  # 01 00 00 00: Setup
+SYSTEM_AREA = 0x02  # 02 00 00 00: System
 
 # Roland Commands
 DT1_COMMAND_12 = 0x12  # Data Set 1
