@@ -24,6 +24,7 @@ from jdxi_manager.midi.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_manager.midi.data.parameter.effects import EffectParameter
+from jdxi_manager.midi.data.partials.partials import TONE_MAPPING
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
@@ -50,54 +51,17 @@ def get_temporary_area(data: List[int]) -> str:
     )
 
 
+def get_partial_address(part_name: str) -> str:
+    """Map partial address to corresponding temporary area."""
+    for key, value in TONE_MAPPING.items():
+        if value == part_name:
+            return key
+    return "Unknown"
+
+
 def get_synth_tone(byte_value: int) -> str:
     """Map byte value to corresponding synth tone."""
-    tone_mapping = {
-        0x00: "TONE_COMMON",
-        0x20: "PARTIAL_1",
-        0x21: "PARTIAL_2",
-        0x22: "PARTIAL_3",
-        0x50: "TONE_MODIFY",
-        0x2E: "BD1",
-        0x30: "RIM",
-        0x32: "BD2",
-        0x34: "CLAP",
-        0x36: "BD3",
-        0x38: "SD1",
-        0x3A: "CHH",
-        0x3C: "SD2",
-        0x3E: "PHH",
-        0x40: "SD3",
-        0x42: "OHH",
-        0x44: "SD4",
-        0x46: "TOM1",
-        0x48: "PRC1",
-        0x4A: "TOM2",
-        0x4C: "PRC2",
-        0x4E: "TOM3",
-        0x50: "PRC3",
-        0x52: "CYM1",
-        0x54: "PRC4",
-        0x56: "CYM2",
-        0x58: "PRC5",
-        0x5A: "CYM3",
-        0x5C: "HIT",
-        0x5E: "OTH1",
-        0x60: "OTH2",
-        0x62: "D4",
-        0x64: "Eb4",
-        0x66: "E4",
-        0x68: "F4",
-        0x6A: "F#4",
-        0x6C: "G4",
-        0x6E: "G#4",
-        0x70: "A4",
-        0x72: "Bb4",
-        0x74: "B4",
-        0x76: "C5",
-        0x78: "C#5",
-    }
-    return tone_mapping.get(byte_value, "Unknown")
+    return TONE_MAPPING.get(byte_value, "Unknown")
 
 
 def extract_tone_name(data: List[int]) -> str:

@@ -32,7 +32,7 @@ print(sysex_bytes)  # Outputs a valid SysEx message as a byte sequence
 
 import logging
 from enum import Enum
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass
 
 from jdxi_manager.midi.data.constants.sysex import (
@@ -96,7 +96,7 @@ class SysExMessage:
     """Base class for MIDI System Exclusive (SysEx) messages."""
 
     start_of_sysex: int = START_OF_SYSEX  # Start of SysEx
-    manufacturer_id: List[int] = None  # Manufacturer ID (e.g., [0x41] for Roland)
+    manufacturer_id: int = None  # Manufacturer ID (e.g., [0x41] for Roland)
     device_id: int = 0x10  # Default device ID
     model_id: List[int] = None  # Model ID (4 bytes)
     command: int = 0x00  # SysEx command (DT1, RQ1, etc.)
@@ -115,11 +115,16 @@ class SysExMessage:
         if self.data is None:
             self.data = []
 
-    def calculate_checksum(self) -> int:
-        """Calculate Roland-style checksum (if applicable)."""
-        if not self.address and not self.data:
-            return 0
-        return (128 - (sum(self.address + self.data) & 0x7F)) & 0x7F
+    def calculate_checksum(self, method: str = "roland") -> Optional[int]:
+        """Calculate checksum based on the specified method (default: Roland)."""
+        if method == "roland":
+            if not self.address and not self.data:
+                return 0
+            return (128 - (sum(self.address + self.data) & 0x7F)) & 0x7F
+        elif method == "basic":  # Example: simple sum mod 128
+            return sum(self.address + self.data) % 128
+        else:
+            return None  # Unsupported checksum type
 
     def to_bytes(self) -> bytes:
         """Convert the SysEx message to a byte sequence."""
@@ -156,8 +161,10 @@ class SysExMessage:
     @classmethod
     def from_bytes(cls, data: bytes):
         """Parse a received SysEx message into an instance."""
-        if len(data) < 12 or data[0] != 0xF0 or data[-1] != 0xF7:
-            raise ValueError("Invalid SysEx message format.")
+        if len(data) < 12:
+            raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")
+        if data[0] != 0xF0 or data[-1] != 0xF7:
+            raise ValueError("Invalid SysEx message: missing start or end bytes")
 
         manufacturer_id = [data[1]]
         device_id = data[2]
@@ -174,3 +181,5 @@ class SysExMessage:
             address=address,
             data=message_data,
         )
+
+

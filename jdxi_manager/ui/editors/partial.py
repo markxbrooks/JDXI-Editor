@@ -43,8 +43,8 @@ class PartialEditor(QWidget):
         self.midi_helper = midi_helper
         self.area = None
         self.part = part
-        self.group = None
-        self.partial_num = partial_num  # This is now the numerical index
+        self.group = 0x00
+        self.partial_number = partial_num  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_handler = None
 
@@ -75,6 +75,20 @@ class PartialEditor(QWidget):
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         # Store control reference
         self.controls[param] = slider
+        """ 
+        try:
+            slider_value = self.midi_helper.get_parameter(
+                area=self.area,
+                part=self.part,
+                group=self.group,
+                param=param.address,
+            )
+            logging.info(f"_create_parameter_value: slider_value: {slider_value}")
+            if slider_value:
+                slider.setValue(slider_value)
+        except TimeoutError:
+            logging.info(f"Timed out requesting {param}")
+        """
         return slider
 
     def _create_parameter_combo_box(

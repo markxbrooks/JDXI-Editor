@@ -18,6 +18,13 @@ def get_digital_parameter_by_address(address: Tuple[int, int]):
     return None
 
 
+DIGITAL_PARTIAL_NAMES = [
+    "PARTIAL_1",
+    "PARTIAL_2",
+    "PARTIAL_3"
+]
+
+
 class WaveGain(IntEnum):
     """Wave gain values in dB"""
 

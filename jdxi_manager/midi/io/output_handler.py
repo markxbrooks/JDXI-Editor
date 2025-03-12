@@ -23,12 +23,32 @@ from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_manager.midi.data.constants import START_OF_SYSEX, DEVICE_ID, MODEL_ID_1
+from jdxi_manager.midi.data.constants import START_OF_SYSEX, DEVICE_ID, MODEL_ID_1, END_OF_SYSEX
 from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.sysex.messages import IdentityRequest
+from jdxi_manager.midi.sysex.roland import RolandSysEx
+from jdxi_manager.midi.sysex.sysex import SysExMessage
 from jdxi_manager.midi.sysex.utils import calculate_checksum
 from jdxi_manager.midi.utils.byte import split_value_to_nibbles
+
+
+def format_midi_message_to_hex_string(message):
+    formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+    return formatted_message
+
+
+def construct_address(area, group, param, part):
+    # Address construction
+    address = [area, part, group & 0xFF, param & 0xFF]
+    return address
+
+
+def increment_group(group, param):
+    # Adjust group if param exceeds 127
+    if param > 127:
+        group += 1
+    return group
 
 
 class MIDIOutHandler(MidiIOController):
@@ -58,7 +78,7 @@ class MIDIOutHandler(MidiIOController):
             logging.info(f"Invalid MIDI value detected: {message}")
             return False
 
-        formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
+        formatted_message = format_midi_message_to_hex_string(message)
         logging.info(f"Sending MIDI message: {formatted_message}")
 
         if not self.midi_out.is_port_open():
@@ -154,11 +174,9 @@ class MIDIOutHandler(MidiIOController):
             logging.error(f"Error sending identity request: {e}")
             return False
 
-    def send_parameter(
-        self, area: int, part: int, group: int, param: int, value: int, size: int = 1
-    ) -> bool:
+    def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
         """
-        Send address parameter change message.
+        Send address parameter change message using RolandSysEx.
 
         Args:
             area: Parameter area (e.g., Program, Digital Synth).
@@ -171,85 +189,35 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.info(
-            f"Sending parameter: area={hex(area)}, part={hex(part)}, area={hex(group)}, param={hex(param)}, value={value}, size={size}"
+            f"send_parameter: \tarea={hex(area)}, \tpart={hex(part)}, \tgroup={hex(group)}, "
+            f"\tparam={hex(param)}, \tvalue={value}, \tsize={size}"
         )
-
-        if not self.is_output_open:
-            logging.warning("MIDI output not open")
-            return False
-
         try:
-            # Construct the address portion of the message
-            if param > 127:
-                group = group + 1
-            address = [area, part, group & 0xFF, param & 0xFF]
+            group = increment_group(group, param)
 
-            def increment_byte_list(parameter_value: int):
-                # Handle the 0x00 to 0x0F cycle for the last byte
-                last_byte = parameter_value % 16
+            address = construct_address(area, group, param, part)
 
-                # Handle the increment of the second byte after every 16 steps
-                second_byte = (parameter_value // 16) % 16
-
-                # Handle the increment of the first byte after every 256 steps
-                first_byte = parameter_value // 256
-
-                # Return the three incrementing bytes
-                increment_bytes = [0x00, first_byte, second_byte, last_byte]
-
-                return increment_bytes
-
+            # Determine the value format
             if size == 1:
-                message = (
-                    [
-                        START_OF_SYSEX,
-                        ROLAND_ID,
-                        DEVICE_ID,
-                        MODEL_ID_1,
-                        MODEL_ID_2,
-                        MODEL_ID_3,
-                        MODEL_ID_4,
-                        0x12,  # SysEx header
-                    ]
-                    + address
-                    + [
-                        value & 0x7F,  # Parameter value (0-127)
-                        0x00,  # Placeholder for checksum
-                        0xF7,  # End of SysEx
-                    ]
-                )
-
+                data_bytes = [value & 0x7F]  # Single byte (0-127)
             elif size in [4, 5]:
-                # byte_list = increment_byte_list(value)
-                value_byte_list = split_value_to_nibbles(value, size)
-                message = (
-                    [
-                        0xF0,
-                        0x41,
-                        0x10,
-                        0x00,
-                        0x00,
-                        0x00,
-                        0x0E,
-                        0x12,
-                    ]
-                    + address
-                    + value_byte_list
-                    + [0x00, 0xF7]
-                )  # Add checksum placeholder
+                data_bytes = split_value_to_nibbles(value, size)  # Convert to nibbles
             else:
                 logging.error(f"Unsupported parameter size: {size}")
                 return False
-            # Calculate checksum (for message[8:-2]), so chop off
-            checksum = calculate_checksum(message[8:-2])
-            message[-2] = checksum
 
-            formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
-            logging.info(f"Sending parameter message: {formatted_message}")
+            # Create a RolandSysEx message
+            sysex_message = RolandSysEx()
+            message = sysex_message.construct_sysex(address, *data_bytes)
+
+            # Convert to a readable format for logging
+            formatted_message = format_midi_message_to_hex_string(message)
+            logging.info(f"Sending SysEx message: {formatted_message}")
+
             return self.send_message(message)
 
-        except Exception as e:
-            logging.error(f"Error sending parameter: {e}")
+        except Exception as ex:
+            logging.error(f"Error sending parameter: {ex}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -269,7 +237,7 @@ class MIDIOutHandler(MidiIOController):
 
         try:
             msg = [0xC0 + channel, program & 0x7F]
-            formatted_msg = " ".join([hex(x)[2:].upper().zfill(2) for x in msg])
+            formatted_msg = format_midi_message_to_hex_string(msg)
             logging.debug(f"Sending program change message: {formatted_msg}")
             return self.send_message(msg)
         except Exception as e:
@@ -292,15 +260,11 @@ class MIDIOutHandler(MidiIOController):
         logging.info(
             f"Attempting to send control change: controller {controller} value {value} channel {channel}"
         )
-        if not self.midi_out.is_port_open():
-            logging.error("MIDI output port not open")
-            return False
-
         try:
-            msg = [0xB0 + channel, controller & 0x7F, value & 0x7F]
-            formatted_msg = " ".join([hex(x)[2:].upper().zfill(2) for x in msg])
+            message = [0xB0 + channel, controller & 0x7F, value & 0x7F]
+            formatted_msg = format_midi_message_to_hex_string(message)
             logging.debug(f"Sending control change message: {formatted_msg}")
-            return self.send_message(msg)
+            return self.send_message(message)
         except Exception as e:
             logging.error(f"Error sending control change: {e}")
             return False
@@ -369,9 +333,7 @@ class MIDIOutHandler(MidiIOController):
             return True
         return False
 
-    def get_parameter(
-        self, area: int, part: int, group: int, param: int
-    ) -> Optional[int]:
+    def get_parameter(self, area: int, part: int, group: int, param: int) -> Optional[int]:
         """
         Get parameter value via MIDI System Exclusive message.
 
@@ -383,44 +345,42 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             Parameter value (0-127) or None if an error occurs.
         """
-        logging.info(
-            f"Requesting parameter: area={area}, address={part}, area={group}, param={param}"
-        )
+        logging.info(f"Requesting parameter: area={area}, part={part}, group={group}, param={param}")
+
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
             return None
 
         try:
-            request = [
-                0xF0,
-                0x41,
-                0x10,
-                0x00,
-                0x00,
-                0x3B,
-                area,
-                part,
-                group,
-                param,
-                0xF7,
-            ]
-            self.midi_out.send_message(request)
+            # Construct SysEx request using SysExMessage
+            request = SysExMessage(
+                manufacturer_id=[ROLAND_ID],
+                device_id=DEVICE_ID,
+                model_id=[0x00, 0x00, 0x3B, 0x00],  # Example model ID
+                command=0x11,  # RQ1 (Request Data) command for Roland
+                address=[area, part, group, param],  # Address of parameter
+                data=[]  # No payload for request
+            )
 
-            # Wait for response with address timeout of 100ms.
+            self.midi_out.send_message(request.to_bytes())
+
+            # Wait for response with a timeout of 100ms.
             start_time = time.time()
             while time.time() - start_time < 0.1:
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
                     if len(msg) >= 11 and msg[0] == 0xF0 and msg[-1] == 0xF7:
-                        return msg[10]  # Value is at index 10
+                        response = SysExMessage.from_bytes(bytes(msg))  # Parse response
+                        return response.data[0] if response.data else None  # Extract parameter value
+
                 time.sleep(0.001)
 
             logging.warning("Timeout waiting for parameter response")
-            return None
+            raise TimeoutError
 
-        except Exception as e:
-            logging.error(f"Error getting parameter: {e}")
+        except Exception as ex:
+            logging.error(f"Error getting parameter: {ex}")
             return None
 
     def request_parameter(self, area: int, part: int, group: int, param: int) -> bool:
@@ -476,7 +436,7 @@ class MIDIOutHandler(MidiIOController):
                 return False
 
             msg = [0xB0 + channel, cc & 0x7F, value & 0x7F]
-            formatted_msg = " ".join([hex(x)[2:].upper().zfill(2) for x in msg])
+            formatted_msg = format_midi_message_to_hex_string(msg)
             logging.debug(f"Sending CC message: {formatted_msg}")
             self.midi_out.send_message(msg)
             logging.debug(f"Sent CC {cc}={value} on ch{channel}")
