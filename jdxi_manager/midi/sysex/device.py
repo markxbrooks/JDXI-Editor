@@ -37,21 +37,10 @@ Methods:
 
 Dependencies:
 -------------
-- logging
 - dataclasses
 - typing (List, Optional)
 
 """
-
-import logging
-from dataclasses import dataclass
-from typing import List, Optional
-
-
-from dataclasses import dataclass
-from typing import List, Optional
-import logging
-
 
 from dataclasses import dataclass
 from typing import List, Optional
@@ -113,76 +102,4 @@ class DeviceInfo:
                 version=[data[10], data[11], data[12], data[13]],  # Firmware Version
             )
         except Exception:
-            return None
-
-
-@dataclass
-class DeviceInfoOld:
-    """JD-Xi device information"""
-
-    device_id: int
-    manufacturer: List[int]  # Roland = [0x41, 0x00, 0x00]
-    family: List[int]  # JD-Xi = [0x00, 0x0E]
-    model: List[int]
-    version: List[int]  # e.g. [0x01, 0x00, 0x00] = v1.00
-
-    @property
-    def to_string(self) -> str:
-        """Get device information as string"""
-        if self.is_roland and self.is_jdxi:
-            return f"Device: Roland JD-Xi {self.version_string}"
-        elif self.is_roland:
-            return "Device: Roland"
-        elif self.is_jdxi:
-            return "Device: JD-Xi"
-        return f"Unknown device, Version: {self.version_string}"
-
-    @property
-    def is_roland(self) -> bool:
-        """Check if device is Roland"""
-        return self.manufacturer == [0x10]
-
-    @property
-    def is_jdxi(self) -> bool:
-        """Check if device is JD-Xi"""
-        return self.is_roland and self.family == [0x00, 0x0E]
-
-    @property
-    def version_string(self) -> str:
-        """Get version as string (e.g. 'v1.00')"""
-        if len(self.version) >= 3:
-            return f"v{self.version[0]}.{self.version[1]:02d}"
-        return "unknown"
-
-    @classmethod
-    def identity_reply_to_device_info(cls, data: bytes) -> Optional[str]:
-        """Convert an Identity Reply message to a device info string"""
-        device_info = cls.from_identity_reply(data)
-        if device_info:
-            return device_info.to_string
-        return None  # Explicitly return None if no device info
-
-    @classmethod
-    def from_identity_reply(cls, data: bytes) -> Optional["DeviceInfo"]:
-        """Create DeviceInfo from an Identity Reply message"""
-        logging.info(f"from_identity_reply data: {data}")
-        try:
-            if (
-                len(data) < 15
-                or data[0] != 0xF0  # SysEx Start
-                or data[1] != 0x7E  # Universal Non-Realtime
-                or data[2] != 0x06  # General Information
-                or data[3] != 0x02  # Identity Reply
-            ):
-                return None
-
-            return cls(
-                device_id=data[2],
-                manufacturer=list(data[5:8]),
-                family=list(data[8:10]),
-                model=list(data[10:12]),
-                version=list(data[12:15]),
-            )
-        except Exception as e:
-            logging.error(f"Error parsing Identity Reply: {e}")
             return None

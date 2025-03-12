@@ -40,7 +40,7 @@ from PySide6.QtCore import Signal, QObject
 from jdxi_manager.midi.io.helper import MIDIHelper
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.data.constants.sysex import DEVICE_ID
-from jdxi_manager.midi.sysex.roland import RolandSysEx
+from jdxi_manager.midi.message.roland import RolandSysEx
 
 
 class PresetLoader(QObject):

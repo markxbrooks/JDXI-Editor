@@ -23,13 +23,14 @@ from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_manager.midi.data.constants import START_OF_SYSEX, DEVICE_ID, MODEL_ID_1, END_OF_SYSEX
-from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4
+from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, DEVICE_ID, RQ1_COMMAND_11
 from jdxi_manager.midi.io.controller import MidiIOController
-from jdxi_manager.midi.sysex.messages import IdentityRequestMessage, ControlChangeMessage, ProgramChangeMessage
-from jdxi_manager.midi.sysex.roland import RolandSysEx
-from jdxi_manager.midi.sysex.sysex import SysExMessage
-from jdxi_manager.midi.sysex.utils import calculate_checksum
+from jdxi_manager.midi.message.identity_request import IdentityRequestMessage
+from jdxi_manager.midi.message.program_change import ProgramChangeMessage
+from jdxi_manager.midi.message.control_change import ControlChangeMessage
+from jdxi_manager.midi.message.channel import ChannelMessage
+from jdxi_manager.midi.message.roland import RolandSysEx
+from jdxi_manager.midi.message.sysex import SysExMessage
 from jdxi_manager.midi.utils.byte import split_value_to_nibbles
 
 
@@ -109,27 +110,24 @@ class MIDIOutHandler(MidiIOController):
         data1: Optional[int] = None,
         data2: Optional[int] = None,
         channel: int = 1,
-    ):
+    ) -> None:
         """
-        Send address MIDI channel mode message.
+        Send a MIDI Channel Message.
 
         Args:
-            status: Status byte (e.g., NOTE_ON, NOTE_OFF).
-            data1: First data byte (optional).
-            data2: Second data byte (optional).
-            channel: MIDI channel (1-based).
-        """
-        msg = [(status & 0xF0) | ((channel - 1) & 0x0F)]
-        if data1 is not None:
-            msg.append(data1 & 0x7F)
-            if data2 is not None:
-                msg.append(data2 & 0x7F)
+            status (int): Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).
+            data1 (Optional[int]): First data byte, typically a note or controller number.
+            data2 (Optional[int]): Second data byte, typically velocity or value.
+            channel (int): MIDI channel (1-based, range 1-16).
 
-        if self.midi_out.is_port_open():
-            self.midi_out.send_message(msg)
-            logging.debug(f"Sent MIDI message: {msg}")
-        else:
-            logging.error("MIDI output port not open")
+        Raises:
+            ValueError: If the channel is out of range (1-16).
+        """
+        if not (1 <= channel <= 16):
+            raise ValueError(f"Invalid MIDI channel: {channel}. Must be 1-16.")
+        channel_message = ChannelMessage(status, data1, data2, channel - 1)  # convert to 0-based
+        message_bytes_list = channel_message.to_list()
+        self.send_message(message_bytes_list)
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
         """
@@ -143,10 +141,6 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.debug(f"Sending bank select: MSB={msb}, LSB={lsb}, channel={channel}")
-        if not self.midi_out.is_port_open():
-            logging.error("MIDI output port not open")
-            return False
-
         try:
             # Bank Select MSB (CC#0)
             self.send_message([0xB0 + channel, 0x00, msb])
@@ -166,10 +160,10 @@ class MIDIOutHandler(MidiIOController):
         """
         logging.debug("Sending identity request")
         try:
-            request = IdentityRequestMessage()
-            request_bytes_list = request.to_list()
-            logging.info(f"sending identity request message: {type(request_bytes_list)} {request_bytes_list}")
-            self.send_message(request_bytes_list)
+            identity_request_message = IdentityRequestMessage()
+            identity_request_bytes_list = identity_request_message.to_list()
+            logging.info(f"sending identity request message: {type(identity_request_bytes_list)} {identity_request_bytes_list}")
+            self.send_message(identity_request_bytes_list)
         except Exception as ex:
             logging.error(f"Error sending identity request: {ex}")
             return False
@@ -194,19 +188,14 @@ class MIDIOutHandler(MidiIOController):
         )
         try:
             group = increment_group(group, param)
-
             address = construct_address(area, group, param, part)
-
-            # Determine the value format
             if size == 1:
-                data_bytes = [value & 0x7F]  # Single byte (0-127)
+                data_bytes = [value & 0x7F]  # Single byte format (0-127)
             elif size in [4, 5]:
                 data_bytes = split_value_to_nibbles(value, size)  # Convert to nibbles
             else:
                 logging.error(f"Unsupported parameter size: {size}")
                 return False
-
-            # Create a RolandSysEx message
             sysex_message = RolandSysEx()
             message = sysex_message.construct_sysex(address, *data_bytes)
             return self.send_message(message)
@@ -289,48 +278,6 @@ class MIDIOutHandler(MidiIOController):
             return False
         return True
 
-    def select_synth_tone(
-        self, patch_number: int, bank: str = "preset", channel: int = 0
-    ) -> bool:
-        """
-        Select address Synth Tone on the JD-Xi using address Program Change.
-
-        Args:
-            patch_number: Patch number (1-128) as listed in JD-Xi documentation.
-            bank: "preset" (default) or "user" to select the correct bank.
-            channel: MIDI channel (0-15).
-        Returns:
-            True if the message was sent successfully, False otherwise.
-        """
-        if not (1 <= patch_number <= 128):
-            logging.error("Patch number must be between 1 and 128.")
-            return False
-
-        # JD-Xi uses 0-based program numbers
-        program_number = patch_number - 1
-        bank = bank.lower()
-
-        if bank == "preset":
-            bank_msb = 92  # Preset Bank
-        elif bank == "user":
-            bank_msb = 93  # User Bank
-        else:
-            logging.error("Invalid bank preset_type. Use 'preset' or 'user'.")
-            return False
-
-        bank_lsb = 0  # Always 0 for JD-Xi
-
-        if (
-            self.send_control_change(0, bank_msb, channel)
-            and self.send_control_change(32, bank_lsb, channel)
-            and self.send_program_change(program_number, channel)
-        ):
-            logging.info(
-                f"Selected {bank.capitalize()} Synth Tone #{patch_number} (PC {program_number}) on channel {channel}."
-            )
-            return True
-        return False
-
     def get_parameter(self, area: int, part: int, group: int, param: int) -> Optional[int]:
         """
         Get parameter value via MIDI System Exclusive message.
@@ -355,7 +302,7 @@ class MIDIOutHandler(MidiIOController):
                 manufacturer_id=[ROLAND_ID],
                 device_id=DEVICE_ID,
                 model_id=[0x00, 0x00, 0x3B, 0x00],  # Example model ID
-                command=0x11,  # RQ1 (Request Data) command for Roland
+                command=RQ1_COMMAND_11,  # RQ1 (Request Data) command for Roland
                 address=[area, part, group, param],  # Address of parameter
                 data=[]  # No payload for request
             )
