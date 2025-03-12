@@ -55,6 +55,76 @@ from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.style import Style
 
 
+def get_program_index_by_id(program_id: str) -> Optional[int]:
+    """Retrieve the index of a program by its ID from PROGRAM_LIST."""
+    logging.info(f"Getting program index for {program_id}")
+    for index, program in enumerate(PROGRAM_LIST):
+        if program["id"] == program_id:
+            logging.info(f"index for {program_id} is {index}")
+            return index - 1  # convert to 0-based index
+    logging.warning(f"Program with ID {program_id} not found.")
+    return None
+
+
+def get_program_by_id(program_id: str) -> Optional[Dict[str, str]]:
+    """Retrieve a program by its ID from PROGRAM_LIST."""
+    for index, program in enumerate(PROGRAM_LIST):
+        if program["id"] == program_id:
+            return program
+    logging.warning(f"Program with ID {program_id} not found.")
+    return None
+
+
+def calculate_midi_values(bank, program_number):
+    """Calculate MSB, LSB, and PC based on bank and program number."""
+    if bank in ["A", "B"]:
+        msb = 85
+        lsb = 64
+        pc = program_number if bank == "A" else program_number + 64
+    elif bank in ["C", "D"]:
+        msb = 85
+        lsb = 65
+        pc = program_number if bank == "C" else program_number + 64
+    elif bank in ["E", "F"]:
+        msb = 85
+        lsb = 0
+        pc = program_number if bank == "E" else program_number + 64
+    elif bank in ["G", "H"]:
+        msb = 85
+        lsb = 1
+        pc = program_number if bank == "G" else program_number + 64
+    else:
+        msb, lsb, pc = None, None, None
+
+    # Ensure PC is within range
+    if not (0 <= pc <= 127):
+        logging.error(f"Invalid Program Change value: {pc}")
+        raise ValueError(f"Program Change value {pc} is out of range")
+
+    return msb, lsb, pc
+
+
+def calculate_index(bank, program_number: int):
+    """Calculate the index based on bank and program number."""
+    bank_offset = (ord(bank) - ord("A")) * 64
+    program_index = program_number - 1
+    return bank_offset + program_index
+
+
+def log_midi_info(msb, lsb, pc):
+    """Helper function to log MIDI information."""
+    logging.info(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
+
+
+def log_program_info(program_name, program_id=None, program_details=None):
+    """Helper function to log program info."""
+    logging.info(f"load_program: program_name: {program_name}")
+    if program_id:
+        logging.info(f"load_program: program_id: {program_id}")
+    if program_details:
+        logging.info(f"load_program: program_details: {program_details}")
+
+
 class ProgramEditor(QMainWindow):
     """ Program Editor Window """
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
@@ -177,59 +247,63 @@ class ProgramEditor(QMainWindow):
         if not self.preset_handler:
             return
 
-        # Get the selected bank
+        # Get the selected bank and genre
         bank = self.bank_combo_box.currentText()
-        print(f"Selected bank: {bank}")
+        selected_genre = self.genre_combo_box.currentText()
+
+        print(f"Selected bank: {bank}, Genre: {selected_genre}")
 
         # Clear the current program list
         self.program_number_combo_box.clear()
         self.programs.clear()
 
-        # Get the selected genre
-        selected_genre = self.genre_combo_box.currentText()
-        updated_list = PROGRAM_LIST.copy()
-        for number, program in enumerate(updated_list):
-            if (bank == "No Bank Selected" or program["id"][0] == bank) and (
-                selected_genre == "No Genre Selected"
-                or program["genre"] == selected_genre
-            ):
-                print(f"Adding program: {program['name']} with number: {number}")
-                self.program_number_combo_box.addItem(
-                    program["id"] + " - " + program["name"], number
-                )
-                self.programs[program["name"]] = number
-        if (
-            bank in ["No Bank Selected", "E", "F", "G", "H"]
-            and selected_genre == "No Genre Selected"
-        ):
-            # Add user banks to the program list
-            user_banks = ["E", "F", "G", "H"]
-            for user_bank in user_banks:
+        # Filter programs based on bank and genre
+        updated_list = [
+            program for program in PROGRAM_LIST
+            if (bank == "No Bank Selected" or program["id"][0] == bank) and
+               (selected_genre == "No Genre Selected" or program["genre"] == selected_genre)
+        ]
+
+        # Add programs to the combo box
+        for program in updated_list:
+            program_name = program["name"]
+            program_id = program["id"]
+            print(f"Adding program: {program_name} with ID: {program_id}")
+            index = len(self.programs)  # Use the current number of programs
+            self.program_number_combo_box.addItem(f"{program_id} - {program_name}", index)
+            self.programs[program_name] = index
+
+        # Handle user banks if necessary
+        if bank in ["No Bank Selected", "E", "F", "G", "H"] and selected_genre == "No Genre Selected":
+            self.add_user_banks(updated_list, bank)
+
+        # Update the UI with the new program list
+        self.program_number_combo_box.setCurrentIndex(0)
+
+    def add_user_banks(self, updated_list, bank):
+        """Add user banks to the program list."""
+        user_banks = ["E", "F", "G", "H"]
+        for user_bank in user_banks:
+            if bank == "No Bank Selected" or bank == user_bank:
                 for i in range(1, 65):
                     program = {
                         "id": f"{user_bank}{i:02}",
                         "name": f"User bank {user_bank} program {i:02}",
                         "genre": "User",
-                        "msb": "85",  # TODO: Get the correct MSB for user banks
-                        "lsb": "64",  # TODO: Get the correct LSB for user banks
-                        "pc": "128",  # TODO: Get the correct PC for user banks
+                        "msb": "85",  # TODO: Correct MSB for user banks
+                        "lsb": "64",  # TODO: Correct LSB for user banks
+                        "pc": "128",  # TODO: Correct PC for user banks
                     }
-                    if bank in [user_bank, "No Bank Selected"]:
-                        updated_list.append(program)
-                        self.program_number_combo_box.addItem(
-                            program["id"] + " - " + program["name"], number
-                        )
-
-        # Update the UI with the new program list
-        self.program_number_combo_box.setCurrentIndex(0)
+                    updated_list.append(program)
+                    program_name = program["name"]
+                    program_id = program["id"]
+                    index = len(self.programs)
+                    self.program_number_combo_box.addItem(f"{program_id} - {program_name}", index)
+                    self.programs[program_name] = index
 
     def on_bank_changed(self, index):
         """Handle bank selection change."""
         self.populate_programs()
-        if self.program_number_combo_box.currentIndex() in [0, 1, 2, 3]:
-            self.save_button.setEnabled(False)
-        else:
-            self.save_button.setEnabled(True)
 
     def on_program_number_changed(self, index):
         """Handle program number selection change."""
@@ -237,49 +311,49 @@ class ProgramEditor(QMainWindow):
 
     def load_program(self):
         """Load the selected program based on bank and number."""
-        program_id = self.program_number_combo_box.currentText()
-        program_list_number = self.get_program_index_by_id(program_id[:3])
-        # Determine MSB, LSB, and PC based on bank and program number
+        program_name = self.program_number_combo_box.currentText()
+        program_id = program_name[:3]
+
+        # Logging program details
+        log_program_info(program_name, program_id)
+
+        # Get program list number and details
+        program_list_number = get_program_index_by_id(program_id)
+        program_details = get_program_by_id(program_id)
+
+        # Logging program index and details
+        log_program_info(program_name, program_list_number, program_details)
+
+        # Get MSB, LSB, and PC
         msb, lsb, pc = self.get_msb_lsb_pc(program_list_number)
-        logging.info(f"msb: {msb} lsb: {lsb} pc: {pc}")
+
+        # Logging MSB, LSB, PC values
+        log_midi_info(msb, lsb, pc)
+
         # Send MIDI Bank Select and Program Change messages
-        self.send_midi_message(self.channel, 0, msb)  # MSB
-        self.send_midi_message(self.channel, 32, lsb)  # LSB
+        self.send_midi_bank_select(msb, lsb)
+        self.send_program_change(pc)
+
+    def send_midi_bank_select(self, msb, lsb):
+        """Send the MIDI Bank Select (MSB, LSB) messages."""
+        self.send_control_change(self.channel, 0, msb)  # MSB
+        self.send_control_change(self.channel, 32, lsb)  # LSB
+
+    def send_program_change(self, pc):
+        """Send the MIDI Program Change message."""
         self.midi_helper.send_program_change(pc, self.channel)
 
-    def calculate_midi_values(self, bank, program_number):
-        """Calculate MSB, LSB, and PC based on bank and program number."""
-        if bank in ["A", "B"]:
-            msb = 85
-            lsb = 64
-            pc = program_number if bank == "A" else program_number + 64
-        elif bank in ["C", "D"]:
-            msb = 85
-            lsb = 65
-            pc = program_number if bank == "C" else program_number + 64
-        elif bank in ["E", "F"]:
-            msb = 85
-            lsb = 0
-            pc = program_number if bank == "E" else program_number + 64
-        elif bank in ["G", "H"]:
-            msb = 85
-            lsb = 1
-            pc = program_number if bank == "G" else program_number + 64
-        else:
-            msb, lsb, pc = None, None, None
+    def send_control_change(self, channel, control, value):
+        """Convenience function to send MIDI control change message."""
+        # Validate the MIDI value is within the allowed range
+        if not (0 <= value <= 127):
+            raise ValueError(f"MIDI value {value} is out of valid range (0-127)")
 
-        # Ensure PC is within range
-        if not (0 <= pc <= 127):
-            logging.error(f"Invalid Program Change value: {pc}")
-            raise ValueError(f"Program Change value {pc} is out of range")
+        # Logging the control change message
+        logging.info(f"Sending control change: channel={channel}, control={control}, value={value}")
 
-        return msb, lsb, pc
-
-    def calculate_index(self, bank, program_number: int):
-        """Calculate the index based on bank and program number."""
-        bank_offset = (ord(bank) - ord("A")) * 64
-        program_index = program_number - 1
-        return bank_offset + program_index
+        # Send the MIDI control change message
+        self.midi_helper.send_control_change(control, value, channel)
 
     def load_preset(self, program_number: int):
         """Load preset data and update UI."""
@@ -302,11 +376,6 @@ class ProgramEditor(QMainWindow):
         """Update UI elements based on loaded preset data."""
         # TODO: Implement UI updates for parameters
 
-    def _collect_ui_data(self) -> Dict[str, int]:
-        """Collect updated UI parameter values."""
-        # TODO: Extract parameter values from UI
-        return {}
-
     def _update_program_list(self):
         """Update the program list with available presets."""
         self.populate_programs()
@@ -324,33 +393,6 @@ class ProgramEditor(QMainWindow):
             self.update_display.emit(self.type, self.current_preset_index, self.channel)
             return self.get_current_preset()
         raise IndexError("Program number out of range")
-
-    def send_midi_message(self, channel, control, value):
-        """ convenience function to send message to midi helper """
-        # Ensure the value is within the valid MIDI range
-        if not (0 <= value <= 127):
-            raise ValueError(f"Value {value} is out of range for MIDI message")
-        logging.info(f"channel: {channel} control: {control} value: {value}")
-        # Send the MIDI message
-        self.midi_helper.send_control_change(control, value, channel)
-
-    def get_program_by_id(self, program_id: str) -> Optional[Dict[str, str]]:
-        """Retrieve a program by its ID from PROGRAM_LIST."""
-        for program in PROGRAM_LIST:
-            if program["id"] == program_id:
-                return program
-        logging.warning(f"Program with ID {program_id} not found.")
-        return None
-
-    def get_program_index_by_id(self, program_id: str) -> Optional[int]:
-        """Retrieve the index of a program by its ID from PROGRAM_LIST."""
-        logging.info(f"Getting program index for {program_id}")
-        for index, program in enumerate(PROGRAM_LIST):
-            if program["id"] == program_id:
-                logging.info(f"index for {program_id} is {index}")
-                return index - 1  # convert to 0-based index
-        logging.warning(f"Program with ID {program_id} not found.")
-        return None
 
     def on_genre_changed(self, _):
         """Handle genre selection change."""

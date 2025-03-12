@@ -26,7 +26,7 @@ from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 from jdxi_manager.midi.data.constants import START_OF_SYSEX, DEVICE_ID, MODEL_ID_1, END_OF_SYSEX
 from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4
 from jdxi_manager.midi.io.controller import MidiIOController
-from jdxi_manager.midi.sysex.messages import IdentityRequest
+from jdxi_manager.midi.sysex.messages import IdentityRequest, ControlChangeMessage
 from jdxi_manager.midi.sysex.roland import RolandSysEx
 from jdxi_manager.midi.sysex.sysex import SysExMessage
 from jdxi_manager.midi.sysex.utils import calculate_checksum
@@ -258,15 +258,23 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.info(
-            f"Attempting to send control change: controller {controller} value {value} channel {channel}"
+            f"send_control_change: attempting - controller {controller} value {value} channel {channel}"
         )
+        if not (0 <= channel <= 15):
+            logging.error(f"send_control_change: Invalid MIDI channel: {channel}. Must be 0-15.")
+            return False
+        if not (0 <= controller <= 127):
+            logging.error(f"send_control_change: Invalid controller number: {controller}. Must be 0-127.")
+            return False
+        if not (0 <= value <= 127):
+            logging.error(f"send_control_change: Invalid controller value: {value}. Must be 0-127.")
+            return False
         try:
-            message = [0xB0 + channel, controller & 0x7F, value & 0x7F]
-            formatted_msg = format_midi_message_to_hex_string(message)
-            logging.debug(f"Sending control change message: {formatted_msg}")
+            control_change_message = ControlChangeMessage(channel, controller, value)
+            message = control_change_message.to_list()
             return self.send_message(message)
-        except Exception as e:
-            logging.error(f"Error sending control change: {e}")
+        except Exception as ex:
+            logging.error(f"send_control_change: Error sending control change: {ex}")
             return False
 
     def send_bank_and_program_change(

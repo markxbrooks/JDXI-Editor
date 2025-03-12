@@ -1,11 +1,9 @@
 from jdxi_manager.midi.data.constants.sysex import DT1_COMMAND_12
 from jdxi_manager.midi.sysex.jdxi import JDXiSysEx
-# from jdxi_manager.midi.sysex.sysex import DT1_COMMAND_12, RQ1_COMMAND_11
 from jdxi_manager.midi.data.constants import (
     DrumKitCC,
     START_OF_SYSEX,
     END_OF_SYSEX,
-    ROLAND_ID,
     DIGITAL_SYNTH_1_AREA,
     PART_1,
     OSC_1_GROUP,  # Changed from OSC_PARAM_GROUP
@@ -19,17 +17,44 @@ from typing import List
 
 from jdxi_manager.midi.sysex.parameter_utils import create_parameter_message
 
-# Roland SysEx Constants
-# START_OF_SYSEX = 0xF0
-# END_OF_SYSEX = 0xF7
-# ROLAND_ID = 0x41  # Roland Manufacturer ID
 JD_XI_MODEL_ID = [0x00, 0x00, 0x00, 0x0E]  # JD-Xi Model ID
-# DT1_COMMAND_12 = 0x12  # Data Set 1 (DT1) command
-# RQ1_COMMAND_11 = 0x11  # Data Request 1 (RQs1) command
 
 
 @dataclass
-class IdentityRequest():
+class ControlChangeMessage:
+    """MIDI Control Change message"""
+
+    channel: int = 0  # Default channel 1, 0-index
+    controller: int = 0
+    value: int = 0
+
+    def to_list(self) -> List[int]:
+        """Convert to list of bytes for sending
+
+        Returns:
+            List of integers representing the MIDI message
+        """
+        return [0xB0 + self.channel, self.controller & 0x7F, self.value & 0x7F]
+
+    def to_bytes(self) -> bytes:
+        """Convert to bytes for sending
+
+        Returns:
+            Bytes object containing the MIDI message
+        """
+        return bytes(self.to_list())
+
+    def to_hex_string(self) -> str:
+        """Convert message to a formatted hexadecimal string.
+
+        Returns:
+            A string representing the message in hexadecimal format.
+        """
+        return " ".join(f"{x:02X}" for x in self.to_list())
+
+
+@dataclass
+class IdentityRequest:
     """MIDI Identity Request message"""
 
     device_id: int = 0x10  # Default device ID
