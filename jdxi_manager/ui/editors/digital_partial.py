@@ -53,9 +53,10 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_manager.midi.data.parameter.digital import DigitalParameter
-from jdxi_manager.midi.data.digital import OscWave
+from jdxi_manager.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.midi.data.constants import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1
+from jdxi_manager.midi.sysex.parsers import get_partial_address
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_frac,
     midi_cc_to_ms,
@@ -75,7 +76,7 @@ from jdxi_manager.ui.image.waveform import (
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_num=1, part=DIGITAL_PART_1, parent=None):
+    def __init__(self, midi_helper=None, partial_number=1, part=DIGITAL_PART_1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = [
             DigitalParameter.OSC_DETUNE,
@@ -90,9 +91,19 @@ class DigitalPartialEditor(PartialEditor):
             DigitalParameter.WAVE_NUMBER_4,
         ]
         self.midi_helper = midi_helper
-        self.partial_num = partial_num
+        self.partial_number = partial_number
         self.area = DIGITAL_SYNTH_1_AREA if part == DIGITAL_PART_1 else DIGITAL_SYNTH_2_AREA
         self.part = part
+        if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
+            self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
+        else:
+            logging.error(f"Invalid partial_num: {partial_number}. Using default value.")
+            self.part_name = "Unknown"  # Provide a fallback value
+        try:
+            self.group = get_partial_address(self.part_name)
+        except Exception as e:
+            logging.error(f"Failed to get partial address for {self.part_name}: {e}")
+            self.group = 0x00  # Provide a default address
 
         # Store parameter controls for easy access
         self.controls: Dict[
@@ -404,7 +415,7 @@ class DigitalPartialEditor(PartialEditor):
         # self.filter_adsr_widget = ADSRWidget()
         group_address, param_address = (
             DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
-                self.partial_num
+                self.partial_number
             )
         )
         self.filter_adsr_widget = ADSR(
@@ -632,7 +643,7 @@ class DigitalPartialEditor(PartialEditor):
         # Create ADSRWidget
         group_address, param_address = (
             DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
-                self.partial_num
+                self.partial_number
             )
         )
         self.amp_env_adsr_widget = ADSR(
@@ -853,7 +864,7 @@ class DigitalPartialEditor(PartialEditor):
         try:
             # Get parameter area and address with partial offset
             if isinstance(param, DigitalParameter):
-                group, param_address = param.get_address_for_partial(self.partial_num)
+                group, param_address = param.get_address_for_partial(self.partial_number)
             else:
                 group = 0x00  # Common parameters area
                 param_address = param.address
