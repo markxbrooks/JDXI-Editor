@@ -86,13 +86,19 @@ PROGRAM_CHANGE = 0xC0  # Program Change
 START_OF_SYSEX = 0xF0
 END_OF_SYSEX = 0xF7
 ROLAND_ID = 0x41
-DEVICE_ID = 0x10
+DEVICE_ID = 0x10  # Device ID (dev: 10H - 1FH, 7FH)
+
+ID_NUMBER = 0x7E  # 7EH ID number (Universal Non-realtime Message)
 
 # Model ID bytes
 MODEL_ID_1 = 0x00  # Manufacturer ID extension
 MODEL_ID_2 = 0x00  # Device family code MSB
 MODEL_ID_3 = 0x00  # Device family code LSB
 MODEL_ID_4 = 0x0E  # Product code
+
+DEVICE = 0x7F
+SUB_ID_1 = 0x06
+SUB_ID_2 = 0x01
 
 # Full Model ID array
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]

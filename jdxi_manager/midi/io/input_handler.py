@@ -23,27 +23,19 @@ Dependencies:
 import json
 import logging
 import mido
-from typing import Any, Callable, Dict, List, Optional, Tuple
-from rtmidi.midiconstants import (
-    NOTE_ON,
-    NOTE_OFF,
-    PROGRAM_CHANGE,
-    CONTROL_CHANGE,
-    SYSTEM_EXCLUSIVE,
-    TIMING_CLOCK,
-)
+from typing import Any, Callable, Dict, List, Optional
 from PySide6.QtCore import Signal
 from pubsub import pub
 
-from jdxi_manager.midi.data.digital import get_digital_parameter_by_address
+from jdxi_manager.midi.data.constants import ROLAND_ID
+from jdxi_manager.midi.data.constants.sysex import DEVICE_ID
 from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io.controller import MidiIOController
+from jdxi_manager.midi.sysex.device import DeviceInfo
 from jdxi_manager.midi.sysex.sysex import SysexParameter
 from jdxi_manager.midi.utils.json import log_json
 from jdxi_manager.midi.sysex.parsers import parse_sysex
-
-# from jdxi_manager.midi.sysex.sysex import SysexParameter
 from jdxi_manager.midi.sysex.utils import get_parameter_from_address
 
 
@@ -76,8 +68,8 @@ class MIDIInHandler(MidiIOController):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
-        self.register_callback(self.midi_callback)
-        pub.subscribe(self.handle_incoming_midi_message, "midi_incoming_message")
+        self.set_callback(self.midi_callback)
+        pub.subscribe(self.pub_handle_incoming_midi_message, "midi_incoming_message")
 
     def rtmidi_to_mido(self, rtmidi_message):
         """Convert an rtmidi message to address mido message."""
@@ -92,17 +84,17 @@ class MIDIInHandler(MidiIOController):
         if callback not in self.callbacks:
             self.callbacks.append(callback)
 
-    def midi_callback(self, event: Any, timestamp: Optional[float] = None) -> None:
+    def midi_callback(self, event: Callable) -> None:
         """
         Handle incoming MIDI messages and route them to appropriate handlers.
 
         This method provides an alternative entry point for processing messages.
 
-        :param message: The MIDI message.
+        :param event: The MIDI message.
         :param timestamp: Optional timestamp for the message.
         """
         try:
-            logging.info(f"message preset_type: {type(event)}")
+            logging.info(f"midi_callback: message preset_type: {type(event)}")
             if type(event) == tuple:
                 message_data, _ = event
                 message = self.rtmidi_to_mido(message_data)
@@ -144,7 +136,7 @@ class MIDIInHandler(MidiIOController):
         """
         self.midi_in.set_callback(callback)
 
-    def handle_incoming_midi_message(self, message: Any) -> None:
+    def pub_handle_incoming_midi_message(self, message: Any) -> None:
         """
         Process incoming MIDI messages.
 
@@ -152,11 +144,7 @@ class MIDIInHandler(MidiIOController):
 
         :param message: The incoming MIDI message.
         """
-        # Do not process clock messages for logging/emission
-        # if message.type != "clock":
-        #    self.midi_incoming_message.emit(message)
-        #    logging.info("MIDI message of preset_type %s incoming: %s", message.type, message)
-
+        # logging.info(f"handle_incoming_midi_message: {message}")
         preset_data: Dict[str, Any] = {"modified": 0}
         message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
             "sysex": self._handle_sysex_message,
@@ -195,6 +183,17 @@ class MIDIInHandler(MidiIOController):
         if message.type == "clock":
             return
 
+    def mido_message_data_to_byte_list(self, message):
+        """ mido message data to byte list"""
+        hex_string = " ".join(f"{byte:02X}" for byte in message.data)
+        logging.debug("converting (%d bytes)", len(message.data))
+
+        # Reconstruct SysEx message bytes
+        message_byte_list = bytes(
+            [0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7]
+        )
+        return message_byte_list
+
     def _handle_sysex_message(self, message: Any, preset_data: Dict[str, Any]) -> None:
         """
         Handle SysEx MIDI messages from the Roland JD-Xi.
@@ -205,23 +204,23 @@ class MIDIInHandler(MidiIOController):
         :param message: The MIDI SysEx message.
         :param preset_data: Dictionary for preset data modifications.
         """
+        logging.debug(f"handle_incoming_midi_message via pub: {message}")
         try:
-            if message.type == 'sysex' and len(message.data) > 6 and message.data[4] == 0x02:  # Identity request
+            if message.type == 'sysex' and len(message.data) > 6 and message.data[3] == 0x02:  # Identity request
                 self._handle_identity_request(message)
-                return
             # Convert raw SysEx data to address hex string
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             logging.debug("SysEx message received (%d bytes)", len(message.data))
 
             # Reconstruct SysEx message bytes
-            sysex_message_bytes = bytes(
+            sysex_message_byte_list = bytes(
                 [0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7]
             )
 
             # If the message contains tone data, attempt to parse it
             if len(message.data) > 63:
                 try:
-                    parsed_data = parse_sysex(sysex_message_bytes)
+                    parsed_data = parse_sysex(sysex_message_byte_list)
                     self.midi_sysex_json.emit(json.dumps(parsed_data))
                     log_json(parsed_data)
                 except Exception as parse_ex:
@@ -248,14 +247,26 @@ class MIDIInHandler(MidiIOController):
 
     def _handle_identity_request(self, message):
         """Handles an incoming Identity Request and sends an Identity Reply."""
-        device_id = message.data[1]
-        manufacturer_id = message.data[5:8]
-        version = message.data[12:16]  # Extract firmware version bytes
+        byte_list = self.mido_message_data_to_byte_list(message)
+        device_info = DeviceInfo.from_identity_reply(byte_list)
+        if device_info:
+            logging.info(device_info.to_string)
+        device_id = device_info.device_id
+        manufacturer_id = device_info.manufacturer
+        version = message.data[9:12]  # Extract firmware version bytes
 
         version_str = ".".join(str(byte) for byte in version)
-        print(f"🎹 Device ID: {hex(device_id)}")
-        print(f"🏭 Manufacturer ID: {manufacturer_id}")
-        print(f"🔄 Firmware Version: {version_str}")
+        if device_id == DEVICE_ID:
+            device_name = "JD-XI"
+        else:
+            device_name = "Unknown"
+        if manufacturer_id == ROLAND_ID:
+            manufacturer_name = "Roland"
+        else:
+            manufacturer_name = "Unknown"
+        logging.info(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
+        logging.info(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
+        logging.info(f"🔄 Firmware Version: \t{version_str}")
         return {
             "device_id": device_id,
             "manufacturer_id": manufacturer_id,

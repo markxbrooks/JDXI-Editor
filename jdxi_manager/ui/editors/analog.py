@@ -262,6 +262,15 @@ class AnalogSynthEditor(SynthEditor):
         self.refresh_shortcut.activated.connect(self.data_request)
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            # Register the callback for incoming MIDI messages
+            logging.info("MIDI helper initialized")
+            if hasattr(self.midi_helper, "set_callback"):
+                self.midi_helper.set_callback(self.midi_helper.midi_callback)
+                logging.info("MIDI callback set")
+            else:
+                logging.error("MIDI set_callback method not found")
+        else:
+            logging.error("MIDI helper not initialized")
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""

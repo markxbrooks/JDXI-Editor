@@ -23,6 +23,8 @@ from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_manager.midi.data.constants import START_OF_SYSEX, DEVICE_ID, MODEL_ID_1
+from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.sysex.messages import IdentityRequest
 from jdxi_manager.midi.sysex.utils import calculate_checksum
@@ -144,8 +146,10 @@ class MIDIOutHandler(MidiIOController):
         """
         logging.debug("Sending identity request")
         try:
-            # Identity Request: F0 7E 7F 06 01 F7
-            return self.send_message([0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7])
+            request = IdentityRequest()
+            request_bytes_list = request.to_list()
+            logging.info(f"sending identity request message: {type(request_bytes_list)} {request_bytes_list}")
+            self.send_message(request_bytes_list)
         except Exception as e:
             logging.error(f"Error sending identity request: {e}")
             return False
@@ -198,13 +202,13 @@ class MIDIOutHandler(MidiIOController):
             if size == 1:
                 message = (
                     [
-                        0xF0,
-                        0x41,
-                        0x10,
-                        0x00,
-                        0x00,
-                        0x00,
-                        0x0E,
+                        START_OF_SYSEX,
+                        ROLAND_ID,
+                        DEVICE_ID,
+                        MODEL_ID_1,
+                        MODEL_ID_2,
+                        MODEL_ID_3,
+                        MODEL_ID_4,
                         0x12,  # SysEx header
                     ]
                     + address
@@ -495,10 +499,3 @@ class MIDIOutHandler(MidiIOController):
         sysex_data = device_id + [0x11] + address + size + [0]
         logging.debug(f"Sending SysEx message: {type(sysex_data)} {sysex_data}")
         self.midi_out.send_message(sysex_data)
-
-    def identify_device(self) -> bool:
-        """Send Identity Request and verify response"""
-        request = IdentityRequest()
-        request_bytes = request.to_list()
-        logging.info(f"sending identity request message: {type(request_bytes)} {request.to_list()}")
-        self.send_message(request_bytes)

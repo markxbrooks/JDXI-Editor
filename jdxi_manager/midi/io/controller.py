@@ -108,12 +108,12 @@ class MidiIOController(QObject):
 
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
-            self.midi_in.set_callback(self.midi_callback)
+            # self.midi_in.set_callback(self.mimidi_callback)
             logging.info(f"Opened MIDI input port: {ports[port_index]}")
             return True
 
-        except Exception as e:
-            logging.error(f"Error opening MIDI input port: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error opening MIDI input port: {str(ex)}")
             return False
 
     def open_output_port(self, port_name_or_index) -> bool:

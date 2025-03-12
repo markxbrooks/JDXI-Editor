@@ -7,6 +7,10 @@ from jdxi_manager.midi._const import (
     ArpParameters
 )
 
+import jdxi_manager.midi.sysex.parameter_utils
+import jdxi_manager.midi.sysex.utils
+
+
 class TestMIDISending(unittest.TestCase):
     def setUp(self):
         """Set up test case with mock MIDI helper"""
@@ -25,7 +29,7 @@ class TestMIDISending(unittest.TestCase):
     def test_send_sysex_message(self):
         """Test sending address SysEx message"""
         # Create arpeggiator parameter message
-        msg = JDXiSysEx.create_parameter_message(
+        msg = jdxi_manager.midi.sysex.parameter_utils.create_parameter_message(
             area=ARPEGGIO_AREA,
             part=SUBGROUP_ZERO,
             group=0x00,
