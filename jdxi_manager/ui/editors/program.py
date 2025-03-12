@@ -125,6 +125,16 @@ def log_program_info(program_name, program_id=None, program_details=None):
         logging.info(f"load_program: program_details: {program_details}")
 
 
+def get_msb_lsb_pc(program_number: int):
+    """Get MSB, LSB, and PC based on bank and program number."""
+    msb, lsb, pc = (
+        PROGRAM_LIST[program_number]["msb"],  # Tone Bank Select MSB (CC# 0)
+        PROGRAM_LIST[program_number]["lsb"],  # Tone Bank Select LSB (CC# 32)
+        PROGRAM_LIST[program_number]["pc"],  # Tone Program Number (PC)
+    )
+    return int(msb), int(lsb), int(pc)
+
+
 class ProgramEditor(QMainWindow):
     """ Program Editor Window """
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
@@ -220,6 +230,91 @@ class ProgramEditor(QMainWindow):
         layout.addWidget(self.load_button)
         self.setLayout(layout)
 
+        self.digital_synth_1_hlayout = QHBoxLayout()
+        layout.addLayout(self.digital_synth_1_hlayout)
+
+        self.digital_synth_1_title = QLabel("Digital Synth 1")
+        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_title)
+        self.digital_synth_1_title.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT};
+            """
+        )
+        self.digital_synth_1_current_synth = QLabel("Current Synth:")
+        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_synth)
+        self.digital_synth_1_current_synth.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT};
+            """
+        )
+        self.digital_synth_2_hlayout = QHBoxLayout()
+        layout.addLayout(self.digital_synth_2_hlayout)
+
+        self.digital_synth_2_title = QLabel("Digital Synth 2")
+        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_title)
+        self.digital_synth_2_title.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT};
+            """
+        )
+        self.digital_synth_2_current_synth = QLabel("Current Synth:")   
+        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_synth)
+        self.digital_synth_2_current_synth.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;  
+                color: {Style.ACCENT};
+            """
+        )
+        self.drum_kit_hlayout = QHBoxLayout()
+        layout.addLayout(self.drum_kit_hlayout)
+
+        self.drum_kit_title = QLabel("Drums")
+        self.drum_kit_hlayout.addWidget(self.drum_kit_title)
+        self.drum_kit_title.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT};
+            """
+        )
+        self.drum_kit_current_synth = QLabel("Current Synth:")  
+        self.drum_kit_hlayout.addWidget(self.drum_kit_current_synth)
+        self.drum_kit_current_synth.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT};
+            """
+        )
+        self.analog_synth_hlayout = QHBoxLayout()
+        layout.addLayout(self.analog_synth_hlayout)
+
+        self.analog_synth_title = QLabel("Analog Synth")
+        self.analog_synth_hlayout.addWidget(self.analog_synth_title)
+        self.analog_synth_title.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT_ANALOG};
+            """
+        )
+        self.analog_synth_current_synth = QLabel("Current Synth:")
+        self.analog_synth_hlayout.addWidget(self.analog_synth_current_synth)
+        self.analog_synth_current_synth.setStyleSheet(
+            f"""
+                font-size: 16px;
+                font-weight: bold;
+                color: {Style.ACCENT_ANALOG};
+            """
+        )   
+
     def update_instrument_image(self):
         """ tart up the UI with a picture """
         image_loaded = False
@@ -286,13 +381,14 @@ class ProgramEditor(QMainWindow):
         for user_bank in user_banks:
             if bank == "No Bank Selected" or bank == user_bank:
                 for i in range(1, 65):
+                    msb, lsb, pc = calculate_midi_values(user_bank, i-1) # 0-based (0-127)
                     program = {
                         "id": f"{user_bank}{i:02}",
                         "name": f"User bank {user_bank} program {i:02}",
                         "genre": "User",
-                        "msb": "85",  # TODO: Correct MSB for user banks
-                        "lsb": "64",  # TODO: Correct LSB for user banks
-                        "pc": "128",  # TODO: Correct PC for user banks
+                        "msb": msb,
+                        "lsb": lsb,
+                        "pc": pc,
                     }
                     updated_list.append(program)
                     program_name = program["name"]
@@ -325,56 +421,34 @@ class ProgramEditor(QMainWindow):
         log_program_info(program_name, program_list_number, program_details)
 
         # Get MSB, LSB, and PC
-        msb, lsb, pc = self.get_msb_lsb_pc(program_list_number)
+        msb, lsb, pc = get_msb_lsb_pc(program_list_number)
 
         # Logging MSB, LSB, PC values
         log_midi_info(msb, lsb, pc)
 
         # Send MIDI Bank Select and Program Change messages
-        self.send_midi_bank_select(msb, lsb)
-        self.send_program_change(pc)
+        self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
+        self.update_current_synths(program_details)
 
-    def send_midi_bank_select(self, msb, lsb):
-        """Send the MIDI Bank Select (MSB, LSB) messages."""
-        self.send_control_change(self.channel, 0, msb)  # MSB
-        self.send_control_change(self.channel, 32, lsb)  # LSB
-
-    def send_program_change(self, pc):
-        """Send the MIDI Program Change message."""
-        self.midi_helper.send_program_change(pc, self.channel)
-
-    def send_control_change(self, channel, control, value):
-        """Convenience function to send MIDI control change message."""
-        # Validate the MIDI value is within the allowed range
-        if not (0 <= value <= 127):
-            raise ValueError(f"MIDI value {value} is out of valid range (0-127)")
-
-        # Logging the control change message
-        logging.info(f"Sending control change: channel={channel}, control={control}, value={value}")
-
-        # Send the MIDI control change message
-        self.midi_helper.send_control_change(control, value, channel)
+    def update_current_synths(self, program_details: dict):
+        """Update the current synth label."""
+        try:
+            self.digital_synth_1_current_synth.setText(program_details["digital_1"])
+            self.digital_synth_2_current_synth.setText(program_details["digital_2"])
+            self.drum_kit_current_synth.setText(program_details["drum"])
+            self.analog_synth_current_synth.setText(program_details["analog"])
+        except KeyError:
+            logging.error(f"Program details missing required keys: {program_details}")
+            self.digital_synth_1_current_synth.setText("Unknown")
+            self.digital_synth_2_current_synth.setText("Unknown")
+            self.drum_kit_current_synth.setText("Unknown")
+            self.analog_synth_current_synth.setText("Unknown")
 
     def load_preset(self, program_number: int):
         """Load preset data and update UI."""
         if not self.preset_handler:
             return
-        preset_data = self.preset_handler.load_preset(program_number)
-        if preset_data:
-            self._update_ui(preset_data)
-
-    def get_msb_lsb_pc(self, program_number: int):
-        """Get MSB, LSB, and PC based on bank and program number."""
-        msb, lsb, pc = (
-            PROGRAM_LIST[program_number]["msb"],  # Tone Bank Select MSB (CC# 0)
-            PROGRAM_LIST[program_number]["lsb"],  # Tone Bank Select LSB (CC# 32)
-            PROGRAM_LIST[program_number]["pc"],  # Tone Program Number (PC)
-        )
-        return int(msb), int(lsb), int(pc)
-
-    def _update_ui(self, parameters: Dict[str, int]):
-        """Update UI elements based on loaded preset data."""
-        # TODO: Implement UI updates for parameters
+        self.preset_handler.load_preset(program_number)
 
     def _update_program_list(self):
         """Update the program list with available presets."""
@@ -383,16 +457,6 @@ class ProgramEditor(QMainWindow):
     def _update_program_display(self, program_name: str, program_number: int):
         """Update the program display with the selected program name and number."""
         self.program_number_combo_box.setCurrentText(program_name)
-
-    def save_preset(self, parameters: dict, program_number: int):
-        """Save the current preset to the preset list."""
-        # Ensure program_number is a valid index
-        if 0 <= program_number < len(self.presets):
-            self.presets[program_number] = parameters  # Use program_number as the index
-            self.preset_changed.emit(self.current_preset_index, self.channel)
-            self.update_display.emit(self.type, self.current_preset_index, self.channel)
-            return self.get_current_preset()
-        raise IndexError("Program number out of range")
 
     def on_genre_changed(self, _):
         """Handle genre selection change."""

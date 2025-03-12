@@ -982,9 +982,7 @@ class AnalogSynthEditor(SynthEditor):
                 if isinstance(control_change, AnalogControlChange)
                 else control_change
             )
-            self.midi_helper.send_cc(
-                control_change_number, value, channel=MIDI_CHANNEL_ANALOG
-            )
+            self.midi_helper.send_control_change(control_change_number, value, MIDI_CHANNEL_ANALOG)
 
     def _on_sub_type_changed(self, value: int):
         """Handle sub oscillator preset_type change"""

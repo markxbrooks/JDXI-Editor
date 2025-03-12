@@ -31,7 +31,7 @@ from jdxi_manager.midi.data.constants.sysex import (
 )
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.io.connection import MIDIConnection
-from jdxi_manager.midi.sysex.messages import IdentityRequest
+from jdxi_manager.midi.sysex.messages import IdentityRequestMessage
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors import (
@@ -1039,7 +1039,7 @@ class JdxiInstrument(JdxiUi):
         """Verify connected device is address JD-Xi by sending identity request"""
         try:
             # Create identity request message using dataclass
-            identity_request = IdentityRequest()
+            identity_request = IdentityRequestMessage()
 
             # Send request
             if self.midi_helper:

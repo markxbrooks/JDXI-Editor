@@ -29,7 +29,7 @@ Example Usage:
 import logging
 from typing import Optional
 from jdxi_manager.midi.sysex.device import DeviceInfo
-from jdxi_manager.midi.sysex.messages import IdentityRequest
+from jdxi_manager.midi.sysex.messages import IdentityRequestMessage
 
 
 class MIDIConnection:
@@ -92,7 +92,7 @@ class MIDIConnection:
 
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""
-        request = IdentityRequest()
+        request = IdentityRequestMessage()
         self.send_message(request)
         logging.info(f"sending identity request message: {request}")
 
