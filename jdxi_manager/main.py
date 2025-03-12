@@ -137,7 +137,6 @@ def main():
 
         window = JdxiInstrument()
         window.show()
-        logging.info("Main window displayed")
         window.set_log_file(log_file)
         # Start event loop
         return app.exec()

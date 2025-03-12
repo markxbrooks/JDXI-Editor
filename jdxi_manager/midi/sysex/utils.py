@@ -72,3 +72,5 @@ def validate_sysex_message(message: List[int]) -> bool:
 def calculate_checksum(data):
     """Calculate Roland checksum for parameter messages."""
     return (128 - (sum(data) & 0x7F)) & 0x7F
+
+

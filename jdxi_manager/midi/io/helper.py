@@ -59,3 +59,6 @@ class MIDIHelper(MIDIInHandler, MIDIOutHandler):
             self.send_message(sysex_list)
         except Exception as ex:
             logging.info(f"Error {ex} sending sysex list")
+
+    def midi_callback(self, event):
+        self.midi_callback(event=event)

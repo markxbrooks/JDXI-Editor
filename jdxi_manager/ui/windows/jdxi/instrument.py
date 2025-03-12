@@ -97,8 +97,8 @@ class JdxiInstrument(JdxiUi):
 
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
-        self.midi_helper.identify_device()
-
+        # self.midi_helper.set_callback(self.midi_helper.midi_callback)
+        self.midi_helper.send_identity_request()
         # Show MIDI config if auto-connect failed
         if (
             not self.midi_helper.current_in_port
@@ -885,7 +885,7 @@ class JdxiInstrument(JdxiUi):
 
             # Set up MIDI input callback
             if self.midi_in:
-                self.midi_in.set_callback(self._handle_midi_message)
+                self.midi_in.set_callback(self.midi_helper.pub_handle_incoming_midi_message)
 
             # Update indicators
             self.midi_in_indicator.set_active(self.midi_in is not None)
@@ -931,7 +931,7 @@ class JdxiInstrument(JdxiUi):
 
                 # Forward to MIDI helper
                 if hasattr(self, "midi_helper"):
-                    self.midi_helper.handle_incoming_midi_message(message, timestamp)
+                    self.midi_helper.pub_handle_incoming_midi_message(message, timestamp)
 
     def _send_midi_message(self, message):
         """Send MIDI message and blink indicator"""

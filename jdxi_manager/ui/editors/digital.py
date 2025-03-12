@@ -302,6 +302,7 @@ class DigitalSynthEditor(SynthEditor):
         self.refresh_shortcut.activated.connect(self.data_request)
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+        self.show()
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

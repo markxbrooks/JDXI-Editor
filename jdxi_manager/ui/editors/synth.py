@@ -99,6 +99,15 @@ class SynthEditor(QWidget):
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            logging.info("MIDI helper initialized")
+            # register callback
+            if hasattr(self.midi_helper, "set_callback"):
+                self.midi_helper.set_callback(self.midi_helper.midi_callback)
+                logging.info("MIDI callback set")
+            else:
+                logging.error("MIDI set_callback method not found")
+        else:
+            logging.error("MIDI helper not initialized")
 
     def _create_parameter_combo_box(
         self,
