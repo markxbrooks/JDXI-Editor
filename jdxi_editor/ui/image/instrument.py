@@ -38,7 +38,7 @@ def draw_instrument_pixmap(
     title_y = margin + 60
     painter.setPen(QPen(Qt.white))
     painter.setFont(QFont("Myriad Pro, Arial", 28, QFont.Bold))
-    painter.drawText(title_x, title_y, "JD-Xi Manager")
+    painter.drawText(title_x, title_y, "JD-Xi Editor")
 
     # LED display area (enlarged for 2 rows)
     display_x = margin + 70

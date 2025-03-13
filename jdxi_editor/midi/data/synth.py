@@ -71,7 +71,7 @@ class AnalogSynth(SynthPart):
             name=["AN Name"],
             file_prefix="JDXi-AN-",
             file_type="Analog Synth Tone",
-            window_title="JD-Xi Manager - Analog Synth Editor",
+            window_title="JD-Xi Editor - Analog Synth Editor",
             window_geometry="900x612"
         )
 
@@ -102,7 +102,7 @@ class DigitalSynth(SynthPart):
             name=[f"SN{part_number} Name", *[""] * 4],
             file_prefix="JDXi-SN-",
             file_type="Digital Synth Tone",
-            window_title=f"JD-Xi Manager - Digital Synth {part_number} Editor",
+            window_title=f"JD-Xi editor - Digital Synth {part_number} Editor",
             window_geometry="1150x740"
         )
         self.part_number = part_number 
@@ -133,7 +133,7 @@ class DrumKit(SynthPart):
             ],
             file_prefix="JDXi-drums_data-",
             file_type="Drum Kit",
-            window_title="JD-Xi Manager - Drum Kit Editor",
+            window_title="JD-Xi editor - Drum Kit Editor",
             window_geometry="1246x710"
         )
 
@@ -160,7 +160,7 @@ class Effects(SynthPart):
             name=["Effect 1", "Effect 2", "Delay", "Reverb"],
             file_prefix="JDXi-FX-",
             file_type="Effects",
-            window_title="JD-Xi Manager - Effects Editor",
+            window_title="JD-Xi editor - Effects Editor",
             window_geometry="740x610"
         )
 
@@ -178,7 +178,7 @@ class Arpeggio(SynthPart):
             name=["Arpeggio"],
             file_prefix="JDXi-AR-",
             file_type="Arpeggio",
-            window_title="JD-Xi Manager - Arpeggio Editor",
+            window_title="JD-Xi editor - Arpeggio Editor",
             window_geometry="480x340"
         )
 
@@ -196,7 +196,7 @@ class VocalFX(SynthPart):
             name=["Vocal FX"],
             file_prefix="JDXi-VC-",
             file_type="Vocal Effects",
-            window_title="JD-Xi Manager - Vocal Effects Editor",
+            window_title="JD-Xi editor - Vocal Effects Editor",
             window_geometry="750x340"
         )
 

@@ -1,16 +1,16 @@
-# JDXI-Manager
+# JDXI-Editor
 
 ![image info](./resources/jdxi_cartoon_600.png)
 
-A Manager for the Roland JD-Xi instrument, written in Python and the Qt Framework and RtMidi 
+A Editor for the Roland JD-Xi instrument, written in Python and the Qt Framework and RtMidi 
 
 Designed to implement as many features at possible of the Roland MIDI implementation without menu diving :-)
 
 Not at all feature-complete or even complete, but have a go and let me know your feedback.
 
-<a href="./resources/main_window.png" rel="Current view of the Roland JD-Xi Manager App">![image info](./resources/main_window_600.png ) </a>
+<a href="./resources/main_window.png" rel="Current view of the Roland JD-Xi Editor App">![image info](./resources/main_window_600.png ) </a>
 
-Current view of the Roland JD-Xi Manager App.
+Current view of the Roland JD-Xi Editor App.
 
 
 Getting started quick guide:
@@ -18,12 +18,12 @@ Getting started quick guide:
 There are no builds yet, so you'll have to run it from a Python shell.
 
 ```code 
-    $ git clone https://github.com/markxbrooks/JDXI-Manager.git
-    $ cd JDXI-Manager
+    $ git clone https://github.com/markxbrooks/JDXI-Editor.git
+    $ cd JDXI-Editor
     $ python -m venv venv
     $ source venv/bin/activate
     $ python -m pip install -r requirements.txt
-    $ python -m jdxi_manager.main
+    $ python -m jdxi_editor.main
 ```
 
 <a href="./resources/digital_analog_synths.png" rel="Digital & Analog Synths">![image info](./resources/digital_analog_synths_600.png ) </a>
@@ -75,7 +75,7 @@ MIDI Config Windows
 2) RTmidi
 3) Cursor.ai
 4) qtawesome
-5) Various awesome JDXI Manager Programs already existing but somehow could be improved.
+5) Various awesome JDXI Editor Programs already existing but somehow could be improved.
 6) Roland for a cool little instrument with lots of capability
 
 

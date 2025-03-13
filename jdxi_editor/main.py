@@ -1,5 +1,5 @@
 """
-main entry point of jdxi_manager
+main entry point of jdxi editor
 """
 
 import os
@@ -42,12 +42,12 @@ def setup_logging():
     """Set up logging configuration"""
     try:
         # Create logs directory in user's home directory
-        _ = logging.getLogger("jdxi_manager")
-        log_dir = Path.home() / ".jdxi_manager" / "logs"
+        _ = logging.getLogger("jdxi_editor")
+        log_dir = Path.home() / ".jdxi_editor" / "logs"
         log_dir.mkdir(parents=True, exist_ok=True)
 
         # Log file path
-        log_file = log_dir / "jdxi_manager.log"
+        log_file = log_dir / "jdxi_editor.log"
         print(f"Setting up logging to: {log_file}")
 
         # Reset root handlers
@@ -100,9 +100,9 @@ def main():
         app = QApplication(sys.argv)
 
         # Set application metadata
-        app.setApplicationName("JD-Xi Manager")
+        app.setApplicationName("JD-Xi Editor")
         app.setApplicationVersion("0.30")
-        app.setOrganizationName("jdximanager")
+        app.setOrganizationName("jdxieditor")
         app.setOrganizationDomain("com.mabinc")
 
         logging.debug("Application initialized")
