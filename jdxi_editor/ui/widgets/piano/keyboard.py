@@ -33,7 +33,7 @@ import logging
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
 from PySide6.QtCore import Qt, QSize
 
-from jdxi_editor.midi.data.keyboard.keyboard import KEYBOARD_BLACK_NOTES, KEYBOARD_WHITE_NOTES, DRUM_LABELS
+from jdxi_editor.midi.data.piano.keyboard import KEYBOARD_BLACK_NOTES, KEYBOARD_WHITE_NOTES, DRUM_LABELS
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
