@@ -1,8 +1,8 @@
 # setup.py
 from setuptools import setup, find_packages
 
-APP = ['jdxi_manager/main.py']  # Path to your main script
-DATA_FILES = ['jdxi_manager.icns', "resources/jdxi_icon.png", "resources/fonts/JdLCD.ttf"]  # Include any additional files your app needs
+APP = ['jdxi-editor/main.py']  # Path to your main script
+DATA_FILES = ['jdxi_editor.icns', "resources/jdxi_icon.png", "resources/fonts/JdLCD.ttf"]  # Include any additional files your app needs
 OPTIONS = {
     'argv_emulation': False,
     'packages': [
@@ -13,7 +13,7 @@ OPTIONS = {
         "qtawesome",
         "mido"]
     ,  # List any packages your app uses
-    'iconfile': 'jdxi_manager.icns',  # Path to your app icon file (optional)
+    'iconfile': 'jdxi_editor.icns',  # Path to your app icon file (optional)
     'excludes': ['Carbon'],
     'plist': {'CFBundleShortVersionString': '0.1.0', }
 }
@@ -21,7 +21,7 @@ OPTIONS = {
 setup(
     app=APP,
     data_files=DATA_FILES,
-    name="jdxi_manager",
+    name="jdxi_editor",
     version="0.30",
     packages=find_packages(),
     install_requires=[
@@ -34,7 +34,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'jdxi_manager=jdxi_manager.main:main',
+            'jdxi_editor=jdxi_editor.main:main',
         ],
     },
     options={'py2app': OPTIONS},

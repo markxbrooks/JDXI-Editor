@@ -33,15 +33,15 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/markxbrooks/JDXI-Manager"
+Homepage = "https://github.com/markxbrooks/JDXI-Editor"
 Repository = "https://github.com/markxbrooks/JDXI-Manager.git"
-Issues = "https://github.com/markxbrooks/JDXI-Manager/issues"
+Issues = "https://github.com/markxbrooks/JDXI-Editor/issues"
 
 [project.scripts]
 jdxi_manager = "jdxi_manager.main:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["jdxi_manager"]
+packages = ["jdxi-editor"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
