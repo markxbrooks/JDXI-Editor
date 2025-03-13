@@ -28,28 +28,52 @@ class MIDIDebugger(QMainWindow):
         0x11: "RQ1 (Data Request)",
         DT1_COMMAND_12: "DT1 (Data Transfer)"
     }
-    
+
     SECTIONS = {
-        0x20: "OSC",
-        0x21: "FILTER",
-        0x22: "AMP",
-        0x23: "LFO",
-        0x24: "EFFECTS"
+        0x01: "PART_1",
+        0x02: "PART_2",
+        0x03: "PART_3",
+        0x04: "PART_4",
     }
-    
+
+    GROUPS = {
+        0x20: "OSC_1_GROUP",
+        0x21: "OSC_2_GROUP",
+        0x22: "FILTER_GROUP",
+        0x23: "AMP_GROUP",
+        0x24: "LFO_1_GROUP",
+        0x25: "LFO_2_GROUP",
+        0x26: "EFFECTS_GROUP",
+    }
+
     PARAMETERS = {
-        0x00: "Wave Type",
-        0x01: "Range",
-        0x02: "Fine Tune",
-        0x03: "Wave Type (OSC2)",
-        0x04: "Range (OSC2)",
-        0x05: "Fine Tune (OSC2)",
-        0x06: "Cutoff",
-        0x07: "Resonance",
-        0x08: "Key Follow",
-        0x13: "Volume",
-        0x14: "Key Hold",
-        0x15: "Portamento"
+        0x00: "OSC_WAVE",
+        0x01: "OSC_VARIATION",
+        0x03: "OSC_PITCH",
+        0x04: "OSC_DETUNE",
+        0x05: "OSC_PWM_DEPTH",
+        0x06: "OSC_PW",
+        0x07: "OSC_PITCH_ENV_A",
+        0x08: "OSC_PITCH_ENV_D",
+        0x09: "OSC_PITCH_ENV_DEPTH",
+        0x0A: "FILTER_MODE",
+        0x0B: "FILTER_SLOPE",
+        0x0C: "FILTER_CUTOFF",
+        0x0D: "FILTER_KEYFOLLOW",
+        0x0E: "FILTER_ENV_VELO",
+        0x0F: "FILTER_RESONANCE",
+        0x10: "FILTER_ENV_A",
+        0x11: "FILTER_ENV_D",
+        0x12: "FILTER_ENV_S",
+        0x13: "FILTER_ENV_R",
+        0x14: "FILTER_ENV_DEPTH",
+        0x15: "AMP_LEVEL",
+        0x16: "AMP_VELO_SENS",
+        0x17: "AMP_ENV_A",
+        0x18: "AMP_ENV_D",
+        0x19: "AMP_ENV_S",
+        0x1A: "AMP_ENV_R",
+        0x1B: "AMP_PAN",
     }
 
     def __init__(self, midi_helper, parent=None):
@@ -150,6 +174,72 @@ class MIDIDebugger(QMainWindow):
         except Exception as e:
             return f"Error decoding message: {str(e)}"
 
+    def _decode_sysex_15(self, message):
+        """Decode address SysEx message"""
+        if len(message) != 15:
+            return "Invalid SysEx message (must be 15 bytes)"
+
+        if message[0] != 0xF0 or message[1] != 0x41:
+            return "Not a Roland address SysEx message"
+
+        try:
+            # Get command
+            command = message[7]
+            command_str = self.COMMANDS.get(command, f"Unknown Command ({hex(command)})")
+
+            # Get area
+            area = message[8]
+            area_str = self.SYSEX_AREAS.get(area, f"Unknown Area ({hex(area)})")
+
+            # Get synth number
+            synth = message[9]
+            synth_str = f"Digital Synth {synth}" if synth in [1, 2] else f"Unknown Synth ({hex(synth)})"
+
+            # Get parameter address (bytes 10 and 11 separately)
+            group = message[10]
+            param = message[11]
+            group_address = hex(group)
+            param_address = hex(param)
+            group_str = self.GROUPS.get(group, f"Unknown Group ({group_address})")
+            param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
+
+            # Get value
+            value = message[12]
+
+            # Get checksum
+            checksum = message[13]
+            checksum_valid = self._validate_checksum(message[7:13], checksum)
+
+            # Format the output
+            decoded = (
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+                f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+                f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
+                f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
+                f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
+                f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
+                f"| {7:<5} | {'Command ID':<28} | {hex(command):<17} | {command_str:<30} |\n"
+                f"| {8:<5} | {'Area':<28} | {hex(area):<17} | {area_str:<30} |\n"
+                f"| {9:<5} | {'Synth':<28} | {hex(synth):<17} | {synth_str:<30} |\n"
+                f"| {10:<5} | {'Parameter Address High':<28} | {group_address:<17} | {group_str:<30} |\n"
+                f"| {11:<5} | {'Parameter Address Low':<28} | {param_address:<17} | {param_str:<30} |\n"
+                f"| {12:<5} | {'Parameter Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
+                f"| {13:<5} | {'Checksum':<28} | {hex(checksum):<17} | {'Valid' if checksum_valid else 'Invalid'} {'':<22} |\n"
+                f"| {14:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+            )
+
+            return decoded
+
+        except Exception as e:
+            return f"Error decoding message: {str(e)}"
+
+    def _validate_checksum(self, data_bytes, checksum):
+        """Validate Roland SysEx checksum (sum of bytes should be 0 mod 128)"""
+        computed_checksum = (128 - (sum(data_bytes) % 128)) % 128
+        return computed_checksum == checksum
+
     def _decode_sysex(self, message):
         """Decode address SysEx message"""
         if len(message) < 8:
@@ -218,7 +308,7 @@ class MIDIDebugger(QMainWindow):
                 message = [int(x, 16) for x in hex_values]
                 # message = bytes(int(byte, 16) for byte in text.split())
                 # Decode and display
-                decoded = self._decode_sysex(message)
+                decoded = self._decode_sysex_15(message)
                 self.decoded_text.append(decoded)
                 
             except ValueError as e:
