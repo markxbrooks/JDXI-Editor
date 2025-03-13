@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from jdxi_manager.midi.helper import MIDIHelper
+from jdxi_editor.midi.helper import MIDIHelper
 
 class TestPianoKeys(unittest.TestCase):
     def setUp(self):

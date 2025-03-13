@@ -1,5 +1,5 @@
 import unittest
-from jdxi_manager.midi.messages import (
+from jdxi_editor.midi.messages import (
     create_parameter_message, 
     create_sysex_message,
     DIGITAL_SYNTH_AREA,

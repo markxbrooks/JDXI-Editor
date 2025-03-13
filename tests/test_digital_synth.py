@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
-from jdxi_manager.ui.editors.digital import DigitalSynthEditor
-from jdxi_manager.midi.helper import MIDIHelper
+from jdxi_editor.ui.editors.digital import DigitalSynthEditor
+from jdxi_editor.midi.helper import MIDIHelper
 
 class TestDigitalSynthEditor(unittest.TestCase):
     def setUp(self):
