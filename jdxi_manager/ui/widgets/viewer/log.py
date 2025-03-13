@@ -1,6 +1,41 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit, QPushButton
-from PySide6.QtCore import Qt
+"""
+Module: log_viewer
+==================
+
+This module provides a graphical log viewer using PySide6. The `LogViewer` class is a
+QMainWindow-based widget that displays real-time logging messages in a styled QTextEdit
+widget. It supports color-coded log levels and provides a button to clear the log display.
+
+Classes:
+--------
+- `LogViewer`: A main window that captures and displays log messages in real time.
+- `LogHandler`: A custom logging handler that redirects log output to the `QTextEdit` widget.
+
+Features:
+---------
+- Dark theme with a modern red-accented styling.
+- Supports logging levels with color-coded messages:
+  - **Red** for errors
+  - **Orange** for warnings
+  - **White** for info messages
+  - **Gray** for debug messages
+- Provides a "Clear Log" button to reset the log display.
+- Automatically removes the log handler when closed.
+
+Usage Example:
+--------------
+>>> viewer = LogViewer()
+>>> viewer.show()
+>>> logging.info("This is an info message.")
+>>> logging.error("This is an error message.")
+
+"""
+
+
+
 import logging
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit, QPushButton
+
 
 class LogViewer(QMainWindow):
     def __init__(self, midi_helper=None, parent=None):
@@ -72,6 +107,7 @@ class LogViewer(QMainWindow):
         """Remove log handler when window is closed"""
         logging.getLogger().removeHandler(self.log_handler)
         event.accept()
+
 
 class LogHandler(logging.Handler):
     """Custom logging handler to display logs in QTextEdit"""

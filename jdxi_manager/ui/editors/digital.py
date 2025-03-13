@@ -336,15 +336,11 @@ class DigitalSynthEditor(SynthEditor):
             icons_hlayout.addWidget(icon_label)
         layout.addLayout(icons_hlayout)
 
-        mono_row = QHBoxLayout()
-
-        self.mono_switch = Switch("Mono", ["OFF", "ON"])
-        self.mono_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.MONO_SWITCH, v)
-        )
-        mono_row.addWidget(self.mono_switch)
-        self.controls[DigitalCommonParameter.MONO_SWITCH] = self.mono_switch
-        layout.addLayout(mono_row)
+        mono_switch_row = QHBoxLayout()
+        self.mono_switch = self._create_parameter_switch(DigitalCommonParameter.MONO_SWITCH, "Mono",
+                                                         ["OFF", "ON"])
+        mono_switch_row.addWidget(self.mono_switch)
+        layout.addLayout(mono_switch_row)
 
         self.pitch_bend_row = QHBoxLayout()
         self.pitch_bend_up = self._create_parameter_slider(
@@ -367,42 +363,29 @@ class DigitalSynthEditor(SynthEditor):
 
         # Ring Modulator switch
         self.ring_row = QHBoxLayout()
-        self.ring_switch = Switch("Ring", ["OFF", "---", "ON"])
-        self.ring_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.RING_SWITCH, v)
-        )
-        self.controls[DigitalCommonParameter.RING_SWITCH] = self.ring_switch
+        self.ring_switch = self._create_parameter_switch(DigitalCommonParameter.RING_SWITCH, "Ring", ["OFF", "---", "ON"])
         self.ring_row.addWidget(self.ring_switch)
         layout.addLayout(self.ring_row)
 
         # Unison switch and size
-        self.unison_row = QHBoxLayout()
-        self.unison_switch = Switch("Unison", ["OFF", "ON"])
-        self.unison_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalCommonParameter.UNISON_SWITCH, v
-            )
-        )
-        self.controls[DigitalCommonParameter.UNISON_SWITCH] = self.unison_switch
-        self.unison_row.addWidget(self.unison_switch)
-        layout.addLayout(self.unison_row)
+        self.unison_switch_row = QHBoxLayout()
+        self.unison_switch = self._create_parameter_switch(DigitalCommonParameter.UNISON_SWITCH,
+                                                           "Unison",
+                                                           ["OFF", "ON"])
+        self.unison_switch_row.addWidget(self.unison_switch)
+        layout.addLayout(self.unison_switch_row)
 
-        self.unison_size = Switch("Size", ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"])
-        self.unison_size.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalCommonParameter.UNISON_SIZE, v)
-        )
-        self.unison_row.addWidget(self.unison_size)
+        self.unison_size = self._create_parameter_switch(DigitalCommonParameter.UNISON_SIZE,
+                                                         "Size",
+                                                         ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"])
+        self.unison_switch_row.addWidget(self.unison_size)
         self.controls[DigitalCommonParameter.UNISON_SIZE] = self.unison_size
-        layout.addLayout(self.unison_row)
+        layout.addLayout(self.unison_switch_row)
 
         self.portamento_row = QHBoxLayout()
-        self.portamento_switch = Switch("Portamento", ["OFF", "ON"])
-        self.portamento_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalCommonParameter.PORTAMENTO_SWITCH, v
-            )
-        )
-        self.controls[DigitalCommonParameter.PORTAMENTO_SWITCH] = self.portamento_switch
+        self.portamento_switch = self._create_parameter_switch(DigitalCommonParameter.PORTAMENTO_SWITCH,
+                                                               "Portamento",
+                                                               ["OFF", "ON"])
         self.portamento_row.addWidget(self.portamento_switch)
         layout.addLayout(self.portamento_row)
 
@@ -415,23 +398,15 @@ class DigitalSynthEditor(SynthEditor):
         layout.addLayout(self.portamento_time_row)
 
         # Portamento mode and legato
-        self.portamento_mode = Switch("Portamento Mode", ["NORMAL", "LEGATO"])
-        self.portamento_mode.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalCommonParameter.PORTAMENTO_MODE, v
-            )
-        )
-        self.controls[DigitalCommonParameter.PORTAMENTO_MODE] = self.portamento_mode
+        self.portamento_mode = self._create_parameter_switch(DigitalCommonParameter.PORTAMENTO_MODE,
+                                                             "Portamento Mode",
+                                                             ["NORMAL", "LEGATO"])
         self.portamento_row.addWidget(self.portamento_mode)
 
         self.legato_row = QHBoxLayout()
-        self.legato_switch = Switch("Legato", ["OFF", "ON"])
-        self.legato_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalCommonParameter.LEGATO_SWITCH, v
-            )
-        )
-        self.controls[DigitalCommonParameter.LEGATO_SWITCH] = self.legato_switch
+        self.legato_switch = self._create_parameter_switch(DigitalCommonParameter.LEGATO_SWITCH,
+                                                           "Legato",
+                                                           ["OFF", "ON"])
         self.legato_row.addWidget(self.legato_switch)
 
         # Analog Feel and Wave Shape
@@ -444,10 +419,10 @@ class DigitalSynthEditor(SynthEditor):
         self.controls[DigitalCommonParameter.ANALOG_FEEL] = self.analog_feel
         self.controls[DigitalCommonParameter.WAVE_SHAPE] = self.wave_shape
         # Add all controls to layout
-        layout.addLayout(mono_row)
+        layout.addLayout(mono_switch_row)
         layout.addLayout(self.tone_level_row)
         layout.addLayout(self.ring_row)
-        layout.addLayout(self.unison_row)
+        layout.addLayout(self.unison_switch_row)
         layout.addLayout(self.legato_row)
         layout.addWidget(self.analog_feel)
         layout.addWidget(self.wave_shape)

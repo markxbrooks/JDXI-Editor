@@ -92,7 +92,6 @@ from jdxi_manager.ui.widgets.adsr.adsr import ADSR
 from jdxi_manager.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_manager.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_manager.ui.widgets.slider import Slider
-from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
 def get_analog_parameter_by_address(address: int):
@@ -111,7 +110,7 @@ class AnalogSynthEditor(SynthEditor):
     # preset_changed = Signal(int, str, int)
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper], preset_handler=None, parent=None
+            self, midi_helper: Optional[MIDIHelper], preset_handler=None, parent=None
     ):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = [
@@ -407,7 +406,7 @@ class AnalogSynthEditor(SynthEditor):
         sub_layout = QVBoxLayout()
         sub_group.setLayout(sub_layout)
 
-        self.sub_type = Switch(
+        self.sub_oscillator_type_switch = self._create_parameter_switch(AnalogParameter.SUB_OSCILLATOR_TYPE,
             "Type",
             [
                 SubOscType.OFF.display_name,
@@ -415,8 +414,7 @@ class AnalogSynthEditor(SynthEditor):
                 SubOscType.OCT_DOWN_2.display_name,
             ],
         )
-        self.sub_type.valueChanged.connect(self._on_sub_type_changed)
-        sub_layout.addWidget(self.sub_type)
+        sub_layout.addWidget(self.sub_oscillator_type_switch)
         layout.addWidget(sub_group)
 
         # Update PW controls enabled state based on current waveform
@@ -461,7 +459,7 @@ class AnalogSynthEditor(SynthEditor):
         # Try to extract synth name from the selected text
         image_loaded = False
         if instrument_matches := re.search(
-            r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+                r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
         ):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
@@ -504,15 +502,17 @@ class AnalogSynthEditor(SynthEditor):
         )
 
     def _on_parameter_changed(
-        self, param: Union[AnalogParameter, AnalogCommonParameter], display_value: int
+            self, param: Union[AnalogParameter, AnalogCommonParameter], display_value: int
     ):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value if needed
             if hasattr(param, "convert_from_display"):
                 midi_value = param.convert_from_display(display_value)
-            else:
+            if hasattr(param, "validate_value"):
                 midi_value = param.validate_value(display_value)
+            else:
+                midi_value = display_value
 
             sysex_message = RolandSysEx(area=self.area,
                                         section=self.part,
@@ -522,18 +522,18 @@ class AnalogSynthEditor(SynthEditor):
             return_value = self.midi_helper.send_midi_message(sysex_message)
 
             # Send MIDI message
-            if not return_value: # self.send_midi_parameter(param, midi_value):
+            if not return_value:  # self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
 
         except Exception as ex:
             logging.error(f"Error handling parameter {param.name}: {str(ex)}")
 
     def _create_parameter_slider(
-        self,
-        param: Union[AnalogParameter, AnalogCommonParameter],
-        label: str,
-        vertical=False,
-        show_value_label=True,
+            self,
+            param: Union[AnalogParameter, AnalogCommonParameter],
+            label: str,
+            vertical=False,
+            show_value_label=True,
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
@@ -620,8 +620,7 @@ class AnalogSynthEditor(SynthEditor):
         layout.addLayout(icons_hlayout)
 
         # Filter controls
-        self.filter_switch = Switch("Filter", ["BYPASS", "LPF"])
-        self.filter_switch.valueChanged.connect(self._on_filter_switch_changed)
+        self.filter_switch = self._create_parameter_switch(AnalogParameter.FILTER_SWITCH, "Filter", ["BYPASS", "LPF"])
         layout.addWidget(self.filter_switch)
         self.filter_cutoff = self._create_parameter_slider(
             AnalogParameter.FILTER_CUTOFF, "Cutoff"
@@ -676,7 +675,9 @@ class AnalogSynthEditor(SynthEditor):
             AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
             AnalogParameter.FILTER_ENV_RELEASE_TIME,
             self.midi_helper,
-            area=TEMPORARY_TONE_AREA
+            area=self.area,
+            part=self.part,
+            group=self.group
         )
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
@@ -738,17 +739,6 @@ class AnalogSynthEditor(SynthEditor):
             )
 
         return group
-
-    def _on_filter_switch_changed(self, value):
-        """Handle filter switch change"""
-
-        if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.FILTER_SWITCH.value[0],
-                                        value=value)
-            self.midi_helper.send_midi_message(sysex_message)
 
     def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
@@ -834,6 +824,9 @@ class AnalogSynthEditor(SynthEditor):
             AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
             AnalogParameter.AMP_ENV_RELEASE_TIME,
             self.midi_helper,
+            area=self.area,
+            part=self.part,
+            group=self.group
         )
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         sub_layout.addWidget(env_group)
@@ -919,14 +912,14 @@ class AnalogSynthEditor(SynthEditor):
 
         # Tempo Sync controls
         sync_row = QHBoxLayout()
-
-        self.lfo_sync_switch = Switch("Tempo Sync", ["OFF", "ON"])
-        self.lfo_sync_switch.valueChanged.connect(self._on_lfo_sync_changed)
+        self.lfo_sync_switch = self._create_parameter_switch(AnalogParameter.LFO_TEMPO_SYNC_SWITCH,
+                                                             "Tempo Sync",
+                                                             ["OFF", "ON"])
         sync_row.addWidget(self.lfo_sync_switch)
 
         self.lfo_sync_note_label = QLabel("Sync note")
         self.lfo_sync_note = self._create_parameter_combo_box(
-            AnalogParameter.LFO_TEMPO_SYNC_NOTE, "", options=LFO_TEMPO_SYNC_NOTES, show_label = False
+            AnalogParameter.LFO_TEMPO_SYNC_NOTE, "", options=LFO_TEMPO_SYNC_NOTES, show_label=False
         )
         sync_row.addWidget(self.lfo_sync_note_label)
         sync_row.addWidget(self.lfo_sync_note)
@@ -946,8 +939,9 @@ class AnalogSynthEditor(SynthEditor):
         )
 
         # Key Trigger switch
-        self.key_trig = Switch("Key Trigger", ["OFF", "ON"])
-        self.key_trig.valueChanged.connect(self._on_lfo_key_trig_changed)
+        self.key_trigger_switch = self._create_parameter_switch(AnalogParameter.LFO_KEY_TRIGGER,
+                                                                "Key Trigger",
+                                                                ["OFF", "ON"])
 
         # Add all controls to layout
         layout.addWidget(self.lfo_rate)
@@ -956,7 +950,7 @@ class AnalogSynthEditor(SynthEditor):
         layout.addWidget(self.lfo_pitch)
         layout.addWidget(self.lfo_filter)
         layout.addWidget(self.lfo_amp)
-        layout.addWidget(self.key_trig)
+        layout.addWidget(self.key_trigger_switch)
 
         return group
 
@@ -991,30 +985,6 @@ class AnalogSynthEditor(SynthEditor):
                 else control_change
             )
             self.midi_helper.send_control_change(control_change_number, value, MIDI_CHANNEL_ANALOG)
-
-    def _on_sub_type_changed(self, value: int):
-        """Handle sub oscillator preset_type change"""
-        if self.midi_helper:
-            # Convert switch position to SubOscType enum
-            sub_type = SubOscType(value)
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.SUB_OSCILLATOR_TYPE.value[0],
-                                        value=sub_type.midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_coarse_changed(self, value: int):
-        """Handle coarse tune change"""
-        if self.midi_helper:
-            # Convert -24 to +24 range to MIDI value (0x28 to 0x58)
-            midi_value = value + 63  # Center at 63 (0x3F)
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.OSC_PITCH_COARSE.value[0],
-                                        value=midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_lfo_shape_changed(self, value: int):
         """Handle LFO shape change"""
@@ -1084,16 +1054,6 @@ class AnalogSynthEditor(SynthEditor):
                                         value=midi_value)
             self.midi_helper.send_midi_message(sysex_message)
 
-    def _on_lfo_key_trig_changed(self, value: int):
-        """Handle LFO key trigger change"""
-        if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.LFO_KEY_TRIGGER.value[0],
-                                        value=value)
-            self.midi_helper.send_midi_message(sysex_message)
-
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
@@ -1151,10 +1111,10 @@ class AnalogSynthEditor(SynthEditor):
             new_value = (
                 midi_cc_to_frac(value)
                 if param
-                in [
-                    AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-                    AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-                ]
+                   in [
+                       AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+                       AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                   ]
                 else midi_cc_to_ms(value)
             )
 
@@ -1180,12 +1140,12 @@ class AnalogSynthEditor(SynthEditor):
                 if param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
                     self._update_lfo_shape_buttons(param_value)
                 elif (
-                    param_name == "SUB_OSCILLATOR_TYPE"
-                    and param_value in sub_osc_type_map
+                        param_name == "SUB_OSCILLATOR_TYPE"
+                        and param_value in sub_osc_type_map
                 ):
-                    self.sub_type.blockSignals(True)
-                    self.sub_type.setValue(sub_osc_type_map[param_value])
-                    self.sub_type.blockSignals(False)
+                    self.sub_oscillator_type_switch.blockSignals(True)
+                    self.sub_oscillator_type_switch.setValue(sub_osc_type_map[param_value])
+                    self.sub_oscillator_type_switch.blockSignals(False)
                 elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                     self._update_waveform_buttons(param_value)
                 elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:

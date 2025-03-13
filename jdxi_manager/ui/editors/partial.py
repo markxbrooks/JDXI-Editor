@@ -27,13 +27,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_manager.midi.data.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_manager.midi.data.parameter.synth import SynthParameter
 from jdxi_manager.midi.data.constants import PART_1
 from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
+from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
 class PartialEditor(QWidget):
@@ -115,6 +115,18 @@ class PartialEditor(QWidget):
         # Store control reference
         self.controls[param] = spin_box
         return spin_box
+
+    def _create_parameter_switch(
+        self,
+        param: SynthParameter,
+        label: str,
+        values: list[str],
+    ) -> Switch:
+        """Create address switch for address parameter with proper display conversion"""
+        switch = Switch(label, values)
+        switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+        self.controls[param] = switch
+        return switch
 
     def _on_parameter_changed(self, param: SynthParameter, display_value: int):
         """Handle parameter value changes from UI controls"""

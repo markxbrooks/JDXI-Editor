@@ -1,4 +1,32 @@
-from functools import partial
+"""
+Module: partials_panel
+======================
+
+This module provides a graphical user interface for controlling individual
+partials within a digital synthesizer patch using PySide6. It includes
+checkbox-based widgets to enable and select specific partials.
+
+Classes:
+--------
+- `PartialSwitch`: A UI component representing a single partial with ON/OFF
+  and selection controls.
+- `PartialsPanel`: A container widget that groups multiple `PartialSwitch`
+  components for managing multiple partials at once.
+
+Features:
+---------
+- Uses `QCheckBox` widgets to toggle partial states.
+- Supports custom styling with a dark theme and red-accented selection indicators.
+- Integrates `qtawesome` icons for better UI visualization.
+- Emits signals when partial states change, allowing external components
+  to respond to updates dynamically.
+
+Usage Example:
+--------------
+>>> panel = PartialsPanel()
+>>> panel.show()
+
+"""
 
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (
@@ -11,6 +39,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 import qtawesome as qta
+
 from jdxi_manager.midi.data.digital import DigitalPartial
 from jdxi_manager.ui.style import Style
 
@@ -40,25 +69,7 @@ class PartialSwitch(QWidget):
         layout.addWidget(self.select_check)
 
         # Style
-        self.setStyleSheet(
-            """
-            QCheckBox {
-                color: #CCCCCC;
-                font-size: 10px;
-            }
-            QCheckBox::indicator {
-                width: 16px;
-                height: 16px;
-                background: #333333;
-                border: 1px solid #555555;
-                border-radius: 8px;
-            }
-            QCheckBox::indicator:checked {
-                background: #666666;
-                border-color: #FF4444;
-            }
-        """
-        )
+        self.setStyleSheet(Style.JDXI_PARTIAL_SWITCH)
 
     def _on_state_changed(self, _):
         """Handle checkbox state changes"""
@@ -106,21 +117,4 @@ class PartialsPanel(QWidget):
 
         layout.addLayout(partial_layout)
         # Style
-        self.setStyleSheet(
-            """
-            QGroupBox {
-                color: #CCCCCC;
-                font-size: 12px;
-                border: 1px solid #444444;
-                border-radius: 3px;
-                margin-top: 1.5ex;
-                padding: 10px;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 0 3px;
-                background-color: #2D2D2D;
-            }
-        """
-        )
+        self.setStyleSheet(Style.JDXI_PARTIALS_PANEL)

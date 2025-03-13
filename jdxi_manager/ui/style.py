@@ -469,6 +469,16 @@ class Style:
             background: transparent;
         """
 
+    JDXI_KEYBOARD_DRUM_LABELS = """
+                QLabel {
+                    color: #808080;
+                    font-size: 7px;
+                    font-family: monospace;
+                    padding: 2px;
+                    min-width: 30px;
+                }
+            """
+
     JDXI_INSTRUMENT_TITLE_LABEL = """
             font-size: 16px;
             font-weight: bold;
@@ -529,6 +539,41 @@ class Style:
             QLabel {
                 color: #FFFFFF;
                 font-family: 'Myriad Pro';
+            }
+        """
+
+    JDXI_PARTIAL_SWITCH = """
+                QCheckBox {
+                    color: #CCCCCC;
+                    font-size: 10px;
+                }
+                QCheckBox::indicator {
+                    width: 16px;
+                    height: 16px;
+                    background: #333333;
+                    border: 1px solid #555555;
+                    border-radius: 8px;
+                }
+                QCheckBox::indicator:checked {
+                    background: #666666;
+                    border-color: #FF4444;
+                }
+            """
+
+    JDXI_PARTIALS_PANEL = """
+            QGroupBox {
+                color: #CCCCCC;
+                font-size: 12px;
+                border: 1px solid #444444;
+                border-radius: 3px;
+                margin-top: 1.5ex;
+                padding: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top center;
+                padding: 0 3px;
+                background-color: #2D2D2D;
             }
         """
 

@@ -33,6 +33,8 @@ import logging
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
 from PySide6.QtCore import Qt, QSize
 
+from jdxi_manager.midi.data.keyboard.keyboard import KEYBOARD_BLACK_NOTES, KEYBOARD_WHITE_NOTES, DRUM_LABELS
+from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.piano.key import PianoKey
 
 
@@ -50,51 +52,9 @@ class PianoKeyboard(QWidget):
         self.black_key_height = 100
 
         # Define note patterns
-        self.white_notes = [
-            36,
-            38,
-            40,
-            41,
-            43,
-            45,
-            47,  # C1 to B1
-            48,
-            50,
-            52,
-            53,
-            55,
-            57,
-            59,  # C2 to B2
-            60,
-            62,
-            64,
-            65,
-            67,
-            69,
-            71,  # C3 to B3
-            72,  # C4
-        ]
+        self.white_notes = KEYBOARD_WHITE_NOTES
 
-        self.black_notes = [
-            37,
-            39,
-            None,
-            42,
-            44,
-            46,  # C#1 to B1
-            49,
-            51,
-            None,
-            54,
-            56,
-            58,  # C#2 to B2
-            61,
-            63,
-            None,
-            66,
-            68,
-            70,  # C#3 to B3
-        ]
+        self.black_notes = KEYBOARD_BLACK_NOTES
 
         # Calculate total width
         total_width = len(self.white_notes) * self.white_key_width
@@ -112,63 +72,11 @@ class PianoKeyboard(QWidget):
         labels_layout.setSpacing(0)
         labels_layout.setContentsMargins(1, 1, 1, 1)
 
-        # Drum pad names in order
-        drum_labels = [
-            "BD1",
-            "RIM",
-            "BD2",
-            "CLP",
-            "BD3",
-            "SD1",
-            "CHH",
-            "SD2",
-            "PHH",
-            "SD3",
-            "OHH",
-            "SD4",
-            "TM1",
-            "PC1",
-            "TM2",
-            "PC2",
-            "TM3",
-            "PC3",
-            "CY1",
-            "PC4",
-            "CY2",
-            "PC5",
-            "CY3",
-            "HIT",
-            "OT1",
-            "OT2",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "   ",
-            "  ",
-            " ",
-        ]
-
         # Create and style labels
-        for text in drum_labels:
+        for text in DRUM_LABELS:
             label = QLabel(text)
-            label.setAlignment(Qt.AlignCenter)
-            label.setStyleSheet(
-                """
-                QLabel {
-                    color: #808080;
-                    font-size: 7px;
-                    font-family: monospace;
-                    padding: 2px;
-                    min-width: 30px;
-                }
-            """
-            )
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            label.setStyleSheet(Style.JDXI_KEYBOARD_DRUM_LABELS)
             labels_layout.addWidget(label)
 
         labels_layout.addStretch()
@@ -208,7 +116,7 @@ class PianoKeyboard(QWidget):
         black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19]
 
         for pos, note in zip(
-            black_positions, [n for n in self.black_notes if n is not None]
+            black_positions, [n for n in KEYBOARD_BLACK_NOTES if n is not None]
         ):
             black_key = PianoKey(
                 note,

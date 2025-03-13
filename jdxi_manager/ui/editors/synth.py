@@ -41,6 +41,7 @@ from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
+from jdxi_manager.ui.widgets.switch.switch import Switch
 
 
 class SynthEditor(QWidget):
@@ -141,6 +142,18 @@ class SynthEditor(QWidget):
         # Store control reference
         self.controls[param] = spin_box
         return spin_box
+    
+    def _create_parameter_switch(
+        self,
+        param: SynthParameter,
+        label: str,
+        values: list[str],
+    ) -> Switch:
+        """Create address switch for address parameter with proper display conversion"""
+        switch = Switch(label, values)
+        switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+        self.controls[param] = switch
+        return switch
 
     def _create_parameter_slider(
         self,
