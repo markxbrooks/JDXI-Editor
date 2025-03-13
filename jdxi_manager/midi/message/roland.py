@@ -45,6 +45,7 @@ class RolandSysEx(SysExMessage):
     group: int = 0x00
     param: int = 0x00
     value: int = 0x00
+    # size: int = 1
 
     # These attributes should not be set in `__init__`
     synth_type: int = field(init=False, default=None)
@@ -57,6 +58,29 @@ class RolandSysEx(SysExMessage):
         """Initialize address and data based on parameters."""
         self.address = [self.area, self.section, self.group, self.param]
         self.data = [self.value] if isinstance(self.value, int) else self.value
+
+    def to_list(self) -> List[int]:
+        """Convert the SysEx message to a list of integers."""
+        msg = (
+                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                + list(self.model_id)
+                + [self.command]
+                + self.address
+                + self.data  # Directly append value (no extra list around it)
+        )
+        # if self.manufacturer_id == [0x41]:  # Roland messages require checksum
+        msg.append(self.calculate_checksum())
+        msg.append(self.end_of_sysex)
+        return msg
+
+    def split_into_nibbles(self, value: int) -> list[int]:
+        """Splits a 4-byte value into its nibbles (4-bit chunks)."""
+        nibbles = []
+        for i in range(4):
+            # Extract each nibble (4 bits) by shifting and masking
+            nibble = (value >> (i * 4)) & 0x0F  # 0x0F is 1111, the mask for 4 bits
+            nibbles.append(nibble)
+        return nibbles
 
     def construct_sysex(self, address, *data_bytes, request=False):
         """Construct a SysEx message with a checksum and update instance variables."""
@@ -72,6 +96,10 @@ class RolandSysEx(SysExMessage):
         # Update instance variables
         self.area, self.section, self.group, self.param = address
 
+        # Convert the value into nibbles (if it's 4 bytes long)
+        if isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF:  # Check for 4-byte integer
+            self.value = self.split_into_nibbles(self.value)
+
         # Determine parameter and value split
         if len(data_bytes) == 1:
             self.parameter = []
@@ -86,6 +114,17 @@ class RolandSysEx(SysExMessage):
             raise ValueError("Invalid data_bytes length. Must be 1, 2+, or 4.")
 
         command = self.rq1_command if request else self.dt1_command
+
+        # **Validation 1: Ensure self.parameter and self.value are lists of integers**
+        if not isinstance(self.parameter, list) or not all(isinstance(p, int) for p in self.parameter):
+            raise TypeError(f"Invalid parameter format: Expected list of integers, got {self.parameter}")
+
+        if not isinstance(self.value, list) or not all(isinstance(v, int) for v in self.value):
+            raise TypeError(f"Invalid value format: Expected list of integers, got {self.value}")
+
+        # **Validation 2: Ensure self.parameter and self.value are not empty if required**
+        if len(self.parameter) == 0 and len(self.value) == 0:
+            raise ValueError("Both parameter and value cannot be empty. At least one must contain data.")
 
         required_values = {
             "manufacturer_id": self.manufacturer_id,
@@ -107,8 +146,8 @@ class RolandSysEx(SysExMessage):
                 + list(self.model_id)
                 + [command]
                 + address
-                + self.parameter
-                + self.value
+                + [self.parameter]
+                + [self.value]
         )
 
         # Append checksum

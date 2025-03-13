@@ -19,7 +19,8 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 from typing import Dict, Union
 from jdxi_manager.midi.data.parameter.synth import SynthParameter
-from jdxi_manager.midi.data.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA, TEMPORARY_TONE_AREA
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_manager.ui.widgets.slider.slider import Slider
 from jdxi_manager.ui.style import Style
@@ -63,7 +64,7 @@ class ADSR(QWidget):
             "sustain_level": 0.8,
         }
         self.group = group if group else ANALOG_OSC_GROUP
-        self.area = area if area else TEMPORARY_ANALOG_SYNTH_AREA
+        self.area = area if area else TEMPORARY_TONE_AREA
         self.part = part if part else ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
@@ -226,7 +227,13 @@ class ADSR(QWidget):
         try:
             group = self.group  # Common parameters area
             param_address = param.address
-
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=group,
+                                        param=param_address,
+                                        value=value)
+            return self.midi_helper.send_midi_message(sysex_message)
+            """            
             # Ensure value is included in the MIDI message
             return self.midi_helper.send_parameter(
                 area=self.area,
@@ -234,7 +241,7 @@ class ADSR(QWidget):
                 group=group,
                 param=param_address,
                 value=value,  # Make sure this value is being sent
-            )
+            )"""
         except Exception as e:
             logging.error(f"MIDI error setting {param}: {str(e)}")
             return False

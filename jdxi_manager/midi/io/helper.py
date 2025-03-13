@@ -56,7 +56,7 @@ class MIDIHelper(MIDIInHandler, MIDIOutHandler):
         try:
             logging.info(f"attempting to send message: {sysex_data}")
             sysex_list = list(sysex_data)
-            self.send_message(sysex_list)
+            self.send_raw_message(sysex_list)
         except Exception as ex:
             logging.info(f"Error {ex} sending sysex list")
 

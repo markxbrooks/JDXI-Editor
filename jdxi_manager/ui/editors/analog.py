@@ -68,6 +68,7 @@ from jdxi_manager.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.data.parameter.analog import AnalogParameter
 from jdxi_manager.midi.io.helper import MIDIHelper
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
@@ -513,8 +514,15 @@ class AnalogSynthEditor(SynthEditor):
             else:
                 midi_value = param.validate_value(display_value)
 
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=param.address,
+                                        value=midi_value)
+            return_value = self.midi_helper.send_midi_message(sysex_message)
+
             # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
+            if not return_value: # self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
 
         except Exception as ex:
@@ -668,6 +676,7 @@ class AnalogSynthEditor(SynthEditor):
             AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
             AnalogParameter.FILTER_ENV_RELEASE_TIME,
             self.midi_helper,
+            area=TEMPORARY_TONE_AREA
         )
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
@@ -734,13 +743,12 @@ class AnalogSynthEditor(SynthEditor):
         """Handle filter switch change"""
 
         if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.FILTER_SWITCH.value[0],
-                value=value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.FILTER_SWITCH.value[0],
+                                        value=value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
@@ -955,13 +963,13 @@ class AnalogSynthEditor(SynthEditor):
     def _on_waveform_selected(self, waveform: Waveform):
         """Handle waveform button selection KEEP!"""
         if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.OSC_WAVEFORM.value[0],
-                value=waveform.midi_value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.OSC_WAVEFORM.value[0],
+                                        value=waveform.midi_value)
+            self.midi_helper.send_midi_message(sysex_message)
+
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
                 btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
@@ -989,37 +997,34 @@ class AnalogSynthEditor(SynthEditor):
         if self.midi_helper:
             # Convert switch position to SubOscType enum
             sub_type = SubOscType(value)
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.SUB_OSCILLATOR_TYPE.value[0],
-                value=sub_type.midi_value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.SUB_OSCILLATOR_TYPE.value[0],
+                                        value=sub_type.midi_value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_coarse_changed(self, value: int):
         """Handle coarse tune change"""
         if self.midi_helper:
             # Convert -24 to +24 range to MIDI value (0x28 to 0x58)
             midi_value = value + 63  # Center at 63 (0x3F)
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.OSC_PITCH_COARSE.value[0],
-                value=midi_value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.OSC_PITCH_COARSE.value[0],
+                                        value=midi_value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_lfo_shape_changed(self, value: int):
         """Handle LFO shape change"""
         if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_SHAPE.value[0],
-                value=value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.LFO_SHAPE.value[0],
+                                        value=value)
+            self.midi_helper.send_midi_message(sysex_message)
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
@@ -1036,63 +1041,58 @@ class AnalogSynthEditor(SynthEditor):
         Handle LFO sync change
         """
         if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_TEMPO_SYNC_SWITCH.value[0],
-                value=value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.LFO_TEMPO_SYNC_SWITCH.value[0],
+                                        value=value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_lfo_sync_note_changed(self, value: int):
         """
         Handle LFO sync note change
         """
         if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_TEMPO_SYNC_NOTE.value[0],
-                value=value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.LFO_TEMPO_SYNC_NOTE.value[0],
+                                        value=value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_lfo_pitch_changed(self, value: int):
         """Handle LFO pitch depth change"""
         if self.midi_helper:
             # Convert -63 to +63 range to 1-127
             midi_value = value + 64 if value >= 0 else abs(value)
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_PITCH_DEPTH.value[0],
-                value=midi_value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.LFO_PITCH_DEPTH.value[0],
+                                        value=midi_value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_lfo_filter_changed(self, value: int):
         """Handle LFO filter depth change"""
         if self.midi_helper:
             # Convert -63 to +63 range to 1-127
             midi_value = value + 64 if value >= 0 else abs(value)
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_TONE_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_FILTER_DEPTH.value[0],
-                value=midi_value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.LFO_FILTER_DEPTH.value[0],
+                                        value=midi_value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_lfo_key_trig_changed(self, value: int):
         """Handle LFO key trigger change"""
         if self.midi_helper:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_ANALOG_SYNTH_AREA,
-                part=ANALOG_PART,
-                group=ANALOG_OSC_GROUP,
-                param=AnalogParameter.LFO_KEY_TRIGGER.value[0],
-                value=value,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=AnalogParameter.LFO_KEY_TRIGGER.value[0],
+                                        value=value)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""

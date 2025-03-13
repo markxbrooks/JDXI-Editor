@@ -56,6 +56,7 @@ from jdxi_manager.midi.data.parameter.digital import DigitalParameter
 from jdxi_manager.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_manager.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_manager.midi.data.constants import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.midi.sysex.parsers import get_partial_address
 from jdxi_manager.midi.utils.conversions import (
     midi_cc_to_frac,
@@ -873,16 +874,13 @@ class DigitalPartialEditor(PartialEditor):
                 size = 4
             else:
                 size = 1
-
-            # Ensure value is included in the MIDI message
-            return self.midi_helper.send_parameter(
-                area=self.area,
-                part=self.part,
-                group=group,
-                param=param_address,
-                value=value,  # Make sure this value is being sent
-                size=size
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=group,
+                                        param=param_address,
+                                        value=value)
+            value = self.midi_helper.send_midi_message(sysex_message)
+            return value
         except Exception as ex:
             logging.error(f"MIDI error setting {param}: {str(ex)}")
             return False

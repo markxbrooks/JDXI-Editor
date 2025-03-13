@@ -27,11 +27,12 @@ from jdxi_manager.midi.data.constants import (
 from jdxi_manager.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
 from jdxi_manager.midi.data.constants.sysex import (
     TEMPORARY_PROGRAM_AREA,
-    TEMPORARY_TONE_AREA,
+    TEMPORARY_TONE_AREA, COMMON_GROUP,
 )
 from jdxi_manager.midi.io import MIDIHelper
 from jdxi_manager.midi.io.connection import MIDIConnection
 from jdxi_manager.midi.message.identity_request import IdentityRequestMessage
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.midi.preset.loader import PresetLoader
 from jdxi_manager.ui.editors import (
@@ -782,16 +783,15 @@ class JdxiInstrument(JdxiUi):
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
-            self.send_midi_parameter(
-                group_address,
-                param_address,
-                octave_value,
-                part_address=part_address,
-                area=TEMPORARY_TONE_AREA,
-            )
             logging.debug(
-                f"Sent octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
+                f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
+            sysex_message = RolandSysEx(area=TEMPORARY_TONE_AREA,
+                                        section=part_address,
+                                        group=group_address,
+                                        param=param_address,
+                                        value=octave_value)
+            return self.midi_helper.send_midi_message(sysex_message)
 
     def send_midi_parameter(
         self, group_address, param_address, value, part_address=None, area=None
@@ -806,13 +806,12 @@ class JdxiInstrument(JdxiUi):
             if not area:
                 area = TEMPORARY_PROGRAM_AREA
             # Ensure value is included in the MIDI message
-            return self.midi_helper.send_parameter(
-                area=area,
-                part=part_address,
-                group=group_address,
-                param=param_address,
-                value=value,  # Make sure this value is being sent
-            )
+            sysex_message = RolandSysEx(area=area,
+                                        section=part_address,
+                                        group=group_address,
+                                        param=param_address,
+                                        value=value)
+            return self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
             logging.error(f"MIDI error setting {param_address}: {str(ex)}")
             return False
@@ -933,14 +932,6 @@ class JdxiInstrument(JdxiUi):
                 if hasattr(self, "midi_helper"):
                     self.midi_helper.pub_handle_incoming_midi_message(message, timestamp)
 
-    def _send_midi_message(self, message):
-        """Send MIDI message and blink indicator"""
-        if self.midi_helper:
-            self.midi_helper.send_message(message)
-            # Blink the output indicator
-            if hasattr(self, "midi_out_indicator"):
-                self.midi_out_indicator.blink()
-
     def _edit_patch_name(self):
         """Edit current patch name"""
         try:
@@ -956,7 +947,7 @@ class JdxiInstrument(JdxiUi):
                     msg = MIDIHelper.create_patch_name_message(
                         self.current_preset_num, new_name
                     )
-                    self.midi_out.send_message(msg)
+                    self.midi_out.send_raw_message(msg)
                     logging.debug(
                         f"Updated patch {self.current_preset_num} name to: {new_name}"
                     )
@@ -1043,7 +1034,7 @@ class JdxiInstrument(JdxiUi):
 
             # Send request
             if self.midi_helper:
-                self.midi_helper.send_message(identity_request.to_list())
+                self.midi_helper.send_raw_message(identity_request.to_list())
                 logging.debug("Sent JD-Xi identity request")
 
         except Exception as ex:
@@ -1054,7 +1045,7 @@ class JdxiInstrument(JdxiUi):
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
             msg = [0x90 + self.channel, note_num, 100]
-            self.midi_helper.send_message(msg)
+            self.midi_helper.send_raw_message(msg)
             logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
     def handle_piano_note_off(self, note_num):
@@ -1065,7 +1056,7 @@ class JdxiInstrument(JdxiUi):
             if not self.key_hold_latched:
                 status = 0x80 + self.channel
                 msg = [status, note_num, 0]
-                self.midi_helper.send_message(msg)
+                self.midi_helper.send_raw_message(msg)
                 logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
 
     def _show_analog_presets(self):

@@ -42,7 +42,7 @@ from PySide6.QtGui import QPixmap
 from jdxi_manager.midi.data.parameter.effects import EffectParameter
 from jdxi_manager.midi.data.effects import EffectCommonParameter
 from jdxi_manager.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRAM_COMMON
-# from jdxi_manager.midi.sysex.sysex import PROGRAM_COMMON
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.style import Style
 from jdxi_manager.midi.io.helper import MIDIHelper
@@ -337,26 +337,6 @@ class EffectsEditor(SynthEditor):
             logging.info(
                 f"parameter: {param} display {display_value} midi value {midi_value}"
             )
-            if param in [
-                EffectParameter.EFX1_PARAM_1,
-                EffectParameter.EFX1_PARAM_2,
-                EffectParameter.EFX1_PARAM_32,
-                EffectParameter.EFX2_PARAM_1,
-                EffectParameter.EFX2_PARAM_2,
-                EffectParameter.EFX2_PARAM_32,
-                EffectParameter.DELAY_PARAM_1,
-                EffectParameter.DELAY_PARAM_2,
-                EffectParameter.DELAY_PARAM_24,
-                EffectParameter.REVERB_PARAM_1,
-                EffectParameter.REVERB_PARAM_2,
-                EffectParameter.REVERB_PARAM_24,
-            ]:
-                size = 4
-            else:
-                size = 1
-            logging.info(
-                f"parameter param {param} value {display_value} size {size} sent"
-            )
             # Ensure we get address valid common parameter
             common_param = EffectParameter.get_common_param_by_name(param.name)
             midi_value = param.convert_to_midi(display_value)
@@ -364,15 +344,13 @@ class EffectsEditor(SynthEditor):
                 logging.error(f"Unknown common parameter preset_type for: {param.name}")
                 return False
             try:
-                # Ensure value is included in the MIDI message
-                return self.midi_helper.send_parameter(
-                    area=self.area,
-                    part=self.part,
-                    group=common_param.address,
-                    param=param.address,
-                    value=midi_value,  # Make sure this value is being sent
-                    size=size,
-                )
+                # Send MIDI message
+                sysex_message = RolandSysEx(area=self.area,
+                                            section=self.part,
+                                            group=common_param.address,
+                                            param=param.address,
+                                            value=midi_value)
+                return self.midi_helper.send_midi_message(sysex_message)
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")
                 return False

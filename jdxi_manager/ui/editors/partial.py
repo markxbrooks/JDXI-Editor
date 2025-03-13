@@ -26,8 +26,11 @@ from typing import Dict
 from PySide6.QtWidgets import (
     QWidget,
 )
+
+from jdxi_manager.midi.data.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_manager.midi.data.parameter.synth import SynthParameter
 from jdxi_manager.midi.data.constants import PART_1
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.ui.widgets.slider import Slider
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_manager.ui.widgets.spin_box.spin_box import SpinBox
@@ -75,20 +78,6 @@ class PartialEditor(QWidget):
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         # Store control reference
         self.controls[param] = slider
-        """ 
-        try:
-            slider_value = self.midi_helper.get_parameter(
-                area=self.area,
-                part=self.part,
-                group=self.group,
-                param=param.address,
-            )
-            logging.info(f"_create_parameter_value: slider_value: {slider_value}")
-            if slider_value:
-                slider.setValue(slider_value)
-        except TimeoutError:
-            logging.info(f"Timed out requesting {param}")
-        """
         return slider
 
     def _create_parameter_combo_box(
@@ -146,6 +135,13 @@ class PartialEditor(QWidget):
                 f"parameter param {param} value {display_value} size {size} sent"
             )
             try:
+                sysex_message = RolandSysEx(area=self.area,
+                                            section=self.part,
+                                            group=self.group,
+                                            param=param.address,
+                                            value=midi_value)
+                value = self.midi_helper.send_midi_message(sysex_message)
+                """ 
                 # Ensure value is included in the MIDI message
                 return self.midi_helper.send_parameter(
                     area=self.area,
@@ -155,6 +151,8 @@ class PartialEditor(QWidget):
                     value=midi_value,  # Make sure this value is being sent
                     size=size,
                 )
+                """
+                return value
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")
                 return False

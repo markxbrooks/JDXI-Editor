@@ -21,10 +21,10 @@ class TestMIDISending(unittest.TestCase):
         """Test sending address basic MIDI message"""
         # Create address simple note-on message
         msg = [0x90, 60, 100]  # Note on, middle C, velocity 100
-        self.midi_helper.send_message(msg)
+        self.midi_helper.send_raw_message(msg)
         
         # Verify message was sent
-        self.midi_helper.midi_out.send_message.assert_called_once_with(msg)
+        self.midi_helper.midi_out.send_raw_message.assert_called_once_with(msg)
 
     def test_send_sysex_message(self):
         """Test sending address SysEx message"""
@@ -38,7 +38,7 @@ class TestMIDISending(unittest.TestCase):
         )
         
         # Send message
-        self.midi_helper.send_message(msg)
+        self.midi_helper.send_raw_message(msg)
         
         # Verify correct SysEx message was sent
         expected_msg = [
@@ -56,8 +56,8 @@ class TestMIDISending(unittest.TestCase):
             0xF7   # End of SysEx
         ]
         
-        self.midi_helper.midi_out.send_message.assert_called_once()
-        actual_msg = list(self.midi_helper.midi_out.send_message.call_args[0][0])
+        self.midi_helper.midi_out.send_raw_message.assert_called_once()
+        actual_msg = list(self.midi_helper.midi_out.send_raw_message.call_args[0][0])
         self.assertEqual(actual_msg, expected_msg)
 
     def test_send_multiple_messages(self):
@@ -76,11 +76,11 @@ class TestMIDISending(unittest.TestCase):
         
         # Send all messages
         for msg in msgs:
-            self.midi_helper.send_message(msg)
+            self.midi_helper.send_raw_message(msg)
         
         # Verify all messages were sent in order
         expected_calls = [((msg,),) for msg in msgs]
-        actual_calls = self.midi_helper.midi_out.send_message.call_args_list
+        actual_calls = self.midi_helper.midi_out.send_raw_message.call_args_list
         self.assertEqual(actual_calls, expected_calls)
 
 if __name__ == '__main__':

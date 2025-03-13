@@ -296,7 +296,6 @@ class ProgramEditor(QMainWindow):
         for program in filtered_list:  # Add programs to the combo box
             program_name = program["name"]
             program_id = program["id"]
-            print(f"Adding program: {program_name} with ID: {program_id}")
             index = len(self.programs)  # Use the current number of programs
             self.program_number_combo_box.addItem(
                 f"{program_id} - {program_name}", index

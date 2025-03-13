@@ -52,6 +52,7 @@ import qtawesome as qta
 from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.editors.digital_partial import DigitalPartialEditor
@@ -528,8 +529,12 @@ class DigitalSynthEditor(SynthEditor):
                 midi_value = param.validate_value(display_value)
             logging.info(f"parameter from widget midi_value: {midi_value}")
             # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=param.address,
+                                        value=midi_value)
+            return self.midi_helper.send_midi_message(sysex_message)
 
         except Exception as ex:
             logging.error(f"Error handling parameter {param.name}: {str(ex)}")

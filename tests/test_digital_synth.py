@@ -27,8 +27,8 @@ class TestDigitalSynthEditor(unittest.TestCase):
         self.editor._send_parameter(0x20, 0x00)  # OSC1 waveform to SAW
         
         # Get the message that was sent
-        self.midi_helper.midi_out.send_message.assert_called_once()
-        args = self.midi_helper.midi_out.send_message.call_args[0][0]
+        self.midi_helper.midi_out.send_raw_message.assert_called_once()
+        args = self.midi_helper.midi_out.send_raw_message.call_args[0][0]
         
         # Expected MIDI message for OSC1 SAW waveform
         expected = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x12, 

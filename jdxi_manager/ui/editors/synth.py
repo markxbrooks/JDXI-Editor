@@ -35,6 +35,7 @@ from jdxi_manager.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_manager.midi.data.presets.type import PresetType
 from jdxi_manager.midi.data.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_manager.midi.io.helper import MIDIHelper
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.midi.preset.handler import PresetHandler
 from jdxi_manager.ui.style import Style
 from jdxi_manager.ui.widgets.combo_box.combo_box import ComboBox
@@ -51,7 +52,7 @@ class SynthEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
-        self.four_byte_params = None
+        self.four_byte_params = []
         self.instrument_icon_folder = None
         self.controls = {}
         self.partial_num = None
@@ -170,17 +171,6 @@ class SynthEditor(QWidget):
             # Get initial MIDI value and convert to display value
             if self.midi_helper:
                 group, _ = param.get_address_for_partial(self.partial_num)
-                """ 
-                midi_value = self.midi_helper.get_parameter(
-                    area=self.area,
-                    part=self.part,
-                    group=group,
-                    param=param.address
-                )
-                if midi_value is not None:
-                    display_value = param.convert_from_midi(midi_value)
-                    slider.setValue(display_value)
-                """
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
@@ -307,6 +297,14 @@ class SynthEditor(QWidget):
                 group = 0x00  # Common parameters area
 
             # Ensure value is included in the MIDI message
+
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=group,
+                                        param=param.address,
+                                        value=value)
+            return_value = self.midi_helper.send_midi_message(sysex_message)
+            """
             return self.midi_helper.send_parameter(
                 area=self.area,
                 part=self.part,
@@ -314,6 +312,8 @@ class SynthEditor(QWidget):
                 param=param.address,
                 value=value,  # Make sure this value is being sent
             )
+            """
+            return return_value
         except Exception as ex:
             logging.error(f"MIDI error setting {param}: {str(ex)}")
             return False
@@ -350,6 +350,13 @@ class SynthEditor(QWidget):
                 f"display_value={display_value:02x},  value={midi_value:02x}"
             )
             try:
+                sysex_message = RolandSysEx(area=self.area,
+                                            section=self.part,
+                                            group=group,
+                                            param=param.address,
+                                            value=midi_value)
+                self.midi_helper.send_midi_message(sysex_message)
+                """
                 # Ensure value is included in the MIDI message
                 return self.midi_helper.send_parameter(
                     area=self.area,
@@ -358,7 +365,7 @@ class SynthEditor(QWidget):
                     param=param.address,
                     value=midi_value,
                     size=size,
-                )
+                )"""
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")
                 return False
@@ -377,7 +384,7 @@ class SynthEditor(QWidget):
     def send_message(self, message):
         """Send address SysEx message using the MIDI helper"""
         if self.midi_helper:
-            self.midi_helper.send_message(message)
+            self.midi_helper.send_raw_message(message)
         else:
             logging.error("MIDI helper not initialized")
 
