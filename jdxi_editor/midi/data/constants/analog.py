@@ -120,9 +120,7 @@ def send_nrpn(midi_out, msb: int, lsb: int, value: int):
     midi_out.send(Message('control_change', control=98, value=lsb))  # NRPN LSB
     midi_out.send(Message('control_change', control=6, value=value))  # Data Entry MSB
 
-# send_nrpn(midi_out, 0, 3, 2)  # Set LFO Shape (NRPN MSB: 0, LSB: 3) to value 2
 
-# Parameter Groups
 ANALOG_OSC_GROUP = 0x00  # Oscillator parameters
 ANALOG_FILTER_GROUP = 0x01  # Filter parameters
 ANALOG_AMP_GROUP = 0x02  # Amplifier parameters

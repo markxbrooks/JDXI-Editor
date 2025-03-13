@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12, RQ1_COMMAND_11, MODEL_ID_1, \
-    MODEL_ID_2, MODEL_ID_3, MODEL_ID_4, ROLAND_ID, DEVICE_ID, END_OF_SYSEX, START_OF_SYSEX, SETUP_AREA
+    MODEL_ID_2, MODEL_ID_3, MODEL_ID_4, ROLAND_ID, DEVICE_ID, END_OF_SYSEX, START_OF_SYSEX, SETUP_AREA, PLACEHOLDER_BYTE
 from jdxi_editor.midi.message.sysex import SysExMessage
 
 
