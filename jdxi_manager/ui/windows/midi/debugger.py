@@ -262,7 +262,7 @@ class MIDIDebugger(QMainWindow):
                     self.log_response(f"Converted to bytes: {[hex(b) for b in message]}")
                     
                     # Send message using MIDIHelper's send_message
-                    self.midi_helper.send_message(message)
+                    self.midi_helper.send_raw_message(message)
                     
                     # Log success
                     hex_str = ' '.join([f"{b:02X}" for b in message])

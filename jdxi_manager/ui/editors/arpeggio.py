@@ -62,6 +62,7 @@ from jdxi_manager.midi.data.constants.arpeggio import (
     ArpOctaveRange,
 )
 from jdxi_manager.midi.io import MIDIHelper
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.ui.editors.synth import SynthEditor
 from jdxi_manager.ui.widgets.slider import Slider
 
@@ -73,6 +74,9 @@ class ArpeggioEditor(SynthEditor):
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.setFixedWidth(450)
+        self.area = TEMPORARY_PROGRAM
+        self.part = ARP_PART
+        self.group = ARP_GROUP
         # Main layout
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -212,15 +216,16 @@ class ArpeggioEditor(SynthEditor):
             switch_is_on = self.switch_button.isChecked()
             self.switch_button.setText("ON" if switch_is_on else "OFF")
             logging.debug(
-                f"Sending arp switch change: area={TEMPORARY_PROGRAM:02x}, part={ARP_PART:02x}, group={ARP_GROUP:02x}, param={switch_address:02x}, value={switch_is_on}"
+                f"Sending arp switch change: area={TEMPORARY_PROGRAM:02x}, "
+                f"part={ARP_PART:02x}, group={ARP_GROUP:02x}, "
+                f"param={switch_address:02x}, value={switch_is_on}"
             )
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_PROGRAM,
-                part=ARP_PART,
-                group=ARP_GROUP,
-                param=switch_address,
-                value=switch_is_on,
-            )
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=switch_address,
+                                        value=switch_is_on)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_style_changed(self, index):
         """Handle changes to the Arpeggio Style."""
@@ -253,14 +258,13 @@ class ArpeggioEditor(SynthEditor):
         if self.midi_helper:
             param = ArpeggioParameter.OCTAVE.value[0]
             octave = index + 61  # Convert index to -3 to +3 range
-            print(f"octave value: {octave}")
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_PROGRAM,
-                part=ARP_PART,
-                group=ARP_GROUP,
-                param=param,
-                value=octave,
-            )
+            logging.info(f"octave value: {octave}")
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=ArpeggioParameter.OCTAVE.value[0],
+                                        value=octave)
+            self.midi_helper.send_midi_message(sysex_message)
 
     def _on_motif_changed(self, index):
         """Handle changes to the Motif."""
@@ -270,13 +274,12 @@ class ArpeggioEditor(SynthEditor):
         """Send parameter change to MIDI device."""
         address, min_val, max_val = param.value
         if min_val <= value <= max_val:
-            self.midi_helper.send_parameter(
-                area=TEMPORARY_PROGRAM,
-                part=ARP_PART,
-                group=ARP_GROUP,
-                param=address,
-                value=value,
-            )
-            print(f"Parameter {param.name} changed to {value}")
+            sysex_message = RolandSysEx(area=self.area,
+                                        section=self.part,
+                                        group=self.group,
+                                        param=address,
+                                        value=value)
+            self.midi_helper.send_midi_message(sysex_message)
+            logging.info(f"Parameter {param.name} changed to {value}")
         else:
-            print(f"Value {value} out of range for parameter {param.name}")
+            logging.info(f"Value {value} out of range for parameter {param.name}")

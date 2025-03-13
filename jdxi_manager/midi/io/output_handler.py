@@ -23,9 +23,15 @@ from typing import List, Optional
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_manager.midi.data.constants.sysex import ROLAND_ID, DEVICE_ID, RQ1_COMMAND_11
+from jdxi_manager.midi.data.constants.sysex import (
+    ROLAND_ID,
+    DEVICE_ID,
+    RQ1_COMMAND_11,
+    END_OF_SYSEX,
+)
 from jdxi_manager.midi.io.controller import MidiIOController
 from jdxi_manager.midi.message.identity_request import IdentityRequestMessage
+from jdxi_manager.midi.message.midi import MidiMessage
 from jdxi_manager.midi.message.program_change import ProgramChangeMessage
 from jdxi_manager.midi.message.control_change import ControlChangeMessage
 from jdxi_manager.midi.message.channel import ChannelMessage
@@ -35,18 +41,19 @@ from jdxi_manager.midi.utils.byte import split_value_to_nibbles
 
 
 def format_midi_message_to_hex_string(message):
+    """hexlify message"""
     formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
     return formatted_message
 
 
 def construct_address(area, group, param, part):
-    # Address construction
+    """Address construction"""
     address = [area, part, group & 0xFF, param & 0xFF]
     return address
 
 
 def increment_group(group, param):
-    # Adjust group if param exceeds 127
+    """Adjust group if param exceeds 127"""
     if param > 127:
         group += 1
     return group
@@ -60,7 +67,7 @@ class MIDIOutHandler(MidiIOController):
         self.parent = parent
         self.channel = 1
 
-    def send_message(self, message: List[int]) -> bool:
+    def send_raw_message(self, message: List[int]) -> bool:
         """
         Send a raw MIDI message with validation.
 
@@ -88,11 +95,12 @@ class MIDIOutHandler(MidiIOController):
 
         try:
             logging.info(
-                f"Validation passed, sending MIDI message: {type(formatted_message)} {formatted_message}"
+                f"Validation passed, sending MIDI message: "
+                f"{type(formatted_message)} {formatted_message}"
             )
             self.midi_out.send_message(message)
             return True
-        except Exception as ex:
+        except (ValueError, TypeError, OSError, IOError) as ex:
             logging.info(f"Error sending MIDI message: {ex}")
             return False
 
@@ -123,11 +131,13 @@ class MIDIOutHandler(MidiIOController):
         Raises:
             ValueError: If the channel is out of range (1-16).
         """
-        if not (1 <= channel <= 16):
+        if not 1 <= channel <= 16:
             raise ValueError(f"Invalid MIDI channel: {channel}. Must be 1-16.")
-        channel_message = ChannelMessage(status, data1, data2, channel - 1)  # convert to 0-based
+        channel_message = ChannelMessage(
+            status, data1, data2, channel - 1
+        )  # convert to 0-based
         message_bytes_list = channel_message.to_list()
-        self.send_message(message_bytes_list)
+        self.send_raw_message(message_bytes_list)
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
         """
@@ -143,12 +153,12 @@ class MIDIOutHandler(MidiIOController):
         logging.debug(f"Sending bank select: MSB={msb}, LSB={lsb}, channel={channel}")
         try:
             # Bank Select MSB (CC#0)
-            self.send_message([0xB0 + channel, 0x00, msb])
+            self.send_raw_message([0xB0 + channel, 0x00, msb])
             # Bank Select LSB (CC#32)
-            self.send_message([0xB0 + channel, 0x20, lsb])
+            self.send_raw_message([0xB0 + channel, 0x20, lsb])
             return True
-        except Exception as e:
-            logging.error(f"Error sending bank select: {e}")
+        except (ValueError, TypeError, OSError, IOError) as ex:
+            logging.error(f"Error sending bank select: {ex}")
             return False
 
     def send_identity_request(self) -> bool:
@@ -162,13 +172,38 @@ class MIDIOutHandler(MidiIOController):
         try:
             identity_request_message = IdentityRequestMessage()
             identity_request_bytes_list = identity_request_message.to_list()
-            logging.info(f"sending identity request message: {type(identity_request_bytes_list)} {identity_request_bytes_list}")
-            self.send_message(identity_request_bytes_list)
-        except Exception as ex:
+            logging.info(
+                f"sending identity request message: "
+                f"{type(identity_request_bytes_list)} {identity_request_bytes_list}"
+            )
+            self.send_raw_message(identity_request_bytes_list)
+            return True
+        except (ValueError, TypeError, OSError, IOError) as ex:
             logging.error(f"Error sending identity request: {ex}")
             return False
 
-    def send_parameter(self, area: int, part: int, group: int, param: int, value: int, size: int = 1) -> bool:
+    def send_midi_message(
+        self, sysex_message: MidiMessage
+    ) -> bool:
+        """
+        Send address parameter change message using MidiMessage.
+
+        Args:
+            sysex_message: of type MidiMessage.
+        Returns:
+            True if successful, False otherwise.
+        """
+        try:
+            message = sysex_message.to_list()
+            return self.send_raw_message(message)
+
+        except (ValueError, TypeError, OSError, IOError) as ex:
+            logging.error(f"Error sending parameter: {ex}")
+            return False
+
+    def send_parameter(
+        self, area: int, part: int, group: int, param: int, value: int, size: int = 1
+    ) -> bool:
         """
         Send address parameter change message using RolandSysEx.
 
@@ -198,9 +233,9 @@ class MIDIOutHandler(MidiIOController):
                 return False
             sysex_message = RolandSysEx()
             message = sysex_message.construct_sysex(address, *data_bytes)
-            return self.send_message(message)
+            return self.send_raw_message(message)
 
-        except Exception as ex:
+        except (ValueError, TypeError, OSError, IOError) as ex:
             logging.error(f"Error sending parameter: {ex}")
             return False
 
@@ -216,11 +251,13 @@ class MIDIOutHandler(MidiIOController):
         """
         logging.debug(f"Sending program change: program={program}, channel={channel}")
         try:
-            program_change_message = ProgramChangeMessage(channel=channel, program=program)
+            program_change_message = ProgramChangeMessage(
+                channel=channel, program=program
+            )
             message = program_change_message.to_list()
-            return self.send_message(message)
-        except Exception as e:
-            logging.error(f"Error sending program change: {e}")
+            return self.send_raw_message(message)
+        except (ValueError, TypeError, OSError, IOError) as ex:
+            logging.error(f"Error sending program change: {ex}")
             return False
 
     def send_control_change(
@@ -237,22 +274,23 @@ class MIDIOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         logging.info(
-            f"send_control_change: attempting - controller {controller} value {value} channel {channel}"
+            f"attempting to send - controller {controller} "
+            f"value {value} channel {channel}"
         )
-        if not (0 <= channel <= 15):
-            logging.error(f"send_control_change: Invalid MIDI channel: {channel}. Must be 0-15.")
+        if not 0 <= channel <= 15:
+            logging.error(f"Invalid MIDI channel: {channel}. Must be 0-15.")
             return False
-        if not (0 <= controller <= 127):
-            logging.error(f"send_control_change: Invalid controller number: {controller}. Must be 0-127.")
+        if not 0 <= controller <= 127:
+            logging.error(f"Invalid controller number: {controller}. Must be 0-127.")
             return False
-        if not (0 <= value <= 127):
-            logging.error(f"send_control_change: Invalid controller value: {value}. Must be 0-127.")
+        if not 0 <= value <= 127:
+            logging.error(f"Invalid controller value: {value}. Must be 0-127.")
             return False
         try:
             control_change_message = ControlChangeMessage(channel, controller, value)
             message = control_change_message.to_list()
-            return self.send_message(message)
-        except Exception as ex:
+            return self.send_raw_message(message)
+        except (ValueError, TypeError, OSError, IOError) as ex:
             logging.error(f"send_control_change: Error sending control change: {ex}")
             return False
 
@@ -278,7 +316,9 @@ class MIDIOutHandler(MidiIOController):
             return False
         return True
 
-    def get_parameter(self, area: int, part: int, group: int, param: int) -> Optional[int]:
+    def get_parameter(
+        self, area: int, part: int, group: int, param: int
+    ) -> Optional[int]:
         """
         Get parameter value via MIDI System Exclusive message.
 
@@ -290,7 +330,10 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             Parameter value (0-127) or None if an error occurs.
         """
-        logging.info(f"Requesting parameter: area={area}, part={part}, group={group}, param={param}")
+        logging.info(
+            f"Requesting parameter: area={area}, part={part}, "
+            f"group={group}, param={param}"
+        )
 
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
@@ -304,10 +347,10 @@ class MIDIOutHandler(MidiIOController):
                 model_id=[0x00, 0x00, 0x3B, 0x00],  # Example model ID
                 command=RQ1_COMMAND_11,  # RQ1 (Request Data) command for Roland
                 address=[area, part, group, param],  # Address of parameter
-                data=[]  # No payload for request
+                data=[],  # No payload for request
             )
 
-            self.midi_out.send_message(request.to_bytes())
+            self.midi_out.send_raw_message(request.to_bytes())
 
             # Wait for response with a timeout of 100ms.
             start_time = time.time()
@@ -315,15 +358,17 @@ class MIDIOutHandler(MidiIOController):
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
-                    if len(msg) >= 11 and msg[0] == 0xF0 and msg[-1] == 0xF7:
-                        response = SysExMessage.from_bytes(bytes(msg))  # Parse response
-                        return response.data[0] if response.data else None  # Extract parameter value
+                    if len(msg) >= 11 and msg[0] == 0xF0 and msg[-1] == END_OF_SYSEX:
+                        # Parse response
+                        response = SysExMessage.from_bytes(bytes(msg))
+                        # Extract parameter value
+                        return response.data[0] if response.data else None
 
                 time.sleep(0.001)
 
             logging.warning("Timeout waiting for parameter response")
             raise TimeoutError
 
-        except Exception as ex:
+        except (TimeoutError, OSError, IOError) as ex:
             logging.error(f"Error getting parameter: {ex}")
             return None

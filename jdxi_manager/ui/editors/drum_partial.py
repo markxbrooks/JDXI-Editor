@@ -38,6 +38,7 @@ from jdxi_manager.midi.data.drum import rm_waves
 from jdxi_manager.midi.data.parameter.drums import DrumParameter
 from jdxi_manager.midi.data.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 from jdxi_manager.midi.data.parameter.drums import get_address_for_partial_name
+from jdxi_manager.midi.message.roland import RolandSysEx
 from jdxi_manager.ui.editors.partial import PartialEditor
 from jdxi_manager.ui.widgets.slider import Slider
 
@@ -51,6 +52,8 @@ class DrumPartialEditor(PartialEditor):
         self.partial_num = partial_num  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
         self.preset_handler = None
+        self.area = TEMPORARY_TONE_AREA
+        self.group = DRUM_KIT_AREA
         # Calculate the address for this partial
         try:
             self.partial_address = get_address_for_partial_name(self.partial_name)
@@ -1027,15 +1030,13 @@ class DrumPartialEditor(PartialEditor):
                 f"parameter param {param} value {display_value} size {size} sent"
             )
             try:
-                # Ensure value is included in the MIDI message
-                return self.midi_helper.send_parameter(
-                    area=TEMPORARY_TONE_AREA,
-                    part=DRUM_KIT_AREA,
-                    group=self.partial_address,
-                    param=param.address,
-                    value=display_value,  # Make sure this value is being sent
-                    size=size,
-                )
+                # Send MIDI message
+                sysex_message = RolandSysEx(area=self.area,
+                                            section=self.part,
+                                            group=self.group,
+                                            param=param.address,
+                                            value=display_value)
+                return self.midi_helper.send_midi_message(sysex_message)
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")
                 return False

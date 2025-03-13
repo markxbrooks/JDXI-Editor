@@ -45,6 +45,7 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class DeviceInfo:
     """JD-Xi device information parser from MIDI Identity Reply."""

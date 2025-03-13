@@ -728,7 +728,7 @@ class PatternSequencer(SynthEditor):
         # Send all notes off
         if self.midi_helper:
             for channel in range(16):
-                self.midi_helper.send_message([CONTROL_CHANGE | channel, 123, 0])
+                self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
 
         logging.info("Pattern playback stopped")
 
@@ -817,13 +817,13 @@ class PatternSequencer(SynthEditor):
                         logging.info(
                             f"Row {row} active at step {step}, sending note {button.note} on channel {channel}"
                         )
-                        self.midi_helper.send_message(
+                        self.midi_helper.send_raw_message(
                             [NOTE_ON | channel, button.note, 100]
                         )  # velocity 100
                         # Note Off message after a short delay
                         QTimer.singleShot(
                             100,
-                            lambda ch=channel, n=button.note: self.midi_helper.send_message(
+                            lambda ch=channel, n=button.note: self.midi_helper.send_raw_message(
                                 [NOTE_ON | ch, n, 0]
                             ),
                         )

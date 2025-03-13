@@ -82,7 +82,7 @@ class PresetLoader(QObject):
         :param request: SysEx command type (DT1 for write, RQ1 for read).
         """
         message = self.sysex_message.construct_sysex(address, *data_bytes, request=request)
-        self.midi_helper.send_message(message)
+        self.midi_helper.send_raw_message(message)
         logging.debug(f"Sent SysEx: {message}")
 
     def load_preset(self, preset_data):
