@@ -8,16 +8,6 @@ from jdxi_editor.midi.data.drum import (
     MuteGroup,  # Mute area enum
     Note  # MIDI note enum
 )
-
-from jdxi_editor.midi.data.analog import (
-    # Parameter enum
-    AnalogOscillator,  # Oscillator settings
-    AnalogFilter,  # Filter settings
-    AnalogAmplifier,  # Amplifier settings
-    AnalogLFO,  # LFO settings
-    AnalogEnvelope,  # Envelope settings
-    AnalogSynthPatch  # Complete patch class
-)
 from .parameter.analog import AnalogParameter
 
 # Import digital synth data

@@ -63,7 +63,6 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_editor.midi.data.analog import AnalogCommonParameter
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.type import PresetType
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
@@ -155,7 +154,7 @@ class AnalogSynthEditor(SynthEditor):
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         # Store parameter controls for easy access
-        self.controls: Dict[Union[AnalogParameter, AnalogCommonParameter], QWidget] = {}
+        self.controls: Dict[Union[AnalogParameter], QWidget] = {}
         self.updating_from_spinbox = False
         # Create container widget for scroll area
         container = QWidget()
@@ -502,7 +501,7 @@ class AnalogSynthEditor(SynthEditor):
         )
 
     def _on_parameter_changed(
-            self, param: Union[AnalogParameter, AnalogCommonParameter], display_value: int
+            self, param: Union[AnalogParameter], display_value: int
     ):
         """Handle parameter value changes from UI controls"""
         try:
@@ -530,7 +529,7 @@ class AnalogSynthEditor(SynthEditor):
 
     def _create_parameter_slider(
             self,
-            param: Union[AnalogParameter, AnalogCommonParameter],
+            param: Union[AnalogParameter],
             label: str,
             vertical=False,
             show_value_label=True,
