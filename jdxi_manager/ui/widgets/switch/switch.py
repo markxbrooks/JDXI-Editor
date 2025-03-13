@@ -1,3 +1,25 @@
+"""
+Module: switch_widget
+=====================
+
+This module provides a custom PySide6 QWidget implementation for a switch-style button with
+text display. The `Switch` class allows users to cycle through predefined values by clicking
+a button, emitting a `valueChanged` signal when toggled.
+
+Classes:
+--------
+- `Switch`: A custom widget that displays a label and a button, cycling through provided values
+  when clicked.
+
+Usage Example:
+--------------
+>>> switch = Switch("Mode", ["Off", "On"])
+>>> switch.valueChanged.connect(lambda index: print(f"Switch changed to: {index}"))
+>>> switch.setValue(1)  # Sets the switch to "On"
+
+"""
+
+
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import Signal
 
