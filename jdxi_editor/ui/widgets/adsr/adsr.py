@@ -89,7 +89,7 @@ class ADSR(QWidget):
 
         # Create layout
         self.layout = QGridLayout(self)
-        self.plot = ADSRPlot()
+        self.plot = ADSRPlot(width=300, height=250)
         
         # Create sliders
         self.attack_slider = self._create_parameter_slider(attack_param, "Attack", value=self.envelope["attack_time"])

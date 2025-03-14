@@ -23,7 +23,6 @@ def generate_polyend_sequencer_button_style(self, is_checked: bool, is_current: 
         }}
     """
 
-
 def generate_sequencer_button_style(active):
     return f"""
         QPushButton {{
@@ -44,17 +43,17 @@ def generate_sequencer_button_style(active):
 
 
 def generate_button_style(
-        bg,
-        border,
-        radius,
-        text_color,
-        hover,
-        border_pressed,
-        background_pressed="#666666",
-        button_border_width=4,
-        font_family="Myriad Pro, Arial, sans-serif",
-        font_size="12px",
-        button_padding=4,
+    bg,
+    border,
+    radius,
+    text_color,
+    hover,
+    border_pressed,
+    background_pressed="#666666",
+    button_border_width=4,
+    font_family="Myriad Pro, Arial, sans-serif",
+    font_size="12px",
+    button_padding=4,
 ):
     """Generate address button style dynamically."""
     return f"""
@@ -78,18 +77,18 @@ def generate_button_style(
 
 
 def generate_tab_style(
-        bg,
-        border,
-        radius,
-        text_color,
-        hover_bg,
-        hover_border,
-        selected_bg,
-        selected_border,
-        font_family="Myriad Pro, Arial, sans-serif",
-        font_size="12px",
-        padding="2px 2px",
-        margin="2px",
+    bg,
+    border,
+    radius,
+    text_color,
+    hover_bg,
+    hover_border,
+    selected_bg,
+    selected_border,
+    font_family="Myriad Pro, Arial, sans-serif",
+    font_size="12px",
+    padding="4px 4px",
+    margin="2px",
 ):
     """Generate address tab style dynamically."""
     return f"""
@@ -128,17 +127,17 @@ def generate_tab_style(
 
 
 def generate_editor_style(
-        accent,
-        accent_hover,
-        background,
-        foreground,
-        font_family,
-        font_size,
-        padding,
-        button_padding,
-        slider_handle,
-        slider_handle_border,
-        slider_groove,
+    accent,
+    accent_hover,
+    background,
+    foreground,
+    font_family,
+    font_size,
+    padding,
+    button_padding,
+    slider_handle,
+    slider_handle_border,
+    slider_groove,
 ):
     return f"""
         QWidget {{
@@ -155,18 +154,18 @@ def generate_editor_style(
             margin-top: 2px;
             padding: {padding}px;
         }}
-
+        
         QGroupBox[adsr="true"] {{
             min-height: 300px;  /* Reduced height for horizontal layout */
         }}
-
+        
         QSlider::handle:vertical {{
             background: {slider_handle};
             border: 2px solid {slider_handle_border};
             margin: 1px 0;
             border-radius: 4px;
         }}
-
+        
         QSlider::handle:vertical:hover {{
             border-color: {accent_hover};
         }}
@@ -243,7 +242,7 @@ class Style:
     BACKGROUND_PRESSED = "#666666"
     FOREGROUND = "#FFFFFF"
     PADDING = 2  # in px
-    BUTTON_PADDING = 2
+    BUTTON_PADDING = 3
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF2200"  # Red for hover
     ACCENT_ANALOG = "#00A0E9"
@@ -501,7 +500,7 @@ class Style:
 
     JDXI_DRUM_GROUP = """
                 QGroupBox {
-                width: 100px;
+                width: 240px;
             }
             """
 
@@ -567,16 +566,16 @@ class Style:
                 font-size: 12px;
                 border: 0px solid #444444;
                 border-radius: 3px;
-                margin-top: 2px;
+                margin-top: 3px;
                 padding: 2px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 subcontrol-position: top center;
-                padding: 0 2px;
+                padding: 0 3px;
                 background-color: #2D2D2D;
             }
-        """  # this may be sub-classed
+        """ # this may be sub-classed
 
     JDXI_DEBUGGER = """
             QMainWindow {
@@ -668,8 +667,8 @@ def get_button_styles(active):
     """
     if active:
         return (
-                base_style
-                + """
+            base_style
+            + """
             QPushButton {
                 background-color: #333333;
                 border-color: #ff6666;
@@ -678,8 +677,8 @@ def get_button_styles(active):
         )
     else:
         return (
-                base_style
-                + """
+            base_style
+            + """
             QPushButton {
                 background-color: #222222;
                 border-color: #666666;

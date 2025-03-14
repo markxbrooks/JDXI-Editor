@@ -133,8 +133,8 @@ class AnalogSynthEditor(SynthEditor):
         self.setWindowTitle("Analog Synth")
         self.previous_json_data = None
         # Allow resizing
-        self.setMinimumSize(800, 400)
-        self.resize(1000, 600)
+        self.setMinimumSize(800, 600)
+        self.resize(900, 600)
         self.image_label = QLabel()
         self.instrument_icon_folder = "analog_synths"
         self.image_label.setAlignment(
@@ -174,7 +174,7 @@ class AnalogSynthEditor(SynthEditor):
         instrument_preset_group.setStyleSheet(
             """
             QGroupBox {
-            width: 300px;
+            width: 100px;
             }
         """
         )
@@ -446,7 +446,7 @@ class AnalogSynthEditor(SynthEditor):
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
-                250, Qt.TransformationMode.SmoothTransformation
+                150, Qt.TransformationMode.SmoothTransformation
             )  # Resize to 250px height
             self.image_label.setPixmap(scaled_pixmap)
             return True
