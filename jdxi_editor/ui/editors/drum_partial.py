@@ -984,7 +984,7 @@ class DrumPartialEditor(PartialEditor):
         pitch_env_layout.addRow(pitch_env_level4_slider)
         return pitch_env_group
 
-    def _create_parameter_slider(
+    def _create_parameter_slider_oldF(
         self, param: DrumParameter, label: str = None
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
@@ -993,7 +993,7 @@ class DrumPartialEditor(PartialEditor):
         else:
             display_min, display_max = param.min_val, param.max_val
 
-        slider = Slider(label, display_min, display_max)
+        slider = Slider(label, display_min, display_max, is_bipolar=param.is_bipolar)
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))

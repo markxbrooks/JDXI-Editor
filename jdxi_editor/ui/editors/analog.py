@@ -544,7 +544,7 @@ class AnalogSynthEditor(SynthEditor):
         slider = Slider(label, display_min, display_max, vertical, show_value_label)
 
         # Set up bipolar parameters
-        if param in self.bipolar_parameters:
+        if param in self.bipolar_parameters or param.is_bipolar:
             # Set format string to show + sign for positive values
             slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
             # Set center tick
@@ -552,6 +552,7 @@ class AnalogSynthEditor(SynthEditor):
             # Add more prominent tick at center
             slider.setTickPosition(Slider.TickPosition.TicksBothSides)
             slider.setTickInterval((display_max - display_min) // 4)
+            
 
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
@@ -619,7 +620,9 @@ class AnalogSynthEditor(SynthEditor):
         layout.addLayout(icons_hlayout)
 
         # Filter controls
-        self.filter_switch = self._create_parameter_switch(AnalogParameter.FILTER_SWITCH, "Filter", ["BYPASS", "LPF"])
+        self.filter_switch = self._create_parameter_switch(AnalogParameter.FILTER_SWITCH,
+                                                           "Filter",
+                                                           ["BYPASS", "LPF"])
         layout.addWidget(self.filter_switch)
         self.filter_cutoff = self._create_parameter_slider(
             AnalogParameter.FILTER_CUTOFF, "Cutoff"

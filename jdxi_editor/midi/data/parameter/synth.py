@@ -31,6 +31,18 @@ class SynthParameter(Enum):
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
+        self.switches = []  # override in subclasses
+        self.bipolar_parameters = []
+
+    @property
+    def is_switch(self) -> bool:
+        """Returns True if parameter is address binary/enum switch"""
+        return self.get_by_name(self.name) in self.switches
+    
+    @property
+    def is_bipolar(self) -> bool:
+        """Returns True if parameter is bipolar"""
+        return self.get_by_name(self.name) in self.bipolar_parameters
 
     @property
     def display_name(self) -> str:
@@ -69,3 +81,9 @@ class SynthParameter(Enum):
 
     def convert_from_midi(self, midi_value):
         pass
+    
+    def get_switch_text(self, value: int) -> str:
+        """Get display text for switch values"""
+        if self.is_switch:
+            return "ON" if value else "OFF"
+        return str(value)
