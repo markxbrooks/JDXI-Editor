@@ -12,8 +12,15 @@ from jdxi_editor.midi.data.constants import (
     DIGITAL_SYNTH_1_AREA, ANALOG_SYNTH_AREA,
     EFFECTS_AREA
 )
+from jdxi_editor.midi.data.parameter.digital import DigitalParameter
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.sysex.parsers import parse_sysex
+
+
+def _validate_checksum(data_bytes, checksum):
+    """Validate Roland SysEx checksum (sum of bytes should be 0 mod 128)"""
+    computed_checksum = (128 - (sum(data_bytes) % 128)) % 128
+    return computed_checksum == checksum
 
 
 class MIDIDebugger(QMainWindow):
@@ -200,7 +207,8 @@ class MIDIDebugger(QMainWindow):
             param = message[11]
             group_address = hex(group)
             param_address = hex(param)
-            group_str = self.GROUPS.get(group, f"Unknown Group ({group_address})")
+            # param_str = DigitalParameter.get_name_by_address(int(param))
+            group_str = self.GROUPS.get(group, f"Common Group ({group_address})")
             param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
 
             # Get value
@@ -208,7 +216,7 @@ class MIDIDebugger(QMainWindow):
 
             # Get checksum
             checksum = message[13]
-            checksum_valid = self._validate_checksum(message[7:13], checksum)
+            checksum_valid = _validate_checksum(message[7:13], checksum)
 
             # Format the output
             decoded = (
@@ -234,11 +242,6 @@ class MIDIDebugger(QMainWindow):
 
         except Exception as e:
             return f"Error decoding message: {str(e)}"
-
-    def _validate_checksum(self, data_bytes, checksum):
-        """Validate Roland SysEx checksum (sum of bytes should be 0 mod 128)"""
-        computed_checksum = (128 - (sum(data_bytes) % 128)) % 128
-        return computed_checksum == checksum
 
     def _decode_sysex(self, message):
         """Decode address SysEx message"""

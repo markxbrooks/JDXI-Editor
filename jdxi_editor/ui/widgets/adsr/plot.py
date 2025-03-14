@@ -50,7 +50,7 @@ from PySide6.QtCore import Qt
 
 
 class ADSRPlot(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, width=400, height=400, parent=None):
         super().__init__(parent)
         # Default envelope parameters (times in ms)
         self.envelope = {
@@ -62,7 +62,7 @@ class ADSRPlot(QWidget):
             "sustain_level": 0.8,
         }
         # Set address fixed size for the widget (or use layouts as needed)
-        self.setMinimumSize(400, 400)
+        self.setMinimumSize(width, height)
         # Use dark gray background
         self.setStyleSheet("""
         QWidget {

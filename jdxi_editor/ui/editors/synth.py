@@ -96,7 +96,7 @@ class SynthEditor(QWidget):
         self.close_shortcut.activated.connect(self.close)
 
         # Common minimum size for all editors
-        self.setMinimumSize(800, 400)
+        self.setMinimumSize(400, 400)
 
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:

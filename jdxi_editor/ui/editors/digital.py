@@ -145,13 +145,14 @@ class DigitalSynthEditor(SynthEditor):
         ] = {}
 
         # Allow resizing
-        self.setMinimumSize(800, 400)
-        self.resize(1000, 600)
+        self.setMinimumSize(800, 600)
+        self.resize(800, 600)
 
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         self.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
+        # self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -172,13 +173,6 @@ class DigitalSynthEditor(SynthEditor):
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(
             f"Digital Synth:\n {self.presets[0]}" if self.presets else "Digital Synth"
-        )
-        instrument_preset_group.setStyleSheet(
-            """
-            QGroupBox {
-            width: 300px;
-            }
-        """
         )
         self.instrument_title_label.setStyleSheet(
             """
@@ -201,10 +195,14 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_title_label = QLabel(
             f"Digital Synth:\n {self.presets[0]}" if self.presets else "Digital Synth"
         )
+        instrument_preset_group.setStyleSheet("""
+                        width: 100px;
+        """)
+        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         instrument_preset_group.setStyleSheet(
             """
             QGroupBox {
-            width: 300px;
+            width: 80px;
             }
         """
         )
@@ -212,6 +210,7 @@ class DigitalSynthEditor(SynthEditor):
             """
             font-size: 16px;
             font-weight: bold;
+            width: 80px;
         """
         )
         instrument_title_group_layout = QVBoxLayout()
@@ -260,7 +259,7 @@ class DigitalSynthEditor(SynthEditor):
 
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()
-        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS)
+        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
         self.partial_editors = {}
 
         # Create editor for each partial
@@ -451,7 +450,7 @@ class DigitalSynthEditor(SynthEditor):
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
-                250, Qt.TransformationMode.SmoothTransformation
+                150, Qt.TransformationMode.SmoothTransformation
             )  # Resize to 250px height
             self.image_label.setPixmap(scaled_pixmap)
             return True
@@ -661,8 +660,6 @@ class DigitalSynthEditor(SynthEditor):
         }
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
-        # osc_waveform_map = {wave.value: wave for wave in OscWave}
-
         failures, successes = [], []
 
         def _update_slider(param, value):
@@ -679,15 +676,6 @@ class DigitalSynthEditor(SynthEditor):
                 successes.append(param.name)
                 if debug_param_updates:
                     logging.info(f"Updated: {param.name:50} {value}")
-
-        def _update_waveform(param_value):
-            """Helper function to update waveform selection UI."""
-            waveform = osc_waveform_map.get(param_value)
-            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
-                button = self.partial_editors[partial_no].wave_buttons[waveform]
-                button.setChecked(True)
-                self.partial_editors[partial_no]._on_waveform_selected(waveform)
-                logging.debug(f"Updated waveform button for {waveform}")
 
         for param_name, param_value in sysex_data.items():
             param = DigitalParameter.get_by_name(param_name)
