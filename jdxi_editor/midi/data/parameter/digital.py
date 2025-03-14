@@ -81,6 +81,31 @@ class DigitalParameter(SynthParameter):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.bipolar_parameters = [
+            # Oscillator parameters
+            "OSC_PITCH",
+            "OSC_DETUNE",
+            "OSC_PITCH_ENV_DEPTH",
+            # Filter parameters
+            "FILTER_CUTOFF_KEYFOLLOW",
+            "FILTER_ENV_VELOCITY_SENSITIVITY",
+            "FILTER_ENV_DEPTH",
+            # Amplifier parameters
+            "AMP_VELOCITY",
+            "AMP_PAN",
+            "AMP_LEVEL_KEYFOLLOW",
+            # LFO parameters
+            "LFO_PITCH_DEPTH",
+            "LFO_FILTER_DEPTH",
+            "LFO_AMP_DEPTH",
+            "LFO_PAN_DEPTH",
+            # Mod LFO parameters
+            "MOD_LFO_PITCH_DEPTH",
+            "MOD_LFO_FILTER_DEPTH",
+            "MOD_LFO_AMP_DEPTH",
+            "MOD_LFO_PAN",
+            "MOD_LFO_RATE_CTRL",
+        ]
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display range for the parameter"""
@@ -298,6 +323,7 @@ class DigitalParameter(SynthParameter):
                 self.MOD_LFO_AMP_DEPTH,
                 self.MOD_LFO_PAN,
                 self.MOD_LFO_RATE_CTRL,
+                self.AMP_LEVEL_KEYFOLLOW,
             ]:
                 value = value + 64  # -63 to +63 -> 0 to 127
             else:
@@ -375,38 +401,6 @@ class DigitalParameter(SynthParameter):
         """Get the DigitalParameter by name."""
         # Return the parameter member by name, or None if not found
         return DigitalParameter.__members__.get(param_name, None)
-    
-    def convert_from_midi_test(self, midi_value: int) -> int:
-        """Convert from MIDI value to display value"""
-        # Handle special bipolar cases first
-        if self == self.OSC_DETUNE:
-            return midi_value - 64  # 14 to 114 -> -50 to +50
-        elif self == self.OSC_PITCH:
-            return midi_value - 64  # 40 to 88 -> -24 to +24
-        elif self == self.OSC_PITCH_ENV_DEPTH:
-            return midi_value - 64  # 1 to 127 -> -63 to +63
-        
-        # For parameters with simple linear scaling
-        if self.display_min != self.min_val or self.display_max != self.max_val:
-            return int(self.display_min + (midi_value - self.min_val) * 
-                       (self.display_max - self.display_min) / (self.max_val - self.min_val))
-        return midi_value
-    
-    def convert_to_midi_test(self, display_value: int) -> int:
-        """Convert from display value to MIDI value"""
-        # Handle special bipolar cases first
-        if self == self.OSC_DETUNE:
-            return display_value + 64  # -50 to +50 -> 14 to 114
-        elif self == self.OSC_PITCH:
-            return display_value + 64  # -24 to +24 -> 40 to 88
-        elif self == self.OSC_PITCH_ENV_DEPTH:
-            return display_value + 64  # -63 to +63 -> 1 to 127
-        
-        # For parameters with simple linear scaling
-        if self.display_min != self.min_val or self.display_max != self.max_val:
-            return int(self.min_val + (display_value - self.display_min) * 
-                       (self.max_val - self.min_val) / (self.display_max - self.display_min))
-        return display_value
 
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""

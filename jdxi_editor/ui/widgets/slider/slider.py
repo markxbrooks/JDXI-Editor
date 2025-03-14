@@ -55,6 +55,7 @@ class Slider(QWidget):
         max_val: int,
         vertical: bool = False,
         show_value_label: bool = True,
+        is_bipolar: bool = False,
         parent=None,
     ):
         super().__init__(parent)
@@ -110,6 +111,8 @@ class Slider(QWidget):
                 Qt.AlignmentFlag.AlignRight if vertical else Qt.AlignmentFlag.AlignLeft
             )
             layout.addWidget(self.value_label)
+        if is_bipolar:
+            self.value_label.setText("0")
 
     def setValueDisplayFormat(self, format_func):
         """Set custom format function for value display"""

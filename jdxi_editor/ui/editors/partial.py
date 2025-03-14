@@ -63,9 +63,9 @@ class PartialEditor(QWidget):
         else:
             display_min, display_max = param.min_val, param.max_val
 
-        slider = Slider(label, display_min, display_max)
+        slider = Slider(label, display_min, display_max, is_bipolar=param.is_bipolar)
         # Set up bipolar parameters
-        if param in self.bipolar_parameters:
+        if param in self.bipolar_parameters or param.is_bipolar:
             # Set format string to show + sign for positive values
             slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
             # Set center tick

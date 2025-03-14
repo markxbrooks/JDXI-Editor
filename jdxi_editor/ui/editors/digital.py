@@ -145,14 +145,13 @@ class DigitalSynthEditor(SynthEditor):
         ] = {}
 
         # Allow resizing
-        self.setMinimumSize(800, 600)
-        self.resize(800, 600)
+        self.setMinimumSize(800, 300)
+        self.resize(930, 600)
 
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         self.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
-        # self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)

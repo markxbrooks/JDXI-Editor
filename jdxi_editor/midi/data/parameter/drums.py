@@ -103,6 +103,31 @@ class DrumParameter(SynthParameter):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.bipolar_parameters = [
+            "PARTIAL_FINE_TUNE",
+            "PARTIAL_FINE_TUNE",
+            "PARTIAL_PAN",
+            "PARTIAL_ALTERNATE_PAN_DEPTH",
+            "TVA_ENV_TIME_1_VELOCITY_SENS",
+            "TVA_ENV_TIME_4_VELOCITY_SENS",
+            "TVF_CUTOFF_VELOCITY_SENS",
+            "TVF_ENV_DEPTH",
+            "TVF_ENV_VELOCITY_SENS",
+            "TVF_ENV_TIME_1_VELOCITY_SENS",
+            "TVF_ENV_TIME_4_VELOCITY_SENS",
+            "WMT1_WAVE_COARSE_TUNE",
+            "WMT1_WAVE_FINE_TUNE",
+            "WMT1_WAVE_PAN",
+            "WMT2_WAVE_COARSE_TUNE",
+            "WMT2_WAVE_FINE_TUNE",
+            "WMT2_WAVE_PAN",
+            "WMT3_WAVE_COARSE_TUNE",
+            "WMT3_WAVE_FINE_TUNE",
+            "WMT3_WAVE_PAN",
+            "WMT4_WAVE_COARSE_TUNE",
+            "WMT4_WAVE_FINE_TUNE",
+            "WMT4_WAVE_PAN",
+        ]
 
     # Partial Name parameters
     PARTIAL_NAME_1 = (0x00, 32, 127)
@@ -793,9 +818,4 @@ class DrumCommonParameter(SynthParameter):
         }
         return partial_params.get(self)
 
-    @staticmethod
-    def get_by_name(param_name):
-        """Get the Parameter by name."""
-        # Return the parameter member by name, or None if not found
-        return DigitalCommonParameter.__members__.get(param_name, None)
 

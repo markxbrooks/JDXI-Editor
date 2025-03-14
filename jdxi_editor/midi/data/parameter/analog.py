@@ -55,8 +55,7 @@ class AnalogParameter(SynthParameter):
     TONE_NAME_10 = (0x09, 32, 127)
     TONE_NAME_11 = (0x0A, 32, 127)
     TONE_NAME_12 = (0x0B, 32, 127)
-    
-    
+
     # LFO Parameters
     LFO_SHAPE = (0x0D, 0, 5)
     LFO_RATE = (0x0E, 0, 127)
@@ -129,6 +128,25 @@ class AnalogParameter(SynthParameter):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.switches = [
+            "FILTER_SWITCH",
+            "PORTAMENTO_SWITCH",
+            "LEGATO_SWITCH",
+            "LFO_TEMPO_SYNC_SWITCH",
+        ]
+        self.bipolar_parameters = [
+            "FILTER_ENV_VELOCITY_SENS",
+            "AMP_LEVEL_KEYFOLLOW",
+            "OSC_PITCH_ENV_VELOCITY_SENS",
+            "OSC_PITCH_COARSE",
+            "OSC_PITCH_FINE",
+            "LFO_PITCH_MODULATION_CONTROL",
+            "LFO_AMP_MODULATION_CONTROL",
+            "LFO_FILTER_MODULATION_CONTROL",
+            "OSC_PITCH_ENV_DEPTH",
+            "LFO_RATE_MODULATION_CONTROL",
+            "FILTER_ENV_DEPTH",
+        ]
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
@@ -161,22 +179,6 @@ class AnalogParameter(SynthParameter):
         """Get display name for the parameter"""
         return self.name.replace("_", " ").title()
 
-    @property
-    def is_switch(self) -> bool:
-        """Returns True if parameter is address binary/enum switch"""
-        return self in [
-            self.LFO_TEMPO_SYNC_SWITCH,
-            self.LFO_KEY_TRIGGER,
-            self.PORTAMENTO_SWITCH,
-            self.LEGATO_SWITCH,
-        ]
-
-    def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
-        if self.is_switch:
-            return "ON" if value else "OFF"
-        return str(value)
-
     @staticmethod
     def get_address(param_name):
         """Get the address of address parameter by name."""
@@ -192,7 +194,7 @@ class AnalogParameter(SynthParameter):
         if param:
             return param.value[1], param.value[2]
         return None, None
-    
+
     @staticmethod
     def get_display_range(param_name):
         """Get the display value range (min, max) of address parameter by name."""
@@ -200,7 +202,7 @@ class AnalogParameter(SynthParameter):
         if param:
             return param.display_min, param.display_max
         return None, None
-    
+
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""
         if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
@@ -263,11 +265,11 @@ class AnalogParameter(SynthParameter):
             return display_value + 64  # -63 to +63 -> 0 to 127
         elif self == AnalogParameter.OSC_PITCH_COARSE:
             return display_value + 64  # -63 to +63 -> 0 to 127
-        
+
         # For parameters with simple linear scaling
         if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
-            return int(self.min_val + (display_value - self.display_min) * 
-                      (self.max_val - self.min_val) / (self.display_max - self.display_min))
+            return int(self.min_val + (display_value - self.display_min) *
+                       (self.max_val - self.min_val) / (self.display_max - self.display_min))
         return display_value
 
     def convert_from_midi(self, midi_value: int) -> int:
@@ -277,11 +279,11 @@ class AnalogParameter(SynthParameter):
             return midi_value - 64  # 0 to 127 -> -63 to +63
         elif self == AnalogParameter.OSC_PITCH_COARSE:
             return midi_value - 64  # 0 to 127 -> -63 to +63
-        
+
         # For parameters with simple linear scaling
         if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
-            return int(self.display_min + (midi_value - self.min_val) * 
-                      (self.display_max - self.display_min) / (self.max_val - self.min_val))
+            return int(self.display_min + (midi_value - self.min_val) *
+                       (self.display_max - self.display_min) / (self.max_val - self.min_val))
         return midi_value
 
     @staticmethod
@@ -306,5 +308,4 @@ class AnalogParameter(SynthParameter):
         if param:
             return param.convert_to_midi(value)
         return None
-
 
