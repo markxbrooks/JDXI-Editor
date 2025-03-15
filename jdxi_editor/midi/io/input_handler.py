@@ -37,6 +37,7 @@ from jdxi_editor.midi.message.sysex import SysexParameter
 from jdxi_editor.midi.utils.json import log_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
+from jdxi_editor.midi.preset.data import PresetData
 
 
 class MIDIInHandler(MidiIOController):
@@ -111,7 +112,7 @@ class MIDIInHandler(MidiIOController):
                         message.type,
                         message,
                     )
-                preset_data: Dict[str, Any] = {"modified": 0}
+                preset_data = PresetData(modified=0)
                 message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
                     "sysex": self._handle_sysex_message,
                     "control_change": self._handle_control_change,
@@ -145,7 +146,7 @@ class MIDIInHandler(MidiIOController):
         :param message: The incoming MIDI message.
         """
         # logging.info(f"handle_incoming_midi_message: {message}")
-        preset_data: Dict[str, Any] = {"modified": 0}
+        preset_data = PresetData(modified=0)
         message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
             "sysex": self._handle_sysex_message,
             "control_change": self._handle_control_change,
@@ -163,7 +164,7 @@ class MIDIInHandler(MidiIOController):
         except Exception as exc:
             logging.error("Error handling incoming MIDI message: %s", str(exc))
 
-    def _handle_note_change(self, message: Any, preset_data: Dict[str, Any]) -> None:
+    def _handle_note_change(self, message: Any, preset_data) -> None:
         """
         Handle Note On and Note Off MIDI messages.
 
@@ -172,7 +173,7 @@ class MIDIInHandler(MidiIOController):
         """
         logging.info("MIDI message preset_type: %s as %s", message.type, message)
 
-    def _handle_clock(self, message: Any, preset_data: Dict[str, Any]) -> None:
+    def _handle_clock(self, message: Any, preset_data) -> None:
         """
         Handle MIDI Clock messages quietly.
 
@@ -194,7 +195,7 @@ class MIDIInHandler(MidiIOController):
         )
         return message_byte_list
 
-    def _handle_sysex_message(self, message: Any, preset_data: Dict[str, Any]) -> None:
+    def _handle_sysex_message(self, message: Any, preset_data) -> None:
         """
         Handle SysEx MIDI messages from the Roland JD-Xi.
 
@@ -273,7 +274,7 @@ class MIDIInHandler(MidiIOController):
             "firmware_version": version_str
         }
 
-    def _handle_control_change(self, message: Any, preset_data: Dict[str, Any]) -> None:
+    def _handle_control_change(self, message: Any, preset_data) -> None:
         """
         Handle Control Change (CC) MIDI messages.
 
@@ -295,7 +296,7 @@ class MIDIInHandler(MidiIOController):
         elif control == 32:
             self.cc_lsb_value = value
 
-    def _handle_program_change(self, message: Any, preset_data: Dict[str, Any]) -> None:
+    def _handle_program_change(self, message: Any, preset_data) -> None:
         """
         Handle Program Change (PC) MIDI messages.
 
@@ -320,7 +321,7 @@ class MIDIInHandler(MidiIOController):
         }
 
         if self.cc_msb_value in preset_mapping:
-            preset_data["preset_type"] = preset_mapping[self.cc_msb_value]
+            preset_data.type = preset_mapping[self.cc_msb_value]
             # Adjust preset number based on LSB value
             self.preset_number = program_number + (
                 128 if self.cc_lsb_value == 65 else 0

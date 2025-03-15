@@ -134,4 +134,4 @@ class ProgramCommonParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
-        return DigitalCommonParameter.__members__.get(param_name, None)
+        return ProgramCommonParameter.__members__.get(param_name, None)

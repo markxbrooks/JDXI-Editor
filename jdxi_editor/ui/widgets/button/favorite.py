@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import logging
 
 from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.loader import PresetLoader
 from jdxi_editor.midi.data.presets.type import PresetType
 
@@ -39,7 +40,7 @@ class FavoriteButton(QPushButton):
         """Save current preset to this favorite slot"""
         self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
         self._update_style()
-        #self._save_to_settings()
+        # self._save_to_settings()
         logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
         
     def load_preset_from_favourites(self):
@@ -47,11 +48,11 @@ class FavoriteButton(QPushButton):
         if not self.preset:
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
-        preset_data = {
-            'preset_type': self.preset.synth_type,  # Ensure this is address valid preset_type
-            'selpreset': self.preset.preset_num + 1,  # Convert to 1-based index
-            'modified': 0  # or 1 if modified
-        }
+        preset_data = PresetData(
+            type=self.preset.synth_type,  # Ensure this is address valid preset_type
+            current_selection=self.preset.preset_num + 1,  # Convert to 1-based index
+            modified=0  # or 1 if modified
+        )
         self.load_preset(
             preset_data
         )

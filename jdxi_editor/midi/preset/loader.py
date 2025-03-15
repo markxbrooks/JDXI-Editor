@@ -90,10 +90,11 @@ class PresetLoader(QObject):
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
         logging.info(f"Loading preset: {preset_data}")
-        program, channel = preset_data["selpreset"], preset_data["channel"]
+        program, channel = preset_data.current_selection, preset_data.channel
+        # program, channel = preset_data["selpreset"], preset_data["channel"]
         self.midi_helper.send_program_change(program=program, channel=channel)
 
-        if preset_data.get("modified", 0) == 0:
+        if preset_data.modified == 0:
             address, msb, lsb = self.get_preset_address(preset_data)
             logging.info(
                 f"address msb lsb {address} {msb} {lsb} self.preset_number: {self.preset_number}"
@@ -109,12 +110,12 @@ class PresetLoader(QObject):
             # Send additional SysEx messages for preset loading
             self.send_preset_sysex_messages()
 
-            self.update_display.emit(preset_data["preset_type"], program, channel)
+            self.update_display.emit(preset_data.type, program, channel)
             logging.info(f"Preset {program} loaded on channel {channel}")
 
     def get_preset_address(self, preset_data):
         """Retrieve the preset memory address based on its type."""
-        preset_type = preset_data["preset_type"]
+        preset_type = preset_data.type
         address_map = {
             PresetType.DIGITAL_1: ("18002006", 95, 64),
             PresetType.DIGITAL_2: ("18002106", 95, 64),
