@@ -46,6 +46,7 @@ from jdxi_editor.ui.editors import (
 )
 from jdxi_editor.ui.editors.pattern import PatternSequencer
 from jdxi_editor.ui.editors.preset import PresetEditor
+from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.message_debug import MIDIMessageDebug
@@ -102,8 +103,8 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.send_identity_request()
         # Show MIDI config if auto-connect failed
         if (
-            not self.midi_helper.current_in_port
-            or not self.midi_helper.current_out_port
+                not self.midi_helper.current_in_port
+                or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
         # Initialize MIDI indicators
@@ -285,12 +286,13 @@ class JdxiInstrument(JdxiUi):
             self.channel,
         )
 
-        preset_data = {
-            "preset_type": self.current_synth_type,
-            "selpreset": self.current_preset_index,  # Convert to 1-based index
-            "modified": 0,  # or 1, depending on your logic
-            "channel": self.channel
-        }
+        preset_data = PresetData(
+            type=self.current_synth_type,
+            current_selection=self.current_preset_index,  # Convert to 1-based index
+            modified=0,  # or 1, depending on logic
+            channel=self.channel
+        )
+
         preset_handler.load_preset(preset_data)
 
     def _next_tone(self):
@@ -314,13 +316,11 @@ class JdxiInstrument(JdxiUi):
             presets[self.current_preset_index],
             self.channel,
         )
-
-        preset_data = {
-            "preset_type": self.current_synth_type,
-            "selpreset": self.current_preset_index,  # Convert to 1-based index
-            "modified": 0,  # or 1, depending on your logic
-            "channel": self.channel
-        }
+        preset_data = PresetData(
+            type=self.current_synth_type,
+            current_selection=self.current_preset_index,
+            modified=0,
+            channel=self.channel)
         preset_handler.load_preset(preset_data)
 
     def update_display_callback(self, synth_type, preset_index, channel):
@@ -794,7 +794,7 @@ class JdxiInstrument(JdxiUi):
             return self.midi_helper.send_midi_message(sysex_message)
 
     def send_midi_parameter(
-        self, group_address, param_address, value, part_address=None, area=None
+            self, group_address, param_address, value, part_address=None, area=None
     ) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
@@ -922,7 +922,7 @@ class JdxiInstrument(JdxiUi):
         if data[0] == START_OF_SYSEX and len(data) > 8 and data[-1] == END_OF_SYSEX:
             # Verify it's address Roland message for JD-Xi
             if data[1] == DEVICE_ID and data[4:8] == bytes(  # Roland ID
-                [MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER]
+                    [MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER]
             ):  # JD-Xi ID
                 # Blink the input indicator
                 if hasattr(self, "midi_in_indicator"):
@@ -1147,12 +1147,12 @@ class JdxiInstrument(JdxiUi):
                     button.preset.preset_name,
                     self.channel,
                 )
-                preset_data = {
-                    "preset_type": self.preset_type,  # Ensure this is address valid preset_type
-                    "selpreset": self.current_preset_index
-                    + 1,  # Convert to 1-based index
-                    "modified": 0,  # or 1, depending on your logic
-                }
+                preset_data = PresetData(
+                    type=self.preset_type,  # Ensure this is address valid preset_type
+                    current_selection=self.current_preset_index + 1,  # Convert to 1-based index
+                    modified=0,  # or 1, depending on your logic
+                    channel=self.channel
+                )
                 # Send MIDI messages to load preset
                 self.load_preset(preset_data)
 

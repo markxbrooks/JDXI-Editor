@@ -81,6 +81,7 @@ from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParam
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.type import PresetType
 from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_editor.ui.style import Style
@@ -389,12 +390,12 @@ class DrumEditor(SynthEditor):
 
     def load_preset_old(self, preset_index):
         """Load address preset by index"""
-        preset_data = {
-            "preset_type": self.preset_type,  # Ensure this is address valid preset_type
-            "selpreset": preset_index,  # Convert to 1-based index
-            "modified": 0,  # or 1, depending on your logic
-            "channel": self.midi_channel,
-        }
+        preset_data = PresetData(
+            type=self.preset_type,  # Ensure this is address valid preset_type
+            current_selection=preset_index,  # Convert to 1-based index
+            modified=0,  # or 1, depending on your logic
+            channel=self.midi_channel,
+        )
         if not self.preset_handler:
             self.preset_handler = PresetHandler(
                 self.midi_helper,

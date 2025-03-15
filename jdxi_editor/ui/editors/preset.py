@@ -60,6 +60,7 @@ from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.type import PresetType
 from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.loader import PresetLoader
 from jdxi_editor.midi.parameter.handler import ParameterHandler
 from jdxi_editor.ui.style import Style
@@ -201,12 +202,13 @@ class PresetEditor(QMainWindow):
     def _on_load_clicked(self, original_index: int):
         """Handle Load button click"""
         preset_loader = PresetLoader(self.midi_helper)
-        preset_data = {
-            "preset_type": self.preset_type,
-            "selpreset": original_index,
-            "modified": 0,
-            "channel": self.channel,
-        }
+        preset_data = PresetData(
+            type=self.preset_type,
+            current_selection=original_index,
+            modified=0,
+            channel=self.channel
+        )
+
         preset_loader.load_preset(preset_data)
         # self.settings.setValue("last_preset/synth_type", self.preset_type)
         # self.settings.setValue("last_preset/preset_num", original_index + 1)
