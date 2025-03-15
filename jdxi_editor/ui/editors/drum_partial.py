@@ -222,23 +222,23 @@ class DrumPartialEditor(PartialEditor):
 
         wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
 
-        wmt1_wave_number_l_spin = self._create_parameter_combo_box(
+        wmt1_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_NUMBER_L,
             "WMT1 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_spin)
+        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_combo)
 
-        wmt1_wave_number_r_spin = self._create_parameter_combo_box(
+        wmt1_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_NUMBER_R,
             "WMT1 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_spin)
+        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_combo)
 
         wmt1_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_GAIN,
@@ -346,23 +346,23 @@ class DrumPartialEditor(PartialEditor):
 
         wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
 
-        wmt2_wave_number_l_spin = self._create_parameter_combo_box(
+        wmt2_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_NUMBER_L,
             "WMT2 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_spin)
+        wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_combo)
 
-        wmt2_wave_number_r_spin = self._create_parameter_combo_box(
+        wmt2_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_NUMBER_R,
             "WMT2 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_spin)
+        wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_combo)
 
         wmt2_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_GAIN,
@@ -470,23 +470,23 @@ class DrumPartialEditor(PartialEditor):
 
         wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
 
-        wmt3_wave_number_l_spin = self._create_parameter_combo_box(
+        wmt3_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_NUMBER_L,
             "WMT3 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_spin)
+        wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_combo)
 
-        wmt3_wave_number_r_spin = self._create_parameter_combo_box(
+        wmt3_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_NUMBER_R,
             "WMT3 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_spin)
+        wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_combo)
 
         wmt3_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_GAIN,
@@ -598,23 +598,23 @@ class DrumPartialEditor(PartialEditor):
 
         wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
 
-        wmt4_wave_number_l_spin = self._create_parameter_combo_box(
+        wmt4_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_NUMBER_L,
             "WMT4 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_spin)
+        wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_combo)
 
-        wmt4_wave_number_r_spin = self._create_parameter_combo_box(
+        wmt4_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_NUMBER_R,
             "WMT4 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
         )
 
-        wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_spin)
+        wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_combo)
 
         wmt4_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_GAIN,
