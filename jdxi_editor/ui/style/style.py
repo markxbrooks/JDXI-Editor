@@ -1,236 +1,80 @@
-from PySide6.QtGui import QColor, QFont
-from PySide6.QtCore import Qt
+"""
+This module defines the `Style` class, which centralizes all style configurations
+for the JD-Xi Manager application. It includes color definitions, dimensions, fonts,
+and styles for buttons, sliders, tabs, labels, and other UI elements.
 
+Attributes:
+    Colors:
+        TITLE_TEXT (str): Color for title text.
+        BACKGROUND (str): Main background color.
+        BACKGROUND_PRESSED (str): Background color when a button is pressed.
+        BUTTON_BACKGROUND (str): Background color for buttons.
+        FOREGROUND (str): Main foreground color.
+        ACCENT (str): Primary red accent color.
+        ACCENT_HOVER (str): Hover color for accent elements.
+        ACCENT_ANALOG (str): Blue accent color for analog components.
+        ACCENT_ANALOG_HOVER (str): Hover color for analog accent elements.
+        BORDER (str): Border color for UI elements.
+        SLIDER_HANDLE (str): Color of the slider handle.
+        SLIDER_HANDLE_BORDER (str): Border color of the slider handle.
+        SLIDER_GROOVE (str): Color of the slider groove.
+        ACCENT_PRESSED (str): Color of the accent when pressed.
+        ACCENT_ANALOG_PRESSED (str): Color of the analog accent when pressed.
 
-def generate_polyend_sequencer_button_style(self, is_checked: bool, is_current: bool = False) -> str:
-    """Generate button style based on state and current step"""
-    base_color = "#3498db" if is_checked else "#2c3e50"
-    border_color = "#e74c3c" if is_current else base_color
+    Dimensions:
+        BUTTON_ROUND_RADIUS (int): Radius for round buttons.
+        BUTTON_RECT_RADIUS (int): Radius for rectangular buttons.
+        BUTTON_BORDER_WIDTH (int): Border width for buttons.
+        HANDLE_SIZE (str): Size of slider handles.
+        GROOVE_WIDTH (str): Width of the slider groove.
+        ICON_SIZE (int): Default icon size.
+        TAB_BUTTON_RECT_RADIUS (int): Radius for tab buttons.
 
-    return f"""
-        QPushButton {{
-            background-color: {base_color};
-            border: 2px solid {border_color};
-            border-radius: 5px;
-            color: white;
-            padding: 2px;
-        }}
-        QPushButton:hover {{
-            background-color: {'#2980b9' if is_checked else '#34495e'};
-        }}
-        QPushButton:pressed {{
-            background-color: {'#2472a4' if is_checked else '#2c3e50'};
-        }}
-    """
+    Fonts:
+        FONT_FAMILY (str): Default font family.
+        FONT_SIZE (str): Default font size.
 
+    Button Styles:
+        JDXI_BUTTON_ROUND: Standard round button style.
+        JDXI_BUTTON_ROUND_SELECTED: Style for selected round buttons.
+        JDXI_BUTTON_ROUND_ACTIVE: Style for active round buttons.
+        JDXI_BUTTON_ROUND_SMALL: Small round button style.
+        JDXI_BUTTON_RECT: Standard rectangular button style.
+        JDXI_BUTTON_RECT_SELECTED: Style for selected rectangular buttons.
+        JDXI_BUTTON_RECT_ACTIVE: Style for active rectangular buttons.
+        JDXI_BUTTON_RECT_ANALOG: Rectangular button style for analog components.
+        JDXI_BUTTON_ANALOG_ACTIVE: Active analog button style.
+        JDXI_BUTTON_WAVEFORM: Button style for waveform selection.
+        JDXI_BUTTON_WAVEFORM_ANALOG: Button style for analog waveform selection.
 
-def generate_sequencer_button_style(active):
-    return f"""
-        QPushButton {{
-            border: 4px solid {'#ff6666' if active else '#666666'};
-            background-color: {'#333333' if active else 'black'};
-            border-radius: 3px;
-            padding: 0px;
-        }}
-        QPushButton:hover {{
-            background-color: #1A1A1A;
-            border-color: #ff4d4d;
-        }}
-        QPushButton:border_pressed {{
-            background-color: #333333;
-            border-color: #ff6666;
-        }}
-    """
+    Tab Styles:
+        JDXI_TABS: Standard tab button styles.
+        JDXI_TABS_ANALOG: Tab button styles for analog components.
+        JDXI_TABS_DRUMS: Tab button styles for drum components.
 
+    Editor Styles:
+        JDXI_EDITOR: Style for the main editor UI.
+        JDXI_EDITOR_ANALOG: Style for the analog editor UI.
 
-def generate_button_style(
-        bg,
-        border,
-        radius,
-        text_color,
-        hover,
-        border_pressed,
-        background_pressed="#666666",
-        button_border_width=4,
-        font_family="Myriad Pro, Arial, sans-serif",
-        font_size="12px",
-        button_padding=4,
-):
-    """Generate address button style dynamically."""
-    return f"""
-            QPushButton {{
-                background-color: {bg};
-                border: {button_border_width}px solid {border};
-                border-radius: {radius}px;
-                color: {text_color};
-                font-family: {font_family};
-                font-size: {font_size};
-                padding: {button_padding}px;
-            }}
-            QPushButton:hover {{
-                background-color: {hover};
-            }}
-            QPushButton:border_pressed, QPushButton:checked {{
-                background-color: {background_pressed};
-                border: {button_border_width}px solid {border_pressed};
-            }}
-        """
+    Additional Styles:
+        JDXI: General application styling.
+        JDXI_ADSR: Styling for ADSR envelope sliders.
+        JDXI_LABEL_SUB: Sub-label text style.
+        JDXI_LABEL: Standard label style.
+        JDXI_KEYBOARD_DRUM_LABELS: Style for drum labels in the keyboard section.
+        JDXI_INSTRUMENT_TITLE_LABEL: Style for instrument title labels.
+        JDXI_LABEL_SYNTH_PART: Style for synthesizer part labels.
+        JDXI_LABEL_ANALOG_SYNTH_PART: Style for analog synthesizer part labels.
+        JDXI_DRUM_GROUP: Style for drum group UI elements.
+        JDXI_PATCH_MANAGER: Styles specific to the patch manager.
+        JDXI_PARTIAL_SWITCH: Style for partial switch elements.
+        JDXI_PARTIALS_PANEL: Styling for the panel displaying partials.
+        JDXI_DEBUGGER: Styles for the debugger window.
+        JDXI_SEQUENCER: Styling for the sequencer UI.
+        JDXI_PARTS_SELECT: Style for part selection elements.
 
-
-def generate_tab_style(
-        bg,
-        border,
-        radius,
-        text_color,
-        hover_bg,
-        hover_border,
-        selected_bg,
-        selected_border,
-        font_family="Myriad Pro, Arial, sans-serif",
-        font_size="12px",
-        padding="2px 2px",
-        margin="2px",
-):
-    """Generate address tab style dynamically."""
-    return f"""
-            QTabBar::tab {{
-                background: {bg};
-                color: {text_color};
-                padding: {padding};
-                margin: {margin};
-                border: 2px solid {border};
-                border-radius: {radius}px;
-                font-family: {font_family};
-                font-size: {font_size};
-            }}
-
-            QTabBar::tab:selected {{
-                background: {selected_bg};
-                color: {text_color};
-                border: 2px solid {selected_border};
-                font-family: {font_family};
-                font-size: {font_size};
-            }}
-
-            QTabBar::tab:hover {{
-                background: {hover_bg};
-                border: 2px solid {hover_border};
-                font-family: {font_family};
-                font-size: {font_size};
-            }}
-
-            QTabWidget::pane {{
-                border: 1px solid {selected_border};
-            }}
-        """
-
-    # Editor Styles
-
-
-def generate_editor_style(
-        accent,
-        accent_hover,
-        background,
-        foreground,
-        font_family,
-        font_size,
-        padding,
-        button_padding,
-        slider_handle,
-        slider_handle_border,
-        slider_groove,
-):
-    return f"""
-        QWidget {{
-            background-color: {background};
-            color: {foreground};
-            font-family: {font_family};
-            font-size: {font_size};
-            padding: 2px;
-        }}
-
-        QGroupBox {{
-            border: 1px solid {accent};
-            border-radius: 3px;
-            margin-top: 2px;
-            padding: {padding}px;
-        }}
-
-        QGroupBox[adsr="true"] {{
-            min-height: 300px;  /* Reduced height for horizontal layout */
-        }}
-
-        QSlider::handle:vertical {{
-            background: {slider_handle};
-            border: 2px solid {slider_handle_border};
-            margin: 1px 0;
-            border-radius: 4px;
-        }}
-
-        QSlider::handle:vertical:hover {{
-            border-color: {accent_hover};
-        }}
-
-        QGroupBox::title {{
-            subcontrol-origin: margin;
-            subcontrol-position: top center;
-            padding: 0 3px;
-            color: {foreground};
-        }}
-
-        QPushButton {{
-            background-color: {background};
-            border: 1px solid {accent};
-            border-radius: 3px;
-            padding: {button_padding}px;
-            color: {foreground};
-        }}
-
-        QPushButton:hover, QPushButton:checked {{
-            background-color: {accent};
-            color: {background};
-        }}
-
-        QComboBox, QScrollBar {{
-            background-color: {background};
-            border: 1px solid {accent};
-            border-radius: 3px;
-            padding: 3px;
-            color: {foreground};
-        }}
-
-        QScrollBar::handle {{
-            background: {slider_handle_border};
-            border-radius: 3px;
-        }}
-
-        QScrollBar::handle:hover {{
-            border: 2px solid {accent};
-        }}
-
-        QSlider::groove:horizontal {{
-            background: {slider_groove};
-            height: 2px;
-            border-radius: 1px;
-        }}
-
-        QSlider::handle:horizontal{{
-            background: {slider_handle};
-            border: 2px solid {slider_handle_border};
-            width: 18px;
-            height: 14px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-        QSlider::handle:vertical {{
-            background: {slider_handle};
-            border: 2px solid {slider_handle_border};
-            width: 18px;
-            height: 12px;
-            margin: -9px 0;
-            border-radius: 9px;
-        }}
-    """
+"""
+from jdxi_editor.ui.style.helpers import generate_button_style, generate_tab_style, generate_editor_style
 
 
 class Style:
@@ -241,6 +85,7 @@ class Style:
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # """"#1A1A1A"
     BACKGROUND_PRESSED = "#666666"
+    BUTTON_BACKGROUND = "#222222"
     FOREGROUND = "#FFFFFF"
     PADDING = 2  # in px
     BUTTON_PADDING = 2
@@ -276,7 +121,7 @@ class Style:
         BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
     JDXI_BUTTON_ROUND_ACTIVE = generate_button_style(
-        bg="#222222",
+        bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
         radius=BUTTON_ROUND_RADIUS,
         text_color=FOREGROUND,
@@ -300,7 +145,7 @@ class Style:
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
     JDXI_BUTTON_RECT_ACTIVE = generate_button_style(
-        bg="#222222",
+        bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
         radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
@@ -318,45 +163,72 @@ class Style:
         ACCENT_PRESSED,
     )
     JDXI_BUTTON_ANALOG_ACTIVE = generate_button_style(
-        bg="#222222",
+        bg=BUTTON_BACKGROUND,
         border=ACCENT_ANALOG,
         radius=BUTTON_RECT_RADIUS,
         text_color=FOREGROUND,
         hover=ACCENT_ANALOG_HOVER,
         border_pressed=ACCENT_ANALOG_PRESSED,
     )
+    JDXI_BUTTON_WAVEFORM = generate_button_style(
+        bg=BUTTON_BACKGROUND,
+        border=BACKGROUND_PRESSED,
+        radius=3,
+        text_color="#CCCCCC",
+        hover="#444444",
+        border_pressed=ACCENT_PRESSED,
+        background_pressed="#333333",
+        button_border_width=1,
+        font_family="Arial, sans-serif",
+        font_size="12px",
+        button_padding=5
+    )
+
+    JDXI_BUTTON_WAVEFORM_ANALOG = generate_button_style(
+        bg=BUTTON_BACKGROUND,
+        border=BACKGROUND_PRESSED,
+        radius=3,
+        text_color="#CCCCCC",
+        hover="#444444",
+        border_pressed=ACCENT_ANALOG,
+        background_pressed="#333333",
+        button_border_width=1,
+        font_family="Arial, sans-serif",
+        font_size="12px",
+        button_padding=5
+    )
 
     # Define Tab styles using get_tab_style function
     JDXI_TABS = generate_tab_style(
-        bg="#000000",
-        border="#666666",
+        bg=BACKGROUND,
+        border=BACKGROUND_PRESSED,
         radius=TAB_BUTTON_RECT_RADIUS,
         text_color="white",
-        hover_bg="#222222",
+        hover_bg=BUTTON_BACKGROUND,
         hover_border="#ff9999",
-        selected_bg="#222222",
+        selected_bg=BUTTON_BACKGROUND,
         selected_border="#ff6666",
     )
 
     JDXI_TABS_ANALOG = generate_tab_style(
-        bg="#000000",
-        border="#666666",
+        bg=BACKGROUND,
+        border=BACKGROUND_PRESSED,
         radius=TAB_BUTTON_RECT_RADIUS,
         text_color="white",
         hover_bg="#00A0C1",
         hover_border="#00A0E9",
-        selected_bg="#222222",
+        selected_bg=BUTTON_BACKGROUND,
         selected_border="#00A0E9",
     )
 
     JDXI_TABS_DRUMS = generate_tab_style(
-        bg="#000000",
-        border="#666666",
+        bg=BACKGROUND,
+        border=BACKGROUND_PRESSED,
         radius=TAB_BUTTON_RECT_RADIUS,
         text_color="white",
-        hover_bg="#222222",
+        hover_bg=BUTTON_BACKGROUND,
         hover_border="#ff9999",
-        selected_bg="#222222",
+        selected_bg=BUTTON_BACKGROUND,
         selected_border="#ff6666",
     )
 
@@ -638,51 +510,3 @@ class Style:
         """
 
 
-def toggle_button_style(button, checked):
-    """Update button style based on its checked state"""
-    button.setStyleSheet(
-        generate_sequencer_button_style(checked)
-    )  # Example style for checked
-
-
-def update_button_style(button, checked):
-    """Toggle the button style based on the state"""
-    button.setStyleSheet(get_button_styles(checked))
-
-
-def get_button_styles(active):
-    """Returns the appropriate style for active/inactive states"""
-    base_style = """
-        QPushButton {
-            border-radius: 15px;
-            border: 4px solid;
-        }
-        QPushButton:border_pressed {
-            background-color: #333333;
-            border: 4px solid #ff6666;
-        }
-        QPushButton:hover {
-            background-color: #1A1A1A;
-            border: 4px solid #ff4d4d;
-        }
-    """
-    if active:
-        return (
-                base_style
-                + """
-            QPushButton {
-                background-color: #333333;
-                border-color: #ff6666;
-            }
-        """
-        )
-    else:
-        return (
-                base_style
-                + """
-            QPushButton {
-                background-color: #222222;
-                border-color: #666666;
-            }
-        """
-        )
