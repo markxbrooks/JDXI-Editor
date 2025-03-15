@@ -852,38 +852,6 @@ class DigitalPartialEditor(PartialEditor):
 
         return mod_lfo_group_box
 
-    def _on_parameter_changed_old(
-        self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
-    ):
-        """Handle parameter value changes from UI controls"""
-        try:
-            # Convert display value to MIDI value
-            group, _(self.partial_number)
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
-                return
-
-            # Convert back to display value to ensure consistency
-            if isinstance(
-                param, DigitalParameter
-            ):  # Check if it's address DigitalParameter
-                if (
-                    param in self.controls
-                    and self.controls[param].value() != display_value
-                ):
-                    self.controls[param].blockSignals(True)
-                    self.controls[param].setValue(midi_value)
-                    self.controls[param].blockSignals(False)
-
-        except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
-
     def _on_waveform_selected(self, waveform: OscWave):
         """Handle waveform button clicks"""
         # Reset all buttons to default style

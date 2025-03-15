@@ -40,7 +40,6 @@ from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_
 from jdxi_editor.midi.data.parameter.drums import get_address_for_partial_name
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.partial import PartialEditor
-from jdxi_editor.ui.widgets.slider import Slider
 
 
 class DrumPartialEditor(PartialEditor):
@@ -983,24 +982,6 @@ class DrumPartialEditor(PartialEditor):
         )
         pitch_env_layout.addRow(pitch_env_level4_slider)
         return pitch_env_group
-
-    def _create_parameter_slider_oldF(
-        self, param: DrumParameter, label: str = None
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        slider = Slider(label, display_min, display_max, is_bipolar=param.is_bipolar)
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
 
     def _on_parameter_changed(self, param: DrumParameter, display_value: int):
         """Handle parameter value changes from UI controls"""
