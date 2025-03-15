@@ -388,24 +388,6 @@ class DrumEditor(SynthEditor):
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
-    def load_preset_old(self, preset_index):
-        """Load address preset by index"""
-        preset_data = PresetData(
-            type=self.preset_type,  # Ensure this is address valid preset_type
-            current_selection=preset_index,  # Convert to 1-based index
-            modified=0,  # or 1, depending on your logic
-            channel=self.midi_channel,
-        )
-        if not self.preset_handler:
-            self.preset_handler = PresetHandler(
-                self.midi_helper,
-                self.preset_list,
-                channel=self.midi_channel,
-                preset_type=self.preset_type,
-            )
-        if self.preset_handler:
-            self.preset_handler.load_preset(preset_data)
-
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")

@@ -530,28 +530,6 @@ class DigitalSynthEditor(SynthEditor):
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
-    def _on_parameter_changed_old(
-        self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
-    ):
-        """Handle parameter value changes from UI controls"""
-        try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-            logging.info(f"parameter from widget midi_value: {midi_value}")
-            # Send MIDI message
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=param.address,
-                                        value=midi_value)
-            return self.midi_helper.send_midi_message(sysex_message)
-
-        except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
-
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool
     ):
