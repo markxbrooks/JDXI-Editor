@@ -50,7 +50,7 @@ from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac

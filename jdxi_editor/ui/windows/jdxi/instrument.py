@@ -4,9 +4,8 @@ from pubsub import pub
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
-import qtawesome as qta
 
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS

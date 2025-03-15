@@ -1,10 +1,36 @@
+"""
+config_dialog module
+====================
+
+MIDIConfigDialog is a dialog class that allows users to configure MIDI input and output ports.
+
+It provides the following functionality:
+- Display available MIDI input and output ports in combo boxes.
+- Allow users to select and change MIDI input and output ports.
+- Refresh the list of available MIDI ports.
+- Retrieve the selected MIDI port settings.
+
+Attributes:
+    input_ports (list): List of available MIDI input ports.
+    output_ports (list): List of available MIDI output ports.
+    current_in (str): Currently selected MIDI input port (optional).
+    current_out (str): Currently selected MIDI output port (optional).
+    midi_helper (MIDIHelper): Instance of the MIDIHelper class to interact with MIDI devices.
+
+Methods:
+    refresh_ports() : Refresh the list of available MIDI ports.
+    get_input_port() : Returns the currently selected MIDI input port.
+    get_output_port() : Returns the currently selected MIDI output port.
+    get_settings() : Returns a dictionary containing the selected MIDI input and output ports.
+
+"""
+
+
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QComboBox,
-    QLabel, QPushButton, QFrame, QCheckBox, QGroupBox, QDialogButtonBox
+    QLabel, QPushButton, QGroupBox, QDialogButtonBox
 )
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPalette, QColor
-import logging
+from PySide6.QtCore import Qt
 import qtawesome as qta
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io.helper import MIDIHelper
@@ -125,4 +151,4 @@ class MIDIConfigDialog(QDialog):
         return {
             'input_port': self.get_input_port(),
             'output_port': self.get_output_port()
-        } 
+        }

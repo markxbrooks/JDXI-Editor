@@ -12,7 +12,7 @@ import logging
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.ui.editors.preset import PresetEditor
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 
 
 class PresetPanel(QWidget):

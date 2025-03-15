@@ -79,7 +79,7 @@ from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler

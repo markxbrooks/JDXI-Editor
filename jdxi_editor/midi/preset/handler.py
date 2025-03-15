@@ -31,7 +31,7 @@ preset changes and communicate them to the UI and MIDI engine.
 
 from PySide6.QtCore import Signal
 
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.preset.loader import PresetLoader
 
 

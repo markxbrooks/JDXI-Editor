@@ -38,7 +38,7 @@ from typing import Optional
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.midi.io.helper import MIDIHelper
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.message.roland import RolandSysEx
 

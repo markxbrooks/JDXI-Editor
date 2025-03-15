@@ -1,7 +1,31 @@
+"""
+Patch Manager Module
+====================s
+
+This module defines the `PatchManager` class, a PySide6-based GUI for loading
+and saving MIDI patch files for the Roland JD-Xi synthesizer.
+
+Features:
+- Allows users to browse for patch files using a file dialog.
+- Supports both saving and loading patches, depending on the mode.
+- Integrates with `MIDIHelper` for handling MIDI patch operations.
+- Implements a simple, dark-themed UI with action buttons.
+
+Classes:
+- PatchManager: A QMainWindow that provides a user interface for managing patch files.
+
+Dependencies:
+- PySide6
+- jdxi_editor.midi.io.MIDIHelper
+- jdxi_editor.ui.style.Style
+
+"""
+
+
 from typing import Optional
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QFileDialog, QLineEdit
 )
 from PySide6.QtCore import Qt
@@ -12,22 +36,22 @@ from jdxi_editor.ui.style import Style
 
 
 class PatchManager(QMainWindow):
-    def __init__(self, midi_helper=Optional[MIDIHelper], parent=None, save_mode=False):
+    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None, save_mode=False):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.save_mode = save_mode
-        
+
         # Set window properties
         self.setWindowTitle("Save Patch" if save_mode else "Load Patch")
         self.setMinimumSize(400, 200)
-        
+
         # Apply dark theme styling
         self.setStyleSheet(Style.JDXI_PATCH_MANAGER)
-        
+
         # Create central widget and layout
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
-        
+
         # Create file path row
         path_layout = QHBoxLayout()
         self.path_input = QLineEdit()
@@ -37,7 +61,7 @@ class PatchManager(QMainWindow):
         path_layout.addWidget(self.path_input)
         path_layout.addWidget(browse_button)
         layout.addLayout(path_layout)
-        
+
         # Create action buttons
         button_layout = QHBoxLayout()
         action_button = QPushButton("Save" if save_mode else "Load")
@@ -47,10 +71,10 @@ class PatchManager(QMainWindow):
         button_layout.addWidget(action_button)
         button_layout.addWidget(cancel_button)
         layout.addLayout(button_layout)
-        
+
         # Set central widget
         self.setCentralWidget(main_widget)
-    
+
     def _browse_file(self):
         """Open file dialog for selecting patch file"""
         try:
@@ -68,32 +92,33 @@ class PatchManager(QMainWindow):
                     "",
                     "Patch Files (*.syx);;All Files (*.*)"
                 )
-                
+
             if file_path:
                 self.path_input.setText(file_path)
-                
+
         except Exception as e:
             logging.error(f"Error browsing for file: {str(e)}")
-    
+
     def _handle_action(self):
         """Handle save/load action"""
         try:
             file_path = self.path_input.text()
             if not file_path:
+                logging.warning("No file selected.")
                 return
-                
+
+            if self.midi_helper is None:
+                logging.error("MIDI helper not initialized.")
+                return
+
             if self.save_mode:
-                # Handle save
-                if self.midi_helper:
-                    self.midi_helper.save_patch(file_path)
-                    logging.info(f"Patch saved to {file_path}")
+                self.midi_helper.save_patch(file_path)
+                logging.info(f"Patch saved to {file_path}")
             else:
-                # Handle load
-                if self.midi_helper:
-                    self.midi_helper.load_patch(file_path)
-                    logging.info(f"Patch loaded from {file_path}")
-                    
+                self.midi_helper.load_patch(file_path)
+                logging.info(f"Patch loaded from {file_path}")
+
             self.close()
-            
+
         except Exception as e:
             logging.error(f"Error {'saving' if self.save_mode else 'loading'} patch: {str(e)}")

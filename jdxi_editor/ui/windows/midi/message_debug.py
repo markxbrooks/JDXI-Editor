@@ -1,5 +1,19 @@
+"""
+message_debug module
+====================
+
+MIDIMessageDebug is a Qt-based main window for logging and displaying MIDI messages. It provides a real-time log view where MIDI messages can be logged with timestamps, allowing for easy debugging of MIDI communication.
+
+Attributes:
+    log_view (QTextEdit): A text edit widget used to display the MIDI message log.
+
+Methods:
+    log_message(message, direction="→"): Logs a MIDI message with a timestamp. Optionally, the direction (input or output) of the message can be specified.
+    clear_log(): Clears the message log view.
+"""
+
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
-from PySide6.QtCore import Qt
+
 
 class MIDIMessageDebug(QMainWindow):
     def __init__(self, parent=None):
@@ -38,4 +52,4 @@ class MIDIMessageDebug(QMainWindow):
         
     def clear_log(self):
         """Clear the log view"""
-        self.log_view.clear() 
+        self.log_view.clear()

@@ -32,7 +32,7 @@ from jdxi_editor.midi.data.parameter.digital import DigitalParameter
 from jdxi_editor.midi.data.parameter.drums import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.io.helper import MIDIHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
