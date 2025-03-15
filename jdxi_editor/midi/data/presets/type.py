@@ -1,4 +1,7 @@
-class PresetType:
+from enum import Enum
+
+
+class PresetType():
     """Preset types and their MIDI area codes"""
     ANALOG = "Analog"
     DIGITAL_1 = "Digital 1"  # Main digital synth

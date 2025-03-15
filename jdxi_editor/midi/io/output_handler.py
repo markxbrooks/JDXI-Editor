@@ -78,13 +78,16 @@ class MIDIOutHandler(MidiIOController):
             True if the message was sent successfully, False otherwise.
         """
         logging.info(f"attempting to send message: {type(message)} {message}")
-        if not message:
-            logging.info("MIDI message is empty.")
-            return False
+        try:
+            if not message:
+                logging.info("MIDI message is empty.")
+                raise ValueError
 
-        if any(not (0 <= x <= 255) for x in message):
-            logging.info(f"Invalid MIDI value detected: {message}")
-            return False
+            if any(not (0 <= x <= 255) for x in message):
+                logging.info(f"Invalid MIDI value detected: {message}")
+                raise ValueError
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred processing midi message")
 
         formatted_message = format_midi_message_to_hex_string(message)
         logging.info(f"Sending MIDI message: {formatted_message}")
