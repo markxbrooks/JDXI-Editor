@@ -1,3 +1,23 @@
+"""
+JD-Xi Manager UI setup.
+
+This class defines the main user interface for the JD-Xi Manager application, inheriting from QMainWindow. It handles the creation of the UI elements, including the main layout, menus, status bar, and MIDI indicators. It also provides functionality for displaying and managing synth presets, favorites, and MIDI connectivity.
+
+Key Features:
+- Sets up a frameless window with a customizable layout.
+- Initializes MIDI helper and indicators for MIDI input/output.
+- Loads and displays a digital font for instrument displays.
+- Allows users to manage and load favorite presets.
+- Displays a virtual piano keyboard in the status bar.
+- Integrates with MIDIHelper for MIDI communication.
+- Loads and saves application settings and preferences.
+
+Methods:
+    - __init__: Initializes the UI, settings, MIDI components, and layout.
+    - _create_main_layout: Sets up the central layout for displaying instrument images and overlays.
+
+"""
+
 import os
 import logging
 import re

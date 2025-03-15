@@ -1,3 +1,30 @@
+"""
+JD-Xi Instrument class for managing presets and MIDI settings.
+
+This module defines the `JdxiInstrument` class, which extends from the `JdxiUi` class to manage JD-Xi instrument presets, MIDI communication, and UI interactions. It allows for controlling and modifying different preset types (Digital 1, Digital 2, Analog, Drums) and provides MIDI connectivity for program changes and preset management.
+
+Key Features:
+- Handles MIDI connectivity and communication, including program change signals.
+- Manages different preset types (Digital, Analog, Drums) with the ability to select and load presets.
+- Provides MIDI indicators to display the status of MIDI input/output ports.
+- Includes functionality for dragging the window and selecting different synth types.
+- Integrates with external MIDI devices for seamless performance control.
+- Includes a custom UI to manage and visualize the instrument's preset settings.
+- Supports the auto-connection of JD-Xi and provides MIDI configuration if auto-connection fails.
+
+Methods:
+    - __init__: Initializes the instrument's MIDI settings, UI components, and preset handlers.
+    - mousePressEvent, mouseMoveEvent, mouseReleaseEvent: Handles window drag events for custom window movement.
+    - _select_synth: Selects the current synth type and updates UI button styles.
+    - _update_synth_button_styles: Updates button styles based on the selected synth type.
+    - _get_presets_for_current_synth: Returns the list of presets based on the selected synth type.
+    - _get_preset_handler_for_current_synth: Returns the appropriate preset handler based on the selected synth type.
+    - _previous_tone: Navigates to the previous tone in the preset list and updates the display.
+    - ...
+
+"""
+
+
 import logging
 
 from pubsub import pub
