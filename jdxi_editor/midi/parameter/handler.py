@@ -1,3 +1,22 @@
+"""
+Module: parameter_handler
+
+This module defines the `ParameterHandler` class, which manages MIDI parameter values
+and emits signals when parameters are updated.
+
+Classes:
+    - ParameterHandler: Handles storing, updating, retrieving, and clearing MIDI parameters.
+
+Signals:
+    - parameters_updated: Emitted when parameter values change.
+
+Methods:
+    - update_parameter(address, value): Updates the value of a parameter at the given address.
+    - get_parameter(address): Retrieves the value of a parameter at the given address.
+    - clear_parameters(): Clears all stored parameters.
+
+"""
+
 from PySide6.QtCore import QObject, Signal
 from typing import Dict, List
 
