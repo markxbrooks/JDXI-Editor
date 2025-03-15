@@ -65,13 +65,15 @@ class PresetLoader(QObject):
         """Send a MIDI parameter change message."""
         logging.info(f"par:[{address}] val:[{value}] len:[{nr}]")
         data = bytes.fromhex(f"{value:0{nr}X}") if nr > 1 else bytes([value])
-
-        # Use SysExMessage helper to construct and send the SysEx message
-        self.send_sysex(
-            [address[i : i + 2] for i in range(0, len(address), 2)],
-            *[f"{b:02X}" for b in data],
-            request=False,
-        )
+        try:
+            # Use SysExMessage helper to construct and send the SysEx message
+            self.send_sysex(
+                [address[i : i + 2] for i in range(0, len(address), 2)],
+                *[f"{b:02X}" for b in data],
+                request=False,
+            )
+        except Exception as ex:
+            logging.info(f"Error {ex} sending parameter change")
 
     def send_sysex(self, address, *data_bytes, request=False):
         """
@@ -136,4 +138,8 @@ class PresetLoader(QObject):
             (["19", "01", "50", "00"], "00", "00", "00", "25"),
         ]
         for address, *data in sysex_rq1_data:
-            self.send_sysex(address, *data, request=True)
+            logging.info(f"send_preset_sysex_messages address: {address} data: {data}")
+            sysex_message = RolandSysEx()
+            sysex_data = sysex_message.construct_sysex(address, *data, request=True)
+            logging.info(f"send_preset_sysex_messages sysex_data: {sysex_data}")
+            self.midi_helper.send_midi_message(sysex_message)
