@@ -70,8 +70,6 @@ class VocalFXEditor(SynthEditor):
         self.area = VOCAL_FX_AREA
         self.part = VOCAL_FX_PART
         self.group = VOCAL_FX_GROUP
-
-        self.four_byte_params = [ProgramCommonParameter.PROGRAM_TEMPO]
         self.setStyleSheet(Style.JDXI_EDITOR + Style.JDXI_TABS)
 
         # Main layout

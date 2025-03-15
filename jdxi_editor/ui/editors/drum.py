@@ -90,7 +90,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
 )
-from jdxi_editor.midi.data.constants import MIDI_CHANNEL_DRUMS
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DRUMS
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 

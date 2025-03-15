@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.data.constants import COMMON_GROUP
+from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
@@ -99,12 +101,6 @@ class DigitalCommonParameter(SynthParameter):
             self.UNISON_SIZE: "Uni Size",
         }.get(self, self.name.replace("_", " ").title())
 
-    def get_address_for_partial(self, partial_num: int = 0) -> Tuple[int, int]:
-        """Get parameter area and address adjusted for partial number."""
-        group_map = {0: 0x00}
-        group = group_map.get(partial_num, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
-        return group, self.address
-
     @property
     def is_switch(self) -> bool:
         """Returns True if parameter is address binary/enum switch"""
@@ -171,3 +167,6 @@ class DigitalCommonParameter(SynthParameter):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
         return DigitalCommonParameter.__members__.get(param_name, None)
+
+    def get_address_for_partial(self, partial_num: int = 0):
+        return PROGRAM_GROUP, 0

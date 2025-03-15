@@ -27,7 +27,7 @@ from typing import Any, Callable, Dict, List, Optional
 from PySide6.QtCore import Signal
 from pubsub import pub
 
-from jdxi_editor.midi.data.constants import ROLAND_ID
+from jdxi_editor.midi.data.constants.constants import ROLAND_ID
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import PresetType

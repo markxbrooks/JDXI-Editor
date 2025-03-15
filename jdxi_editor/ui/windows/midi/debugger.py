@@ -42,10 +42,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.constants import (DT1_COMMAND_12,
-                                             DIGITAL_SYNTH_1_AREA,
-                                             EFFECTS_AREA
+from jdxi_editor.midi.data.constants import (EFFECTS_AREA
                                              )
+from jdxi_editor.midi.data.constants.constants import DT1_COMMAND_12
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import _validate_checksum

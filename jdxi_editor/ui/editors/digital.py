@@ -49,6 +49,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
+from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.io import MIDIHelper
@@ -56,6 +57,7 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.editors.digital_partial import DigitalPartialEditor
+from jdxi_editor.midi.data.parameter.digital_modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.midi.data.digital import (
@@ -67,17 +69,13 @@ from jdxi_editor.midi.data.digital import (
 from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_editor.midi.data.parameter.digital import DigitalParameter
 from jdxi_editor.midi.data.constants import (
-    DIGITAL_SYNTH_1_AREA,
-    PART_1,
-    PART_2,
     TEMPORARY_DIGITAL_SYNTH_1_AREA,
-    DIGITAL_SYNTH_2_AREA,
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_DIGITAL2,
     COMMON_AREA,
 )
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, DIGITAL_1_PART, \
+    DIGITAL_2_PART
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
-from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -127,14 +125,13 @@ class DigitalSynthEditor(SynthEditor):
         if self.synth_num == 2:
             self.midi_channel = MIDI_CHANNEL_DIGITAL2
             self.area = DIGITAL_SYNTH_2_AREA
-            self.part = PART_1
+            self.part = DIGITAL_2_PART
         else:
             self.midi_channel = MIDI_CHANNEL_DIGITAL1
             self.area = DIGITAL_SYNTH_1_AREA
-            self.part = PART_2
+            self.part = DIGITAL_1_PART
         # midi message parameters
 
-        self.part = PART_1 if synth_num == 1 else PART_2
         self.group = COMMON_AREA
         self.setWindowTitle(f"Digital Synth {synth_num}")
         self.main_window = parent
@@ -248,9 +245,6 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
 
-        # Add performance section
-        # container_layout.addWidget(self._create_performance_section())
-
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
         container_layout.addWidget(self.partials_panel)
@@ -269,6 +263,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.addTab(
             self._create_common_controls_section(), "Common Controls"
         )
+        self.partial_tab_widget.addTab(self._create_tone_modify_section(), "Tone Modify")
 
         container_layout.addWidget(self.partial_tab_widget)
 
@@ -426,6 +421,51 @@ class DigitalSynthEditor(SynthEditor):
         layout.addWidget(self.wave_shape)
         self.update_instrument_image()
         return group
+    
+    def _create_tone_modify_section(self):
+        """Create tone modify section"""
+        group = QWidget()
+        layout = QVBoxLayout()
+        group.setLayout(layout)
+        attack_time_interval_sens = self._create_parameter_slider(
+            DigitalModifyParameter.ATTACK_TIME_INTERVAL_SENS, "Attack Time Interval Sens"
+        )
+        layout.addWidget(attack_time_interval_sens)
+        release_time_interval_sens = self._create_parameter_slider(
+            DigitalModifyParameter.RELEASE_TIME_INTERVAL_SENS, "Release Time Interval Sens"
+        )
+        layout.addWidget(release_time_interval_sens)
+        portamento_time_interval_sens = self._create_parameter_slider(
+            DigitalModifyParameter.PORTAMENTO_TIME_INTERVAL_SENS, "Portamento Time Interval Sens"
+        )
+        layout.addWidget(portamento_time_interval_sens)
+
+        envelope_loop_mode_row = QHBoxLayout()
+        envelope_loop_mode_label = QLabel("Envelope Loop Mode")
+        envelope_loop_mode_row.addWidget(envelope_loop_mode_label)
+        envelope_loop_mode = self._create_parameter_combo_box(
+            DigitalModifyParameter.ENVELOPE_LOOP_MODE, "Envelope Loop Mode", ["OFF", "FREE-RUN", "TEMPO-SYNC"]
+        )
+        envelope_loop_mode_row.addWidget(envelope_loop_mode)
+        layout.addLayout(envelope_loop_mode_row)
+
+        envelope_loop_sync_note_row = QHBoxLayout()
+        envelope_loop_sync_note_label = QLabel("Envelope Loop Sync Note")
+        envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note_label)
+        envelope_loop_sync_note = self._create_parameter_combo_box(
+            DigitalModifyParameter.ENVELOPE_LOOP_SYNC_NOTE, "Envelope Loop Sync Note", ["16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2", "3/8", "1/3", "1/4", "3/16", "1/6", "1/8", "3/32", "1/12", "1/16", "1/24", "1/32"]
+        )
+        envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note)
+        layout.addLayout(envelope_loop_sync_note_row)
+
+        chromatic_portamento_row = QHBoxLayout()
+        chromatic_portamento_label = QLabel("Chromatic Portamento")
+        chromatic_portamento_row.addWidget(chromatic_portamento_label)
+        chromatic_portamento = self._create_parameter_switch(
+            DigitalModifyParameter.CHROMATIC_PORTAMENTO, "Chromatic Portamento", ["OFF", "ON"]
+        )
+        layout.addWidget(chromatic_portamento)
+        return group
 
     def update_instrument_title(self):
         """Update the instrument title label with the selected synth name."""
@@ -490,7 +530,7 @@ class DigitalSynthEditor(SynthEditor):
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
-    def _on_parameter_changed(
+    def _on_parameter_changed_old(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
         """Handle parameter value changes from UI controls"""
@@ -805,34 +845,16 @@ class DigitalSynthEditor(SynthEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA "
+                "or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
             )
             return
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
 
-        common_ignored_keys = {
-            "JD_XI_HEADER",
-            "ADDRESS",
-            "TEMPORARY_AREA",
-            "SYNTH_TONE",
-            "TONE_NAME",
-            "TONE_NAME_1",
-            "TONE_NAME_2",
-            "TONE_NAME_3",
-            "TONE_NAME_4",
-            "TONE_NAME_5",
-            "TONE_NAME_6",
-            "TONE_NAME_7",
-            "TONE_NAME_8",
-            "TONE_NAME_9",
-            "TONE_NAME_10",
-            "TONE_NAME_11",
-            "TONE_NAME_12",
-        }
         sysex_data = {
-            k: v for k, v in sysex_data.items() if k not in common_ignored_keys
+            k: v for k, v in sysex_data.items() if k not in COMMON_IGNORED_KEYS
         }
 
         if synth_tone == "TONE_COMMON":

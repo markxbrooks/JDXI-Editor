@@ -54,9 +54,12 @@ JD_XI_MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]  # JD-Xi Model
 
 PROGRAM_COMMON = 0x00
 
+
 # JD-Xi Memory Map Areas
 SETUP_AREA = 0x01  # 01 00 00 00: Setup
 SYSTEM_AREA = 0x02  # 02 00 00 00: System
+# Memory areas
+COMMON_AREA = 0x00
 
 # Roland Commands
 DT1_COMMAND_12 = 0x12  # Data Set 1
@@ -127,5 +130,13 @@ COMMON_GROUP = 0x10
 PARTIAL_GROUP = 0x20
 EFFECTS_GROUP = 0x30
 
+TONE_MODIFY = 0x50
+
 # Bank Select
 BANK_MSB = 0x55  # 85 (0x55) for all JD-Xi banks
+
+# Ones to tidy up
+PROGRAM_AREA = 0x18
+DIGITAL_SYNTH_1_AREA = 0x19
+DIGITAL_SYNTH_2_AREA = 0x1A
+ANALOG_SYNTH_AREA = 0x1B

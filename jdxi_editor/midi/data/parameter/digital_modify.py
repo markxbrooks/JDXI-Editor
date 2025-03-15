@@ -24,7 +24,7 @@ if param:
     print(param.name, param.min_val, param.max_val)
 
 """
-
+from jdxi_editor.midi.data.constants.sysex import TONE_MODIFY
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
@@ -72,3 +72,5 @@ class DigitalModifyParameter(SynthParameter):
                 raise ValueError(f"Value {value} out of range for {self.name} (valid range: 0-19)")
         return value        
 
+    def get_address_for_partial(self, partial_num: int = 0):
+        return TONE_MODIFY, 0
