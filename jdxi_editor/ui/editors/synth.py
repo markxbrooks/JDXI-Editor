@@ -33,7 +33,8 @@ from jdxi_editor.midi.data.parameter.drums import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import PresetType
-from jdxi_editor.midi.data.constants import MIDI_CHANNEL_DIGITAL1
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
+from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.io.helper import MIDIHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import PresetData
@@ -54,7 +55,6 @@ class SynthEditor(QWidget):
         self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
-        self.four_byte_params = []
         self.instrument_icon_folder = None
         self.controls = {}
         self.partial_num = None
@@ -118,7 +118,7 @@ class SynthEditor(QWidget):
         label: str = None,
         options: list = None,
         values: list = None,
-        show_label = True
+        show_label=True,
     ) -> ComboBox:
         """Create a combo box for a parameter with proper display conversion"""
         combo_box = ComboBox(label, options, values, show_label=show_label)
@@ -143,7 +143,7 @@ class SynthEditor(QWidget):
         # Store control reference
         self.controls[param] = spin_box
         return spin_box
-    
+
     def _create_parameter_switch(
         self,
         param: SynthParameter,
@@ -170,7 +170,14 @@ class SynthEditor(QWidget):
             display_min, display_max = param.min_val, param.max_val
 
         # Create slider
-        slider = Slider(label, display_min, display_max, vertical, show_value_label, is_bipolar=param.is_bipolar)
+        slider = Slider(
+            label,
+            display_min,
+            display_max,
+            vertical,
+            show_value_label,
+            is_bipolar=param.is_bipolar,
+        )
 
         # Set up bipolar parameters
         if param in self.bipolar_parameters or param.is_bipolar:
@@ -220,7 +227,7 @@ class SynthEditor(QWidget):
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def update_instrument_image(self):
-        """ tart up ui with image """
+        """tart up ui with image"""
         class_name = self.__class__.__name__.lower()  # Get class name in lowercase
         default_image_path = os.path.join("resources", class_name, f"{class_name}.png")
 
@@ -294,98 +301,47 @@ class SynthEditor(QWidget):
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
 
-    def send_midi_parameter(self, param, value) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            logging.debug("No MIDI helper available - parameter change ignored")
-            return False
-
+    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
+        """Send MIDI parameter with error handling."""
         try:
             # Get parameter area and address with partial offset
-            if isinstance(param, DigitalParameter):
-                if hasattr(param, "get_address_for_partial"):
-                    group, _ = param.get_address_for_partial(self.partial_num)
-                else:
-                    group = 0x00  # Common parameters area
+            if hasattr(param, "get_address_for_partial"):
+                group, _ = param.get_address_for_partial(0)
             else:
-                group = 0x00  # Common parameters area
+                group = PROGRAM_GROUP
+            logging.info(
+                f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
+            )
 
-            # Ensure value is included in the MIDI message
-
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=group,
-                                        param=param.address,
-                                        value=value)
-            return_value = self.midi_helper.send_midi_message(sysex_message)
-            """
-            return self.midi_helper.send_parameter(
+            sysex_message = RolandSysEx(
                 area=self.area,
-                part=self.part,
+                section=self.part,
                 group=group,
                 param=param.address,
-                value=value,  # Make sure this value is being sent
+                value=value,
             )
-            """
-            return return_value
+            result = self.midi_helper.send_midi_message(sysex_message)
+
+            return bool(result)
         except Exception as ex:
-            logging.error(f"MIDI error setting {param}: {str(ex)}")
+            logging.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
     def _on_parameter_changed(self, param: SynthParameter, display_value: int):
-        """Handle parameter value changes from UI controls"""
+        """Handle parameter value changes from UI controls."""
         try:
-            # Get parameter area and address with partial offset
-            if param in [DrumCommonParameter.KIT_LEVEL]:
-                group = param.get_address_for_partial()
-            elif isinstance(param, DigitalParameter):
-                if hasattr(param, "get_address_for_partial"):
-                    group, _ = param.get_address_for_partial(self.partial_num)
-                else:
-                    group = self.group
-            else:
-                group = self.group
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            elif hasattr(param, "convert_to_midi"):
-                midi_value = param.convert_to_midi(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-            if param in self.four_byte_params:
-                size = 4
-            else:
-                size = 1
-            logging.info(f"parameter from widget midi_value: {midi_value}")
-            # Send MIDI message
-            logging.debug(
-                f"Sending: area={self.area:02x}, address={self.part:02x}, "
-                f"group={group:02x}, param={param.address:02x}, "
-                f"display_value={display_value:02x},  value={midi_value:02x}"
+            # Convert display value to MIDI value
+            midi_value = (
+                param.convert_from_display(display_value)
+                if hasattr(param, "convert_from_display")
+                else param.validate_value(display_value)
             )
-            try:
-                sysex_message = RolandSysEx(area=self.area,
-                                            section=self.part,
-                                            group=group,
-                                            param=param.address,
-                                            value=midi_value)
-                self.midi_helper.send_midi_message(sysex_message)
-                """
-                # Ensure value is included in the MIDI message
-                return self.midi_helper.send_parameter(
-                    area=self.area,
-                    part=self.part,
-                    group=group,
-                    param=param.address,
-                    value=midi_value,
-                    size=size,
-                )"""
-            except Exception as ex:
-                logging.error(f"MIDI error setting {param}: {str(ex)}")
-                return False
 
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
+            logging.error(f"Error handling parameter {param.name}: {ex}")
 
     def data_request(self):
         """Send data request SysEx messages to the JD-Xi"""

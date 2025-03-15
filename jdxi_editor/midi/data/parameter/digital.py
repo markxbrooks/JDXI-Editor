@@ -43,7 +43,6 @@ from typing import Tuple, Optional, Union
 from enum import Enum
 from dataclasses import dataclass
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-# from jdxi_editor.ui.widgets.slider import Slider
 
 
 def parse_digital_parameters(data: list) -> dict:

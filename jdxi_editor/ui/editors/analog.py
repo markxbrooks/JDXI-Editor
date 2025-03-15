@@ -82,7 +82,7 @@ from jdxi_editor.midi.data.constants.analog import (
     ANALOG_PART,
     ANALOG_OSC_GROUP, LFO_TEMPO_SYNC_NOTES,
 )
-from jdxi_editor.midi.data.constants import MIDI_CHANNEL_ANALOG
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon

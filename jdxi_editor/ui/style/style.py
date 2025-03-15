@@ -81,14 +81,14 @@ class Style:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
-    # COM_BG = "#000000"
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # """"#1A1A1A"
     BACKGROUND_PRESSED = "#666666"
     BUTTON_BACKGROUND = "#222222"
+    BUTTON_BACKGROUND_PRESSED = "#333333"
     FOREGROUND = "#FFFFFF"
-    PADDING = 2  # in px
-    BUTTON_PADDING = 2
+    PADDING = 1  # in px
+    BUTTON_PADDING = 1
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF2200"  # Red for hover
     ACCENT_ANALOG = "#00A0E9"
@@ -129,7 +129,7 @@ class Style:
         border_pressed=ACCENT_PRESSED,
     )
     JDXI_BUTTON_ROUND_SMALL = generate_button_style(
-        bg="#333333",
+        bg=BORDER,
         border=BORDER,
         radius=12,
         text_color=FOREGROUND,
@@ -177,7 +177,7 @@ class Style:
         text_color="#CCCCCC",
         hover="#444444",
         border_pressed=ACCENT_PRESSED,
-        background_pressed="#333333",
+        background_pressed=BUTTON_BACKGROUND_PRESSED,
         button_border_width=1,
         font_family="Arial, sans-serif",
         font_size="12px",
@@ -191,7 +191,7 @@ class Style:
         text_color="#CCCCCC",
         hover="#444444",
         border_pressed=ACCENT_ANALOG,
-        background_pressed="#333333",
+        background_pressed=BUTTON_BACKGROUND_PRESSED,
         button_border_width=1,
         font_family="Arial, sans-serif",
         font_size="12px",
@@ -415,22 +415,22 @@ class Style:
             }
         """
 
-    JDXI_PARTIAL_SWITCH = """
-                QCheckBox {
+    JDXI_PARTIAL_SWITCH = f"""
+                QCheckBox {{
                     color: #CCCCCC;
                     font-size: 10px;
-                }
-                QCheckBox::indicator {
+                }}
+                QCheckBox::indicator {{
                     width: 16px;
                     height: 16px;
                     background: #333333;
                     border: 1px solid #555555;
                     border-radius: 8px;
-                }
-                QCheckBox::indicator:checked {
+                }}
+                QCheckBox::indicator:checked {{
                     background: #666666;
                     border-color: #FF4444;
-                }
+                }}
             """
 
     JDXI_PARTIALS_PANEL = """  

@@ -55,7 +55,8 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.data.parameter.digital import DigitalParameter
 from jdxi_editor.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_editor.midi.data.constants import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, \
+    DIGITAL_PART_1, DIGITAL_PART_2
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.parsers import get_partial_address
 from jdxi_editor.midi.utils.conversions import (
@@ -77,7 +78,7 @@ from jdxi_editor.ui.image.waveform import (
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_number=1, part=DIGITAL_PART_1, parent=None):
+    def __init__(self, midi_helper=None, partial_number=1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = [
             DigitalParameter.OSC_DETUNE,
@@ -85,16 +86,11 @@ class DigitalPartialEditor(PartialEditor):
             DigitalParameter.OSC_PITCH_ENV_DEPTH,
             DigitalParameter.AMP_PAN,
         ]
-        self.four_byte_params = [
-            DigitalParameter.WAVE_NUMBER_1,
-            DigitalParameter.WAVE_NUMBER_2,
-            DigitalParameter.WAVE_NUMBER_3,
-            DigitalParameter.WAVE_NUMBER_4,
-        ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
-        self.area = DIGITAL_SYNTH_1_AREA if part == DIGITAL_PART_1 else DIGITAL_SYNTH_2_AREA
-        self.part = part
+        self.area = DIGITAL_SYNTH_1_AREA if partial_number == 1 else DIGITAL_SYNTH_2_AREA
+        self.part = DIGITAL_PART_1 if partial_number == 1 else DIGITAL_PART_2
+        # self.part = part
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
         else:
@@ -856,41 +852,13 @@ class DigitalPartialEditor(PartialEditor):
 
         return mod_lfo_group_box
 
-    def send_midi_parameter(self, param, value) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            logging.debug("No MIDI helper available - parameter change ignored")
-            return False
-
-        try:
-            # Get parameter area and address with partial offset
-            if isinstance(param, DigitalParameter):
-                group, param_address = param.get_address_for_partial(self.partial_number)
-            else:
-                group = 0x00  # Common parameters area
-                param_address = param.address
-
-            if DigitalParameter in self.four_byte_params:
-                size = 4
-            else:
-                size = 1
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=group,
-                                        param=param_address,
-                                        value=value)
-            value = self.midi_helper.send_midi_message(sysex_message)
-            return value
-        except Exception as ex:
-            logging.error(f"MIDI error setting {param}: {str(ex)}")
-            return False
-
-    def _on_parameter_changed(
+    def _on_parameter_changed_old(
         self, param: Union[DigitalParameter, DigitalCommonParameter], display_value: int
     ):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value
+            group, _(self.partial_number)
             if hasattr(param, "convert_from_display"):
                 midi_value = param.convert_from_display(display_value)
             else:

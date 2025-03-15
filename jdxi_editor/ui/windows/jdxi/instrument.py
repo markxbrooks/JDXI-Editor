@@ -36,20 +36,9 @@ from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
-from jdxi_editor.midi.data.constants import (
-    START_OF_SYSEX,
-    DEVICE_ID,
-    MODEL_ID_1,
-    MODEL_ID_2,
-    MODEL_ID,
-    JD_XI_HEADER,
-    END_OF_SYSEX,
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_DIGITAL2,
-    MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DRUMS,
-    DigitalParameter,
-)
+from jdxi_editor.midi.data.constants.triage import DigitalParameter
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
+    MIDI_CHANNEL_DRUMS, START_OF_SYSEX, END_OF_SYSEX, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER
 from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_PROGRAM_AREA,

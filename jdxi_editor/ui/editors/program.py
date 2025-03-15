@@ -54,7 +54,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal, Qt
 
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
-from jdxi_editor.midi.data.constants import MIDI_CHANNEL_PROGRAMS
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors.helpers.program import (

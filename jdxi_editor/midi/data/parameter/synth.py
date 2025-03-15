@@ -24,6 +24,9 @@ Methods:
 
 from enum import Enum
 
+from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
+
+
 
 class SynthParameter(Enum):
 
@@ -77,7 +80,12 @@ class SynthParameter(Enum):
         return SynthParameter.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_num: int = 0):
-        pass # implemented in subclasses
+        """
+        :param partial_num: int
+        :return: int default area
+        to be subclassed
+        """
+        return PROGRAM_GROUP
 
     def convert_from_midi(self, midi_value):
         pass

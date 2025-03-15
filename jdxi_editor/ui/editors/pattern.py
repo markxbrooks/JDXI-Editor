@@ -39,12 +39,8 @@ from PySide6.QtCore import Qt, QTimer
 from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage, bpm2tempo
 from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 
-from jdxi_editor.midi.data.constants import (
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_ANALOG,
-    MIDI_CHANNEL_DIGITAL2,
-    MIDI_CHANNEL_DRUMS,
-)
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
+    MIDI_CHANNEL_DRUMS
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.midi.preset.handler import PresetHandler
 

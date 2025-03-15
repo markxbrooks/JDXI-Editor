@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-from jdxi_editor.midi.data.constants import PART_1
+from jdxi_editor.midi.data.constants.constants import PART_1
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
@@ -42,7 +42,6 @@ class PartialEditor(QWidget):
     def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = []
-        self.four_byte_params = None
         self.midi_helper = midi_helper
         self.area = None
         self.part = part
@@ -128,47 +127,44 @@ class PartialEditor(QWidget):
         self.controls[param] = switch
         return switch
 
-    def _on_parameter_changed(self, param: SynthParameter, display_value: int):
-        """Handle parameter value changes from UI controls"""
+    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
+        """Send MIDI parameter with error handling."""
         try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            else:
-                midi_value = param.validate_value(display_value)
-            logging.info(
-                f"parameter: {param} display {display_value} midi value {midi_value}"
-            )
-            if param in self.four_byte_params:
-                size = 4
-            else:
-                size = 1
-            logging.info(
-                f"parameter param {param} value {display_value} size {size} sent"
-            )
-            try:
-                sysex_message = RolandSysEx(area=self.area,
-                                            section=self.part,
-                                            group=self.group,
-                                            param=param.address,
-                                            value=midi_value)
-                value = self.midi_helper.send_midi_message(sysex_message)
-                """ 
-                # Ensure value is included in the MIDI message
-                return self.midi_helper.send_parameter(
-                    area=self.area,
-                    part=self.part,
-                    group=self.group,
-                    param=param.address,
-                    value=midi_value,  # Make sure this value is being sent
-                    size=size,
-                )
-                """
-                return value
-            except Exception as ex:
-                logging.error(f"MIDI error setting {param}: {str(ex)}")
-                return False
+            # Get parameter area and address with partial offset
+            group, _ = getattr(
+                param, "get_address_for_partial", lambda _: (self.group, None)
+            )(self.partial_number)
 
+            logging.info(
+                f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
+            )
+
+            sysex_message = RolandSysEx(
+                area=self.area,
+                section=self.part,
+                group=group,
+                param=param.address,
+                value=value,
+            )
+            result = self.midi_helper.send_midi_message(sysex_message)
+
+            return bool(result)
         except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
+            logging.error(f"MIDI error setting {param.name}: {ex}")
             return False
+
+    def _on_parameter_changed(self, param: SynthParameter, display_value: int):
+        """Handle parameter value changes from UI controls."""
+        try:
+            # Convert display value to MIDI value
+            midi_value = (
+                param.convert_from_display(display_value)
+                if hasattr(param, "convert_from_display")
+                else param.validate_value(display_value)
+            )
+
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+        except Exception as ex:
+            logging.error(f"Error handling parameter {param.name}: {ex}")
