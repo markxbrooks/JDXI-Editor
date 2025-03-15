@@ -89,8 +89,9 @@ class JdxiUi(QMainWindow):
         self._create_menu_bar()
         self._create_status_bar()
         self._create_main_layout()
-        self._create_editors_menu()
-        self._create_debug_menu()
+        self._create_parts_menu()
+        self._create_effects_menu()
+        self._create_other_menu()
         self._create_help_menu()
 
         # Load settings
@@ -292,6 +293,10 @@ class JdxiUi(QMainWindow):
         # File menu
         file_menu = menubar.addMenu("File")
 
+        load_program_action = QAction("Load Program...", self)
+        load_program_action.triggered.connect(lambda: self.show_editor("program"))
+        file_menu.addAction(load_program_action)
+
         load_action = QAction("Load Patch...", self)
         load_action.triggered.connect(self._load_patch)
         file_menu.addAction(load_action)
@@ -313,84 +318,48 @@ class JdxiUi(QMainWindow):
         midi_config_action.triggered.connect(self._show_midi_config)
         edit_menu.addAction(midi_config_action)
 
-        # Synth menu - reordered to match buttons
-        synth_menu = menubar.addMenu("Synth")
+    def _create_parts_menu(self):
+        """Create editors menu"""
+        self.parts_menu = self.menuBar().addMenu("Parts")
 
         digital1_action = QAction("Digital Synth 1", self)
         digital1_action.triggered.connect(self._open_digital_synth1)
-        synth_menu.addAction(digital1_action)
+        self.parts_menu.addAction(digital1_action)
 
         digital2_action = QAction("Digital Synth 2", self)
         digital2_action.triggered.connect(self._open_digital_synth2)
-        synth_menu.addAction(digital2_action)
+        self.parts_menu.addAction(digital2_action)
 
         drums_action = QAction("Drums", self)
         drums_action.triggered.connect(self._open_drums)
-        synth_menu.addAction(drums_action)
+        self.parts_menu.addAction(drums_action)
 
         analog_action = QAction("Analog Synth", self)
         analog_action.triggered.connect(self._open_analog_synth)
 
-        synth_menu.addAction(analog_action)
+        self.parts_menu.addAction(analog_action)
 
-        pattern_action = QAction("Pattern Sequencer", self)
-        pattern_action.triggered.connect(self._open_pattern)
-        synth_menu.addAction(pattern_action)
-
-        # Effects menu
-        fx_menu = menubar.addMenu("Effects")
-
-        arp_action = QAction("Arpeggiator", self)
-        arp_action.triggered.connect(self._open_arpeggiator)
-        fx_menu.addAction(arp_action)
+    def _create_effects_menu(self):
+        """Create editors menu"""
+        self.effects_menu = self.menuBar().addMenu("Effects")
 
         effects_action = QAction("Effects", self)
         effects_action.triggered.connect(self._open_effects)
-        fx_menu.addAction(effects_action)
+        self.effects_menu.addAction(effects_action)
 
-        # Add Edit menu
-        # edit_menu = menubar.addMenu("Edit")
+        vocal_effects_action = QAction("Vocal FX", self)
+        vocal_effects_action.triggered.connect(self._open_vocal_fx)
+        self.effects_menu.addAction(vocal_effects_action)
 
-        # Add Patch Name action
-        edit_name_action = QAction("Edit Patch Name", self)
-        edit_name_action.triggered.connect(self._edit_patch_name)
-        edit_menu.addAction(edit_name_action)
-
-        # Add Presets menu
-        # presets_menu = self.menuBar().addMenu("&Presets")
-
-        presets_action = edit_menu.addAction("&Presets")
-        presets_action.triggered.connect(self._show_analog_presets)
-
-    def _create_editors_menu(self):
+    def _create_other_menu(self):
         # Create editors menu
-        editors_menu = self.menuBar().addMenu("Editors")
+        editors_menu = self.menuBar().addMenu("Other")
 
-        # Add menu items for each editor
-        digital1_action = editors_menu.addAction("Digital Synth 1")
-        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
+        arpeggiator_action = editors_menu.addAction("Arpeggiator")
+        arpeggiator_action.triggered.connect(lambda: self.show_editor("arpeggio"))
 
-        digital2_action = editors_menu.addAction("Digital Synth 2")
-        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
-
-        analog_action = editors_menu.addAction("Analog Synth")
-        analog_action.triggered.connect(lambda: self.show_editor("analog"))
-
-        drums_action = editors_menu.addAction("Drums")
-        drums_action.triggered.connect(lambda: self.show_editor("drums"))
-
-        arp_action = editors_menu.addAction("Arpeggio")
-        arp_action.triggered.connect(lambda: self.show_editor("arpeggio"))
-
-        effects_action = editors_menu.addAction("Effects")
-        effects_action.triggered.connect(lambda: self.show_editor("effects"))
-
-        # Add Vocal FX menu item
-        vocal_fx_action = editors_menu.addAction("Vocal FX")
-        vocal_fx_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
-
-        program_action = editors_menu.addAction("Program")
-        program_action.triggered.connect(lambda: self.show_editor("program"))
+        sequencer_action = editors_menu.addAction("Pattern Sequencer")
+        sequencer_action.triggered.connect(lambda: self.show_editor("pattern"))
 
     def _create_debug_menu(self):
         # Add debug menu
@@ -415,10 +384,20 @@ class JdxiUi(QMainWindow):
         menubar = self.menuBar()
 
         # Help menu
-        help_menu = menubar.addMenu("Help")
+        self.help_menu = menubar.addMenu("Help")
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
-        help_menu.addAction(log_viewer_action)
+        self.help_menu.addAction(log_viewer_action)
+
+        # Add MIDI debugger action (SysEx decoder)
+        midi_debugger_action = QAction("MIDI SysEx Debugger", self)
+        midi_debugger_action.triggered.connect(self._open_midi_debugger)
+        self.help_menu.addAction(midi_debugger_action)
+
+        # Add MIDI message monitor action
+        midi_monitor_action = QAction("MIDI Monitor", self)
+        midi_monitor_action.triggered.connect(self._open_midi_message_debug)
+        self.help_menu.addAction(midi_monitor_action)
 
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""

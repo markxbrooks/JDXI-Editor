@@ -41,8 +41,7 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MID
     MIDI_CHANNEL_DRUMS, START_OF_SYSEX, END_OF_SYSEX, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER
 from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
 from jdxi_editor.midi.data.constants.sysex import (
-    TEMPORARY_PROGRAM_AREA,
-    TEMPORARY_TONE_AREA, COMMON_GROUP,
+    TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA,
 )
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
@@ -304,8 +303,8 @@ class JdxiInstrument(JdxiUi):
         preset_data = PresetData(
             type=self.current_synth_type,
             current_selection=self.current_preset_index,  # Convert to 1-based index
-            modified=0,  # or 1, depending on logic
-            channel=self.channel
+            channel=self.channel,
+            modified=0
         )
 
         preset_handler.load_preset(preset_data)
@@ -343,12 +342,6 @@ class JdxiInstrument(JdxiUi):
         logging.info(
             f"update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
         )
-        preset_map = {
-            PresetType.ANALOG: ANALOG_PRESETS_ENUMERATED,
-            PresetType.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
-            PresetType.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
-            PresetType.DRUMS: DRUM_PRESETS_ENUMERATED,
-        }
 
         preset_channel_map = {
             MIDI_CHANNEL_ANALOG: ANALOG_PRESETS_ENUMERATED,
@@ -413,7 +406,9 @@ class JdxiInstrument(JdxiUi):
 
     def _open_effects(self, title, editor_type: str):
         self._show_editor("Effects", EffectsEditor)
-        # self._show_editor("Effects")
+
+    def _open_vocal_effects(self, title, editor_type: str):
+        self._show_editor("Vocal Effects", VocalFXEditor)
 
     def _open_pattern(self, editor_type: str):
         self._show_editor("Pattern", PatternSequencer)
@@ -1165,8 +1160,8 @@ class JdxiInstrument(JdxiUi):
                 preset_data = PresetData(
                     type=self.preset_type,  # Ensure this is address valid preset_type
                     current_selection=self.current_preset_index + 1,  # Convert to 1-based index
-                    modified=0,  # or 1, depending on your logic
-                    channel=self.channel
+                    channel=self.channel,
+                    modified=0
                 )
                 # Send MIDI messages to load preset
                 self.load_preset(preset_data)
@@ -1319,7 +1314,7 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error showing Vocal FX editor: {str(ex)}")
 
-    def _show_arpeggio_editor(self):
+    def _show_arpeggio_editor(self, event):
         """Show the arpeggio editor window"""
         try:
             if not hasattr(self, "arpeggio_editor"):
