@@ -1,11 +1,18 @@
 """
+Module for AnalogWaveformButton UI Component.
 
-AnalogWaveformButton
+This module defines the `AnalogWaveformButton` class, a specialized button for selecting oscillator waveforms in the JD-Xi editor. It inherits from `WaveformButton` and emits a signal when a waveform is selected.
 
+Features:
+- Displays selectable waveform options with a styled QPushButton.
+- Emits `waveform_selected` signal upon selection.
+- Custom styling for default, checked, and hover states.
 """
+
 
 from PySide6.QtCore import Signal
 from jdxi_editor.midi.data.constants import Waveform
+from jdxi_editor.ui.style import Style
 
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 
@@ -26,22 +33,4 @@ class AnalogWaveformButton(WaveformButton):
 
         # Style
         self.setMinimumWidth(60)
-        self.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #222222;
-                color: #CCCCCC;
-                border: 1px solid #666666;
-                border-radius: 3px;
-                padding: 5px;
-            }
-            QPushButton:checked {
-                background-color: #333333;
-                color: white;
-                border: 1px solid #00A0E9;
-            }
-            QPushButton:hover {
-                background-color: #444444;
-            }
-        """
-        )
+        self.setStyleSheet(Style.JDXI_BUTTON_WAVEFORM_ANALOG)

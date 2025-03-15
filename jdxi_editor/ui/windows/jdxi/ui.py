@@ -41,7 +41,8 @@ from PySide6.QtGui import (
 )
 from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
-from jdxi_editor.ui.style import Style, generate_sequencer_button_style, toggle_button_style
+from jdxi_editor.ui.style.style import Style
+from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
