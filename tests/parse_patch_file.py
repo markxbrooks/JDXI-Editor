@@ -30,6 +30,7 @@ def parse_sysex_file(filename):
         print(f"Raw Data: {raw[:200]}...")  # Show only the first 200 hex characters
         print("-" * 40)
 
+
 def parse_patch(file_path):
     with open(file_path, 'rb') as f:
         data = f.read()
