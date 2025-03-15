@@ -64,7 +64,7 @@ from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.midi.io.helper import MIDIHelper
 from jdxi_editor.midi.message.roland import RolandSysEx

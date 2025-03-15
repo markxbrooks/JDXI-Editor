@@ -30,7 +30,7 @@ from pubsub import pub
 from jdxi_editor.midi.data.constants import ROLAND_ID
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.type import PresetType
+from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter
