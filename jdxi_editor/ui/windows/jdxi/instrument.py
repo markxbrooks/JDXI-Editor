@@ -50,6 +50,7 @@ from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.midi.preset.loader import PresetLoader
+from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -117,6 +118,7 @@ class JdxiInstrument(JdxiUi):
         self._auto_connect_jdxi()
         # self.midi_helper.set_callback(self.midi_helper.midi_callback)
         self.midi_helper.send_identity_request()
+        self.program_helper = ProgramHelper(self.midi_helper, MIDI_CHANNEL_DIGITAL1)
         # Show MIDI config if auto-connect failed
         if (
                 not self.midi_helper.current_in_port
@@ -286,52 +288,11 @@ class JdxiInstrument(JdxiUi):
     
     def _previous_program(self):
         """Decrement the program index and update the display."""
-        if self.current_preset_index <= 0:
-            logging.info("Already at the first program.")
-            return
-
-        self.current_preset_index -= 1
-
-        presets = self._get_presets_for_current_synth()
-        preset_handler = self._get_preset_handler_for_current_synth()
-
-        self._update_display_preset(
-            self.current_preset_index,
-            presets[self.current_preset_index],
-            self.channel,
-        )
-
-        preset_data = PresetData(
-            type=self.current_synth_type,
-            current_selection=self.current_preset_index,  # Convert to 1-based index
-            channel=self.channel,
-            modified=0
-        )
-        preset_handler.load_preset(preset_data)
+        self.program_helper.previous_program()
 
     def _next_program(self):
         """Increment the program index and update the display."""
-        if self.current_preset_index >= len(self._get_presets_for_current_synth()) - 1:
-            logging.info("Already at the last program.")
-            return
-
-        self.current_preset_index += 1
-        presets = self._get_presets_for_current_synth()
-        preset_handler = self._get_preset_handler_for_current_synth()
-
-        self._update_display_preset(
-            self.current_preset_index,
-            presets[self.current_preset_index],
-            self.channel,
-        )
-
-        preset_data = PresetData(
-            type=self.current_synth_type,
-            current_selection=self.current_preset_index,  # Convert to 1-based index
-            channel=self.channel,
-            modified=0
-        )
-        preset_handler.load_preset(preset_data)
+        self.program_helper.next_program()
 
     def _previous_tone(self):
         """Decrement the tone index and update the display."""

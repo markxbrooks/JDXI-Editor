@@ -43,7 +43,6 @@ from typing import Optional
 
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
-    QMainWindow,
     QVBoxLayout,
     QComboBox,
     QPushButton,
@@ -56,16 +55,12 @@ from PySide6.QtCore import Signal, Qt
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS
 from jdxi_editor.midi.io import MIDIHelper
-from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
-    get_program_index_by_id,
     get_program_by_id,
     calculate_midi_values,
-    log_midi_info,
-    log_program_info,
-    get_msb_lsb_pc,
+    log_midi_info
 )
 from jdxi_editor.ui.style import Style
 
@@ -101,8 +96,9 @@ class ProgramEditor(SynthEditor):
         self.genre_combo_box = None
         self.preset_type = None
         self.programs = {}  # Maps program names to numbers
-        # self.setup_ui()
+        self.setup_ui()
 
+    def setup_ui(self):
         """set up ui elements"""
         self.setWindowTitle("Program Editor")
         self.setMinimumSize(400, 400)
