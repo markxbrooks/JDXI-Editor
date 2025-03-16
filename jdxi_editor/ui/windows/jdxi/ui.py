@@ -124,7 +124,7 @@ class JdxiUi(QMainWindow):
         self.channel_button = ChannelButton()
 
         # Add to status bar before piano keyboard
-        self.statusBar().addPermanentWidget(self.channel_button)
+        # self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load last used preset settings
@@ -152,8 +152,8 @@ class JdxiUi(QMainWindow):
             self.favorite_buttons.append(button)
 
         # Add to status bar
-        self.statusBar().addPermanentWidget(self.favorites_widget)
-        self.statusBar().addPermanentWidget(self.channel_button)
+        # self.statusBar().addPermanentWidget(self.favorites_widget)
+        # self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load saved favorites
@@ -639,20 +639,6 @@ class JdxiUi(QMainWindow):
         fx_layout.addLayout(vocal_effects_row)
         fx_layout.addLayout(effects_row)
 
-        # Effects button hopefully in top left, but currently just showing a black rectangle
-        # vocal_fx_container = QWidget(central_widget)
-        # vocal_fx_container.setGeometry(self.width - 350, # top left x position of a QRect
-        #                               self.margin + 20, # top left y position of a QRect
-        #                               150, # x size
-        #                               50) # y size
-        # vocal_effects_row, self.vocal_effects_button = create_button_row(
-        #    "Vocoder", self._open_vocal_fx
-        # )
-        # vocal_fx_layout = QHBoxLayout()
-        # vocal_fx_layout.setSpacing(15)
-        # vocal_fx_layout.addLayout(vocal_effects_row)
-        # vocal_fx_layout.addLayout(vocal_effects_row)
-
         # For tone buttons
         tone_container = QWidget(central_widget)
         tone_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
@@ -679,7 +665,6 @@ class JdxiUi(QMainWindow):
         # sequencer_label_layout.addWidget(sequencer_label)
         # sequencer_container_layout.addLayout(sequencer_label_layout)
         sequencer_layout = QHBoxLayout()
-        # seq_width = 400  # Approximate width for sequencer
         favorites_button_row = self._create_favorite_button_row()
         sequencer, self.sequencer_buttons = self._create_sequencer_buttons_row_layout()
         sequencer_layout.addLayout(sequencer)
@@ -873,8 +858,8 @@ class JdxiUi(QMainWindow):
                 self.piano_keyboard.set_midi_channel(channel)
 
             # Update channel indicator if it exists
-            if hasattr(self, "channel_button"):
-                self.channel_button.set_channel(channel)
+            #if hasattr(self, "channel_button"):
+            #    self.channel_button.set_channel(channel)
 
             logging.debug(
                 f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})"
