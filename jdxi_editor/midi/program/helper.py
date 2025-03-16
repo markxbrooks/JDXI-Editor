@@ -31,17 +31,18 @@ preset changes and communicate them to the UI and MIDI engine.
 import logging
 from typing import Optional
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values
 from jdxi_editor.midi.io import MIDIHelper
 
 
-class ProgramHelper:
+class ProgramHelper(QObject):
     """ Preset Loading Class """
     program_changed = Signal(str, int)  # Signal emitted when preset changes bank, program
 
     def __init__(self, midi_helper: Optional[MIDIHelper], channel: int):
+        super().__init__()
         self.midi_helper = midi_helper
         self.channel = channel
         self.current_bank_letter = "A"
@@ -81,7 +82,7 @@ class ProgramHelper:
     def load_program(self, bank_letter: str, program_number: int):
         self.current_bank_letter = bank_letter
         self.current_program_number = program_number
-        # self.program_changed.emit(self.current_bank_letter, self.current_program_number)
+        self.program_changed.emit(bank_letter, program_number)
         msb, lsb, pc = calculate_midi_values(bank_letter, program_number)
         logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
