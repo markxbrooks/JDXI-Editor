@@ -146,7 +146,8 @@ class AnalogSynthEditor(SynthEditor):
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS_ENUMERATED
         self.preset_type = PresetType.ANALOG
-        self.midi_requests = ["F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"]
+        self.midi_requests = ["F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7", # Program Common
+                              "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"] # Analog
         self.midi_channel = MIDI_CHANNEL_ANALOG
         # Create scroll area for resizable content
         scroll = QScrollArea()
@@ -270,6 +271,7 @@ class AnalogSynthEditor(SynthEditor):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
+        self.midi_helper.update_tone_name.connect(self.set_instrument_title_label)
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""

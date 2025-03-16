@@ -56,7 +56,9 @@ from PySide6.QtCore import Signal, Qt
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS
 from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_index_by_id,
     get_program_by_id,
@@ -68,7 +70,7 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.ui.style import Style
 
 
-class ProgramEditor(QMainWindow):
+class ProgramEditor(SynthEditor):
     """Program Editor Window"""
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
@@ -79,12 +81,14 @@ class ProgramEditor(QMainWindow):
         parent: Optional[QWidget] = None,
         preset_handler: PresetHandler = None,
     ):
-        super().__init__(parent)
+        super().__init__()
+        self.setWindowFlag(Qt.Window)
         self.midi_helper = midi_helper
         self.preset_handler = preset_handler
         self.channel = (
             MIDI_CHANNEL_PROGRAMS  # Default MIDI channel: 16 for programs, 0-based
         )
+        self.layout = None
         self.genre_label = None
         self.program_number_combo_box = None
         self.bank_combo_box = None
@@ -97,18 +101,15 @@ class ProgramEditor(QMainWindow):
         self.genre_combo_box = None
         self.preset_type = None
         self.programs = {}  # Maps program names to numbers
-        self.setup_ui()
-        self.populate_programs()
-        self.show()
+        # self.setup_ui()
 
-    def setup_ui(self):
         """set up ui elements"""
         self.setWindowTitle("Program Editor")
         self.setMinimumSize(400, 400)
-        center_widget = QWidget()
+        # center_widget = QWidget()
         layout = QVBoxLayout()
-        self.setCentralWidget(center_widget)
-        center_widget.setLayout(layout)
+        # self.setCentralWidget(center_widget)
+        self.setLayout(layout)
         self.setStyleSheet(Style.JDXI_EDITOR)
 
         self.title_label = QLabel("Programs:")
@@ -126,7 +127,7 @@ class ProgramEditor(QMainWindow):
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        layout.addWidget(self.image_label)
+        title_layout.addWidget(self.image_label)
         self.update_instrument_image()
 
         self.program_label = QLabel("Program")
@@ -251,6 +252,7 @@ class ProgramEditor(QMainWindow):
                 color: {Style.ACCENT_ANALOG};
             """
         )
+        self.populate_programs()
 
     def update_instrument_image(self):
         """tart up the UI with a picture"""
@@ -352,14 +354,19 @@ class ProgramEditor(QMainWindow):
         """Load the selected program based on bank and number."""
         program_name = self.program_number_combo_box.currentText()
         program_id = program_name[:3]
-        program_list_number = get_program_index_by_id(program_id)
-        program_details = get_program_by_id(program_id)
-        msb, lsb, pc = get_msb_lsb_pc(program_list_number)
-        log_program_info(program_name, program_id)
-        log_program_info(program_name, program_list_number, program_details)
+        bank_letter = program_name[0]
+        bank_number = int(program_name[1:3])
+        logging.info(f"combo box bank_letter : {bank_letter}")
+        logging.info(f"combo box  bank_number : {bank_number}")
+        if bank_letter in ["A", "B", "C", "D"]:
+            program_details = get_program_by_id(program_id)
+            self.update_current_synths(program_details)
+        msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
+        logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
-        self.update_current_synths(program_details)
+        msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
+        logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
 
     def update_current_synths(self, program_details: dict):
         """Update the current synth label."""
@@ -380,6 +387,7 @@ class ProgramEditor(QMainWindow):
         if not self.preset_handler:
             return
         self.preset_handler.load_preset(program_number)
+        self.get_data()
 
     def _update_program_list(self):
         """Update the program list with available presets."""

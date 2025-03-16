@@ -14,7 +14,7 @@ from PySide6.QtGui import (
 
 
 def draw_instrument_pixmap(
-    digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT PATCH"
+    digital_font_family=None, current_octave=0, preset_num=1, preset_name="INIT TONE", program="INIT PROGRAM"
 ):
     """Create address QPixmap of the JD-Xi"""
     # Create address black background image with correct aspect ratio
@@ -41,9 +41,9 @@ def draw_instrument_pixmap(
     painter.drawText(title_x, title_y, "JD-Xi Editor")
 
     # LED display area (enlarged for 2 rows)
-    display_x = margin + 70
+    display_x = margin + 20
     display_y = title_y + 30
-    display_width = 150
+    display_width = 210
     display_height = 70
 
     # Draw dark grey background for display
@@ -64,12 +64,12 @@ def draw_instrument_pixmap(
     # Truncate if too long for display
     if len(preset_text) > 20:  # Adjust based on display width
         preset_text = preset_text[:19] + "…"
-    text_y = display_y + 25
-    painter.drawText(display_x + 10, text_y, preset_text)
-
+    text_y = display_y + 50
+    painter.drawText(display_x + 7, text_y, preset_text)
+    painter.drawText(display_x + 7, display_y + 20, program)
     # Draw octave display below preset name
     oct_x = display_x + display_width - 60  # Position from right edge
-    oct_y = text_y + 25  # Position below preset text
+    oct_y = text_y  # Position alongside preset text
 
     # Format octave text
     if current_octave == 0:

@@ -65,7 +65,8 @@ class SynthEditor(QWidget):
         self.preset_loader = None
         self.midi_helper = midi_helper
         self.bipolar_parameters = []
-        self.midi_requests = []  # Initialize empty list of MIDI requests
+        # Midi request for Temporary program
+        self.midi_requests = []
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
@@ -107,10 +108,15 @@ class SynthEditor(QWidget):
             if hasattr(self.midi_helper, "set_callback"):
                 self.midi_helper.set_callback(self.midi_helper.midi_callback)
                 logging.info("MIDI callback set")
+
             else:
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
+
+
+    def set_instrument_title_label(self, name: str):
+        self.instrument_title_label.setText(f"Synth:\n {name}")
 
     def _create_parameter_combo_box(
         self,

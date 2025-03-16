@@ -311,13 +311,31 @@ class MIDIOutHandler(MidiIOController):
         Returns:
             True if all messages are sent successfully, False otherwise.
         """
-        if not (
+        try:
+            logging.info(f"send_bank_select_and_program_change "
+                         f"channel: {channel} "
+                         f" bank_msb: {bank_msb} "
+                         f" bank_lsb: {bank_lsb} "
+                         f"program: {program} ")
+            logging.info(f"1) sending send_control_change "
+                     f"controller: 0 "
+                     f" bank_msb: {bank_msb} "
+                     f" program: {channel} ")
             self.send_control_change(0, bank_msb, channel)
-            and self.send_control_change(32, bank_lsb, channel)
-            and self.send_program_change(program, channel)
-        ):
-            return False
-        return True
+
+            logging.info(f"2) sending send_control_change "
+                     f"controller: 32"
+                     f" bank_lsb: {bank_lsb} "
+                     f" program: {channel} ")
+            self.send_control_change(32, bank_lsb, channel)
+
+            logging.info(f"3) sending send_program_change "
+                     f" program: {program} "
+                     f" program: {channel} ")
+            self.send_program_change(program, channel)
+            return True
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred sending bank and program change message")
 
     def get_parameter(
         self, area: int, part: int, group: int, param: int

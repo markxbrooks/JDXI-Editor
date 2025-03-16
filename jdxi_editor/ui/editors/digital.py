@@ -107,6 +107,7 @@ class DigitalSynthEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_handler = preset_handler
         self.midi_requests = [
+            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # common controls
             "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
             "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
@@ -297,6 +298,7 @@ class DigitalSynthEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.show()
+        self.midi_helper.update_tone_name.connect(self.set_instrument_title_label)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

@@ -48,7 +48,8 @@ class MIDIInHandler(MidiIOController):
     their preset_type, and emits corresponding signals. It handles SysEx, Control
     Change, Program Change, Note On/Off, and Clock messages.
     """
-
+    update_program_name = Signal(str)
+    update_tone_name = Signal(str)
     midi_incoming_message = Signal(object)
     midi_program_changed = Signal(int, int)  # channel, program
     midi_parameter_changed = Signal(object, int)  # Emit parameter and value
@@ -224,8 +225,25 @@ class MIDIInHandler(MidiIOController):
                     parsed_data = parse_sysex(sysex_message_byte_list)
                     self.midi_sysex_json.emit(json.dumps(parsed_data))
                     log_json(parsed_data)
+                    tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") in ["12190100", "12194200"] else None
+                    if tone_name:
+                        self.update_tone_name.emit(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
+            else:
+                # PROGRAM common data but not to be emitted
+                try:
+                    parsed_data = parse_sysex(sysex_message_byte_list)
+                    log_json(parsed_data)
+                    # Extract TONE_NAME if ADDRESS is "12180000"
+                    tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") == "12180000" else None
+                    if tone_name:
+                        self.update_program_name.emit(tone_name)
+                    # Print the result
+                    print(tone_name)
+                except Exception as parse_ex:
+                    logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
+
 
             # Extract command preset_type and parameter address
             try:

@@ -24,6 +24,7 @@ from jdxi_editor.midi.data.parameter.digital import DigitalParameter
 from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
+from jdxi_editor.midi.data.parameter.program_common import ProgramCommonParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
 
 
@@ -40,7 +41,9 @@ def extract_hex(data: List[int], start: int, end: int, default: str = "N/A") -> 
 
 def get_temporary_area(data: List[int]) -> str:
     """Map address bytes to corresponding temporary area."""
+    logging.info(f"data for temporary area: {data}")
     area_mapping = {
+        (0x18, 0x00):  "TEMPORARY_PROGRAM_AREA",
         (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
         (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
         (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
@@ -98,6 +101,9 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
 
     temporary_area = parameters["TEMPORARY_AREA"]
     synth_tone = parameters["SYNTH_TONE"]
+
+    if temporary_area == "TEMPORARY_PROGRAM_AREA":
+        parameters.update(parse_parameters(data, ProgramCommonParameter))
 
     if temporary_area in [
         "TEMPORARY_DIGITAL_SYNTH_1_AREA",
