@@ -422,13 +422,12 @@ class JdxiInstrument(JdxiUi):
 
     def _save_favorite(self, index):
         """Save the current preset as address favorite"""
-        settings = QSettings("YourCompany", "YourApp")
+        self.settings = QSettings("mabsoft", "jdxi_editor")
         preset_name = f"favorite_{index + 1:02d}"
         # Assuming you have address method to get the current preset
         current_preset = self._get_current_preset()
-        settings.setValue(preset_name, current_preset)
+        self.settings.setValue(f"favorite_{index + 1:02d}", current_preset)
         logging.info(f"Saved {current_preset} as {preset_name}")
-        logging.debug(f"Saved {current_preset} as {preset_name}")
 
     def _get_current_preset(self):
         """Retrieve the current preset"""
@@ -1147,7 +1146,7 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error saving last preset: {str(ex)}")
 
-    def _load_favorite(self, button: FavoriteButton):
+    def _load_favorite(self, button):
         """Load preset from favorite button"""
         if button.preset:
             if self.midi_helper:
