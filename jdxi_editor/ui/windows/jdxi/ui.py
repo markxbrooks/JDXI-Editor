@@ -95,7 +95,7 @@ class JdxiUi(QMainWindow):
         self._create_help_menu()
 
         # Load settings
-        self.settings = QSettings("jdxi_manager2", "settings")
+        self.settings = QSettings("mabsoft", "jdxi_editor")
         self._load_settings()
 
         # Show window
@@ -275,6 +275,10 @@ class JdxiUi(QMainWindow):
             button.setFixedSize(25, 25)
             button.setCheckable(True)  # Ensure the button is checkable
             button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
+            if not button.isChecked():
+                button.setToolTip(f"Save Favorite {i}")
+            else:
+                button.setToolTip(f"Load Favorite {i}")
             button.toggled.connect(
                 lambda checked, btn=button: toggle_button_style(btn, checked)
             )
@@ -894,3 +898,6 @@ class JdxiUi(QMainWindow):
 
         except Exception as ex:
             logging.error(f"Error updating display image: {str(ex)}")
+
+    def _save_favorite(self, idx):
+        pass # to be implemented in subclass
