@@ -219,9 +219,9 @@ class JdxiUi(QMainWindow):
         self.program_down_button.setFixedSize(25, 25)
         self.program_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
 
-        # create program label
-        #self.program_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        #self.program_label.setStyleSheet(Style.JDXI_LABEL)
+        # Connect buttons to functions
+        self.program_down_button.clicked.connect(self._previous_program)
+        self.program_up_button.clicked.connect(self._next_program)
 
         # create program layout
         program_layout = QHBoxLayout()
@@ -513,7 +513,7 @@ class JdxiUi(QMainWindow):
 
         # Position to align with sequencer but 25% higher (increased from 20%)
         seq_y = self.height - 50 - self.height * 0.1  # Base sequencer Y position
-        offset_y = self.height * 0.25  # 25% of window height (increased from 0.2)
+        offset_y = self.height * 0.3  # 25% of window height (increased from 0.2)
         arpeggiator_x = self.width - self.width * 0.8 - 60  # Position left of sequencer
 
         # Apply the height offset to the Y position
@@ -581,7 +581,7 @@ class JdxiUi(QMainWindow):
 
         # Position to align with sequencer but 25% higher (increased from 20%)
         seq_y = self.height - 50 - int(self.height * 0.1)  # Base sequencer Y position
-        offset_y = int(self.height * 0.25)  # 25% of window height (increased from 0.2)
+        offset_y = int(self.height * 0.3)  # 25% of window height (increased from 0.2)
         octave_x = self.width - int(self.width * 0.8) - 150  # Position left of sequencer
 
         # Apply the height offset to the Y position
@@ -729,7 +729,7 @@ class JdxiUi(QMainWindow):
         fx_layout.addLayout(effects_row)
 
         program_container = QWidget(central_widget)
-        program_container.setGeometry(self.width - 425, self.margin + 15, 150, 100)
+        program_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
         program_container_layout = QVBoxLayout(program_container)
         program_label_layout = QHBoxLayout()
         program_label = QLabel("Program")
@@ -744,7 +744,7 @@ class JdxiUi(QMainWindow):
 
         # For tone buttons
         tone_container = QWidget(central_widget)
-        tone_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
+        tone_container.setGeometry(self.width - 380, self.margin + 15, 150, 100)
         tone_container_layout = QVBoxLayout(tone_container)
         tone_label_layout = QHBoxLayout()
         tone_label = QLabel("Tone")
