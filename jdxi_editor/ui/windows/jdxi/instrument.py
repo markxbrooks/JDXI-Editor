@@ -32,6 +32,7 @@ from pubsub import pub
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
 
+from jdxi_editor.midi.preset.preset import Preset
 from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -438,12 +439,14 @@ class JdxiInstrument(JdxiUi):
             preset_type = self._get_current_preset_type()
 
             # Format the preset data
+            """
             current_preset = {
                 "number": preset_number,
                 "name": preset_name,
                 "preset_type": preset_type,
             }
-
+            """
+            current_preset = Preset(number=preset_number, name=preset_name, preset_type=preset_type)
             logging.debug(f"Current preset retrieved: {current_preset}")
             return current_preset
 
@@ -492,7 +495,8 @@ class JdxiInstrument(JdxiUi):
 
     def _get_current_preset_type(self):
         """Get the preset_type of the currently selected preset"""
-        return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
+        return self.preset_type
+        # return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
 
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
