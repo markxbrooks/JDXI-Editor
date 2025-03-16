@@ -204,11 +204,39 @@ class JdxiUi(QMainWindow):
         # Initialize current preset index
         self.current_preset_index = 0
 
+    def _create_program_buttons_row(self):
+        # create program navigation buttons
+        # self.program_label = QLabel("Program")
+        self.program_down_button = QPushButton("-")
+        self.program_spacer = QLabel(" ")
+        self.program_up_button = QPushButton("+")
+
+        # create program up button
+        self.program_up_button.setFixedSize(25, 25)
+        self.program_up_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
+
+        # create program down button
+        self.program_down_button.setFixedSize(25, 25)
+        self.program_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
+
+        # create program label
+        #self.program_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        #self.program_label.setStyleSheet(Style.JDXI_LABEL)
+
+        # create program layout
+        program_layout = QHBoxLayout()
+        program_layout.addStretch()
+        program_layout.addWidget(self.program_down_button)
+        program_layout.addWidget(self.program_spacer)
+        program_layout.addWidget(self.program_up_button)
+        program_layout.addStretch()
+        return program_layout
+
     def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
-        self.tone_label = QLabel("Tone")
+        #self.tone_label = QLabel("Tone")
         self.tone_down_button = QPushButton("-")
-        self.spacer = QLabel(" ")
+        self.tone_spacer = QLabel(" ")
         self.tone_up_button = QPushButton("+")
 
         # Calculate size for tone buttons
@@ -228,13 +256,13 @@ class JdxiUi(QMainWindow):
 
         button_label_layout = QHBoxLayout()
         button_label_layout.addStretch()
-        button_label_layout.addWidget(self.tone_label)
+        button_label_layout.addWidget(self.tone_spacer)
         button_label_layout.addStretch()
         # Button layout
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.tone_down_button)
-        button_layout.addWidget(self.spacer)
+        button_layout.addWidget(self.tone_spacer)
         button_layout.addWidget(self.tone_up_button)
         button_layout.addStretch()
         return button_layout
@@ -261,7 +289,7 @@ class JdxiUi(QMainWindow):
         self.favourites_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         row.addWidget(self.favourites_button)
         return row
-
+    
     def _create_sequencer_buttons_row_layout(self):
         """Create address row with label and circular button"""
         row_layout = QHBoxLayout()
@@ -291,11 +319,68 @@ class JdxiUi(QMainWindow):
 
         return row_layout, sequencer_buttons
 
+    def _create_sequencer_buttons_row_layout_new(self):
+        """Create address row with label and circular button"""
+        row_layout = QHBoxLayout()
+        sequencer_buttons = []
+
+        grid = QGridLayout()
+        grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        grid.setGeometry(QRect(1, 1, 300, 150))
+        
+        # Assuming you have a way to get the current preset name or ID
+        current_presets = self.get_current_presets()  # This should return a list or dict of current presets
+
+        for i in range(16):
+            button = QPushButton()
+            button.setFixedSize(25, 25)
+            button.setCheckable(True)  # Ensure the button is checkable
+            button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
+            
+            # Set the initial tooltip based on the button's checked state
+            if not button.isChecked():
+                button.setToolTip(f"Save Favorite {i}")
+            else:
+                preset_name = current_presets.get(i, f"Preset {i}")  # Get the preset name or default
+                button.setToolTip(f"Load {preset_name}")
+
+            # Connect the toggled signal to update the tooltip
+            button.toggled.connect(
+                lambda checked, btn=button, idx=i: self.update_tooltip(btn, checked, idx)
+            )
+            
+            button.clicked.connect(lambda _, idx=i: self._save_favorite(idx))
+            grid.addWidget(button, 0, i)  # Row 0, column i with spacing
+            grid.setHorizontalSpacing(2)  # Add spacing between columns
+            sequencer_buttons.append(button)
+        row_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        row_layout.addLayout(grid)
+
+        return row_layout, sequencer_buttons
+
+    def update_tooltip(self, button, checked, index):
+        """Update the tooltip based on the button's checked state and current preset"""
+        if checked:
+            preset_name = self.get_current_presets().get(index, f"Preset {index}")
+            button.setToolTip(f"Load {preset_name}")
+        else:
+            button.setToolTip(f"Save Favorite {index}")
+
+    def get_current_presets(self):
+        """Retrieve the current presets. This is a placeholder for actual implementation."""
+        # This should return a dictionary or list with the current preset names or IDs
+        return {0: "Preset A", 1: "Preset B", 2: "Preset C"}  # Example data
+
     def _create_menu_bar(self):
         menubar = self.menuBar()
 
         # File menu
         file_menu = menubar.addMenu("File")
+
+        # Add MIDI file action
+        midi_file_action = QAction("MIDI File", self)
+        midi_file_action.triggered.connect(lambda: self.show_editor("midi_file"))
+        file_menu.addAction(midi_file_action)
 
         load_program_action = QAction("Load Program...", self)
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
@@ -642,6 +727,20 @@ class JdxiUi(QMainWindow):
         fx_layout.setSpacing(15)
         fx_layout.addLayout(vocal_effects_row)
         fx_layout.addLayout(effects_row)
+
+        program_container = QWidget(central_widget)
+        program_container.setGeometry(self.width - 425, self.margin + 15, 150, 100)
+        program_container_layout = QVBoxLayout(program_container)
+        program_label_layout = QHBoxLayout()
+        program_label = QLabel("Program")
+        program_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        program_label.setStyleSheet(Style.JDXI_LABEL)
+        program_label_layout.addWidget(program_label)
+        program_container_layout.addLayout(program_label_layout)
+        program_layout = QHBoxLayout()
+        program_row = self._create_program_buttons_row()
+        program_layout.addLayout(program_row)
+        program_container_layout.addLayout(program_layout)
 
         # For tone buttons
         tone_container = QWidget(central_widget)

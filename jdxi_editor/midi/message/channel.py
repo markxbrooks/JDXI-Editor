@@ -30,10 +30,10 @@ from jdxi_editor.midi.message.midi import MidiMessage
 @dataclass
 class ChannelMessage(MidiMessage):
     """MIDI Channel Message"""
-    status: int
+    channel: int = 0  # Default value first
+    status: int = 0  # Must have a default since `channel` does
     data1: Optional[int] = None
     data2: Optional[int] = None
-    channel: int = 0  # Default to channel 0 (0-based)
 
     def to_list(self) -> List[int]:
         """Convert to list of bytes for sending"""
@@ -48,3 +48,5 @@ class ChannelMessage(MidiMessage):
                 message.append(self.data2 & self.MIDI_MAX_VALUE)
 
         return message
+
+

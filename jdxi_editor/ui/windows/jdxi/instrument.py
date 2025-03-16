@@ -58,6 +58,7 @@ from jdxi_editor.ui.editors import (
     EffectsEditor,
     VocalFXEditor,
     ProgramEditor,
+    MidiFileEditor,
 )
 from jdxi_editor.ui.editors.pattern import PatternSequencer
 from jdxi_editor.ui.editors.preset import PresetEditor
@@ -207,6 +208,9 @@ class JdxiInstrument(JdxiUi):
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         self.digital_display.mousePressEvent = self._open_program_editor
+        # Connect buttons to functions
+        self.program_down_button.clicked.connect(self._previous_program)
+        self.program_up_button.clicked.connect(self._next_program)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -279,6 +283,55 @@ class JdxiInstrument(JdxiUi):
             )
             return self.digital_1_preset_handler  # Safe fallback
         return handler
+    
+    def _previous_program(self):
+        """Decrement the program index and update the display."""
+        if self.current_preset_index <= 0:
+            logging.info("Already at the first program.")
+            return
+
+        self.current_preset_index -= 1
+
+        presets = self._get_presets_for_current_synth()
+        preset_handler = self._get_preset_handler_for_current_synth()
+
+        self._update_display_preset(
+            self.current_preset_index,
+            presets[self.current_preset_index],
+            self.channel,
+        )
+
+        preset_data = PresetData(
+            type=self.current_synth_type,
+            current_selection=self.current_preset_index,  # Convert to 1-based index
+            channel=self.channel,
+            modified=0
+        )
+        preset_handler.load_preset(preset_data)
+
+    def _next_program(self):
+        """Increment the program index and update the display."""
+        if self.current_preset_index >= len(self._get_presets_for_current_synth()) - 1:
+            logging.info("Already at the last program.")
+            return
+
+        self.current_preset_index += 1
+        presets = self._get_presets_for_current_synth()
+        preset_handler = self._get_preset_handler_for_current_synth()
+
+        self._update_display_preset(
+            self.current_preset_index,
+            presets[self.current_preset_index],
+            self.channel,
+        )
+
+        preset_data = PresetData(
+            type=self.current_synth_type,
+            current_selection=self.current_preset_index,  # Convert to 1-based index
+            channel=self.channel,
+            modified=0
+        )
+        preset_handler.load_preset(preset_data)
 
     def _previous_tone(self):
         """Decrement the tone index and update the display."""
@@ -373,6 +426,7 @@ class JdxiInstrument(JdxiUi):
             "effects": self._open_effects,
             "pattern": self._open_pattern,
             "program": self._open_program,
+            "midi_file": self._open_midi_file,
         }
         self._select_synth(self.preset_type)
         if editor_type in editor_map:
@@ -420,6 +474,9 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error showing Program editor: {str(ex)}")
 
+    def _open_midi_file(self, editor_type: str):
+        self._show_editor("MIDI File", MidiFileEditor)
+
     def _save_favorite(self, index):
         """Save the current preset as address favorite"""
         self.settings = QSettings("mabsoft", "jdxi_editor")
@@ -436,15 +493,6 @@ class JdxiInstrument(JdxiUi):
             preset_number = self.current_preset_index
             preset_name = self._get_current_preset_name()
             preset_type = self._get_current_preset_type()
-
-            # Format the preset data
-            """
-            current_preset = {
-                "number": preset_number,
-                "name": preset_name,
-                "preset_type": preset_type,
-            }
-            """
             current_preset = Preset(number=preset_number, name=preset_name, preset_type=preset_type)
             logging.debug(f"Current preset retrieved: {current_preset}")
             return current_preset
@@ -603,6 +651,8 @@ class JdxiInstrument(JdxiUi):
                 self.effects_editor = editor
             elif title == "Pattern":
                 self.pattern_editor = editor
+            elif title == "Program":
+                self.program_editor = editor
             logging.info(f"midi channel: {self.channel}")
             # Show editor
             editor.show()

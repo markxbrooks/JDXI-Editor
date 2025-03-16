@@ -67,7 +67,7 @@ def get_program_by_id(program_id: str) -> Optional[Dict[str, str]]:
     return None
 
 
-def calculate_midi_values(bank, program_number):
+def calculate_midi_values(bank: str, program_number: int):
     """Calculate MSB, LSB, and PC based on bank and program number."""
     if bank in ["A", "B"]:
         msb = 85
@@ -93,7 +93,7 @@ def calculate_midi_values(bank, program_number):
         logging.error(f"Invalid Program Change value: {pc}")
         raise ValueError(f"Program Change value {pc} is out of range")
 
-    return msb, lsb, pc
+    return msb, lsb, pc - 1
 
 
 def calculate_index(bank, program_number: int):
