@@ -54,6 +54,15 @@ class PresetLoader(QObject):
             debug: bool = False
     ):
         super().__init__()
+        self.midi_requests = [
+            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
+            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
+            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
+            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
+        ]
         self.preset_number = 1  # Default preset
         self.midi_helper = midi_helper
         self.device_number = device_number
@@ -112,6 +121,7 @@ class PresetLoader(QObject):
 
             self.update_display.emit(preset_data.type, program, channel)
             logging.info(f"Preset {program} loaded on channel {channel}")
+            self.data_request()
 
     def get_preset_address(self, preset_data):
         """Retrieve the preset memory address based on its type."""
@@ -144,3 +154,8 @@ class PresetLoader(QObject):
             sysex_data = sysex_message.construct_sysex(address, *data, request=True)
             logging.info(f"send_preset_sysex_messages sysex_data: {sysex_data}")
             self.midi_helper.send_midi_message(sysex_message)
+
+    def data_request(self):
+        for midi_request in self.midi_requests:
+            byte_list_message = bytes.fromhex(midi_request)
+            self.midi_helper.send_raw_message(byte_list_message)
