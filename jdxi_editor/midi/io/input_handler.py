@@ -327,7 +327,7 @@ class MIDIInHandler(MidiIOController):
         elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
             # We have both MSB and LSB; reconstruct NRPN address
             nrpn_address = (self.nrpn_msb << 7) | self.nrpn_lsb
-            self._handle_nrpn_message(nrpn_address, value, channel)
+            # self._handle_nrpn_message(nrpn_address, value, channel)
 
             # Reset NRPN state
             self.nrpn_msb = None
