@@ -304,7 +304,7 @@ class MIDIInHandler(MidiIOController):
             "firmware_version": version_str
         }
 
-    def _handle_control_change(self, message: Any, preset_data) -> None:
+    def _handle_control_change(self, message: Any, preset_data) -> None: # @@
         """
         Handle Control Change (CC) MIDI messages.
 
@@ -320,7 +320,20 @@ class MIDIInHandler(MidiIOController):
             control,
             value,
         )
-        self.midi_control_changed.emit(channel, control, value)
+        if control == 99:  # NRPN MSB
+            self.nrpn_msb = value
+        elif control == 98:  # NRPN LSB
+            self.nrpn_lsb = value
+        elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
+            # We have both MSB and LSB; reconstruct NRPN address
+            nrpn_address = (self.nrpn_msb << 7) | self.nrpn_lsb
+            self._handle_nrpn_message(nrpn_address, value, channel)
+
+            # Reset NRPN state
+            self.nrpn_msb = None
+            self.nrpn_lsb = None
+        else:
+            self.midi_control_changed.emit(channel, control, value)
         if control == 0:
             self.cc_msb_value = value
         elif control == 32:
