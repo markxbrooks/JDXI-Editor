@@ -297,6 +297,46 @@ class MIDIOutHandler(MidiIOController):
             logging.error(f"send_control_change: Error sending control change: {ex}")
             return False
 
+    def send_nrpn(self, parameter: int, value: int, channel: int = 0) -> bool:
+        """
+        Send an NRPN (Non-Registered Parameter Number) message using Control Change.
+    
+        Args:
+            parameter: The NRPN parameter number (0-16383).
+            value: The value to set (0-16383).
+            channel: MIDI channel (0-15).
+    
+        Returns:
+            True if all messages were sent successfully, False otherwise.
+        """
+        if not 0 <= parameter <= 16383:
+            logging.error(f"Invalid NRPN parameter: {parameter}. Must be 0-16383.")
+            return False
+        if not 0 <= value <= 16383:
+            logging.error(f"Invalid NRPN value: {value}. Must be 0-16383.")
+            return False
+    
+        # Extract MSB (Most Significant Byte) and LSB (Least Significant Byte)
+        nrpn_msb = (parameter >> 7) & 0x7F
+        nrpn_lsb = parameter & 0x7F
+        value_msb = (value >> 7) & 0x7F
+        value_lsb = value & 0x7F
+    
+        success = (
+            self.send_control_change(99, nrpn_msb, channel) and  # NRPN MSB
+            self.send_control_change(98, nrpn_lsb, channel) and  # NRPN LSB
+            self.send_control_change(6, value_msb, channel) and  # Data Entry MSB
+            self.send_control_change(38, value_lsb, channel)     # Data Entry LSB
+        )
+    
+        if success:
+            logging.info(f"Sent NRPN: Parameter {parameter}, Value {value}, Channel {channel}")
+        else:
+            logging.error("Failed to send NRPN messages.")
+    
+        return success
+
+
     def send_bank_select_and_program_change(
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
     ) -> bool:
