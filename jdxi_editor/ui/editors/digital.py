@@ -298,7 +298,10 @@ class DigitalSynthEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.show()
-        self.midi_helper.update_tone_name.connect(self.set_instrument_title_label)
+        if self.synth_num == 2:
+            self.midi_helper.update_digital2_tone_name.connect(self.set_instrument_title_label)
+        else:
+            self.midi_helper.update_digital1_tone_name.connect(self.set_instrument_title_label)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""

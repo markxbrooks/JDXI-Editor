@@ -50,6 +50,10 @@ class MIDIInHandler(MidiIOController):
     """
     update_program_name = Signal(str)
     update_tone_name = Signal(str)
+    update_digital1_tone_name = Signal(str)
+    update_digital2_tone_name = Signal(str)
+    update_analog_tone_name = Signal(str)
+    update_drums_tone_name = Signal(str)
     midi_incoming_message = Signal(object)
     midi_program_changed = Signal(int, int)  # channel, program
     midi_parameter_changed = Signal(object, int)  # Emit parameter and value
@@ -227,7 +231,14 @@ class MIDIInHandler(MidiIOController):
                     log_json(parsed_data)
                     tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") in ["12190100", "12194200"] else None
                     if tone_name:
-                        self.update_tone_name.emit(tone_name)
+                        if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_1_AREA":
+                            self.update_digital1_tone_name.emit(tone_name)
+                        elif parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_2_AREA":
+                            self.update_digital2_tone_name.emit(tone_name)
+                        elif parsed_data["TEMPORARY_AREA"] == "TEMPORARY_ANALOG_AREA":
+                            self.update_analog_tone_name.emit(tone_name)
+                        elif parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DRUMS_AREA":
+                            self.update_drums_tone_name.emit(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
             else:
@@ -238,12 +249,13 @@ class MIDIInHandler(MidiIOController):
                     # Extract TONE_NAME if ADDRESS is "12180000"
                     tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") == "12180000" else None
                     if tone_name:
+                        logging.info(f"@@@@@Emitting tone name{tone_name}")
                         self.update_program_name.emit(tone_name)
+
                     # Print the result
                     print(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
-
 
             # Extract command preset_type and parameter address
             try:
