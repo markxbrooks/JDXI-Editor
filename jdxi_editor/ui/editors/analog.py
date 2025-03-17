@@ -1214,3 +1214,47 @@ class AnalogSynthEditor(SynthEditor):
             selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
         else:
             logging.warning(f"Unknown LFO shape value: {value}")
+
+    def send_analog_synth_parameter(self, parameter: str, value: int, channel: int = 0) -> bool:
+        """
+        Send a MIDI Control Change or NRPN message for an Analog Synth parameter.
+    
+        Args:
+            parameter: The name of the parameter to modify.
+            value: The parameter value (0-127).
+            channel: The MIDI channel (0-15).
+    
+        Returns:
+            True if successful, False otherwise.
+        """
+        # Define parameter mappings
+        cc_parameters = {
+            "Cutoff": 102,
+            "Resonance": 105,
+            "Level": 117,
+            "LFO Rate": 16,
+        }
+    
+        nrpn_parameters = {
+            "Envelope": (0, 124),
+            "LFO Shape": (0, 3),
+            "LFO Pitch Depth": (0, 15),
+            "LFO Filter Depth": (0, 18),
+            "LFO Amp Depth": (0, 21),
+            "Pulse Width": (0, 37),
+        }
+    
+        if parameter in cc_parameters:
+            # Send as a Control Change (CC) message
+            controller = cc_parameters[parameter]
+            return self.midi_helper.send_control_change(controller, value, channel)
+    
+        elif parameter in nrpn_parameters:
+            # Send as an NRPN message
+            msb, lsb = nrpn_parameters[parameter]
+            return self.midi_helper.send_nrpn((msb << 7) | lsb, value, channel)
+    
+        else:
+            logging.error(f"Invalid Analog Synth parameter: {parameter}")
+            return False
+
