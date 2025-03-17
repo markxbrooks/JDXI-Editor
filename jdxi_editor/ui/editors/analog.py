@@ -1258,3 +1258,42 @@ class AnalogSynthEditor(SynthEditor):
             logging.error(f"Invalid Analog Synth parameter: {parameter}")
             return False
 
+    def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
+        """Process incoming NRPN messages and update UI controls."""
+        logging.info(f"Received NRPN {nrpn_address} with value {value} on channel {channel}")
+    
+        # NRPN Address Mapping
+        nrpn_map = {
+            (0, 124): "Envelope",
+            (0, 3): "LFO Shape",
+            (0, 15): "LFO Pitch Depth",
+            (0, 18): "LFO Filter Depth",
+            (0, 21): "LFO Amp Depth",
+            (0, 37): "Pulse Width",
+        }
+    
+        # Find matching parameter
+        msb = nrpn_address >> 7
+        lsb = nrpn_address & 0x7F
+        param_name = nrpn_map.get((msb, lsb))
+    
+        if param_name:
+            # Update slider or control
+            param = AnalogParameter.get_by_name(param_name)
+            if param:
+                self._update_slider(param, value)
+        else:
+            logging.warning(f"Unrecognized NRPN {nrpn_address}")
+
+    def _update_slider(self, param, value):
+        """Safely update sliders from NRPN messages."""
+        slider = self.controls.get(param)
+        if slider:
+            slider_value = param.convert_from_midi(value)
+            slider.blockSignals(True)
+            slider.setValue(slider_value)
+            slider.blockSignals(False)
+            logging.info(f"Updated {param.name} slider to {slider_value}")
+
+
+
