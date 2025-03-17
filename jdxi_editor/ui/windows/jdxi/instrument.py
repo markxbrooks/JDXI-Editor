@@ -26,6 +26,7 @@ Methods:
 
 
 import logging
+from typing import Union
 
 from pubsub import pub
 
@@ -39,7 +40,8 @@ from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
 from jdxi_editor.midi.data.constants.triage import DigitalParameter
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
-    MIDI_CHANNEL_DRUMS, START_OF_SYSEX, END_OF_SYSEX, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER
+    MIDI_CHANNEL_DRUMS, START_OF_SYSEX, END_OF_SYSEX, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER, \
+    MIDI_CHANNEL_PROGRAMS
 from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA,
@@ -64,6 +66,7 @@ from jdxi_editor.ui.editors import (
 from jdxi_editor.ui.editors.pattern import PatternSequencer
 from jdxi_editor.ui.editors.preset import PresetEditor
 from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.message_debug import MIDIMessageDebug
@@ -118,7 +121,7 @@ class JdxiInstrument(JdxiUi):
         self._auto_connect_jdxi()
         # self.midi_helper.set_callback(self.midi_helper.midi_callback)
         self.midi_helper.send_identity_request()
-        self.program_helper = ProgramHelper(self.midi_helper, MIDI_CHANNEL_DIGITAL1)
+        self.program_helper = ProgramHelper(self.midi_helper, MIDI_CHANNEL_PROGRAMS)
         # Show MIDI config if auto-connect failed
         if (
                 not self.midi_helper.current_in_port
@@ -204,7 +207,6 @@ class JdxiInstrument(JdxiUi):
         self.analog_preset_handler.update_display.connect(self.update_display_callback)
         self.drums_preset_handler.update_display.connect(self.update_display_callback)
         self.old_pos = None
-        # self.get_data()
 
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
@@ -213,6 +215,11 @@ class JdxiInstrument(JdxiUi):
         # Connect buttons to functions
         self.program_down_button.clicked.connect(self._previous_program)
         self.program_up_button.clicked.connect(self._next_program)
+        self.midi_helper.update_program_name.connect(self.set_current_program_name)
+        self.midi_helper.update_digital1_tone_name.connect(self.set_current_digital1_tone_name)
+        self.midi_helper.update_digital2_tone_name.connect(self.set_current_digital2_tone_name)
+        self.midi_helper.update_analog_tone_name.connect(self.set_current_analog_tone_name)
+        self.midi_helper.update_program_name.connect(self.set_current_drums_tone_name)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -227,6 +234,31 @@ class JdxiInstrument(JdxiUi):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = None
+
+    def set_current_program_name(self, program_name: str):
+        """ program name """
+        self.current_program_name = program_name
+        self._update_display()
+
+    def set_current_digital1_tone_name(self, tone_name: str):
+        """ program name """
+        self.current_digital1_tone_name = tone_name
+        self._update_display()
+
+    def set_current_digital2_tone_name(self, tone_name: str):
+        """ program name """
+        self.current_digital2_tone_name = tone_name
+        self._update_display()
+
+    def set_current_analog_tone_name(self, tone_name: str):
+        """ program name """
+        self.current_analog_tone_name = tone_name
+        self._update_display()
+
+    def set_current_drums_tone_name(self, tone_name: str):
+        """ program name """
+        self.current_drums_tone_name = tone_name
+        self._update_display()
 
     def _select_synth(self, synth_type):
         """Select address synth and update button styles."""
@@ -438,14 +470,34 @@ class JdxiInstrument(JdxiUi):
     def _open_midi_file(self, editor_type: str):
         self._show_editor("MIDI File", MidiFileEditor)
 
-    def _save_favorite(self, index):
+    def _save_favorite(self, button, index):
         """Save the current preset as address favorite"""
-        self.settings = QSettings("mabsoft", "jdxi_editor")
-        preset_name = f"favorite_{index + 1:02d}"
-        # Assuming you have address method to get the current preset
-        current_preset = self._get_current_preset()
-        self.settings.setValue(f"favorite_{index + 1:02d}", current_preset)
-        logging.info(f"Saved {current_preset} as {preset_name}")
+        if button.isChecked():
+            self.settings = QSettings("mabsoft", "jdxi_editor")
+            preset_name = f"favorite_{index + 1:02d}"
+            # Assuming you have address method to get the current preset
+            current_preset = self._get_current_preset()
+            if current_preset:
+                button.preset = current_preset
+                print(current_preset)
+                button.setToolTip(f"Program {current_preset.name}, {current_preset.preset_type}")
+                button.setCheckable(False)
+            self.settings.setValue(f"favorite_{index + 1:02d}", current_preset)
+            logging.info(f"Saved {current_preset} as {preset_name}")
+        else:
+            self.load_button_preset(button)
+
+    def load_button_preset(self, button):
+        """ load preset dat stored on the button """
+        preset = button.preset
+        preset_data = PresetData(
+            type=preset.preset_type,  # Ensure this is address valid preset_type
+            current_selection=preset.number + 1,  # Convert to 1-based index
+            modified=0
+        )
+        self.preset_loader.load_preset(
+            preset_data
+        )
 
     def _get_current_preset(self):
         """Retrieve the current preset"""
@@ -1180,7 +1232,7 @@ class JdxiInstrument(JdxiUi):
                 # Send MIDI messages to load preset
                 self.load_preset(preset_data)
 
-    def _show_favorite_context_menu(self, pos, button: FavoriteButton):
+    def _show_favorite_context_menu(self, pos, button: Union[FavoriteButton, SequencerSquare]):
         """Show context menu for favorite button"""
         menu = QMenu()
 
@@ -1196,7 +1248,7 @@ class JdxiInstrument(JdxiUi):
 
         menu.exec_(button.mapToGlobal(pos))
 
-    def _save_to_favorite(self, button: FavoriteButton):
+    def _save_to_favorite(self, button: Union[FavoriteButton, SequencerSquare]):
         """Save current preset to favorite slot"""
         if hasattr(self, "current_preset_num"):
             # Get current preset info from settings

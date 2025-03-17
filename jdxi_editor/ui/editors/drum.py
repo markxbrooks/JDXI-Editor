@@ -144,14 +144,14 @@ class DrumEditor(SynthEditor):
             "OTH1": 24,
             "OTH2": 25,
         }
-        self.midi_requests = self.midi_requests.extend([
+        self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",
             "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7",
             "F0 41 10 00 00 00 0E 11 19 70 30 00 00 00 01 43 03 F7",
             "F0 41 10 00 00 00 0E 11 19 70 32 00 00 00 01 43 01 F7",
             "F0 41 10 00 00 00 0E 11 19 70 34 00 00 00 01 43 7F F7",
             "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7",
-        ])
+        ]
         self.midi_channel = MIDI_CHANNEL_DRUMS
 
         # UI parameters
@@ -321,8 +321,8 @@ class DrumEditor(SynthEditor):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
-        self.midi_helper.update_tone_name.connect(self.set_instrument_title_label)
-        self.data_request()
+        self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
+        self.data_request() # this is giving an error
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()

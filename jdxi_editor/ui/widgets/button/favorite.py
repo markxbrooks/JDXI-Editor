@@ -32,8 +32,8 @@ class FavoriteButton(QPushButton):
         self.preset = None
         self.setFixedSize(60, 30)
         self.setFlat(True)
-        #self.settings = QSettings("jdxi_manager2", "settings")
-        #self._load_from_settings()
+        self.settings = QSettings("mabsoft", "jdxi_editor")
+        # self._load_from_settings()
         self._update_style()
         
     def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):

@@ -67,6 +67,17 @@ def get_program_by_id(program_id: str) -> Optional[Dict[str, str]]:
     return None
 
 
+def get_program_by_bank_and_number(bank: str, program_number: int) -> Optional[Dict[str, str]]:
+    """Retrieve a program by its ID from PROGRAM_LIST."""
+    for _, program in enumerate(PROGRAM_LIST):
+        # for reference, the program_id is formatted as "A01"
+        program_id = f"{bank}{program_number:02d}"
+        if program["id"] == program_id:
+            return program
+    logging.warning(f"Program with {bank} and {program_number} not found.")
+    return None
+
+
 def calculate_midi_values(bank: str, program_number: int):
     """Calculate MSB, LSB, and PC based on bank and program number."""
     if bank in ["A", "B"]:

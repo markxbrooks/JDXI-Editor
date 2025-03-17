@@ -43,6 +43,7 @@ from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
+from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
@@ -55,6 +56,12 @@ class JdxiUi(QMainWindow):
     """ JDXI UI setup, with little or no actual functionality, which is superclassed"""
     def __init__(self):
         super().__init__()
+        self.current_program_name = "Init Program"
+        self.current_digital1_tone_name = "Init Tone"
+        self.current_digital2_tone_name = "Init Tone"
+        self.current_analog_tone_name = "Init Tone"
+        self.current_drums_tone_name = "Init Tone"
+
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
@@ -103,7 +110,7 @@ class JdxiUi(QMainWindow):
 
         # Add preset tracking
         self.current_preset_num = 1
-        self.current_preset_name = "INIT PATCH"
+        self.current_preset_name = "Init Tone"
 
         # Add piano keyboard at bottom
         self.piano_keyboard = PianoKeyboard(parent=self)
@@ -219,10 +226,6 @@ class JdxiUi(QMainWindow):
         self.program_down_button.setFixedSize(25, 25)
         self.program_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
 
-        # Connect buttons to functions
-        self.program_down_button.clicked.connect(self._previous_program)
-        self.program_up_button.clicked.connect(self._next_program)
-
         # create program layout
         program_layout = QHBoxLayout()
         program_layout.addStretch()
@@ -234,7 +237,7 @@ class JdxiUi(QMainWindow):
 
     def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
-        #self.tone_label = QLabel("Tone")
+        # self.tone_label = QLabel("Tone")
         self.tone_down_button = QPushButton("-")
         self.tone_spacer = QLabel(" ")
         self.tone_up_button = QPushButton("+")
@@ -299,10 +302,14 @@ class JdxiUi(QMainWindow):
         grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
         grid.setGeometry(QRect(1, 1, 300, 150))
         for i in range(16):
-            button = QPushButton()
+            # button = QPushButton()
+            button = SequencerSquare(i, self.midi_helper)
             button.setFixedSize(25, 25)
             button.setCheckable(True)  # Ensure the button is checkable
             button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
+            button.customContextMenuRequested.connect(
+                lambda pos, b=button: self._show_favorite_context_menu(pos, b)
+            )
             if not button.isChecked():
                 button.setToolTip(f"Save Favorite {i}")
             else:
@@ -310,7 +317,7 @@ class JdxiUi(QMainWindow):
             button.toggled.connect(
                 lambda checked, btn=button: toggle_button_style(btn, checked)
             )
-            button.clicked.connect(lambda _, idx=i: self._save_favorite(idx))
+            button.clicked.connect(lambda _, idx=i, but=button: self._save_favorite(but, idx))
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
             grid.setHorizontalSpacing(2)  # Add spacing between columns
             sequencer_buttons.append(button)
@@ -349,7 +356,7 @@ class JdxiUi(QMainWindow):
                 lambda checked, btn=button, idx=i: self.update_tooltip(btn, checked, idx)
             )
             
-            button.clicked.connect(lambda _, idx=i: self._save_favorite(idx))
+            button.clicked.connect(lambda _, idx=i: self._save_favorite(button, idx))
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
             grid.setHorizontalSpacing(2)  # Add spacing between columns
             sequencer_buttons.append(button)
@@ -830,6 +837,15 @@ class JdxiUi(QMainWindow):
 
     def _update_display(self):
         """Update the JD-Xi display image"""
+        if self.current_synth_type == PresetType.DIGITAL_1:
+            self.current_preset_name = self.current_digital1_tone_name
+        elif self.current_synth_type == PresetType.DIGITAL_2:
+            self.current_preset_name = self.current_digital2_tone_name
+        elif self.current_synth_type == PresetType.DRUMS:
+            self.current_preset_name = self.current_drums_tone_name
+        elif self.current_synth_type == PresetType.ANALOG:
+            self.current_preset_name = self.current_analog_tone_name
+
         pixmap = draw_instrument_pixmap(
             digital_font_family=(
                 self.digital_font_family
@@ -839,6 +855,7 @@ class JdxiUi(QMainWindow):
             current_octave=self.current_octave,
             preset_num=self.current_preset_num,
             preset_name=self.current_preset_name,
+            program=self.current_program_name
         )
         if hasattr(self, "image_label"):
             self.image_label.setPixmap(pixmap)
@@ -998,5 +1015,5 @@ class JdxiUi(QMainWindow):
         except Exception as ex:
             logging.error(f"Error updating display image: {str(ex)}")
 
-    def _save_favorite(self, idx):
+    def _save_favorite(self, button, idx):
         pass # to be implemented in subclass

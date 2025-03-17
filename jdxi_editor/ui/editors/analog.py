@@ -271,7 +271,7 @@ class AnalogSynthEditor(SynthEditor):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
-        self.midi_helper.update_tone_name.connect(self.set_instrument_title_label)
+        self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""

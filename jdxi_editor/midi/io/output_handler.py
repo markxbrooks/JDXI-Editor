@@ -320,18 +320,18 @@ class MIDIOutHandler(MidiIOController):
             logging.info(f"1) sending send_control_change "
                      f"controller: 0 "
                      f" bank_msb: {bank_msb} "
-                     f" program: {channel} ")
+                     f" channel: {channel} ")
             self.send_control_change(0, bank_msb, channel)
 
             logging.info(f"2) sending send_control_change "
                      f"controller: 32"
                      f" bank_lsb: {bank_lsb} "
-                     f" program: {channel} ")
+                     f" channel: {channel} ")
             self.send_control_change(32, bank_lsb, channel)
 
             logging.info(f"3) sending send_program_change "
                      f" program: {program} "
-                     f" program: {channel} ")
+                     f" channel: {channel} ")
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
