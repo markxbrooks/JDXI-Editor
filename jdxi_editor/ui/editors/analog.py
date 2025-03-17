@@ -1140,8 +1140,14 @@ class AnalogSynthEditor(SynthEditor):
         for param_name, param_value in current_sysex_data.items():
             param = AnalogParameter.get_by_name(param_name)
 
-            if param:
-                if param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
+            if param: # @@
+                if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
+                    nrpn_address = next(
+                        (addr for addr, name in nrpn_map.items() if name == param_name), None
+                    )
+                    if nrpn_address:
+                        self._handle_nrpn_message(nrpn_address, param_value, channel=1)
+                elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
                     self._update_lfo_shape_buttons(param_value)
                 elif (
                         param_name == "SUB_OSCILLATOR_TYPE"
