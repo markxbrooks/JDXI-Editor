@@ -6,6 +6,7 @@ import logging
 from jdxi_editor.midi.io import MIDIHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.loader import PresetLoader
+from jdxi_editor.midi.preset.preset import Preset
 from jdxi_editor.midi.preset.type import PresetType
 
 
@@ -29,7 +30,7 @@ class FavoriteButton(QPushButton):
         
     def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
         """Save current preset to this favorite slot"""
-        #self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
+        # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
         self.preset = Preset(number=preset_num, name=preset_name, preset_type=synth_type)
         self._update_style()
         # self._save_to_settings()
