@@ -1,0 +1,116 @@
+NRPN or CC List
+
+CC# or LSB=Value below (with MSB=0 or MSB noted)
+(ABC) Part 1/Analog, Part 2, Part 3 (+ Midi Channel)
+'not' (ABC) may = Main/All for Section or for the partials Selected (but how??)
+(*NRPN or CC listed in JD-Xi Midi impl. Guide)"
+
+"N/RPN CCs, and Null reset values to avoid unintentional changes
+Null NRPN CC 98(MSB)=127 and CC 99(LSB)=127
+Null RPN CC 100(MSB)=127 and CC 101(LSB)=127
+Data Entry (Controller numbers 6(MSB) and 38 (LSB)"
+
+(CC# or LSB=Value below (where MSB=0 or MSB is noted)
+
++---------------------------------------------+--------------------------------------------------+
+|              CC# or LSB=Value               |                     Parameter                    |
++---------------------------------------------+--------------------------------------------------+
+| 2                                           |  Unison (Digi) off/on                            |
+| 3-5                                         |  *LFO Shape [values 0-5] TRI SIN SAW SQR S&H RND |
+| 6-8                                         |  LFO Rate (see below about CC16-18??)            |
+| 9-11                                        |  LFO Tempo sync off/on                           |
+| 12-14                                       |  LFO Fade Time (Delay??)                         |
+| 15-17                                       |  *LFO Pitch Depth -/+                            |
+| 18-20                                       |  *LFO Filter Depth -/+                           |
+| 21-23                                       |  *LFO Amp Depth -/+                              |
+| 24-26                                       |  OSC Waveform (0-2 for Analog 0-7 for Digi)      |
+| SAW SQR PW-SQR TRI SINE NOISE SUPER-SAW PCM |                                                  |
+| 27-29                                       |  Pitch -/+                                       |
+| 30-32                                       |  Detune -/+                                      |
+| 33                                          |  Digi: Wave shape (common)                       |
+| 34                                          |  Digi: RING off/on                               |
+| 37-39                                       |  Pulse Width                                     |
+| 40-42                                       |  PWM Depth                                       |
+| 43-45                                       |  Digi:Pitch Depth -63/+64                        |
+| 46-48                                       |  Digi:Pitch Attack                               |
+| 49-51                                       |  Digi:Pitch Decay                                |
+| CC1                                         |  Modulation                                      |
+| CC5                                         |  Portamento time                                 |
+| CC65                                        |  Portamento off/on                               |
+| CC7                                         |  Volume                                          |
+| CC10                                        |  Pan 0-64-127 (L C R)                            |
+| CC11                                        |  Expression                                      |
+| CC64                                        |  Hold off/on                                     |
+| 56-58                                       |  (0-1 Analog 0-7 Digi) Filter type               |
+| 59-61                                       |  Cutoff                                          |
+| 62-64                                       |  Resonance (partial)                             |
+| 65-67                                       |  Depth (Filter) -/+                              |
+| 68-70                                       |  Cutoff KF (Filter) -/+                          |
+| 71-73                                       |  Digi: HPF cutoff                                |
+| 74-76                                       |  Filter Attack                                   |
+| 77-79                                       |  Filter Decay                                    |
+| 80-82                                       |  Filter Sustain                                  |
+| 83-85                                       |  Filter Release                                  |
+| 86-88                                       |  Amp Level                                       |
+| 89-91                                       |  Amp Attack                                      |
+| 92-94                                       |  Amp Decay                                       |
+| 95-97                                       |  Amp Sustain                                     |
+| 98-100                                      |  Amp Release                                     |
+| 124-126                                     |  Envelope                                        |
+| CC71                                        |  Resonance -/+                                   |
+| CC72                                        |  Release time -/+                                |
+| CC73                                        |  Attack time                                     |
+| CC74                                        |  Cutoff                                          |
+| CC75                                        |  Decay Time                                      |
+| CC76                                        |  Vibrato Rate                                    |
+| CC77                                        |  Vibrato Depth                                   |
+| CC78                                        |  Vibrato Delay                                   |
+| CC121                                       |  Reset all controllers below (on Midi Channel)   |
++---------------------------------------------+--------------------------------------------------+
+(Pitch Bend/Pressure/Modulation/Expression/Hold/RPN/NRPN)
+
+**Analog / Digital (SuperNATURAL Synth Tone),
+"(ABC) Part 1/Analog, Part 2, Part 3 (+ Midi Channel)
+(all NRPN and CCs present in Midi Impl Guide)"
++------------------+----------------------------------------------------+
+| CC# or LSB=Value |                      Parameter                     |
++------------------+----------------------------------------------------+
+| CC102-104        |  Cutoff                                            |
+| CC105-107        |  Resonance                                         |
+| CC117-119        |  Level                                             |
+| 124-126          |  Envelope                                          |
+| 3-5              |  LFO Shape [values 0-5] TRI SIN SAW SQR S&H RND    |
+| CC16-18          |  LFO Rate (see above about LSB 6-8)                |
+| 15-17            |  LFO Pitch Depth -/+                               |
+| 18-20            |  LFO Filter Depth -/+                              |
+| 21-23            |  LFO Amp Depth -/+                                 |
+| 37-?             |  Pulse Width- Analog (see Pulse width above 37-39) |
++------------------+----------------------------------------------------+
+
+
+**Drum Parts,
+"Changes to Drum changes are ID'd by different MSBs and Note as LSB (36-72), M=MSB, L=LSB
+(*all NRPN and CCs present in Midi Impl guide unless noted)"
++------------------+------------+
+| CC# or LSB=Value |  Parameter |
++------------------+------------+
+| 89M+note         |  Cutoff    |
+| 92M+note         |  Resonance |
+| 64M+note         |  Level     |
+| 119M+note        |  Envelope  |
++------------------+------------+
+
+**Effects
++------------------+-------------------------------+
+| CC# or LSB=Value |           Parameter           |
++------------------+-------------------------------+
+| CC14             |  Effect 1                     |
+| CC15             |  Effect 2                     |
+| CC13             |  Delay                        |
+| CC12             |  Reverb                       |
+| CC83             |  Vocoder (Level)              |
+| CC91             |  GP Effect1 Reverb Send Level |
+| CC94             |  GP Effect 4 Delay Send Level |
++------------------+-------------------------------+
+
+
