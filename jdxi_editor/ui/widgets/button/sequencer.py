@@ -16,7 +16,7 @@ class SequencerSquare(QPushButton):
     
     def __init__(self, slot_num, midi_helper: Optional[MIDIHelper], parent=None):
         super().__init__(parent)
-        self.preset_helper = None # we will be using this later
+        self.preset_loader = None  # we will be using this later
         self.midi_helper = midi_helper
         self.settings = QSettings("mabsoft", "jdxi_editor")
         self.slot_num = slot_num
@@ -39,16 +39,17 @@ class SequencerSquare(QPushButton):
     def _handle_click(self, checked):
         """Handle button toggle"""
         if self.isChecked():
-            self.load_preset()
-            #self._load_from_settings()
-        #else:
+            if self.preset:
+                self.load_preset(self.preset)
+            # self._load_from_settings()
+        # else:
         #    self.save_preset_as_favourite()
         
     def paintEvent(self, event):
         """Custom paint for illuminated appearance"""
         super().paintEvent(event)
         
-        if self.illuminated:
+        if self.isChecked():
             painter = QPainter(self)
             painter.setRenderHint(QPainter.Antialiasing)
             
