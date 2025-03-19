@@ -61,7 +61,8 @@ from jdxi_editor.midi.data.constants.arpeggio import (
     ARP_GROUP,
     ArpOctaveRange,
 )
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.data.parameter.program_zone import ProgramZoneParameter
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.widgets.slider import Slider
@@ -69,7 +70,7 @@ from jdxi_editor.ui.widgets.slider import Slider
 
 class ArpeggioEditor(SynthEditor):
     """ Arpeggio Editor Window"""
-    def __init__(self, midi_helper: MIDIHelper, parent=None):
+    def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
@@ -98,8 +99,16 @@ class ArpeggioEditor(SynthEditor):
         self.update_instrument_image()
 
         # Add on-off switch
+        program_zone_row = QHBoxLayout()
+        common_button = self._create_parameter_switch(ProgramZoneParameter.ARPEGGIO_SWITCH,
+                                                      "Master Arpeggiator",
+                                                      ["OFF", "ON"])
+        program_zone_row.addWidget(common_button)
+        layout.addLayout(program_zone_row)
+
+        # Add on-off switch
         switch_row = QHBoxLayout()
-        switch_label = QLabel("Arpeggiator:")
+        switch_label = QLabel("Arpeggiator")
         self.switch_button = QPushButton("OFF")
         self.switch_button.setCheckable(True)
         self.switch_button.clicked.connect(self._on_switch_changed)

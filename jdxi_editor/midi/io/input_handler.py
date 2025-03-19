@@ -40,7 +40,7 @@ from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.midi.preset.data import PresetData
 
 
-class MIDIInHandler(MidiIOController):
+class MidiInHandler(MidiIOController):
     """
     Helper class for MIDI communication with the JD-Xi.
 

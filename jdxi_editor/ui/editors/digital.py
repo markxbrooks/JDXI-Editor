@@ -52,7 +52,7 @@ import qtawesome as qta
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import PresetType
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.synth import SynthEditor
@@ -85,7 +85,7 @@ class DigitalSynthEditor(SynthEditor):
 
     def __init__(
         self,
-        midi_helper: Optional[MIDIHelper] = None,
+        midi_helper: Optional[MidiIOHelper] = None,
         synth_num=1,
         parent=None,
         preset_handler=None,

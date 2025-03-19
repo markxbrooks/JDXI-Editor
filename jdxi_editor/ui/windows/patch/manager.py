@@ -31,12 +31,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 import logging
 
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.style import Style
 
 
 class PatchManager(QMainWindow):
-    def __init__(self, midi_helper: Optional[MIDIHelper] = None, parent=None, save_mode=False):
+    def __init__(self, midi_helper: Optional[MidiIOHelper] = None, parent=None, save_mode=False):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.save_mode = save_mode

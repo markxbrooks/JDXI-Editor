@@ -80,7 +80,7 @@ from PySide6.QtGui import QPixmap
 from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import PresetType
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors.drum_partial import DrumPartialEditor
@@ -98,7 +98,7 @@ class DrumEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper] = None, preset_handler=None, parent=None
+        self, midi_helper: Optional[MidiIOHelper] = None, preset_handler=None, parent=None
     ):
         super().__init__(midi_helper, parent)
 

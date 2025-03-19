@@ -5,16 +5,16 @@ from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPainter, QPen, QColor
 
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
-from jdxi_editor.midi.preset.loader import PresetLoader
+from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.preset.preset import Preset
 
 
 class SequencerSquare(QPushButton):
     """Square button for sequencer/favorites with illuminated state"""
     
-    def __init__(self, slot_num, midi_helper: Optional[MIDIHelper], parent=None):
+    def __init__(self, slot_num, midi_helper: Optional[MidiIOHelper], parent=None):
         super().__init__(parent)
         self.preset_loader = None  # we will be using this later
         self.midi_helper = midi_helper
@@ -76,7 +76,7 @@ class SequencerSquare(QPushButton):
         try:
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_loader = PresetLoader(self.midi_helper)
+                self.preset_loader = PresetHelper(self.midi_helper)
                 self.preset_loader.load_preset(
                     preset_data,
                 )

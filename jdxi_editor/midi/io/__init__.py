@@ -1,9 +1,9 @@
-from .helper import MIDIHelper
+from .helper import MidiIOHelper
 from .connection import MIDIConnection
 from .controller import MidiIOController
 
 __all__ = [
-    "MIDIHelper",
+    "MidiIOHelper",
     "MIDIConnection",
     "MidiIOController",
 ]

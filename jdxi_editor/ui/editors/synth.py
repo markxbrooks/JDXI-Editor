@@ -35,7 +35,7 @@ from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
-from jdxi_editor.midi.io.helper import MIDIHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler
@@ -52,7 +52,7 @@ class SynthEditor(QWidget):
     parameter_received = Signal(list, int)  # address, value
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
+        self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(parent)
         self.instrument_icon_folder = None
@@ -206,7 +206,7 @@ class SynthEditor(QWidget):
         self.controls[param] = slider
         return slider
 
-    def set_midi_helper(self, midi_helper: MIDIHelper):
+    def set_midi_helper(self, midi_helper: MidiIOHelper):
         """Set MIDI helper instance"""
         self.midi_helper = midi_helper
 

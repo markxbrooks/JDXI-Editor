@@ -45,13 +45,13 @@ from jdxi_editor.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRA
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.style import Style
-from jdxi_editor.midi.io.helper import MIDIHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class EffectsEditor(SynthEditor):
     """Effects Editor Window"""
 
-    def __init__(self, midi_helper: MIDIHelper, parent=None):
+    def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper, parent)
         self.efx2_additional_params = [
             EffectParameter.EFX2_PARAM_1,

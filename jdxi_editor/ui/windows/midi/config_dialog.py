@@ -15,7 +15,7 @@ Attributes:
     output_ports (list): List of available MIDI output ports.
     current_in (str): Currently selected MIDI input port (optional).
     current_out (str): Currently selected MIDI output port (optional).
-    midi_helper (MIDIHelper): Instance of the MIDIHelper class to interact with MIDI devices.
+    midi_helper (MidiIOHelper): Instance of the MIDIHelper class to interact with MIDI devices.
 
 Methods:
     refresh_ports() : Refresh the list of available MIDI ports.
@@ -33,7 +33,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 import qtawesome as qta
 from jdxi_editor.ui.style import Style
-from jdxi_editor.midi.io.helper import MIDIHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class MIDIConfigDialog(QDialog):
@@ -48,7 +48,7 @@ class MIDIConfigDialog(QDialog):
         self.current_out = current_out
         
         # Create an instance of MIDIHelper
-        self.midi_helper = MIDIHelper()
+        self.midi_helper = MidiIOHelper()
 
         self._create_ui()
         
