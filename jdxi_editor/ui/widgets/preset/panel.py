@@ -10,7 +10,7 @@ from PySide6.QtCore import Signal
 import logging
 
 from jdxi_editor.ui.style import Style
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.preset import PresetEditor
 from jdxi_editor.midi.preset.type import PresetType
 
@@ -22,7 +22,7 @@ class PresetPanel(QWidget):
     load_clicked = Signal(int)  # Emits preset number when load clicked
     save_clicked = Signal(int)  # Emits preset number when save clicked
 
-    def __init__(self, midi_helper: MIDIHelper, parent=None):
+    def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(parent)
 
         layout = QHBoxLayout(self)

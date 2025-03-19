@@ -48,7 +48,7 @@ from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
@@ -79,7 +79,7 @@ class JdxiUi(QMainWindow):
         # Initialize state variables
         self.current_octave = 0  # Initialize octave tracking first
         # Initialize MIDI helper
-        self.midi_helper = MIDIHelper(parent=self)
+        self.midi_helper = MidiIOHelper(parent=self)
         # Initialize MIDI indicators
         self.midi_in_indicator = MIDIIndicator()
         self.midi_out_indicator = MIDIIndicator()

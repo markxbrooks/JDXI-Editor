@@ -38,7 +38,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.parameter.program_common import ProgramCommonParameter
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.style import Style
@@ -62,7 +62,7 @@ class VocalFXEditor(SynthEditor):
     """Vocal Effects Window Class"""
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper] = None, parent: Optional[QWidget] = None
+        self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Vocal FX")

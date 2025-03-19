@@ -3,9 +3,9 @@ from PySide6.QtCore import Qt, Signal, QSettings
 from dataclasses import dataclass
 import logging
 
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
-from jdxi_editor.midi.preset.loader import PresetLoader
+from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.preset.preset import Preset
 from jdxi_editor.midi.preset.type import PresetType
 
@@ -15,7 +15,7 @@ class FavoriteButton(QPushButton):
     
     preset_selected = Signal(str, int, int)  # synth_type, preset_num, channel
     
-    def __init__(self, slot_num: int, midi_helper: MIDIHelper, parent=None):
+    def __init__(self, slot_num: int, midi_helper: MidiIOHelper, parent=None):
         super().__init__(parent)
         self.last_preset = None
         self.preset_loader = None
@@ -63,7 +63,7 @@ class FavoriteButton(QPushButton):
         try:
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_loader = PresetLoader(self.midi_helper)
+                self.preset_loader = PresetHelper(self.midi_helper)
                 self.preset_loader.load_preset(
                     preset_data,
                 )

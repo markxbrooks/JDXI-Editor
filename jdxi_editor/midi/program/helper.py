@@ -35,14 +35,14 @@ from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values, get_program_by_id, \
     get_program_by_bank_and_number
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 
 
 class ProgramHelper(QObject):
     """ Preset Loading Class """
     program_changed = Signal(str, int)  # Signal emitted when preset changes bank, program
 
-    def __init__(self, midi_helper: Optional[MIDIHelper], channel: int):
+    def __init__(self, midi_helper: Optional[MidiIOHelper], channel: int):
         super().__init__()
         self.midi_helper = midi_helper
         self.channel = channel

@@ -46,12 +46,12 @@ from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpPar
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA,
 )
-from jdxi_editor.midi.io import MIDIHelper
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.handler import PresetHandler
-from jdxi_editor.midi.preset.loader import PresetLoader
+from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
@@ -110,8 +110,8 @@ class JdxiInstrument(JdxiUi):
             self.midi_out.delete()  # Use delete() instead of close()
         if self.midi_helper:
             self.midi_helper.close_ports()
-        self.midi_helper = MIDIHelper(parent=self)
-        self.preset_loader = PresetLoader(self.midi_helper)
+        self.midi_helper = MidiIOHelper(parent=self)
+        self.preset_loader = PresetHelper(self.midi_helper)
         # Initialize windows to None
         self.log_viewer = None
         self.midi_debugger = None
@@ -931,8 +931,8 @@ class JdxiInstrument(JdxiUi):
                 self.midi_out = None
 
             # Check available ports before opening new ones
-            available_in_ports = MIDIHelper.get_input_ports()
-            available_out_ports = MIDIHelper.get_output_ports()
+            available_in_ports = MidiIOHelper.get_input_ports()
+            available_out_ports = MidiIOHelper.get_output_ports()
 
             if in_port not in available_in_ports:
                 logging.warning(f"Input port '{in_port}' not found. Available: {available_in_ports}")
@@ -943,8 +943,8 @@ class JdxiInstrument(JdxiUi):
                 return
 
             # Open new ports
-            self.midi_in = MIDIHelper.open_input(in_port, self)
-            self.midi_out = MIDIHelper.open_output(out_port, self)
+            self.midi_in = MidiIOHelper.open_input(in_port, self)
+            self.midi_out = MidiIOHelper.open_output(out_port, self)
 
             # Store port names
             self.midi_in_port_name = in_port
@@ -1020,7 +1020,7 @@ class JdxiInstrument(JdxiUi):
 
                 # Send MIDI message to update patch name
                 if self.midi_out:
-                    msg = MIDIHelper.create_patch_name_message(
+                    msg = MidiIOHelper.create_patch_name_message(
                         self.current_preset_num, new_name
                     )
                     self.midi_out.send_raw_message(msg)
@@ -1306,7 +1306,7 @@ class JdxiInstrument(JdxiUi):
             # self.preset_type = PresetType.DIGITAL_1
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_loader = PresetLoader(self.midi_helper)
+                self.preset_loader = PresetHelper(self.midi_helper)
                 self.preset_loader.load_preset(
                     preset_data,
                 )

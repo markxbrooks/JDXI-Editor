@@ -1,8 +1,8 @@
 """
-Module: preset loader
+Module: preset helper
 =====================
 
-This module provides the `PresetLoader` class, which handles loading and managing
+This module provides the `PresetHelper` class, which handles loading and managing
 presets via MIDI for the Roland JD-Xi synthesizer. It utilizes SysEx messages to
 communicate with the synthesizer and update parameter values.
 
@@ -37,19 +37,19 @@ from pubsub import pub
 from typing import Optional
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.midi.io.helper import MIDIHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.type import PresetType
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
-class PresetLoader(QObject):
+class PresetHelper(QObject):
     """Utility class for loading presets via MIDI"""
 
     update_display = Signal(int, int, int)
 
     def __init__(
-        self, midi_helper: Optional[MIDIHelper],
+        self, midi_helper: Optional[MidiIOHelper],
             device_number: int = DEVICE_ID,
             debug: bool = False
     ):

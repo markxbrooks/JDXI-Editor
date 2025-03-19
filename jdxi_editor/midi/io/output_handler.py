@@ -59,7 +59,7 @@ def increment_group(group, param):
     return group
 
 
-class MIDIOutHandler(MidiIOController):
+class MidiOutHandler(MidiIOController):
     """Helper class for MIDI communication with the JD-Xi."""
 
     def __init__(self, parent=None):

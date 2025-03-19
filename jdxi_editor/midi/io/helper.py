@@ -15,14 +15,15 @@ Dependencies:
     - PySide6.QtCore.Signal for Qt signal support.
     - jdxi_manager.midi.input_handler.MIDIInHandler for handling incoming MIDI messages.
     - jdxi_manager.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
+
 """
 
 import logging
-from jdxi_editor.midi.io.input_handler import MIDIInHandler
-from jdxi_editor.midi.io.output_handler import MIDIOutHandler
+from jdxi_editor.midi.io.input_handler import MidiInHandler
+from jdxi_editor.midi.io.output_handler import MidiOutHandler
 
 
-class MIDIHelper(MIDIInHandler, MIDIOutHandler):
+class MidiIOHelper(MidiInHandler, MidiOutHandler):
     """
     Helper class for MIDI communication with the JD-Xi.
 
