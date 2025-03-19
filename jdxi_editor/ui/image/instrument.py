@@ -78,7 +78,7 @@ def draw_instrument_pixmap(
 
     # Use smaller margins without border
     margin = 15
-
+    """ 
     draw_display(
         current_octave,
         digital_font_family,
@@ -88,6 +88,7 @@ def draw_instrument_pixmap(
         preset_num,
         program_name,
     )
+    """
 
     # Keyboard section (moved up and taller)
     keyboard_width = JDXI_KEYBOARD_WIDTH
@@ -110,6 +111,7 @@ def draw_display(
     preset_name: str,
     preset_num: int,
     program_name: str,
+    program_num: int = 1
 ):
     """
     Draw the digital display section of the JD-Xi interface.
