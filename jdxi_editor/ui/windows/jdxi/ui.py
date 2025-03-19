@@ -855,7 +855,7 @@ class JdxiUi(QMainWindow):
             current_octave=self.current_octave,
             preset_num=self.current_preset_num,
             preset_name=self.current_preset_name,
-            program=self.current_program_name
+            program_name=self.current_program_name
         )
         if hasattr(self, "image_label"):
             self.image_label.setPixmap(pixmap)

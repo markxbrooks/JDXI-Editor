@@ -112,7 +112,6 @@ class Style:
     # Fonts
     FONT_FAMILY = "Myriad Pro, Arial, sans-serif"
     FONT_SIZE = "12px"
-
     # Define button styles
     JDXI_BUTTON_ROUND = generate_button_style(
         BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
