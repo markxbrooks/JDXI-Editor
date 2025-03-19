@@ -39,10 +39,12 @@ class ProgramZoneParameter(SynthParameter):
     """Program Common parameters"""
 
     def __init__(self, address: int, min_val: Optional[int] = None, max_val: Optional[int] = None,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+                 display_min: Optional[int] = None, display_max: Optional[int] = None,
+                 partial_number: Optional[int] = 0):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.partial_number = partial_number
 
     ARPEGGIO_SWITCH = (0x03, 0, 1, 0, 1)  # Arpeggio OFF, ON
     ZONAL_OCTAVE_SHIFT = (0x19, 61, 67, -3, +3)  # Octave shift
@@ -91,10 +93,13 @@ class ProgramZoneParameter(SynthParameter):
 
         return value
 
+    def set_partial_number(self, partial_number: int) -> Optional[int]:
+        """Returns the partial number (1-4) if this is address partial parameter, None otherwise"""
+        self.partial_number = partial_number
+
     def get_partial_number(self) -> Optional[int]:
         """Returns the partial number (1-4) if this is address partial parameter, None otherwise"""
-        partial_params = {} # FIXME: sort this out
-        return partial_params.get(self)
+        return self.partial_number
 
     @staticmethod
     def get_by_name(param_name):

@@ -78,6 +78,18 @@ class ArpeggioEditor(SynthEditor):
         self.area = TEMPORARY_PROGRAM
         self.part = ARP_PART
         self.group = ARP_GROUP
+        self.partial_number = 0
+        if parent:
+            if parent.current_synth_type:
+                if parent.current_synth_type == "Digital 1":
+                    self.partial_number = 0
+                elif parent.current_synth_type == "Digital 2":
+                    self.partial_number = 1
+                elif parent.current_synth_type == "Digital 3":
+                    self.partial_number = 2
+                elif parent.current_synth_type == "Digital 4":
+                    self.partial_number = 3
+
         # Main layout
         layout = QVBoxLayout()
         self.setLayout(layout)

@@ -14,6 +14,7 @@ from jdxi_editor.ui.editors.program import ProgramEditor
 from jdxi_editor.ui.editors.midi_file import MidiFileEditor
 
 __all__ = [
+    "SynthEditor",
     "AnalogSynthEditor",
     "DigitalSynthEditor",
     "DrumEditor",
