@@ -1,6 +1,37 @@
+"""
+digital_display.py
+
+This module provides the DigitalDisplay class, a custom PySide6 QWidget designed
+to simulate an LCD-style digital display for MIDI controllers, synthesizers,
+or other music-related applications. The display shows preset and program
+information along with an octave indicator.
+
+Features:
+- Displays a program name, program number, preset name, and preset number.
+- Shows the current octave with a digital-style font.
+- Customizable font family for the digital display.
+- Resizable and styled for a retro LCD appearance.
+- Provides setter methods to update displayed values dynamically.
+
+Classes:
+- DigitalDisplay: A QWidget subclass that renders a digital-style display.
+
+Usage Example:
+    display = DigitalDisplay()
+    display.setPresetText("Grand Piano")
+    display.setPresetNumber(12)
+    display.setProgramText("User Program 1")
+    display.setProgramNumber(5)
+    display.setOctave(1)
+
+Dependencies:
+- PySide6.QtWidgets (QWidget, QSizePolicy)
+- PySide6.QtGui (QPainter, QColor, QPen, QFont)
+
+"""
+
 from PySide6.QtGui import QPainter, QColor, QPen, QFont
 from PySide6.QtWidgets import QWidget, QSizePolicy
-from PySide6.QtCore import Qt
 
 
 class DigitalDisplay(QWidget):
@@ -53,9 +84,9 @@ class DigitalDisplay(QWidget):
 
         # Draw preset number and name
         preset_text = f"{self.preset_num:03d}:{self.preset_name}"
-        preset_text = preset_text[:19] + "…" if len(preset_text) > 20 else preset_text
+        preset_text = preset_text[:21] + "…" if len(preset_text) > 22 else preset_text
         program_text = f"{self.program_num:03d}:{self.program_name}"
-        program_text = program_text[:19] + "…" if len(program_text) > 20 else program_text
+        program_text = program_text[:21] + "…" if len(program_text) > 22 else program_text
         painter.drawText(display_x + 7, display_y + 50, preset_text)
         painter.drawText(display_x + 7, display_y + 20, program_text)
 
