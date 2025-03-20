@@ -39,7 +39,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import (
     JDXI_WIDTH,
     JDXI_HEIGHT,
     JDXI_KEYBOARD_WIDTH,
-    JDXI_WHITE_KEY_HEIGHT,
+    JDXI_WHITE_KEY_HEIGHT, JDXI_MARGIN,
 )
 
 
@@ -77,7 +77,7 @@ def draw_instrument_pixmap(
     painter.setRenderHint(QPainter.Antialiasing)
 
     # Use smaller margins without border
-    margin = 15
+    margin = JDXI_MARGIN
     """ 
     draw_display(
         current_octave,

@@ -44,23 +44,34 @@ from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_MARGIN, JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, \
+    JDXI_DISPLAY_HEIGHT
 
 
 class JdxiUi(QMainWindow):
     """ JDXI UI setup, with little or no actual functionality, which is superclassed"""
     def __init__(self):
         super().__init__()
+        # Add preset & program tracking
+        self.current_preset_num = 1
+        self.current_preset_name = "Init Tone"
+        self.current_program_num = 1
         self.current_program_name = "Init Program"
         self.current_digital1_tone_name = "Init Tone"
         self.current_digital2_tone_name = "Init Tone"
         self.current_analog_tone_name = "Init Tone"
         self.current_drums_tone_name = "Init Tone"
+        # Initialize synth preset_type
+        self.current_synth_type = PresetType.DIGITAL_1
+        # Initialize octave
+        self.current_octave = 0  # Initialize octave tracking first
 
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.log_file = None
@@ -76,8 +87,7 @@ class JdxiUi(QMainWindow):
         self.display_width = 180
         self.display_height = 70
         self.digital_font_family = None
-        # Initialize state variables
-        self.current_octave = 0  # Initialize octave tracking first
+
         # Initialize MIDI helper
         self.midi_helper = MidiIOHelper(parent=self)
         # Initialize MIDI indicators
@@ -108,10 +118,6 @@ class JdxiUi(QMainWindow):
         # Show window
         self.show()
 
-        # Add preset tracking
-        self.current_preset_num = 1
-        self.current_preset_name = "Init Tone"
-
         # Add piano keyboard at bottom
         self.piano_keyboard = PianoKeyboard(parent=self)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
@@ -137,8 +143,7 @@ class JdxiUi(QMainWindow):
         # Load last used preset settings
         # self._load_last_preset()
 
-        # Initialize synth preset_type
-        self.current_synth_type = PresetType.DIGITAL_1
+
 
         # Create favorite buttons container
         self.favorites_widget = QWidget()
@@ -656,6 +661,13 @@ class JdxiUi(QMainWindow):
         # Create absolute positioning layout
         central_widget.setLayout(QVBoxLayout())
 
+        digital_display_container = QWidget(central_widget)
+        digital_display_container.setGeometry(JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT)
+        digital_display_layout = QHBoxLayout()
+        digital_display_container.setLayout(digital_display_layout)
+        self.digital_display = DigitalDisplay(parent=self)
+        digital_display_layout.addWidget(self.digital_display)
+
         # Parts Select section with Arpeggiator
         parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 30
@@ -787,17 +799,15 @@ class JdxiUi(QMainWindow):
         parts_container.setStyleSheet("background: transparent;")
         fx_container.setStyleSheet("background: transparent;")
 
-        margin = 15
-
         # LED display area (enlarged for 2 rows)
-        display_x = margin + 70
-        display_y = margin + 90
+        display_x = JDXI_MARGIN + 70
+        display_y = JDXI_MARGIN + 90
         display_width = 150
         display_height = 70
 
         # Create digital display QLabel
-        self.digital_display = QLabel(central_widget)
-        self.digital_display.setGeometry(display_x, display_y, display_width, display_height)
+        # self.digital_display = QLabel(central_widget)
+        # self.digital_display.setGeometry(display_x, display_y, display_width, display_height)
 
 
     def _create_other(self):
@@ -836,6 +846,25 @@ class JdxiUi(QMainWindow):
         return frame
 
     def _update_display(self):
+        """Update the JD-Xi display image"""
+        if self.current_synth_type == PresetType.DIGITAL_1:
+            self.current_preset_name = self.current_digital1_tone_name
+        elif self.current_synth_type == PresetType.DIGITAL_2:
+            self.current_preset_name = self.current_digital2_tone_name
+        elif self.current_synth_type == PresetType.DRUMS:
+            self.current_preset_name = self.current_drums_tone_name
+        elif self.current_synth_type == PresetType.ANALOG:
+            self.current_preset_name = self.current_analog_tone_name
+
+        self.digital_display.repaint_display(
+            current_octave=self.current_octave,
+            preset_num=self.current_preset_num,
+            preset_name=self.current_preset_name,
+            program_name=self.current_program_name,
+            program_num=self.current_program_num
+        )
+
+    def _update_display_old(self):
         """Update the JD-Xi display image"""
         if self.current_synth_type == PresetType.DIGITAL_1:
             self.current_preset_name = self.current_digital1_tone_name
@@ -1017,3 +1046,6 @@ class JdxiUi(QMainWindow):
 
     def _save_favorite(self, button, idx):
         pass # to be implemented in subclass
+
+    def _load_settings(self):
+        pass
