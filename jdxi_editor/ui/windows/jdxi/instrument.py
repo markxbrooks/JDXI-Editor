@@ -117,6 +117,16 @@ class JdxiInstrument(JdxiUi):
         self.midi_debugger = None
         self.midi_message_debug = None
 
+        self.midi_requests = [
+            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
+            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
+            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
+            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
+        ]
+
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
         # self.midi_helper.set_callback(self.midi_helper.midi_callback)
@@ -220,6 +230,7 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.update_digital2_tone_name.connect(self.set_current_digital2_tone_name)
         self.midi_helper.update_analog_tone_name.connect(self.set_current_analog_tone_name)
         self.midi_helper.update_program_name.connect(self.set_current_drums_tone_name)
+        self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -238,12 +249,27 @@ class JdxiInstrument(JdxiUi):
     def set_current_program_name(self, program_name: str):
         """ program name """
         self.current_program_name = program_name
+        self.data_request()
+        self._update_display()
+
+    def set_current_program_number(self, channel: int, program_number: int):
+        """ program name """
+        self.current_program_number = program_number + 1
+        self.data_request()
         self._update_display()
 
     def set_current_digital1_tone_name(self, tone_name: str):
         """ program name """
         self.current_digital1_tone_name = tone_name
         self._update_display()
+
+    def data_request(self):
+        """Send data request SysEx messages to the JD-Xi"""
+        # Define SysEx messages as byte arrays
+        for request in self.midi_requests:
+            request = bytes.fromhex(request)
+            # Send each SysEx message
+            self.midi_helper.send_raw_message(request)
 
     def set_current_digital2_tone_name(self, tone_name: str):
         """ program name """
@@ -320,11 +346,24 @@ class JdxiInstrument(JdxiUi):
     
     def _previous_program(self):
         """Decrement the program index and update the display."""
+        """Decrement the tone index and update the display."""
+        if self.current_program_number == 1:
+            logging.info("Already at the first program.")
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)  # Use QMessageBox.Warning, Information, or Question as needed
+            msg_box.setWindowTitle("First program")
+            msg_box.setText("Already at the first program")
+            msg_box.exec()
+            return
+        self.current_program_number -= 1
         self.program_helper.previous_program()
+        self._update_display()
 
     def _next_program(self):
         """Increment the program index and update the display."""
+        self.current_program_number += 1
         self.program_helper.next_program()
+        self._update_display()
 
     def _previous_tone(self):
         """Decrement the tone index and update the display."""
@@ -398,7 +437,6 @@ class JdxiInstrument(JdxiUi):
         }
 
         # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
-        # presets = preset_map.get(synth_type, DIGITAL_PRESETS_ENUMERATED)
         presets = preset_channel_map.get(channel, DIGITAL_PRESETS_ENUMERATED)
 
         self._update_display_preset(
@@ -916,6 +954,8 @@ class JdxiInstrument(JdxiUi):
                     ARP_GROUP, param_address, value
                 )  # Send the parameter
                 logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
+                request = bytes.fromhex("F0 41 10 00 00 00 0E 12 18 00 30 03 01 34 F7")
+                self.midi_helper.send_raw_message(request)
         except Exception as ex:
             logging.error(f"Error sending arp on/off: {str(ex)}")
 
@@ -1141,7 +1181,7 @@ class JdxiInstrument(JdxiUi):
             midi_helper=self.midi_helper, parent=self, preset_type=PresetType.ANALOG
         )
         self.preset_editor.preset_changed.connect(self._update_display_preset)
-        # self.midi_helper.preset_changed.connect(self._update_display_preset)
+        self.program_helper.program_changed.connect(self._update_display_program)
         self.preset_editor.show()
 
     def _load_last_preset(self):

@@ -1142,6 +1142,14 @@ class AnalogSynthEditor(SynthEditor):
 
             if param: # @@
                 if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
+                    nrpn_map = {
+                        (0, 124): "Envelope",
+                        (0, 3): "LFO Shape",
+                        (0, 15): "LFO Pitch Depth",
+                        (0, 18): "LFO Filter Depth",
+                        (0, 21): "LFO Amp Depth",
+                        (0, 37): "Pulse Width",
+                    }
                     nrpn_address = next(
                         (addr for addr, name in nrpn_map.items() if name == param_name), None
                     )

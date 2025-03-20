@@ -60,9 +60,9 @@ class JdxiUi(QMainWindow):
     def __init__(self):
         super().__init__()
         # Add preset & program tracking
-        self.current_preset_num = 1
+        self.current_preset_number = 1
         self.current_preset_name = "Init Tone"
-        self.current_program_num = 1
+        self.current_program_number = 1
         self.current_program_name = "Init Program"
         self.current_digital1_tone_name = "Init Tone"
         self.current_digital2_tone_name = "Init Tone"
@@ -671,9 +671,9 @@ class JdxiUi(QMainWindow):
         # Parts Select section with Arpeggiator
         parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 30
-        parts_y = self.display_y - (
+        parts_y = int(self.display_y - (
             self.height * 0.15
-        )  # Move up by 20% of window height
+        ))  # Move up by 20% of window height
 
         parts_container.setGeometry(parts_x, parts_y, 220, 250)
         parts_layout = QVBoxLayout(parts_container)
@@ -799,17 +799,6 @@ class JdxiUi(QMainWindow):
         parts_container.setStyleSheet("background: transparent;")
         fx_container.setStyleSheet("background: transparent;")
 
-        # LED display area (enlarged for 2 rows)
-        display_x = JDXI_MARGIN + 70
-        display_y = JDXI_MARGIN + 90
-        display_width = 150
-        display_height = 70
-
-        # Create digital display QLabel
-        # self.digital_display = QLabel(central_widget)
-        # self.digital_display.setGeometry(display_x, display_y, display_width, display_height)
-
-
     def _create_other(self):
         """Create other controls section"""
         frame = QFrame()
@@ -858,36 +847,11 @@ class JdxiUi(QMainWindow):
 
         self.digital_display.repaint_display(
             current_octave=self.current_octave,
-            preset_num=self.current_preset_num,
+            preset_num=self.current_preset_number,
             preset_name=self.current_preset_name,
             program_name=self.current_program_name,
-            program_num=self.current_program_num
+            program_num=self.current_program_number
         )
-
-    def _update_display_old(self):
-        """Update the JD-Xi display image"""
-        if self.current_synth_type == PresetType.DIGITAL_1:
-            self.current_preset_name = self.current_digital1_tone_name
-        elif self.current_synth_type == PresetType.DIGITAL_2:
-            self.current_preset_name = self.current_digital2_tone_name
-        elif self.current_synth_type == PresetType.DRUMS:
-            self.current_preset_name = self.current_drums_tone_name
-        elif self.current_synth_type == PresetType.ANALOG:
-            self.current_preset_name = self.current_analog_tone_name
-
-        pixmap = draw_instrument_pixmap(
-            digital_font_family=(
-                self.digital_font_family
-                if hasattr(self, "digital_font_family")
-                else None
-            ),
-            current_octave=self.current_octave,
-            preset_num=self.current_preset_num,
-            preset_name=self.current_preset_name,
-            program_name=self.current_program_name
-        )
-        if hasattr(self, "image_label"):
-            self.image_label.setPixmap(pixmap)
 
     def _load_digital_font(self):
         """Load the digital LCD font for the display"""
@@ -917,10 +881,16 @@ class JdxiUi(QMainWindow):
         else:
             logging.debug(f"File not found: {font_path}")
 
-    def update_preset_display(self, preset_num, preset_name):
+    def update_preset_display(self, preset_number, preset_name):
         """Update the current preset display"""
-        self.current_preset_num = preset_num
+        self.current_preset_number = preset_number
         self.current_preset_name = preset_name
+        self._update_display()
+
+    def update_program_display(self, program_number, program_name):
+        """Update the current preset display"""
+        self.current_program_number = program_number
+        self.current_program_name = program_name
         self._update_display()
 
     def show_error(self, title: str, message: str):
@@ -984,6 +954,13 @@ class JdxiUi(QMainWindow):
         )  # Original was (self.width() - 100, 70)
 
         return indicator_widget
+
+    def _update_display_program(
+        self, program_name: str, program_number: int
+    ):
+        self.current_program_number = program_number
+        self.current_program_name = program_name
+        self._update_display()
 
     def _update_display_preset(
         self, preset_number: int, preset_name: str, channel: int
