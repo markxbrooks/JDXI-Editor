@@ -38,7 +38,7 @@ from typing import Optional
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.preset.type import PresetType
+from jdxi_editor.midi.preset.type import ToneType
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.message.roland import RolandSysEx
 
@@ -127,10 +127,10 @@ class PresetHelper(QObject):
         """Retrieve the preset memory address based on its type."""
         preset_type = preset_data.type
         address_map = {
-            PresetType.DIGITAL_1: ("18002006", 95, 64),
-            PresetType.DIGITAL_2: ("18002106", 95, 64),
-            PresetType.ANALOG: ("18002206", 94, 64),
-            PresetType.DRUMS: ("18002306", 86, 64),
+            ToneType.DIGITAL_1: ("18002006", 95, 64),
+            ToneType.DIGITAL_2: ("18002106", 95, 64),
+            ToneType.ANALOG: ("18002206", 94, 64),
+            ToneType.DRUMS: ("18002306", 86, 64),
         }
 
         address, msb, lsb = address_map.get(preset_type, (None, None, None))

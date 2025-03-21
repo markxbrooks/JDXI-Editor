@@ -67,12 +67,21 @@ def get_synth_tone(byte_value: int) -> str:
     return TONE_MAPPING.get(byte_value, "Unknown")
 
 
-def extract_tone_name(data: List[int]) -> str:
+def extract_tone_name_old(data: List[int]) -> str:
     """Extract and clean the tone name from SysEx data."""
     if len(data) < 12:
         return "Unknown"
-    raw_name = bytes(data[11 : min(23, len(data) - 1)]).decode(errors="ignore").strip()
+    raw_name = bytes(data[12 : min(23, len(data) - 1)]).decode(errors="ignore").strip()
     return raw_name.replace("\u0000", "")  # Remove null characters
+
+
+def extract_tone_name(data: List[int]) -> str:
+    """Extract and clean the tone name from SysEx data."""
+    if len(data) < 23:  # Ensure sufficient length for full extraction
+        return "Unknown"
+
+    raw_name = bytes(data[11:23]).decode(errors="ignore").strip()  # Start at index 11
+    return raw_name.replace("\u0000", "").replace('\r', '')  # Remove null characters or return carriage
 
 
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:

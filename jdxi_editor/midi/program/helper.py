@@ -38,6 +38,31 @@ from jdxi_editor.ui.editors.helpers.program import calculate_midi_values, get_pr
 from jdxi_editor.midi.io import MidiIOHelper
 
 
+def get_previous_program_bank_and_number(program_number: int, bank_letter: str):
+    """ get previous program bank number """
+    if program_number > 1:
+        program_number -= 1
+    elif bank_letter == "A":
+        program_number = 64  # wrap around to 64
+        bank_letter = "H"
+    else:
+        program_number = 64  # wrap around to 64
+        bank_letter = chr(ord(bank_letter) - 1)
+    return bank_letter, program_number
+
+
+def get_next_program_bank_and_number(program_number, bank_letter):
+    if program_number < 64:
+        program_number += 1
+    elif bank_letter == "H":
+        program_number = 1  # reset program number, wrap around to 1
+        bank_letter = "A"  # reset bank letter
+    else:
+        program_number = 1  # reset program number
+        bank_letter = chr(ord(bank_letter) + 1)
+    return program_number, bank_letter
+
+
 class ProgramHelper(QObject):
     """ Preset Loading Class """
     program_changed = Signal(str, int)  # Signal emitted when preset changes bank, program
@@ -64,28 +89,16 @@ class ProgramHelper(QObject):
 
     def next_program(self):
         """Increase the tone index and return the new preset."""
-        if self.current_program_number <64:
-            self.current_program_number += 1
-        elif self.current_bank_letter == "H":
-            self.current_program_number = 1 # reset program number, wrap around to 1
-            self.current_bank_letter = "A" # reset bank letter
-        else:
-            self.current_program_number = 1 # reset program number
-            self.current_bank_letter = chr(ord(self.current_bank_letter) + 1)
+        self.current_program_number, self.current_bank_letter = get_next_program_bank_and_number(
+            self.current_program_number, self.current_bank_letter)
         self.load_program(self.current_bank_letter, self.current_program_number)
 
     def previous_program(self):
         """Decrease the tone index and return the new preset."""
-        if self.current_program_number > 1:
-            self.current_program_number -= 1
-        elif self.current_bank_letter == "A":
-            self.current_program_number = 64 # wrap around to 64
-            self.current_bank_letter = "H"
-        else:
-            self.current_program_number = 64 # wrap around to 64
-            self.current_bank_letter = chr(ord(self.current_bank_letter) - 1)
+        self.current_bank_letter, self.current_program_number = get_previous_program_bank_and_number(
+            self.current_program_number, self.current_bank_letter)
         self.load_program(self.current_bank_letter, self.current_program_number)
-    
+
     def get_current_program(self):
         return self.current_bank_letter, self.current_program_number
     

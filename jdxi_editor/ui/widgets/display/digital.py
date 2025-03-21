@@ -33,6 +33,9 @@ Dependencies:
 from PySide6.QtGui import QPainter, QColor, QPen, QFont
 from PySide6.QtWidgets import QWidget, QSizePolicy
 
+from jdxi_editor.midi.program.helper import get_previous_program_bank_and_number
+from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name
+
 
 class DigitalDisplay(QWidget):
     """Digital LCD-style display widget."""
@@ -41,19 +44,24 @@ class DigitalDisplay(QWidget):
             self,
             current_octave: int = 0,
             digital_font_family: str = "Consolas",
-            preset_name: str = "Init Tone",
-            preset_num: int = 1,
+            active_synth: str = "D1",
+            tone_name: str = "Init Tone",
+            tone_number: int = 1,
             program_name: str = "Init Program",
-            program_num: int = 1,
+            program_bank_letter: str = "A",
+            program_number: int = 1,
             parent=None,
     ):
         super().__init__(parent)
+        self.active_synth = active_synth
         self.digital_font_family = digital_font_family
         self.current_octave = current_octave
-        self.preset_name = preset_name
-        self.preset_num = preset_num
+        self.tone_name = tone_name
+        self.tone_number = tone_number
         self.program_name = program_name
-        self.program_num = program_num
+        self.program_number = program_number
+        self.program_bank_letter = program_bank_letter
+        self.program_id = self.program_bank_letter + str(self.program_number)
         self.margin = 10  # Default margin for display elements
 
         self.setMinimumSize(210, 70)  # Set size matching display
@@ -83,11 +91,12 @@ class DigitalDisplay(QWidget):
         painter.setPen(QPen(QColor("#FF8C00")))  # Orange color for text
 
         # Draw preset number and name
-        preset_text = f"{self.preset_num:03d}:{self.preset_name}"
-        preset_text = preset_text[:21] + "…" if len(preset_text) > 22 else preset_text
-        program_text = f"{self.program_num:03d}:{self.program_name}"
+        tone_name_text = f" {self.active_synth}:{self.tone_name}"
+        tone_name_text = tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
+        # program_text = f"{self.program_bank_letter}{self.program_number:02d}:{self.program_name}"
+        program_text = f"{self.program_id}:{self.program_name}"
         program_text = program_text[:21] + "…" if len(program_text) > 22 else program_text
-        painter.drawText(display_x + 7, display_y + 50, preset_text)
+        painter.drawText(display_x + 7, display_y + 50, tone_name_text)
         painter.drawText(display_x + 7, display_y + 20, program_text)
 
         # Draw octave display
@@ -97,12 +106,12 @@ class DigitalDisplay(QWidget):
     # --- Property Setters ---
     def setPresetText(self, text: str):
         """Set preset name and trigger repaint."""
-        self.preset_name = text
+        self.tone_name = text
         self.update()
 
     def setPresetNumber(self, number: int):
         """Set preset number and trigger repaint."""
-        self.preset_num = number
+        self.tone_number = number
         self.update()
 
     def setProgramText(self, text: str):
@@ -112,7 +121,7 @@ class DigitalDisplay(QWidget):
 
     def setProgramNumber(self, number: int):
         """Set program number and trigger repaint."""
-        self.program_num = number
+        self.program_number = number
         self.update()
 
     def setOctave(self, octave: int):
@@ -122,13 +131,19 @@ class DigitalDisplay(QWidget):
 
     def repaint_display(self,
                         current_octave,
-                        preset_num,
-                        preset_name,
+                        tone_number,
+                        tone_name,
                         program_name,
-                        program_num=1):
+                        program_number=1,
+                        program_bank_letter="A",
+                        active_synth="D1"):
         self.current_octave = current_octave
-        self.preset_num = preset_num
-        self.preset_name = preset_name
+        self.tone_number = tone_number
+        self.tone_name = tone_name
         self.program_name = program_name
-        self.program_num = program_num
+        # self.program_number = program_number
+        # self.program_bank_letter = program_bank_letter
+        # self.program_bank_letter, self.program_number
+        self.program_id = get_program_id_by_name(self.program_name)
+        self.active_synth = active_synth
         self.update()

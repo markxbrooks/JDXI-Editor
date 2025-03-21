@@ -64,7 +64,7 @@ from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import PresetType
+from jdxi_editor.midi.preset.type import ToneType
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -145,7 +145,7 @@ class AnalogSynthEditor(SynthEditor):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS_ENUMERATED
-        self.preset_type = PresetType.ANALOG
+        self.preset_type = ToneType.ANALOG
         self.midi_requests = ["F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7", # Program Common
                               "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"] # Analog
         self.midi_channel = MIDI_CHANNEL_ANALOG

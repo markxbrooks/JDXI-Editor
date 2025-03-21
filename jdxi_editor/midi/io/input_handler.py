@@ -30,7 +30,7 @@ from pubsub import pub
 from jdxi_editor.midi.data.constants.constants import ROLAND_ID
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import PresetType
+from jdxi_editor.midi.preset.type import ToneType
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter
@@ -249,7 +249,7 @@ class MidiInHandler(MidiIOController):
                     # Extract TONE_NAME if ADDRESS is "12180000"
                     tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") == "12180000" else None
                     if tone_name:
-                        logging.info(f"@@@@@Emitting tone name{tone_name}")
+                        logging.info(f"@@@@@Emitting tone name: {tone_name}")
                         self.update_program_name.emit(tone_name)
 
                     # Print the result
@@ -357,10 +357,10 @@ class MidiInHandler(MidiIOController):
 
         self.midi_program_changed.emit(channel, program_number)
 
-        preset_mapping: Dict[int, PresetType] = {
-            95: PresetType.DIGITAL_1,
-            94: PresetType.ANALOG,
-            86: PresetType.DRUMS,
+        preset_mapping: Dict[int, ToneType] = {
+            95: ToneType.DIGITAL_1,
+            94: ToneType.ANALOG,
+            86: ToneType.DRUMS,
         }
 
         if self.cc_msb_value in preset_mapping:

@@ -39,7 +39,7 @@ from PySide6.QtGui import (
     QAction,
     QFontDatabase,
 )
-from jdxi_editor.midi.preset.type import PresetType
+from jdxi_editor.midi.preset.type import ToneType
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
@@ -60,8 +60,10 @@ class JdxiUi(QMainWindow):
     def __init__(self):
         super().__init__()
         # Add preset & program tracking
-        self.current_preset_number = 1
-        self.current_preset_name = "Init Tone"
+        self.current_program_bank_letter = "A"
+        self.program_helper = None
+        self.current_tone_number = 1
+        self.current_tone_name = "Init Tone"
         self.current_program_number = 1
         self.current_program_name = "Init Program"
         self.current_digital1_tone_name = "Init Tone"
@@ -69,7 +71,7 @@ class JdxiUi(QMainWindow):
         self.current_analog_tone_name = "Init Tone"
         self.current_drums_tone_name = "Init Tone"
         # Initialize synth preset_type
-        self.current_synth_type = PresetType.DIGITAL_1
+        self.current_synth_type = ToneType.DIGITAL_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
 
@@ -703,15 +705,15 @@ class JdxiUi(QMainWindow):
         )
 
         self.analog_button.clicked.connect(
-            lambda: self._select_synth(PresetType.ANALOG)
+            lambda: self._select_synth(ToneType.ANALOG)
         )
         self.digital1_button.clicked.connect(
-            lambda: self._select_synth(PresetType.DIGITAL_1)
+            lambda: self._select_synth(ToneType.DIGITAL_1)
         )
         self.digital2_button.clicked.connect(
-            lambda: self._select_synth(PresetType.DIGITAL_2)
+            lambda: self._select_synth(ToneType.DIGITAL_2)
         )
-        self.drums_button.clicked.connect(lambda: self._select_synth(PresetType.DRUMS))
+        self.drums_button.clicked.connect(lambda: self._select_synth(ToneType.DRUMS))
 
         # Create address button area
         button_group = QButtonGroup()
@@ -836,21 +838,29 @@ class JdxiUi(QMainWindow):
 
     def _update_display(self):
         """Update the JD-Xi display image"""
-        if self.current_synth_type == PresetType.DIGITAL_1:
-            self.current_preset_name = self.current_digital1_tone_name
-        elif self.current_synth_type == PresetType.DIGITAL_2:
-            self.current_preset_name = self.current_digital2_tone_name
-        elif self.current_synth_type == PresetType.DRUMS:
-            self.current_preset_name = self.current_drums_tone_name
-        elif self.current_synth_type == PresetType.ANALOG:
-            self.current_preset_name = self.current_analog_tone_name
+        if self.current_synth_type == ToneType.DIGITAL_1:
+            self.current_tone_name = self.current_digital1_tone_name
+            active_synth = "D1"
+        elif self.current_synth_type == ToneType.DIGITAL_2:
+            self.current_tone_name = self.current_digital2_tone_name
+            active_synth = "D2"
+        elif self.current_synth_type == ToneType.DRUMS:
+            self.current_tone_name = self.current_drums_tone_name
+            active_synth = "DR"
+        elif self.current_synth_type == ToneType.ANALOG:
+            self.current_tone_name = self.current_analog_tone_name
+            active_synth = "AN"
+        else:
+            active_synth = "D1"
 
         self.digital_display.repaint_display(
             current_octave=self.current_octave,
-            preset_num=self.current_preset_number,
-            preset_name=self.current_preset_name,
+            tone_number=self.current_tone_number,
+            tone_name=self.current_tone_name,
             program_name=self.current_program_name,
-            program_num=self.current_program_number
+            program_number=self.current_program_number,
+            program_bank_letter=self.current_program_bank_letter,
+            active_synth=active_synth,
         )
 
     def _load_digital_font(self):
@@ -883,8 +893,8 @@ class JdxiUi(QMainWindow):
 
     def update_preset_display(self, preset_number, preset_name):
         """Update the current preset display"""
-        self.current_preset_number = preset_number
-        self.current_preset_name = preset_name
+        self.current_tone_number = preset_number
+        self.current_tone_name = preset_name
         self._update_display()
 
     def update_program_display(self, program_number, program_name):
