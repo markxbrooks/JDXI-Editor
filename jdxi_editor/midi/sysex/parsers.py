@@ -89,6 +89,19 @@ def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
+def parse_parameters_new(data: List[int], parameter_type: Type) -> Dict[str, int]:
+    """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
+    parameters = {param.name: safe_get(data, param.address) for param in parameter_type}
+
+    # Extract tone name (assuming its offset is correctly defined in parameter_type)
+    tone_name_start = parameter_type.TONE_NAME.address  # Replace with correct offset
+    tone_name_bytes = data[tone_name_start:tone_name_start + 12]  # Extract 12 bytes
+    tone_name = "".join(chr(b) for b in tone_name_bytes if b > 31)  # Filter out control chars
+
+    parameters["TONE_NAME"] = tone_name.strip()  # Assign cleaned tone name
+    return parameters
+
+
 def parse_sysex(data: List[int]) -> Dict[str, str]:
     """Parses JD-Xi tone data from SysEx messages."""
     if len(data) <= 7:
@@ -130,6 +143,26 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DrumCommonParameter))
         parameters.update(parse_parameters(data, DrumParameter))
+    print(parameters)
+    if all(f"TONE_NAME_{i}" in parameters for i in range(1, 13)):  # If ASCII values exist
+        tone_name = "".join(chr(parameters[f"TONE_NAME_{i}"]) for i in range(1, 13) if parameters[f"TONE_NAME_{i}"] > 0)
+        parameters["TONE_NAME"] = tone_name.strip().replace("\u0000", "").replace('\r',
+                                                                                  '')  # Remove null characters or return carriage
+        print("@@@@Tone Name:", tone_name)
+    #else:  # Fallback to raw string if needed
+    #    tone_name = parameters.get("TONE_NAME", "").replace("\u0000", "").replace("\r", "").encode("ascii",
+    #                                                                                               "ignore").decode(
+    #        "ascii")
+
+    #print("Tone Name:", tone_name)
+    # Convert to ASCII and remove unwanted characters
+    #tone_name_ascii = [
+    #    name.replace("\u0000", "").replace("\r", "").encode("ascii", "ignore").decode("ascii")
+    #    for name in tone_name
+    #]
+
+    #print(tone_name_ascii)
+    #print(tone_name)
     logging.info(f"Address: {parameters['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")
 
