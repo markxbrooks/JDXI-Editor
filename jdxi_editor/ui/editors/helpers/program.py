@@ -42,6 +42,7 @@ Usage Example:
 """
 
 import logging
+import re
 from typing import Optional, Dict
 
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
@@ -52,30 +53,72 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
     logging.info(f"Getting program index for {program_id}")
     for index, program in enumerate(PROGRAM_LIST):
         if program["id"] == program_id:
-            logging.info(f"index for {program_id} is {index}")
-            return index - 1  # convert to 0-based index
+            logging.info(f"Index for {program_id} is {index - 1}")
+            return index - 1  # Convert to 0-based index
     logging.warning(f"Program with ID {program_id} not found.")
     return None
 
 
 def get_program_by_id(program_id: str) -> Optional[Dict[str, str]]:
     """Retrieve a program by its ID from PROGRAM_LIST."""
-    for _, program in enumerate(PROGRAM_LIST):
-        if program["id"] == program_id:
-            return program
-    logging.warning(f"Program with ID {program_id} not found.")
-    return None
+    return next((program for program in PROGRAM_LIST if program["id"] == program_id), None)
 
 
 def get_program_by_bank_and_number(bank: str, program_number: int) -> Optional[Dict[str, str]]:
-    """Retrieve a program by its ID from PROGRAM_LIST."""
-    for _, program in enumerate(PROGRAM_LIST):
-        # for reference, the program_id is formatted as "A01"
-        program_id = f"{bank}{program_number:02d}"
-        if program["id"] == program_id:
-            return program
-    logging.warning(f"Program with {bank} and {program_number} not found.")
+    """Retrieve a program by its bank letter and number."""
+    program_id = f"{bank}{program_number:02d}"
+    return next((program for program in PROGRAM_LIST if program["id"] == program_id), None)
+
+
+def get_program_id_by_name_new(name: str) -> Optional[str]:
+    """Retrieve a program's ID by its name from PROGRAM_LIST."""
+    program = next((program for program in PROGRAM_LIST if program["name"] == name), None)
+    return program["id"] if program else None
+
+
+def get_program_id_by_name_new(name: str) -> Optional[str]:
+    """Retrieve a program's ID from PROGRAM_LIST by matching its name flexibly."""
+    print(f"Searching for program name: {name}")
+
+    for program in PROGRAM_LIST:
+        # Match 'name' as a substring of 'program["name"]' (correct order)
+        if re.search(re.escape(fr"{name}"), fr'{program["name"]}', re.IGNORECASE):
+            print(program)
+            return program["id"]
+
+    logging.warning(f"Program named '{name}' not found.")
     return None
+
+
+def get_program_id_by_name(name: str) -> Optional[str]:
+    """Retrieve a program's ID from PROGRAM_LIST by matching its name as a substring."""
+    print(f"Searching for program name: {name}")
+
+    for program in PROGRAM_LIST:
+        if name in program["name"]:  # Check if 'name' is a substring
+            print(program)
+            return program["id"]
+
+    logging.warning(f"Program named '{name}' not found.")
+    return None
+
+
+def get_program_number_by_name(program_name: str) -> Optional[str]:
+    """Retrieve a program's number (without bank letter) by its name from PROGRAM_LIST."""
+    program = next((p for p in PROGRAM_LIST if p["name"] == program_name), None)
+    return int(program["id"][1:]) if program else None
+
+
+def get_program_name_by_id(program_id: str) -> Optional[str]:
+    """Retrieve a program name by its ID from PROGRAM_LIST."""
+    program = next((program for program in PROGRAM_LIST if program["id"] == program_id), None)
+    return program["name"] if program else None
+
+
+def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str]:
+    """Retrieve a specific parameter value from a program by its ID."""
+    program = next((p for p in PROGRAM_LIST if p["id"] == program_id), None)
+    return program.get(parameter) if program else None
 
 
 def calculate_midi_values(bank: str, program_number: int):

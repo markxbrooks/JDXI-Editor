@@ -51,7 +51,7 @@ import qtawesome as qta
 
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import PresetType
+from jdxi_editor.midi.preset.type import ToneType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
@@ -95,7 +95,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_num = None
         self.current_data = None
         self.preset_type = (
-            PresetType.DIGITAL_1 if synth_num == 1 else PresetType.DIGITAL_2
+            ToneType.DIGITAL_1 if synth_num == 1 else ToneType.DIGITAL_2
         )
 
         self.presets = DIGITAL_PRESETS_ENUMERATED
@@ -118,7 +118,7 @@ class DigitalSynthEditor(SynthEditor):
         if preset_handler:
             self.preset_handler = preset_handler
         else:
-            if self.preset_type == PresetType.DIGITAL_1:
+            if self.preset_type == ToneType.DIGITAL_1:
                 self.preset_handler = parent.digital_1_preset_handler
             else:
                 self.preset_handler = parent.digital_2_preset_handler

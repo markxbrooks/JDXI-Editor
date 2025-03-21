@@ -7,7 +7,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.preset.preset import Preset
-from jdxi_editor.midi.preset.type import PresetType
+from jdxi_editor.midi.preset.type import ToneType
 
 
 class FavoriteButton(QPushButton):
@@ -43,7 +43,7 @@ class FavoriteButton(QPushButton):
             return
         preset_data = PresetData(
             type=self.preset.synth_type,  # Ensure this is address valid preset_type
-            current_selection=self.preset.preset_num + 1,  # Convert to 1-based index
+            current_selection=self.preset.tone_number + 1,  # Convert to 1-based index
             modified=0  # or 1 if modified
         )
         self.load_preset(
@@ -56,7 +56,7 @@ class FavoriteButton(QPushButton):
         # self.settings.setValue('last_preset/channel', self.preset.channel)
         # self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
         # Update the display
-        logging.debug(f"Loading favorite {self.slot_num}: {self.preset.preset_name}")
+        logging.debug(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
 
     def load_preset(self, preset_data):
         """Load preset data into synth"""
@@ -77,8 +77,8 @@ class FavoriteButton(QPushButton):
         """Save preset data to settings"""
         if self.preset:
             self.settings.setValue(f'favorites/slot{self.slot_num}/synth_type', self.preset.synth_type)
-            self.settings.setValue(f'favorites/slot{self.slot_num}/preset_num', self.preset.preset_num)
-            self.settings.setValue(f'favorites/slot{self.slot_num}/preset_name', self.preset.preset_name)
+            self.settings.setValue(f'favorites/slot{self.slot_num}/preset_num', self.preset.tone_number)
+            self.settings.setValue(f'favorites/slot{self.slot_num}/preset_name', self.preset.tone_name)
             self.settings.setValue(f'favorites/slot{self.slot_num}/channel', self.preset.channel)
         else:
             # Clear settings if no preset
@@ -104,21 +104,21 @@ class FavoriteButton(QPushButton):
         """Update button appearance"""
         if self.preset:
             # Get color based on synth preset_type
-            if self.preset.synth_type == PresetType.ANALOG:
+            if self.preset.synth_type == ToneType.ANALOG:
                 color = "#00A3F0"  # Analog blue
-            elif self.preset.synth_type in [PresetType.DIGITAL_1, PresetType.DIGITAL_2]:
+            elif self.preset.synth_type in [ToneType.DIGITAL_1, ToneType.DIGITAL_2]:
                 color = "#FF0000"  # Red for both digital synths
-            elif self.preset.synth_type == PresetType.DRUMS:
+            elif self.preset.synth_type == ToneType.DRUMS:
                 color = "#00FF00"  # Green for drums
             else:
                 color = "#666666"  # Gray for unknown types
                 
             # Set text to preset name
             # Get just the preset name without the number prefix
-            if ':' in self.preset.preset_name:
-                preset_display_name = self.preset.preset_name.split(':', 1)[1].strip()
+            if ':' in self.preset.tone_name:
+                preset_display_name = self.preset.tone_name.split(':', 1)[1].strip()
             else:
-                preset_display_name = self.preset.preset_name
+                preset_display_name = self.preset.tone_name
                 
             text = f"FAV {self.slot_num + 1}\n{preset_display_name}"
         else:
