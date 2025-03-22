@@ -50,6 +50,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
@@ -63,11 +64,10 @@ from jdxi_editor.ui.editors import (
     ProgramEditor,
     MidiFileEditor,
 )
-from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_program_name_by_id, \
-    get_program_number_by_name
+from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_program_name_by_id
 from jdxi_editor.ui.editors.pattern import PatternSequencer
 from jdxi_editor.ui.editors.preset import PresetEditor
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
@@ -75,7 +75,6 @@ from jdxi_editor.ui.windows.midi.message_debug import MIDIMessageDebug
 from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.ui.windows.jdxi.ui import JdxiUi
-from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 
@@ -463,6 +462,7 @@ class JdxiInstrument(JdxiUi):
             "arpeggio": self._show_arpeggio_editor,
             "effects": self._open_effects,
             "pattern": self._open_pattern,
+            "preset": self._open_preset,
             "program": self._open_program,
             "midi_file": self._open_midi_file,
         }
@@ -505,6 +505,12 @@ class JdxiInstrument(JdxiUi):
 
     def _open_pattern(self, editor_type: str):
         self._show_editor("Pattern", PatternSequencer)
+
+    def _open_preset(self, editor_type: str):
+        try:
+            self._show_editor("Preset", PresetEditor)
+        except Exception as ex:
+            logging.error(f"Error showing Preset editor: {str(ex)}")
 
     def _open_program(self, editor_type: str):
         try:
@@ -679,7 +685,8 @@ class JdxiInstrument(JdxiUi):
                 DrumEditor,
                 AnalogSynthEditor,
                 PatternSequencer,
-                ProgramEditor
+                ProgramEditor,
+                PresetEditor,
             ]:
                 preset_handler = self._get_preset_handler_for_current_synth()
                 editor = editor_class(
@@ -709,6 +716,8 @@ class JdxiInstrument(JdxiUi):
                 self.effects_editor = editor
             elif title == "Pattern":
                 self.pattern_editor = editor
+            elif title == "Preset":
+                self.preset_editor = editor
             elif title == "Program":
                 self.program_editor = editor
             logging.info(f"midi channel: {self.channel}")
