@@ -7,7 +7,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.preset.preset import Preset
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 
 
 class FavoriteButton(QPushButton):
@@ -104,11 +104,11 @@ class FavoriteButton(QPushButton):
         """Update button appearance"""
         if self.preset:
             # Get color based on synth preset_type
-            if self.preset.synth_type == ToneType.ANALOG:
+            if self.preset.synth_type == SynthType.ANALOG:
                 color = "#00A3F0"  # Analog blue
-            elif self.preset.synth_type in [ToneType.DIGITAL_1, ToneType.DIGITAL_2]:
+            elif self.preset.synth_type in [SynthType.DIGITAL_1, SynthType.DIGITAL_2]:
                 color = "#FF0000"  # Red for both digital synths
-            elif self.preset.synth_type == ToneType.DRUMS:
+            elif self.preset.synth_type == SynthType.DRUMS:
                 color = "#00FF00"  # Green for drums
             else:
                 color = "#666666"  # Gray for unknown types

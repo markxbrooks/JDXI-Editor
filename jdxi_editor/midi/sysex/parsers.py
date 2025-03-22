@@ -144,25 +144,28 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
             parameters.update(parse_parameters(data, DrumCommonParameter))
         parameters.update(parse_parameters(data, DrumParameter))
     print(parameters)
+
+    """
+    # Extract tone name (assuming its offset is correctly defined in parameter_type)
     if all(f"TONE_NAME_{i}" in parameters for i in range(1, 13)):  # If ASCII values exist
         tone_name = "".join(chr(parameters[f"TONE_NAME_{i}"]) for i in range(1, 13) if parameters[f"TONE_NAME_{i}"] > 0)
         parameters["TONE_NAME"] = tone_name.strip().replace("\u0000", "").replace('\r',
-                                                                                  '')  # Remove null characters or return carriage
-        print("@@@@Tone Name:", tone_name)
-    #else:  # Fallback to raw string if needed
-    #    tone_name = parameters.get("TONE_NAME", "").replace("\u0000", "").replace("\r", "").encode("ascii",
-    #                                                                                               "ignore").decode(
-    #        "ascii")
+                                                                                   '')  # Remove null characters or return carriage
+         print("@@@@Tone Name:", tone_name)
+    else:  # Fallback to raw string if needed
+        tone_name = parameters.get("TONE_NAME", "").replace("\u0000", "").replace("\r", "").encode("ascii",
+                                                                                                   "ignore").decode(
+            "ascii")
 
-    #print("Tone Name:", tone_name)
+    print("Tone Name:", tone_name)
     # Convert to ASCII and remove unwanted characters
-    #tone_name_ascii = [
-    #    name.replace("\u0000", "").replace("\r", "").encode("ascii", "ignore").decode("ascii")
-    #    for name in tone_name
-    #]
-
+    tone_name_ascii = [
+        name.replace("\u0000", "").replace("\r", "").encode("ascii", "ignore").decode("ascii")
+        for name in tone_name
+    ]
     #print(tone_name_ascii)
     #print(tone_name)
+    """
     logging.info(f"Address: {parameters['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")
 

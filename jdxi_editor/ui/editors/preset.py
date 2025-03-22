@@ -58,7 +58,7 @@ from PySide6.QtCore import Signal, QSettings
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.helper import PresetHelper
@@ -76,7 +76,7 @@ class PresetEditor(QMainWindow):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_type: str = ToneType.ANALOG,
+        preset_type: str = SynthType.ANALOG,
     ):
         super().__init__(parent)
         self.setMinimumSize(400, 800)
@@ -113,10 +113,10 @@ class PresetEditor(QMainWindow):
         self.type_selector = QComboBox()
         self.type_selector.addItems(
             [
-                ToneType.DIGITAL_1,
-                ToneType.DIGITAL_2,
-                ToneType.ANALOG,
-                ToneType.DRUMS,
+                SynthType.DIGITAL_1,
+                SynthType.DIGITAL_2,
+                SynthType.ANALOG,
+                SynthType.DRUMS,
             ]
         )
         self.settings = QSettings("jdxi_manager", "settings")
@@ -149,9 +149,9 @@ class PresetEditor(QMainWindow):
     def _get_preset_list(self) -> List[str]:
         """Get the appropriate preset list based on preset_type"""
         logging.debug(f"Getting preset list for preset_type: {self.preset_type}")
-        if self.preset_type == ToneType.ANALOG:
+        if self.preset_type == SynthType.ANALOG:
             return ANALOG_PRESETS_ENUMERATED
-        if self.preset_type == ToneType.DIGITAL_1:
+        if self.preset_type == SynthType.DIGITAL_1:
             return DIGITAL_PRESETS_ENUMERATED
         return DRUM_PRESETS_ENUMERATED
 

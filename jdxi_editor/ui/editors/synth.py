@@ -32,7 +32,7 @@ from jdxi_editor.midi.data.parameter.digital import DigitalParameter
 from jdxi_editor.midi.data.parameter.drums import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -302,7 +302,7 @@ class SynthEditor(QWidget):
                 self.midi_helper,
                 DIGITAL_PRESETS_ENUMERATED,
                 channel=MIDI_CHANNEL_DIGITAL1,
-                preset_type=ToneType.DIGITAL_1,
+                preset_type=SynthType.DIGITAL_1,
             )
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)

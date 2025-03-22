@@ -16,12 +16,12 @@ from dataclasses import dataclass
 from typing import Optional
 
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 
 
 @dataclass
 class PresetData:
-    type: str = ToneType.DIGITAL_1  # Adjust the type as needed
+    type: str = SynthType.DIGITAL_1  # Adjust the type as needed
     current_selection: int = 1
     modified: int = 0
     channel: int = MIDI_CHANNEL_DIGITAL1

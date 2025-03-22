@@ -79,12 +79,24 @@ class ProgramHelper(QObject):
         self.analog_preset = None
         self.midi_requests = [
             "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
+            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital1 common controls
+            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital1 partial 1 request
+            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital1 partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital1 partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital1 modify request
+            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # digital2 common controls
+            "F0 41 10 00 00 00 0E 11 19 21 20 00 00 00 00 3D 69 F7",  # digital2 partial 1 request
+            "F0 41 10 00 00 00 0E 11 19 21 21 00 00 00 00 3D 68 F7",  # digital2 partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 21 22 00 00 00 00 3D 67 F7",  # digital2 partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 21 50 00 00 00 00 25 51 F7",  # digital2 modify request
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7",  # analog request
+            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",  # drums requests
+            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",
+            "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7",
+            "F0 41 10 00 00 00 0E 11 19 70 30 00 00 00 01 43 03 F7",
+            "F0 41 10 00 00 00 0E 11 19 70 32 00 00 00 01 43 01 F7",
+            "F0 41 10 00 00 00 0E 11 19 70 34 00 00 00 01 43 7F F7",
+            "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7",
         ]
 
     def next_program(self):

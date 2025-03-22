@@ -12,7 +12,7 @@ import logging
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.preset import PresetEditor
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 
 
 class PresetPanel(QWidget):
@@ -42,10 +42,10 @@ class PresetPanel(QWidget):
         layout.addWidget(save_btn)
 
         # Create preset editors for each preset_type
-        self.analog_editor = PresetEditor(midi_helper, self, ToneType.ANALOG)
-        self.digital_1_editor = PresetEditor(midi_helper, self, ToneType.DIGITAL_1)
-        self.digital_2_editor = PresetEditor(midi_helper, self, ToneType.DIGITAL_2)
-        self.drums_editor = PresetEditor(midi_helper, self, ToneType.DRUMS)
+        self.analog_editor = PresetEditor(midi_helper, self, SynthType.ANALOG)
+        self.digital_1_editor = PresetEditor(midi_helper, self, SynthType.DIGITAL_1)
+        self.digital_2_editor = PresetEditor(midi_helper, self, SynthType.DIGITAL_2)
+        self.drums_editor = PresetEditor(midi_helper, self, SynthType.DRUMS)
 
     def _on_load(self):
         """Handle load button click"""

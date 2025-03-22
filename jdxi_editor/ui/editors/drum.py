@@ -79,7 +79,7 @@ from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler
@@ -105,7 +105,7 @@ class DrumEditor(SynthEditor):
         # Initialize class attributes
 
         # Presets
-        self.preset_type = ToneType.DRUMS
+        self.preset_type = SynthType.DRUMS
         self.preset_handler = preset_handler
         self.preset_list = DRUM_PRESETS_ENUMERATED
 
