@@ -124,6 +124,8 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
 
 def get_preset_parameter_value(parameter: str, id: str) -> Union[Optional[int], Any]:
     """Retrieve a specific parameter value from a program by its ID."""
+    if type(id) == int:
+        id = f"{id:03d}"
     preset = next((p for p in DIGITAL_PRESET_LIST if p["id"] == id), None)
     if not preset:
         return None
