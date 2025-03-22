@@ -203,7 +203,7 @@ class DigitalSynthEditor(SynthEditor):
                         width: 100px;
         """)
         self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
-        instrument_preset_group.setStyleSheet(
+        self.instrument_title_label.setStyleSheet(
             """
             QGroupBox {
             width: 80px;
@@ -624,52 +624,41 @@ class DigitalSynthEditor(SynthEditor):
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
-            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
-                synth_tone, None
-            )
-
-        def update_adsr_widget(param, value):
-            """Helper function to update ADSR widgets."""
-            new_value = (
-                midi_cc_to_frac(value)
-                if param
-                in [
-                    DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-                    DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
-                ]
-                else midi_cc_to_ms(value)
-            )
-
-            adsr_mapping = {
-                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
-                    partial_no
-                ].amp_env_adsr_widget.attack_sb,
-                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
-                    partial_no
-                ].amp_env_adsr_widget.decay_sb,
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
-                    partial_no
-                ].amp_env_adsr_widget.sustain_sb,
-                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
-                    partial_no
-                ].amp_env_adsr_widget.release_sb,
-                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
-                    partial_no
-                ].filter_adsr_widget.attack_sb,
-                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
-                    partial_no
-                ].filter_adsr_widget.decay_sb,
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
-                    partial_no
-                ].filter_adsr_widget.sustain_sb,
-                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
-                    partial_no
-                ].filter_adsr_widget.release_sb,
+            partial_map = {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3,
+                "TONE_PARTIAL_1": 1,
+                "TONE_PARTIAL_2": 2,
+                "TONE_PARTIAL_3": 3
             }
+            partial_no = partial_map.get(synth_tone)
+            if partial_no is None:
+                logging.warning(f"Unknown synth tone: {synth_tone}")
+            return partial_no
 
-            if param in adsr_mapping:
-                spinbox = adsr_mapping[param]
-                spinbox.setValue(new_value)
+        def _update_slider(param, value):
+            """Helper function to update sliders safely."""
+            if partial_no is None:
+                logging.warning("Cannot update slider: partial_no is None")
+                return
+
+            if partial_no not in self.partial_editors:
+                logging.warning(f"Partial editor {partial_no} not found")
+                return
+
+            slider = self.partial_editors[partial_no].controls.get(param)
+            if slider:
+                slider_value = param.convert_from_midi(value)
+                logging.info(f"midi value {value} converted to slider value {slider_value}")
+                slider.blockSignals(True)
+                slider.setValue(slider_value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
@@ -679,6 +668,10 @@ class DigitalSynthEditor(SynthEditor):
 
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(synth_tone)
+
+        if partial_no is None:
+            logging.warning(f"Could not determine partial number from synth tone: {synth_tone}")
+            return
 
         ignored_keys = {
             "JD_XI_HEADER",
@@ -690,21 +683,6 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
         failures, successes = [], []
-
-        def _update_slider(param, value):
-            """Helper function to update sliders safely."""
-            slider = self.partial_editors[partial_no].controls.get(param)
-            if slider:
-                slider_value = param.convert_from_midi(value)
-                logging.info(
-                    f"midi value {value} converted to slider value {slider_value}"
-                )
-                slider.blockSignals(True)
-                slider.setValue(slider_value)
-                slider.blockSignals(False)
-                successes.append(param.name)
-                if debug_param_updates:
-                    logging.info(f"Updated: {param.name:50} {value}")
 
         for param_name, param_value in sysex_data.items():
             param = DigitalParameter.get_by_name(param_name)
@@ -721,9 +699,7 @@ class DigitalSynthEditor(SynthEditor):
         def _log_debug_info():
             """Helper function to log debugging statistics."""
             if debug_stats:
-                success_rate = (
-                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-                )
+                success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
                 logging.info(f"Successes: {successes}")
                 logging.info(f"Failures: {failures}")
                 logging.info(f"Success Rate: {success_rate:.1f}%")
@@ -788,9 +764,15 @@ class DigitalSynthEditor(SynthEditor):
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
-            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
-                synth_tone, None
-            )
+            partial_map = {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3,
+                "TONE_PARTIAL_1": 1,
+                "TONE_PARTIAL_2": 2,
+                "TONE_PARTIAL_3": 3
+            }
+            return partial_map.get(synth_tone)
 
         def _update_common_slider(param, value):
             """Helper function to update sliders safely."""
@@ -904,6 +886,10 @@ class DigitalSynthEditor(SynthEditor):
             f"Updating waveform buttons for partial {partial_number} with value {value}"
         )
 
+        if partial_number is None:
+            logging.warning("Cannot update waveform buttons: partial_number is None")
+            return
+
         waveform_map = {
             0: OscWave.SAW,
             1: OscWave.SQUARE,
@@ -924,6 +910,10 @@ class DigitalSynthEditor(SynthEditor):
         logging.debug(f"Waveform value {value} found, selecting {selected_waveform}")
 
         # Retrieve waveform buttons for the given partial
+        if partial_number not in self.partial_editors:
+            logging.warning(f"Partial editor {partial_number} not found")
+            return
+
         wave_buttons = self.partial_editors[partial_number].wave_buttons
 
         # Reset all buttons to default style
@@ -936,3 +926,5 @@ class DigitalSynthEditor(SynthEditor):
         if selected_btn:
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(Style.JDXI_BUTTON_RECT)
+        else:
+            logging.warning(f"Waveform button not found for {selected_waveform}")

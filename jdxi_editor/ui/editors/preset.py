@@ -88,14 +88,21 @@ class PresetEditor(SynthEditor):
         self.midi_channel = (
             MIDI_CHANNEL_DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
         )
-        self.midi_requests = [
+        self.midi_requests = [ # MIDI requests for preset names. Don't want too many requests.
             "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
+            # "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
+            # "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
+            # "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
+            # "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
             "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
+            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # digital2 common controls
+            # "F0 41 10 00 00 00 0E 11 19 21 20 00 00 00 00 3D 69 F7",  # digital2 partial 1 request
+            # "F0 41 10 00 00 00 0E 11 19 21 21 00 00 00 00 3D 68 F7",  # digital2 partial 2 request
+            # "F0 41 10 00 00 00 0E 11 19 21 22 00 00 00 00 3D 67 F7",  # digital2 partial 3 request
+            # "F0 41 10 00 00 00 0E 11 19 21 50 00 00 00 00 25 51 F7",  # digital2 modify request
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7",  # analog request
+            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",  # drums requests
         ]
         self.layout = None
         self.genre_label = None
@@ -110,6 +117,7 @@ class PresetEditor(SynthEditor):
         self.preset_type = None
         self.presets = {}  # Maps program names to numbers
         self.setup_ui()
+        self.data_request()
 
     def setup_ui(self):
         """set up ui elements"""
@@ -267,6 +275,10 @@ class PresetEditor(SynthEditor):
             """
         )
         self._populate_presets()
+        self.midi_helper.update_digital1_tone_name.connect(self.update_digital1_tone_name)
+        self.midi_helper.update_digital2_tone_name.connect(self.update_digital2_tone_name)
+        self.midi_helper.update_drums_tone_name.connect(self.update_drums_tone_name)
+        self.midi_helper.update_analog_tone_name.connect(self.update_analog_tone_name)
         
     def on_preset_type_changed(self, index):
         """Handle preset type selection change."""
@@ -282,6 +294,18 @@ class PresetEditor(SynthEditor):
             self.midi_channel = MIDI_CHANNEL_ANALOG
         self._populate_presets()
         self.update_category_combo_box_categories()
+
+    def update_digital1_tone_name(self, tone_name):
+        self.digital_synth_1_current_synth.setText(tone_name)
+
+    def update_digital2_tone_name(self, tone_name):
+        self.digital_synth_2_current_synth.setText(tone_name)
+
+    def update_drums_tone_name(self, tone_name):
+        self.drum_kit_current_synth.setText(tone_name)
+
+    def update_analog_tone_name(self, tone_name):
+        self.analog_synth_current_synth.setText(tone_name)
 
     def load_preset_by_program_change(self, preset_index):
         """Load a preset by program change."""

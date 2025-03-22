@@ -332,13 +332,13 @@ class MidiInHandler(MidiIOController):
                             print(f"@@@@@Emitting tone name: {tone_name}")
                             self.update_program_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_1_AREA":
-                            print(f"@@@@@Emitting tone name: {tone_name}")
+                            print(f"@@@@@Emitting D1 tone name: {tone_name}")
                             self.update_digital1_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_2_AREA":
-                            print(f"@@@@@Emitting tone name: {tone_name}")
+                            print(f"@@@@@Emitting D2 tone name: {tone_name}")
                             self.update_digital2_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_ANALOG_SYNTH_AREA":
-                            print(f"@@@@@Emitting tone name: {tone_name}")
+                            print(f"@@@@@Emitting AN tone name: {tone_name}")
                             self.update_analog_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DRUM_KIT_AREA":
                             print(f"@@@@@Emitting drums tone name: {tone_name}")

@@ -62,7 +62,6 @@ class SynthEditor(QWidget):
         self.preset_handler = None
         self.instrument_selection_combo = None
         self.preset_type = None
-        self.preset_loader = None
         self.midi_helper = midi_helper
         self.bipolar_parameters = []
         # Midi request for Temporary program
@@ -113,6 +112,7 @@ class SynthEditor(QWidget):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
+        self.preset_loader = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
 
 
     def set_instrument_title_label(self, name: str):
