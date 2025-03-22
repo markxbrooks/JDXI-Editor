@@ -233,7 +233,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS_ENUMERATED)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_handler.current_preset_zero_based_index
+            self.preset_handler.current_preset_zero_based
         )
 
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(

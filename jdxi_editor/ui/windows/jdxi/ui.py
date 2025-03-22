@@ -399,6 +399,10 @@ class JdxiUi(QMainWindow):
         load_program_action = QAction("Load Program...", self)
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
+        
+        load_preset_action = QAction("Load Preset...", self)
+        load_preset_action.triggered.connect(lambda: self.show_editor("preset"))
+        file_menu.addAction(load_preset_action)
 
         load_action = QAction("Load Patch...", self)
         load_action.triggered.connect(self._load_patch)
@@ -1035,4 +1039,7 @@ class JdxiUi(QMainWindow):
         pass # to be implemented in subclass
 
     def _load_settings(self):
+        pass
+
+    def show_editor(self, param):
         pass

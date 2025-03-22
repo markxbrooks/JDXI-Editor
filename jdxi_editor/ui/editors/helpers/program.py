@@ -43,8 +43,9 @@ Usage Example:
 
 import logging
 import re
-from typing import Optional, Dict
+from typing import Optional, Dict, Union, Any
 
+from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 
 
@@ -121,6 +122,17 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
     return program.get(parameter) if program else None
 
 
+def get_preset_parameter_value(parameter: str, id: str) -> Union[Optional[int], Any]:
+    """Retrieve a specific parameter value from a program by its ID."""
+    preset = next((p for p in DIGITAL_PRESET_LIST if p["id"] == id), None)
+    if not preset:
+        return None
+    # Convert string values to integers for msb, lsb, pc
+    if parameter in ["msb", "lsb", "pc"]:
+        return int(preset.get(parameter))
+    return preset.get(parameter)
+
+
 def calculate_midi_values(bank: str, program_number: int):
     """Calculate MSB, LSB, and PC based on bank and program number."""
     if bank in ["A", "B"]:
@@ -157,8 +169,8 @@ def calculate_index(bank, program_number: int):
     return bank_offset + program_index
 
 
-def log_midi_info(msb, lsb, pc):
-    """Helper function to log MIDI information."""
+def log_midi_info(msb: int, lsb: int, pc: int):
+    """Log MIDI information in a consistent format."""
     logging.info(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
 
 
