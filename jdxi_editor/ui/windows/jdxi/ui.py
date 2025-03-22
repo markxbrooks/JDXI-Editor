@@ -39,7 +39,7 @@ from PySide6.QtGui import (
     QAction,
     QFontDatabase,
 )
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
@@ -71,7 +71,7 @@ class JdxiUi(QMainWindow):
         self.current_analog_tone_name = "Init Tone"
         self.current_drums_tone_name = "Init Tone"
         # Initialize synth preset_type
-        self.current_synth_type = ToneType.DIGITAL_1
+        self.current_synth_type = SynthType.DIGITAL_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
 
@@ -705,15 +705,15 @@ class JdxiUi(QMainWindow):
         )
 
         self.analog_button.clicked.connect(
-            lambda: self._select_synth(ToneType.ANALOG)
+            lambda: self._select_synth(SynthType.ANALOG)
         )
         self.digital1_button.clicked.connect(
-            lambda: self._select_synth(ToneType.DIGITAL_1)
+            lambda: self._select_synth(SynthType.DIGITAL_1)
         )
         self.digital2_button.clicked.connect(
-            lambda: self._select_synth(ToneType.DIGITAL_2)
+            lambda: self._select_synth(SynthType.DIGITAL_2)
         )
-        self.drums_button.clicked.connect(lambda: self._select_synth(ToneType.DRUMS))
+        self.drums_button.clicked.connect(lambda: self._select_synth(SynthType.DRUMS))
 
         # Create address button area
         button_group = QButtonGroup()
@@ -838,21 +838,21 @@ class JdxiUi(QMainWindow):
 
     def _update_display(self):
         """Update the JD-Xi display image"""
-        if self.current_synth_type == ToneType.DIGITAL_1:
+        if self.current_synth_type == SynthType.DIGITAL_1:
             self.current_tone_name = self.current_digital1_tone_name
             active_synth = "D1"
-        elif self.current_synth_type == ToneType.DIGITAL_2:
+        elif self.current_synth_type == SynthType.DIGITAL_2:
             self.current_tone_name = self.current_digital2_tone_name
             active_synth = "D2"
-        elif self.current_synth_type == ToneType.DRUMS:
+        elif self.current_synth_type == SynthType.DRUMS:
             self.current_tone_name = self.current_drums_tone_name
             active_synth = "DR"
-        elif self.current_synth_type == ToneType.ANALOG:
+        elif self.current_synth_type == SynthType.ANALOG:
             self.current_tone_name = self.current_analog_tone_name
             active_synth = "AN"
         else:
             active_synth = "D1"
-
+        print(f"current tone name: {self.current_tone_name}")
         self.digital_display.repaint_display(
             current_octave=self.current_octave,
             tone_number=self.current_tone_number,

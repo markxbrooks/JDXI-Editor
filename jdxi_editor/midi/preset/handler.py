@@ -2,7 +2,7 @@
 Module: preset_handler
 ======================
 
-This module defines the `PresetHandler` class, which extends `PresetLoader` to manage
+This module defines the `PresetHandler` class, which extends `PresetHelper` to manage
 preset selection and navigation for a MIDI-enabled synthesizer.
 
 Classes:
@@ -31,7 +31,7 @@ preset changes and communicate them to the UI and MIDI engine.
 
 from PySide6.QtCore import Signal
 
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.preset.helper import PresetHelper
 
 
@@ -39,7 +39,7 @@ class PresetHandler(PresetHelper):
     """ Preset Loading Class """
     preset_changed = Signal(int, int)  # Signal emitted when preset changes
 
-    def __init__(self, midi_helper, presets, device_number=0, channel=1, preset_type=ToneType.DIGITAL_1):
+    def __init__(self, midi_helper, presets, device_number=0, channel=1, preset_type=SynthType.DIGITAL_1):
         super().__init__(midi_helper, device_number)  # Call PresetLoader's constructor
         self.presets = presets
         self.channel = channel

@@ -67,6 +67,7 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.editors.partial import PartialEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.style import Style
+# from jdxi_editor.ui.widgets.adsr.pitch_envelope import PitchEnvelope
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.switch.switch import Switch
@@ -245,7 +246,22 @@ class DigitalPartialEditor(PartialEditor):
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
+        """ 
+        group_address, _ = (
+            DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME.get_address_for_partial(
+                self.partial_number
+            )
+        )
 
+        pitch_env_widget = PitchEnvelope(DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME,
+                                         DigitalParameter.OSC_PITCH_ENV_DECAY_TIME,
+                                         DigitalParameter.OSC_PITCH_ENV_DEPTH,
+                                         self.midi_helper,
+                                         area=DIGITAL_SYNTH_1_AREA,
+                                         part=self.part,
+                                         group=group_address)
+        pitch_env_layout.addWidget(pitch_env_widget)
+        """
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
                 DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
@@ -259,6 +275,7 @@ class DigitalPartialEditor(PartialEditor):
         pitch_env_layout.addWidget(
             self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_DEPTH, "Depth")
         )
+
         layout.addWidget(pitch_env_group)
 
         # Wave gain control
@@ -424,6 +441,7 @@ class DigitalPartialEditor(PartialEditor):
             area=DIGITAL_SYNTH_1_AREA,
             part=self.part,
             group=group_address,
+            # depth_param=DigitalParameter.FILTER_ENV_DEPTH,
         )
 
         adsr_vlayout = QVBoxLayout()

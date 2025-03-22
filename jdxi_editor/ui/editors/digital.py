@@ -51,7 +51,7 @@ import qtawesome as qta
 
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
@@ -95,7 +95,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_num = None
         self.current_data = None
         self.preset_type = (
-            ToneType.DIGITAL_1 if synth_num == 1 else ToneType.DIGITAL_2
+            SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
         )
 
         self.presets = DIGITAL_PRESETS_ENUMERATED
@@ -113,12 +113,19 @@ class DigitalSynthEditor(SynthEditor):
             "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
             "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
             "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # modify request
+        ] if synth_num == 1 else [
+            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
+            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # common controls
+            "F0 41 10 00 00 00 0E 11 19 21 20 00 00 00 00 3D 69 F7",  # partial 1 request
+            "F0 41 10 00 00 00 0E 11 19 21 21 00 00 00 00 3D 68 F7",  # partial 2 request
+            "F0 41 10 00 00 00 0E 11 19 21 22 00 00 00 00 3D 67 F7",  # partial 3 request
+            "F0 41 10 00 00 00 0E 11 19 21 50 00 00 00 00 25 51 F7",  # modify request
         ]
         self.instrument_icon_folder = "digital_synths"
         if preset_handler:
             self.preset_handler = preset_handler
         else:
-            if self.preset_type == ToneType.DIGITAL_1:
+            if self.preset_type == SynthType.DIGITAL_1:
                 self.preset_handler = parent.digital_1_preset_handler
             else:
                 self.preset_handler = parent.digital_2_preset_handler

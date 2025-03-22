@@ -30,7 +30,7 @@ from pubsub import pub
 from jdxi_editor.midi.data.constants.constants import ROLAND_ID
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import ToneType
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter
@@ -38,6 +38,32 @@ from jdxi_editor.midi.utils.json import log_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.midi.preset.data import PresetData
+
+
+def _parse_sysex_data(sysex_data: bytes) -> dict:
+    """Parses SysEx data and logs the result."""
+    try:
+        parsed_data = parse_sysex(sysex_data)
+        log_json(parsed_data)
+        return parsed_data
+    except Exception as parse_ex:
+        logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
+        return {}
+
+
+def _extract_command_info(message: Any) -> None:
+    """Extracts and logs command type and address offset."""
+    try:
+        command_type = message.data[6]
+        address_offset = "".join(f"{byte:02X}" for byte in message.data[7:11])
+        command_name = SysexParameter.get_command_name(command_type)
+
+        logging.debug(
+            "Command: %s (0x%02X), Address Offset: %s",
+            command_name, command_type, address_offset
+        )
+    except Exception as ex:
+        logging.warning(f"Unable to extract command or parameter address due to {ex}")
 
 
 class MidiInHandler(MidiIOController):
@@ -200,6 +226,71 @@ class MidiInHandler(MidiIOController):
         )
         return message_byte_list
 
+    def _handle_sysex_message_new(self, message: Any, preset_data) -> None:
+        """
+        Handle SysEx MIDI messages from the Roland JD-Xi.
+
+        Processes SysEx data, attempts to parse tone data, and extracts command
+        and parameter information for further processing.
+
+        :param message: The MIDI SysEx message.
+        :param preset_data: Dictionary for preset data modifications.
+        """
+        logging.debug(f"handle_incoming_midi_message via pub: {message}")
+
+        try:
+            if not (message.type == 'sysex' and len(message.data) > 6):
+                return
+
+            if message.data[3] == 0x02:  # Identity request
+                self._handle_identity_request(message)
+                return
+
+            hex_string = " ".join(f"{byte:02X}" for byte in message.data)
+            logging.debug("SysEx message received (%d bytes)", len(message.data))
+
+            # Convert SysEx data
+            sysex_message_byte_list = bytes([0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7])
+
+            # Attempt to parse the SysEx data
+            parsed_data = _parse_sysex_data(sysex_message_byte_list)
+
+            if not parsed_data:
+                return
+
+            # Extract and emit tone name if present
+            self._emit_tone_name(parsed_data)
+
+            # Extract command and parameter details
+            _extract_command_info(message)
+
+        except Exception as ex:
+            logging.error(f"Unexpected error {ex} while handling SysEx message")
+
+    def _emit_tone_name(self, parsed_data: dict) -> None:
+        """Extracts and emits the tone name if applicable."""
+        tone_name = parsed_data.get("TONE_NAME")
+
+        if not tone_name:
+            return
+
+        address = parsed_data.get("ADDRESS")
+
+        # Only emit if the address matches known tone addresses
+        if address in {"12180000", "12190100", "12192100", "12194200", "12197000"}:
+            area = parsed_data.get("TEMPORARY_AREA")
+            emit_map = {
+                "TEMPORARY_PROGRAM_AREA": self.update_program_name,
+                "TEMPORARY_DIGITAL_SYNTH_1_AREA": self.update_digital1_tone_name,
+                "TEMPORARY_DIGITAL_SYNTH_2_AREA": self.update_digital2_tone_name,
+                "TEMPORARY_ANALOG_SYNTH_AREA": self.update_analog_tone_name,
+                "TEMPORARY_DRUM_KIT_AREA": self.update_drums_tone_name,
+            }
+
+            if emitter := emit_map.get(area):
+                logging.info(f"@@@@@ Emitting tone name: {tone_name}")
+                emitter.emit(tone_name)
+
     def _handle_sysex_message(self, message: Any, preset_data) -> None:
         """
         Handle SysEx MIDI messages from the Roland JD-Xi.
@@ -224,20 +315,33 @@ class MidiInHandler(MidiIOController):
             )
 
             # If the message contains tone data, attempt to parse it
-            if len(message.data) > 63:
+            if len(message.data) > 20:
                 try:
                     parsed_data = parse_sysex(sysex_message_byte_list)
                     self.midi_sysex_json.emit(json.dumps(parsed_data))
                     log_json(parsed_data)
-                    tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") in ["12190100", "12194200"] else None
+                    tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") in [
+                        "12180000",
+                        "12190100",
+                        "12192100",
+                        "12194200",
+                        "12197000"  # Drums Common
+                    ] else None
                     if tone_name:
+                        if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_PROGRAM_AREA":
+                            print(f"@@@@@Emitting tone name: {tone_name}")
+                            self.update_program_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_1_AREA":
+                            print(f"@@@@@Emitting tone name: {tone_name}")
                             self.update_digital1_tone_name.emit(tone_name)
-                        elif parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_2_AREA":
+                        if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_2_AREA":
+                            print(f"@@@@@Emitting tone name: {tone_name}")
                             self.update_digital2_tone_name.emit(tone_name)
-                        elif parsed_data["TEMPORARY_AREA"] == "TEMPORARY_ANALOG_AREA":
+                        if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_ANALOG_SYNTH_AREA":
+                            print(f"@@@@@Emitting tone name: {tone_name}")
                             self.update_analog_tone_name.emit(tone_name)
-                        elif parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DRUMS_AREA":
+                        if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DRUM_KIT_AREA":
+                            print(f"@@@@@Emitting drums tone name: {tone_name}")
                             self.update_drums_tone_name.emit(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
@@ -357,10 +461,10 @@ class MidiInHandler(MidiIOController):
 
         self.midi_program_changed.emit(channel, program_number)
 
-        preset_mapping: Dict[int, ToneType] = {
-            95: ToneType.DIGITAL_1,
-            94: ToneType.ANALOG,
-            86: ToneType.DRUMS,
+        preset_mapping: Dict[int, SynthType] = {
+            95: SynthType.DIGITAL_1,
+            94: SynthType.ANALOG,
+            86: SynthType.DRUMS,
         }
 
         if self.cc_msb_value in preset_mapping:
