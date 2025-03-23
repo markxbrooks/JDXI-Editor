@@ -37,7 +37,7 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
@@ -290,7 +290,7 @@ class SynthEditor(QWidget):
 
     def load_preset(self, preset_index):
         """Load address preset by index"""
-        preset_data = PresetData(
+        preset_data = ToneData(
             type=self.preset_type,  # Ensure this is address valid preset_type
             current_selection=preset_index,  # Convert to 1-based index
             modified=0,  # or 1, depending on your logic

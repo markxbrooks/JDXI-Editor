@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPainter, QPen, QColor
 
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.preset.tone import Tone
 

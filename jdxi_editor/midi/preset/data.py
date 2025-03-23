@@ -20,7 +20,7 @@ from jdxi_editor.midi.preset.type import SynthType
 
 
 @dataclass
-class PresetData:
+class ToneData:
     type: str = SynthType.DIGITAL_1  # Adjust the type as needed
     current_selection: int = 1
     modified: int = 0
