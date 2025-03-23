@@ -174,6 +174,8 @@ def generate_editor_style(
         slider_handle,
         slider_handle_border,
         slider_groove,
+        slider_neon,
+        slider_neon_gradient_stop,
 ):
     return f"""
         QWidget {{
@@ -251,7 +253,7 @@ def generate_editor_style(
 
         QSlider::handle:horizontal{{
             background: {slider_handle};
-            border: 3px solid #ff1a1a; /* Neon red border */
+            border: 3px solid {slider_neon}; /* Neon red border */
             width: 8px;  /* More rectangular */
             height: 2px;  
             margin: -6px;
@@ -282,8 +284,8 @@ def generate_editor_style(
         }}
                 /* Glowing effect when moving */
         QSlider::sub-page:horizontal {{
-            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
-                         stop:0 #660000, stop:1 #ff1a1a);
+            background: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
+                         stop:0 {slider_neon_gradient_stop}, stop:1 {slider_neon});
             border-radius: 3px;
         }}
         /* Glowing effect when moving */
@@ -299,12 +301,13 @@ def generate_editor_style(
         }}
         /* QLabels */
         QLabel {{
-            color: #ff1a1a;
+            color: {accent};
         }}
     """
 
+
 def get_button_styles(active):
-    """Returns the appropriate style for active/inactive states"""
+    """Returns the appropriate style for active/inactive button states"""
     base_style = """
         QPushButton {
             border-radius: 15px;

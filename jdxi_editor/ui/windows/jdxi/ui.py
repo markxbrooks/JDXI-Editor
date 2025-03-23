@@ -39,7 +39,12 @@ from PySide6.QtGui import (
     QAction,
     QFontDatabase,
 )
+
+from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
+from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
@@ -298,10 +303,10 @@ class JdxiUi(QMainWindow):
         grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
         grid.setGeometry(QRect(1, 1, 300, 30))
         for i in range(16):
-            # button = QPushButton()
             button = SequencerSquare(i, self.midi_helper)
             button.setFixedSize(25, 25)
             button.setCheckable(True)  # Ensure the button is checkable
+            button.setChecked(False)
             button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
             button.customContextMenuRequested.connect(
                 lambda pos, b=button: self._show_favorite_context_menu(pos, b)
@@ -313,7 +318,7 @@ class JdxiUi(QMainWindow):
             button.toggled.connect(
                 lambda checked, btn=button: toggle_button_style(btn, checked)
             )
-            button.clicked.connect(lambda _, idx=i, but=button: self._save_favorite(but, idx))
+            button.clicked.connect(lambda _, index=i, but=button: self._save_favorite(but, index))
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
             grid.setHorizontalSpacing(2)  # Add spacing between columns
             sequencer_buttons.append(button)
@@ -833,18 +838,27 @@ class JdxiUi(QMainWindow):
         """Update the JD-Xi display image"""
         if self.current_synth_type == SynthType.DIGITAL_1:
             self.current_tone_name = self.current_digital1_tone_name
+            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
+                                                                      DIGITAL_PRESET_LIST)
             active_synth = "D1"
         elif self.current_synth_type == SynthType.DIGITAL_2:
             self.current_tone_name = self.current_digital2_tone_name
             active_synth = "D2"
+            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
+                                                                      DIGITAL_PRESET_LIST)
         elif self.current_synth_type == SynthType.DRUMS:
             self.current_tone_name = self.current_drums_tone_name
             active_synth = "DR"
+            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
+                                                                      DRUM_KIT_LIST)
         elif self.current_synth_type == SynthType.ANALOG:
             self.current_tone_name = self.current_analog_tone_name
             active_synth = "AN"
+            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
+                                                                      ANALOG_PRESET_LIST)
         else:
             active_synth = "D1"
+        print(f"current tone number: {self.current_tone_number}")
         print(f"current tone name: {self.current_tone_name}")
         self.digital_display.repaint_display(
             current_octave=self.current_octave,

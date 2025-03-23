@@ -329,19 +329,19 @@ class MidiInHandler(MidiIOController):
                     ] else None
                     if tone_name:
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_PROGRAM_AREA":
-                            print(f"@@@@@Emitting tone name: {tone_name}")
+                            print(f"Emitting tone name: {tone_name}")
                             self.update_program_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_1_AREA":
-                            print(f"@@@@@Emitting D1 tone name: {tone_name}")
+                            print(f"Emitting D1 tone name: {tone_name}")
                             self.update_digital1_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_2_AREA":
-                            print(f"@@@@@Emitting D2 tone name: {tone_name}")
+                            print(f"Emitting D2 tone name: {tone_name}")
                             self.update_digital2_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_ANALOG_SYNTH_AREA":
-                            print(f"@@@@@Emitting AN tone name: {tone_name}")
+                            print(f"Emitting AN tone name: {tone_name}")
                             self.update_analog_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DRUM_KIT_AREA":
-                            print(f"@@@@@Emitting drums tone name: {tone_name}")
+                            print(f"Emitting drums tone name: {tone_name}")
                             self.update_drums_tone_name.emit(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
@@ -353,7 +353,7 @@ class MidiInHandler(MidiIOController):
                     # Extract TONE_NAME if ADDRESS is "12180000"
                     tone_name = parsed_data["TONE_NAME"] if parsed_data.get("ADDRESS") == "12180000" else None
                     if tone_name:
-                        logging.info(f"@@@@@Emitting tone name: {tone_name}")
+                        logging.info(f"Emitting tone name: {tone_name}")
                         self.update_program_name.emit(tone_name)
 
                     # Print the result
