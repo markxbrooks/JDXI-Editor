@@ -171,8 +171,6 @@ class JdxiInstrument(JdxiUi):
         self.display_label = QLabel()
         self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
 
-        # Initial display
-        self._update_display_image()
 
         # Add display to layout
         if hasattr(self, "main_layout"):

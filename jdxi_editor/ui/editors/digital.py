@@ -480,6 +480,7 @@ class DigitalSynthEditor(SynthEditor):
             DigitalModifyParameter.CHROMATIC_PORTAMENTO, "Chromatic Portamento", ["OFF", "ON"]
         )
         layout.addWidget(chromatic_portamento)
+        layout.addStretch()
         return group
 
     def update_instrument_title(self):
@@ -963,7 +964,7 @@ class DigitalSynthEditor(SynthEditor):
                 "TONE_PARTIAL_2": 2,
                 "TONE_PARTIAL_3": 3
             }
-            return partial_map.get(synth_tone)
+            return partial_map.get(synth_tone, 3)
 
         def _update_common_slider(param, value):
             """Helper function to update sliders safely."""

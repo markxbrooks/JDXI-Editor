@@ -245,17 +245,32 @@ def generate_editor_style(
 
         QSlider::groove:horizontal {{
             background: {slider_groove};
-            height: 2px;
-            border-radius: 1px;
+            height: 6px;
+            border-radius: 2px;
         }}
 
         QSlider::handle:horizontal{{
             background: {slider_handle};
-            border: 2px solid {slider_handle_border};
-            width: 18px;
-            height: 14px;
-            margin: -9px 0;
-            border-radius: 9px;
+            border: 3px solid #ff1a1a; /* Neon red border */
+            width: 8px;  /* More rectangular */
+            height: 2px;  
+            margin: -6px;
+            padding: 2px;
+            border-radius: 4px;
+        }}
+        QSlider::handle:disabled{{
+            background: {slider_handle};
+            border: 2px solid #333333; /* grey border */
+            width: 8px;  /* More rectangular */
+            height: 2px;  
+            margin: -6px;
+            padding: 2px;
+            border-radius: 4px;
+        }}
+        /* Unfilled portion */
+        QSlider::add-page:horizontal {{
+            background: #222;
+            border-radius: 3px;
         }}
         QSlider::handle:vertical {{
             background: {slider_handle};
@@ -264,6 +279,27 @@ def generate_editor_style(
             height: 12px;
             margin: -9px 0;
             border-radius: 9px;
+        }}
+                /* Glowing effect when moving */
+        QSlider::sub-page:horizontal {{
+            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }}
+        /* Glowing effect when moving */
+        QSlider::sub-page:horizontal:disabled {{
+            background: #333333;
+            border-radius: 3px;
+        }}
+
+        /* Unfilled portion */
+        QSlider::add-page:horizontal {{
+            background: #222;
+            border-radius: 3px;
+        }}
+        /* QLabels */
+        QLabel {{
+            color: #ff1a1a;
         }}
     """
 
