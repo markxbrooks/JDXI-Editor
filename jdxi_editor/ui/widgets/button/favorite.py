@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import logging
 
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
@@ -41,7 +41,7 @@ class FavoriteButton(QPushButton):
         if not self.preset:
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
-        preset_data = PresetData(
+        preset_data = ToneData(
             type=self.preset.synth_type,  # Ensure this is address valid preset_type
             current_selection=self.preset.tone_number + 1,  # Convert to 1-based index
             modified=0  # or 1 if modified

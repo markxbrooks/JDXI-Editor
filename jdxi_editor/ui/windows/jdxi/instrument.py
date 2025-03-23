@@ -50,7 +50,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
@@ -389,7 +389,7 @@ class JdxiInstrument(JdxiUi):
             self.channel,
         )
 
-        preset_data = PresetData(
+        preset_data = ToneData(
             type=self.current_synth_type,
             current_selection=self.current_preset_index,  # Convert to 1-based index
             channel=self.channel,
@@ -420,7 +420,7 @@ class JdxiInstrument(JdxiUi):
             presets[self.current_preset_index],
             self.channel,
         )
-        preset_data = PresetData(
+        preset_data = ToneData(
             type=self.current_synth_type,
             current_selection=self.current_preset_index,
             modified=0,
@@ -526,13 +526,13 @@ class JdxiInstrument(JdxiUi):
         preset_name = f"favorite_{index + 1:02d}"
 
         if button.isChecked():
-            current_preset = self._get_current_preset()
+            current_preset = self._get_current_tone()
             if current_preset:
                 # Uncheck all other favorite buttons before setting this one
-                for other_button in self.favorite_buttons:
-                    if other_button is not button:
-                        other_button.setCheckable(True)
-                        other_button.setChecked(False)
+                # for other_button in self.favorite_buttons:
+                #    if other_button is not button:
+                #        other_button.setCheckable(True)
+                #       other_button.setChecked(False)
 
                 button.preset = current_preset  # Store preset in button
                 button.setToolTip(f"Program {current_preset.name}, {current_preset.synth_type}")
@@ -552,7 +552,7 @@ class JdxiInstrument(JdxiUi):
             self.settings = QSettings("mabsoft", "jdxi_editor")
             preset_name = f"favorite_{index + 1:02d}"
             # Assuming you have address method to get the current preset
-            current_preset = self._get_current_preset()
+            current_preset = self._get_current_tone()
             if current_preset:
                 button.preset = current_preset
                 print(current_preset)
@@ -564,7 +564,7 @@ class JdxiInstrument(JdxiUi):
     def load_button_preset(self, button):
         """ load preset dat stored on the button """
         preset = button.preset
-        preset_data = PresetData(
+        preset_data = ToneData(
             type=preset.synth_type,  # Ensure this is address valid preset_type
             current_selection=preset.number + 1,  # Convert to 1-based index
             modified=0
@@ -573,16 +573,16 @@ class JdxiInstrument(JdxiUi):
             preset_data
         )
 
-    def _get_current_preset(self):
+    def _get_current_tone(self):
         """Retrieve the current preset"""
         try:
             # Update the current preset index or details here
             tone_number = self.current_tone_number
             tone_name = self.current_tone_name
             synth_type = self.current_synth_type
-            current_preset = Tone(number=tone_number, name=tone_name, synth_type=synth_type)
-            logging.debug(f"Current preset retrieved: {current_preset}")
-            return current_preset
+            current_tone = Tone(number=tone_number, name=tone_name, synth_type=synth_type)
+            logging.debug(f"Current preset retrieved: {current_tone}")
+            return current_tone
 
         except Exception as ex:
             logging.error(f"Error retrieving current preset: {str(ex)}")
@@ -1302,7 +1302,7 @@ class JdxiInstrument(JdxiUi):
                     button.preset.tone_name,
                     self.channel,
                 )
-                preset_data = PresetData(
+                preset_data = ToneData(
                     type=self.preset_type,  # Ensure this is address valid preset_type
                     current_selection=self.current_preset_index + 1,  # Convert to 1-based index
                     channel=self.channel,

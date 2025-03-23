@@ -37,7 +37,7 @@ from jdxi_editor.midi.message.sysex import SysexParameter
 from jdxi_editor.midi.utils.json import log_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.midi.preset.data import ToneData
 
 
 def _parse_sysex_data(sysex_data: bytes) -> dict:
@@ -143,7 +143,7 @@ class MidiInHandler(MidiIOController):
                         message.type,
                         message,
                     )
-                preset_data = PresetData(modified=0)
+                preset_data = ToneData(modified=0)
                 message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
                     "sysex": self._handle_sysex_message,
                     "control_change": self._handle_control_change,
@@ -177,7 +177,7 @@ class MidiInHandler(MidiIOController):
         :param message: The incoming MIDI message.
         """
         # logging.info(f"handle_incoming_midi_message: {message}")
-        preset_data = PresetData(modified=0)
+        preset_data = ToneData(modified=0)
         message_handlers: Dict[str, Callable[[Any, Dict[str, Any]], None]] = {
             "sysex": self._handle_sysex_message,
             "control_change": self._handle_control_change,

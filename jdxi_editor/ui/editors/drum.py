@@ -82,7 +82,7 @@ from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.data import PresetData
+from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
