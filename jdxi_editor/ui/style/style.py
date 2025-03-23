@@ -282,7 +282,16 @@ class Style:
                 background-color: #333333;
             }
             QGroupBox {
-                border: 1px solid #333333;
+                border: none;
+                border-top: 1px solid #333333;
+                margin-top: 1em;
+                padding-top: 0.5em;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top center;
+                padding: 0 3px;
+                background-color: black;
             }
             QLabel {
                 background-color: transparent;
@@ -293,7 +302,203 @@ class Style:
             }
         """
 
+    JDXI_ADSR_ANALOG = """
+        /* Groove (Track) */
+        QSlider::groove:vertical {
+            background: #111; /* Dark background */
+            width: 6px;
+            border-radius: 3px;
+        }
+
+        /* Handle (Knob) */
+        QSlider::handle:vertical {
+            background: black;
+            border: 2px solid #1a1aff; /* Neon red border */
+            width: 40px;  /* More rectangular */
+            height: 8px;  
+            margin: -6px;
+            border-radius: 2px;
+            padding: 2px;
+        }
+
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical {
+            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+                         stop:0 #000066, stop:1 #1a1aff);
+            border-radius: 3px;
+        }
+
+        /* Unfilled portion */
+        QSlider::add-page:vertical {
+            background: #222;
+            border-radius: 3px;
+        }
+
+        /* Tick Marks (Small dashes on both sides) */
+        QSlider::tick-mark {
+            background: #1a1aff;
+            width: 4px;
+            height: 2px;
+            border-radius: 1px;
+            margin-left: -8px;
+            margin-right: 8px;
+        }
+
+        /* Handle Hover Effect */
+        QSlider::handle:vertical:hover {
+            border: 2px solid #3333ff;
+        }
+    """
+
     JDXI_ADSR = """
+        /* Groove (Track) */
+        QSlider::groove:vertical {
+            background: #111; /* Dark background */
+            width: 6px;
+            border-radius: 3px;
+        }
+
+        /* Handle (Knob) */
+        QSlider::handle:vertical {
+            background: black;
+            border: 2px solid #ff1a1a; /* Neon red border */
+            width: 40px;  /* More rectangular */
+            height: 8px;  
+            margin: -6px;
+            border-radius: 2px;
+        }
+
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical {
+            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }
+
+        /* Unfilled portion */
+        QSlider::add-page:vertical {
+            background: #222;
+            border-radius: 3px;
+        }
+
+        /* Tick Marks (Small dashes on both sides) */
+        QSlider::tick-mark {
+            background: #ff1a1a;
+            width: 4px;
+            height: 2px;
+            border-radius: 1px;
+            margin-left: -8px;
+            margin-right: 8px;
+        }
+
+        /* Handle Hover Effect */
+        QSlider::handle:vertical:hover {
+            border: 2px solid #ff3333;
+        }
+    """
+
+    JDXI_ADSR_VERY_VNEW = """
+        /* Groove (Track) */
+        QSlider::groove:vertical {
+            background: #111;
+            width: 6px;
+            border-radius: 3px;
+        }
+        /* Handle (Knob) */
+        QSlider::handle:vertical {
+            background: black;
+            border: 2px solid #ff1a1a;
+            width: 24px;
+            height: 16px;
+            margin: -6px;
+            border-radius: 2px;
+            box-shadow: 0px 0px 10px #ff1a1a;
+        }
+
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical {
+            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }
+
+        /* Unfilled portion */
+        QSlider::add-page:vertical {
+            background: #222;
+            border-radius: 3px;
+        }
+
+        /* Tick Marks (Fake tick marks using box-shadow) */
+        QSlider::tick-mark:vertical {
+            background-color: transparent;
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            margin-left: -12px;  /* Positioning to the left */
+            margin-right: 12px;  /* Positioning to the right */
+            box-shadow: 
+                -8px 0px 0px 2px #ff1a1a,  /* Left ticks */
+                8px 0px 0px 2px #ff1a1a;   /* Right ticks */
+        }
+
+        /* Handle Hover Effect */
+        QSlider::handle:vertical:hover {
+            border: 2px solid #ff3333;
+            box-shadow: 0px 0px 15px #ff3333;
+        }
+    """
+
+    JDXI_ADSR_NEW = """
+    /* Groove (Track) */
+    QSlider::groove:vertical {
+        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, 
+                     stop:0 #222, stop:1 #111); /* Metallic effect */
+        width: 8px;
+        border-radius: 4px;
+    }
+
+    /* Handle (Knob) */
+    QSlider::handle:vertical {
+        background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, 
+                     fx:0.5, fy:0.5, stop:0 #ff4500, stop:1 #7a1c00); 
+        border: 2px solid #ff4500; /* Neon-like border */
+        width: 16px;  
+        height: 16px;
+        margin: -6px;
+        border-radius: 8px;
+    }
+
+    /* Filled portion (moving slider) */
+    QSlider::sub-page:vertical {
+        background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+                     stop:0 #ff4500, stop:1 #ff9966);
+        border-radius: 4px;
+    }
+
+    /* Unfilled portion */
+    QSlider::add-page:vertical {
+        background: #2a2a2a;
+        border-radius: 4px;
+    }
+
+    /* Tick Marks */
+    QSlider::tick-mark {
+        background: #ff6500; /* More visible */
+        width: 3px;
+        height: 3px;
+        border-radius: 2px;
+    }
+
+    /* Glow Effect */
+    QSlider::handle:vertical:hover {
+        background: qradialgradient(cx:0.5, cy:0.5, radius:0.6, 
+                     fx:0.5, fy:0.5, stop:0 #ff5722, stop:1 #7a1c00);
+        border: 2px solid #ff9966;
+    }
+"""
+
+
+    JDXI_ADSR_OLD = """
     QSlider::groove:vertical {
         background: #1A1A1A; /* Dark background */
         width: 6px; /* Thin groove */
@@ -324,6 +529,80 @@ class Style:
         width: 2px;
         height: 2px;
     }
+    """
+
+    JDXI_COMBO_BOX = f"""
+    QComboBox {{
+        background-color: {BACKGROUND};
+        border: 1px solid {ACCENT};
+        border-radius: 3px;
+        padding: 3px;
+        color: {FOREGROUND};
+    }}
+
+    /* Style for the dropdown button */
+    QComboBox::drop-down {{
+        border: none;
+        width: 20px;
+        height: 20px;
+    }}
+
+    /* Custom small down arrow */
+    QComboBox::down-arrow {{
+        width: 16px; /* Adjust arrow size */
+        height: 10px;
+    }}
+
+    /* Custom small up arrow (if needed for editable combobox) */
+    QComboBox::up-arrow {{
+        width: 16px; /* Adjust arrow size */
+        height: 10px;
+    }}
+
+    /* Scrollbar styling */
+    QScrollBar:vertical {{
+        background: black;
+        border: 2px solid #ff4500;
+        width: 20px;
+        border-radius: 5px;
+    }}
+    """
+
+    JDXI_COMBO_BOX_ANALOG = f"""
+        QComboBox {{
+            background-color: {BACKGROUND};
+            border: 1px solid {ACCENT_ANALOG};
+            border-radius: 3px;
+            padding: 3px;
+            color: {FOREGROUND};
+        }}
+
+        /* Style for the dropdown button */
+        QComboBox::drop-down {{
+            border: none;
+            width: 20px;
+            height: 20px;
+        }}
+
+        /* Custom small down arrow */
+        QComboBox::down-arrow {{
+            width: 16px; /* Adjust arrow size */
+            height: 10px;
+        }}
+
+        /* Custom small up arrow (if needed for editable combobox) */
+        QComboBox::up-arrow {{
+            width: 16px; /* Adjust arrow size */
+            height: 10px;
+        }}
+
+        /* Scrollbar styling */
+        QScrollBar:vertical {{
+            background: black;
+            border: 2px solid #ff4500;
+            width: 20px;
+            border-radius: 5px;
+        }}
     """
 
     JDXI_LABEL_SUB = """

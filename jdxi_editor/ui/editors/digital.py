@@ -51,10 +51,12 @@ import qtawesome as qta
 
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
+from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.editors.digital_partial import DigitalPartialEditor
 from jdxi_editor.midi.data.parameter.digital_modify import DigitalModifyParameter
@@ -230,11 +232,12 @@ class DigitalSynthEditor(SynthEditor):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
         # Preset ComboBox
-        self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESETS_ENUMERATED)
+        self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESET_LIST)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_handler.current_preset_zero_based
         )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
 
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -485,6 +488,35 @@ class DigitalSynthEditor(SynthEditor):
         logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
 
+    def load_preset(self, preset_index):
+        """Load a preset by program change."""
+        preset_name = self.instrument_selection_combo.combo_box.currentText()  # Get the selected preset name
+        logging.info(f"combo box preset_name : {preset_name}")
+        program_number = preset_name[:3]
+        logging.info(f"combo box program_number : {program_number}")
+
+        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        msb = get_preset_parameter_value("msb", program_number)
+        lsb = get_preset_parameter_value("lsb", program_number)
+        pc = get_preset_parameter_value("pc", program_number)
+
+        if None in [msb, lsb, pc]:
+            logging.error(f"Could not retrieve preset parameters for program {program_number}")
+            return
+
+        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log_midi_info(msb, lsb, pc)
+
+        # Send bank select and program change
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            self.midi_channel,  # MIDI channel
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1  # Convert 1-based PC to 0-based
+        )
+        self.data_request()
+
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
 
@@ -622,6 +654,163 @@ class DigitalSynthEditor(SynthEditor):
                 "TEMPORARY_DIGITAL_SYNTH_2_AREA",
             ]
 
+        def _get_partial_number_old(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
+                synth_tone, None
+            )
+
+        def _get_partial_number(synth_tone):
+            """Retrieve partial number from synth tone mapping."""
+            partial_map = {
+                "PARTIAL_1": 1,
+                "PARTIAL_2": 2,
+                "PARTIAL_3": 3,
+                "TONE_PARTIAL_1": 1,
+                "TONE_PARTIAL_2": 2,
+                "TONE_PARTIAL_3": 3
+            }
+            partial_no = partial_map.get(synth_tone)
+            if partial_no is None:
+                logging.warning(f"Unknown synth tone: {synth_tone}")
+            return partial_no
+
+        def update_adsr_widget(param, value):
+            """Helper function to update ADSR widgets."""
+            new_value = (
+                midi_cc_to_frac(value)
+                if param
+                in [
+                    DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
+                    DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                ]
+                else midi_cc_to_ms(value)
+            )
+
+            adsr_mapping = {
+                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.attack_sb,
+                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.decay_sb,
+                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.sustain_sb,
+                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
+                    partial_no
+                ].amp_env_adsr_widget.release_sb,
+                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.attack_sb,
+                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.decay_sb,
+                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.sustain_sb,
+                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
+                    partial_no
+                ].filter_adsr_widget.release_sb,
+            }
+
+            if param in adsr_mapping:
+                spinbox = adsr_mapping[param]
+                spinbox.setValue(new_value)
+
+        if not _is_valid_sysex_area(sysex_data):
+            logging.warning(
+                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
+            )
+            return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        partial_no = _get_partial_number(synth_tone)
+
+        ignored_keys = {
+            "JD_XI_HEADER",
+            "ADDRESS",
+            "TEMPORARY_AREA",
+            "TONE_NAME",
+            "SYNTH_TONE",
+        }
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
+
+        # osc_waveform_map = {wave.value: wave for wave in OscWave}
+
+        failures, successes = [], []
+
+        def _update_slider(param, value):
+            """Helper function to update sliders safely."""
+            slider = self.partial_editors[partial_no].controls.get(param)
+            if slider:
+                slider_value = param.convert_from_midi(value)
+                logging.info(
+                    f"midi value {value} converted to slider value {slider_value}"
+                )
+                slider.blockSignals(True)
+                slider.setValue(slider_value)
+                slider.blockSignals(False)
+                successes.append(param.name)
+                if debug_param_updates:
+                    logging.info(f"Updated: {param.name:50} {value}")
+
+        def _update_waveform(param_value):
+            """Helper function to update waveform selection UI."""
+            waveform = osc_waveform_map.get(param_value)
+            if waveform and waveform in self.partial_editors[partial_no].wave_buttons:
+                button = self.partial_editors[partial_no].wave_buttons[waveform]
+                button.setChecked(True)
+                self.partial_editors[partial_no]._on_waveform_selected(waveform)
+                logging.debug(f"Updated waveform button for {waveform}")
+
+        for param_name, param_value in sysex_data.items():
+            param = DigitalParameter.get_by_name(param_name)
+
+            if param:
+                if param == DigitalParameter.OSC_WAVE:
+                    self._update_waveform_buttons(partial_no, param_value)
+                else:
+                    _update_slider(param, param_value)
+                    update_adsr_widget(param, param_value)
+            else:
+                failures.append(param_name)
+
+        def _log_debug_info():
+            """Helper function to log debugging statistics."""
+            if debug_stats:
+                success_rate = (
+                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+                )
+                logging.info(f"Successes: {successes}")
+                logging.info(f"Failures: {failures}")
+                logging.info(f"Success Rate: {success_rate:.1f}%")
+                logging.info("--------------------------------")
+
+        _log_debug_info()
+
+    def _update_partial_sliders_from_sysex_new(self, json_sysex_data: str):
+        """Update sliders and combo boxes based on parsed SysEx data."""
+        logging.info("Updating UI components from SysEx data")
+        debug_param_updates = True
+        debug_stats = True
+
+        try:
+            sysex_data = json.loads(json_sysex_data)
+            self.previous_data = self.current_data
+            self.current_data = sysex_data
+            self._log_changes(self.previous_data, sysex_data)
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
+            return
+
+        def _is_valid_sysex_area(sysex_data):
+            """Check if SysEx data belongs to address supported digital synth area."""
+            return sysex_data.get("TEMPORARY_AREA") in [
+                "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+            ]
+
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
             partial_map = {
@@ -692,7 +881,7 @@ class DigitalSynthEditor(SynthEditor):
                     self._update_waveform_buttons(partial_no, param_value)
                 else:
                     _update_slider(param, param_value)
-                    update_adsr_widget(param, param_value)
+                    # update_adsr_widget(param, param_value)
             else:
                 failures.append(param_name)
 
@@ -733,6 +922,8 @@ class DigitalSynthEditor(SynthEditor):
             self._update_common_sliders_from_sysex(json_sysex_data)
         elif synth_tone == "TONE_MODIFY":
             pass  # not yet implemented
+        elif synth_tone in ["PRC3"]: # This is for drums but comes through
+            pass
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
 
