@@ -313,12 +313,12 @@ class Style:
         /* Handle (Knob) */
         QSlider::handle:vertical {
             background: black;
-            border: 2px solid #1a1aff; /* Neon red border */
-            width: 40px;  /* More rectangular */
-            height: 8px;  
-            margin: -6px;
-            border-radius: 2px;
-            padding: 2px;
+            border: 2px solid #1a1aff; /* Neon blue border */
+            width: 25px;  /* More rectangular */
+            height: 4px;  
+            margin: -10px;
+            border-radius: 15px;
+            padding: 4px;
         }
 
         /* Glowing effect when moving */
@@ -348,6 +348,20 @@ class Style:
         QSlider::handle:vertical:hover {
             border: 2px solid #3333ff;
         }
+        /* Spin Box */
+        QSpinBox, QDoubleSpinBox {
+            background-color: #222;
+            border: 1px solid #00A0E9;
+            border-radius: 3px;
+            padding: 4px;
+            margin: -2px;
+            width: 40px;
+            color: #00A0E9;
+        }
+        /* QLabels */
+        QLabel {
+            color: #00A0E9;
+        }
     """
 
     JDXI_ADSR = """
@@ -362,10 +376,10 @@ class Style:
         QSlider::handle:vertical {
             background: black;
             border: 2px solid #ff1a1a; /* Neon red border */
-            width: 40px;  /* More rectangular */
-            height: 8px;  
-            margin: -6px;
-            border-radius: 2px;
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -10px;
+            border-radius: 5px;
         }
 
         /* Glowing effect when moving */
@@ -394,6 +408,19 @@ class Style:
         /* Handle Hover Effect */
         QSlider::handle:vertical:hover {
             border: 2px solid #ff3333;
+        }
+        /* Spin Box */
+        QSpinBox, QDoubleSpinBox {
+            background-color: #222;
+            border: 1px solid #ff1a1a;
+            border-radius: 3px;
+            padding: 2px;
+            margin: -2px;
+            color: #ff1a1a;
+        }
+        /* QLabels */
+        QLabel {
+            color: #ff1a1a;
         }
     """
 

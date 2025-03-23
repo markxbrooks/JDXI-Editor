@@ -324,8 +324,9 @@ class DigitalPartialEditor(PartialEditor):
 
     def _update_pcm_controls_state(self, waveform: OscWave):
         """Update PCM wave controls visibility based on waveform"""
-        self.pcm_wave_gain.setEnabled(waveform == OscWave.PCM)
-        self.pcm_wave_number.setEnabled(waveform == OscWave.PCM)
+        pcm_enabled = waveform == OscWave.PCM
+        self.pcm_wave_gain.setEnabled(pcm_enabled)
+        self.pcm_wave_number.setEnabled(pcm_enabled)
 
     def _on_wave_number_changed(self, value: int):
         """Handle wave number changes"""

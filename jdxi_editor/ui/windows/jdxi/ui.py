@@ -128,8 +128,6 @@ class JdxiUi(QMainWindow):
         self.display_label = QLabel()
         self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
 
-        # Initial display
-        self._update_display_image()
 
         # Add display to layout
         if hasattr(self, "main_layout"):
@@ -197,16 +195,7 @@ class JdxiUi(QMainWindow):
 
         # Store reference to image label
         self.image_label = QLabel()
-        self.image_label.setPixmap(
-            draw_instrument_pixmap(
-                (
-                    self.digital_font_family
-                    if hasattr(self, "digital_font_family")
-                    else None
-                ),
-                self.current_octave,
-            )
-        )
+        self.image_label.setPixmap(draw_instrument_pixmap())
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         container.layout().addWidget(self.image_label)
 
@@ -307,7 +296,7 @@ class JdxiUi(QMainWindow):
 
         grid = QGridLayout()
         grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        grid.setGeometry(QRect(1, 1, 300, 150))
+        grid.setGeometry(QRect(1, 1, 300, 30))
         for i in range(16):
             # button = QPushButton()
             button = SequencerSquare(i, self.midi_helper)
@@ -784,7 +773,7 @@ class JdxiUi(QMainWindow):
 
         # Beginning of sequencer section
         sequencer_container = QWidget(central_widget)
-        sequencer_container.setGeometry(self.width - 500, self.margin + 150, 500, 100)
+        sequencer_container.setGeometry(self.width - 500, self.margin + 150, 500, 80)
         sequencer_container_layout = QHBoxLayout(sequencer_container)
         sequencer_label_layout = QHBoxLayout()
         sequencer_label = QLabel("Sequencer")
@@ -1007,33 +996,6 @@ class JdxiUi(QMainWindow):
 
         except Exception as ex:
             logging.error(f"Error updating display: {str(ex)}")
-
-    def _update_display_image(
-        self, preset_num: int = 1, preset_name: str = "INIT PATCH"
-    ):
-        """Update the digital display image
-
-        Args:
-            preset_num: Preset number to display (1-128)
-            preset_name: Name of preset to display
-        """
-        try:
-            # Create new image with updated preset info
-            image = draw_instrument_pixmap(
-                digital_font_family=self.digital_font_family,
-                current_octave=self.current_octave,
-                preset_num=preset_num,
-                preset_name=preset_name,
-            )
-
-            # Update display label
-            if hasattr(self, "display_label"):
-                self.display_label.setPixmap(image)
-
-            logging.debug(f"Updated display: {preset_num:03d}:{preset_name}")
-
-        except Exception as ex:
-            logging.error(f"Error updating display image: {str(ex)}")
 
     def _save_favorite(self, button, idx):
         pass # to be implemented in subclass
