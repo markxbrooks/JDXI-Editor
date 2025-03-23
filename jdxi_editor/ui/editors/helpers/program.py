@@ -43,7 +43,7 @@ Usage Example:
 
 import logging
 import re
-from typing import Optional, Dict, Union, Any
+from typing import Optional, Dict, Union, Any, List
 
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
@@ -108,6 +108,12 @@ def get_program_number_by_name(program_name: str) -> Optional[str]:
     """Retrieve a program's number (without bank letter) by its name from PROGRAM_LIST."""
     program = next((p for p in PROGRAM_LIST if p["name"] == program_name), None)
     return int(program["id"][1:]) if program else None
+
+
+def get_preset_list_number_by_name(preset_name: str, preset_list: List[Dict[str, str]]) -> Optional[int]:
+    """Retrieve a program's number (without bank letter) by its name using regex search."""
+    preset = next((p for p in preset_list if re.search(re.escape(preset_name), p["name"], re.IGNORECASE)), None)
+    return int(preset["id"]) if preset else 0
 
 
 def get_program_name_by_id(program_id: str) -> Optional[str]:

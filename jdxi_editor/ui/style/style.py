@@ -97,8 +97,14 @@ class Style:
     SLIDER_HANDLE = "#000000"  # Black fill
     SLIDER_HANDLE_BORDER = "#666666"  # Light grey outline
     SLIDER_GROOVE = "#666666"  # grey groove
+    SLIDER_NEON = "#ff1a1a"
+    SLIDER_NEON_GRADIENT_STOP = "#660000"
+    SLIDER_NEON_ANALOG = "#1a1aff"
+    SLIDER_NEON_GRADIENT_STOP_ANALOG = "#000066"
     ACCENT_PRESSED = "#FF6666"
+
     ACCENT_ANALOG_PRESSED = "#417ffa"
+
 
     # Dimensions
     BUTTON_ROUND_RADIUS = 15
@@ -243,6 +249,8 @@ class Style:
         SLIDER_HANDLE,
         SLIDER_HANDLE_BORDER,
         SLIDER_GROOVE,
+        SLIDER_NEON,
+        SLIDER_NEON_GRADIENT_STOP,
     )
 
     JDXI_EDITOR_ANALOG = generate_editor_style(
@@ -257,6 +265,8 @@ class Style:
         SLIDER_HANDLE,
         SLIDER_HANDLE_BORDER,
         SLIDER_GROOVE,
+        SLIDER_NEON_ANALOG,
+        SLIDER_NEON_GRADIENT_STOP_ANALOG,
     )
 
     JDXI = """
@@ -314,10 +324,10 @@ class Style:
         QSlider::handle:vertical {
             background: black;
             border: 2px solid #1a1aff; /* Neon blue border */
-            width: 25px;  /* More rectangular */
-            height: 4px;  
+            width: 10px;  /* More rectangular */
+            height: 10px;  
             margin: -10px;
-            border-radius: 15px;
+            border-radius: 5px;
             padding: 4px;
         }
 

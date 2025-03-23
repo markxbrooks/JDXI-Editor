@@ -33,7 +33,7 @@ from pubsub import pub
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
 
-from jdxi_editor.midi.preset.preset import Preset
+from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -121,14 +121,13 @@ class JdxiInstrument(JdxiUi):
         self.midi_debugger = None
         self.midi_message_debug = None
 
-        self.midi_requests = [
+        self.midi_requests = [ # MIDI requests for preset names. Don't want too many requests.
             "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
             "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
+            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # digital2 common controls
+            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7",  # analog request
+            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",  # drums request
         ]
 
         # Try to auto-connect to JD-Xi
@@ -259,7 +258,7 @@ class JdxiInstrument(JdxiUi):
     def set_current_program_number(self, channel: int, program_number: int):
         """ program name """
         self.current_program_number = program_number + 1
-        # self.data_request()
+        self.data_request()
         self._update_display()
 
     def set_current_digital1_tone_name(self, tone_name: str):
@@ -522,8 +521,34 @@ class JdxiInstrument(JdxiUi):
         self._show_editor("MIDI File", MidiFileEditor)
 
     def _save_favorite(self, button, index):
+        """Save the current preset as an address favorite and prevent toggling off."""
+        self.settings = QSettings("mabsoft", "jdxi_editor")
+        preset_name = f"favorite_{index + 1:02d}"
+
+        if button.isChecked():
+            current_preset = self._get_current_preset()
+            if current_preset:
+                # Uncheck all other favorite buttons before setting this one
+                for other_button in self.favorite_buttons:
+                    if other_button is not button:
+                        other_button.setCheckable(True)
+                        other_button.setChecked(False)
+
+                button.preset = current_preset  # Store preset in button
+                button.setToolTip(f"Program {current_preset.name}, {current_preset.synth_type}")
+                button.setChecked(True)  # Keep it checked
+                button.setCheckable(False)  # Prevent unchecking directly
+
+                self.settings.setValue(preset_name, current_preset)  # Save preset
+                logging.info(f"Saved {current_preset} as {preset_name}")
+        else:
+            self.load_button_preset(button)  # Load stored preset if checked
+
+    def _save_favorite_old(self, button, index):
         """Save the current preset as address favorite"""
         if button.isChecked():
+            self.load_button_preset(button)
+        else:
             self.settings = QSettings("mabsoft", "jdxi_editor")
             preset_name = f"favorite_{index + 1:02d}"
             # Assuming you have address method to get the current preset
@@ -531,18 +556,16 @@ class JdxiInstrument(JdxiUi):
             if current_preset:
                 button.preset = current_preset
                 print(current_preset)
-                button.setToolTip(f"Program {current_preset.name}, {current_preset.preset_type}")
+                button.setToolTip(f"Program {current_preset.name}, {current_preset.synth_type}")
                 button.setCheckable(False)
             self.settings.setValue(f"favorite_{index + 1:02d}", current_preset)
             logging.info(f"Saved {current_preset} as {preset_name}")
-        else:
-            self.load_button_preset(button)
 
     def load_button_preset(self, button):
         """ load preset dat stored on the button """
         preset = button.preset
         preset_data = PresetData(
-            type=preset.preset_type,  # Ensure this is address valid preset_type
+            type=preset.synth_type,  # Ensure this is address valid preset_type
             current_selection=preset.number + 1,  # Convert to 1-based index
             modified=0
         )
@@ -554,10 +577,10 @@ class JdxiInstrument(JdxiUi):
         """Retrieve the current preset"""
         try:
             # Update the current preset index or details here
-            preset_number = self.current_preset_index
-            preset_name = self._get_current_preset_name()
-            preset_type = self._get_current_preset_type()
-            current_preset = Preset(number=preset_number, name=preset_name, preset_type=preset_type)
+            tone_number = self.current_tone_number
+            tone_name = self.current_tone_name
+            synth_type = self.current_synth_type
+            current_preset = Tone(number=tone_number, name=tone_name, synth_type=synth_type)
             logging.debug(f"Current preset retrieved: {current_preset}")
             return current_preset
 

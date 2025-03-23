@@ -8,7 +8,7 @@ from PySide6.QtGui import QPainter, QPen, QColor
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.preset.preset import Preset
+from jdxi_editor.midi.preset.tone import Tone
 
 
 class SequencerSquare(QPushButton):
@@ -33,7 +33,7 @@ class SequencerSquare(QPushButton):
         self.illuminated = checked
         self.is_checked = checked
         if self.preset:
-            self.setToolTip(f"Program {self.preset.name}, {self.preset.preset_type}")
+            self.setToolTip(f"Program {self.preset.name}, {self.preset.synth_type}")
         self.update()  # Trigger repaint
 
     def _handle_click(self, checked):
@@ -62,7 +62,7 @@ class SequencerSquare(QPushButton):
     def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
         """Save current preset to this favorite slot"""
         # Preset(number=0, name='001: JP8 Strings1', preset_type='Digital 1')
-        self.preset = Preset(number=preset_num, name=preset_name, preset_type=synth_type)
+        self.preset = Tone(number=preset_num, name=preset_name, synth_type=synth_type)
         # self._save_to_settings()
         logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
 

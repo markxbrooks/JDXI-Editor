@@ -6,7 +6,7 @@ import logging
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.preset.preset import Preset
+from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
 
 
@@ -31,7 +31,7 @@ class FavoriteButton(QPushButton):
     def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
         """Save current preset to this favorite slot"""
         # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-        self.preset = Preset(number=preset_num, name=preset_name, preset_type=synth_type)
+        self.preset = Tone(number=preset_num, name=preset_name, synth_type=synth_type)
         self._update_style()
         # self._save_to_settings()
         logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
@@ -92,7 +92,7 @@ class FavoriteButton(QPushButton):
             preset_name = self.settings.value(f'favorites/slot{self.slot_num}/preset_name', '')
             channel = self.settings.value(f'favorites/slot{self.slot_num}/channel', 0, type=int)
             #self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-            self.preset = Preset(number=preset_num, name=preset_name, preset_type=synth_type)
+            self.preset = Tone(number=preset_num, name=preset_name, synth_type=synth_type)
             
     def clear_preset(self):
         """Clear the saved preset"""
