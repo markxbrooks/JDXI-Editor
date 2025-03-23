@@ -115,6 +115,7 @@ class SynthEditor(QWidget):
         self.preset_loader = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
 
 
+
     def set_instrument_title_label(self, name: str):
         self.instrument_title_label.setText(f"Synth:\n {name}")
 

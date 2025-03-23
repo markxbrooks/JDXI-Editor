@@ -83,8 +83,8 @@ class Slider(QWidget):
 
         # Set size policy for vertical sliders
         if vertical:
+            layout.addWidget(self.label)  # Label is added over the slider
             layout.addWidget(self.slider)
-            layout.addWidget(self.label) # Label is added under the slider
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding
             )

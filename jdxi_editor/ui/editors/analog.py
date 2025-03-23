@@ -64,6 +64,7 @@ from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
+from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -83,6 +84,7 @@ from jdxi_editor.midi.data.constants.analog import (
     ANALOG_OSC_GROUP, LFO_TEMPO_SYNC_NOTES,
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
+from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -197,7 +199,8 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_selection_label = QLabel("Select an Analog synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESETS_ENUMERATED)
+        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
+        self.instrument_selection_combo.setStyleSheet(Style.JDXI_COMBO_BOX_ANALOG)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -272,6 +275,36 @@ class AnalogSynthEditor(SynthEditor):
         else:
             logging.error("MIDI helper not initialized")
         self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+
+    def load_preset(self, preset_index):
+        """Load a preset by program change."""
+        preset_name = self.instrument_selection_combo.combo_box.currentText()  # Get the selected preset name
+        logging.info(f"combo box preset_name : {preset_name}")
+        program_number = preset_name[:3]
+        logging.info(f"combo box program_number : {program_number}")
+
+        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        msb = get_preset_parameter_value("msb", program_number, ANALOG_PRESET_LIST)
+        lsb = get_preset_parameter_value("lsb", program_number, ANALOG_PRESET_LIST)
+        pc = get_preset_parameter_value("pc", program_number, ANALOG_PRESET_LIST)
+
+        if None in [msb, lsb, pc]:
+            logging.error(f"Could not retrieve preset parameters for program {program_number}")
+            return
+
+        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log_midi_info(msb, lsb, pc)
+
+        # Send bank select and program change
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            self.midi_channel,  # MIDI channel
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1  # Convert 1-based PC to 0-based
+        )
+        self.data_request()
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
@@ -434,7 +467,7 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
 
     def update_instrument_image(self):
-        def load_and_set_image(image_path, secondary_image_path):
+        def load_and_set_image(image_path, secondary_image_path=None):
             """Helper function to load and set the image on the label."""
             file_to_load = ""
 
@@ -672,7 +705,6 @@ class AnalogSynthEditor(SynthEditor):
         env_layout.setSpacing(5)
 
         # Create ADSRWidget
-        # self.filter_adsr_widget = ADSRWidget()
         self.filter_adsr_widget = ADSR(
             AnalogParameter.FILTER_ENV_ATTACK_TIME,
             AnalogParameter.FILTER_ENV_DECAY_TIME,
@@ -683,6 +715,7 @@ class AnalogSynthEditor(SynthEditor):
             part=self.part,
             group=self.group
         )
+        self.filter_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
         adsr_vlayout = QVBoxLayout()
         adsr_vlayout.addLayout(env_layout)
         env_layout.addWidget(self.filter_adsr_widget)
@@ -832,8 +865,10 @@ class AnalogSynthEditor(SynthEditor):
             part=self.part,
             group=self.group
         )
+        self.amp_env_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         sub_layout.addWidget(env_group)
+        sub_layout.addStretch()
         layout.addLayout(sub_layout)
         return group
 

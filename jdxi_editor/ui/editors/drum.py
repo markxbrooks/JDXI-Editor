@@ -79,11 +79,13 @@ from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
+from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.data import PresetData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors.drum_partial import DrumPartialEditor
+from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.midi.data.constants.sysex import (
@@ -191,7 +193,7 @@ class DrumEditor(SynthEditor):
         drum_group_layout.addWidget(self.selection_label)
         # Drum kit selection
 
-        self.instrument_selection_combo = PresetComboBox(DRUM_PRESETS_ENUMERATED)
+        self.instrument_selection_combo = PresetComboBox(DRUM_KIT_LIST)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_handler.preset_number
@@ -322,7 +324,37 @@ class DrumEditor(SynthEditor):
         else:
             logging.error("MIDI helper not initialized")
         self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
         self.data_request() # this is giving an error
+
+    def load_preset(self, preset_index):
+        """Load a preset by program change."""
+        preset_name = self.instrument_selection_combo.combo_box.currentText()  # Get the selected preset name
+        logging.info(f"combo box preset_name : {preset_name}")
+        program_number = preset_name[:3]
+        logging.info(f"combo box program_number : {program_number}")
+
+        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        msb = get_preset_parameter_value("msb", program_number, DRUM_KIT_LIST)
+        lsb = get_preset_parameter_value("lsb", program_number, DRUM_KIT_LIST)
+        pc = get_preset_parameter_value("pc", program_number, DRUM_KIT_LIST)
+
+        if None in [msb, lsb, pc]:
+            logging.error(f"Could not retrieve preset parameters for program {program_number}")
+            return
+
+        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log_midi_info(msb, lsb, pc)
+
+        # Send bank select and program change
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            self.midi_channel,  # MIDI channel
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1  # Convert 1-based PC to 0-based
+        )
+        self.data_request()
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()

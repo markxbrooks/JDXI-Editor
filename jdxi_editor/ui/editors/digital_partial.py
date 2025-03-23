@@ -443,6 +443,7 @@ class DigitalPartialEditor(PartialEditor):
             group=group_address,
             # depth_param=DigitalParameter.FILTER_ENV_DEPTH,
         )
+        self.filter_adsr_widget.setStyleSheet(Style.JDXI_ADSR)
 
         adsr_vlayout = QVBoxLayout()
         env_layout.addWidget(self.filter_adsr_widget)
@@ -671,6 +672,7 @@ class DigitalPartialEditor(PartialEditor):
             part=self.part,
             group=group_address,
         )
+        self.amp_env_adsr_widget.setStyleSheet(Style.JDXI_ADSR)
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)

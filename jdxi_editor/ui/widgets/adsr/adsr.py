@@ -88,7 +88,7 @@ class ADSR(QWidget):
         self.sustain_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["sustain_level"]
         )
-        self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(Style.JDXI_ADSR_ANALOG)
 
         # Create layout
         self.layout = QGridLayout(self)
@@ -368,7 +368,7 @@ class ADSR_new(QWidget):
 
         # Create layout
         self.layout = QGridLayout(self)
-        self.plot = ADSRPlot(width=300, height=250)
+        self.adsr_plot = ADSRPlot(width=350, height=450)
         
         # Create sliders
         self.attack_slider = self._create_parameter_slider(attack_param, "Attack", value=self.envelope["attack_time"])
@@ -394,8 +394,8 @@ class ADSR_new(QWidget):
             self.layout.addWidget(self.depth_sb, 1, 4)
         
         # Add plot
-        self.layout.addWidget(self.plot, 0, 4, 3, 1)
-        self.layout.setColumnMinimumWidth(4, 150)
+        self.layout.addWidget(self.adsr_plot, 0, 4, 3, 1)
+        self.layout.setColumnMinimumWidth(4, 300)
 
         # Connect signals
         if depth_param:
@@ -406,7 +406,7 @@ class ADSR_new(QWidget):
             sb.valueChanged.connect(self.valueChanged)
 
         self.setLayout(self.layout)
-        self.plot.set_values(self.envelope)
+        self.adsr_plot.set_values(self.envelope)
         self.update_from_envelope()
 
     def update_from_envelope(self):
@@ -419,7 +419,7 @@ class ADSR_new(QWidget):
         """Set envelope values and update controls"""
         self.envelope = envelope
         self.update_controls_from_envelope()
-        self.plot.set_values(self.envelope)
+        self.adsr_plot.set_values(self.envelope)
 
     def _create_parameter_slider(self, param: SynthParameter, label: str, value: int = None) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
@@ -485,7 +485,7 @@ class ADSR_new(QWidget):
                 logging.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
             logging.error(f"Error updating parameter: {ex}")
-        self.plot.set_values(self.envelope)
+        self.adsr_plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
     def update_spin_box(self, param):
@@ -536,7 +536,7 @@ class ADSR_new(QWidget):
     def update_sliders_from_envelope(self):
         """Update sliders from envelope values and update the plot."""
         self.update_controls_from_envelope()
-        self.plot.set_values(self.envelope)
+        self.adsr_plot.set_values(self.envelope)
 
     def valueChanged(self):
         """Update envelope values when spin boxes change"""
@@ -546,7 +546,7 @@ class ADSR_new(QWidget):
         self.update_sliders_from_envelope()
         self.updating_from_spinbox = False
         self.blockSignals(False)
-        self.plot.set_values(self.envelope)
+        self.adsr_plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
     def update_envelope_from_spinboxes(self):
