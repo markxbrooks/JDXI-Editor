@@ -84,7 +84,7 @@ class DigitalDisplay(QWidget):
         display_x, display_y = 0, 0
         display_width, display_height = self.width(), self.height()
 
-        # 🔸 1. Create an orange glow gradient background
+        # 1. Create an orange glow gradient background
         gradient = QLinearGradient(0, 0, display_width, display_height)
         gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
         gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
@@ -96,12 +96,12 @@ class DigitalDisplay(QWidget):
         painter.setPen(QPen(QColor("#000000"), 2))  # Orange border
         painter.drawRect(display_x, display_y, display_width, display_height)
 
-        # 🔸 2. Set font for digital display
-        display_font = QFont(self.digital_font_family, 12, QFont.Bold)
+        # 2. Set font for digital display
+        display_font = QFont(self.digital_font_family, 13, QFont.Bold)
         painter.setFont(display_font)
         painter.setPen(QPen(QColor("#FFBB33")))  # Lighter orange for text
 
-        # 🔸 3. Draw text with glowing effect
+        # 3. Draw text with glowing effect
         tone_name_text = f" {self.active_synth}:{self.tone_name}"
         tone_name_text = tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
         program_text = f"{self.program_id}:{self.program_name}"
