@@ -30,13 +30,14 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.constants.constants import PART_1
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.ui.editors.synth import SynthControlBase
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
-class PartialEditor(QWidget):
+class PartialEditor(SynthControlBase):
     """Editor for address single partial"""
 
     def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
@@ -53,9 +54,7 @@ class PartialEditor(QWidget):
         # Store parameter controls for easy access
         self.controls: Dict[SynthParameter, QWidget] = {}
 
-    def _create_parameter_slider(
-        self, param: SynthParameter, label: str = None
-    ) -> Slider:
+    def _create_parameter_slider_old(self, param: SynthParameter, label: str = None) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
@@ -79,7 +78,7 @@ class PartialEditor(QWidget):
         self.controls[param] = slider
         return slider
 
-    def _create_parameter_combo_box(
+    def _create_parameter_combo_box_old(
         self,
         param: SynthParameter,
         label: str = None,
@@ -97,7 +96,7 @@ class PartialEditor(QWidget):
         self.controls[param] = combo_box
         return combo_box
 
-    def _create_parameter_spin_box(
+    def _create_parameter_spin_box_old(
         self, param: SynthParameter, label: str = None
     ) -> SpinBox:
         """Create address spin box for address parameter with proper display conversion"""
@@ -115,7 +114,7 @@ class PartialEditor(QWidget):
         self.controls[param] = spin_box
         return spin_box
 
-    def _create_parameter_switch(
+    def _create_parameter_switch_old(
         self,
         param: SynthParameter,
         label: str,
