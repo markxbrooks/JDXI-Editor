@@ -507,6 +507,7 @@ class DigitalSynthEditor(SynthEditor):
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
+        logging.info(f"loading instrument image")
 
         def load_and_set_image(image_path, secondary_image_path=None):
             """Helper function to load and set the image on the label."""
@@ -532,15 +533,16 @@ class DigitalSynthEditor(SynthEditor):
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
-
+        logging.info(f"selected instrument text: {selected_instrument_text}")
         # Try to extract synth name from the selected text
         image_loaded = False
         if instrument_matches := re.search(
-            r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+            r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
         ):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
+            logging.info(f"selected instrument text: {selected_instrument_name}")
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )

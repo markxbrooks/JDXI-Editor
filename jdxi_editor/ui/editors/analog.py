@@ -493,7 +493,7 @@ class AnalogSynthEditor(SynthEditor):
         # Try to extract synth name from the selected text
         image_loaded = False
         if instrument_matches := re.search(
-                r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+                r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
         ):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
