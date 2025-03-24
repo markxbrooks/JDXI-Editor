@@ -406,7 +406,7 @@ class DrumEditor(SynthEditor):
         # Try to extract drum kit name from the selected text
         image_loaded = False
         if drum_kit_matches := re.search(
-            r"(\d{3}): (\S+).+", selected_kit_text, re.IGNORECASE
+            r"(\d{3}) - (\S+).+", selected_kit_text, re.IGNORECASE
         ):
             selected_kit_name = (
                 drum_kit_matches.group(2).lower().replace("&", "_").split("_")[0]
