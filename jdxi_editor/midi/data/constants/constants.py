@@ -53,6 +53,7 @@ MODEL_ID_4 = 0x0E  # Product code
 MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
 JD_XI_HEADER = [
     ROLAND_ID,
+    DEVICE_ID,
     MODEL_ID_1,
     MODEL_ID_2,
     MODEL_ID_3,

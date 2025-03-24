@@ -22,7 +22,7 @@ Usage Example:
     >>> msg = NoteOnMessage()
     >>> msg.to_bytes()
     b'\x90<\x7f'
-    >>> msg.to_hex_string()
+import jdxi_editor.midi.sysex.utils    >>> jdxi_editor.midi.sysex.utils.to_hex_string()
     '90 3C 7F'
 """
 

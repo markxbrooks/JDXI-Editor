@@ -55,6 +55,7 @@ from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.sysex.requests import DIGITAL1_REQUESTS, DIGITAL2_REQUESTS
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.editors.synth import SynthEditor
@@ -108,21 +109,7 @@ class DigitalSynthEditor(SynthEditor):
 
         self.midi_helper = midi_helper
         self.preset_handler = preset_handler
-        self.midi_requests = [
-            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # common controls
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # modify request
-        ] if synth_num == 1 else [
-            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
-            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # common controls
-            "F0 41 10 00 00 00 0E 11 19 21 20 00 00 00 00 3D 69 F7",  # partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 21 21 00 00 00 00 3D 68 F7",  # partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 21 22 00 00 00 00 3D 67 F7",  # partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 21 50 00 00 00 00 25 51 F7",  # modify request
-        ]
+        self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
         self.instrument_icon_folder = "digital_synths"
         if preset_handler:
             self.preset_handler = preset_handler

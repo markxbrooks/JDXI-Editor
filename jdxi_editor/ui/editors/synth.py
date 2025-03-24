@@ -348,7 +348,7 @@ class SynthEditor(QWidget):
         except Exception as ex:
             logging.error(f"Error handling parameter {param.name}: {ex}")
 
-    def data_request(self):
+    def data_request(self, channel=None, program=None):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
         for request in self.midi_requests:
