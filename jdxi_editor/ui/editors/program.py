@@ -48,9 +48,11 @@ from PySide6.QtWidgets import (
     QPushButton,
     QWidget,
     QLabel,
-    QHBoxLayout,
+    QHBoxLayout, QGroupBox,
 )
 from PySide6.QtCore import Signal, Qt
+from rtmidi.midiconstants import SONG_START, SONG_STOP
+import qtawesome as qta
 
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS
@@ -168,13 +170,31 @@ class ProgramEditor(SynthEditor):
         layout.addWidget(self.bank_combo_box)
 
         # Load button
-        self.load_button = QPushButton("Load Program")
+        self.load_button = QPushButton(qta.icon("ph.folder-notch-open-fill"), "Load Program")
         self.load_button.clicked.connect(self.load_program)
         layout.addWidget(self.load_button)
         self.setLayout(layout)
 
+        # Transport controls area
+        transport_group = QGroupBox("Transport")
+        transport_layout = QHBoxLayout()
+
+        self.start_button = QPushButton(qta.icon("ri.play-line"), "Play")
+        self.stop_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
+        self.start_button.clicked.connect(self.start_playback)
+        self.stop_button.clicked.connect(self.stop_playback)
+
+        transport_layout.addWidget(self.start_button)
+        transport_layout.addWidget(self.stop_button)
+        transport_group.setLayout(transport_layout)
+        layout.addWidget(transport_group)
+
         self.digital_synth_1_hlayout = QHBoxLayout()
         layout.addLayout(self.digital_synth_1_hlayout)
+
+        self.digital_synth_1_icon = QLabel()
+        self.digital_synth_1_icon.setPixmap(qta.icon("msc.piano").pixmap(40, 40))
+        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
         self.digital_synth_1_title = QLabel("Digital Synth 1")
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_title)
@@ -195,6 +215,11 @@ class ProgramEditor(SynthEditor):
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
+
+        self.digital_synth_2_icon = QLabel()
+        self.digital_synth_2_icon.setPixmap(qta.icon("msc.piano").pixmap(40, 40))
+        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
+
         layout.addLayout(self.digital_synth_2_hlayout)
 
         self.digital_synth_2_title = QLabel("Digital Synth 2")
@@ -218,6 +243,10 @@ class ProgramEditor(SynthEditor):
         self.drum_kit_hlayout = QHBoxLayout()
         layout.addLayout(self.drum_kit_hlayout)
 
+        self.drum_kit_icon = QLabel()
+        self.drum_kit_icon.setPixmap(qta.icon("fa5s.drum").pixmap(40, 40))
+        self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
+
         self.drum_kit_title = QLabel("Drums")
         self.drum_kit_hlayout.addWidget(self.drum_kit_title)
         self.drum_kit_title.setStyleSheet(
@@ -239,6 +268,10 @@ class ProgramEditor(SynthEditor):
         self.analog_synth_hlayout = QHBoxLayout()
         layout.addLayout(self.analog_synth_hlayout)
 
+        self.analog_synth_icon = QLabel()
+        self.analog_synth_icon.setPixmap(qta.icon("msc.piano").pixmap(40, 40))
+        self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
+
         self.analog_synth_title = QLabel("Analog Synth")
         self.analog_synth_hlayout.addWidget(self.analog_synth_title)
         self.analog_synth_title.setStyleSheet(
@@ -258,6 +291,12 @@ class ProgramEditor(SynthEditor):
             """
         )
         self.populate_programs()
+
+    def start_playback(self):
+        self.midi_helper.send_raw_message([SONG_START])
+
+    def stop_playback(self):
+        self.midi_helper.send_raw_message([SONG_STOP])
 
     def update_instrument_image(self):
         """tart up the UI with a picture"""

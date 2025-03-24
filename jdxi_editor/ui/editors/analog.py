@@ -69,6 +69,7 @@ from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, ANALOG_REQUEST
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
@@ -148,8 +149,7 @@ class AnalogSynthEditor(SynthEditor):
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS_ENUMERATED
         self.preset_type = SynthType.ANALOG
-        self.midi_requests = ["F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7", # Program Common
-                              "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"] # Analog
+        self.midi_requests = [PROGRAM_COMMON_REQUEST, ANALOG_REQUEST]
         self.midi_channel = MIDI_CHANNEL_ANALOG
         # Create scroll area for resizable content
         scroll = QScrollArea()

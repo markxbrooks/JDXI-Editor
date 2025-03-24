@@ -37,7 +37,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSettings, QRect
 from PySide6.QtGui import (
     QAction,
-    QFontDatabase,
+    QFontDatabase, QFont,
 )
 
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
@@ -57,7 +57,7 @@ from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_MARGIN, JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, \
-    JDXI_DISPLAY_HEIGHT
+    JDXI_DISPLAY_HEIGHT, JDXI_TITLE_X, JDXI_TITLE_Y
 
 
 class JdxiUi(QMainWindow):
@@ -530,9 +530,9 @@ class JdxiUi(QMainWindow):
 
         # Apply the height offset to the Y position
         arpeggiator_buttons_container.setGeometry(
-            arpeggiator_x,
+            arpeggiator_x -10,
             seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
-            100,
+            120,
             100,
         )
 
@@ -598,7 +598,7 @@ class JdxiUi(QMainWindow):
 
         # Apply the height offset to the Y position
         octave_buttons_container.setGeometry(
-            octave_x,
+            octave_x - 10,
             seq_y - 60 - offset_y,  # Move up by offset_y
             100,
             100,
@@ -668,16 +668,28 @@ class JdxiUi(QMainWindow):
         self.digital_display = DigitalDisplay(parent=self)
         digital_display_layout.addWidget(self.digital_display)
 
+        title_container = QWidget(central_widget)
+        title_container.setGeometry(JDXI_TITLE_X + 10, JDXI_TITLE_Y, 200, 50)
+        title_layout = QHBoxLayout()
+        title_container.setLayout(title_layout)
+        self.title_label = QLabel("JD-XI Editor", parent=self)
+        font = QFont("Myriad Pro", 28)  # "Myriad Pro", size 28pt
+        font.setBold(True)  # Optionally make it bold
+
+        # Apply the font to the QLabel
+        self.title_label.setFont(font)
+        title_layout.addWidget(self.title_label)
+
         # Parts Select section with Arpeggiator
         parts_container = QWidget(central_widget)
-        parts_x = self.display_x + self.display_width + 30
+        parts_x = self.display_x + self.display_width + 35
         parts_y = int(self.display_y - (
-            self.height * 0.15
+            self.height * 0.14
         ))  # Move up by 20% of window height
 
-        parts_container.setGeometry(parts_x, parts_y, 220, 250)
+        parts_container.setGeometry(parts_x + 10, parts_y, 200, 250)
         parts_layout = QVBoxLayout(parts_container)
-        parts_layout.setSpacing(15)  # Increased from 5 to 15 for more vertical spacing
+        parts_layout.setSpacing(7)  # Increased from 5 to 15 for more vertical spacing
 
         # Add Parts Select label
         parts_label = QLabel("Parts Select")
