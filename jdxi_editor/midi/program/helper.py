@@ -33,7 +33,7 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.midi.sysex.requests import PROGRAM_AND_TONE_NAME_REQUESTS
+from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 from jdxi_editor.ui.editors.helpers.program import calculate_midi_values, get_program_by_bank_and_number
 from jdxi_editor.midi.io import MidiIOHelper
 
@@ -77,7 +77,7 @@ class ProgramHelper(QObject):
         self.digital_2_preset = None
         self.drums_preset = None
         self.analog_preset = None
-        self.midi_requests = PROGRAM_AND_TONE_NAME_REQUESTS
+        self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 
     def next_program(self):
         """Increase the tone index and return the new preset."""

@@ -54,6 +54,7 @@ from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
+from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -121,13 +122,7 @@ class JdxiInstrument(JdxiUi):
         self.midi_debugger = None
         self.midi_message_debug = None
 
-        self.midi_requests = [ # MIDI requests for preset names. Don't want too many requests.
-            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
-            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # digital2 common controls
-            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",  # drums request
-        ]
+        self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
