@@ -672,7 +672,7 @@ class JdxiUi(QMainWindow):
         title_container.setGeometry(JDXI_TITLE_X + 10, JDXI_TITLE_Y, 200, 50)
         title_layout = QHBoxLayout()
         title_container.setLayout(title_layout)
-        self.title_label = QLabel("JD-XI Editor", parent=self)
+        self.title_label = QLabel("JD-Xi Editor", parent=self)
         font = QFont("Myriad Pro", 28)  # "Myriad Pro", size 28pt
         font.setBold(True)  # Optionally make it bold
 

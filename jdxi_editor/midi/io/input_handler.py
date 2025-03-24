@@ -22,6 +22,8 @@ Dependencies:
 
 import json
 import logging
+import threading
+
 import mido
 from typing import Any, Callable, Dict, List, Optional
 from PySide6.QtCore import Signal
@@ -100,7 +102,7 @@ class MidiInHandler(MidiIOController):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
-        self.set_callback(self.midi_callback)
+        # self.midi_in.set_callback(lambda msg, data: self.rtmidi_callback(msg, data))
         pub.subscribe(self.pub_handle_incoming_midi_message, "midi_incoming_message")
 
     def rtmidi_to_mido(self, rtmidi_message):
@@ -506,3 +508,42 @@ class MidiInHandler(MidiIOController):
         param = get_parameter_from_address(address)
         if param:
             self.midi_parameter_changed.emit(param, value)
+
+    def rtmidi_callback(self, *args):
+        message = args[0]
+        timestamp = args[1]
+        print(f"Message: {message}")
+        print(f"Timestamp: {timestamp}")
+
+    def listen_midi(self, port_name, callback):
+        """
+        Function to listen for MIDI messages and call address callback.
+        """
+        with mido.open_input(port_name) as inport:
+            logging.info(f"Listening on port: {port_name}")
+            for msg in inport:
+                callback(msg)  # Call the provided callback function
+
+    def start_thread(self):
+        """ start input thread """
+        input_ports = mido.get_input_names()
+        if not input_ports:
+            print("No MIDI input ports available!")
+            # exit()
+
+        print("Available MIDI input ports:")
+        for i, port in enumerate(input_ports):
+            print(f"{i}: {port}")
+
+        # Choose the first available port
+        try:
+            port_name = input_ports[0]
+            print(f"Using port: {port_name}")
+
+            # Start the listener in address separate thread
+            listener_thread = threading.Thread(
+                target=listen_midi, args=(port_name, self.midi_callback), daemon=True
+            )
+            listener_thread.start()
+        except Exception as ex:
+            print(f"Error starting listener thread: {str(ex)}")

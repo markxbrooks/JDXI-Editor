@@ -31,7 +31,7 @@ from typing import Union
 from pubsub import pub
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
-from PySide6.QtCore import Qt, QSettings, Signal
+from PySide6.QtCore import Qt, QSettings, Signal, QTimer
 
 from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
@@ -231,6 +231,10 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.update_analog_tone_name.connect(self.set_current_analog_tone_name)
         self.midi_helper.update_drums_tone_name.connect(self.set_current_drums_tone_name)
         self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
+        # Set up a QTimer to poll for MIDI messages
+        # self.timer = QTimer(self)
+        # self.timer.timeout.connect(self.midi_helper.rtmidi_callback)
+        # self.timer.start(10)  # Poll every 10 milliseconds
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:

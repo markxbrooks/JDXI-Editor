@@ -9,7 +9,7 @@ class MidiHelper:
         self.midiin = mido.open_input('JD-Xi')
 
     def set_callback(self, callback):
-        self.midiin.set_callback(callback)
+        self.midiin._callback(callback)
 
     def get_ports(self):
         return self.midiin.get_ports()
