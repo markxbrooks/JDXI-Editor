@@ -46,7 +46,84 @@ from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
-class SynthEditor(QWidget):
+class SynthControlBase(QWidget):
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    def _create_parameter_slider(
+        self,
+        param: SynthParameter,
+        label: str,
+        vertical=False,
+        show_value_label=True,
+    ) -> Slider:
+        """Create a slider for a synth parameter with proper display conversion."""
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+
+        slider = Slider(
+            label, display_min, display_max, vertical, show_value_label, is_bipolar=param.is_bipolar
+        )
+
+        if param in self.bipolar_parameters or param.is_bipolar:
+            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
+            slider.setCenterMark(0)
+            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
+            slider.setTickInterval((display_max - display_min) // 4)
+
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+        self.controls[param] = slider
+        return slider
+
+    def _create_parameter_combo_box(
+        self,
+        param: SynthParameter,
+        label: str = None,
+        options: list = None,
+        values: list = None,
+        show_label=True,
+    ) -> ComboBox:
+        """Create a combo box for a parameter with proper display conversion"""
+        combo_box = ComboBox(label, options, values, show_label=show_label)
+        combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+        self.controls[param] = combo_box
+        return combo_box
+
+    def _create_parameter_spin_box(
+        self, param: SynthParameter, label: str = None
+    ) -> SpinBox:
+        """Create address spin box for address parameter with proper display conversion"""
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+
+        spin_box = SpinBox(label, display_min, display_max)
+
+        # Connect value changed signal
+        spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+
+        # Store control reference
+        self.controls[param] = spin_box
+        return spin_box
+
+    def _create_parameter_switch(
+        self,
+        param: SynthParameter,
+        label: str,
+        values: list[str],
+    ) -> Switch:
+        """Create address switch for address parameter with proper display conversion"""
+        switch = Switch(label, values)
+        switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
+        self.controls[param] = switch
+        return switch
+
+
+class SynthEditor(SynthControlBase):
     """Base class for all editor windows"""
 
     parameter_received = Signal(list, int)  # address, value
@@ -117,7 +194,7 @@ class SynthEditor(QWidget):
     def set_instrument_title_label(self, name: str):
         self.instrument_title_label.setText(f"Synth:\n {name}")
 
-    def _create_parameter_combo_box(
+    def _create_parameter_combo_box_old(
         self,
         param: SynthParameter,
         label: str = None,
@@ -131,7 +208,7 @@ class SynthEditor(QWidget):
         self.controls[param] = combo_box
         return combo_box
 
-    def _create_parameter_spin_box(
+    def _create_parameter_spin_box_old(
         self, param: SynthParameter, label: str = None
     ) -> SpinBox:
         """Create address spin box for address parameter with proper display conversion"""
@@ -149,7 +226,7 @@ class SynthEditor(QWidget):
         self.controls[param] = spin_box
         return spin_box
 
-    def _create_parameter_switch(
+    def _create_parameter_switch_old(
         self,
         param: SynthParameter,
         label: str,
@@ -161,7 +238,7 @@ class SynthEditor(QWidget):
         self.controls[param] = switch
         return switch
 
-    def _create_parameter_slider(
+    def _create_parameter_slider_old(
         self,
         param: SynthParameter,
         label: str,
