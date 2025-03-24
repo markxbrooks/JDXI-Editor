@@ -125,6 +125,7 @@ class MIDIConfigDialog(QDialog):
         self.input_combo.addItems(self.input_ports)
         self.output_combo.clear()
         self.output_combo.addItems(self.output_ports)
+        self.midi_helper.start_thread()
 
     def get_input_port(self) -> str:
         """Get selected input port name

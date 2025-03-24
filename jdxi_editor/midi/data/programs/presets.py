@@ -249,9 +249,6 @@ id,name,category,msb,lsb,pc
 255,Voc:Noise,FX/Other,95,65,127
 256,Init Tone,FX/Other,95,65,128
 """
-data = pd.read_csv(StringIO(RAW_PRESETS_CSV))
-data.head()
-data.to_json(orient='records', indent=2, path_or_buf='presets.json')
 
 
 # Preset data as structured JSON

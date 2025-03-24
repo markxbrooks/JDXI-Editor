@@ -1,4 +1,4 @@
-import mido
+import test_mido
 
 # List available MIDI input ports
 print("Available MIDI input ports:")
