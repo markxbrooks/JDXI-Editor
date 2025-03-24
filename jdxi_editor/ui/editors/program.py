@@ -58,6 +58,7 @@ from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
@@ -85,15 +86,7 @@ class ProgramEditor(SynthEditor):
         self.channel = (
             MIDI_CHANNEL_PROGRAMS  # Default MIDI channel: 16 for programs, 0-based
         )
-        self.midi_requests = [
-            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
-            "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
-            "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
-            "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
-            "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
-        ]
+        self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
         self.layout = None
         self.genre_label = None
         self.program_number_combo_box = None

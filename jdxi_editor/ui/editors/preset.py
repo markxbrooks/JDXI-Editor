@@ -61,6 +61,7 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS, MID
     MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_DRUMS, MIDI_CHANNEL_ANALOG
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS, PROGRAM_TONE_NAME_REQUESTS
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
@@ -89,22 +90,7 @@ class PresetEditor(SynthEditor):
         self.midi_channel = (
             MIDI_CHANNEL_DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
         )
-        self.midi_requests = [ # MIDI requests for preset names. Don't want too many requests.
-            "F0 41 10 00 00 00 0E 11 18 00 00 00 00 00 00 40 26 F7",  # Program common
-            "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
-            # "F0 41 10 00 00 00 0E 11 19 01 20 00 00 00 00 3D 09 F7",  # digital partial 1 request
-            # "F0 41 10 00 00 00 0E 11 19 01 21 00 00 00 00 3D 08 F7",  # digital partial 2 request
-            # "F0 41 10 00 00 00 0E 11 19 01 22 00 00 00 00 3D 07 F7",  # digital partial 3 request
-            # "F0 41 10 00 00 00 0E 11 19 01 50 00 00 00 00 25 71 F7",  # digital modify request
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
-            "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # digital2 common controls
-            # "F0 41 10 00 00 00 0E 11 19 21 20 00 00 00 00 3D 69 F7",  # digital2 partial 1 request
-            # "F0 41 10 00 00 00 0E 11 19 21 21 00 00 00 00 3D 68 F7",  # digital2 partial 2 request
-            # "F0 41 10 00 00 00 0E 11 19 21 22 00 00 00 00 3D 67 F7",  # digital2 partial 3 request
-            # "F0 41 10 00 00 00 0E 11 19 21 50 00 00 00 00 25 51 F7",  # digital2 modify request
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7",  # analog request
-            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",  # drums requests
-        ]
+        self.midi_requests = PROGRAM_TONE_NAME_REQUESTS
         self.layout = None
         self.genre_label = None
         self.preset_combo_box = None
