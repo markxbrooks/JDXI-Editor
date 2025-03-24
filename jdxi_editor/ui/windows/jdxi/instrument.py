@@ -126,7 +126,6 @@ class JdxiInstrument(JdxiUi):
             "F0 41 10 00 00 00 0E 11 19 01 00 00 00 00 00 40 26 F7",  # digital common controls
             "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7"   # analog request
             "F0 41 10 00 00 00 0E 11 19 21 00 00 00 00 00 40 06 F7",  # digital2 common controls
-            "F0 41 10 00 00 00 0E 11 19 42 00 00 00 00 00 40 65 F7",  # analog request
             "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",  # drums request
         ]
 

@@ -74,3 +74,26 @@ def calculate_checksum(data):
     return (128 - (sum(data) & 0x7F)) & 0x7F
 
 
+def bytes_to_hex_string(byte_list, prefix="F0"):
+    """
+    Convert a list of byte values to a space-separated hex string.
+
+    :param byte_list: List of integers (bytes).
+    :param prefix: Optional prefix (default is "F0" for SysEx messages).
+    :return: Formatted hex string.
+    """
+    return f"{prefix} " + " ".join(f"{byte:02X}" for byte in byte_list)
+
+
+def to_hex_string(value: int) -> str:
+    """
+    Converts an integer value to a hexadecimal string representation.
+    The result is formatted in uppercase and without the '0x' prefix.
+
+    Args:
+        value (int): The integer value to be converted to hex.
+
+    Returns:
+        str: The hexadecimal string representation.
+    """
+    return hex(value)[2:].upper()
