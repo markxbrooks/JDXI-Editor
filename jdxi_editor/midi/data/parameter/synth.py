@@ -28,54 +28,6 @@ from typing import Optional
 from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 
 
-class SynthParameterNew:
-    """Base class for synthesizer parameters."""
-
-    def __init__(self, name: str, address: int, min_val: int, max_val: int):
-        self.name = name
-        self.address = address
-        self.min_val = min_val
-        self.max_val = max_val
-        self.switches = set()
-        self.bipolar_parameters = set()
-
-    def __str__(self) -> str:
-        return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
-
-    @property
-    def is_switch(self) -> bool:
-        """Returns True if parameter is a binary switch."""
-        return self.name in self.switches
-
-    @property
-    def is_bipolar(self) -> bool:
-        """Returns True if parameter is bipolar."""
-        return self.name in self.bipolar_parameters
-
-    @property
-    def display_name(self) -> str:
-        """Get a formatted display name for the parameter."""
-        return self.name.replace("_", " ").title()
-
-    def validate_value(self, value: int) -> int:
-        """Ensure the value is within the allowed range."""
-        if not isinstance(value, int):
-            raise ValueError(f"Value must be an integer, got {type(value).__name__}")
-
-        if not (self.min_val <= value <= self.max_val):
-            raise ValueError(f"Value {value} out of range for {self.name} (valid range: {self.min_val}-{self.max_val})")
-
-        return value
-
-    def convert_from_midi(self, midi_value: int) -> int:
-        """Convert a MIDI value to the parameter's range (can be overridden)."""
-        return midi_value
-
-    def get_switch_text(self, value: int) -> str:
-        """Return ON/OFF for switch parameters, otherwise return the value."""
-        return "ON" if (self.is_switch and value) else str(value)
-
-
 class SynthParameter(Enum):
 
     def __init__(self, address: int, min_val: int, max_val: int):

@@ -44,11 +44,11 @@ class VocalFXParameter(SynthParameter):
             )
         return value
 
-    @staticmethod
-    def get_by_name(param_name):
-        """Get the VocalFXParameter by name."""
-        # Return the parameter member by name, or None if not found
-        return VocalFXParameter.__members__.get(param_name, None)
+    #@staticmethod
+    #def get_by_name(param_name):
+    #    """Get the VocalFXParameter by name."""
+    #    # Return the parameter member by name, or None if not found
+    #    return VocalFXParameter.__members__.get(param_name, None)
 
     @staticmethod
     def get_name_by_address(address: int):
@@ -70,12 +70,6 @@ class VocalFXParameter(SynthParameter):
             self.AUTO_PITCH_SWITCH,
             self.VOCODER_SWITCH,
         ]
-
-    def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
-        if self.is_switch:
-            return "ON" if value else "OFF"
-        return str(value)
 
     @staticmethod
     def get_address(param_name):
