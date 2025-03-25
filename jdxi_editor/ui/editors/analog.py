@@ -337,14 +337,6 @@ class AnalogSynthEditor(SynthEditor):
                         "updating waveform buttons for param {param} with {value}"
                     )
 
-    def _on_midi_message_received(self, message):
-        """Handle incoming MIDI messages"""
-        if not message.type == "clock":
-            logging.info(f"MIDI message: {message}")
-            self.blockSignals(True)
-            self.data_request()
-            self.blockSignals(False)
-
     def _create_oscillator_section(self):
         group = QWidget()
         layout = QVBoxLayout()
@@ -456,16 +448,6 @@ class AnalogSynthEditor(SynthEditor):
 
         return group
 
-    def update_combo_box_index(self, preset_number):
-        """Updates the QComboBox to reflect the loaded preset."""
-        logging.info(f"Updating combo to preset {preset_number}")
-        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
-
-    def update_instrument_title(self):
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        logging.info(f"selected_synth_text: {selected_synth_text}")
-        self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
-
     def update_instrument_image(self):
         def load_and_set_image(image_path, secondary_image_path=None):
             """Helper function to load and set the image on the label."""
@@ -534,67 +516,6 @@ class AnalogSynthEditor(SynthEditor):
         self.osc_pulse_width_mod_depth.setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
-
-    def _on_parameter_changed(
-            self, param: Union[AnalogParameter], display_value: int
-    ):
-        """Handle parameter value changes from UI controls"""
-        try:
-            # Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(display_value)
-            if hasattr(param, "validate_value"):
-                midi_value = param.validate_value(display_value)
-            else:
-                midi_value = display_value
-
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=param.address,
-                                        value=midi_value)
-            return_value = self.midi_helper.send_midi_message(sysex_message)
-
-            # Send MIDI message
-            if not return_value:  # self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
-
-        except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
-
-    def _create_parameter_slider(
-            self,
-            param: Union[AnalogParameter],
-            label: str,
-            vertical=False,
-            show_value_label=True,
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        # Create horizontal slider (removed vertical ADSR check)
-        slider = Slider(label, display_min, display_max, vertical, show_value_label)
-
-        # Set up bipolar parameters
-        if param in self.bipolar_parameters or param.is_bipolar:
-            # Set format string to show + sign for positive values
-            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
-            # Set center tick
-            slider.setCenterMark(0)
-            # Add more prominent tick at center
-            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
-            slider.setTickInterval((display_max - display_min) // 4)
-            
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
 
     def on_amp_env_adsr_envelope_changed(self, envelope):
         """ Updating ADSR envelope controls"""

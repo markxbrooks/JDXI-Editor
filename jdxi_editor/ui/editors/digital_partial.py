@@ -57,7 +57,6 @@ from jdxi_editor.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, \
     DIGITAL_PART_1, DIGITAL_PART_2
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.parsers import get_partial_address
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_frac,
