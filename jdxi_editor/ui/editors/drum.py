@@ -364,7 +364,7 @@ class DrumEditor(SynthEditor):
         for partial_name, partial_index in self.partial_mapping.items():
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
-                partial_num=partial_index,
+                partial_number=partial_index,
                 partial_name=partial_name,
                 parent=self,
             )

@@ -1,3 +1,24 @@
+"""
+Synth Control Base Module
+
+This module defines the `SynthControlBase` class, a Qt-based widget that provides MIDI
+control functionality for synthesizer parameters in the JD-Xi editor.
+
+It facilitates:
+- Sending and receiving MIDI SysEx messages.
+- Handling parameter updates through UI elements (sliders, combo boxes, spin boxes, switches).
+- Managing MIDI helper instances for communication.
+
+Dependencies:
+- PySide6 for GUI components.
+- jdxi_editor.midi for MIDI communication.
+- jdxi_editor.ui.widgets for UI elements.
+
+Classes:
+- SynthControlBase: A base widget for controlling synth parameters via MIDI.
+"""
+
+
 import logging
 
 from PySide6.QtWidgets import QWidget
@@ -13,7 +34,7 @@ from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
 class SynthControlBase(QWidget):
-
+    """ base class for all synth editors """
     def __init__(self, midi_helper, parent):
         super().__init__(parent)
         self.controls = None
@@ -101,7 +122,12 @@ class SynthControlBase(QWidget):
             display_min, display_max = param.min_val, param.max_val
 
         slider = Slider(
-            label, display_min, display_max, vertical, show_value_label, is_bipolar=param.is_bipolar
+            label,
+            display_min,
+            display_max,
+            vertical,
+            show_value_label,
+            is_bipolar=param.is_bipolar,
         )
 
         if param in self.bipolar_parameters or param.is_bipolar:

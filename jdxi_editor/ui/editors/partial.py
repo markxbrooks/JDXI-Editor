@@ -36,14 +36,14 @@ from jdxi_editor.ui.editors.synth_control.base import SynthControlBase
 class PartialEditor(SynthControlBase):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_num=1, part=PART_1, parent=None):
+    def __init__(self, midi_helper=None, partial_number=1, part=PART_1, parent=None):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
         self.area = None
         self.part = part
         self.group = 0x00
-        self.partial_number = partial_num  # This is now the numerical index
+        self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_handler = None
 

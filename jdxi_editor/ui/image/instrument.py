@@ -111,11 +111,13 @@ def draw_sequencer(
     line_y = sequencer_y - 10  # Move lines above buttons
     measure_width = (step_size + step_spacing) * 4  # Width of 4 steps
     line_spacing = step_size / 3  # Space between lines
-    time_signatures = [3, 2, 4]  # Time signatures for each beat grid
+    time_signatures = [4, 2, 4]  # Time signatures for each beat grid
 
     for time_signature_number, beats in enumerate(time_signatures):
         for beat_number in range(beats):
-            if beats == 2:
+            if time_signature_number == 0:
+                scaled_measure_width = measure_width * 0.75
+            elif beats == 2:
                 scaled_measure_width = measure_width * 2.0
             else:
                 scaled_measure_width = measure_width
