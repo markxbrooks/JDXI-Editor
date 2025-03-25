@@ -54,7 +54,6 @@ from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.requests import DIGITAL1_REQUESTS, DIGITAL2_REQUESTS
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
@@ -300,11 +299,6 @@ class DigitalSynthEditor(SynthEditor):
         else:
             self.midi_helper.update_digital1_tone_name.connect(self.set_instrument_title_label)
 
-    def update_combo_box_index(self, preset_number):
-        """Updates the QComboBox to reflect the loaded preset."""
-        logging.info(f"Updating combo to preset {preset_number}")
-        self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
-
     def _create_common_controls_section(self):
         """Create common controls section"""
         group = QWidget()
@@ -469,12 +463,6 @@ class DigitalSynthEditor(SynthEditor):
         layout.addWidget(chromatic_portamento)
         layout.addStretch()
         return group
-
-    def update_instrument_title(self):
-        """Update the instrument title label with the selected synth name."""
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        logging.info(f"selected_synth_text: {selected_synth_text}")
-        self.instrument_title_label.setText(f"Digital Synth:\n {selected_synth_text}")
 
     def load_preset(self, preset_index):
         """Load a preset by program change."""
@@ -644,12 +632,6 @@ class DigitalSynthEditor(SynthEditor):
                 "TEMPORARY_DIGITAL_SYNTH_2_AREA",
             ]
 
-        def _get_partial_number_old(synth_tone):
-            """Retrieve partial number from synth tone mapping."""
-            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
-                synth_tone, None
-            )
-
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
             partial_map = {
@@ -726,7 +708,7 @@ class DigitalSynthEditor(SynthEditor):
         }
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
-        # osc_waveform_map = {wave.value: wave for wave in OscWave}
+        osc_waveform_map = {wave.value: wave for wave in OscWave}
 
         failures, successes = [], []
 

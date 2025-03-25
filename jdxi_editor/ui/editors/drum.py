@@ -356,11 +356,6 @@ class DrumEditor(SynthEditor):
         )
         self.data_request()
 
-    def update_instrument_title(self):
-        selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        logging.info(f"selected_synth_text: {selected_synth_text}")
-        self.instrument_title_label.setText(f"Drums\n {selected_synth_text}")
-
     def _setup_partial_editors(self):
         """Setup all partial editors and tabs"""
         # Map of partial names to their indices

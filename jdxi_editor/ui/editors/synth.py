@@ -28,99 +28,14 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
-from jdxi_editor.midi.data.parameter.digital import DigitalParameter
-from jdxi_editor.midi.data.parameter.drums import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
-from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.ui.editors.synth_control.base import SynthControlBase
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
-from jdxi_editor.ui.widgets.slider import Slider
-from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
-from jdxi_editor.ui.widgets.switch.switch import Switch
-
-
-class SynthControlBase(QWidget):
-
-    def __init__(self, parent):
-        super().__init__(parent)
-
-    def _create_parameter_slider(
-        self,
-        param: SynthParameter,
-        label: str,
-        vertical=False,
-        show_value_label=True,
-    ) -> Slider:
-        """Create a slider for a synth parameter with proper display conversion."""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        slider = Slider(
-            label, display_min, display_max, vertical, show_value_label, is_bipolar=param.is_bipolar
-        )
-
-        if param in self.bipolar_parameters or param.is_bipolar:
-            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
-            slider.setCenterMark(0)
-            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
-            slider.setTickInterval((display_max - display_min) // 4)
-
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        self.controls[param] = slider
-        return slider
-
-    def _create_parameter_combo_box(
-        self,
-        param: SynthParameter,
-        label: str = None,
-        options: list = None,
-        values: list = None,
-        show_label=True,
-    ) -> ComboBox:
-        """Create a combo box for a parameter with proper display conversion"""
-        combo_box = ComboBox(label, options, values, show_label=show_label)
-        combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        self.controls[param] = combo_box
-        return combo_box
-
-    def _create_parameter_spin_box(
-        self, param: SynthParameter, label: str = None
-    ) -> SpinBox:
-        """Create address spin box for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        spin_box = SpinBox(label, display_min, display_max)
-
-        # Connect value changed signal
-        spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = spin_box
-        return spin_box
-
-    def _create_parameter_switch(
-        self,
-        param: SynthParameter,
-        label: str,
-        values: list[str],
-    ) -> Switch:
-        """Create address switch for address parameter with proper display conversion"""
-        switch = Switch(label, values)
-        switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        self.controls[param] = switch
-        return switch
 
 
 class SynthEditor(SynthControlBase):
@@ -131,7 +46,9 @@ class SynthEditor(SynthControlBase):
     def __init__(
         self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
-        super().__init__(parent)
+        super().__init__(midi_helper, parent)
+        self.instrument_title_label = None
+        self.image_label = None
         self.instrument_icon_folder = None
         self.controls = {}
         self.partial_num = None
@@ -149,7 +66,7 @@ class SynthEditor(SynthControlBase):
         # midi message bytes
         # To be over-ridden by subclasses
         self.area = None
-        """ 
+        """ One of:
             PROGRAM_AREA, 
             ANALOG_SYNTH_AREA, 
             DIGITAL_SYNTH_1_AREA, 
@@ -193,98 +110,6 @@ class SynthEditor(SynthControlBase):
 
     def set_instrument_title_label(self, name: str):
         self.instrument_title_label.setText(f"Synth:\n {name}")
-
-    def _create_parameter_combo_box_old(
-        self,
-        param: SynthParameter,
-        label: str = None,
-        options: list = None,
-        values: list = None,
-        show_label=True,
-    ) -> ComboBox:
-        """Create a combo box for a parameter with proper display conversion"""
-        combo_box = ComboBox(label, options, values, show_label=show_label)
-        combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        self.controls[param] = combo_box
-        return combo_box
-
-    def _create_parameter_spin_box_old(
-        self, param: SynthParameter, label: str = None
-    ) -> SpinBox:
-        """Create address spin box for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        spin_box = SpinBox(label, display_min, display_max)
-
-        # Connect value changed signal
-        spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = spin_box
-        return spin_box
-
-    def _create_parameter_switch_old(
-        self,
-        param: SynthParameter,
-        label: str,
-        values: list[str],
-    ) -> Switch:
-        """Create address switch for address parameter with proper display conversion"""
-        switch = Switch(label, values)
-        switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        self.controls[param] = switch
-        return switch
-
-    def _create_parameter_slider_old(
-        self,
-        param: SynthParameter,
-        label: str,
-        vertical=False,
-        show_value_label=True,
-    ) -> Slider:
-        """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-
-        # Create slider
-        slider = Slider(
-            label,
-            display_min,
-            display_max,
-            vertical,
-            show_value_label,
-            is_bipolar=param.is_bipolar,
-        )
-
-        # Set up bipolar parameters
-        if param in self.bipolar_parameters or param.is_bipolar:
-            # Set format string to show + sign for positive values
-            slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
-            # Set center tick
-            slider.setCenterMark(0)
-            # Add more prominent tick at center
-            slider.setTickPosition(Slider.TickPosition.TicksBothSides)
-            slider.setTickInterval((display_max - display_min) // 4)
-
-            # Get initial MIDI value and convert to display value
-            if self.midi_helper:
-                group, _ = param.get_address_for_partial(self.partial_num)
-
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
-        # Store control reference
-        self.controls[param] = slider
-        return slider
-
-    def set_midi_helper(self, midi_helper: MidiIOHelper):
-        """Set MIDI helper instance"""
-        self.midi_helper = midi_helper
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -382,63 +207,6 @@ class SynthEditor(SynthControlBase):
             )
         if self.preset_handler:
             self.preset_handler.load_preset(preset_data)
-
-    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
-        """Send MIDI parameter with error handling."""
-        try:
-            # Get parameter area and address with partial offset
-            if hasattr(param, "get_address_for_partial"):
-                group, _ = param.get_address_for_partial(0)
-            else:
-                group = PROGRAM_GROUP
-            logging.info(
-                f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
-            )
-
-            sysex_message = RolandSysEx(
-                area=self.area,
-                section=self.part,
-                group=group,
-                param=param.address,
-                value=value,
-            )
-            result = self.midi_helper.send_midi_message(sysex_message)
-
-            return bool(result)
-        except Exception as ex:
-            logging.error(f"MIDI error setting {param.name}: {ex}")
-            return False
-
-    def _on_parameter_changed(self, param: SynthParameter, display_value: int):
-        """Handle parameter value changes from UI controls."""
-        try:
-            # Convert display value to MIDI value
-            midi_value = (
-                param.convert_from_display(display_value)
-                if hasattr(param, "convert_from_display")
-                else param.validate_value(display_value)
-            )
-
-            # Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
-        except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {ex}")
-
-    def data_request(self, channel=None, program=None):
-        """Send data request SysEx messages to the JD-Xi"""
-        # Define SysEx messages as byte arrays
-        for request in self.midi_requests:
-            request = bytes.fromhex(request)
-            # Send each SysEx message
-            self.send_message(request)
-
-    def send_message(self, message):
-        """Send address SysEx message using the MIDI helper"""
-        if self.midi_helper:
-            self.midi_helper.send_raw_message(message)
-        else:
-            logging.error("MIDI helper not initialized")
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
