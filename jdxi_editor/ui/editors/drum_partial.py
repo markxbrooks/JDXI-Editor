@@ -45,10 +45,10 @@ from jdxi_editor.ui.editors.partial import PartialEditor
 class DrumPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_num=0, partial_name=None, parent=None):
+    def __init__(self, midi_helper=None, partial_number=0, partial_name=None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
-        self.partial_num = partial_num  # This is now the numerical index
+        self.partial_num = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
         self.preset_handler = None
         self.area = TEMPORARY_TONE_AREA
@@ -57,11 +57,11 @@ class DrumPartialEditor(PartialEditor):
         try:
             self.partial_address = get_address_for_partial_name(self.partial_name)
             logging.info(
-                f"Initialized partial {partial_num} with address: {hex(self.partial_address)}"
+                f"Initialized partial {partial_number} with address: {hex(self.partial_address)}"
             )
         except Exception as ex:
             logging.error(
-                f"Error calculating address for partial {partial_num}: {str(ex)}"
+                f"Error calculating address for partial {partial_number}: {str(ex)}"
             )
             self.partial_address = 0x00
 

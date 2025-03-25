@@ -1,8 +1,5 @@
 from enum import Enum, auto
 
-# from jdxi_editor.midi.data.constants.sysex import PART_1,
-# PART_2, PART_3, PART_4, OSC_1_GROUP, AnalogControlChange, Waveform
-
 DRUM_KIT_AREA = 0x1C
 MIDI_CHANNEL_DIGITAL1 = 0  # Corresponds to channel 1
 MIDI_CHANNEL_DIGITAL2 = 1  # Corresponds to channel 2
