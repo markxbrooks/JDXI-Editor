@@ -61,8 +61,19 @@ class DigitalModifyParameter(SynthParameter):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
         return DigitalModifyParameter.__members__.get(param_name, None)
-    
+
     def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be an integer, got {type(value)}")
+
+        # Validate range for specific parameters
+        if self == self.ENVELOPE_LOOP_SYNC_NOTE and not (0 <= value <= 19):
+            raise ValueError(f"Value {value} out of range for {self.name} (valid range: 0-19)")
+
+        return value
+    
+    def validate_value_old(self, value: int) -> int:
         """Validate and convert parameter value"""
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")

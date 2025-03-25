@@ -4259,20 +4259,6 @@ class SetupMessage(RolandSysEx):
         self.data = [self.value]
 
 
-# Example usage:
-# Change program bank MSB
-msg = SetupMessage(param=SetupParam.BANK_MSB.value, value=0)  # Bank 0
-
-# Change program bank LSB
-msg = SetupMessage(param=SetupParam.BANK_LSB.value, value=0)  # Bank 0
-
-# Change program number
-msg = SetupMessage(param=SetupParam.PROGRAM.value, value=0)  # Program 1
-
-
-# Program Common Parameters (0x18 00)
-
-
 @dataclass
 class ProgramCommonParameterMessage(RolandSysEx):
     """Program Common parameter message"""
@@ -4293,30 +4279,6 @@ class ProgramCommonParameterMessage(RolandSysEx):
             self.param,  # Parameter number
         ]
         self.data = [self.value]
-
-
-# Example usage:
-# Set program name character
-msg = ProgramCommonParameterMessage(
-    param=ProgramCommonParameter.NAME_1.value, value=ord("A")  # ASCII 'A'
-)
-
-# Set program level
-msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.PROGRAM_LEVEL.value, value=100)  # Level 100
-
-# Set program tempo to 120.00 BPM
-msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.PROGRAM_TEMPO.value, value=12000)  # 120.00 BPM
-
-# Set vocal effect to VOCODER
-msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.VOCAL_EFFECT.value, value=1)  # VOCODER
-
-# Set vocal effect number
-msg = ProgramCommonParameterMessage(
-    param=ProgramCommonParameter.VOCAL_EFFECT_NUMBER.value, value=0  # Vocal Effect 1
-)
-
-# Enable auto note
-msg = ProgramCommonParameterMessage(param=ProgramCommonParameter.AUTO_NOTE_SWITCH.value, value=1)  # ON
 
 
 # Program Vocal Effect Parameters (0x18 01)

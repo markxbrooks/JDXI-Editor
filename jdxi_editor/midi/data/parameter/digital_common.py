@@ -1,36 +1,7 @@
-from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional
 
-from jdxi_editor.midi.data.constants import COMMON_GROUP
 from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-
-
-def parse_digital_common_parameters(data: list) -> dict:
-    """
-    Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, and Amplifier parameters.
-
-    Args:
-        data (bytes): SysEx message containing tone parameters.
-
-    Returns:
-        dict: Parsed parameters.
-    """
-
-    # Function to safely retrieve values from `data`
-    def safe_get(index, default=0):
-        tone_name_length = 12
-        index = index + tone_name_length # shift the index by 12 to account for the tone name
-        return data[index] if index < len(data) else default
-
-    parameters = {}
-
-    # Mapping DigitalParameter Enum members to their respective positions in SysEx data
-    for param in DigitalCommonParameter:
-        # Use the parameter's address from the enum and fetch the value from the data
-        parameters[param.name] = safe_get(param.address)
-
-    return parameters
 
 
 class DigitalCommonParameter(SynthParameter):
@@ -132,6 +103,28 @@ class DigitalCommonParameter(SynthParameter):
         return str(value)
 
     def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be an integer, got {type(value)}")
+
+        # Special cases mapping
+        special_cases = {
+            self.RING_SWITCH: lambda v: 2 if v == 1 else v  # Skip "---" value
+        }
+
+        # Apply special case transformation if applicable
+        value = special_cases.get(self, lambda v: v)(value)
+
+        # Regular range check
+        if not (self.min_val <= value <= self.max_val):
+            raise ValueError(
+                f"Value {value} out of range for {self.name} "
+                f"(valid range: {self.min_val}-{self.max_val})"
+            )
+
+        return value
+
+    def validate_value_old(self, value: int) -> int:
         """Validate and convert parameter value"""
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
