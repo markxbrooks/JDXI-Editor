@@ -85,6 +85,7 @@ from jdxi_editor.midi.data.constants.analog import (
     ANALOG_OSC_GROUP, LFO_TEMPO_SYNC_NOTES,
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
+from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -93,17 +94,6 @@ from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_editor.ui.widgets.slider import Slider
-
-
-def get_analog_parameter_by_address(address: int):
-    """Retrieve the DigitalParameter by its address."""
-    logging.info(f"address: {address}")
-    for param in AnalogParameter:
-        if param.address == address:
-            logging.info(f"get_analog_parameter_by_address found param: {param}")
-            return param
-    return None
 
 
 class AnalogSynthEditor(SynthEditor):

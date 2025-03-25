@@ -39,37 +39,8 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 
 import logging
-from typing import Tuple, Optional, Union
-from enum import Enum
-from dataclasses import dataclass
+from typing import Tuple, Optional
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-
-
-def parse_digital_parameters(data: list) -> dict:
-    """
-    Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, and Amplifier parameters.
-
-    Args:
-        data (bytes): SysEx message containing tone parameters.
-
-    Returns:
-        dict: Parsed parameters.
-    """
-
-    # Function to safely retrieve values from `data`
-    def safe_get(index, default=0):
-        tone_name_length = 12
-        index = index + tone_name_length # shift the index by 12 to account for the tone name
-        return data[index] if index < len(data) else default
-
-    parameters = {}
-
-    # Mapping DigitalParameter Enum members to their respective positions in SysEx data
-    for param in DigitalParameter:
-        # Use the parameter's address from the enum and fetch the value from the data
-        parameters[param.name] = safe_get(param.address)
-
-    return parameters
 
 
 class DigitalParameter(SynthParameter):
@@ -184,9 +155,6 @@ class DigitalParameter(SynthParameter):
     PCM_WAVE_NUMBER = (0x3F, 0, 3)
     PCM_WAVE_GAIN = (0x40, 0, 16384)
 
-    def __str__(self) -> str:
-        return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
-
     @property
     def display_name(self) -> str:
         """Get display name for the parameter"""
@@ -270,6 +238,41 @@ class DigitalParameter(SynthParameter):
             return False
 
     def validate_value(self, value: int) -> int:
+        """Validate and convert parameter value to MIDI range (0-127)"""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be an integer, got {type(value)}")
+
+        # Define parameter-specific conversions
+        conversion_map = {
+            self.AMP_PAN: lambda v: v + 64,  # -64 to +63 -> 0 to 127
+            self.OSC_PITCH: lambda v: v + 64,  # -24 to +24 -> 40 to 88
+            self.OSC_DETUNE: lambda v: v + 64,  # -50 to +50 -> 14 to 114
+            self.OSC_PITCH_ENV_DEPTH: lambda v: v + 64,  # -63 to +63 -> 1 to 127
+            self.FILTER_CUTOFF_KEYFOLLOW: lambda v: (v + 100) * 127 // 200,  # -100 to +100 -> 0 to 127
+            self.AMP_LEVEL_KEYFOLLOW: lambda v: (v + 100) * 127 // 200,  # -100 to +100 -> 0 to 127
+        }
+
+        # Default conversion for bipolar values (-63 to +63 -> 0 to 127)
+        bipolar_params = {
+            self.LFO_PITCH_DEPTH, self.LFO_FILTER_DEPTH, self.LFO_AMP_DEPTH, self.LFO_PAN_DEPTH,
+            self.MOD_LFO_PITCH_DEPTH, self.MOD_LFO_FILTER_DEPTH, self.MOD_LFO_AMP_DEPTH,
+            self.MOD_LFO_PAN, self.MOD_LFO_RATE_CTRL,
+        }
+
+        if self in conversion_map:
+            value = conversion_map[self](value)
+        elif self in bipolar_params:
+            value += 64  # -63 to +63 -> 0 to 127
+        else:
+            value += 63  # -63 to +63 -> 0 to 126
+
+        # Ensure value is within MIDI range
+        if not (0 <= value <= 127):
+            raise ValueError(f"MIDI value {value} out of range for {self.name} (must be 0-127)")
+
+        return value
+
+    def validate_value_old(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
