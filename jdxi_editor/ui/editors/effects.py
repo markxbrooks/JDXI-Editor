@@ -182,7 +182,7 @@ class EffectsEditor(SynthEditor):
             ["Thru", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER"],
             [0, 1, 2, 3, 4],
         )
-        layout.addRow("Effect 1 Type", self.efx1_type)
+        layout.addRow(self.efx1_type)
 
         # Create sliders for EFX1 parameters
         self.efx1_level = self._create_parameter_slider(
@@ -203,7 +203,7 @@ class EffectsEditor(SynthEditor):
         self.efx1_output_assign = self._create_parameter_combo_box(
             EffectParameter.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"], [0, 1]
         )
-        layout.addRow("Output Assign", self.efx1_output_assign)
+        layout.addRow(self.efx1_output_assign)
 
         self.efx1_parameter1_slider = self._create_parameter_slider(
             EffectParameter.EFX1_PARAM_1, "Parameter 1"
@@ -235,7 +235,7 @@ class EffectsEditor(SynthEditor):
             ["OFF", "FLANGER", "PHASER", "RING MOD", "SLICER"],
             [0, 5, 6, 7, 8],
         )
-        layout.addRow("Effect 2 Type", self.efx2_type)
+        layout.addRow(self.efx2_type)
 
         # Create sliders for EFX2 parameters
         self.efx2_level = self._create_parameter_slider(

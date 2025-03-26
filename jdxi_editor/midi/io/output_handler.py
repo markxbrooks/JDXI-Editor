@@ -230,7 +230,7 @@ class MidiOutHandler(MidiIOController):
             if size == 1:
                 data_bytes = [value & 0x7F]  # Single byte format (0-127)
             elif size in [4, 5]:
-                data_bytes = split_value_to_nibbles(value, size)  # Convert to nibbles
+                data_bytes = split_value_to_nibbles(value)  # Convert to nibbles
             else:
                 logging.error(f"Unsupported parameter size: {size}")
                 return False

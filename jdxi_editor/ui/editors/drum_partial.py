@@ -121,7 +121,7 @@ class DrumPartialEditor(PartialEditor):
             [0, 1, 2, 3, 4, 5, 6, 7],
         )
 
-        tva_layout.addRow("Level Velocity Curve", tva_level_velocity_curve_spin)
+        tva_layout.addRow(tva_level_velocity_curve_spin)
 
         tva_level_velocity_sens_slider = self._create_parameter_slider(
             DrumParameter.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
@@ -220,7 +220,7 @@ class DrumPartialEditor(PartialEditor):
             DrumParameter.WMT1_WAVE_SWITCH, "WMT1 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
-        wmt1_layout.addRow("WMT1 Wave Switch", wmt1_wave_switch_combo)
+        wmt1_layout.addRow(wmt1_wave_switch_combo)
 
         wmt1_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_NUMBER_L,
@@ -229,7 +229,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt1_layout.addRow("WMT1 Wave Number L", wmt1_wave_number_l_combo)
+        wmt1_layout.addRow(wmt1_wave_number_l_combo)
 
         wmt1_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_NUMBER_R,
@@ -238,7 +238,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt1_layout.addRow("WMT1 Wave Number R", wmt1_wave_number_r_combo)
+        wmt1_layout.addRow(wmt1_wave_number_r_combo)
 
         wmt1_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_GAIN,
@@ -247,7 +247,7 @@ class DrumPartialEditor(PartialEditor):
             values=[0, 1, 2, 3],
         )
 
-        wmt1_layout.addRow("WMT1 Wave Gain", wmt1_wave_gain_combo)
+        wmt1_layout.addRow(wmt1_wave_gain_combo)
 
         wmt1_wave_fxm_switch_combo = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_GAIN,
@@ -255,7 +255,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt1_layout.addRow("WMT1 Wave FXM Switch", wmt1_wave_fxm_switch_combo)
+        wmt1_layout.addRow(wmt1_wave_fxm_switch_combo)
 
         wmt1_wave_fxm_color_slider = self._create_parameter_slider(
             DrumParameter.WMT1_WAVE_FXM_COLOR,
@@ -297,7 +297,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON"],
             [0, 1],
         )
-        wmt1_layout.addRow("Wave Random Pan", wmt1_wave_random_pan_switch)
+        wmt1_layout.addRow(wmt1_wave_random_pan_switch)
 
         wmt1_wave_alternate_pan_switch = self._create_parameter_combo_box(
             DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH,
@@ -305,7 +305,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
         )
-        wmt1_layout.addRow("Wave Alternate Pan Switch", wmt1_wave_alternate_pan_switch)
+        wmt1_layout.addRow(wmt1_wave_alternate_pan_switch)
 
         wmt1_wave_level_slider = self._create_parameter_slider(
             DrumParameter.WMT1_WAVE_LEVEL,
@@ -344,7 +344,7 @@ class DrumPartialEditor(PartialEditor):
             DrumParameter.WMT2_WAVE_SWITCH, "WMT2 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
-        wmt2_layout.addRow("WMT2 Wave Switch", wmt2_wave_switch_combo)
+        wmt2_layout.addRow(wmt2_wave_switch_combo)
 
         wmt2_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_NUMBER_L,
@@ -353,7 +353,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt2_layout.addRow("WMT2 Wave Number L", wmt2_wave_number_l_combo)
+        wmt2_layout.addRow(wmt2_wave_number_l_combo)
 
         wmt2_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_NUMBER_R,
@@ -362,7 +362,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt2_layout.addRow("WMT2 Wave Number R", wmt2_wave_number_r_combo)
+        wmt2_layout.addRow(wmt2_wave_number_r_combo)
 
         wmt2_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_GAIN,
@@ -371,7 +371,7 @@ class DrumPartialEditor(PartialEditor):
             values=[0, 1, 2, 3],
         )
 
-        wmt2_layout.addRow("WMT2 Wave Gain", wmt2_wave_gain_combo)
+        wmt2_layout.addRow(wmt2_wave_gain_combo)
 
         wmt2_wave_fxm_switch_combo = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_GAIN,
@@ -379,7 +379,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt2_layout.addRow("WMT2 Wave FXM Switch", wmt2_wave_fxm_switch_combo)
+        wmt2_layout.addRow(wmt2_wave_fxm_switch_combo)
 
         wmt2_wave_fxm_color_slider = self._create_parameter_slider(
             DrumParameter.WMT2_WAVE_FXM_COLOR,
@@ -421,7 +421,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON"],
             [0, 1],
         )
-        wmt2_layout.addRow("Wave Random Pan", wmt2_wave_random_pan_switch)
+        wmt2_layout.addRow(wmt2_wave_random_pan_switch)
 
         wmt2_wave_alternate_pan_switch = self._create_parameter_combo_box(
             DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
@@ -429,7 +429,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
         )
-        wmt2_layout.addRow("Wave Alternate Pan Switch", wmt2_wave_alternate_pan_switch)
+        wmt2_layout.addRow(wmt2_wave_alternate_pan_switch)
 
         wmt2_wave_level_slider = self._create_parameter_slider(
             DrumParameter.WMT2_WAVE_LEVEL,
@@ -468,7 +468,7 @@ class DrumPartialEditor(PartialEditor):
             DrumParameter.WMT3_WAVE_SWITCH, "WMT3 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
-        wmt3_layout.addRow("WMT3 Wave Switch", wmt3_wave_switch_combo)
+        wmt3_layout.addRow(wmt3_wave_switch_combo)
 
         wmt3_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_NUMBER_L,
@@ -477,7 +477,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt3_layout.addRow("WMT3 Wave Number L", wmt3_wave_number_l_combo)
+        wmt3_layout.addRow(wmt3_wave_number_l_combo)
 
         wmt3_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_NUMBER_R,
@@ -486,7 +486,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt3_layout.addRow("WMT3 Wave Number R", wmt3_wave_number_r_combo)
+        wmt3_layout.addRow(wmt3_wave_number_r_combo)
 
         wmt3_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_GAIN,
@@ -495,7 +495,7 @@ class DrumPartialEditor(PartialEditor):
             values=[0, 1, 2, 3],
         )
 
-        wmt3_layout.addRow("WMT3 Wave Gain", wmt3_wave_gain_combo)
+        wmt3_layout.addRow(wmt3_wave_gain_combo)
 
         wmt3_wave_fxm_switch_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_GAIN,
@@ -503,7 +503,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt3_layout.addRow("WMT3 Wave FXM Switch", wmt3_wave_fxm_switch_combo)
+        wmt3_layout.addRow(wmt3_wave_fxm_switch_combo)
 
         wmt3_wave_fxm_color_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_FXM_COLOR,
@@ -511,7 +511,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt3_layout.addRow("WMT3 Wave FXM Color", wmt3_wave_fxm_color_combo)
+        wmt3_layout.addRow(wmt3_wave_fxm_color_combo)
 
         wmt3_wave_fxm_depth_combo = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_FXM_DEPTH,
@@ -519,7 +519,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt3_layout.addRow("WMT3 Wave FXM Depth", wmt3_wave_fxm_depth_combo)
+        wmt3_layout.addRow(wmt3_wave_fxm_depth_combo)
 
         wmt3_wave_tempo_sync_slider = self._create_parameter_slider(
             DrumParameter.WMT3_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
@@ -549,7 +549,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON"],
             [0, 1],
         )
-        wmt3_layout.addRow("Wave Random Pan", wmt3_wave_random_pan_switch)
+        wmt3_layout.addRow(wmt3_wave_random_pan_switch)
 
         wmt3_wave_alternate_pan_switch = self._create_parameter_combo_box(
             DrumParameter.WMT3_WAVE_ALTERNATE_PAN_SWITCH,
@@ -557,7 +557,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
         )
-        wmt3_layout.addRow("Wave Alternate Pan Switch", wmt3_wave_alternate_pan_switch)
+        wmt3_layout.addRow(wmt3_wave_alternate_pan_switch)
 
         wmt3_wave_level_slider = self._create_parameter_slider(
             DrumParameter.WMT3_WAVE_LEVEL,
@@ -596,7 +596,7 @@ class DrumPartialEditor(PartialEditor):
             DrumParameter.WMT4_WAVE_SWITCH, "WMT4 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
-        wmt4_layout.addRow("WMT4 Wave Switch", wmt4_wave_switch_combo)
+        wmt4_layout.addRow(wmt4_wave_switch_combo)
 
         wmt4_wave_number_l_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_NUMBER_L,
@@ -605,7 +605,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt4_layout.addRow("WMT4 Wave Number L", wmt4_wave_number_l_combo)
+        wmt4_layout.addRow(wmt4_wave_number_l_combo)
 
         wmt4_wave_number_r_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_NUMBER_R,
@@ -614,7 +614,7 @@ class DrumPartialEditor(PartialEditor):
             values=list(range(0, 453)),
         )
 
-        wmt4_layout.addRow("WMT4 Wave Number R", wmt4_wave_number_r_combo)
+        wmt4_layout.addRow(wmt4_wave_number_r_combo)
 
         wmt4_wave_gain_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_GAIN,
@@ -623,7 +623,7 @@ class DrumPartialEditor(PartialEditor):
             values=[0, 1, 2, 3],
         )
 
-        wmt4_layout.addRow("WMT4 Wave Gain", wmt4_wave_gain_combo)
+        wmt4_layout.addRow(wmt4_wave_gain_combo)
 
         wmt4_wave_fxm_switch_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_GAIN,
@@ -631,7 +631,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt4_layout.addRow("WMT4 Wave FXM Switch", wmt4_wave_fxm_switch_combo)
+        wmt4_layout.addRow(wmt4_wave_fxm_switch_combo)
 
         wmt4_wave_fxm_color_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_FXM_COLOR,
@@ -639,7 +639,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt4_layout.addRow("WMT4 Wave FXM Color", wmt4_wave_fxm_color_combo)
+        wmt4_layout.addRow(wmt4_wave_fxm_color_combo)
 
         wmt4_wave_fxm_depth_combo = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_FXM_DEPTH,
@@ -647,7 +647,7 @@ class DrumPartialEditor(PartialEditor):
             options=["OFF", "ON"],
             values=[0, 1],
         )
-        wmt4_layout.addRow("WMT4 Wave FXM Depth", wmt4_wave_fxm_depth_combo)
+        wmt4_layout.addRow(wmt4_wave_fxm_depth_combo)
 
         wmt4_wave_tempo_sync_slider = self._create_parameter_slider(
             DrumParameter.WMT4_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
@@ -677,7 +677,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON"],
             [0, 1],
         )
-        wmt4_layout.addRow("Wave Random Pan", wmt4_wave_random_pan_switch)
+        wmt4_layout.addRow(wmt4_wave_random_pan_switch)
 
         wmt4_wave_alternate_pan_switch = self._create_parameter_combo_box(
             DrumParameter.WMT4_WAVE_ALTERNATE_PAN_SWITCH,
@@ -685,7 +685,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
         )
-        wmt4_layout.addRow("Wave Alternate Pan Switch", wmt4_wave_alternate_pan_switch)
+        wmt4_layout.addRow(wmt4_wave_alternate_pan_switch)
 
         wmt4_wave_level_slider = self._create_parameter_slider(
             DrumParameter.WMT4_WAVE_LEVEL,
@@ -768,7 +768,7 @@ class DrumPartialEditor(PartialEditor):
             ["NO-SUS", "SUSTAIN"],
             [0, 1],
         )
-        pitch_layout.addRow("Partial Env Mode", partial_env_mode_combo)
+        pitch_layout.addRow(partial_env_mode_combo)
 
         return pitch_group
 
@@ -800,7 +800,7 @@ class DrumPartialEditor(PartialEditor):
             ["EFX1", "EFX2", "DLY", "REV", "DIR"],
             [0, 1, 2, 3, 4],
         )
-        output_layout.addRow("Partial Output Assign", partial_output_assign_combo)
+        output_layout.addRow(partial_output_assign_combo)
 
         return output_group
 
@@ -818,7 +818,7 @@ class DrumPartialEditor(PartialEditor):
             ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"],
             [0, 1, 2, 3, 4],
         )
-        tvf_layout.addRow("Filter Type", tvf_filter_type_combo)
+        tvf_layout.addRow(tvf_filter_type_combo)
 
         tvf_cutoff_frequency_slider = self._create_parameter_slider(
             DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff"
@@ -831,7 +831,7 @@ class DrumPartialEditor(PartialEditor):
             ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
             [0, 1, 2, 3, 4, 5, 6, 7],
         )
-        tvf_layout.addRow("Cutoff Velocity Curve", tvf_cutoff_velocity_curve_spin)
+        tvf_layout.addRow(tvf_cutoff_velocity_curve_spin)
 
         tvf_env_depth_slider = self._create_parameter_slider(
             DrumParameter.TVF_ENV_DEPTH, "Env Depth"
@@ -844,7 +844,7 @@ class DrumPartialEditor(PartialEditor):
             ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
             [0, 1, 2, 3, 4, 5, 6, 7],
         )
-        tvf_layout.addRow("Env Velocity Curve Type", tvf_env_velocity_curve_type_spin)
+        tvf_layout.addRow(tvf_env_velocity_curve_type_spin)
 
         tvf_env_velocity_sens_slider = self._create_parameter_slider(
             DrumParameter.TVF_ENV_VELOCITY_SENS, "Env Velocity Sens"

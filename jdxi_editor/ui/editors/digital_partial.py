@@ -49,7 +49,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QSpinBox,
-    QTabWidget,
+    QTabWidget, QGridLayout, QFormLayout,
 )
 
 from jdxi_editor.midi.data.parameter.digital import DigitalParameter
@@ -57,6 +57,7 @@ from jdxi_editor.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, \
     DIGITAL_PART_1, DIGITAL_PART_2
+from jdxi_editor.midi.data.presets.pcm_waves import PCM_WAVES, PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.sysex.parsers import get_partial_address
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_frac,
@@ -189,11 +190,10 @@ class DigitalPartialEditor(PartialEditor):
         top_row.addLayout(wave_layout)
 
         # Wave variation switch
-        self.wave_var = Switch("Variation", ["A", "B", "C"])
-        self.wave_var.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.OSC_WAVE_VARIATION, v)
-        )
-        top_row.addWidget(self.wave_var)
+        self.wave_variation_switch = self._create_parameter_switch(DigitalParameter.OSC_WAVE_VARIATION,
+                                                                   "Variation",
+                                                                   ["A", "B", "C"])
+        top_row.addWidget(self.wave_variation_switch)
         layout.addLayout(top_row)
 
         # Tuning controls
@@ -226,41 +226,23 @@ class DigitalPartialEditor(PartialEditor):
 
         # PCM Wave controls
         pcm_group = QGroupBox("PCM Wave")
-        pcm_layout = QVBoxLayout()
+        pcm_layout = QGridLayout()
         pcm_group.setLayout(pcm_layout)
-
-        self.pcm_wave_number = self._create_parameter_slider(
-            DigitalParameter.PCM_WAVE_NUMBER, "Number"
-        )
-        pcm_layout.addWidget(self.pcm_wave_number)
-        layout.addWidget(pcm_group)
         self.pcm_group = pcm_group  # Store reference for visibility control
-        self.pcm_wave_gain = self._create_parameter_slider(
-            DigitalParameter.PCM_WAVE_GAIN, "Gain"
+        self.pcm_wave_gain = self._create_parameter_combo_box(
+            DigitalParameter.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
         )
-        pcm_layout.addWidget(self.pcm_wave_gain)
+        self.pcm_wave_number = self._create_parameter_combo_box(
+            DigitalParameter.PCM_WAVE_NUMBER, "Number", PCM_WAVES_CATEGORIZED
+        )
+        pcm_layout.addWidget(self.pcm_wave_gain, 0, 0)
+        pcm_layout.addWidget(self.pcm_wave_number, 0, 1)
         layout.addWidget(pcm_group)
 
         # Pitch Envelope
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
-        """ 
-        group_address, _ = (
-            DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME.get_address_for_partial(
-                self.partial_number
-            )
-        )
-
-        pitch_env_widget = PitchEnvelope(DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME,
-                                         DigitalParameter.OSC_PITCH_ENV_DECAY_TIME,
-                                         DigitalParameter.OSC_PITCH_ENV_DEPTH,
-                                         self.midi_helper,
-                                         area=DIGITAL_SYNTH_1_AREA,
-                                         part=self.part,
-                                         group=group_address)
-        pitch_env_layout.addWidget(pitch_env_widget)
-        """
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
                 DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
@@ -278,11 +260,11 @@ class DigitalPartialEditor(PartialEditor):
         layout.addWidget(pitch_env_group)
 
         # Wave gain control
-        self.wave_gain = Switch("Gain", ["-6dB", "0dB", "+6dB", "+12dB"])
-        self.wave_gain.valueChanged.connect(
+        self.wave_gain_switch = Switch("Gain", ["-6dB", "0dB", "+6dB", "+12dB"])
+        self.wave_gain_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalParameter.WAVE_GAIN, v)
         )
-        layout.addWidget(self.wave_gain)
+        layout.addWidget(self.wave_gain_switch)
 
         # Super Saw detune (only for SUPER-SAW wave)
         self.super_saw_detune = self._create_parameter_slider(

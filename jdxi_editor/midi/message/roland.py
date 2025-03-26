@@ -30,6 +30,7 @@ from typing import List
 from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12, RQ1_COMMAND_11, MODEL_ID_1, \
     MODEL_ID_2, MODEL_ID_3, MODEL_ID_4, ROLAND_ID, DEVICE_ID, END_OF_SYSEX, START_OF_SYSEX, SETUP_AREA, PLACEHOLDER_BYTE
 from jdxi_editor.midi.message.sysex import SysExMessage
+from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
 
 @dataclass
@@ -57,7 +58,10 @@ class RolandSysEx(SysExMessage):
     def __post_init__(self):
         """Initialize address and data based on parameters."""
         self.address = [self.area, self.section, self.group, self.param]
-        self.data = [self.value] if isinstance(self.value, int) else self.value
+        if isinstance(self.value, int) and self.value > 0x0F:
+            self.data = split_value_to_nibbles(self.value)
+        else:
+            self.data = [self.value] if isinstance(self.value, int) else self.value
 
     def to_list(self) -> List[int]:
         """Convert the SysEx message to a list of integers."""
@@ -68,19 +72,13 @@ class RolandSysEx(SysExMessage):
                 + self.address
                 + self.data  # Directly append value (no extra list around it)
         )
+        print(f"self.command {self.command}")
+        print(f"self.address {self.address}")
+        print(f"self.data {self.data}")
         # if self.manufacturer_id == [0x41]:  # Roland messages require checksum
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
         return msg
-
-    def split_into_nibbles(self, value: int) -> list[int]:
-        """Splits a 4-byte value into its nibbles (4-bit chunks)."""
-        nibbles = []
-        for i in range(4):
-            # Extract each nibble (4 bits) by shifting and masking
-            nibble = (value >> (i * 4)) & 0x0F  # 0x0F is 1111, the mask for 4 bits
-            nibbles.append(nibble)
-        return nibbles
 
     def construct_sysex(self, address, *data_bytes, request=False):
         """Construct a SysEx message with a checksum and update instance variables."""

@@ -37,6 +37,8 @@ class SynthControlBase(QWidget):
     """ base class for all synth editors """
     def __init__(self, midi_helper, parent):
         super().__init__(parent)
+        self.area = None
+        self.part = None
         self.controls = None
         self.midi_helper = midi_helper
         self.midi_requests = []
