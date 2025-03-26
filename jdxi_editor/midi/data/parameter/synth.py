@@ -88,7 +88,7 @@ class SynthParameter(Enum):
         :return: int default area
         to be subclassed
         """
-        return PROGRAM_GROUP
+        return PROGRAM_GROUP, 0x00
 
     def convert_from_midi(self, midi_value):
         pass

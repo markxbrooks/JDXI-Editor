@@ -235,7 +235,7 @@ class DrumEditor(SynthEditor):
         self.assign_type_combo = self._create_parameter_combo_box(
             DrumParameter.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
         )
-        common_layout.addRow("Assign Type", self.assign_type_combo)
+        common_layout.addRow(self.assign_type_combo)
 
         # Mute Group control
         self.mute_group_combo = self._create_parameter_combo_box(
@@ -245,7 +245,7 @@ class DrumEditor(SynthEditor):
             list(range(0, 31)),
         )
 
-        common_layout.addRow("Mute Group", self.mute_group_combo)
+        common_layout.addRow(self.mute_group_combo)
 
         # Sustain control
         self.sustain_combo = self._create_parameter_combo_box(
@@ -275,7 +275,7 @@ class DrumEditor(SynthEditor):
             [0, 1],
         )
 
-        common_layout.addRow("Receive Expression", self.receive_expression_combo)
+        common_layout.addRow(self.receive_expression_combo)
 
         # Partial Receive Hold-1
         self.receive_hold_combo = self._create_parameter_combo_box(
@@ -285,13 +285,13 @@ class DrumEditor(SynthEditor):
             [0, 1],
         )
 
-        common_layout.addRow("Receive Hold-1", self.receive_hold_combo)
+        common_layout.addRow(self.receive_hold_combo)
 
         # One Shot Mode
         self.one_shot_mode_combo = self._create_parameter_combo_box(
             DrumParameter.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
         )
-        common_layout.addRow("One Shot Mode", self.one_shot_mode_combo)
+        common_layout.addRow(self.one_shot_mode_combo)
 
         common_group.setLayout(common_layout)
         upper_layout.addWidget(common_group)

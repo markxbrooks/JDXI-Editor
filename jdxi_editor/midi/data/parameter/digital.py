@@ -152,8 +152,8 @@ class DigitalParameter(SynthParameter):
     WAVE_NUMBER_3 = (0x3D, 0, 15)  # Next 4 bits
     WAVE_NUMBER_4 = (0x3E, 0, 15)  # Least significant 4 bits
 
-    PCM_WAVE_NUMBER = (0x3F, 0, 3)
-    PCM_WAVE_GAIN = (0x40, 0, 16384)
+    PCM_WAVE_GAIN = (0x34, 0, 3)
+    PCM_WAVE_NUMBER = (0x35, 0, 16384)
 
     @property
     def display_name(self) -> str:

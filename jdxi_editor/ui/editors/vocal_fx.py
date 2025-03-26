@@ -67,6 +67,7 @@ class VocalFXEditor(SynthEditor):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Vocal FX")
         self.setMinimumHeight(700)
+        self.setMinimumWidth(500)
         self.area = VOCAL_FX_AREA
         self.part = VOCAL_FX_PART
         self.group = VOCAL_FX_GROUP
@@ -254,7 +255,6 @@ class VocalFXEditor(SynthEditor):
 
         # HPF Frequency
         hpf_row = QHBoxLayout()
-        hpf_row.addWidget(QLabel("HPF"))
         hpf_row.addWidget(self.vocoder_hpf)
 
         # Add all controls
@@ -266,7 +266,7 @@ class VocalFXEditor(SynthEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-
+        vocoder_group.setStyleSheet(Style.JDXI_ADSR)
         return vocal_effect_section
 
     def _create_mixer_section(self):
@@ -318,9 +318,10 @@ class VocalFXEditor(SynthEditor):
         layout = QVBoxLayout()
         auto_pitch_section.setLayout(layout)
 
-        # Auto Pitch Switch
-        self.pitch_switch = Switch("Auto Pitch", ["OFF", "ON"])
-        self.pitch_switch.valueChanged.connect(self._on_pitch_switch_changed)
+        self.pitch_switch = self._create_parameter_switch(VocalFXParameter.AUTO_PITCH_SWITCH,
+                                                          "Auto Pitch",
+                                                          ["OFF", "ON"])
+
         # Type selector
         type_row = QHBoxLayout()
         type_row.addWidget(QLabel("Type"))
@@ -370,8 +371,9 @@ class VocalFXEditor(SynthEditor):
             VocalFXParameter.AUTO_PITCH_GENDER, "Gender"
         )
 
-        self.octave = Switch("Octave", ["-1", "0", "+1"])
-        self.octave.valueChanged.connect(self._on_octave_changed)
+        self.octave = self._create_parameter_switch(VocalFXParameter.AUTO_PITCH_OCTAVE,
+                                                    "Octave",
+                                                    ["-1", "0", "+1"])
 
         # Dry/Wet Balance
         self.auto_pitch_balance = self._create_parameter_slider(
