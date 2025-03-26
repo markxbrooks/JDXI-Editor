@@ -49,7 +49,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QSpinBox,
-    QTabWidget, QGridLayout, QFormLayout,
+    QTabWidget, QGridLayout, QFormLayout, QComboBox,
 )
 
 from jdxi_editor.midi.data.parameter.digital import DigitalParameter
@@ -233,10 +233,27 @@ class DigitalPartialEditor(PartialEditor):
             DigitalParameter.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
         )
         self.pcm_wave_number = self._create_parameter_combo_box(
-            DigitalParameter.PCM_WAVE_NUMBER, "Number", PCM_WAVES_CATEGORIZED
+            DigitalParameter.PCM_WAVE_NUMBER, "Number", PCM_WAVES
         )
+
+        # Create ComboBoxes
+        self.category_combo = QComboBox()
+
+        # Populate categories (with "No selection" option)
+        self.categories = ["No selection"] + sorted(set(w["Category"] for w in PCM_WAVES_CATEGORIZED))
+        self.category_combo.addItems(self.categories)
+
+        # Connect signal to update waves
+        self.category_combo.currentIndexChanged.connect(self.update_waves)
+
         pcm_layout.addWidget(self.pcm_wave_gain, 0, 0)
-        pcm_layout.addWidget(self.pcm_wave_number, 0, 1)
+        pcm_layout.addWidget(QLabel("Category"), 0, 1)
+        pcm_layout.addWidget(self.category_combo, 0, 2)
+        pcm_layout.addWidget(self.pcm_wave_number, 0, 3)
+
+        self.update_waves()
+
+        # Add widgets
         layout.addWidget(pcm_group)
 
         # Pitch Envelope
@@ -296,6 +313,20 @@ class DigitalPartialEditor(PartialEditor):
         self.pcm_group = pcm_group  # Store reference for visibility control
 
         return oscillator_section
+
+    def update_waves(self):
+        selected_category = self.category_combo.currentText()
+
+        # Filter waves or show all if "No selection"
+        if selected_category == "No selection":
+            filtered_waves = PCM_WAVES_CATEGORIZED  # Show all waves
+        else:
+            filtered_waves = [w for w in PCM_WAVES_CATEGORIZED if w["Category"] == selected_category]
+
+        # Update wave combo box
+        self.pcm_wave_number.combo_box.clear()
+        self.pcm_wave_number.combo_box.addItems([f"{w['Wave Number']}: {w['Wave Name']}" for w in filtered_waves])
+        self.pcm_wave_number.values = [w["Wave Number"] for w in filtered_waves]
 
     def _update_pw_controls_state(self, waveform: OscWave):
         """Update pulse width controls enabled state based on waveform"""
