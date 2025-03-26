@@ -94,7 +94,7 @@ class ComboBox(QWidget):
         layout.addWidget(self.combo_box)
 
         # Ensure label width consistency
-        self.combo_box.setMaximumWidth(150)
+        self.combo_box.setMaximumWidth(350)
         self.combo_box.setMaximumHeight(25)
 
         # Connect combo box index change to emit mapped value
