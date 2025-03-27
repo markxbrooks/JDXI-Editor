@@ -11,7 +11,7 @@ import logging
 
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors.preset import PresetEditor
+from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.midi.preset.type import SynthType
 
 

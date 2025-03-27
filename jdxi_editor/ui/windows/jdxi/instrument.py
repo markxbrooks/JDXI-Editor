@@ -66,8 +66,8 @@ from jdxi_editor.ui.editors import (
     MidiFileEditor,
 )
 from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_program_name_by_id
-from jdxi_editor.ui.editors.pattern import PatternSequencer
-from jdxi_editor.ui.editors.preset import PresetEditor
+from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
+from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog

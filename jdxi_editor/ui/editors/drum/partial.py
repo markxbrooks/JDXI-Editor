@@ -38,7 +38,7 @@ from jdxi_editor.midi.data.drum import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name
-from jdxi_editor.ui.editors.partial import PartialEditor
+from jdxi_editor.ui.editors.synth.partial import PartialEditor
 
 
 class DrumPartialEditor(PartialEditor):
