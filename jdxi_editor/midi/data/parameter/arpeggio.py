@@ -1,4 +1,43 @@
-from enum import Enum
+"""
+Module: ArpeggioParameter
+=========================
+
+This module defines the ArpeggioParameter class, which represents arpeggiator-related parameters
+in a synthesizer. These parameters control various aspects of arpeggios, such as grid, duration, 
+style, motif, octave range, accent rate, and velocity, as well as pattern, rhythm, and note settings.
+
+The class provides methods to:
+
+- Initialize arpeggio parameters with a given address, range, and optional display range.
+- Store the minimum and maximum values for display and parameter validation.
+- Define a variety of arpeggio and pattern-related parameters with specific ranges, including:
+  - Arpeggio grid (e.g., 4_, 8_, 16_)
+  - Arpeggio duration (e.g., 30, 40, 50, 60)
+  - Arpeggio style and motif
+  - Arpeggio octave range (-3 to +3)
+  - Accent rate and velocity
+  - Arpeggio pattern, rhythm, and note settings
+
+Parameters include:
+- Arpeggio grid, duration, switch, style, motif, octave range, accent rate, and velocity.
+- Pattern parameters (4 patterns, each with a range from 0 to 127).
+- Rhythm parameters (4 rhythm settings, each with a range from 0 to 127).
+- Note parameters (4 note settings, each with a range from 0 to 127).
+
+```python
+Usage example:
+    # Initialize an arpeggio parameter object
+    param = ArpeggioParameter(address=0x01, min_val=0, max_val=8)
+
+    # Access display range values
+    print(param.display_min)  # Output: 0
+    print(param.display_max)  # Output: 8
+
+    # Validate a value for the parameter
+    valid_value = param.validate_value(5)
+
+"""
+
 from typing import Optional
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 

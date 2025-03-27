@@ -33,7 +33,7 @@ from pubsub import pub
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal, QTimer
 
-from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED

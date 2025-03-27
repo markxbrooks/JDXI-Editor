@@ -58,7 +58,7 @@ from jdxi_editor.midi.data.constants.arpeggio import (
     ARP_GROUP,
     ArpOctaveRange, ArpMotif,
 )
-from jdxi_editor.midi.data.parameter.program_zone import ProgramZoneParameter
+from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.synth import SynthEditor
 

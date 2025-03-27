@@ -1,6 +1,6 @@
 """
-DigitalParameter: JD-Xi Digital Synthesizer Parameter Mapping
-=============================================================
+DigitalPartialParameter: JD-Xi Digital Synthesizer Parameter Mapping
+====================================================================
 
 This class defines digital synthesizer parameters for the Roland JD-Xi, mapping
 various synthesis parameters to their corresponding memory addresses and valid
@@ -43,7 +43,7 @@ from typing import Tuple, Optional
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
-class DigitalParameter(SynthParameter):
+class DigitalPartialParameter(SynthParameter):
     """Digital synth parameters with their addresses and value ranges"""
 
     def __init__(self, address: int, min_val: int, max_val: int, 
@@ -402,7 +402,7 @@ class DigitalParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the DigitalParameter by name."""
         # Return the parameter member by name, or None if not found
-        return DigitalParameter.__members__.get(param_name, None)
+        return DigitalPartialParameter.__members__.get(param_name, None)
 
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""

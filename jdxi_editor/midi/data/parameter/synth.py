@@ -1,4 +1,6 @@
 """
+SynthParameter Base Class
+=========================
 Module for representing and managing synthesizer parameters as enum values.
 
 This module defines the `SynthParameter` enum, which models the various parameters

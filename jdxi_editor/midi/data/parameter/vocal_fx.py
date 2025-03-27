@@ -1,3 +1,45 @@
+"""
+Module: VocalFXParameter
+========================
+
+This module defines the VocalFXParameter class, which represents various vocal effects parameters
+in a synthesizer. These parameters control different aspects of vocal processing, including
+level, pan, delay/reverb send levels, auto pitch settings, vocoder effects, and more.
+
+The class provides methods to:
+
+- Initialize vocal FX parameters with a given address, range, and optional display range.
+- Validate and convert parameter values to the MIDI range (0-127).
+- Define a variety of vocal effects parameters with specific ranges, including:
+  - Level, pan, delay/reverb send levels, and output assignment
+  - Auto pitch settings such as switch, type, scale, key, note, gender, octave, and balance
+  - Vocoder parameters such as switch, envelope type, level, mic sensitivity, and mix level
+
+The class also offers conversion utilities:
+- Convert between MIDI values and display values.
+- Handle special bipolar cases (e.g., pan, auto pitch gender).
+- Retrieve the display value range or MIDI value range for parameters.
+
+Parameters include:
+- Level, pan, delay and reverb send levels, output assignment, and auto pitch settings
+- Vocoder settings for on/off, envelope, level, mic sensitivity, synth level, and mic mix
+- Auto pitch gender, octave, balance, and key/note configurations
+
+The class also includes utility functions to get a parameter's address, range, display range,
+and to convert between MIDI values and display values.
+
+Usage example:
+    # Initialize a VocalFXParameter object for the LEVEL parameter
+    param = VocalFXParameter(address=0x00, min_val=0, max_val=127)
+
+    # Access display range values
+    print(param.display_min)  # Output: 0
+    print(param.display_max)  # Output: 127
+
+    # Validate a MIDI value
+    midi_value = param.convert_to_midi(64)
+"""
+
 from typing import Optional, Tuple
 
 from jdxi_editor.midi.data.parameter.synth import SynthParameter

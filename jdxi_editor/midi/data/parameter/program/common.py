@@ -1,4 +1,6 @@
 """
+ProgramCommonParameter
+======================
 Defines the ProgramCommonParameter class for managing common program-level
 parameters in the JD-Xi synthesizer.
 

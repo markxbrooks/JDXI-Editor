@@ -1,4 +1,7 @@
 """
+ProgramZoneParameter
+====================
+
 Defines the ProgramZoneParameter class for managing common program-level
 parameters in the JD-Xi synthesizer.
 
@@ -54,11 +57,6 @@ class ProgramZoneParameter(SynthParameter):
         if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
-
-    @property
-    def display_name(self) -> str:
-        """Get display name for the parameter"""
-        return self.name.replace("_", " ").title()
 
     def get_address_for_partial(self, partial_num: int = 0) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""

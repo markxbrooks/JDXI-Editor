@@ -37,12 +37,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.parameter.program_common import ProgramCommonParameter
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.switch.switch import Switch
 from jdxi_editor.midi.data.constants.vocal_fx import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,

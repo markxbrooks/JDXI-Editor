@@ -35,10 +35,9 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 from jdxi_editor.midi.data.drum import rm_waves
-from jdxi_editor.midi.data.parameter.drums import DrumParameter
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
-from jdxi_editor.midi.data.parameter.drums import get_address_for_partial_name
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name
 from jdxi_editor.ui.editors.partial import PartialEditor
 
 
@@ -66,7 +65,7 @@ class DrumPartialEditor(PartialEditor):
             self.partial_address = 0x00
 
         # Store parameter controls for easy access
-        self.controls: Dict[DrumParameter, QWidget] = {}
+        self.controls: Dict[DrumPartialParameter, QWidget] = {}
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -115,7 +114,7 @@ class DrumPartialEditor(PartialEditor):
 
         # Add TVA parameters
         tva_level_velocity_curve_spin = self._create_parameter_combo_box(
-            DrumParameter.TVA_LEVEL_VELOCITY_CURVE,
+            DrumPartialParameter.TVA_LEVEL_VELOCITY_CURVE,
             "Level Velocity Curve",
             ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
             [0, 1, 2, 3, 4, 5, 6, 7],
@@ -124,53 +123,53 @@ class DrumPartialEditor(PartialEditor):
         tva_layout.addRow(tva_level_velocity_curve_spin)
 
         tva_level_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
+            DrumPartialParameter.TVA_LEVEL_VELOCITY_SENS, "Level Velocity Sens"
         )
         tva_layout.addRow(tva_level_velocity_sens_slider)
 
         tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
+            DrumPartialParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
         )
         tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
         tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
+            DrumPartialParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
         )
 
         tva_layout.addRow(tva_env_time4_velocity_sens_slider)
 
         tva_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_1, "Env Time 1"
+            DrumPartialParameter.TVA_ENV_TIME_1, "Env Time 1"
         )
         tva_layout.addRow(tva_env_time1_slider)
 
         tva_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_2, "Env Time 2"
+            DrumPartialParameter.TVA_ENV_TIME_2, "Env Time 2"
         )
         tva_layout.addRow(tva_env_time2_slider)
 
         tva_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_3, "Env Time 3"
+            DrumPartialParameter.TVA_ENV_TIME_3, "Env Time 3"
         )
         tva_layout.addRow(tva_env_time3_slider)
 
         tva_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_TIME_4, "Env Time 4"
+            DrumPartialParameter.TVA_ENV_TIME_4, "Env Time 4"
         )
         tva_layout.addRow(tva_env_time4_slider)
 
         tva_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_1, "Env Level 1"
+            DrumPartialParameter.TVA_ENV_LEVEL_1, "Env Level 1"
         )
         tva_layout.addRow(tva_env_level1_slider)
 
         tva_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_2, "Env Level 2"
+            DrumPartialParameter.TVA_ENV_LEVEL_2, "Env Level 2"
         )
         tva_layout.addRow(tva_env_level2_slider)
 
         tva_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.TVA_ENV_LEVEL_3, "Env Level 3"
+            DrumPartialParameter.TVA_ENV_LEVEL_3, "Env Level 3"
         )
         tva_layout.addRow(tva_env_level3_slider)
         return tva_group
@@ -217,13 +216,13 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt1_layout(self):
         wmt1_layout = QFormLayout()
         wmt1_wave_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_SWITCH, "WMT1 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT1_WAVE_SWITCH, "WMT1 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
         wmt1_layout.addRow(wmt1_wave_switch_combo)
 
         wmt1_wave_number_l_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_NUMBER_L,
+            DrumPartialParameter.WMT1_WAVE_NUMBER_L,
             "WMT1 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -232,7 +231,7 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_wave_number_l_combo)
 
         wmt1_wave_number_r_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_NUMBER_R,
+            DrumPartialParameter.WMT1_WAVE_NUMBER_R,
             "WMT1 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -241,7 +240,7 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_wave_number_r_combo)
 
         wmt1_wave_gain_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_GAIN,
+            DrumPartialParameter.WMT1_WAVE_GAIN,
             "Wave Gain",
             options=["-6", "0", "6", "12"],
             values=[0, 1, 2, 3],
@@ -250,7 +249,7 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_wave_gain_combo)
 
         wmt1_wave_fxm_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_GAIN,
+            DrumPartialParameter.WMT1_WAVE_GAIN,
             "Wave FXM Switch",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -258,41 +257,41 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_wave_fxm_switch_combo)
 
         wmt1_wave_fxm_color_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_FXM_COLOR,
+            DrumPartialParameter.WMT1_WAVE_FXM_COLOR,
             "Wave FXM Color",
         )
         wmt1_layout.addRow(wmt1_wave_fxm_color_slider)
 
         wmt1_wave_fxm_depth_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_FXM_DEPTH,
+            DrumPartialParameter.WMT1_WAVE_FXM_DEPTH,
             "Wave FXM Depth",
         )
         wmt1_layout.addRow(wmt1_wave_fxm_depth_slider)
 
         wmt1_wave_tempo_sync_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
+            DrumPartialParameter.WMT1_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
         )
         wmt1_layout.addRow(wmt1_wave_tempo_sync_slider)
 
         wmt1_wave_coarse_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_COARSE_TUNE,
+            DrumPartialParameter.WMT1_WAVE_COARSE_TUNE,
             "Wave Coarse Tune",
         )
         wmt1_layout.addRow(wmt1_wave_coarse_tune_slider)
 
         wmt1_wave_fine_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_FINE_TUNE, "Wave Fine Tune"
+            DrumPartialParameter.WMT1_WAVE_FINE_TUNE, "Wave Fine Tune"
         )
         wmt1_layout.addRow(wmt1_wave_fine_tune_slider)
 
         wmt1_wave_pan = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_PAN,
+            DrumPartialParameter.WMT1_WAVE_PAN,
             "Wave Pan",
         )
         wmt1_layout.addRow(wmt1_wave_pan)
 
         wmt1_wave_random_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_RANDOM_PAN_SWITCH,
+            DrumPartialParameter.WMT1_WAVE_RANDOM_PAN_SWITCH,
             "Wave Random Pan Switch",
             ["OFF", "ON"],
             [0, 1],
@@ -300,7 +299,7 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_wave_random_pan_switch)
 
         wmt1_wave_alternate_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH,
+            DrumPartialParameter.WMT1_WAVE_ALTERNATE_PAN_SWITCH,
             "Wave Alternate Pan Switch",
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
@@ -308,31 +307,31 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_wave_alternate_pan_switch)
 
         wmt1_wave_level_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_WAVE_LEVEL,
+            DrumPartialParameter.WMT1_WAVE_LEVEL,
             "Wave Level",
         )
         wmt1_layout.addRow(wmt1_wave_level_slider)
 
         wmt1_velocity_range_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_VELOCITY_RANGE_LOWER,
+            DrumPartialParameter.WMT1_VELOCITY_RANGE_LOWER,
             "Velocity Range Lower",
         )
         wmt1_layout.addRow(wmt1_velocity_range_lower_slider)
 
         wmt1_velocity_range_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_VELOCITY_RANGE_UPPER,
+            DrumPartialParameter.WMT1_VELOCITY_RANGE_UPPER,
             "Velocity Range Upper",
         )
         wmt1_layout.addRow(wmt1_velocity_range_upper_slider)
 
         wmt1_velocity_fade_width_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER,
+            DrumPartialParameter.WMT1_VELOCITY_FADE_WIDTH_LOWER,
             "Velocity Fade Width Lower",
         )
         wmt1_layout.addRow(wmt1_velocity_fade_width_lower_slider)
 
         wmt1_velocity_fade_width_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER,
+            DrumPartialParameter.WMT1_VELOCITY_FADE_WIDTH_UPPER,
             "Velocity Fade Width Upper",
         )
         wmt1_layout.addRow(wmt1_velocity_fade_width_upper_slider)
@@ -341,13 +340,13 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt2_layout(self):
         wmt2_layout = QFormLayout()
         wmt2_wave_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_SWITCH, "WMT2 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT2_WAVE_SWITCH, "WMT2 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
         wmt2_layout.addRow(wmt2_wave_switch_combo)
 
         wmt2_wave_number_l_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_NUMBER_L,
+            DrumPartialParameter.WMT2_WAVE_NUMBER_L,
             "WMT2 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -356,7 +355,7 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_wave_number_l_combo)
 
         wmt2_wave_number_r_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_NUMBER_R,
+            DrumPartialParameter.WMT2_WAVE_NUMBER_R,
             "WMT2 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -365,7 +364,7 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_wave_number_r_combo)
 
         wmt2_wave_gain_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_GAIN,
+            DrumPartialParameter.WMT2_WAVE_GAIN,
             "Wave Gain",
             options=["-6", "0", "6", "12"],
             values=[0, 1, 2, 3],
@@ -374,7 +373,7 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_wave_gain_combo)
 
         wmt2_wave_fxm_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_GAIN,
+            DrumPartialParameter.WMT2_WAVE_GAIN,
             "Wave FXM Switch",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -382,41 +381,41 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_wave_fxm_switch_combo)
 
         wmt2_wave_fxm_color_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_FXM_COLOR,
+            DrumPartialParameter.WMT2_WAVE_FXM_COLOR,
             "Wave FXM Color",
         )
         wmt2_layout.addRow(wmt2_wave_fxm_color_slider)
 
         wmt2_wave_fxm_depth_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_FXM_DEPTH,
+            DrumPartialParameter.WMT2_WAVE_FXM_DEPTH,
             "Wave FXM Depth",
         )
         wmt2_layout.addRow(wmt2_wave_fxm_depth_slider)
 
         wmt2_wave_tempo_sync_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
+            DrumPartialParameter.WMT2_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
         )
         wmt2_layout.addRow(wmt2_wave_tempo_sync_slider)
 
         wmt2_wave_coarse_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_COARSE_TUNE,
+            DrumPartialParameter.WMT2_WAVE_COARSE_TUNE,
             "Wave Coarse Tune",
         )
         wmt2_layout.addRow(wmt2_wave_coarse_tune_slider)
 
         wmt2_wave_fine_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_FINE_TUNE, "Wave Fine Tune"
+            DrumPartialParameter.WMT2_WAVE_FINE_TUNE, "Wave Fine Tune"
         )
         wmt2_layout.addRow(wmt2_wave_fine_tune_slider)
 
         wmt2_wave_pan = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_PAN,
+            DrumPartialParameter.WMT2_WAVE_PAN,
             "Wave Pan",
         )
         wmt2_layout.addRow(wmt2_wave_pan)
 
         wmt2_wave_random_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_RANDOM_PAN_SWITCH,
+            DrumPartialParameter.WMT2_WAVE_RANDOM_PAN_SWITCH,
             "Wave Random Pan Switch",
             ["OFF", "ON"],
             [0, 1],
@@ -424,7 +423,7 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_wave_random_pan_switch)
 
         wmt2_wave_alternate_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
+            DrumPartialParameter.WMT2_WAVE_ALTERNATE_PAN_SWITCH,
             "Wave Alternate Pan Switch",
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
@@ -432,31 +431,31 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_wave_alternate_pan_switch)
 
         wmt2_wave_level_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_WAVE_LEVEL,
+            DrumPartialParameter.WMT2_WAVE_LEVEL,
             "Wave Level",
         )
         wmt2_layout.addRow(wmt2_wave_level_slider)
 
         wmt2_velocity_range_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_VELOCITY_RANGE_LOWER,
+            DrumPartialParameter.WMT2_VELOCITY_RANGE_LOWER,
             "Velocity Range Lower",
         )
         wmt2_layout.addRow(wmt2_velocity_range_lower_slider)
 
         wmt2_velocity_range_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_VELOCITY_RANGE_UPPER,
+            DrumPartialParameter.WMT2_VELOCITY_RANGE_UPPER,
             "Velocity Range Upper",
         )
         wmt2_layout.addRow(wmt2_velocity_range_upper_slider)
 
         wmt2_velocity_fade_width_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER,
+            DrumPartialParameter.WMT2_VELOCITY_FADE_WIDTH_LOWER,
             "Velocity Fade Width Lower",
         )
         wmt2_layout.addRow(wmt2_velocity_fade_width_lower_slider)
 
         wmt2_velocity_fade_width_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER,
+            DrumPartialParameter.WMT2_VELOCITY_FADE_WIDTH_UPPER,
             "Velocity Fade Width Upper",
         )
         wmt2_layout.addRow(wmt2_velocity_fade_width_upper_slider)
@@ -465,13 +464,13 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt3_layout(self):
         wmt3_layout = QFormLayout()
         wmt3_wave_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_SWITCH, "WMT3 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT3_WAVE_SWITCH, "WMT3 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
         wmt3_layout.addRow(wmt3_wave_switch_combo)
 
         wmt3_wave_number_l_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_NUMBER_L,
+            DrumPartialParameter.WMT3_WAVE_NUMBER_L,
             "WMT3 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -480,7 +479,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_number_l_combo)
 
         wmt3_wave_number_r_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_NUMBER_R,
+            DrumPartialParameter.WMT3_WAVE_NUMBER_R,
             "WMT3 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -489,7 +488,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_number_r_combo)
 
         wmt3_wave_gain_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_GAIN,
+            DrumPartialParameter.WMT3_WAVE_GAIN,
             "Wave Gain",
             options=["-6", "0", "6", "12"],
             values=[0, 1, 2, 3],
@@ -498,7 +497,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_gain_combo)
 
         wmt3_wave_fxm_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_GAIN,
+            DrumPartialParameter.WMT3_WAVE_GAIN,
             "Wave FXM Switch",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -506,7 +505,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_fxm_switch_combo)
 
         wmt3_wave_fxm_color_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_FXM_COLOR,
+            DrumPartialParameter.WMT3_WAVE_FXM_COLOR,
             "Wave FXM Color",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -514,7 +513,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_fxm_color_combo)
 
         wmt3_wave_fxm_depth_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_FXM_DEPTH,
+            DrumPartialParameter.WMT3_WAVE_FXM_DEPTH,
             "Wave FXM Depth",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -522,29 +521,29 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_fxm_depth_combo)
 
         wmt3_wave_tempo_sync_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
+            DrumPartialParameter.WMT3_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
         )
         wmt3_layout.addRow(wmt3_wave_tempo_sync_slider)
 
         wmt3_wave_coarse_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_WAVE_COARSE_TUNE,
+            DrumPartialParameter.WMT3_WAVE_COARSE_TUNE,
             "Wave Coarse Tune",
         )
         wmt3_layout.addRow(wmt3_wave_coarse_tune_slider)
 
         wmt3_wave_fine_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_WAVE_FINE_TUNE, "Wave Fine Tune"
+            DrumPartialParameter.WMT3_WAVE_FINE_TUNE, "Wave Fine Tune"
         )
         wmt3_layout.addRow(wmt3_wave_fine_tune_slider)
 
         wmt3_wave_pan = self._create_parameter_slider(
-            DrumParameter.WMT3_WAVE_PAN,
+            DrumPartialParameter.WMT3_WAVE_PAN,
             "Wave Pan",
         )
         wmt3_layout.addRow(wmt3_wave_pan)
 
         wmt3_wave_random_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_RANDOM_PAN_SWITCH,
+            DrumPartialParameter.WMT3_WAVE_RANDOM_PAN_SWITCH,
             "Wave Random Pan Switch",
             ["OFF", "ON"],
             [0, 1],
@@ -552,7 +551,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_random_pan_switch)
 
         wmt3_wave_alternate_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT3_WAVE_ALTERNATE_PAN_SWITCH,
+            DrumPartialParameter.WMT3_WAVE_ALTERNATE_PAN_SWITCH,
             "Wave Alternate Pan Switch",
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
@@ -560,31 +559,31 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_wave_alternate_pan_switch)
 
         wmt3_wave_level_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_WAVE_LEVEL,
+            DrumPartialParameter.WMT3_WAVE_LEVEL,
             "Wave Level",
         )
         wmt3_layout.addRow(wmt3_wave_level_slider)
 
         wmt3_velocity_range_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_VELOCITY_RANGE_LOWER,
+            DrumPartialParameter.WMT3_VELOCITY_RANGE_LOWER,
             "Velocity Range Lower",
         )
         wmt3_layout.addRow(wmt3_velocity_range_lower_slider)
 
         wmt3_velocity_range_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_VELOCITY_RANGE_UPPER,
+            DrumPartialParameter.WMT3_VELOCITY_RANGE_UPPER,
             "Velocity Range Upper",
         )
         wmt3_layout.addRow(wmt3_velocity_range_upper_slider)
 
         wmt3_velocity_fade_width_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_VELOCITY_FADE_WIDTH_LOWER,
+            DrumPartialParameter.WMT3_VELOCITY_FADE_WIDTH_LOWER,
             "Velocity Fade Width Lower",
         )
         wmt3_layout.addRow(wmt3_velocity_fade_width_lower_slider)
 
         wmt3_velocity_fade_width_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT3_VELOCITY_FADE_WIDTH_UPPER,
+            DrumPartialParameter.WMT3_VELOCITY_FADE_WIDTH_UPPER,
             "Velocity Fade Width Upper",
         )
         wmt3_layout.addRow(wmt3_velocity_fade_width_upper_slider)
@@ -593,13 +592,13 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt4_layout(self):
         wmt4_layout = QFormLayout()
         wmt4_wave_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_SWITCH, "WMT4 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT4_WAVE_SWITCH, "WMT4 Wave Switch", ["OFF", "ON"], [0, 1]
         )
 
         wmt4_layout.addRow(wmt4_wave_switch_combo)
 
         wmt4_wave_number_l_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_NUMBER_L,
+            DrumPartialParameter.WMT4_WAVE_NUMBER_L,
             "WMT4 Wave Number L/Mono",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -608,7 +607,7 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_number_l_combo)
 
         wmt4_wave_number_r_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_NUMBER_R,
+            DrumPartialParameter.WMT4_WAVE_NUMBER_R,
             "WMT4 Wave Number R",
             options=rm_waves,
             values=list(range(0, 453)),
@@ -617,7 +616,7 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_number_r_combo)
 
         wmt4_wave_gain_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_GAIN,
+            DrumPartialParameter.WMT4_WAVE_GAIN,
             "Wave Gain",
             options=["-6", "0", "6", "12"],
             values=[0, 1, 2, 3],
@@ -626,7 +625,7 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_gain_combo)
 
         wmt4_wave_fxm_switch_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_GAIN,
+            DrumPartialParameter.WMT4_WAVE_GAIN,
             "Wave FXM Switch",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -634,7 +633,7 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_fxm_switch_combo)
 
         wmt4_wave_fxm_color_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_FXM_COLOR,
+            DrumPartialParameter.WMT4_WAVE_FXM_COLOR,
             "Wave FXM Color",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -642,7 +641,7 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_fxm_color_combo)
 
         wmt4_wave_fxm_depth_combo = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_FXM_DEPTH,
+            DrumPartialParameter.WMT4_WAVE_FXM_DEPTH,
             "Wave FXM Depth",
             options=["OFF", "ON"],
             values=[0, 1],
@@ -650,29 +649,29 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_fxm_depth_combo)
 
         wmt4_wave_tempo_sync_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
+            DrumPartialParameter.WMT4_WAVE_TEMPO_SYNC, "Wave Tempo Sync"
         )
         wmt4_layout.addRow(wmt4_wave_tempo_sync_slider)
 
         wmt4_wave_coarse_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_WAVE_COARSE_TUNE,
+            DrumPartialParameter.WMT4_WAVE_COARSE_TUNE,
             "Wave Coarse Tune",
         )
         wmt4_layout.addRow(wmt4_wave_coarse_tune_slider)
 
         wmt4_wave_fine_tune_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_WAVE_FINE_TUNE, "Wave Fine Tune"
+            DrumPartialParameter.WMT4_WAVE_FINE_TUNE, "Wave Fine Tune"
         )
         wmt4_layout.addRow(wmt4_wave_fine_tune_slider)
 
         wmt4_wave_pan = self._create_parameter_slider(
-            DrumParameter.WMT4_WAVE_PAN,
+            DrumPartialParameter.WMT4_WAVE_PAN,
             "Wave Pan",
         )
         wmt4_layout.addRow(wmt4_wave_pan)
 
         wmt4_wave_random_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_RANDOM_PAN_SWITCH,
+            DrumPartialParameter.WMT4_WAVE_RANDOM_PAN_SWITCH,
             "Wave Random Pan Switch",
             ["OFF", "ON"],
             [0, 1],
@@ -680,7 +679,7 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_random_pan_switch)
 
         wmt4_wave_alternate_pan_switch = self._create_parameter_combo_box(
-            DrumParameter.WMT4_WAVE_ALTERNATE_PAN_SWITCH,
+            DrumPartialParameter.WMT4_WAVE_ALTERNATE_PAN_SWITCH,
             "Wave Alternate Pan Switch",
             ["OFF", "ON", "REVERSE"],
             [0, 1, 2],
@@ -688,31 +687,31 @@ class DrumPartialEditor(PartialEditor):
         wmt4_layout.addRow(wmt4_wave_alternate_pan_switch)
 
         wmt4_wave_level_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_WAVE_LEVEL,
+            DrumPartialParameter.WMT4_WAVE_LEVEL,
             "Wave Level",
         )
         wmt4_layout.addRow(wmt4_wave_level_slider)
 
         wmt4_velocity_range_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_VELOCITY_RANGE_LOWER,
+            DrumPartialParameter.WMT4_VELOCITY_RANGE_LOWER,
             "Velocity Range Lower",
         )
         wmt4_layout.addRow(wmt4_velocity_range_lower_slider)
 
         wmt4_velocity_range_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_VELOCITY_RANGE_UPPER,
+            DrumPartialParameter.WMT4_VELOCITY_RANGE_UPPER,
             "Velocity Range Upper",
         )
         wmt4_layout.addRow(wmt4_velocity_range_upper_slider)
 
         wmt4_velocity_fade_width_lower_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_VELOCITY_FADE_WIDTH_LOWER,
+            DrumPartialParameter.WMT4_VELOCITY_FADE_WIDTH_LOWER,
             "Velocity Fade Width Lower",
         )
         wmt4_layout.addRow(wmt4_velocity_fade_width_lower_slider)
 
         wmt4_velocity_fade_width_upper_slider = self._create_parameter_slider(
-            DrumParameter.WMT4_VELOCITY_FADE_WIDTH_UPPER,
+            DrumPartialParameter.WMT4_VELOCITY_FADE_WIDTH_UPPER,
             "Velocity Fade Width Upper",
         )
         wmt4_layout.addRow(wmt4_velocity_fade_width_upper_slider)
@@ -728,42 +727,42 @@ class DrumPartialEditor(PartialEditor):
 
         # Add pitch parameters
         partial_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_LEVEL, "Partial Level"
+            DrumPartialParameter.PARTIAL_LEVEL, "Partial Level"
         )
         pitch_layout.addRow(partial_level_slider)
 
         partial_coarse_tune_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
+            DrumPartialParameter.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
         )
         pitch_layout.addRow(partial_coarse_tune_slider)
 
         partial_fine_tune_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune"
+            DrumPartialParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune"
         )
         pitch_layout.addRow(partial_fine_tune_slider)
 
         partial_random_pitch_depth_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_RANDOM_PITCH_DEPTH, "Partial Random Pitch Depth"
+            DrumPartialParameter.PARTIAL_RANDOM_PITCH_DEPTH, "Partial Random Pitch Depth"
         )
         pitch_layout.addRow(partial_random_pitch_depth_slider)
 
         partial_pan_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_PAN, "Partial Pan"
+            DrumPartialParameter.PARTIAL_PAN, "Partial Pan"
         )
         pitch_layout.addRow(partial_pan_slider)
 
         partial_random_pan_depth_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
+            DrumPartialParameter.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
         )
         pitch_layout.addRow(partial_random_pan_depth_slider)
 
         partial_alternate_pan_depth_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_ALTERNATE_PAN_DEPTH, "Partial Alternate Pan Depth"
+            DrumPartialParameter.PARTIAL_ALTERNATE_PAN_DEPTH, "Partial Alternate Pan Depth"
         )
         pitch_layout.addRow(partial_alternate_pan_depth_slider)
 
         partial_env_mode_combo = self._create_parameter_combo_box(
-            DrumParameter.PARTIAL_ENV_MODE,
+            DrumPartialParameter.PARTIAL_ENV_MODE,
             "Partial Env Mode",
             ["NO-SUS", "SUSTAIN"],
             [0, 1],
@@ -780,22 +779,22 @@ class DrumPartialEditor(PartialEditor):
 
         # Add output parameters
         partial_output_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_OUTPUT_LEVEL, "Partial Output Level"
+            DrumPartialParameter.PARTIAL_OUTPUT_LEVEL, "Partial Output Level"
         )
         output_layout.addRow(partial_output_level_slider)
 
         partial_chorus_send_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_CHORUS_SEND_LEVEL, "Partial Chorus Send Level"
+            DrumPartialParameter.PARTIAL_CHORUS_SEND_LEVEL, "Partial Chorus Send Level"
         )
         output_layout.addRow(partial_chorus_send_level_slider)
 
         partial_reverb_send_level_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_REVERB_SEND_LEVEL, "Partial Reverb Send Level"
+            DrumPartialParameter.PARTIAL_REVERB_SEND_LEVEL, "Partial Reverb Send Level"
         )
         output_layout.addRow(partial_reverb_send_level_slider)
 
         partial_output_assign_combo = self._create_parameter_combo_box(
-            DrumParameter.PARTIAL_OUTPUT_ASSIGN,
+            DrumPartialParameter.PARTIAL_OUTPUT_ASSIGN,
             "Partial Output Assign",
             ["EFX1", "EFX2", "DLY", "REV", "DIR"],
             [0, 1, 2, 3, 4],
@@ -813,7 +812,7 @@ class DrumPartialEditor(PartialEditor):
 
         # Add TVF parameters
         tvf_filter_type_combo = self._create_parameter_combo_box(
-            DrumParameter.TVF_FILTER_TYPE,
+            DrumPartialParameter.TVF_FILTER_TYPE,
             "Filter Type",
             ["OFF", "LPF", "BPF", "HPF", "PKG", "LPF2", "LPF3"],
             [0, 1, 2, 3, 4],
@@ -821,12 +820,12 @@ class DrumPartialEditor(PartialEditor):
         tvf_layout.addRow(tvf_filter_type_combo)
 
         tvf_cutoff_frequency_slider = self._create_parameter_slider(
-            DrumParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff"
+            DrumPartialParameter.TVF_CUTOFF_FREQUENCY, "TVF Cutoff"
         )
         tvf_layout.addRow(tvf_cutoff_frequency_slider)
 
         tvf_cutoff_velocity_curve_spin = self._create_parameter_combo_box(
-            DrumParameter.TVF_CUTOFF_VELOCITY_CURVE,
+            DrumPartialParameter.TVF_CUTOFF_VELOCITY_CURVE,
             "Cutoff Velocity Curve",
             ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
             [0, 1, 2, 3, 4, 5, 6, 7],
@@ -834,12 +833,12 @@ class DrumPartialEditor(PartialEditor):
         tvf_layout.addRow(tvf_cutoff_velocity_curve_spin)
 
         tvf_env_depth_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_DEPTH, "Env Depth"
+            DrumPartialParameter.TVF_ENV_DEPTH, "Env Depth"
         )
         tvf_layout.addRow(tvf_env_depth_slider)
 
         tvf_env_velocity_curve_type_spin = self._create_parameter_combo_box(
-            DrumParameter.TVF_ENV_VELOCITY_CURVE_TYPE,
+            DrumPartialParameter.TVF_ENV_VELOCITY_CURVE_TYPE,
             "Env Velocity Curve Type",
             ["FIXED", "1", "2", "3", "4", "5", "6", "7"],
             [0, 1, 2, 3, 4, 5, 6, 7],
@@ -847,62 +846,62 @@ class DrumPartialEditor(PartialEditor):
         tvf_layout.addRow(tvf_env_velocity_curve_type_spin)
 
         tvf_env_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_VELOCITY_SENS, "Env Velocity Sens"
+            DrumPartialParameter.TVF_ENV_VELOCITY_SENS, "Env Velocity Sens"
         )
         tvf_layout.addRow(tvf_env_velocity_sens_slider)
 
         tvf_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
+            DrumPartialParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
         )
         tvf_layout.addRow(tvf_env_time1_velocity_sens_slider)
 
         tvf_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
+            DrumPartialParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
         )
         tvf_layout.addRow(tvf_env_time4_velocity_sens_slider)
 
         tvf_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_1, "Env Time 1"
+            DrumPartialParameter.TVF_ENV_TIME_1, "Env Time 1"
         )
         tvf_layout.addRow(tvf_env_time1_slider)
 
         tvf_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_2, "Env Time 2"
+            DrumPartialParameter.TVF_ENV_TIME_2, "Env Time 2"
         )
         tvf_layout.addRow(tvf_env_time2_slider)
 
         tvf_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_3, "Env Time 3"
+            DrumPartialParameter.TVF_ENV_TIME_3, "Env Time 3"
         )
         tvf_layout.addRow(tvf_env_time3_slider)
 
         tvf_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_TIME_4, "Env Time 4"
+            DrumPartialParameter.TVF_ENV_TIME_4, "Env Time 4"
         )
         tvf_layout.addRow(tvf_env_time4_slider)
 
         tvf_env_level0_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_0, "Env Level 0"
+            DrumPartialParameter.TVF_ENV_LEVEL_0, "Env Level 0"
         )
         tvf_layout.addRow(tvf_env_level0_slider)
 
         tvf_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_1, "Env Level 1"
+            DrumPartialParameter.TVF_ENV_LEVEL_1, "Env Level 1"
         )
         tvf_layout.addRow(tvf_env_level1_slider)
 
         tvf_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_2, "Env Level 2"
+            DrumPartialParameter.TVF_ENV_LEVEL_2, "Env Level 2"
         )
         tvf_layout.addRow(tvf_env_level2_slider)
 
         tvf_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_3, "Env Level 3"
+            DrumPartialParameter.TVF_ENV_LEVEL_3, "Env Level 3"
         )
         tvf_layout.addRow(tvf_env_level3_slider)
 
         tvf_env_level4_slider = self._create_parameter_slider(
-            DrumParameter.TVF_ENV_LEVEL_4, "Env Level 4"
+            DrumPartialParameter.TVF_ENV_LEVEL_4, "Env Level 4"
         )
         tvf_layout.addRow(tvf_env_level4_slider)
         return tvf_group
@@ -916,69 +915,69 @@ class DrumPartialEditor(PartialEditor):
 
         # Add pitch env parameters
         pitch_env_depth_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_DEPTH, "Pitch Env Depth"
+            DrumPartialParameter.PITCH_ENV_DEPTH, "Pitch Env Depth"
         )
         pitch_env_layout.addRow(pitch_env_depth_slider)
 
         pitch_env_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_VELOCITY_SENS, "Pitch Env Velocity Sens"
+            DrumPartialParameter.PITCH_ENV_VELOCITY_SENS, "Pitch Env Velocity Sens"
         )
         pitch_env_layout.addRow(pitch_env_velocity_sens_slider)
 
         pitch_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_1_VELOCITY_SENS,
+            DrumPartialParameter.PITCH_ENV_TIME_1_VELOCITY_SENS,
             "Pitch Env Time 1 Velocity Sens",
         )
         pitch_env_layout.addRow(pitch_env_time1_velocity_sens_slider)
 
         pitch_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_4_VELOCITY_SENS,
+            DrumPartialParameter.PITCH_ENV_TIME_4_VELOCITY_SENS,
             "Pitch Env Time 4 Velocity Sens",
         )
         pitch_env_layout.addRow(pitch_env_time4_velocity_sens_slider)
 
         pitch_env_time1_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_1, "Pitch Env Time 1"
+            DrumPartialParameter.PITCH_ENV_TIME_1, "Pitch Env Time 1"
         )
         pitch_env_layout.addRow(pitch_env_time1_slider)
 
         pitch_env_time2_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_2, "Pitch Env Time 2"
+            DrumPartialParameter.PITCH_ENV_TIME_2, "Pitch Env Time 2"
         )
         pitch_env_layout.addRow(pitch_env_time2_slider)
 
         pitch_env_time3_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_3, "Pitch Env Time 3"
+            DrumPartialParameter.PITCH_ENV_TIME_3, "Pitch Env Time 3"
         )
         pitch_env_layout.addRow(pitch_env_time3_slider)
 
         pitch_env_time4_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_TIME_4, "Pitch Env Time 4"
+            DrumPartialParameter.PITCH_ENV_TIME_4, "Pitch Env Time 4"
         )
         pitch_env_layout.addRow(pitch_env_time4_slider)
 
         pitch_env_level0_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_0, "Pitch Env Level 0"
+            DrumPartialParameter.PITCH_ENV_LEVEL_0, "Pitch Env Level 0"
         )
         pitch_env_layout.addRow(pitch_env_level0_slider)
 
         pitch_env_level1_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_1, "Pitch Env Level 1"
+            DrumPartialParameter.PITCH_ENV_LEVEL_1, "Pitch Env Level 1"
         )
         pitch_env_layout.addRow(pitch_env_level1_slider)
 
         pitch_env_level2_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_2, "Pitch Env Level 2"
+            DrumPartialParameter.PITCH_ENV_LEVEL_2, "Pitch Env Level 2"
         )
         pitch_env_layout.addRow(pitch_env_level2_slider)
 
         pitch_env_level3_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_3, "Pitch Env Level 3"
+            DrumPartialParameter.PITCH_ENV_LEVEL_3, "Pitch Env Level 3"
         )
         pitch_env_layout.addRow(pitch_env_level3_slider)
 
         pitch_env_level4_slider = self._create_parameter_slider(
-            DrumParameter.PITCH_ENV_LEVEL_4, "Pitch Env Level 4"
+            DrumPartialParameter.PITCH_ENV_LEVEL_4, "Pitch Env Level 4"
         )
         pitch_env_layout.addRow(pitch_env_level4_slider)
         return pitch_env_group

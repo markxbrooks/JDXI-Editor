@@ -49,6 +49,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
+from jdxi_editor.midi.data.constants.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -59,7 +60,7 @@ from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.editors.synth import SynthEditor
 from jdxi_editor.ui.editors.digital_partial import DigitalPartialEditor
-from jdxi_editor.midi.data.parameter.digital_modify import DigitalModifyParameter
+from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.midi.data.digital import (
@@ -68,8 +69,8 @@ from jdxi_editor.midi.data.digital import (
     set_partial_state,
     get_digital_parameter_by_address,
 )
-from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_editor.midi.data.parameter.digital import DigitalParameter
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.constants import (
     TEMPORARY_DIGITAL_SYNTH_1_AREA,
     COMMON_AREA,
@@ -134,7 +135,7 @@ class DigitalSynthEditor(SynthEditor):
 
         # Store parameter controls for easy access
         self.controls: Dict[
-            Union[DigitalParameter, DigitalCommonParameter], QWidget
+            Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
         ] = {}
 
         # Allow resizing
@@ -437,8 +438,6 @@ class DigitalSynthEditor(SynthEditor):
         layout.addWidget(portamento_time_interval_sens)
 
         envelope_loop_mode_row = QHBoxLayout()
-        envelope_loop_mode_label = QLabel("Envelope Loop Mode")
-        envelope_loop_mode_row.addWidget(envelope_loop_mode_label)
         envelope_loop_mode = self._create_parameter_combo_box(
             DigitalModifyParameter.ENVELOPE_LOOP_MODE, "Envelope Loop Mode", ["OFF", "FREE-RUN", "TEMPO-SYNC"]
         )
@@ -446,11 +445,9 @@ class DigitalSynthEditor(SynthEditor):
         layout.addLayout(envelope_loop_mode_row)
 
         envelope_loop_sync_note_row = QHBoxLayout()
-        envelope_loop_sync_note_label = QLabel("Envelope Loop Sync Note")
-        envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note_label)
         envelope_loop_sync_note = self._create_parameter_combo_box(
-            DigitalModifyParameter.ENVELOPE_LOOP_SYNC_NOTE, "Envelope Loop Sync Note", ["16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2", "3/8", "1/3", "1/4", "3/16", "1/6", "1/8", "3/32", "1/12", "1/16", "1/24", "1/32"]
-        )
+            DigitalModifyParameter.ENVELOPE_LOOP_SYNC_NOTE, "Envelope Loop Sync Note",
+            LFOSyncNote.get_all_display_names())
         envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note)
         layout.addLayout(envelope_loop_sync_note_row)
 
@@ -604,7 +601,7 @@ class DigitalSynthEditor(SynthEditor):
                     slider.blockSignals(False)
 
                 # Handle OSC_WAVE parameter to update waveform buttons
-                if param == DigitalParameter.OSC_WAVE:
+                if param == DigitalPartialParameter.OSC_WAVE:
                     self._update_waveform_buttons(partial_no, value)
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
@@ -653,35 +650,35 @@ class DigitalSynthEditor(SynthEditor):
                 midi_cc_to_frac(value)
                 if param
                 in [
-                    DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-                    DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                    DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
+                    DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
                 ]
                 else midi_cc_to_ms(value)
             )
 
             adsr_mapping = {
-                DigitalParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
+                DigitalPartialParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
                     partial_no
                 ].amp_env_adsr_widget.attack_sb,
-                DigitalParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
+                DigitalPartialParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
                     partial_no
                 ].amp_env_adsr_widget.decay_sb,
-                DigitalParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                     partial_no
                 ].amp_env_adsr_widget.sustain_sb,
-                DigitalParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
+                DigitalPartialParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
                     partial_no
                 ].amp_env_adsr_widget.release_sb,
-                DigitalParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
+                DigitalPartialParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
                     partial_no
                 ].filter_adsr_widget.attack_sb,
-                DigitalParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
+                DigitalPartialParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
                     partial_no
                 ].filter_adsr_widget.decay_sb,
-                DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                     partial_no
                 ].filter_adsr_widget.sustain_sb,
-                DigitalParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
+                DigitalPartialParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                     partial_no
                 ].filter_adsr_widget.release_sb,
             }
@@ -737,10 +734,10 @@ class DigitalSynthEditor(SynthEditor):
                 logging.debug(f"Updated waveform button for {waveform}")
 
         for param_name, param_value in sysex_data.items():
-            param = DigitalParameter.get_by_name(param_name)
+            param = DigitalPartialParameter.get_by_name(param_name)
 
             if param:
-                if param == DigitalParameter.OSC_WAVE:
+                if param == DigitalPartialParameter.OSC_WAVE:
                     self._update_waveform_buttons(partial_no, param_value)
                 else:
                     _update_slider(param, param_value)
@@ -846,10 +843,10 @@ class DigitalSynthEditor(SynthEditor):
         failures, successes = [], []
 
         for param_name, param_value in sysex_data.items():
-            param = DigitalParameter.get_by_name(param_name)
+            param = DigitalPartialParameter.get_by_name(param_name)
 
             if param:
-                if param == DigitalParameter.OSC_WAVE:
+                if param == DigitalPartialParameter.OSC_WAVE:
                     self._update_waveform_buttons(partial_no, param_value)
                 else:
                     _update_slider(param, param_value)

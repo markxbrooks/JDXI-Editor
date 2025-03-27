@@ -77,13 +77,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.data import ToneData
-from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.ui.editors.drum_partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style
@@ -164,7 +163,7 @@ class DrumEditor(SynthEditor):
         self.image_label = None
         self.instrument_icon_folder = "drum_kits"
         # Main layout
-        self.controls: Dict[DrumParameter, QWidget] = {}
+        self.controls: Dict[DrumPartialParameter, QWidget] = {}
 
         # Create layouts
         main_layout = QVBoxLayout(self)
@@ -233,13 +232,13 @@ class DrumEditor(SynthEditor):
         common_layout = QFormLayout()
 
         self.assign_type_combo = self._create_parameter_combo_box(
-            DrumParameter.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
+            DrumPartialParameter.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
         )
         common_layout.addRow(self.assign_type_combo)
 
         # Mute Group control
         self.mute_group_combo = self._create_parameter_combo_box(
-            DrumParameter.MUTE_GROUP,
+            DrumPartialParameter.MUTE_GROUP,
             "Mute Group",
             ["OFF"] + [str(i) for i in range(1, 31)],
             list(range(0, 31)),
@@ -249,7 +248,7 @@ class DrumEditor(SynthEditor):
 
         # Sustain control
         self.sustain_combo = self._create_parameter_combo_box(
-            DrumParameter.PARTIAL_ENV_MODE,
+            DrumPartialParameter.PARTIAL_ENV_MODE,
             "Partial ENV Mode",
             ["SUSTAIN", "NO-SUSTAIN"],
             [0, 1],
@@ -263,13 +262,13 @@ class DrumEditor(SynthEditor):
 
         # Partial Pitch Bend Range
         self.pitch_bend_range_slider = self._create_parameter_slider(
-            DrumParameter.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
+            DrumPartialParameter.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
         )
         common_layout.addRow(self.pitch_bend_range_slider)
 
         # Partial Receive Expression
         self.receive_expression_combo = self._create_parameter_combo_box(
-            DrumParameter.PARTIAL_RECEIVE_EXPRESSION,
+            DrumPartialParameter.PARTIAL_RECEIVE_EXPRESSION,
             "Receive Expression",
             ["OFF", "ON"],
             [0, 1],
@@ -279,7 +278,7 @@ class DrumEditor(SynthEditor):
 
         # Partial Receive Hold-1
         self.receive_hold_combo = self._create_parameter_combo_box(
-            DrumParameter.PARTIAL_RECEIVE_HOLD_1,
+            DrumPartialParameter.PARTIAL_RECEIVE_HOLD_1,
             "Receive Hold-1",
             ["OFF", "ON"],
             [0, 1],
@@ -289,7 +288,7 @@ class DrumEditor(SynthEditor):
 
         # One Shot Mode
         self.one_shot_mode_combo = self._create_parameter_combo_box(
-            DrumParameter.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
         )
         common_layout.addRow(self.one_shot_mode_combo)
 
@@ -655,7 +654,7 @@ class DrumEditor(SynthEditor):
                     logging.info(f"Updated: {param.name:50} {value}")
 
         for param_name, param_value in sysex_data.items():
-            param = DrumParameter.get_by_name(param_name)
+            param = DrumPartialParameter.get_by_name(param_name)
             if param:
                 _update_slider(param, param_value)
             else:
