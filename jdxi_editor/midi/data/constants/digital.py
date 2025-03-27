@@ -68,72 +68,6 @@ LFO_PARAM_GROUP = LFO_1_GROUP  # For backwards compatibility
 ENV_PARAM_GROUP = 0x60         # Envelope parameters
 
 
-class Waveform(Enum):
-    """Digital oscillator waveform types"""
-    SAW = 0x00
-    SQUARE = 0x01
-    PULSE = 0x02
-    TRIANGLE = 0x03
-    SINE = 0x04
-    NOISE = 0x05
-    SUPER_SAW = 0x06
-    PCM = 0x07
-
-    @property
-    def display_name(self) -> str:
-        """Get display name for waveform"""
-        names = {
-            0: "SAW",
-            1: "SQR",
-            2: "P.W",
-            3: "TRI",
-            4: "SINE",
-            5: "NOISE",
-            6: "S.SAW",
-            7: "PCM"
-        }
-        return names.get(self.value, "???")
-
-class FilterMode(Enum):
-    """Filter mode types"""
-    BYPASS = 0x00
-    LPF = 0x01     # Low-pass filter
-    HPF = 0x02     # High-pass filter
-    BPF = 0x03     # Band-pass filter
-    PKG = 0x04     # Peaking filter
-    LPF2 = 0x05    # Low-pass filter 2
-    LPF3 = 0x06    # Low-pass filter 3
-    LPF4 = 0x07    # Low-pass filter 4
-
-    @property
-    def display_name(self) -> str:
-        """Get display name for filter mode"""
-        names = {
-            0: "BYPASS",
-            1: "LPF",
-            2: "HPF",
-            3: "BPF",
-            4: "PKG",
-            5: "LPF2",
-            6: "LPF3",
-            7: "LPF4"
-        }
-        return names.get(self.value, "???")
-
-class FilterSlope(Enum):
-    """Filter slope values"""
-    DB_12 = 0x00  # -12 dB/octave
-    DB_24 = 0x01  # -24 dB/octave
-
-    @property
-    def display_name(self) -> str:
-        """Get display name for filter slope"""
-        names = {
-            0: "-12dB",
-            1: "-24dB"
-        }
-        return names.get(self.value, "???")
-
 # Parameter value ranges
 FILTER_RANGES = {
     'cutoff': (0, 127),
@@ -160,6 +94,7 @@ LFO_RANGES = {
 
 # Subgroups
 SUBGROUP_ZERO = 0x00
+
 
 def validate_value(param: int, value: int) -> bool:
     """Validate parameter value is within allowed range"""

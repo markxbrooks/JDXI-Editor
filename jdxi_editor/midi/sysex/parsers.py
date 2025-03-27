@@ -20,11 +20,12 @@ import logging
 from typing import List, Dict, Type
 
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
-from jdxi_editor.midi.data.parameter.digital import DigitalParameter
-from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
-from jdxi_editor.midi.data.parameter.drums import DrumParameter, DrumCommonParameter
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
-from jdxi_editor.midi.data.parameter.program_common import ProgramCommonParameter
+from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
 
 
@@ -136,13 +137,13 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
         elif synth_tone == "TONE_MODIFY":
             parameters.update(parse_parameters(data, EffectParameter))
         else:
-            parameters.update(parse_parameters(data, DigitalParameter))
+            parameters.update(parse_parameters(data, DigitalPartialParameter))
     elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
         parameters.update(parse_parameters(data, AnalogParameter))
     elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DrumCommonParameter))
-        parameters.update(parse_parameters(data, DrumParameter))
+        parameters.update(parse_parameters(data, DrumPartialParameter))
     print(parameters)
 
     """

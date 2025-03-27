@@ -1,7 +1,7 @@
-from jdxi_editor.midi.data.parameter.digital import DigitalParameter
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 
 
-def parse_digital_parameters(data: list) -> dict:
+def parse_digital_common_parameters(data: list) -> dict:
     """
     Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, and Amplifier parameters.
 
@@ -21,7 +21,7 @@ def parse_digital_parameters(data: list) -> dict:
     parameters = {}
 
     # Mapping DigitalParameter Enum members to their respective positions in SysEx data
-    for param in DigitalParameter:
+    for param in DigitalCommonParameter:
         # Use the parameter's address from the enum and fetch the value from the data
         parameters[param.name] = safe_get(param.address)
 

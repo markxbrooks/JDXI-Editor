@@ -1,4 +1,6 @@
 """
+DigitalModifyParameter: JD-Xi Digital Synthesizer Parameter Mapping
+====================================================================
 Defines the DigitalModifyParameter class for modifying parameters of
 Digital/SuperNATURAL synth tones in the JD-Xi.
 

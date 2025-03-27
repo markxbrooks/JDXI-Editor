@@ -1,17 +1,17 @@
 from dataclasses import dataclass
-from enum import IntEnum
+from enum import IntEnum, Enum
 from typing import Dict, List, Tuple, Optional
 import logging
 
-from jdxi_editor.midi.data.parameter.digital import DigitalParameter
-from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA, PART_1, OSC_1_GROUP
 
 
 def get_digital_parameter_by_address(address: Tuple[int, int]):
     """Retrieve the DigitalParameter by its address."""
     logging.info(f"address: {address}")
-    for param in DigitalParameter:
+    for param in DigitalPartialParameter:
         if (param.group, param.address) == address:
             logging.info(f"param found: {param}")
             return param
@@ -410,34 +410,34 @@ DIGITAL_CATEGORIES = {
 }
 
 
-def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
+def validate_value(param: DigitalPartialParameter, value: int) -> Optional[int]:
     """Validate and convert parameter value"""
     if not isinstance(value, int):
         raise ValueError(f"Value must be integer, got {type(value)}")
 
     # Check enum parameters
-    if param == DigitalParameter.OSC_WAVE:
+    if param == DigitalPartialParameter.OSC_WAVE:
         if not isinstance(value, OscWave):
             try:
                 value = OscWave(value).value
             except ValueError:
                 raise ValueError(f"Invalid oscillator wave value: {value}")
 
-    elif param == DigitalParameter.FILTER_MODE:
+    elif param == DigitalPartialParameter.FILTER_MODE:
         if not isinstance(value, FilterMode):
             try:
                 value = FilterMode(value).value
             except ValueError:
                 raise ValueError(f"Invalid filter mode value: {value}")
 
-    elif param == DigitalParameter.FILTER_SLOPE:
+    elif param == DigitalPartialParameter.FILTER_SLOPE:
         if not isinstance(value, FilterSlope):
             try:
                 value = FilterSlope(value).value
             except ValueError:
                 raise ValueError(f"Invalid filter slope value: {value}")
 
-    elif param in [DigitalParameter.LFO_SHAPE, DigitalParameter.MOD_LFO_SHAPE]:
+    elif param in [DigitalPartialParameter.LFO_SHAPE, DigitalPartialParameter.MOD_LFO_SHAPE]:
         if not isinstance(value, LFOShape):
             try:
                 value = LFOShape(value).value
@@ -445,8 +445,8 @@ def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
                 raise ValueError(f"Invalid LFO shape value: {value}")
 
     elif param in [
-        DigitalParameter.LFO_TEMPO_NOTE,
-        DigitalParameter.MOD_LFO_TEMPO_NOTE,
+        DigitalPartialParameter.LFO_TEMPO_NOTE,
+        DigitalPartialParameter.MOD_LFO_TEMPO_NOTE,
     ]:
         if not isinstance(value, TempoSyncNote):
             try:
@@ -454,7 +454,7 @@ def validate_value(param: DigitalParameter, value: int) -> Optional[int]:
             except ValueError:
                 raise ValueError(f"Invalid tempo sync note value: {value}")
 
-    elif param == DigitalParameter.WAVE_GAIN:
+    elif param == DigitalPartialParameter.WAVE_GAIN:
         if not isinstance(value, WaveGain):
             try:
                 value = WaveGain(value).value
@@ -547,3 +547,16 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
     except Exception as e:
         logging.error(f"Error getting partial {partial.name} state: {str(e)}")
         return (False, False)
+
+
+class DigitalFilterMode(Enum):
+    """Filter modes available on JD-Xi"""
+
+    BYPASS = 0x00
+    LPF = 0x01  # Low Pass Filter
+    HPF = 0x02  # High Pass Filter
+    BPF = 0x03  # Band Pass Filter
+    PKG = 0x04  # Peaking Filter
+    LPF2 = 0x05  # Low Pass Filter 2
+    LPF3 = 0x06  # Low Pass Filter 3
+    LPF4 = 0x07  # Low Pass Filter 4

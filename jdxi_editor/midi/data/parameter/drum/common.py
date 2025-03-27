@@ -1,10 +1,24 @@
+"""
+This module defines the `DrumCommonParameter` class, which represents
+common parameters for drum tones in the JD-Xi synthesizer.
+
+These parameters are shared across all partials within a drum kit
+and include settings such as tone name, kit level, and various switches.
+
+Classes:
+    DrumCommonParameter(SynthParameter)
+        Represents common drum parameters and provides methods
+        for retrieving addresses, validating values, and formatting
+        switch-based parameter values.
+"""
+
+
 from typing import Optional
 
-from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
-class DigitalCommonParameter(SynthParameter):
+class DrumCommonParameter(SynthParameter):
     """Common parameters for Digital/SuperNATURAL synth tones.
     These parameters are shared across all partials.
     """
@@ -30,47 +44,20 @@ class DigitalCommonParameter(SynthParameter):
     TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
 
     # Tone level
-    TONE_LEVEL = (0x0C, 0, 127)  # Overall tone level
-
-    # Performance parameters
-    PORTAMENTO_SWITCH = (0x12, 0, 1)  # Portamento Switch (OFF, ON)
-    PORTAMENTO_TIME = (0x13, 0, 127)  # Portamento Time (CC# 5)
-    MONO_SWITCH = (0x14, 0, 1)  # Mono Switch (OFF, ON)
-    OCTAVE_SHIFT = (0x15, 61, 67)  # Octave Shift (-3 to +3)
-    PITCH_BEND_UP = (0x16, 0, 24)  # Pitch Bend Range Up (semitones)
-    PITCH_BEND_DOWN = (0x17, 0, 24)  # Pitch Bend Range Down (semitones)
-
-    # Partial switches
-    PARTIAL1_SWITCH = (0x19, 0, 1)  # Partial 1 Switch (OFF, ON)
-    PARTIAL1_SELECT = (0x1A, 0, 1)  # Partial 1 Select (OFF, ON)
-    PARTIAL2_SWITCH = (0x1B, 0, 1)  # Partial 2 Switch (OFF, ON)
-    PARTIAL2_SELECT = (0x1C, 0, 1)  # Partial 2 Select (OFF, ON)
-    PARTIAL3_SWITCH = (0x1D, 0, 1)  # Partial 3 Switch (OFF, ON)
-    PARTIAL3_SELECT = (0x1E, 0, 1)  # Partial 3 Select (OFF, ON)
-
-    # Additional parameters
-    RING_SWITCH = (0x1F, 0, 2)  # OFF(0), ---(1), ON(2)
-    UNISON_SWITCH = (0x2E, 0, 1)  # OFF, ON
-    PORTAMENTO_MODE = (0x31, 0, 1)  # NORMAL, LEGATO
-    LEGATO_SWITCH = (0x32, 0, 1)  # OFF, ON
-    ANALOG_FEEL = (0x34, 0, 127)  # Analog Feel amount
-    WAVE_SHAPE = (0x35, 0, 127)  # Wave Shape amount
-    TONE_CATEGORY = (0x36, 0, 127)  # Tone Category
-    UNISON_SIZE = (0x3C, 0, 3)  # Unison voice count (2-5 voices)
+    KIT_LEVEL = (0x0C, 0, 127)  # Overall tone level
 
     @property
     def display_name(self) -> str:
         """Get display name for the parameter"""
         return {
-            self.RING_SWITCH: "Ring Mod",
-            self.UNISON_SWITCH: "Unison",
-            self.PORTAMENTO_MODE: "Porto Mode",
-            self.LEGATO_SWITCH: "Legato",
-            self.ANALOG_FEEL: "Analog Feel",
-            self.WAVE_SHAPE: "Wave Shape",
-            self.TONE_CATEGORY: "Category",
-            self.UNISON_SIZE: "Uni Size",
+            self.KIT_LEVEL: "Kit level",
         }.get(self, self.name.replace("_", " ").title())
+
+    def get_address_for_partial(self, partial_num: int = 0) -> int:
+        """Get parameter area and address adjusted for partial number."""
+        group_map = {0: 0x00}
+        group = group_map.get(partial_num, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        return group
 
     @property
     def is_switch(self) -> bool:
@@ -105,34 +92,7 @@ class DigitalCommonParameter(SynthParameter):
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value"""
         if not isinstance(value, int):
-            raise ValueError(f"Value must be an integer, got {type(value)}")
-
-        # Special cases mapping
-        special_cases = {
-            self.RING_SWITCH: lambda v: 2 if v == 1 else v  # Skip "---" value
-        }
-
-        # Apply special case transformation if applicable
-        value = special_cases.get(self, lambda v: v)(value)
-
-        # Regular range check
-        if not (self.min_val <= value <= self.max_val):
-            raise ValueError(
-                f"Value {value} out of range for {self.name} "
-                f"(valid range: {self.min_val}-{self.max_val})"
-            )
-
-        return value
-
-    def validate_value_old(self, value: int) -> int:
-        """Validate and convert parameter value"""
-        if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
-
-        # Special handling for ring switch
-        if self == self.RING_SWITCH and value == 1:
-            # Skip over the "---" value
-            value = 2
 
         # Regular range check
         if value < self.min_val or value > self.max_val:
@@ -154,12 +114,3 @@ class DigitalCommonParameter(SynthParameter):
             self.PARTIAL3_SELECT: 3,
         }
         return partial_params.get(self)
-
-    @staticmethod
-    def get_by_name(param_name):
-        """Get the Parameter by name."""
-        # Return the parameter member by name, or None if not found
-        return DigitalCommonParameter.__members__.get(param_name, None)
-
-    def get_address_for_partial(self, partial_num: int = 0):
-        return PROGRAM_GROUP, 0

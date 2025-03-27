@@ -16,7 +16,6 @@ from .digital import (
     # Parameter enum
     DigitalPartial,  # Partial constants
 )
-from .parameter.digital import DigitalParameter
 
 # Import effects data
 from .effects import (

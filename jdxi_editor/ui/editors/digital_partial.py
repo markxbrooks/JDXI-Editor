@@ -52,9 +52,9 @@ from PySide6.QtWidgets import (
     QTabWidget, QGridLayout, QFormLayout, QComboBox,
 )
 
-from jdxi_editor.midi.data.parameter.digital import DigitalParameter
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
-from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, \
     DIGITAL_PART_1, DIGITAL_PART_2
 from jdxi_editor.midi.data.presets.pcm_waves import PCM_WAVES, PCM_WAVES_CATEGORIZED
@@ -82,10 +82,10 @@ class DigitalPartialEditor(PartialEditor):
     def __init__(self, midi_helper=None, partial_number=1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = [
-            DigitalParameter.OSC_DETUNE,
-            DigitalParameter.OSC_PITCH,
-            DigitalParameter.OSC_PITCH_ENV_DEPTH,
-            DigitalParameter.AMP_PAN,
+            DigitalPartialParameter.OSC_DETUNE,
+            DigitalPartialParameter.OSC_PITCH,
+            DigitalPartialParameter.OSC_PITCH_ENV_DEPTH,
+            DigitalPartialParameter.AMP_PAN,
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
@@ -105,7 +105,7 @@ class DigitalPartialEditor(PartialEditor):
 
         # Store parameter controls for easy access
         self.controls: Dict[
-            Union[DigitalParameter, DigitalCommonParameter], QWidget
+            Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
         ] = {}
 
         # Main layout
@@ -190,7 +190,7 @@ class DigitalPartialEditor(PartialEditor):
         top_row.addLayout(wave_layout)
 
         # Wave variation switch
-        self.wave_variation_switch = self._create_parameter_switch(DigitalParameter.OSC_WAVE_VARIATION,
+        self.wave_variation_switch = self._create_parameter_switch(DigitalPartialParameter.OSC_WAVE_VARIATION,
                                                                    "Variation",
                                                                    ["A", "B", "C"])
         top_row.addWidget(self.wave_variation_switch)
@@ -202,10 +202,10 @@ class DigitalPartialEditor(PartialEditor):
         tuning_group.setLayout(tuning_layout)
 
         tuning_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH, "Pitch")
+            self._create_parameter_slider(DigitalPartialParameter.OSC_PITCH, "Pitch")
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_DETUNE, "Detune")
+            self._create_parameter_slider(DigitalPartialParameter.OSC_DETUNE, "Detune")
         )
         layout.addWidget(tuning_group)
 
@@ -215,10 +215,10 @@ class DigitalPartialEditor(PartialEditor):
         pw_group.setLayout(pw_layout)
 
         self.pw_slider = self._create_parameter_slider(
-            DigitalParameter.OSC_PULSE_WIDTH, "Width"
+            DigitalPartialParameter.OSC_PULSE_WIDTH, "Width"
         )
         self.pwm_slider = self._create_parameter_slider(
-            DigitalParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
+            DigitalPartialParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
         )
         pw_layout.addWidget(self.pw_slider)
         pw_layout.addWidget(self.pwm_slider)
@@ -230,10 +230,10 @@ class DigitalPartialEditor(PartialEditor):
         pcm_group.setLayout(pcm_layout)
         self.pcm_group = pcm_group  # Store reference for visibility control
         self.pcm_wave_gain = self._create_parameter_combo_box(
-            DigitalParameter.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
+            DigitalPartialParameter.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
         )
         self.pcm_wave_number = self._create_parameter_combo_box(
-            DigitalParameter.PCM_WAVE_NUMBER, "Number", PCM_WAVES
+            DigitalPartialParameter.PCM_WAVE_NUMBER, "Number", PCM_WAVES
         )
 
         # Create ComboBoxes
@@ -262,16 +262,16 @@ class DigitalPartialEditor(PartialEditor):
         pitch_env_group.setLayout(pitch_env_layout)
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
+                DigitalPartialParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
             )
         )
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.OSC_PITCH_ENV_DECAY_TIME, "Decay"
+                DigitalPartialParameter.OSC_PITCH_ENV_DECAY_TIME, "Decay"
             )
         )
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.OSC_PITCH_ENV_DEPTH, "Depth")
+            self._create_parameter_slider(DigitalPartialParameter.OSC_PITCH_ENV_DEPTH, "Depth")
         )
 
         layout.addWidget(pitch_env_group)
@@ -279,13 +279,13 @@ class DigitalPartialEditor(PartialEditor):
         # Wave gain control
         self.wave_gain_switch = Switch("Gain", ["-6dB", "0dB", "+6dB", "+12dB"])
         self.wave_gain_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.WAVE_GAIN, v)
+            lambda v: self._on_parameter_changed(DigitalPartialParameter.WAVE_GAIN, v)
         )
         layout.addWidget(self.wave_gain_switch)
 
         # Super Saw detune (only for SUPER-SAW wave)
         self.super_saw_detune = self._create_parameter_slider(
-            DigitalParameter.SUPER_SAW_DETUNE, "S-Saw Detune"
+            DigitalPartialParameter.SUPER_SAW_DETUNE, "S-Saw Detune"
         )
         layout.addWidget(self.super_saw_detune)
 
@@ -350,10 +350,10 @@ class DigitalPartialEditor(PartialEditor):
             b4 = value & 0x0F  # Least significant 4 bits
 
             # Send each byte
-            self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_1, b1)
-            self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_2, b2)
-            self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_3, b3)
-            self.send_midi_parameter(DigitalParameter.WAVE_NUMBER_4, b4)
+            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_1, b1)
+            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_2, b2)
+            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_3, b3)
+            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_4, b4)
 
         except Exception as e:
             logging.error(f"Error setting wave number: {str(e)}")
@@ -388,7 +388,7 @@ class DigitalPartialEditor(PartialEditor):
         # Filter slope switch
         self.filter_slope = Switch("Slope", ["-12dB", "-24dB"])
         self.filter_slope.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.FILTER_SLOPE, v)
+            lambda v: self._on_parameter_changed(DigitalPartialParameter.FILTER_SLOPE, v)
         )
         type_row.addWidget(self.filter_slope)
         filter_layout.addLayout(type_row)
@@ -399,21 +399,21 @@ class DigitalPartialEditor(PartialEditor):
         controls_group_box.setLayout(controls_layout)
 
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_CUTOFF, "Cutoff")
+            self._create_parameter_slider(DigitalPartialParameter.FILTER_CUTOFF, "Cutoff")
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_RESONANCE, "Resonance"
+                DigitalPartialParameter.FILTER_RESONANCE, "Resonance"
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"
+                DigitalPartialParameter.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"
+                DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"
             )
         )
         filter_layout.addWidget(controls_group_box)
@@ -441,15 +441,15 @@ class DigitalPartialEditor(PartialEditor):
         # Create ADSRWidget
         # self.filter_adsr_widget = ADSRWidget()
         group_address, param_address = (
-            DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+            DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
                 self.partial_number
             )
         )
         self.filter_adsr_widget = ADSR(
-            DigitalParameter.FILTER_ENV_ATTACK_TIME,
-            DigitalParameter.FILTER_ENV_DECAY_TIME,
-            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.FILTER_ENV_RELEASE_TIME,
+            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
+            DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
+            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
             self.midi_helper,
             area=DIGITAL_SYNTH_1_AREA,
             part=self.part,
@@ -470,7 +470,7 @@ class DigitalPartialEditor(PartialEditor):
 
         # Envelope depth
         env_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.FILTER_ENV_DEPTH, "Depth")
+            self._create_parameter_slider(DigitalPartialParameter.FILTER_ENV_DEPTH, "Depth")
         )
         sub_layout.addWidget(env_group)
         filter_layout.addLayout(sub_layout)
@@ -480,11 +480,11 @@ class DigitalPartialEditor(PartialEditor):
 
         # HPF cutoff
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.HPF_CUTOFF, "HPF Cutoff")
+            self._create_parameter_slider(DigitalPartialParameter.HPF_CUTOFF, "HPF Cutoff")
         )
         # Aftertouch sensitivity
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.CUTOFF_AFTERTOUCH, "AT Sens")
+            self._create_parameter_slider(DigitalPartialParameter.CUTOFF_AFTERTOUCH, "AT Sens")
         )
         return filter_section
 
@@ -492,8 +492,8 @@ class DigitalPartialEditor(PartialEditor):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""
         spinbox = control_map[param]
         if param in [
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
         ]:
             new_value = midi_cc_to_frac(value)
         else:
@@ -506,16 +506,16 @@ class DigitalPartialEditor(PartialEditor):
 
     def on_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
-            self.controls[DigitalParameter.FILTER_ENV_ATTACK_TIME].setValue(
+            self.controls[DigitalPartialParameter.FILTER_ENV_ATTACK_TIME].setValue(
                 ms_to_midi_cc(envelope["attack_time"], 10, 1000)
             )
-            self.controls[DigitalParameter.FILTER_ENV_DECAY_TIME].setValue(
+            self.controls[DigitalPartialParameter.FILTER_ENV_DECAY_TIME].setValue(
                 ms_to_midi_cc(envelope["decay_time"], 10, 1000)
             )
-            self.controls[DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(
+            self.controls[DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(
                 ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
             )
-            self.controls[DigitalParameter.FILTER_ENV_RELEASE_TIME].setValue(
+            self.controls[DigitalPartialParameter.FILTER_ENV_RELEASE_TIME].setValue(
                 ms_to_midi_cc(envelope["release_time"], 10, 1000)
             )
 
@@ -545,16 +545,16 @@ class DigitalPartialEditor(PartialEditor):
 
     def on_amp_env_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
-            self.controls[DigitalParameter.AMP_ENV_ATTACK_TIME].setValue(
+            self.controls[DigitalPartialParameter.AMP_ENV_ATTACK_TIME].setValue(
                 ms_to_midi_cc(envelope["attack_time"], 10, 1000)
             )
-            self.controls[DigitalParameter.AMP_ENV_DECAY_TIME].setValue(
+            self.controls[DigitalPartialParameter.AMP_ENV_DECAY_TIME].setValue(
                 ms_to_midi_cc(envelope["decay_time"], 10, 1000)
             )
-            self.controls[DigitalParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
+            self.controls[DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
                 ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
             )
-            self.controls[DigitalParameter.AMP_ENV_RELEASE_TIME].setValue(
+            self.controls[DigitalPartialParameter.AMP_ENV_RELEASE_TIME].setValue(
                 ms_to_midi_cc(envelope["release_time"], 10, 1000)
             )
 
@@ -586,7 +586,7 @@ class DigitalPartialEditor(PartialEditor):
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
         # Send MIDI message
-        self._on_parameter_changed(DigitalParameter.FILTER_MODE, mode)
+        self._on_parameter_changed(DigitalPartialParameter.FILTER_MODE, mode)
 
         # Update control states
         self._update_filter_controls_state(mode)
@@ -595,15 +595,15 @@ class DigitalPartialEditor(PartialEditor):
         """Update filter controls enabled state based on mode"""
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
-            DigitalParameter.FILTER_CUTOFF,
-            DigitalParameter.FILTER_RESONANCE,
-            DigitalParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
-            DigitalParameter.FILTER_ENV_ATTACK_TIME,
-            DigitalParameter.FILTER_ENV_DECAY_TIME,
-            DigitalParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.FILTER_ENV_RELEASE_TIME,
-            DigitalParameter.FILTER_ENV_DEPTH,
-            DigitalParameter.FILTER_SLOPE,
+            DigitalPartialParameter.FILTER_CUTOFF,
+            DigitalPartialParameter.FILTER_RESONANCE,
+            DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
+            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
+            DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
+            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
+            DigitalPartialParameter.FILTER_ENV_DEPTH,
+            DigitalPartialParameter.FILTER_SLOPE,
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
@@ -638,14 +638,14 @@ class DigitalPartialEditor(PartialEditor):
         controls_group.setLayout(controls_layout)
 
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_LEVEL, "Level")
+            self._create_parameter_slider(DigitalPartialParameter.AMP_LEVEL, "Level")
         )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.AMP_VELOCITY, "Velocity")
+            self._create_parameter_slider(DigitalPartialParameter.AMP_VELOCITY, "Velocity")
         )
 
         # Create and center the pan slider
-        pan_slider = self._create_parameter_slider(DigitalParameter.AMP_PAN, "Pan")
+        pan_slider = self._create_parameter_slider(DigitalPartialParameter.AMP_PAN, "Pan")
         pan_slider.setValue(0)  # Center the pan slider
         controls_layout.addWidget(pan_slider)
 
@@ -671,15 +671,15 @@ class DigitalPartialEditor(PartialEditor):
 
         # Create ADSRWidget
         group_address, param_address = (
-            DigitalParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+            DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
                 self.partial_number
             )
         )
         self.amp_env_adsr_widget = ADSR(
-            DigitalParameter.AMP_ENV_ATTACK_TIME,
-            DigitalParameter.AMP_ENV_DECAY_TIME,
-            DigitalParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalParameter.AMP_ENV_RELEASE_TIME,
+            DigitalPartialParameter.AMP_ENV_ATTACK_TIME,
+            DigitalPartialParameter.AMP_ENV_DECAY_TIME,
+            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
+            DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
             self.midi_helper,
             area=DIGITAL_SYNTH_1_AREA,
             part=self.part,
@@ -695,11 +695,11 @@ class DigitalPartialEditor(PartialEditor):
         # Keyfollow and aftertouch
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.AMP_LEVEL_KEYFOLLOW, "KeyFollow"
+                DigitalPartialParameter.AMP_LEVEL_KEYFOLLOW, "KeyFollow"
             )
         )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LEVEL_AFTERTOUCH, "AT Sens")
+            self._create_parameter_slider(DigitalPartialParameter.LEVEL_AFTERTOUCH, "AT Sens")
         )
         return amp_section
 
@@ -734,7 +734,7 @@ class DigitalPartialEditor(PartialEditor):
         # Shape switch
         self.lfo_shape = Switch("Shape", ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
         self.lfo_shape.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.LFO_SHAPE, v)
+            lambda v: self._on_parameter_changed(DigitalPartialParameter.LFO_SHAPE, v)
         )
         top_row.addWidget(self.lfo_shape)
 
@@ -742,7 +742,7 @@ class DigitalPartialEditor(PartialEditor):
         self.lfo_tempo_sync_switch = Switch("Tempo Sync", ["OFF", "ON"])
         self.lfo_tempo_sync_switch.valueChanged.connect(
             lambda v: self._on_parameter_changed(
-                DigitalParameter.LFO_TEMPO_SYNC_SWITCH, v
+                DigitalPartialParameter.LFO_TEMPO_SYNC_SWITCH, v
             )
         )
         top_row.addWidget(self.lfo_tempo_sync_switch)
@@ -750,16 +750,16 @@ class DigitalPartialEditor(PartialEditor):
 
         # Rate and fade controls
         layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_RATE, "Rate")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_RATE, "Rate")
         )
         layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_FADE_TIME, "Fade")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_FADE_TIME, "Fade")
         )
 
         # Key trigger switch
         self.lfo_trigger = Switch("Key Trigger", ["OFF", "ON"])
         self.lfo_trigger.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.LFO_KEY_TRIGGER, v)
+            lambda v: self._on_parameter_changed(DigitalPartialParameter.LFO_KEY_TRIGGER, v)
         )
         layout.addWidget(self.lfo_trigger)
 
@@ -774,16 +774,16 @@ class DigitalPartialEditor(PartialEditor):
             depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_PITCH_DEPTH, "Pitch")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_PITCH_DEPTH, "Pitch")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_FILTER_DEPTH, "Filter")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_FILTER_DEPTH, "Filter")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_AMP_DEPTH, "Amp")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_AMP_DEPTH, "Amp")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.LFO_PAN_DEPTH, "Pan")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH, "Pan")
         )
         layout.addWidget(depths_group)
 
@@ -801,7 +801,7 @@ class DigitalPartialEditor(PartialEditor):
         # Shape switch
         self.mod_lfo_shape = Switch("Shape", ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
         self.mod_lfo_shape.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalParameter.MOD_LFO_SHAPE, v)
+            lambda v: self._on_parameter_changed(DigitalPartialParameter.MOD_LFO_SHAPE, v)
         )
         top_row.addWidget(self.mod_lfo_shape)
 
@@ -809,7 +809,7 @@ class DigitalPartialEditor(PartialEditor):
         self.mod_lfo_sync = Switch("Sync", ["OFF", "ON"])
         self.mod_lfo_sync.valueChanged.connect(
             lambda v: self._on_parameter_changed(
-                DigitalParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v
+                DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v
             )
         )
         top_row.addWidget(self.mod_lfo_sync)
@@ -818,7 +818,7 @@ class DigitalPartialEditor(PartialEditor):
         # Rate and note controls
         rate_row = QHBoxLayout()
         rate_row.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_RATE, "Rate")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_RATE, "Rate")
         )
 
         # Note selection (only visible when sync is ON)
@@ -849,7 +849,7 @@ class DigitalPartialEditor(PartialEditor):
         )
         self.mod_lfo_note.valueChanged.connect(
             lambda v: self._on_parameter_changed(
-                DigitalParameter.MOD_LFO_TEMPO_SYNC_NOTE, v
+                DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_NOTE, v
             )
         )
         rate_row.addWidget(self.mod_lfo_note)
@@ -861,25 +861,25 @@ class DigitalPartialEditor(PartialEditor):
         depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_PITCH_DEPTH, "Pitch")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PITCH_DEPTH, "Pitch")
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.MOD_LFO_FILTER_DEPTH, "Filter"
+                DigitalPartialParameter.MOD_LFO_FILTER_DEPTH, "Filter"
             )
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_AMP_DEPTH, "Amp")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_AMP_DEPTH, "Amp")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalParameter.MOD_LFO_PAN, "Pan")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PAN, "Pan")
         )
         mod_lfo_layout.addWidget(depths_group)
 
         # Rate control
         mod_lfo_layout.addWidget(
             self._create_parameter_slider(
-                DigitalParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
+                DigitalPartialParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
             )
         )
 
@@ -899,7 +899,7 @@ class DigitalPartialEditor(PartialEditor):
             selected_btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
-        if not self.send_midi_parameter(DigitalParameter.OSC_WAVE, waveform.value):
+        if not self.send_midi_parameter(DigitalPartialParameter.OSC_WAVE, waveform.value):
             logging.warning(f"Failed to set waveform to {waveform.name}")
 
         # Update control visibility

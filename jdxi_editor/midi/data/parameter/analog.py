@@ -1,5 +1,6 @@
 """
 AnalogParameter: JD-Xi Digital Synthesizer Parameter Mapping
+============================================================
 
 This class defines digital synthesizer parameters for the Roland JD-Xi, mapping
 various synthesis parameters to their corresponding memory addresses and valid
