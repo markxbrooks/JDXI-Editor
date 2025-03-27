@@ -37,14 +37,11 @@ Dependencies:
 """
 
 import os
-import logging
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QComboBox,
-    QPushButton,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
@@ -59,13 +56,11 @@ from jdxi_editor.midi.data.constants.arpeggio import (
     TEMPORARY_PROGRAM,
     ARP_PART,
     ARP_GROUP,
-    ArpOctaveRange,
+    ArpOctaveRange, ArpMotif,
 )
 from jdxi_editor.midi.data.parameter.program_zone import ProgramZoneParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth import SynthEditor
-from jdxi_editor.ui.widgets.slider import Slider
 
 
 class ArpeggioEditor(SynthEditor):
@@ -120,90 +115,67 @@ class ArpeggioEditor(SynthEditor):
 
         # Add on-off switch
         switch_row = QHBoxLayout()
-        switch_label = QLabel("Arpeggiator")
-        self.switch_button = QPushButton("OFF")
-        self.switch_button.setCheckable(True)
-        self.switch_button.clicked.connect(self._on_switch_changed)
-        switch_row.addWidget(switch_label)
+        self.switch_button = self._create_parameter_switch(ArpeggioParameter.ARPEGGIO_SWITCH,
+                                                           "Arpeggiator",
+                                                           ["OFF", "ON"])
         switch_row.addWidget(self.switch_button)
         layout.addLayout(switch_row)
 
         # Create address combo box for Arpeggio Style
-        self.style_combo = QComboBox()
-        # Add style combo box
+        self.style_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_STYLE,
+                                                            "Style",
+                                                            arp_style)
         style_row = QHBoxLayout()
-        style_label = QLabel("Style:")
-        self.style_combo.addItems(arp_style)  # Use arp_style list
-        self.style_combo.currentIndexChanged.connect(self._on_style_changed)
-        style_row.addWidget(style_label)
         style_row.addWidget(self.style_combo)
         layout.addLayout(style_row)
 
         # Create address combo box for Arpeggio Grid
         # Add grid combo box
         grid_row = QHBoxLayout()
-        grid_label = QLabel("Grid:")
-        self.grid_combo = QComboBox()
-        self.grid_combo.addItems(arp_grid)  # Use arp_grid list
-        self.grid_combo.currentIndexChanged.connect(self._on_grid_changed)
-        grid_row.addWidget(grid_label)
+        self.grid_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_GRID,
+                                                           "Grid:",
+                                                           arp_grid)
         grid_row.addWidget(self.grid_combo)
         layout.addLayout(grid_row)
 
         # Add grid combo box
         duration_row = QHBoxLayout()
-        duration_label = QLabel("Duration:")
         # Create address combo box for Arpeggio Duration
-        self.duration_combo = QComboBox()
-        self.duration_combo.addItems(arp_duration)  # Use arp_duration list
-        self.duration_combo.currentIndexChanged.connect(self._on_duration_changed)
-        duration_row.addWidget(duration_label)
+        self.duration_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_DURATION,
+                                                               "Duration",
+                                                               arp_duration)
         duration_row.addWidget(self.duration_combo)
         layout.addLayout(duration_row)
 
         # Add sliders
-        self.velocity_slider = Slider("Velocity", 0, 127)
-        self.velocity_slider.valueChanged.connect(self._on_velocity_changed)
+        self.velocity_slider = self._create_parameter_slider(ArpeggioParameter.ARPEGGIO_VELOCITY,
+                                                             "Velocity",
+                                                             0,
+                                                             127)
         layout.addWidget(self.velocity_slider)
 
-        self.accent_slider = Slider("Accent", 0, 127)
-        self.accent_slider.valueChanged.connect(self._on_accent_changed)
+        self.accent_slider = self._create_parameter_slider(ArpeggioParameter.ARPEGGIO_ACCENT_RATE,
+                                                           "Accent",
+                                                           0,
+                                                           127)
         layout.addWidget(self.accent_slider)
 
         # Add octave range combo box
         octave_row = QHBoxLayout()
-        octave_label = QLabel("Octave Range:")
-        self.octave_combo = QComboBox()
-        self.octave_combo.addItems([octave.display_name for octave in ArpOctaveRange])
+        self.octave_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_OCTAVE_RANGE,
+                                                             "Octave Range:",
+                                                             [octave.display_name for octave in ArpOctaveRange],
+                                                             [octave.midi_value for octave in ArpOctaveRange])
         # Set default to 0
-        self.octave_combo.setCurrentIndex(3)  # Index 3 is OCT_ZERO
-        self.octave_combo.currentIndexChanged.connect(self._on_octave_changed)
-        octave_row.addWidget(octave_label)
+        self.octave_combo.combo_box.setCurrentIndex(3)  # Index 3 is OCT_ZERO
         octave_row.addWidget(self.octave_combo)
         layout.addLayout(octave_row)
 
         # Add motif combo box
         motif_row = QHBoxLayout()
-        motif_label = QLabel("Motif:")
-        self.motif_combo = QComboBox()
-        self.motif_combo.addItems(
-            [
-                "UP/L",
-                "UP/H",
-                "UP/_",
-                "dn/L",
-                "dn/H",
-                "dn/_",
-                "Ud/L",
-                "Ud/H",
-                "Ud/_",
-                "rn/L",
-                "rn/_",
-                "PHRASE",
-            ]
-        )
-        self.motif_combo.currentIndexChanged.connect(self._on_motif_changed)
-        motif_row.addWidget(motif_label)
+        self.motif_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_MOTIF,
+                                                            "Motif:",
+                                                            [motif.name for motif in ArpMotif])
         motif_row.addWidget(self.motif_combo)
         layout.addLayout(motif_row)
 
@@ -229,78 +201,3 @@ class ArpeggioEditor(SynthEditor):
         if not image_loaded:
             if not load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
-
-    def _on_switch_changed(self, checked: bool):
-        """Handle arpeggiator switch change"""
-        if self.midi_helper:
-            switch_address = ArpeggioParameter.SWITCH.value[0]
-            switch_is_on = self.switch_button.isChecked()
-            self.switch_button.setText("ON" if switch_is_on else "OFF")
-            logging.debug(
-                f"Sending arp switch change: area={TEMPORARY_PROGRAM:02x}, "
-                f"part={ARP_PART:02x}, group={ARP_GROUP:02x}, "
-                f"param={switch_address:02x}, value={switch_is_on}"
-            )
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=switch_address,
-                                        value=switch_is_on)
-            self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_style_changed(self, index):
-        """Handle changes to the Arpeggio Style."""
-        self._send_parameter_change(ArpeggioParameter.STYLE, index)
-
-    def _on_grid_changed(self, index):
-        """Handle changes to the Arpeggio Grid."""
-        self._send_parameter_change(ArpeggioParameter.GRID, index)
-
-    def _on_duration_changed(self, index):
-        """Handle changes to the Arpeggio Duration."""
-        self._send_parameter_change(ArpeggioParameter.DURATION, index)
-
-    def _on_pattern_changed(self, index):
-        """Handle changes to the Pattern Type."""
-        self._send_parameter_change(
-            ArpeggioParameter.PATTERN_1, index
-        )  # Replace with actual parameter if different
-
-    def _on_velocity_changed(self, value):
-        """Handle changes to the Velocity."""
-        self._send_parameter_change(ArpeggioParameter.VELOCITY, value)
-
-    def _on_accent_changed(self, value):
-        """Handle changes to the Accent."""
-        self._send_parameter_change(ArpeggioParameter.ACCENT_RATE, value)
-
-    def _on_octave_changed(self, index: int):
-        """Handle octave range change"""
-        if self.midi_helper:
-            param = ArpeggioParameter.OCTAVE.value[0]
-            octave = index + 61  # Convert index to -3 to +3 range
-            logging.info(f"octave value: {octave}")
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=ArpeggioParameter.OCTAVE.value[0],
-                                        value=octave)
-            self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_motif_changed(self, index):
-        """Handle changes to the Motif."""
-        self._send_parameter_change(ArpeggioParameter.MOTIF, index)
-
-    def _send_parameter_change(self, param, value):
-        """Send parameter change to MIDI device."""
-        address, min_val, max_val = param.value
-        if min_val <= value <= max_val:
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=address,
-                                        value=value)
-            self.midi_helper.send_midi_message(sysex_message)
-            logging.info(f"Parameter {param.name} changed to {value}")
-        else:
-            logging.info(f"Value {value} out of range for parameter {param.name}")

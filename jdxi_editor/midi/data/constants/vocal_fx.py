@@ -267,4 +267,74 @@ class VocoderHPF(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for HPF frequency"""
-        return self.value 
+        return self.value
+
+
+class VoiceCutoffFilter(Enum):
+    """Voice cutoff filter types"""
+
+    THRU = 0x00
+    LPF = 0x01
+    HPF = 0x02
+    BPF = 0x03
+
+
+class VoiceScale(Enum):
+    """Voice scale types"""
+
+    CHROMATIC = 0x00
+    MAJOR = 0x01
+    MINOR = 0x02
+    BLUES = 0x03
+    INDIAN = 0x04
+
+
+class VoiceKey(Enum):
+    """Voice keys"""
+
+    C = 0x00
+    Db = 0x01
+    D = 0x02
+    Eb = 0x03
+    E = 0x04
+    F = 0x05
+    Gb = 0x06
+    G = 0x07
+    Ab = 0x08
+    A = 0x09
+    Bb = 0x0A
+    B = 0x0B
+
+
+class VocalFX(Enum):
+    """Vocal effects types and parameters"""
+
+    # Effect types
+    VOCODER = 0x00
+    AUTO_PITCH = 0x01
+    HARMONIST = 0x02
+
+    # Common parameters
+    LEVEL = 0x00
+    PAN = 0x01
+    REVERB_SEND = 0x02
+    DELAY_SEND = 0x03
+
+    # Vocoder parameters
+    MIC_SENS = 0x10
+    CARRIER_MIX = 0x11
+    FORMANT = 0x12
+    CUTOFF = 0x13
+    RESONANCE = 0x14
+
+    # Auto-Pitch parameters
+    SCALE = 0x20
+    KEY = 0x21
+    GENDER = 0x22
+    BALANCE = 0x23
+
+    # Harmonist parameters
+    HARMONY_1 = 0x30
+    HARMONY_2 = 0x31
+    HARMONY_3 = 0x32
+    DETUNE = 0x33
