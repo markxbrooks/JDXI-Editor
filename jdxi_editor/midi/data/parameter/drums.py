@@ -610,8 +610,7 @@ class DrumParameter(SynthParameter):
         """Get the display range for the parameter"""
         return self.display_min, self.display_max
 
-    @staticmethod
-    def get_address_for_partial(partial_index: int) -> tuple:
+    def get_address_for_partial(self, partial_index: int) -> tuple:
         """Get the address for address drum partial by index"""
         if not isinstance(partial_index, int):
             raise ValueError(f"Partial index must be an integer, got {type(partial_index)}")
@@ -661,7 +660,7 @@ class DrumParameter(SynthParameter):
 
         }
         group = group_map.get(partial_index, 0x2E)  # Default to 0x2E if partial_name is not 1, 2, or 3
-        return group
+        return group, 0x00
 
     @staticmethod
     def get_address_for_partial_name(partial_name: str) -> int:

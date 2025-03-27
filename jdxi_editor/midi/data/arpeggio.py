@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import List
 
 # Arpeggiator settings
@@ -19,12 +20,12 @@ arp_motif = [
     "Phrase",
 ]
 arp_style = (
-    "001: Basic 1 (address)",
-    "002: Basic 2 (address)",
-    "003: Basic 3 (address)",
-    "004: Basic 4 (address)",
-    "005: Basic 5 (address)",
-    "006: Basic 6 (address)",
+    "001: Basic 1",
+    "002: Basic 2",
+    "003: Basic 3",
+    "004: Basic 4",
+    "005: Basic 5",
+    "006: Basic 6",
     "007: Seq Ptn 1 (2)",
     "008: Seq Ptn 2 (2)",
     "009: Seq Ptn 3 (2)",
@@ -126,28 +127,29 @@ arp_style = (
     "105: Bassline 39 (p)",
     "106: Bassline 40 (p)",
     "107: Bassline 41 (p)",
-    "108: Sliced 1 (address)",
-    "109: Sliced 2 (address)",
-    "110: Sliced 3 (address)",
-    "111: Sliced 4 (address)",
-    "112: Sliced 5 (address)",
-    "113: Sliced 6 (address)",
-    "114: Sliced 7 (address)",
-    "115: Sliced 8 (address)",
-    "116: Sliced 9 (address)",
-    "117: Sliced 10 (address)",
+    "108: Sliced 1",
+    "109: Sliced 2",
+    "110: Sliced 3",
+    "111: Sliced 4",
+    "112: Sliced 5",
+    "113: Sliced 6",
+    "114: Sliced 7",
+    "115: Sliced 8",
+    "116: Sliced 9",
+    "117: Sliced 10",
     "118: Gtr Arp 1 (4)",
     "119: Gtr Arp 2 (5)",
     "120: Gtr Arp 3 (6)",
-    "121: Gtr Backing 1 (address)",
-    "122: Gtr Backing 2 (address)",
-    "123: Key Backing 1 (address)",
-    "124: Key Backing 2 (address)",
+    "121: Gtr Backing 1",
+    "122: Gtr Backing 2",
+    "123: Key Backing 1",
+    "124: Key Backing 2",
     "125: Key Backing 3 (1-3)",
     "126: 1/1 Note Trg (1)",
     "127: 1/2 Note Trg (1)",
     "128: 1/4 Note Trg (1)",
 )
+
 
 # Arpeggio patterns
 PATTERNS = [
@@ -259,3 +261,62 @@ class ArpeggioPatch:
             'duration': (0, 100),
             'shuffle': (0, 100)
         }
+
+
+class ArpGrid(Enum):
+    """Arpeggio grid values"""
+
+    GRID_4 = 0  # 04_
+    GRID_8 = 1  # 08_
+    GRID_8L = 2  # 08L
+    GRID_8H = 3  # 08H
+    GRID_8T = 4  # 08t
+    GRID_16 = 5  # 16_
+    GRID_16L = 6  # 16L
+    GRID_16H = 7  # 16H
+    GRID_16T = 8  # 16t
+
+
+class ArpDuration(Enum):
+    """Arpeggio duration values"""
+
+    DUR_30 = 0  # 30%
+    DUR_40 = 1  # 40%
+    DUR_50 = 2  # 50%
+    DUR_60 = 3  # 60%
+    DUR_70 = 4  # 70%
+    DUR_80 = 5  # 80%
+    DUR_90 = 6  # 90%
+    DUR_100 = 7  # 100%
+    DUR_120 = 8  # 120%
+    DUR_FULL = 9  # FULL
+
+
+class ArpMotif(Enum):
+    """Arpeggio motif values"""
+
+    UP_L = 0  # UP/L
+    UP_H = 1  # UP/H
+    UP_NORM = 2  # UP/_
+    DOWN_L = 3  # dn/L
+    DOWN_H = 4  # dn/H
+    DOWN_NORM = 5  # dn/_
+    UP_DOWN_L = 6  # Ud/L
+    UP_DOWN_H = 7  # Ud/H
+    UP_DOWN_NORM = 8  # Ud/_
+    RANDOM_L = 9  # rn/L
+    RANDOM_NORM = 10  # rn/_
+    PHRASE = 11  # PHRASE
+
+
+class ArpParameters(Enum):
+    """Arpeggiator parameters"""
+
+    GRID = 0x01  # Grid (0-8)
+    DURATION = 0x02  # Duration (0-9)
+    SWITCH = 0x03  # On/Off (0-1)
+    STYLE = 0x05  # Style (0-127)
+    MOTIF = 0x06  # Motif (0-11)
+    OCTAVE = 0x07  # Octave Range (61-67: -3 to +3)
+    ACCENT = 0x09  # Accent Rate (0-100)
+    VELOCITY = 0x0A  # Velocity (0-127, 0=REAL)

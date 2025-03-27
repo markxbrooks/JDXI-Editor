@@ -33,7 +33,7 @@ class TestMIDISending(unittest.TestCase):
             area=ARPEGGIO_AREA,
             part=SUBGROUP_ZERO,
             group=0x00,
-            param=ArpParameters.SWITCH.value,
+            param=ArpParameters.ARPEGGIO_SWITCH.value,
             value=1  # Turn on arpeggiator
         )
         

@@ -51,6 +51,19 @@ class ArpParameter(IntEnum):
     SWING = 0x06       # Swing amount (0-100)
 
 
+class ArpParameters(Enum):
+    """Arpeggiator parameters"""
+
+    GRID = 0x01  # Grid (0-8)
+    DURATION = 0x02  # Duration (0-9)
+    SWITCH = 0x03  # On/Off (0-1)
+    STYLE = 0x05  # Style (0-127)
+    MOTIF = 0x06  # Motif (0-11)
+    OCTAVE = 0x07  # Octave Range (61-67: -3 to +3)
+    ACCENT = 0x09  # Accent Rate (0-100)
+    VELOCITY = 0x0A  # Velocity (0-127, 0=REAL)
+
+
 class ArpGrid(Enum):
     """Arpeggiator grid values"""
     QUARTER = 0      # 1/4
@@ -112,7 +125,40 @@ class ArpDuration(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for duration"""
-        return self.value 
+        return self.value
+
+
+class ArpMotif(Enum):
+    """Arpeggio motif values"""
+
+    UP_L = 0  # UP/L
+    UP_H = 1  # UP/H
+    UP_NORM = 2  # UP/_
+    DOWN_L = 3  # dn/L
+    DOWN_H = 4  # dn/H
+    DOWN_NORM = 5  # dn/_
+    UP_DOWN_L = 6  # Ud/L
+    UP_DOWN_H = 7  # Ud/H
+    UP_DOWN_NORM = 8  # Ud/_
+    RANDOM_L = 9  # rn/L
+    RANDOM_NORM = 10  # rn/_
+    PHRASE = 11  # PHRASE
+
+
+ARP_MOTIF_NAME_LIST = [
+                "UP/L",
+                "UP/H",
+                "UP/_",
+                "dn/L",
+                "dn/H",
+                "dn/_",
+                "Ud/L",
+                "Ud/H",
+                "Ud/_",
+                "rn/L",
+                "rn/_",
+                "PHRASE",
+            ]
 
 
 class ArpOctaveRange(Enum):
@@ -154,4 +200,13 @@ class ArpSwitch(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for switch"""
-        return self.value 
+        return self.value
+
+
+class ArpeggioGroup(Enum):
+    """Arpeggiator parameter groups"""
+
+    COMMON = 0x00  # Common parameters
+    PATTERN = 0x10  # Pattern parameters
+    RHYTHM = 0x20  # Rhythm parameters
+    NOTE = 0x30  # Note parameters

@@ -33,12 +33,12 @@ from pubsub import pub
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal, QTimer
 
+from jdxi_editor.midi.data.parameter.digital_common import DigitalCommonParameter
 from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
-from jdxi_editor.midi.data.constants.triage import DigitalParameter
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
     MIDI_CHANNEL_DRUMS, START_OF_SYSEX, END_OF_SYSEX, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER, \
     MIDI_CHANNEL_PROGRAMS
@@ -930,7 +930,7 @@ class JdxiInstrument(JdxiUi):
             self._update_display()
             part_address = 0x01
             group_address = 0x00
-            param_address = DigitalParameter.OCTAVE_SHIFT.value
+            param_address = DigitalCommonParameter.OCTAVE_SHIFT.value
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
@@ -985,7 +985,7 @@ class JdxiInstrument(JdxiUi):
         """Send arpeggiator on/off command"""
         try:
             if self.midi_helper:
-                param_address = ArpParameter.SWITCH.value  # On/Off parameter
+                param_address = ArpParameter.SWITCH.value  # On/Off parameter @@@  FIXME: Should be ArpeggioParameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
                 self.send_midi_parameter(
                     ARP_GROUP, param_address, value

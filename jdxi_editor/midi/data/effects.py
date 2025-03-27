@@ -14,6 +14,35 @@ class EffectType(Enum):
     RING_MOD = 0x07
     SLICER = 0x08
 
+    # Common parameters
+    LEVEL = 0x00
+    MIX = 0x01
+
+    # Effect-specific parameters
+    DRIVE = 0x10
+    TONE = 0x11
+    ATTACK = 0x12
+    RELEASE = 0x13
+    THRESHOLD = 0x14
+    RATIO = 0x15
+    BIT_DEPTH = 0x16
+    RATE = 0x17
+    DEPTH = 0x18
+    FEEDBACK = 0x19
+    FREQUENCY = 0x1A
+    BALANCE = 0x1B
+    PATTERN = 0x1C
+
+    # Send levels
+    REVERB_SEND = 0x20
+    DELAY_SEND = 0x21
+    CHORUS_SEND = 0x22
+
+    # Reverb parameters
+    REVERB_TYPE = 0x30
+    REVERB_TIME = 0x31
+    REVERB_PRE_DELAY = 0x32
+
 
 class EffectCommonParameter(Enum):
     """Common parameters for Effects."""
