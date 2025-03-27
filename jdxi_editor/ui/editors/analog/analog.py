@@ -87,7 +87,7 @@ from jdxi_editor.midi.data.constants.analog import (
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
 from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
-from jdxi_editor.ui.editors.synth import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import Style

@@ -33,7 +33,7 @@ from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
 from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
-class SynthControlBase(QWidget):
+class SynthBase(QWidget):
     """ base class for all synth editors """
     def __init__(self, midi_helper, parent):
         super().__init__(parent)

@@ -20,6 +20,8 @@ import datetime
 import logging
 from typing import Optional
 import qtawesome as qta
+import mido
+import matplotlib.pyplot as plt
 
 from PySide6.QtWidgets import (
     QFileDialog,
@@ -30,7 +32,6 @@ from PySide6.QtWidgets import (
     QComboBox,
     QGroupBox,
     QSpinBox,
-    QWidget,
     QMessageBox,
 )
 
@@ -44,12 +45,12 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MID
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.handler import PresetHandler
 
-from jdxi_editor.ui.editors.synth import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
 
-class PatternSequencer(SynthEditor):
+class MidiFileEditor(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
     def __init__(
@@ -223,8 +224,8 @@ class PatternSequencer(SynthEditor):
 
         self.start_button = QPushButton(qta.icon("ri.play-line"), "Play")
         self.stop_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
-        self.start_button.clicked.connect(self.play_pattern)
-        self.stop_button.clicked.connect(self.stop_pattern)
+        # self.start_button.clicked.connect(self.play_pattern)
+        # self.stop_button.clicked.connect(self.stop_pattern)
 
         transport_layout.addWidget(self.start_button)
         transport_layout.addWidget(self.stop_button)
@@ -615,200 +616,119 @@ class PatternSequencer(SynthEditor):
                 )
 
     def load_pattern(self, filename: str):
-        """Load a pattern from a MIDI file"""
+        """Load a MIDI file and display its pattern in the sequencer"""
         try:
+            # Clear existing pattern
             self.clear_pattern()
+            
             midi_file = MidiFile(filename)
+            self.midi_file = midi_file  # Store for playback
+            
+            # Get ticks per beat for timing calculations
             ppq = midi_file.ticks_per_beat
-
-            for track_num, track in enumerate(midi_file.tracks[:4]):
-                if track_num >= len(self.buttons):
-                    logging.error(f"Track {track_num} exceeds available button rows.")
-                    continue
-
+            
+            # Create a dictionary to store notes for each channel
+            channel_notes = {0: [], 1: [], 2: [], 9: []}  # Channels 1, 2, 3, and 10 (0-based)
+            
+            # Process each track
+            for track in midi_file.tracks:
                 absolute_time = 0
                 for msg in track:
                     absolute_time += msg.time
-                    if msg.type == "note_on" and msg.velocity > 0:
-                        step = int((absolute_time / ppq) * 4) % self.total_steps
-                        if step >= len(self.buttons[track_num]):
-                            logging.error(
-                                f"Step {step} exceeds available buttons in row {track_num}."
-                            )
-                            continue
-
-                        button = self.buttons[track_num][step]
-                        button.setChecked(True)
-                        button.note = msg.note
-                        if track_num == 3:
-                            drums_note_name = self._midi_to_note_name(
-                                button.note, drums=True
-                            )
-                            button.setToolTip(f"Note: {drums_note_name}")
-                        else:
-                            note_name = self._midi_to_note_name(button.note)
-                            button.setToolTip(f"Note: {note_name}")
-
-            for event in midi_file.tracks[0]:
-                if event.type == "set_tempo":
-                    bpm = int(tempo2bpm(event.tempo))
-                    self.tempo_spinbox.setValue(bpm)
-
+                    
+                    if msg.type == 'note_on' and hasattr(msg, 'channel'):
+                        if msg.channel in channel_notes:
+                            step = int((absolute_time / ppq) * 4) % 16
+                            channel_notes[msg.channel].append({
+                                'step': step,
+                                'note': msg.note,
+                                'velocity': msg.velocity
+                            })
+            
+            # Map channels to rows (0->0, 1->1, 2->2, 9->3)
+            channel_to_row = {0: 0, 1: 1, 2: 2, 9: 3}
+            
+            # Update sequencer buttons
+            for channel, notes in channel_notes.items():
+                row = channel_to_row[channel]
+                for note_data in notes:
+                    step = note_data['step']
+                    if step < 16:  # Ensure step is within bounds
+                        button = self._get_button(row, step)
+                        if button:
+                            button.setChecked(True)
+                            button.note = note_data['note']
+                            self._update_button_style(button, True)
+            
+            # Update tempo if available
+            for track in midi_file.tracks:
+                for msg in track:
+                    if msg.type == 'set_tempo':
+                        bpm = int(tempo2bpm(msg.tempo))
+                        self.tempo_spinbox.setValue(bpm)
+                        break
+            
+            logging.info(f"Pattern loaded from {filename}")
+            
         except Exception as ex:
             logging.error(f"Error loading pattern: {ex}")
-            QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
+            raise
 
-    def play_pattern(self):
-        """Start playing the pattern"""
-        if hasattr(self, "timer") and self.timer and self.timer.isActive():
-            return  # Already playing
+    def _get_button(self, row, column):
+        """Get the button at the specified row and column"""
+        for button in self.buttons[row]:
+            if button.column == column:
+                return button
+        return None
 
-        self.current_step = 0
-
-        # Calculate interval based on tempo (ms per 16th note)
-        ms_per_step = (60000 / self.bpm) / 4
-
-        # Create and start timer
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self._play_step)
-        self.timer.start(int(ms_per_step))
-
-        # Update button states
-        self.start_button.setEnabled(False)
-        self.stop_button.setEnabled(True)
-
-        logging.info("Pattern playback started")
-
-    def stop_pattern(self):
-        """Stop playing the pattern"""
-        if hasattr(self, "timer") and self.timer:
-            self.timer.stop()
-            self.timer = None
-
-        # Reset step counter
-        self.current_step = 0
-
-        # Update button states
-        self.start_button.setEnabled(True)
-        self.stop_button.setEnabled(False)
-
-        # Send all notes off
-        if self.midi_helper:
-            for channel in range(16):
-                self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
-
-        logging.info("Pattern playback stopped")
-
-    def _note_name_to_midi(self, note_name: str) -> int:
-        """Convert note name (e.g., 'C4') to MIDI note number"""
-        # Note name to semitone mapping
-        note_to_semitone = {
-            "C": 0,
-            "C#": 1,
-            "D": 2,
-            "D#": 3,
-            "E": 4,
-            "F": 5,
-            "F#": 6,
-            "G": 7,
-            "G#": 8,
-            "A": 9,
-            "A#": 10,
-            "B": 11,
-        }
-
-        # Split note name into note and octave
-        if "#" in note_name:
-            note = note_name[:-1]  # Everything except last character (octave)
-            octave = int(note_name[-1])
+    def _update_button_style(self, button, checked):
+        """Update button style and tooltip based on state"""
+        button.setStyleSheet(self.generate_sequencer_button_style(checked))
+        if button.note is not None:
+            note_name = self._midi_to_note_name(button.note, button.row == 3)
+            button.setToolTip(f"Note: {note_name}")
         else:
-            note = note_name[0]
-            octave = int(note_name[1])
+            button.setToolTip("Rest")
 
-        # Calculate MIDI note number
-        # MIDI note 60 is middle C (C4)
-        # Each octave is 12 semitones
-        # Formula: (octave + 1) * 12 + semitone
-        midi_note = (octave + 1) * 12 + note_to_semitone[note]
+    def play_file(self, filename):
+        """Play the loaded MIDI file"""
+        if not hasattr(self, 'midi_file'):
+            logging.error("No MIDI file loaded")
+            return
+        
+        try:
+            # Calculate timing based on tempo
+            tempo = 500000  # Default tempo (120 BPM)
+            for track in self.midi_file.tracks:
+                for msg in track:
+                    if msg.type == 'set_tempo':
+                        tempo = msg.tempo
+                        break
+            
+            # Start playback
+            current_time = 0
+            for msg in self.midi_file.play():
+                if msg.type in ['note_on', 'note_off']:
+                    if msg.channel in [0, 1, 2, 9]:  # Only process our tracked channels
+                        # Update visual state of buttons
+                        step = int((current_time / self.midi_file.ticks_per_beat) * 4) % 16
+                        self._highlight_current_step(step)
+                        
+                        # Send MIDI message if we have a MIDI helper
+                        if hasattr(self, 'midi_helper') and self.midi_helper:
+                            self.midi_helper.send_message(msg)
+                        
+                current_time += msg.time
+                
+        except Exception as ex:
+            logging.error(f"Error playing MIDI file: {ex}")
+            raise
 
-        return midi_note
-
-    def _midi_to_note_name(self, midi_note: int, drums=False) -> str:
-        """Convert MIDI note number to note name (e.g., 60 -> 'C4')"""
-        # Note mapping (reverse of note_to_semitone)
-        semitone_to_note = [
-            "C",
-            "C#",
-            "D",
-            "D#",
-            "E",
-            "F",
-            "F#",
-            "G",
-            "G#",
-            "A",
-            "A#",
-            "B",
-        ]
-
-        # Calculate octave and note
-        octave = (midi_note // 12) - 1
-        note = semitone_to_note[midi_note % 12]
-
-        if drums:
-            return self.drum_options[midi_note - 36]
-        # so not drums
-        return f"{note}{octave}"
-
-    def _play_step(self):
-        """Plays the current step and advances to the next one."""
-        step = self.current_step % self.total_steps
-        logging.info(f"Playing step {step}")
-
-        # Check each row's button at the current step
-        for row in range(4):
-            button = self.buttons[row][step]
-            if (
-                button.isChecked()
-                and hasattr(button, "note")
-                and button.note is not None
-            ):
-                # Determine channel based on row
-                channel = (
-                    row if row < 3 else 9
-                )  # channels 0,1,2 for synths, 9 for drums
-
-                # Send Note On message using the stored note
-                if self.midi_helper:
-                    if channel not in self.muted_channels:
-                        logging.info(
-                            f"Row {row} active at step {step}, sending note {button.note} on channel {channel}"
-                        )
-                        self.midi_helper.send_raw_message(
-                            [NOTE_ON | channel, button.note, 100]
-                        )  # velocity 100
-                        # Note Off message after a short delay
-                        QTimer.singleShot(
-                            100,
-                            lambda ch=channel, n=button.note: self.midi_helper.send_raw_message(
-                                [NOTE_ON | ch, n, 0]
-                            ),
-                        )
-                else:
-                    logging.warning("MIDI helper not available")
-
-        # Advance to next step
-        self.current_step = (self.current_step + 1) % self.total_steps
-
-        # Update UI to show current step
-        for row in range(4):
-            for col in range(self.total_steps):
-                button = self.buttons[row][col]
-                button.setStyleSheet(
-                    self.generate_sequencer_button_style(
-                        button.isChecked(), col == step
-                    )
-                )
+    def _highlight_current_step(self, step):
+        """Highlight the current step in the sequencer"""
+        for button in self.buttons[0]:
+            is_current = button.column == step
+            button.setStyleSheet(self.generate_sequencer_button_style(button.isChecked(), is_current))
 
     def generate_sequencer_button_style(
         self, is_checked: bool, is_current: bool = False
@@ -875,7 +795,9 @@ class PatternSequencer(SynthEditor):
                 button.note = None
                 button.setStyleSheet(self.generate_sequencer_button_style(False))
                 if row == 3:
-                    drums_note_name = self._midi_to_note_name(button.note, drums=True)
+                    drums_note_name = self._midi_to_note_name(
+                        button.note, drums=True
+                    )
                     button.setToolTip(f"Note: {drums_note_name}")
                 else:
                     note_name = self._midi_to_note_name(button.note)
@@ -956,3 +878,236 @@ class PatternSequencer(SynthEditor):
 
         # Ensure UI updates properly
         self.update()
+
+    def get_events(self):
+        mid = self
+        print(mid)
+
+        # There is > 16 channel in midi.tracks. However there is only 16 channel related to "music" events.
+        # We store music events of 16 channel in the list "events" with form [[ch1],[ch2]....[ch16]]
+        # Lyrics and meta data used a extra channel which is not include in "events"
+
+        events = [[] for x in range(16)]
+
+        # Iterate all event in the midi and extract to 16 channel form
+        for track in mid.tracks:
+            for msg in track:
+                try:
+                    channel = msg.channel
+                    events[channel].append(msg)
+                except AttributeError:
+                    try:
+                        if type(msg) != type(mido.UnknownMetaMessage):
+                            self.meta[msg.type] = msg.dict()
+                        else:
+                            pass
+                    except:
+                        print("error",type(msg))
+
+        return events
+
+    def get_roll(self):
+        events = self.get_events()
+        # Identify events, then translate to piano roll
+        # choose a sample ratio(sr) to down-sample through time axis
+        sr = self.sr
+
+        # compute total length in tick unit
+        length = self.get_total_ticks()
+
+        # allocate memory to numpy array
+        roll = np.zeros((16, 128, length // sr), dtype="int8")
+
+        # use a register array to save the state(no/off) for each key
+        note_register = [int(-1) for x in range(128)]
+
+        # use a register array to save the state(program_change) for each channel
+        timbre_register = [1 for x in range(16)]
+
+
+        for idx, channel in enumerate(events):
+
+            time_counter = 0
+            volume = 100
+            # Volume would change by control change event (cc) cc7 & cc11
+            # Volume 0-100 is mapped to 0-127
+
+            print("channel", idx, "start")
+            for msg in channel:
+                if msg.type == "control_change":
+                    if msg.control == 7:
+                        volume = msg.value
+                        # directly assign volume
+                    if msg.control == 11:
+                        volume = volume * msg.value // 127
+                        # change volume by percentage
+                    # print("cc", msg.control, msg.value, "duration", msg.time)
+
+                if msg.type == "program_change":
+                    timbre_register[idx] = msg.program
+                    print("channel", idx, "pc", msg.program, "time", time_counter, "duration", msg.time)
+
+
+
+                if msg.type == "note_on":
+                    print("on ", msg.note, "time", time_counter, "duration", msg.time, "velocity", msg.velocity)
+                    note_on_start_time = time_counter // sr
+                    note_on_end_time = (time_counter + msg.time) // sr
+                    intensity = volume * msg.velocity // 127
+
+
+
+					# When a note_on event *ends* the note start to be play
+					# Record end time of note_on event if there is no value in register
+					# When note_off event happens, we fill in the color
+                    if note_register[msg.note] == -1:
+                        note_register[msg.note] = (note_on_end_time,intensity)
+                    else:
+					# When note_on event happens again, we also fill in the color
+                        old_end_time = note_register[msg.note][0]
+                        old_intensity = note_register[msg.note][1]
+                        roll[idx, msg.note, old_end_time: note_on_end_time] = old_intensity
+                        note_register[msg.note] = (note_on_end_time,intensity)
+
+
+                if msg.type == "note_off":
+                    print("off", msg.note, "time", time_counter, "duration", msg.time, "velocity", msg.velocity)
+                    note_off_start_time = time_counter // sr
+                    note_off_end_time = (time_counter + msg.time) // sr
+                    note_on_end_time = note_register[msg.note][0]
+                    intensity = note_register[msg.note][1]
+					# fill in color
+                    roll[idx, msg.note, note_on_end_time:note_off_end_time] = intensity
+
+                    note_register[msg.note] = -1  # reinitialize register
+
+                time_counter += msg.time
+
+                # TODO : velocity -> done, but not verified
+                # TODO: Pitch wheel
+                # TODO: Channel - > Program Changed / Timbre catagory
+                # TODO: real time scale of roll
+
+            # if there is a note not closed at the end of a channel, close it
+            for key, data in enumerate(note_register):
+                if data != -1:
+                    note_on_end_time = data[0]
+                    intensity = data[1]
+                    # print(key, note_on_end_time)
+                    note_off_start_time = time_counter // sr
+                    roll[idx, key, note_on_end_time:] = intensity
+                note_register[idx] = -1
+
+        return roll
+
+    def get_roll_image(self):
+        roll = self.get_roll()
+        plt.ioff()
+
+        K = 16
+
+        transparent = colorConverter.to_rgba('black')
+        colors = [mpl.colors.to_rgba(mpl.colors.hsv_to_rgb((i / K, 1, 1)), alpha=1) for i in range(K)]
+        cmaps = [mpl.colors.LinearSegmentedColormap.from_list('my_cmap', [transparent, colors[i]], 128) for i in
+                 range(K)]
+
+        for i in range(K):
+            cmaps[i]._init()  # create the _lut array, with rgba values
+            # create your alpha array and fill the colormap with them.
+            # here it is progressive, but you can create whathever you want
+            alphas = np.linspace(0, 1, cmaps[i].N + 3)
+            cmaps[i]._lut[:, -1] = alphas
+
+        fig = plt.figure(figsize=(4, 3))
+        a1 = fig.add_subplot(111)
+        a1.axis("equal")
+        a1.set_facecolor("black")
+
+        array = []
+
+        for i in range(K):
+            try:
+                img = a1.imshow(roll[i], interpolation='nearest', cmap=cmaps[i], aspect='auto')
+                array.append(img.get_array())
+            except IndexError:
+                pass
+        return array
+
+    def draw_roll(self):
+
+
+        roll = self.get_roll()
+
+        # build and set fig obj
+        plt.ioff()
+        fig = plt.figure(figsize=(4, 3))
+        a1 = fig.add_subplot(111)
+        a1.axis("equal")
+        a1.set_facecolor("black")
+
+        # change unit of time axis from tick to second
+        tick = self.get_total_ticks()
+        second = mido.tick2second(tick, self.ticks_per_beat, self.get_tempo())
+        print(second)
+        if second > 10:
+            x_label_period_sec = second // 10
+        else:
+            x_label_period_sec = second / 10  # ms
+        print(x_label_period_sec)
+        x_label_interval = mido.second2tick(x_label_period_sec, self.ticks_per_beat, self.get_tempo()) / self.sr
+        print(x_label_interval)
+        plt.xticks([int(x * x_label_interval) for x in range(20)], [round(x * x_label_period_sec, 2) for x in range(20)])
+
+        # change scale and label of y axis
+        plt.yticks([y*16 for y in range(8)], [y*16 for y in range(8)])
+
+        # build colors
+        channel_nb = 16
+        transparent = colorConverter.to_rgba('black')
+        colors = [mpl.colors.to_rgba(mpl.colors.hsv_to_rgb((i / channel_nb, 1, 1)), alpha=1) for i in range(channel_nb)]
+        cmaps = [mpl.colors.LinearSegmentedColormap.from_list('my_cmap', [transparent, colors[i]], 128) for i in
+                 range(channel_nb)]
+
+        # build color maps
+        for i in range(channel_nb):
+            cmaps[i]._init()
+            # create your alpha array and fill the colormap with them.
+            alphas = np.linspace(0, 1, cmaps[i].N + 3)
+            # create the _lut array, with rgba values
+            cmaps[i]._lut[:, -1] = alphas
+
+
+        # draw piano roll and stack image on a1
+        for i in range(channel_nb):
+            try:
+                a1.imshow(roll[i], origin="lower", interpolation='nearest', cmap=cmaps[i], aspect='auto')
+            except IndexError:
+                pass
+
+        # draw color bar
+
+        colors = [mpl.colors.hsv_to_rgb((i / channel_nb, 1, 1)) for i in range(channel_nb)]
+        cmap = mpl.colors.LinearSegmentedColormap.from_list('my_cmap', colors, 16)
+        a2 = fig.add_axes([0.05, 0.80, 0.9, 0.15])
+        cbar = mpl.colorbar.ColorbarBase(a2, cmap=cmap,
+                                        orientation='horizontal',
+                                        ticks=list(range(16)))
+
+        # show piano roll
+        plt.draw()
+        plt.ion()
+        plt.show(block=True)
+
+    def get_tempo(self):
+        try:
+            return self.meta["set_tempo"]["tempo"]
+        except:
+            return 500000
+
+    def get_total_ticks(self):
+        max_ticks = 0
+        for channel in range(16):
+            ticks = sum(msg.time for msg in self.events[channel])
+            if ticks > max_ticks:
+                max_ticks = ticks
+        return max_ticks

@@ -3,9 +3,11 @@ from enum import IntEnum, Enum
 from typing import Dict, List, Tuple, Optional
 import logging
 
+from jdxi_editor.midi.data.constants.constants import PART_1
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA, PART_1, OSC_1_GROUP
+# from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA, PART_1, OSC_1_GROUP
 
 
 def get_digital_parameter_by_address(address: Tuple[int, int]):

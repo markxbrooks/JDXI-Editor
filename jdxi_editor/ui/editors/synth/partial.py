@@ -30,10 +30,10 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.constants.constants import PART_1
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.ui.editors.synth_control.base import SynthControlBase
+from jdxi_editor.ui.editors.synth.base import SynthBase
 
 
-class PartialEditor(SynthControlBase):
+class PartialEditor(SynthBase):
     """Editor for address single partial"""
 
     def __init__(self, midi_helper=None, partial_number=1, part=PART_1, parent=None):

@@ -60,7 +60,7 @@ from jdxi_editor.midi.data.constants.arpeggio import (
 )
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors.synth import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 
 class ArpeggioEditor(SynthEditor):
