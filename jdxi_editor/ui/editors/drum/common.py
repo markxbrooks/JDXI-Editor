@@ -83,10 +83,10 @@ from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors.drum_partial import DrumPartialEditor
+from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.editors.synth import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
@@ -95,7 +95,7 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DRUMS
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
-class DrumEditor(SynthEditor):
+class DrumCommonEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(

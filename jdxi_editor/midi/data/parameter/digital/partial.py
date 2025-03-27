@@ -146,6 +146,7 @@ class DigitalPartialParameter(SynthParameter):
     HPF_CUTOFF = (0x39, 0, 127)  # HPF cutoff
     SUPER_SAW_DETUNE = (0x3A, 0, 127)  # Super saw detune
 
+
     # Wave Number parameters
     WAVE_NUMBER_1 = (0x3B, 0, 15)  # Most significant 4 bits
     WAVE_NUMBER_2 = (0x3C, 0, 15)  # Next 4 bits

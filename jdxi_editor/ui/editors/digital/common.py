@@ -58,8 +58,8 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.sysex.requests import DIGITAL1_REQUESTS, DIGITAL2_REQUESTS
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
-from jdxi_editor.ui.editors.synth import SynthEditor
-from jdxi_editor.ui.editors.digital_partial import DigitalPartialEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
@@ -81,7 +81,7 @@ from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
 
 
-class DigitalSynthEditor(SynthEditor):
+class DigitalCommonEditor(SynthEditor):
     """class for Digital Synth Editor containing 3 partials"""
 
     preset_changed = Signal(int, str, int)

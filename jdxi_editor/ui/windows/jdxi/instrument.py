@@ -57,8 +57,8 @@ from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
-    DigitalSynthEditor,
-    DrumEditor,
+    DigitalCommonEditor,
+    DrumCommonEditor,
     ArpeggioEditor,
     EffectsEditor,
     VocalFXEditor,
@@ -478,7 +478,7 @@ class JdxiInstrument(JdxiUi):
     def _show_digital_synth_editor(self, editor_type: str):
         synth_num = 1 if editor_type == "digital1" else 2
         self._show_editor(
-            f"Digital Synth {synth_num}", DigitalSynthEditor, synth_num=synth_num
+            f"Digital Synth {synth_num}", DigitalCommonEditor, synth_num=synth_num
         )
         self.preset_type = (
             SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
@@ -490,7 +490,7 @@ class JdxiInstrument(JdxiUi):
         self.preset_type = SynthType.ANALOG
 
     def _show_drums_editor(self, editor_type: str):
-        self._show_editor("Drums", DrumEditor)
+        self._show_editor("Drums", DrumCommonEditor)
         self.channel = MIDI_CHANNEL_DRUMS
         self.preset_type = SynthType.DRUMS
 
@@ -702,8 +702,8 @@ class JdxiInstrument(JdxiUi):
         try:
             # Create editor with proper initialization
             if editor_class in [
-                DigitalSynthEditor,
-                DrumEditor,
+                DigitalCommonEditor,
+                DrumCommonEditor,
                 AnalogSynthEditor,
                 PatternSequencer,
                 ProgramEditor,
@@ -768,7 +768,7 @@ class JdxiInstrument(JdxiUi):
         self.channel = MIDI_CHANNEL_DIGITAL1
         try:
             if not hasattr(self, "digital_synth1_editor"):
-                self.digital_synth1_editor = DigitalSynthEditor(
+                self.digital_synth1_editor = DigitalCommonEditor(
                     midi_helper=self.midi_helper, parent=self
                 )
             self.digital_synth1_editor.show()
@@ -777,14 +777,14 @@ class JdxiInstrument(JdxiUi):
             logging.error(f"Error opening Digital Synth 1 editor: {str(ex)}")
 
     def _open_digital_synth2(self):
-        self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
+        self._show_editor("Digital Synth 2", DigitalCommonEditor, synth_num=2)
         self.channel = MIDI_CHANNEL_DIGITAL2
         self.preset_type = SynthType.DIGITAL_2
         self.current_synth_type = SynthType.DIGITAL_2
 
     def _open_drums(self):
         self.channel = MIDI_CHANNEL_DRUMS
-        self._show_editor("Drums", DrumEditor)
+        self._show_editor("Drums", DrumCommonEditor)
         self.preset_type = SynthType.DRUMS
         self.current_synth_type = SynthType.DRUMS
 

@@ -276,13 +276,6 @@ class DigitalPartialEditor(PartialEditor):
 
         layout.addWidget(pitch_env_group)
 
-        # Wave gain control
-        self.wave_gain_switch = Switch("Gain", ["-6dB", "0dB", "+6dB", "+12dB"])
-        self.wave_gain_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalPartialParameter.WAVE_GAIN, v)
-        )
-        layout.addWidget(self.wave_gain_switch)
-
         # Super Saw detune (only for SUPER-SAW wave)
         self.super_saw_detune = self._create_parameter_slider(
             DigitalPartialParameter.SUPER_SAW_DETUNE, "S-Saw Detune"
@@ -294,10 +287,10 @@ class DigitalPartialEditor(PartialEditor):
         self._update_pcm_controls_state(OscWave.PCM)  # Initial state
 
         # PCM Wave number selector (only for PCM wave)
-        pcm_group = QGroupBox("PCM Wave")
-        pcm_layout = QVBoxLayout()
-        pcm_group.setLayout(pcm_layout)
-
+        # pcm_group = QGroupBox("PCM Wave")
+        # pcm_layout = QVBoxLayout()
+        # pcm_group.setLayout(pcm_layout)
+        """
         # Wave number spinner/selector
         wave_row = QHBoxLayout()
         self.wave_number = QSpinBox()
@@ -307,10 +300,10 @@ class DigitalPartialEditor(PartialEditor):
         wave_row.addWidget(QLabel("Number:"))
         wave_row.addWidget(self.wave_number)
         pcm_layout.addLayout(wave_row)
-
-        layout.addWidget(pcm_group)
-        pcm_group.setVisible(False)  # Hide initially
-        self.pcm_group = pcm_group  # Store reference for visibility control
+        """
+        # layout.addWidget(pcm_group)
+        # pcm_group.setVisible(False)  # Hide initially
+        # self.pcm_group = pcm_group  # Store reference for visibility control
 
         return oscillator_section
 

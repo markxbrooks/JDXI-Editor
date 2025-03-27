@@ -34,11 +34,11 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import ToneData
 from jdxi_editor.midi.preset.handler import PresetHandler
-from jdxi_editor.ui.editors.synth_control.base import SynthControlBase
+from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import Style
 
 
-class SynthEditor(SynthControlBase):
+class SynthEditor(SynthBase):
     """Base class for all editor windows"""
 
     parameter_received = Signal(list, int)  # address, value

@@ -43,7 +43,7 @@ from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.effects import EffectCommonParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRAM_COMMON
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.ui.editors.synth import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
