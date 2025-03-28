@@ -287,13 +287,12 @@ class DigitalCommonEditor(SynthEditor):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
-
-        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         print(f"self.controls: {self.controls}")
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.show()
         if self.synth_num == 2:
             self.midi_helper.update_digital2_tone_name.connect(self.set_instrument_title_label)

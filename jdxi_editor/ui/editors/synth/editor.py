@@ -107,6 +107,10 @@ class SynthEditor(SynthBase):
         else:
             logging.error("MIDI helper not initialized")
         self.preset_loader = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
+        # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+
+    def _dispatch_sysex_to_area(self):
+        raise NotImplementedError
 
     def set_instrument_title_label(self, name: str):
         self.instrument_title_label.setText(f"Synth:\n {name}")

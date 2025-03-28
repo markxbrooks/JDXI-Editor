@@ -40,7 +40,6 @@ from dataclasses import dataclass
 from enum import Enum, IntEnum
 
 from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 # Areas and Parts

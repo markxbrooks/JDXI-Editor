@@ -47,7 +47,7 @@ class RolandSysEx(SysExMessage):
     group: int = 0x00
     param: int = 0x00
     value: int = 0x00
-    # size: int = 1
+    size: int = 1
 
     # These attributes should not be set in `__init__`
     synth_type: int = field(init=False, default=None)
@@ -59,7 +59,7 @@ class RolandSysEx(SysExMessage):
     def __post_init__(self):
         """Initialize address and data based on parameters."""
         self.address = [self.area, self.section, self.group, self.param]
-        if isinstance(self.value, int) and self.value > 0x0F:
+        if isinstance(self.value, int) and self.size == 4:
             self.data = split_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
@@ -76,6 +76,7 @@ class RolandSysEx(SysExMessage):
         print(f"self.command {self.command}")
         print(f"self.address {self.address}")
         print(f"self.data {self.data}")
+        print(f"self.size {self.size}")
         # if self.manufacturer_id == [0x41]:  # Roland messages require checksum
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)

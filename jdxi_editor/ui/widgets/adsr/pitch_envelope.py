@@ -248,13 +248,18 @@ class PitchEnvelope(QWidget):
             return False
 
         try:
+            if hasattr(param, "get_nibbled_size"):
+                size = param.get_nibbled_size()
+            else:
+                size = 1
             group = self.group  # Common parameters area
             param_address = param.address
             sysex_message = RolandSysEx(area=self.area,
                                         section=self.part,
                                         group=group,
                                         param=param_address,
-                                        value=value)
+                                        value=value,
+                                        size=size)
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as e:
             logging.error(f"MIDI error setting {param}: {str(e)}")

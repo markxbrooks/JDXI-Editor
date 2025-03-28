@@ -265,6 +265,7 @@ class AnalogSynthEditor(SynthEditor):
         else:
             logging.error("MIDI helper not initialized")
         self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
+        self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
 
     def load_preset(self, preset_index):
@@ -1178,12 +1179,12 @@ class AnalogSynthEditor(SynthEditor):
     def send_analog_synth_parameter(self, parameter: str, value: int, channel: int = 0) -> bool:
         """
         Send a MIDI Control Change or NRPN message for an Analog Synth parameter.
-    
+
         Args:
             parameter: The name of the parameter to modify.
             value: The parameter value (0-127).
             channel: The MIDI channel (0-15).
-    
+
         Returns:
             True if successful, False otherwise.
         """
@@ -1194,7 +1195,7 @@ class AnalogSynthEditor(SynthEditor):
             "Level": 117,
             "LFO Rate": 16,
         }
-    
+
         nrpn_parameters = {
             "Envelope": (0, 124),
             "LFO Shape": (0, 3),
@@ -1203,17 +1204,17 @@ class AnalogSynthEditor(SynthEditor):
             "LFO Amp Depth": (0, 21),
             "Pulse Width": (0, 37),
         }
-    
+
         if parameter in cc_parameters:
             # Send as a Control Change (CC) message
             controller = cc_parameters[parameter]
             return self.midi_helper.send_control_change(controller, value, channel)
-    
+
         elif parameter in nrpn_parameters:
             # Send as an NRPN message
             msb, lsb = nrpn_parameters[parameter]
             return self.midi_helper.send_nrpn((msb << 7) | lsb, value, channel)
-    
+
         else:
             logging.error(f"Invalid Analog Synth parameter: {parameter}")
             return False
@@ -1221,7 +1222,7 @@ class AnalogSynthEditor(SynthEditor):
     def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
         """Process incoming NRPN messages and update UI controls."""
         logging.info(f"Received NRPN {nrpn_address} with value {value} on channel {channel}")
-    
+
         # NRPN Address Mapping
         nrpn_map = {
             (0, 124): "Envelope",
@@ -1231,12 +1232,12 @@ class AnalogSynthEditor(SynthEditor):
             (0, 21): "LFO Amp Depth",
             (0, 37): "Pulse Width",
         }
-    
+
         # Find matching parameter
         msb = nrpn_address >> 7
         lsb = nrpn_address & 0x7F
         param_name = nrpn_map.get((msb, lsb))
-    
+
         if param_name:
             # Update slider or control
             param = AnalogParameter.get_by_name(param_name)
@@ -1254,6 +1255,3 @@ class AnalogSynthEditor(SynthEditor):
             slider.setValue(slider_value)
             slider.blockSignals(False)
             logging.info(f"Updated {param.name} slider to {slider_value}")
-
-
-

@@ -503,7 +503,7 @@ class DigitalPartialParameter(SynthParameter):
             return slider_value + 64  # 0 to 127 -> -63 to +63
         elif self == self.LFO_AMP_DEPTH:
             return slider_value + 64  # 0 to 127 -> -63 to +63
-        elif self == self.LFO_PAN:
+        elif self == self.LFO_PAN_DEPTH:
             return slider_value + 64  # 0 to 127 -> -63 to +63
         elif self == self.MOD_LFO_PITCH_DEPTH:
             return slider_value + 64  # 0 to 127 -> -63 to +63
