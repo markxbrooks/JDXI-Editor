@@ -18,7 +18,7 @@ Methods:
     - _select_synth: Selects the current synth type and updates UI button styles.
     - _update_synth_button_styles: Updates button styles based on the selected synth type.
     - _get_presets_for_current_synth: Returns the list of presets based on the selected synth type.
-    - _get_preset_handler_for_current_synth: Returns the appropriate preset handler based on the selected synth type.
+    - _get_for_current_synth: Returns the appropriate preset handler based on the selected synth type.
     - _previous_tone: Navigates to the previous tone in the preset list and updates the display.
     - ...
 
@@ -342,7 +342,7 @@ class JdxiInstrument(JdxiUi):
         handler = handler_map.get(self.current_synth_type, None)
         if handler is None:
             logging.warning(
-                f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1_preset_handler"
+                f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1"
             )
             return self.digital_1_preset_helper  # Safe fallback
         return handler

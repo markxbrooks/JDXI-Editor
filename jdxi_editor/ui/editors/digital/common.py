@@ -91,7 +91,7 @@ class DigitalCommonEditor(SynthEditor):
         midi_helper: Optional[MidiIOHelper] = None,
         synth_num=1,
         parent=None,
-        preset_handler=None,
+        preset_helper=None,
     ):
         super().__init__(parent)
         # Image display
@@ -108,16 +108,16 @@ class DigitalCommonEditor(SynthEditor):
         )  # Center align the image
 
         self.midi_helper = midi_helper
-        self.preset_handler = preset_handler
+        self.preset_helper = preset_helper
         self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
         self.instrument_icon_folder = "digital_synths"
-        if preset_handler:
-            self.preset_handler = preset_handler
+        if preset_helper:
+            self.preset_helper = preset_helper
         else:
             if self.preset_type == SynthType.DIGITAL_1:
-                self.preset_handler = parent.digital_1_preset_handler
+                self.preset_helper = parent.digital_1_preset_helper
             else:
-                self.preset_handler = parent.digital_2_preset_handler
+                self.preset_helper = parent.digital_2_preset_helper
         self.synth_num = synth_num
         if self.synth_num == 2:
             self.midi_channel = MIDI_CHANNEL_DIGITAL2
@@ -222,7 +222,7 @@ class DigitalCommonEditor(SynthEditor):
         self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESET_LIST)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_handler.current_preset_zero_indexed
+            self.preset_helper.current_preset_zero_indexed
         )
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
 
@@ -230,7 +230,7 @@ class DigitalCommonEditor(SynthEditor):
             self.update_instrument_image
         )
         # Connect QComboBox signal to PresetHandler
-        self.preset_handler.preset_changed.connect(self.update_combo_box_index)
+        self.preset_helper.preset_changed.connect(self.update_combo_box_index)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_title
         )
