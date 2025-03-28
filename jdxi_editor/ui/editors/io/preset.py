@@ -60,7 +60,7 @@ from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS, MIDI_CHANNEL_DIGITAL1, \
     MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_DRUMS, MIDI_CHANNEL_ANALOG
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS, PROGRAM_TONE_NAME_REQUESTS
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
@@ -80,7 +80,7 @@ class PresetEditor(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_handler: PresetHandler = None,
+        preset_handler: PresetHelper = None,
     ):
         super().__init__()
         self.digital_preset_type_combo = None

@@ -33,7 +33,7 @@ from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import ToneData
-from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import Style
 
@@ -106,7 +106,7 @@ class SynthEditor(SynthBase):
                 logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
-        self.preset_loader = PresetHandler(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
+        self.preset_loader = PresetHelper(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
 
     def _dispatch_sysex_to_area(self):
@@ -203,7 +203,7 @@ class SynthEditor(SynthBase):
             channel=self.midi_channel,
         )
         if not self.preset_handler:
-            self.preset_handler = PresetHandler(
+            self.preset_handler = PresetHelper(
                 self.midi_helper,
                 DIGITAL_PRESETS_ENUMERATED,
                 channel=MIDI_CHANNEL_DIGITAL1,

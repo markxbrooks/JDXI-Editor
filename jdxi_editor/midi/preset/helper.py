@@ -1,72 +1,125 @@
 """
-Module: preset helper
-=====================
+Module: preset_handler
+======================
 
-This module provides the `PresetHelper` class, which handles loading and managing
-presets via MIDI for the Roland JD-Xi synthesizer. It utilizes SysEx messages to
-communicate with the synthesizer and update parameter values.
+This module defines the `PresetHandler` class, which extends `PresetHelper` to manage
+preset selection and navigation for a MIDI-enabled synthesizer.
 
-Features:
----------
-- Sends MIDI Program Change messages to select presets.
-- Uses SysEx messages to modify parameter values and load presets.
-- Handles different preset types (Digital1, Digital2, Analog, Drums).
-- Emits signals to update the UI with the selected preset.
+Classes:
+--------
+- `PresetHandler`: Handles preset loading, switching, and signaling for UI updates.
 
 Dependencies:
 -------------
-- PySide6 for Qt-based signal handling.
-- `pubsub` for event-driven communication.
-- `jdxi_manager` package for MIDI handling and preset management.
+- `PySide6.QtCore` (Signal, QObject) for event-driven UI interaction.
+- `jdxi_manager.midi.data.presets.type.PresetType` for managing preset types.
+- `jdxi_manager.midi.preset.loader.PresetLoader` as the base class for preset loading.
+
+Functionality:
+--------------
+- Loads presets via MIDI.
+- Emits signals when a preset changes (`preset_changed`).
+- Supports navigation through available presets (`next_tone`, `previous_tone`).
+- Retrieves current preset details (`get_current_preset`).
 
 Usage:
 ------
-Instantiate `PresetLoader` with a `MIDIHelper` instance and subscribe to
-preset loading requests. The class listens for `request_load_preset` events
-to trigger preset changes.
+This class is typically used within a larger MIDI control application to handle
+preset changes and communicate them to the UI and MIDI engine.
 
-Example:
---------
-```python
-midi_helper = MIDIHelper()
-preset_loader = PresetLoader(midi_helper)
 """
 
 import logging
 from pubsub import pub
-from typing import Optional
+
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG, MIDI_CHANNEL_DRUMS
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 
 
 class PresetHelper(QObject):
-    """Utility class for loading presets via MIDI"""
-
+    """ Preset Loading Class """
     update_display = Signal(int, int, int)
+    preset_changed = Signal(int, int)  # Signal emitted when preset changes
 
-    def __init__(
-        self, midi_helper: Optional[MidiIOHelper],
-            device_number: int = DEVICE_ID,
-            debug: bool = False
-    ):
+    def __init__(self, midi_helper, presets, device_number=0, channel=1, preset_type=SynthType.DIGITAL_1):
         super().__init__()
-        self.midi_channel = None
+        self.presets = presets
+        self.channel = channel
+        self.type = preset_type
+        self.current_preset_zero_indexed = 0
         self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
         self.preset_number = 1  # Default preset
         self.midi_helper = midi_helper
         self.device_number = device_number
-        self.debug = debug
         self.sysex_message = RolandSysEx()
         pub.subscribe(self.load_preset, "request_load_preset")
+
+    def next_tone(self):
+        """Increase the tone index and return the new preset."""
+        if self.current_preset_zero_indexed < len(self.presets) - 1:
+            self.current_preset_zero_indexed += 1
+            self.load_preset_by_program_change(self.current_preset_zero_indexed)
+            self.preset_changed.emit(self.current_preset_zero_indexed, self.channel)
+        return self.get_current_preset()
+
+    def previous_tone(self):
+        """Decrease the tone index and return the new preset."""
+        if self.current_preset_zero_indexed > 0:
+            self.current_preset_zero_indexed -= 1
+            self.load_preset_by_program_change(self.current_preset_zero_indexed)
+            self.preset_changed.emit(self.current_preset_zero_indexed, self.channel)
+        return self.get_current_preset()
+
+    def get_current_preset(self):
+        """Get the current preset details."""
+        return {
+            "index": self.current_preset_zero_indexed,
+            "preset": self.presets[self.current_preset_zero_indexed],
+            "channel": self.channel,
+        }
+
+    def get_available_presets(self):
+        """Get the available presets."""
+        return self.presets
+
+    def save_preset(self, program_number: int, params):
+        """Save the current preset to the preset list."""
+        name = self.presets[program_number]
+        print(f"name: \t{name}")
+        print(f"params: \t{params}")
+        self.preset_changed.emit(self.current_preset_zero_indexed, self.channel)
+        self.update_display.emit(self.type, self.current_preset_zero_indexed, self.channel)
+        return self.get_current_preset()
+
+    def load_preset_by_program_change(self, preset_index):
+        """Load a preset by program change."""
+        logging.info(f"preset_index : {preset_index}")
+
+        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        msb = get_preset_parameter_value("msb", preset_index)
+        lsb = get_preset_parameter_value("lsb", preset_index)
+        pc = get_preset_parameter_value("pc", preset_index)
+
+        if None in [msb, lsb, pc]:
+            logging.error(f"Could not retrieve preset parameters for program {preset_index}")
+            return
+
+        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log_midi_info(msb, lsb, pc)
+
+        # Send bank select and program change
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            self.channel,  # MIDI channel
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1  # Convert 1-based PC to 0-based
+        )
+        self.data_request()
 
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
@@ -77,8 +130,8 @@ class PresetHelper(QObject):
         elif channel == MIDI_CHANNEL_ANALOG:
             preset_list = ANALOG_PRESET_LIST
         else:
-            preset_list = DIGITAL_PRESET_LIST        
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+            preset_list = DIGITAL_PRESET_LIST
+            # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, preset_list)
         lsb = get_preset_parameter_value("lsb", program_number, preset_list)
         pc = get_preset_parameter_value("pc", program_number, preset_list)
@@ -104,3 +157,5 @@ class PresetHelper(QObject):
         for midi_request in self.midi_requests:
             byte_list_message = bytes.fromhex(midi_request)
             self.midi_helper.send_raw_message(byte_list_message)
+
+

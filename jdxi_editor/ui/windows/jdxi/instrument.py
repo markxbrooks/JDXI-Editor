@@ -51,7 +51,6 @@ from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import ToneData
-from jdxi_editor.midi.preset.handler import PresetHandler
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
@@ -82,6 +81,16 @@ from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 
 
+def _find_jdxi_port(ports, port_type):
+    """Helper function to find address JD-Xi MIDI port."""
+    jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
+    for port in ports:
+        if any(name in port.lower() for name in jdxi_names):
+            logging.info(f"Auto-detected JD-Xi {port_type}: {port}")
+            return port
+    return None
+
+
 class JdxiInstrument(JdxiUi):
     midi_program_changed = Signal(
         int, int
@@ -96,7 +105,6 @@ class JdxiInstrument(JdxiUi):
         self.channel = MIDI_CHANNEL_DIGITAL1
         self.analog_editor = None
         self.last_preset = None
-        self.preset_loader = None
         self.log_file = None
         self.preset_type = SynthType.DIGITAL_1  # Default preset
         # Initialize state variables
@@ -116,7 +124,6 @@ class JdxiInstrument(JdxiUi):
         if self.midi_helper:
             self.midi_helper.close_ports()
         self.midi_helper = MidiIOHelper(parent=self)
-        self.preset_loader = PresetHelper(self.midi_helper)
         # Initialize windows to None
         self.log_viewer = None
         self.midi_debugger = None
@@ -188,29 +195,29 @@ class JdxiInstrument(JdxiUi):
         self.current_preset_index = 0
 
         # Initialize PresetHandler with the desired preset list
-        self.digital_1_preset_handler = PresetHandler(self.midi_helper,
-                                                      DIGITAL_PRESETS_ENUMERATED,
-                                                      channel=MIDI_CHANNEL_DIGITAL1,
-                                                      preset_type=SynthType.DIGITAL_1)
-        self.digital_2_preset_handler = PresetHandler(self.midi_helper,
-                                                      DIGITAL_PRESETS_ENUMERATED,
-                                                      channel=MIDI_CHANNEL_DIGITAL2,
-                                                      preset_type=SynthType.DIGITAL_2)
-        self.analog_preset_handler = PresetHandler(self.midi_helper, ANALOG_PRESETS_ENUMERATED,
-                                                   channel=MIDI_CHANNEL_ANALOG,
-                                                   preset_type=SynthType.ANALOG)
-        self.drums_preset_handler = PresetHandler(self.midi_helper,
-                                                  DRUM_PRESETS_ENUMERATED,
-                                                  channel=MIDI_CHANNEL_DRUMS,
-                                                  preset_type=SynthType.DRUMS)
-        self.digital_1_preset_handler.update_display.connect(
+        self.digital_1_preset_helper = PresetHelper(self.midi_helper,
+                                                    DIGITAL_PRESETS_ENUMERATED,
+                                                    channel=MIDI_CHANNEL_DIGITAL1,
+                                                    preset_type=SynthType.DIGITAL_1)
+        self.digital_2_preset_helper = PresetHelper(self.midi_helper,
+                                                    DIGITAL_PRESETS_ENUMERATED,
+                                                    channel=MIDI_CHANNEL_DIGITAL2,
+                                                    preset_type=SynthType.DIGITAL_2)
+        self.analog_preset_helper = PresetHelper(self.midi_helper, ANALOG_PRESETS_ENUMERATED,
+                                                 channel=MIDI_CHANNEL_ANALOG,
+                                                 preset_type=SynthType.ANALOG)
+        self.drums_preset_helper = PresetHelper(self.midi_helper,
+                                                DRUM_PRESETS_ENUMERATED,
+                                                channel=MIDI_CHANNEL_DRUMS,
+                                                preset_type=SynthType.DRUMS)
+        self.digital_1_preset_helper.update_display.connect(
             self.update_display_callback
         )
-        self.digital_2_preset_handler.update_display.connect(
+        self.digital_2_preset_helper.update_display.connect(
             self.update_display_callback
         )
-        self.analog_preset_handler.update_display.connect(self.update_display_callback)
-        self.drums_preset_handler.update_display.connect(self.update_display_callback)
+        self.analog_preset_helper.update_display.connect(self.update_display_callback)
+        self.drums_preset_helper.update_display.connect(self.update_display_callback)
         self.old_pos = None
 
         # Set initial indicator states
@@ -226,10 +233,6 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.update_analog_tone_name.connect(self.set_current_analog_tone_name)
         self.midi_helper.update_drums_tone_name.connect(self.set_current_drums_tone_name)
         self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
-        # Set up a QTimer to poll for MIDI messages
-        # self.timer = QTimer(self)
-        # self.timer.timeout.connect(self.midi_helper.rtmidi_callback)
-        # self.timer.start(10)  # Poll every 10 milliseconds
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -292,7 +295,7 @@ class JdxiInstrument(JdxiUi):
         logging.info(f"Selected synth: {synth_type}")
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
-        self.preset_handler = self._get_preset_handler_for_current_synth()
+        self.preset_handler = self._get_preset_helper_for_current_synth()
         self.preset_handler.preset_changed.connect(self.midi_helper.send_program_change)
 
     def _update_synth_button_styles(self):
@@ -328,21 +331,20 @@ class JdxiInstrument(JdxiUi):
             return DIGITAL_PRESETS_ENUMERATED  # Safe fallback
         return presets
 
-    def _get_preset_handler_for_current_synth(self):
+    def _get_preset_helper_for_current_synth(self):
         """Return the appropriate preset handler based on the current synth preset_type."""
         handler_map = {
-            SynthType.ANALOG: self.analog_preset_handler,
-            SynthType.DIGITAL_1: self.digital_1_preset_handler,
-            SynthType.DIGITAL_2: self.digital_2_preset_handler,
-            SynthType.DRUMS: self.drums_preset_handler,
+            SynthType.ANALOG: self.analog_preset_helper,
+            SynthType.DIGITAL_1: self.digital_1_preset_helper,
+            SynthType.DIGITAL_2: self.digital_2_preset_helper,
+            SynthType.DRUMS: self.drums_preset_helper,
         }
-
         handler = handler_map.get(self.current_synth_type, None)
         if handler is None:
             logging.warning(
                 f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1_preset_handler"
             )
-            return self.digital_1_preset_handler  # Safe fallback
+            return self.digital_1_preset_helper  # Safe fallback
         return handler
     
     def _previous_program(self):
@@ -379,22 +381,13 @@ class JdxiInstrument(JdxiUi):
 
         self.current_preset_index -= 1
         presets = self._get_presets_for_current_synth()
-        preset_handler = self._get_preset_handler_for_current_synth()
+        preset_handler = self._get_preset_helper_for_current_synth()
 
         self._update_display_preset(
             self.current_preset_index,
             presets[self.current_preset_index],
             self.channel,
         )
-
-        preset_data = ToneData(
-            type=self.current_synth_type,
-            current_selection=self.current_preset_index,  # Convert to 1-based index
-            channel=self.channel,
-            modified=0
-        )
-
-        # preset_handler.load_preset(preset_data)
         preset_handler.load_preset_by_program_change(self.current_preset_index)
 
     def _next_tone(self):
@@ -411,20 +404,14 @@ class JdxiInstrument(JdxiUi):
 
         self.current_preset_index += 1
         presets = self._get_presets_for_current_synth()
-        preset_handler = self._get_preset_handler_for_current_synth()
+        preset_handler = self._get_preset_helper_for_current_synth()
 
         self._update_display_preset(
             self.current_preset_index,
             presets[self.current_preset_index],
             self.channel,
         )
-        preset_data = ToneData(
-            type=self.current_synth_type,
-            current_selection=self.current_preset_index,
-            modified=0,
-            channel=self.channel)
         preset_handler.load_preset_by_program_change(self.current_preset_index)
-        # preset_handler.load_preset(preset_data)
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth preset_type and preset index."""
@@ -494,9 +481,6 @@ class JdxiInstrument(JdxiUi):
         self.channel = MIDI_CHANNEL_DRUMS
         self.preset_type = SynthType.DRUMS
 
-    def _open_effects(self, title, editor_type: str):
-        self._show_editor("Effects", EffectsEditor)
-
     def _open_vocal_effects(self, title, editor_type: str):
         self._show_editor("Vocal Effects", VocalFXEditor)
 
@@ -526,38 +510,14 @@ class JdxiInstrument(JdxiUi):
         if button.isChecked():
             current_preset = self._get_current_tone()
             if current_preset:
-                # Uncheck all other favorite buttons before setting this one
-                # for other_button in self.favorite_buttons:
-                #    if other_button is not button:
-                #        other_button.setCheckable(True)
-                #       other_button.setChecked(False)
-
                 button.preset = current_preset  # Store preset in button
                 button.setToolTip(f"Program {current_preset.name}, {current_preset.synth_type}")
                 button.setChecked(True)  # Keep it checked
                 button.setCheckable(False)  # Prevent unchecking directly
-
                 self.settings.setValue(preset_name, current_preset)  # Save preset
                 logging.info(f"Saved {current_preset} as {preset_name}")
         else:
             self.load_button_preset(button)  # Load stored preset if checked
-
-    def _save_favorite_old(self, button, index):
-        """Save the current preset as address favorite"""
-        if button.isChecked():
-            self.load_button_preset(button)
-        else:
-            self.settings = QSettings("mabsoft", "jdxi_editor")
-            preset_name = f"favorite_{index + 1:02d}"
-            # Assuming you have address method to get the current preset
-            current_preset = self._get_current_tone()
-            if current_preset:
-                button.preset = current_preset
-                print(current_preset)
-                button.setToolTip(f"Program {current_preset.name}, {current_preset.synth_type}")
-                button.setCheckable(False)
-            self.settings.setValue(f"favorite_{index + 1:02d}", current_preset)
-            logging.info(f"Saved {current_preset} as {preset_name}")
 
     def load_button_preset(self, button):
         """ load preset dat stored on the button """
@@ -567,7 +527,7 @@ class JdxiInstrument(JdxiUi):
             current_selection=preset.number + 1,  # Convert to 1-based index
             modified=0
         )
-        self.preset_loader.load_preset(
+        self.digital1_preset_helper.load_preset(
             preset_data
         )
 
@@ -709,7 +669,7 @@ class JdxiInstrument(JdxiUi):
                 ProgramEditor,
                 PresetEditor,
             ]:
-                preset_handler = self._get_preset_handler_for_current_synth()
+                preset_handler = self._get_preset_helper_for_current_synth()
                 editor = editor_class(
                     midi_helper=self.midi_helper, parent=self, preset_handler=preset_handler, **kwargs
                 )
@@ -1132,15 +1092,6 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error saving settings: {str(ex)}")
 
-    def _find_jdxi_port(self, ports, port_type):
-        """Helper function to find address JD-Xi MIDI port."""
-        jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
-        for port in ports:
-            if any(name in port.lower() for name in jdxi_names):
-                logging.info(f"Auto-detected JD-Xi {port_type}: {port}")
-                return port
-        return None
-
     def _auto_connect_jdxi(self):
         """Attempt to automatically connect to JD-Xi MIDI ports."""
         try:
@@ -1149,8 +1100,8 @@ class JdxiInstrument(JdxiUi):
             output_ports = self.midi_helper.get_output_ports()
 
             # Find JD-Xi ports
-            selected_in_port = self._find_jdxi_port(input_ports, "input")
-            selected_out_port = self._find_jdxi_port(output_ports, "output")
+            selected_in_port = _find_jdxi_port(input_ports, "input")
+            selected_out_port = _find_jdxi_port(output_ports, "output")
 
             # Ensure both ports are found
             if not selected_in_port or not selected_out_port:
@@ -1383,8 +1334,8 @@ class JdxiInstrument(JdxiUi):
             # self.preset_type = PresetType.DIGITAL_1
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_loader = PresetHelper(self.midi_helper)
-                self.preset_loader.load_preset(
+                self.digital1_preset_helper = PresetHelper(self.midi_helper)
+                self.digital1_preset_helper.load_preset(
                     preset_data,
                 )
                 # Store as last loaded preset

@@ -42,7 +42,7 @@ from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
     MIDI_CHANNEL_DRUMS
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.handler import PresetHandler
+from jdxi_editor.midi.preset.helper import PresetHelper
 
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
@@ -55,7 +55,7 @@ class PatternSequencer(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper],
-        preset_handler: Optional[PresetHandler],
+        preset_handler: Optional[PresetHelper],
         parent=None,
     ):
         super().__init__(parent)
