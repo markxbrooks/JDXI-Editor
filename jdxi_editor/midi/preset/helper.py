@@ -30,7 +30,6 @@ preset changes and communicate them to the UI and MIDI engine.
 """
 
 import logging
-from pubsub import pub
 
 from PySide6.QtCore import Signal, QObject
 
@@ -73,7 +72,6 @@ class PresetHelper(QObject):
         self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
         self.midi_helper = midi_helper
         self.sysex_message = RolandSysEx()
-        pub.subscribe(self.load_preset, "request_load_preset")
 
     def next_tone(self):
         """Increase the tone index and return the new preset."""
