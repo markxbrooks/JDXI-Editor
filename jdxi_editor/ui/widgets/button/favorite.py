@@ -18,7 +18,7 @@ class FavoriteButton(QPushButton):
     def __init__(self, slot_num: int, midi_helper: MidiIOHelper, parent=None):
         super().__init__(parent)
         self.last_preset = None
-        self.preset_loader = None
+        self.preset_helper = None
         self.midi_helper = midi_helper
         self.slot_num = slot_num
         self.preset = None
@@ -63,8 +63,8 @@ class FavoriteButton(QPushButton):
         try:
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_loader = PresetHelper(self.midi_helper)
-                self.preset_loader.load_preset(
+                self.preset_helper = PresetHelper(self.midi_helper)
+                self.preset_helper.load_preset(
                     preset_data,
                 )
                 # Store as last loaded preset
