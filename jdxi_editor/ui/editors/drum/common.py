@@ -204,7 +204,7 @@ class DrumCommonEditor(SynthEditor):
             self.update_instrument_preset
         )
         # Connect QComboBox signal to PresetHandler
-        self.main_window.drums_preset_handler.preset_changed.connect(
+        self.main_window.drums_preset_helper.preset_changed.connect(
             self.update_combo_box_index
         )
 

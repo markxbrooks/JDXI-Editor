@@ -63,16 +63,15 @@ class PresetHelper(QObject):
     update_display = Signal(int, int, int)
     preset_changed = Signal(int, int)  # Signal emitted when preset changes
 
-    def __init__(self, midi_helper, presets, device_number=0, channel=1, preset_type=SynthType.DIGITAL_1):
+    def __init__(self, midi_helper, presets, channel=1, preset_type=SynthType.DIGITAL_1):
         super().__init__()
         self.presets = presets
         self.channel = channel
         self.type = preset_type
+        self.preset_number = 1
         self.current_preset_zero_indexed = 0
         self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
-        self.preset_number = 1  # Default preset
         self.midi_helper = midi_helper
-        self.device_number = device_number
         self.sysex_message = RolandSysEx()
         pub.subscribe(self.load_preset, "request_load_preset")
 
