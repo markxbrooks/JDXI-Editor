@@ -19,7 +19,7 @@ Example usage:
 
 import logging
 import time
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
@@ -67,7 +67,7 @@ class MidiOutHandler(MidiIOController):
         self.parent = parent
         self.channel = 1
 
-    def send_raw_message(self, message: List[int]) -> bool:
+    def send_raw_message(self, message: Union[bytes, List[int]]) -> bool:
         """
         Send a raw MIDI message with validation.
 

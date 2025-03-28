@@ -20,6 +20,7 @@ Classes:
 
 
 import logging
+from tokenize import group
 
 from PySide6.QtWidgets import QWidget
 
@@ -37,6 +38,7 @@ class SynthBase(QWidget):
     """ base class for all synth editors """
     def __init__(self, midi_helper, parent):
         super().__init__(parent)
+        self.group = None
         self.area = None
         self.part = None
         self.controls = None
@@ -76,17 +78,24 @@ class SynthBase(QWidget):
             # Get parameter area and address with partial offset
             if hasattr(param, "get_address_for_partial"):
                 group, _ = param.get_address_for_partial(0)
+            elif self.group:
+                group = self.group
             else:
                 group = PROGRAM_GROUP
             logging.info(
                 f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
             )
+            if hasattr(param, "get_nibbled_size"):
+                size = param.get_nibbled_size()
+            else:
+                size = 1
             sysex_message = RolandSysEx(
                 area=self.area,
                 section=self.part,
                 group=group,
                 param=param.address,
                 value=value,
+                size=size
             )
             result = self.midi_helper.send_midi_message(sysex_message)
             return bool(result)
@@ -98,12 +107,14 @@ class SynthBase(QWidget):
         """Handle parameter value changes from UI controls."""
         try:
             # Convert display value to MIDI value
-            midi_value = (
-                param.convert_from_display(display_value)
-                if hasattr(param, "convert_from_display")
-                else param.validate_value(display_value)
-            )
-
+            if hasattr(param, "convert_to_midi"):
+                midi_value = param.convert_to_midi(display_value)
+            else:
+                midi_value = (
+                    param.convert_from_display(display_value)
+                    if hasattr(param, "convert_from_display")
+                    else param.validate_value(display_value)
+                )
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")

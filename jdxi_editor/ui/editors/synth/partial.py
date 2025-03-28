@@ -61,6 +61,10 @@ class PartialEditor(SynthBase):
             logging.info(
                 f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
             )
+            if hasattr(param, "get_nibbled_size"):
+                size = param.get_nibbled_size()
+            else:
+                size = 1
 
             sysex_message = RolandSysEx(
                 area=self.area,
@@ -68,6 +72,7 @@ class PartialEditor(SynthBase):
                 group=group,
                 param=param.address,
                 value=value,
+                size=size,
             )
             result = self.midi_helper.send_midi_message(sysex_message)
 

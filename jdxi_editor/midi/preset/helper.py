@@ -42,7 +42,6 @@ from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
@@ -68,32 +67,6 @@ class PresetHelper(QObject):
         self.debug = debug
         self.sysex_message = RolandSysEx()
         pub.subscribe(self.load_preset, "request_load_preset")
-
-    def send_parameter_change_message(self, address, value, nr):
-        """Send a MIDI parameter change message."""
-        logging.info(f"par:[{address}] val:[{value}] len:[{nr}]")
-        data = bytes.fromhex(f"{value:0{nr}X}") if nr > 1 else bytes([value])
-        try:
-            # Use SysExMessage helper to construct and send the SysEx message
-            self.send_sysex(
-                [address[i : i + 2] for i in range(0, len(address), 2)],
-                *[f"{b:02X}" for b in data],
-                request=False,
-            )
-        except Exception as ex:
-            logging.info(f"Error {ex} sending parameter change")
-
-    def send_sysex(self, address, *data_bytes, request=False):
-        """
-        Construct and send a SysEx message.
-
-        :param address: Address bytes in hex string format.
-        :param data_bytes: Data bytes in hex string format.
-        :param request: SysEx command type (DT1 for write, RQ1 for read).
-        """
-        message = self.sysex_message.construct_sysex(address, *data_bytes, request=request)
-        self.midi_helper.send_raw_message(message)
-        logging.debug(f"Sent SysEx: {message}")
 
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
@@ -126,65 +99,6 @@ class PresetHelper(QObject):
             pc - 2  # Convert 1-based PC to 0-based
         )
         self.data_request()
-
-    def load_preset_old(self, preset_data):
-        """Load the preset based on the provided data."""
-        logging.info(f"Loading preset: {preset_data}")
-        program, channel = preset_data.current_selection, preset_data.channel
-
-        self.midi_helper.send_program_change(program=program, channel=channel)
-
-        if preset_data.modified == 0:
-            address, msb, lsb = self.get_preset_address(preset_data)
-            logging.info(
-                f"address msb lsb {address} {msb} {lsb} self.preset_number: {self.preset_number}"
-            )
-            self.preset_number = program if program <= 128 else program - 128
-            self.midi_helper.send_program_change(program, channel)
-            self.send_parameter_change_message(address, msb, 1)
-            self.send_parameter_change_message(f"{int(address, 16) + 1:08X}", lsb, 1)
-            self.send_parameter_change_message(
-                 f"{int(address, 16) + 2:08X}", self.preset_number, 1
-            )
-
-            # Send additional SysEx messages for preset loading
-            self.send_preset_sysex_messages()
-
-            self.update_display.emit(preset_data.type, program, channel)
-            logging.info(f"Preset {program} loaded on channel {channel}")
-            self.data_request()
-
-    def get_preset_address(self, preset_data):
-        """Retrieve the preset memory address based on its type."""
-        preset_type = preset_data.type
-        address_map = {
-            SynthType.DIGITAL_1: ("18002006", 95, 64),
-            SynthType.DIGITAL_2: ("18002106", 95, 64),
-            SynthType.ANALOG: ("18002206", 94, 64),
-            SynthType.DRUMS: ("18002306", 86, 64),
-        }
-
-        address, msb, lsb = address_map.get(preset_type, (None, None, None))
-        if address is None:
-            raise ValueError("Invalid preset type")
-
-        return address, msb, (65 if self.preset_number > 128 else lsb)
-
-    def send_preset_sysex_messages(self):
-        """Send additional SysEx messages for preset initialization."""
-        sysex_rq1_data = [
-            (["19", "01", "00", "00"], "00", "00", "00", "40"),
-            (["19", "01", "20", "00"], "00", "00", "00", "3D"),
-            (["19", "01", "21", "00"], "00", "00", "00", "3D"),
-            (["19", "01", "22", "00"], "00", "00", "00", "3D"),
-            (["19", "01", "50", "00"], "00", "00", "00", "25"),
-        ]
-        for address, *data in sysex_rq1_data:
-            logging.info(f"send_preset_sysex_messages address: {address} data: {data}")
-            sysex_message = RolandSysEx()
-            sysex_data = sysex_message.construct_sysex(address, *data, request=True)
-            logging.info(f"send_preset_sysex_messages sysex_data: {sysex_data}")
-            self.midi_helper.send_midi_message(sysex_message)
 
     def data_request(self):
         for midi_request in self.midi_requests:

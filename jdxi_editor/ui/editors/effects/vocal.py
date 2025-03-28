@@ -22,7 +22,6 @@ Dependencies:
 """
 
 import os
-import logging
 from typing import Optional
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
@@ -32,21 +31,18 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QLabel,
     QScrollArea,
-    QPushButton,
     QTabWidget,
 )
 from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.data.constants.vocal_fx import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,
     VOCAL_FX_GROUP,
-    VocalFxSwitch,
     AutoPitchType,
     OutputAssign,
     AutoPitchKey,
@@ -149,8 +145,6 @@ class VocalFXEditor(SynthEditor):
         layout.addWidget(self.program_tempo)
 
         vocal_effect_switch_row = QHBoxLayout()
-        vocal_effect_switch_label = QLabel("Effect Part:")
-        vocal_effect_switch_row.addWidget(vocal_effect_switch_label)
         self.vocal_effect_type = self._create_parameter_combo_box(
             ProgramCommonParameter.VOCAL_EFFECT,
             "Vocal Effect",
@@ -173,21 +167,17 @@ class VocalFXEditor(SynthEditor):
 
         # Add Effect Part switch
         effect_part_switch_row = QHBoxLayout()
-        effect_part_switch_label = QLabel("Effect Part:")
-        self.effect_part_switch = QPushButton("OFF")
-        self.effect_part_switch.setCheckable(True)
-        self.effect_part_switch.clicked.connect(self._on_effect_part_switch_changed)
-        effect_part_switch_row.addWidget(effect_part_switch_label)
+        self.effect_part_switch = self._create_parameter_switch(VocalFXParameter.VOCODER_SWITCH,
+                                                                "Effect Part:",
+                                                                ["OFF", "ON"])
         effect_part_switch_row.addWidget(self.effect_part_switch)
         layout.addLayout(effect_part_switch_row)  # Add at bottom
 
         # Add Auto Note switch
         auto_note_switch_row = QHBoxLayout()
-        auto_note_switch_label = QLabel("Auto Note:")
-        self.auto_note_switch = QPushButton("OFF")
-        self.auto_note_switch.setCheckable(True)
-        self.auto_note_switch.clicked.connect(self._on_auto_note_switch_changed)
-        auto_note_switch_row.addWidget(auto_note_switch_label)
+        self.auto_note_switch = self._create_parameter_switch(ProgramCommonParameter.AUTO_NOTE_SWITCH,
+                                                              "Auto Note:",
+                                                              ["OFF", "ON"])
         auto_note_switch_row.addWidget(self.auto_note_switch)
         layout.addLayout(auto_note_switch_row)  # Add at bottom
 
@@ -196,17 +186,15 @@ class VocalFXEditor(SynthEditor):
     def _create_vocal_effect_section(self):
         """Create general vocal effect controls section"""
         vocal_effect_section = QWidget()
-        # group = QGroupBox("Vocal Effect")
         layout = QVBoxLayout()
         vocal_effect_section.setLayout(layout)
 
         # Add vocoder switch
         switch_row = QHBoxLayout()
-        switch_label = QLabel("Vocoder:")
-        self.vocoder_switch = QPushButton("OFF")
-        self.vocoder_switch.setCheckable(True)
-        self.vocoder_switch.clicked.connect(self._on_vocoder_switch_changed)
-        switch_row.addWidget(switch_label)
+        self.vocoder_switch = self._create_parameter_switch(VocalFXParameter.VOCODER_SWITCH,
+                                                            "Vocoder:",
+                                                            ["OFF", "ON"]
+                                                            )
         switch_row.addWidget(self.vocoder_switch)
         layout.addLayout(switch_row)  # Add at top
 
@@ -390,111 +378,3 @@ class VocalFXEditor(SynthEditor):
         layout.addWidget(self.auto_pitch_balance)
 
         return auto_pitch_section
-
-    def _on_vocoder_switch_changed(self, checked: bool):
-        """Handle vocoder switch change"""
-        if self.midi_helper:
-            switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
-            logging.info(
-                f"Sending vocoder switch change: area={VOCAL_FX_AREA:02x}, "
-                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
-                f"param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, "
-                f"value={switch.midi_value:02x}"
-            )
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=VocalFXParameter.VOCODER_SWITCH.value[0],
-                                        value=switch.midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
-            self.vocoder_switch.setText(switch.display_name)
-
-    def _on_auto_note_switch_changed(self, checked: bool):
-        """Handle vocoder switch change"""
-        if self.midi_helper:
-            switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
-            logging.info(
-                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, "
-                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
-                f"param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, "
-                f"value={switch.midi_value:02x}"
-            )
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=ProgramCommonParameter.AUTO_NOTE_SWITCH.value[0],
-                                        value=switch.midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
-            self.auto_note_switch.setText(switch.display_name)
-
-    def _on_effect_part_switch_changed(self, checked: bool):
-        """Handle vocoder switch change"""
-        if self.midi_helper:
-            switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
-            logging.info(
-                f"Sending effect part switch change: area={VOCAL_FX_AREA:02x}, "
-                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
-                f"param={VocalFXParameter.VOCODER_SWITCH.value[0]:02x}, "
-                f"value={switch.midi_value:02x}"
-            )
-            # Send MIDI message
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=ProgramCommonParameter.VOCAL_EFFECT_PART.value[0],
-                                        value=switch.midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
-            # Update button text
-            self.effect_part_switch.setText(switch.display_name)
-
-    def _on_octave_changed(self, value: int):
-        """Handle octave change"""
-        if self.midi_helper:
-            logging.info(
-                f"Sending octave change: area={VOCAL_FX_AREA:02x}, "
-                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
-                f"param={VocalFXParameter.AUTO_PITCH_OCTAVE.value[0]:02x}, "
-                f"value={value:02x}"
-            )
-            # Send MIDI message
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=VocalFXParameter.AUTO_PITCH_OCTAVE.value[0],
-                                        value=value)
-            return self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_pitch_note_changed(self, index: int):
-        """Handle auto pitch note change"""
-        if self.midi_helper:
-            note = AutoPitchNote(index)
-            logging.info(
-                f"Sending auto pitch note change: area={VOCAL_FX_AREA:02x}, "
-                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
-                f"param={VocalFXParameter.AUTO_PITCH_NOTE.value[0]:02x}, "
-                f"value={note.midi_value:02x}"
-            )
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=VocalFXParameter.AUTO_PITCH_NOTE.value[0],
-                                        value=note.midi_value)
-            return self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_pitch_switch_changed(self, checked: bool):
-        """Handle auto pitch switch change"""
-        if self.midi_helper:
-            switch = VocalFxSwitch.ON if checked else VocalFxSwitch.OFF
-            logging.info(
-                f"Sending auto pitch switch change: area={VOCAL_FX_AREA:02x}, "
-                f"address={VOCAL_FX_PART:02x}, group={VOCAL_FX_GROUP:02x}, "
-                f"param={VocalFXParameter.AUTO_PITCH_SWITCH.value[0]:02x}, "
-                f"value={switch.midi_value:02x}"
-            )
-            # Send MIDI message
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=VocalFXParameter.AUTO_PITCH_SWITCH.value[0],
-                                        value=switch.midi_value)
-            return self.midi_helper.send_midi_message(sysex_message)

@@ -82,6 +82,51 @@ def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
+def parse_sysex_new(data: List[int]) -> Dict[str, str]:
+    """Parses JD-Xi tone data from SysEx messages."""
+
+    def initialize_parameters() -> Dict[str, str]:
+        """Initialize parameters with essential fields."""
+        return {
+            "JD_XI_HEADER": extract_hex(data, 0, 7),
+            "ADDRESS": extract_hex(data, 7, 11),
+            "TEMPORARY_AREA": get_temporary_area(data) if len(data) > 7 else "Unknown",
+            "SYNTH_TONE": get_synth_tone(data[10]) if len(data) > 10 else "Unknown",
+            "TONE_NAME": extract_tone_name(data),
+        }
+
+    if len(data) <= 7:
+        logging.warning("Insufficient data length for parsing.")
+        return initialize_parameters()
+
+    parameters = initialize_parameters()
+    temporary_area, synth_tone = parameters["TEMPORARY_AREA"], parameters["SYNTH_TONE"]
+
+    area_mappings = {
+        "TEMPORARY_PROGRAM_AREA": ProgramCommonParameter,
+        "TEMPORARY_ANALOG_SYNTH_AREA": AnalogParameter,
+        "TEMPORARY_DRUM_KIT_AREA": DrumPartialParameter,
+    }
+
+    if temporary_area in area_mappings:
+        parameters.update(parse_parameters(data, area_mappings[temporary_area]))
+
+    elif temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
+        tone_mappings = {
+            "TONE_COMMON": DigitalCommonParameter,
+            "TONE_MODIFY": EffectParameter,
+        }
+        parameters.update(parse_parameters(data, tone_mappings.get(synth_tone, DigitalPartialParameter)))
+
+    elif temporary_area == "TEMPORARY_DRUM_KIT_AREA" and synth_tone == "TONE_COMMON":
+        parameters.update(parse_parameters(data, DrumCommonParameter))
+
+    logging.info(f"Address: {parameters['ADDRESS']}")
+    logging.info(f"Temporary Area: {temporary_area}")
+
+    return parameters
+
+
 def parse_sysex(data: List[int]) -> Dict[str, str]:
     """Parses JD-Xi tone data from SysEx messages."""
     if len(data) <= 7:

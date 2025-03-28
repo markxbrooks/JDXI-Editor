@@ -100,3 +100,15 @@ class SynthParameter(Enum):
         if self.is_switch:
             return "ON" if value else "OFF"
         return str(value)
+    
+    def get_nibbled_size(self) -> int:
+        """Get the nibbled size for the parameter"""
+        if self.max_val <= 127:
+            return 1
+        else:
+            return 4  # dont know of any other sizes
+
+    def convert_to_midi_test(self) -> int:
+        """ convert to midi value"""
+        return value
+

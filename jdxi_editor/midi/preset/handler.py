@@ -53,8 +53,7 @@ class PresetHandler(PresetHelper):
         if self.current_preset_zero_based < len(self.presets) - 1:
             self.current_preset_zero_based += 1
             self.load_preset_by_program_change(self.current_preset_zero_based)
-            self.preset_changed.emit(self.current_preset_zero_based_index, self.channel)
-            # self.update_display.emit(self.type, self.current_preset_zero_based_index, self.channel)  # convert to 1-based index
+            self.preset_changed.emit(self.current_preset_zero_based, self.channel)
         return self.get_current_preset()
 
     def previous_tone(self):
@@ -63,7 +62,6 @@ class PresetHandler(PresetHelper):
             self.current_preset_zero_based -= 1
             self.load_preset_by_program_change(self.current_preset_zero_based)
             self.preset_changed.emit(self.current_preset_zero_based, self.channel)
-            # self.update_display.emit(self.type, self.current_preset_zero_based_index, self.channel)  # convert to 1-based index
         return self.get_current_preset()
 
     def get_current_preset(self):
