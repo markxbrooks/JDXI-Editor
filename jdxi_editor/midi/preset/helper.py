@@ -114,27 +114,6 @@ class PresetHelper(QObject):
 
         self.send_program_change(self.channel, msb, lsb, pc)
 
-    def load_preset_by_program_change_old(self, preset_index):
-        """Load a preset by program change."""
-        logging.info(f"preset_index : {preset_index}")
-
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", preset_index)
-        lsb = get_preset_parameter_value("lsb", preset_index)
-        pc = get_preset_parameter_value("pc", preset_index)
-
-        if None in [msb, lsb, pc]:
-            logging.error(f"Could not retrieve preset parameters for program {preset_index}")
-            return
-
-        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
-        log_midi_info(msb, lsb, pc)
-
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
-        self.send_program_change(self.channel, msb, lsb, pc)
-        self.data_request()
-
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
         logging.info(f"Loading preset: {preset_data}")
