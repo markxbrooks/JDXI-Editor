@@ -26,6 +26,7 @@ Methods:
 
 
 import logging
+import time
 from typing import Union
 
 from pubsub import pub
@@ -272,6 +273,7 @@ class JdxiInstrument(JdxiUi):
         # Define SysEx messages as byte arrays
         for request in self.midi_requests:
             request = bytes.fromhex(request)
+            time.sleep(0.075)
             # Send each SysEx message
             self.midi_helper.send_raw_message(request)
 

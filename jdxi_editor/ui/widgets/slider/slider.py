@@ -28,10 +28,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QSlider,
-    QSizePolicy,
+    QSizePolicy, QStylePainter, QStyleOptionSlider, QStyle,
 )
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPainter, QPen
+from PySide6.QtCore import Qt, Signal, QPoint
+from PySide6.QtGui import QPainter, QPen, QFontMetrics
 
 
 class Slider(QWidget):
@@ -134,6 +134,74 @@ class Slider(QWidget):
         """Update the value label using current format function"""
         value = self.slider.value()
         self.value_label.setText(self.value_display_format(value))
+
+    def paintEventTest(self, event):
+        """Custom paint event for additional rendering like value display."""
+        super().paintEvent(event)  # Correctly call base class paintEvent
+
+        painter = QPainter(self)
+        painter.setPen(QPen(Qt.white))
+
+        curr_value = self.slider.value() / 1000.0  # Corrected value retrieval
+        round_value = round(float(curr_value), 2)
+
+        font_metrics = QFontMetrics(self.font())
+        text_rect = font_metrics.boundingRect(str(round_value))
+        font_width = text_rect.width()
+        font_height = text_rect.height()
+
+        rect = self.geometry()
+
+        if self.slider.orientation() == Qt.Horizontal:
+            text_x = rect.width() - font_width - 5
+            text_y = rect.height() * 0.75
+            painter.drawText(QPoint(int(text_x), int(text_y)), str(round_value))
+
+        elif self.slider.orientation() == Qt.Vertical:
+            text_x = rect.width() / 2.0 - font_width / 2.0
+            text_y = rect.height() - 5
+            painter.drawText(QPoint(int(text_x), int(text_y)), str(round_value))
+
+        # Draw the slider itself with tick marks
+        style_painter = QStylePainter(self)
+        option = QStyleOptionSlider()
+        self.slider.initStyleOption(option)
+        style_painter.drawComplexControl(QStyle.CC_Slider, option)
+
+        painter.end()
+
+    def paintEventNew(self, event):
+        super().paintEvent(event)
+        # QSlider.paintEvent(self.slider, event)
+
+        # curr_value = str(self.value() / 1000.00)
+        curr_value = str(self.slider.value() / 1000.00)
+        round_value = round(float(curr_value), 2)
+
+        painter = QPainter(self)
+        painter.setPen(QPen(Qt.white))
+
+        font_metrics = QFontMetrics(self.font())
+        text_rect = font_metrics.boundingRect(str(round_value))
+        font_width = text_rect.width()
+        font_height = text_rect.height()
+
+        rect = self.geometry()
+        if self.slider.orientation() == Qt.Horizontal:
+            horizontal_x_pos = rect.width() - font_width - 5
+            horizontal_y_pos = rect.height() * 0.75
+
+            painter.drawText(QPoint(horizontal_x_pos, int(horizontal_y_pos)), str(round_value))
+
+        elif self.slider.orientation() == Qt.Vertical:
+            vertical_x_pos = rect.width() - font_width - 5
+            vertical_y_pos = rect.height() * 0.75
+
+            painter.drawText(QPoint(rect.width() / 2.0 - font_width / 2.0, rect.height() - 5), str(round_value))
+        else:
+            pass
+
+        painter.drawRect(rect)
 
     def paintEvent(self, event):
         """Override paint event to draw center mark if needed"""
