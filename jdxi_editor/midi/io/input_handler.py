@@ -331,19 +331,19 @@ class MidiInHandler(MidiIOController):
                     ] else None
                     if tone_name:
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_PROGRAM_AREA":
-                            print(f"Emitting tone name: {tone_name}")
+                            logging.info(f"Emitting tone name: {tone_name}")
                             self.update_program_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_1_AREA":
-                            print(f"Emitting D1 tone name: {tone_name}")
+                            logging.info(f"Emitting D1 tone name: {tone_name}")
                             self.update_digital1_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DIGITAL_SYNTH_2_AREA":
-                            print(f"Emitting D2 tone name: {tone_name}")
+                            logging.info(f"Emitting D2 tone name: {tone_name}")
                             self.update_digital2_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_ANALOG_SYNTH_AREA":
-                            print(f"Emitting AN tone name: {tone_name}")
+                            logging.info(f"Emitting AN tone name: {tone_name}")
                             self.update_analog_tone_name.emit(tone_name)
                         if parsed_data["TEMPORARY_AREA"] == "TEMPORARY_DRUM_KIT_AREA":
-                            print(f"Emitting drums tone name: {tone_name}")
+                            logging.info(f"Emitting drums tone name: {tone_name}")
                             self.update_drums_tone_name.emit(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
@@ -359,7 +359,7 @@ class MidiInHandler(MidiIOController):
                         self.update_program_name.emit(tone_name)
 
                     # Print the result
-                    print(tone_name)
+                    logging.info(tone_name)
                 except Exception as parse_ex:
                     logging.warning("Failed to parse JD-Xi tone data: %s", parse_ex)
 
@@ -512,8 +512,8 @@ class MidiInHandler(MidiIOController):
     def rtmidi_callback(self, *args):
         message = args[0]
         timestamp = args[1]
-        print(f"Message: {message}")
-        print(f"Timestamp: {timestamp}")
+        logging.info(f"Message: {message}")
+        logging.info(f"Timestamp: {timestamp}")
 
     def listen_midi(self, port_name, callback):
         """
@@ -528,17 +528,17 @@ class MidiInHandler(MidiIOController):
         """ start input thread """
         input_ports = mido.get_input_names()
         if not input_ports:
-            print("No MIDI input ports available!")
+            logging.info("No MIDI input ports available!")
             # exit()
 
-        print("Available MIDI input ports:")
+        logging.info("Available MIDI input ports:")
         for i, port in enumerate(input_ports):
-            print(f"{i}: {port}")
+            logging.info(f"{i}: {port}")
 
         # Choose the first available port
         try:
             port_name = input_ports[0]
-            print(f"Using port: {port_name}")
+            logging.info(f"Using port: {port_name}")
 
             # Start the listener in address separate thread
             listener_thread = threading.Thread(
@@ -546,4 +546,4 @@ class MidiInHandler(MidiIOController):
             )
             listener_thread.start()
         except Exception as ex:
-            print(f"Error starting listener thread: {str(ex)}")
+            logging.info(f"Error starting listener thread: {str(ex)}")

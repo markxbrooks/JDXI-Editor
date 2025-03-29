@@ -870,8 +870,8 @@ class JdxiUi(QMainWindow):
                                                                       ANALOG_PRESET_LIST)
         else:
             active_synth = "D1"
-        print(f"current tone number: {self.current_tone_number}")
-        print(f"current tone name: {self.current_tone_name}")
+        logging.info(f"current tone number: {self.current_tone_number}")
+        logging.info(f"current tone name: {self.current_tone_name}")
         self.digital_display.repaint_display(
             current_octave=self.current_octave,
             tone_number=self.current_tone_number,

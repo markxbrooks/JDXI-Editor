@@ -297,8 +297,8 @@ class JdxiInstrument(JdxiUi):
         logging.info(f"Selected synth: {synth_type}")
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
-        self.preset_handler = self._get_preset_helper_for_current_synth()
-        self.preset_handler.preset_changed.connect(self.midi_helper.send_program_change)
+        self.preset_helper = self._get_preset_helper_for_current_synth()
+        self.preset_helper.preset_changed.connect(self.midi_helper.send_program_change)
 
     def _update_synth_button_styles(self):
         """Update styles for synth buttons based on selection."""
@@ -671,9 +671,9 @@ class JdxiInstrument(JdxiUi):
                 ProgramEditor,
                 PresetEditor,
             ]:
-                preset_handler = self._get_preset_helper_for_current_synth()
+                preset_helper = self._get_preset_helper_for_current_synth()
                 editor = editor_class(
-                    midi_helper=self.midi_helper, parent=self, preset_handler=preset_handler, **kwargs
+                    midi_helper=self.midi_helper, parent=self, preset_helper=preset_helper, **kwargs
                 )
             else:
                 # For other editors, use existing initialization
@@ -707,7 +707,7 @@ class JdxiInstrument(JdxiUi):
             # Show editor
             editor.show()
             editor.raise_()
-            editor.preset_handler.update_display.connect(
+            editor.preset_helper.update_display.connect(
                 self.update_display_callback
             )
 
