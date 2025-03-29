@@ -49,7 +49,7 @@ class DrumPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_num = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
-        self.preset_handler = None
+        self.preset_helper = None
         self.area = TEMPORARY_TONE_AREA
         self.group = DRUM_KIT_AREA
         # Calculate the address for this partial

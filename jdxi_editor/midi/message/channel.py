@@ -16,7 +16,7 @@ Features:
 
 Usage Example:
     >>> msg = ChannelMessage(status=0x90, data1=60, data2=127, channel=1)  # Note On for Middle C
-    >>> msg.to_list()
+    >>> msg.to_message_list()
     [145, 60, 127]  # (0x91 in hex: Note On for channel 1)
 """
 
@@ -35,7 +35,7 @@ class ChannelMessage(MidiMessage):
     data1: Optional[int] = None
     data2: Optional[int] = None
 
-    def to_list(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert to list of bytes for sending"""
         if not (0 <= self.channel <= 15):
             raise ValueError(f"Channel {self.channel} is out of valid MIDI range (0-15).")

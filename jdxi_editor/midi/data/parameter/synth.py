@@ -46,11 +46,11 @@ class SynthParameter(Enum):
     def is_switch(self) -> bool:
         """Returns True if parameter is address binary/enum switch"""
         return self.get_by_name(self.name) in self.switches
-    
+
     @property
     def is_bipolar(self) -> bool:
-        """Returns True if parameter is bipolar"""
-        return self.get_by_name(self.name) in self.bipolar_parameters
+        """Returns True if parameter is bipolar."""
+        return self.name in getattr(self, "bipolar_parameters", [])
 
     @property
     def display_name(self) -> str:
@@ -92,9 +92,22 @@ class SynthParameter(Enum):
         """
         return PROGRAM_GROUP, 0x00
 
-    def convert_from_midi(self, midi_value):
-        pass
-    
+    def convert_to_midi(self, value: int) -> int:
+        """Convert parameter value to MIDI range (0-127)."""
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be an integer, got {type(value)}")
+
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} (valid range: {self.min_val}-{self.max_val})"
+            )
+
+        if self.is_bipolar:
+            # Map -max_val..+max_val to 0-127
+            return int(((value - self.min_val) / (self.max_val - self.min_val)) * 127)
+
+        return value
+
     def get_switch_text(self, value: int) -> str:
         """Get display text for switch values"""
         if self.is_switch:

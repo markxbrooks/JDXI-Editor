@@ -53,7 +53,7 @@ class SynthEditor(SynthBase):
         self.controls = {}
         self.partial_num = None
         self.midi_channel = None
-        self.preset_handler = None
+        self.preset_helper = None
         self.instrument_selection_combo = None
         self.preset_type = None
         self.midi_helper = midi_helper
@@ -202,15 +202,15 @@ class SynthEditor(SynthBase):
             modified=0,  # or 1, depending on your logic
             channel=self.midi_channel,
         )
-        if not self.preset_handler:
-            self.preset_handler = PresetHelper(
+        if not self.preset_helper:
+            self.preset_helper = PresetHelper(
                 self.midi_helper,
                 DIGITAL_PRESETS_ENUMERATED,
                 channel=MIDI_CHANNEL_DIGITAL1,
                 preset_type=SynthType.DIGITAL_1,
             )
-        if self.preset_handler:
-            self.preset_handler.load_preset(preset_data)
+        if self.preset_helper:
+            self.preset_helper.load_preset(preset_data)
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""

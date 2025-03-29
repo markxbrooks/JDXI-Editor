@@ -17,7 +17,7 @@ Constants:
 
 Usage Example:
     >>> program_msg = ProgramChangeMessage(program=5)
-    >>> program_msg.to_list()
+    >>> program_msg.to_message_list()
     [0xC0, 5]
 
 """

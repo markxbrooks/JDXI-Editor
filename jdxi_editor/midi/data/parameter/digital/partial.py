@@ -46,7 +46,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 class DigitalPartialParameter(SynthParameter):
     """Digital synth parameters with their addresses and value ranges"""
 
-    def __init__(self, address: int, min_val: int, max_val: int, 
+    def __init__(self, address: int, min_val: int, max_val: int,
                  display_min: Optional[int] = None, display_max: Optional[int] = None):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
@@ -183,61 +183,6 @@ class DigitalPartialParameter(SynthParameter):
             return f"{[-6, 0, 6, 12][value]:+d}dB"
         return str(value)
 
-    def get_wave_number(self, midi_helper) -> Optional[int]:
-        """Get the full 16-bit wave number value"""
-        try:
-            # Get all 4 bytes
-            b1 = midi_helper.get_parameter(self.WAVE_NUMBER_1)
-            b2 = midi_helper.get_parameter(self.WAVE_NUMBER_2)
-            b3 = midi_helper.get_parameter(self.WAVE_NUMBER_3)
-            b4 = midi_helper.get_parameter(self.WAVE_NUMBER_4)
-
-            if None in (b1, b2, b3, b4):
-                return None
-
-            # Combine into 16-bit value
-            return (b1 << 12) | (b2 << 8) | (b3 << 4) | b4
-
-        except Exception as e:
-            logging.error(f"Error getting wave number: {str(e)}")
-            return None
-
-    def set_wave_number(self, midi_helper, value: int) -> bool:
-        """Set the 16-bit wave number value
-
-        Args:
-            midi_helper: MIDI helper instance
-            value: Wave number (0-16384)
-
-        Returns:
-            True if successful
-        """
-        try:
-            if not 0 <= value <= 16384:
-                raise ValueError(f"Wave number {value} out of range (0-16384)")
-
-            # Split into 4-bit chunks
-            b1 = (value >> 12) & 0x0F  # Most significant 4 bits
-            b2 = (value >> 8) & 0x0F  # Next 4 bits
-            b3 = (value >> 4) & 0x0F  # Next 4 bits
-            b4 = value & 0x0F  # Least significant 4 bits
-
-            # Send all 4 bytes
-            success = all(
-                [
-                    midi_helper.send_parameter(self.WAVE_NUMBER_1, b1),
-                    midi_helper.send_parameter(self.WAVE_NUMBER_2, b2),
-                    midi_helper.send_parameter(self.WAVE_NUMBER_3, b3),
-                    midi_helper.send_parameter(self.WAVE_NUMBER_4, b4),
-                ]
-            )
-
-            return success
-
-        except Exception as e:
-            logging.error(f"Error setting wave number: {str(e)}")
-            return False
-
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value to MIDI range (0-127)"""
         if not isinstance(value, int):
@@ -270,73 +215,6 @@ class DigitalPartialParameter(SynthParameter):
         # Ensure value is within MIDI range
         if not (0 <= value <= 127):
             raise ValueError(f"MIDI value {value} out of range for {self.name} (must be 0-127)")
-
-        return value
-
-    def validate_value_old(self, value: int) -> int:
-        """Validate and convert parameter value to MIDI range (0-127)"""
-        if not isinstance(value, int):
-            raise ValueError(f"Value must be integer, got {type(value)}")
-
-        # Convert bipolar values to MIDI range
-        if self in [
-            # Oscillator parameters
-            self.OSC_PITCH,
-            self.OSC_DETUNE,
-            self.OSC_PITCH_ENV_DEPTH,
-            # Filter parameters
-            self.FILTER_CUTOFF_KEYFOLLOW,
-            self.FILTER_ENV_VELOCITY_SENSITIVITY,
-            self.FILTER_ENV_DEPTH,
-            # Amplifier parameters
-            self.AMP_VELOCITY,
-            self.AMP_PAN,
-            self.AMP_LEVEL_KEYFOLLOW,
-            # LFO parameters
-            self.LFO_PITCH_DEPTH,
-            self.LFO_FILTER_DEPTH,
-            self.LFO_AMP_DEPTH,
-            self.LFO_PAN_DEPTH,
-            # Mod LFO parameters
-            self.MOD_LFO_PITCH_DEPTH,
-            self.MOD_LFO_FILTER_DEPTH,
-            self.MOD_LFO_AMP_DEPTH,
-            self.MOD_LFO_PAN,
-            self.MOD_LFO_RATE_CTRL,
-        ]:
-            # Convert from display range to MIDI range
-            if self == self.AMP_PAN:
-                value = value + 64  # -64 to +63 -> 0 to 127
-            elif self in [self.FILTER_CUTOFF_KEYFOLLOW, self.AMP_LEVEL_KEYFOLLOW]:
-                value = value + 100  # -100 to +100 -> 0 to 200
-                value = (value * 127) // 200  # Scale to MIDI range
-            elif self == self.OSC_PITCH:
-                value = value + 64  # -24 to +24 -> 40 to 88
-            elif self == self.OSC_DETUNE:
-                value = value + 64  # -50 to +50 -> 14 to 114
-            elif self == self.OSC_PITCH_ENV_DEPTH:
-                value = value + 64  # -63 to +63 -> 1 to 127
-            elif self in [
-                self.LFO_PITCH_DEPTH,
-                self.LFO_FILTER_DEPTH,
-                self.LFO_AMP_DEPTH,
-                self.LFO_PAN_DEPTH,
-                self.MOD_LFO_PITCH_DEPTH,
-                self.MOD_LFO_FILTER_DEPTH,
-                self.MOD_LFO_AMP_DEPTH,
-                self.MOD_LFO_PAN,
-                self.MOD_LFO_RATE_CTRL,
-                self.AMP_LEVEL_KEYFOLLOW,
-            ]:
-                value = value + 64  # -63 to +63 -> 0 to 127
-            else:
-                value = value + 63  # -63 to +63 -> 0 to 126
-
-        # Ensure value is in valid MIDI range
-        if value < 0 or value > 127:
-            raise ValueError(
-                f"MIDI value {value} out of range for {self.name} " f"(must be 0-127)"
-            )
 
         return value
 

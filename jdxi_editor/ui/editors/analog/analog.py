@@ -35,8 +35,8 @@ It requires a `MIDIHelper` instance for proper communication with the synthesize
 Example:
 --------
     midi_helper = MIDIHelper()
-    preset_handler = PresetHandler()
-    editor = AnalogSynthEditor(midi_helper, preset_handler)
+    preset_helper = PresetHandler()
+    editor = AnalogSynthEditor(midi_helper, preset_helper)
     editor.show()
 
 """
@@ -102,7 +102,7 @@ class AnalogSynthEditor(SynthEditor):
     # preset_changed = Signal(int, str, int)
 
     def __init__(
-            self, midi_helper: Optional[MidiIOHelper], preset_handler=None, parent=None
+            self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = [
@@ -122,7 +122,7 @@ class AnalogSynthEditor(SynthEditor):
         self.area = TEMPORARY_TONE_AREA
         self.group = ANALOG_OSC_GROUP
         self.part = ANALOG_PART
-        self.preset_handler = preset_handler
+        self.preset_helper = preset_helper
         self.setWindowTitle("Analog Synth")
         self.previous_json_data = None
         # Allow resizing

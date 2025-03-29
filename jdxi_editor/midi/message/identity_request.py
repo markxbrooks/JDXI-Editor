@@ -19,7 +19,7 @@ Constants Used:
 
 Usage Example:
     >>> identity_msg = IdentityRequestMessage()
-    >>> identity_msg.to_list()
+    >>> identity_msg.to_message_list()
     [0xF0, 0x7E, 0x00, 0x01, 0x02, 0xF7]
 
 """
@@ -37,7 +37,7 @@ class IdentityRequestMessage(MidiMessage):
 
     device_id: int = 0x10  # Default device ID
 
-    def to_list(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert to list of bytes for sending
 
         Returns:

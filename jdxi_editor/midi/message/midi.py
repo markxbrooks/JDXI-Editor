@@ -37,14 +37,14 @@ class MidiMessage:
     MIDI_STATUS_MASK = 0xF0  # Extracts message type
     MIDI_CHANNEL_MASK = 0x0F  # Extracts channel number
 
-    def to_list(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert to list of bytes for sending, must be implemented in subclass"""
         raise NotImplementedError("Subclasses should implement this method.")
 
     def to_bytes(self) -> bytes:
         """Convert to bytes for sending"""
-        return bytes(self.to_list())
+        return bytes(self.to_message_list())
 
     def to_hex_string(self) -> str:
         """Convert message to a formatted hexadecimal string."""
-        return " ".join(f"{x:02X}" for x in self.to_list())
+        return " ".join(f"{x:02X}" for x in self.to_message_list())

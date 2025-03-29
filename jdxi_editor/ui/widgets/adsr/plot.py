@@ -35,7 +35,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 import numpy as np
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QPen, QColor, QFont
+from PySide6.QtGui import QPainter, QPen, QColor, QFont, QLinearGradient
 from PySide6.QtCore import Qt
 
 import numpy as np
@@ -70,11 +70,23 @@ class ADSRPlot(QWidget):
         }
         """)
         # Sample rate for converting times to samples
-        self.sample_rate = 44100
+        self.sample_rate = 256
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
+
+        # draw background gradient, dark gray at edges, gray transition, orange glow center, gray transition, dark gray at edges
+        # no white border
+        gradient = QLinearGradient(0, 0, self.width(), self.height())
+        gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
+        gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
+        gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
+        gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
+        gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
+        painter.setBrush(gradient)
+        painter.setPen(QPen(QColor("#000000"), 0))    # no border 
+        painter.drawRect(0, 0, self.width(), self.height())
 
         # Use orange for drawing
         pen = QPen(QColor("orange"))
@@ -144,7 +156,9 @@ class ADSRPlot(QWidget):
         painter.setPen(axis_pen)
         painter.drawLine(padding, padding, padding, padding + plot_h)  # Y-axis
         painter.drawLine(padding, padding + plot_h, padding + plot_w, padding + plot_h)  # X-axis
-        painter.drawText(padding - 30, padding + plot_h + 5, "0s")
+        # painter.drawText(padding - 30, padding + plot_h + 5, "0s")
+        painter.drawText(padding, padding + plot_h + 20, "0s")
+        painter.drawText(padding + plot_w - 10, padding + plot_h + 20, "5s")
         for i in range(1, 5):
             x = padding + i * plot_w / 5
             painter.drawLine(x, padding + plot_h, x, padding + plot_h + 5)
@@ -155,6 +169,29 @@ class ADSRPlot(QWidget):
             painter.drawText(padding - 35, y + 5, f"{1 - i * 0.2:.1f}")
         painter.drawText(padding - 35, padding + 5, "1")
         painter.drawText(padding - 35, padding + plot_h, "0")
+
+        # draw envelope label at the top center of the widget
+        painter.setPen(QPen(QColor("orange")))
+        painter.setFont(QFont("Consolas", 12))
+        painter.drawText(padding + plot_w / 2, padding - 10, "ADSR")
+
+        # write legend labels for x and y axis
+        painter.setPen(QPen(QColor("orange")))
+        painter.setFont(QFont("Consolas", 12))
+        painter.drawText(padding - 35, padding + plot_h + 20, "Time")
+        painter.drawText(padding + plot_w / 2, padding + plot_h + 20, "Amplitude")
+
+        # draw baground grid as dashed dark gray lines
+        pen = QPen(Qt.GlobalColor.darkGray, 2)
+        pen.setStyle(Qt.PenStyle.DashLine)
+        pen.setWidth(1)
+        painter.setPen(pen)
+        for i in range(1, 5):
+            x = padding + i * plot_w / 5
+            painter.drawLine(x, padding, x, padding + plot_h)
+        for i in range(1, 5):
+            y = padding + i * plot_h / 5
+            painter.drawLine(padding, y, padding + plot_w, y)
 
     def set_values(self, envelope):
         """Update envelope values and trigger address redraw."""

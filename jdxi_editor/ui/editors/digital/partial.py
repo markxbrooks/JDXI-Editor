@@ -333,24 +333,6 @@ class DigitalPartialEditor(PartialEditor):
         self.pcm_wave_gain.setEnabled(pcm_enabled)
         self.pcm_wave_number.setEnabled(pcm_enabled)
 
-    def _on_wave_number_changed(self, value: int):
-        """Handle wave number changes"""
-        try:
-            # Send wave number in 4-bit chunks
-            b1 = (value >> 12) & 0x0F  # Most significant 4 bits
-            b2 = (value >> 8) & 0x0F  # Next 4 bits
-            b3 = (value >> 4) & 0x0F  # Next 4 bits
-            b4 = value & 0x0F  # Least significant 4 bits
-
-            # Send each byte
-            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_1, b1)
-            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_2, b2)
-            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_3, b3)
-            self.send_midi_parameter(DigitalPartialParameter.WAVE_NUMBER_4, b4)
-
-        except Exception as e:
-            logging.error(f"Error setting wave number: {str(e)}")
-
     def _create_filter_section(self):
         """Create the filter section of the partial editor"""
         filter_section = QWidget()
@@ -779,7 +761,7 @@ class DigitalPartialEditor(PartialEditor):
             self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH, "Pan")
         )
         layout.addWidget(depths_group)
-
+        layout.addStretch()
         return lfo_section
 
     def _create_mod_lfo_section(self):
@@ -875,7 +857,7 @@ class DigitalPartialEditor(PartialEditor):
                 DigitalPartialParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
             )
         )
-
+        mod_lfo_layout.addStretch()
         return mod_lfo_group_box
 
     def _on_waveform_selected(self, waveform: OscWave):
