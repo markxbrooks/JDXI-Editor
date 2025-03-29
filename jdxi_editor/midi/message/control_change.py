@@ -15,7 +15,7 @@ Features:
 
 Usage Example:
     >>> msg = ControlChangeMessage(channel=1, controller=7, value=100)  # Volume control on channel 1
-    >>> msg.to_message_list()
+    >>> msg.to_list()
     [177, 7, 100]  # (0xB1 in hex: CC message for channel 1)
 """
 
@@ -50,7 +50,7 @@ class ControlChangeMessage(MidiMessage):
         self.data1 = self.controller  # Controller number
         self.data2 = self.value  # Control value
 
-    def to_message_list(self) -> List[int]:
+    def to_list(self) -> List[int]:
         """Convert Control Change message to a list of bytes for sending"""
         status_byte = self.status | (self.channel & 0x0F)  # Ensures correct channel encoding
         return [status_byte, self.data1 & 0x7F, self.data2 & 0x7F]  # Proper MIDI CC message

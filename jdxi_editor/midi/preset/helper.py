@@ -115,7 +115,7 @@ class PresetHelper(QObject):
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
         logging.info(f"Loading preset: {preset_data}")
-        program_number, channel = preset_data.current_selection, preset_data.channel
+        program_number, channel = preset_data.number, preset_data.channel
 
         # Select the correct preset list based on the channel
         preset_list = {

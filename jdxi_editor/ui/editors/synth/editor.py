@@ -32,7 +32,7 @@ from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.preset.data import ToneData
+from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import Style
@@ -196,10 +196,9 @@ class SynthEditor(SynthBase):
 
     def load_preset(self, preset_index):
         """Load address preset by index"""
-        preset_data = ToneData(
+        preset_data = Preset(
             type=self.preset_type,  # Ensure this is address valid preset_type
-            current_selection=preset_index,  # Convert to 1-based index
-            modified=0,  # or 1, depending on your logic
+            number=preset_index,
             channel=self.midi_channel,
         )
         if not self.preset_helper:
