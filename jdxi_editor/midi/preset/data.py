@@ -20,27 +20,9 @@ from jdxi_editor.midi.preset.type import SynthType
 
 
 @dataclass
-class ToneData:
+class Preset:
     type: str = SynthType.DIGITAL_1  # Adjust the type as needed
-    current_selection: int = 1
+    number: int = 1
     modified: int = 0
     channel: int = MIDI_CHANNEL_DIGITAL1
     name: Optional[str] = None
-
-""" 
-@dataclass
-class PresetFavorite:
-    # ""Preset favorite data""
-    synth_type: str  # Using PresetType constants
-    preset_num: int
-    preset_name: str
-    channel: int
-    
-@dataclass
-class Preset:
-    number: int = None
-    name: str = None,
-    preset_type: str = PresetType.DIGITAL_1
-    # channel: int = MIDI_CHANNEL_DIGITAL1
-
-"""

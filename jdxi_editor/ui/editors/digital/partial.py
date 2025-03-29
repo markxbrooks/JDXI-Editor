@@ -233,7 +233,7 @@ class DigitalPartialEditor(PartialEditor):
             DigitalPartialParameter.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
         )
         self.pcm_wave_number = self._create_parameter_combo_box(
-            DigitalPartialParameter.PCM_WAVE_NUMBER, "Number", PCM_WAVES
+            DigitalPartialParameter.PCM_WAVE_NUMBER, "Number", set(w["Wave Number"] for w in PCM_WAVES_CATEGORIZED)
         )
 
         # Create ComboBoxes
@@ -285,25 +285,6 @@ class DigitalPartialEditor(PartialEditor):
         # Update PW controls enabled state when waveform changes
         self._update_pw_controls_state(OscWave.SAW)  # Initial state
         self._update_pcm_controls_state(OscWave.PCM)  # Initial state
-
-        # PCM Wave number selector (only for PCM wave)
-        # pcm_group = QGroupBox("PCM Wave")
-        # pcm_layout = QVBoxLayout()
-        # pcm_group.setLayout(pcm_layout)
-        """
-        # Wave number spinner/selector
-        wave_row = QHBoxLayout()
-        self.wave_number = QSpinBox()
-        self.wave_number.setRange(0, 16384)
-        self.wave_number.setValue(0)
-        self.wave_number.valueChanged.connect(self._on_wave_number_changed)
-        wave_row.addWidget(QLabel("Number:"))
-        wave_row.addWidget(self.wave_number)
-        pcm_layout.addLayout(wave_row)
-        """
-        # layout.addWidget(pcm_group)
-        # pcm_group.setVisible(False)  # Hide initially
-        # self.pcm_group = pcm_group  # Store reference for visibility control
 
         return oscillator_section
 

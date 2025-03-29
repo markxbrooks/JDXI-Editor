@@ -29,13 +29,13 @@ import logging
 import time
 from typing import Union
 
+from PySide6.QtGui import QShortcut, QKeySequence
 from pubsub import pub
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
-from PySide6.QtCore import Qt, QSettings, Signal, QTimer
+from PySide6.QtCore import Qt, QSettings, Signal
 
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.preset.tone import Tone
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -51,7 +51,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.preset.data import ToneData
+from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
@@ -99,6 +99,7 @@ class JdxiInstrument(JdxiUi):
 
     def __init__(self):
         super().__init__()
+        self.digital_1_preset_helper = None
         self.current_program_id = "A01"
         self.current_program_number = int(self.current_program_id[1:])
         self.current_program_name = get_program_name_by_id(self.current_program_id)
@@ -234,6 +235,10 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.update_analog_tone_name.connect(self.set_current_analog_tone_name)
         self.midi_helper.update_drums_tone_name.connect(self.set_current_drums_tone_name)
         self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
+        # sur ctrl-R for data request
+        # Add keyboard shortcuts
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -253,8 +258,9 @@ class JdxiInstrument(JdxiUi):
         """ program name """
         self.current_program_name = program_name
         self.current_program_id = get_program_id_by_name(program_name)
+        if not self.current_program_id:
+            self.current_program_number = 0
         self.current_program_number = int(self.current_program_id[1:])
-        # self.data_request()
         self._update_display()
 
     def set_current_program_number(self, channel: int, program_number: int):
@@ -513,7 +519,7 @@ class JdxiInstrument(JdxiUi):
             current_preset = self._get_current_tone()
             if current_preset:
                 button.preset = current_preset  # Store preset in button
-                button.setToolTip(f"Program {current_preset.name}, {current_preset.synth_type}")
+                button.setToolTip(f"Tone {current_preset.number} {current_preset.name}, {current_preset.type}")
                 button.setChecked(True)  # Keep it checked
                 button.setCheckable(False)  # Prevent unchecking directly
                 self.settings.setValue(preset_name, current_preset)  # Save preset
@@ -524,12 +530,13 @@ class JdxiInstrument(JdxiUi):
     def load_button_preset(self, button):
         """ load preset dat stored on the button """
         preset = button.preset
-        preset_data = ToneData(
-            type=preset.synth_type,  # Ensure this is address valid preset_type
-            current_selection=preset.number + 1,  # Convert to 1-based index
-            modified=0
+        preset_data = Preset(
+            type=preset.type,  # Ensure this is address valid preset_type
+            number=preset.number,  # Convert to 1-based index
         )
-        self.digital1_preset_helper.load_preset(
+        self.current_synth_type = preset.type
+        preset_helper = self._get_preset_helper_for_current_synth()
+        preset_helper.load_preset(
             preset_data
         )
 
@@ -540,7 +547,7 @@ class JdxiInstrument(JdxiUi):
             tone_number = self.current_tone_number
             tone_name = self.current_tone_name
             synth_type = self.current_synth_type
-            current_tone = Tone(number=tone_number, name=tone_name, synth_type=synth_type)
+            current_tone = Preset(number=tone_number, name=tone_name, type=synth_type)
             logging.debug(f"Current preset retrieved: {current_tone}")
             return current_tone
 
@@ -1244,7 +1251,7 @@ class JdxiInstrument(JdxiUi):
         if button.preset:
             if self.midi_helper:
                 # Get preset info from button
-                self.preset_type = button.preset.synth_type
+                self.preset_type = button.preset.type
                 self.current_preset_index = button.preset.tone_number
                 self.channel = button.preset.channel
                 # Update display - REMOVED the preset_num + 1
@@ -1253,11 +1260,10 @@ class JdxiInstrument(JdxiUi):
                     button.preset.tone_name,
                     self.channel,
                 )
-                preset_data = ToneData(
+                preset_data = Preset(
                     type=self.preset_type,  # Ensure this is address valid preset_type
-                    current_selection=self.current_preset_index + 1,  # Convert to 1-based index
-                    channel=self.channel,
-                    modified=0
+                    number=self.current_preset_index,
+                    channel=self.channel
                 )
                 # Send MIDI messages to load preset
                 self.load_preset(preset_data)
@@ -1336,8 +1342,8 @@ class JdxiInstrument(JdxiUi):
             # self.preset_type = PresetType.DIGITAL_1
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.digital1_preset_helper = PresetHelper(self.midi_helper)
-                self.digital1_preset_helper.load_preset(
+                self.digital_1_preset_helper = PresetHelper(self.midi_helper)
+                self.digital_1_preset_helper.load_preset(
                     preset_data,
                 )
                 # Store as last loaded preset

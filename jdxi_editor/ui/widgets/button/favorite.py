@@ -4,9 +4,9 @@ from dataclasses import dataclass
 import logging
 
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.data import ToneData
+from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.preset.tone import Tone
+from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.type import SynthType
 
 
@@ -31,7 +31,7 @@ class FavoriteButton(QPushButton):
     def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
         """Save current preset to this favorite slot"""
         # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-        self.preset = Tone(number=preset_num, name=preset_name, synth_type=synth_type)
+        self.preset = Preset(number=preset_num, name=preset_name, type=synth_type)
         self._update_style()
         # self._save_to_settings()
         logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
@@ -41,10 +41,9 @@ class FavoriteButton(QPushButton):
         if not self.preset:
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
-        preset_data = ToneData(
-            type=self.preset.synth_type,  # Ensure this is address valid preset_type
-            current_selection=self.preset.tone_number + 1,  # Convert to 1-based index
-            modified=0  # or 1 if modified
+        preset_data = Preset(
+            type=self.preset.type,  # Ensure this is address valid preset_type
+            number=self.preset.tone_number + 1,  # Convert to 1-based index
         )
         self.load_preset(
             preset_data
@@ -76,7 +75,7 @@ class FavoriteButton(QPushButton):
     def _save_to_settings(self):
         """Save preset data to settings"""
         if self.preset:
-            self.settings.setValue(f'favorites/slot{self.slot_num}/synth_type', self.preset.synth_type)
+            self.settings.setValue(f'favorites/slot{self.slot_num}/synth_type', self.preset.type)
             self.settings.setValue(f'favorites/slot{self.slot_num}/preset_num', self.preset.tone_number)
             self.settings.setValue(f'favorites/slot{self.slot_num}/preset_name', self.preset.tone_name)
             self.settings.setValue(f'favorites/slot{self.slot_num}/channel', self.preset.channel)
@@ -89,10 +88,9 @@ class FavoriteButton(QPushButton):
         synth_type = self.settings.value(f'favorites/slot{self.slot_num}/synth_type', '')
         if synth_type:
             preset_num = self.settings.value(f'favorites/slot{self.slot_num}/preset_num', 0, type=int)
-            preset_name = self.settings.value(f'favorites/slot{self.slot_num}/preset_name', '')
+            preset_name = self.settings.value(f'favorites/slot{self.slot_num}/preset_name', '', type=str)
             channel = self.settings.value(f'favorites/slot{self.slot_num}/channel', 0, type=int)
-            #self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-            self.preset = Tone(number=preset_num, name=preset_name, synth_type=synth_type)
+            self.preset = Preset(number=preset_num, name=preset_name, type=synth_type)
             
     def clear_preset(self):
         """Clear the saved preset"""
@@ -104,11 +102,11 @@ class FavoriteButton(QPushButton):
         """Update button appearance"""
         if self.preset:
             # Get color based on synth preset_type
-            if self.preset.synth_type == SynthType.ANALOG:
+            if self.preset.type == SynthType.ANALOG:
                 color = "#00A3F0"  # Analog blue
-            elif self.preset.synth_type in [SynthType.DIGITAL_1, SynthType.DIGITAL_2]:
+            elif self.preset.type in [SynthType.DIGITAL_1, SynthType.DIGITAL_2]:
                 color = "#FF0000"  # Red for both digital synths
-            elif self.preset.synth_type == SynthType.DRUMS:
+            elif self.preset.type == SynthType.DRUMS:
                 color = "#00FF00"  # Green for drums
             else:
                 color = "#666666"  # Gray for unknown types
