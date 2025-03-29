@@ -123,6 +123,7 @@ class AnalogSynthEditor(SynthEditor):
         self.group = ANALOG_OSC_GROUP
         self.part = ANALOG_PART
         self.preset_helper = preset_helper
+        self.preset_type = SynthType.ANALOG
         self.setWindowTitle("Analog Synth")
         self.previous_json_data = None
         # Allow resizing
@@ -268,66 +269,6 @@ class AnalogSynthEditor(SynthEditor):
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
 
-    def load_preset(self, preset_index):
-        """Load a preset by program change."""
-        preset_name = self.instrument_selection_combo.combo_box.currentText()  # Get the selected preset name
-        logging.info(f"combo box preset_name : {preset_name}")
-        program_number = preset_name[:3]
-        logging.info(f"combo box program_number : {program_number}")
-
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", program_number, ANALOG_PRESET_LIST)
-        lsb = get_preset_parameter_value("lsb", program_number, ANALOG_PRESET_LIST)
-        pc = get_preset_parameter_value("pc", program_number, ANALOG_PRESET_LIST)
-
-        if None in [msb, lsb, pc]:
-            logging.error(f"Could not retrieve preset parameters for program {program_number}")
-            return
-
-        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
-        log_midi_info(msb, lsb, pc)
-
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
-        self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1  # Convert 1-based PC to 0-based
-        )
-        self.data_request()
-
-    def _on_parameter_received(self, address, value):
-        """Handle parameter updates from MIDI messages."""
-        area_code = address[0]
-        if address[0] == TEMPORARY_ANALOG_SYNTH_AREA:
-            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
-            parameter_address = tuple(address[2:])  # (80, 0)
-
-            # Retrieve the corresponding DigitalParameter
-            param = get_analog_parameter_by_address(parameter_address)
-            partial_no = address[1]
-            if param:
-                logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
-
-                # Update the corresponding slider
-                if param in self.controls:
-                    slider_value = param.convert_from_midi(value)
-                    logging.info(
-                        f"midi value {value} converted to slider value {slider_value}"
-                    )
-                    slider = self.controls[param]
-                    slider.blockSignals(True)  # Prevent feedback loop
-                    slider.setValue(slider_value)
-                    slider.blockSignals(False)
-
-                # Handle OSC_WAVE parameter to update waveform buttons
-                if param == AnalogParameter.OSC_WAVEFORM:
-                    self._update_waveform_buttons(value)
-                    logging.debug(
-                        "updating waveform buttons for param {param} with {value}"
-                    )
-
     def _create_oscillator_section(self):
         group = QWidget()
         layout = QVBoxLayout()
@@ -439,117 +380,14 @@ class AnalogSynthEditor(SynthEditor):
 
         return group
 
-    def update_instrument_image(self):
-        def load_and_set_image(image_path, secondary_image_path=None):
-            """Helper function to load and set the image on the label."""
-            file_to_load = ""
-
-            if os.path.exists(image_path):
-                file_to_load = image_path
-            elif os.path.exists(secondary_image_path):
-                file_to_load = secondary_image_path
-            else:
-                file_to_load = os.path.join(
-                    "resources", self.instrument_icon_folder, "analog.png"
-                )
-            pixmap = QPixmap(file_to_load)
-            scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-
-        selected_instrument_text = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )
-
-        # Try to extract synth name from the selected text
-        image_loaded = False
-        if instrument_matches := re.search(
-                r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
-        ):
-            selected_instrument_name = (
-                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            selected_instrument_type = (
-                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
-            )
-            logging.info(
-                f"selected instrument image preset_type: {selected_instrument_type}"
-            )
-            specific_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_name}.png",
-            )
-            generic_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_type}.png",
-            )
-            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
-
-        default_image_path = os.path.join("resources", "drum_kits", "drums.png")
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
-
-    def _update_pw_controls_state(self, waveform: Waveform):
-        """Enable/disable PW controls based on waveform"""
-        pw_enabled = waveform == Waveform.PULSE
-        self.osc_pulse_width.setEnabled(pw_enabled)
-        self.osc_pulse_width_mod_depth.setEnabled(pw_enabled)
-        # Update the visual state
-        self.osc_pulse_width.setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
-        )
-        self.osc_pulse_width_mod_depth.setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
-        )
-
-    def on_amp_env_adsr_envelope_changed(self, envelope):
-        """ Updating ADSR envelope controls"""
-        if not self.updating_from_spinbox:
-            self.controls[AnalogParameter.AMP_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope["attack_time"], 10, 1000)
-            )
-            self.controls[AnalogParameter.AMP_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope["decay_time"], 10, 1000)
-            )
-            self.controls[AnalogParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
-            )
-            self.controls[AnalogParameter.AMP_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope["release_time"], 10, 1000)
-            )
-
-    def amp_env_adsr_value_changed(self):
-        self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope["attack_time"] = (
-            self.amp_env_adsr_widget.attack_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["decay_time"] = (
-            self.amp_env_adsr_widget.decay_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["release_time"] = (
-            self.amp_env_adsr_widget.release_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["sustain_level"] = (
-            self.amp_env_adsr_widget.sustain_sb.value()
-        )
-        self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
-        self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
-        self.updating_from_spinbox = False
-
     def _create_filter_section(self):
         """Create the filter section"""
-        group = QWidget()
-        layout = QVBoxLayout()
-        group.setLayout(layout)
+        filter_group = QWidget()
+        filter_group_layout = QVBoxLayout()
+        filter_group.setLayout(filter_group_layout)
 
         # prettify with icons
-        icons_hlayout = QHBoxLayout()
+        adsr_icon_row_layout = QHBoxLayout()
         for icon in [
             "mdi.triangle-wave",
             "mdi.sine-wave",
@@ -558,19 +396,19 @@ class AnalogSynthEditor(SynthEditor):
             "mdi.triangle-wave",
             "mdi.waveform",
         ]:
-            icon_label = QLabel()
+            adsr_icon_label = QLabel()
             icon = qta.icon(icon, color="#666666")  # Set icon color to grey
-            pixmap = icon.pixmap(30, 30)  # Set the desired size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
+            adsr_pixmap = icon.pixmap(30, 30)  # Set the desired size
+            adsr_icon_label.setPixmap(adsr_pixmap)
+            adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            adsr_icon_row_layout.addWidget(adsr_icon_label)
+        filter_group_layout.addLayout(adsr_icon_row_layout)
 
         # Filter controls
         self.filter_switch = self._create_parameter_switch(AnalogParameter.FILTER_SWITCH,
                                                            "Filter",
                                                            ["BYPASS", "LPF"])
-        layout.addWidget(self.filter_switch)
+        filter_group_layout.addWidget(self.filter_switch)
         self.filter_cutoff = self._create_parameter_slider(
             AnalogParameter.FILTER_CUTOFF, "Cutoff"
         )
@@ -580,42 +418,6 @@ class AnalogSynthEditor(SynthEditor):
         self.filter_cutoff_keyfollow = self._create_parameter_slider(
             AnalogParameter.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
         )
-        self.filter_env_depth = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_DEPTH, "Depth"
-        )
-
-        self.filter_env_velocity_sens = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_VELOCITY_SENS, "Env. Velocity Sens."
-        )
-        layout.addWidget(self.filter_cutoff)
-        layout.addWidget(self.filter_resonance)
-        layout.addWidget(self.filter_cutoff_keyfollow)
-        layout.addWidget(self.filter_env_depth)
-        layout.addWidget(self.filter_env_velocity_sens)
-
-        # Add spacing
-        layout.addSpacing(10)
-
-        # Generate the ADSR waveform icon
-        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
-        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
-
-        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
-        sub_layout = QVBoxLayout()
-
-        icon_label = QLabel()
-        icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignHCenter)
-        icons_hlayout = QHBoxLayout()
-        icons_hlayout.addWidget(icon_label)
-        sub_layout.addLayout(icons_hlayout)
-
-        # Filter envelope
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR area
-        env_layout = QHBoxLayout()
-        env_layout.setSpacing(5)
-
         # Create ADSRWidget
         self.filter_adsr_widget = ADSR(
             AnalogParameter.FILTER_ENV_ATTACK_TIME,
@@ -628,82 +430,59 @@ class AnalogSynthEditor(SynthEditor):
             group=self.group
         )
         self.filter_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
-        adsr_vlayout = QVBoxLayout()
-        adsr_vlayout.addLayout(env_layout)
-        env_layout.addWidget(self.filter_adsr_widget)
-        env_layout.setStretchFactor(self.filter_adsr_widget, 5)
-
-        # ADSR controls
-        adsr_layout = QHBoxLayout()
-        adsr_vlayout.addLayout(adsr_layout)
-
-        self.filter_env_attack_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_ATTACK_TIME,
-            "A",
-            vertical=True,
-            show_value_label=False,
+        self.filter_env_depth = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_DEPTH, "Depth"
         )
-        self.filter_env_decay_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_DECAY_TIME,
-            "D",
-            vertical=True,
-            show_value_label=False,
+
+        self.filter_env_velocity_sens = self._create_parameter_slider(
+            AnalogParameter.FILTER_ENV_VELOCITY_SENS, "Env. Velocity Sens."
         )
-        self.filter_env_sustain_level = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            "S",
-            vertical=True,
-            show_value_label=False,
-        )
-        self.filter_env_release_time = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_RELEASE_TIME,
-            "R",
-            vertical=True,
-            show_value_label=False,
-        )
-        sub_layout.addWidget(env_group)
-        env_group.setLayout(adsr_vlayout)
-        layout.addLayout(sub_layout)
+        filter_group_layout.addWidget(self.filter_cutoff)
+        filter_group_layout.addWidget(self.filter_resonance)
+        filter_group_layout.addWidget(self.filter_cutoff_keyfollow)
 
-        # Mapping ADSR parameters to their corresponding spinboxes
-        self.filter_adsr_control_map = {
-            AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attack_sb,
-            AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decay_sb,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustain_sb,
-            AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.release_sb,
-        }
+        filter_group_layout.addWidget(self.filter_env_depth)
+        filter_group_layout.addWidget(self.filter_env_velocity_sens)
 
-        # 🔹 Connect ADSR spinboxes to external controls dynamically
-        for param, spinbox in self.filter_adsr_control_map.items():
-            spinbox.valueChanged.connect(partial(self.update_slider_from_adsr, param))
+        # Add spacing
+        filter_group_layout.addSpacing(10)
 
-        # 🔹 Connect external controls to ADSR spinboxes dynamically
-        for param, spinbox in self.filter_adsr_control_map.items():
-            self.controls[param].valueChanged.connect(
-                partial(
-                    self.update_filter_adsr_spinbox_from_param,
-                    self.filter_adsr_control_map,
-                    param,
-                )
-            )
+        # Generate the ADSR waveform icon
+        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
+        adsr_pixmap = base64_to_pixmap(adsr_icon_base64)  # Convert to QPixmap
 
-        return group
+        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
+        sub_layout = QVBoxLayout()
 
-    def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
-        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
-        spinbox = control_map[param]
-        if param in [
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = midi_cc_to_frac(value)
-        else:
-            new_value = midi_cc_to_ms(value)
-        if spinbox.value() != new_value:
-            spinbox.blockSignals(True)
-            spinbox.setValue(new_value)
-            spinbox.blockSignals(False)
-            self.filter_adsr_widget.valueChanged()
+        adsr_icon_label = QLabel()
+        adsr_icon_label.setPixmap(adsr_pixmap)
+        adsr_icon_label.setAlignment(Qt.AlignHCenter)
+        adsr_icon_row_layout = QHBoxLayout()
+        adsr_icon_row_layout.addWidget(adsr_icon_label)
+        sub_layout.addLayout(adsr_icon_row_layout)
+
+        # Filter envelope
+        env_group = QGroupBox("Envelope")
+        env_group.setProperty("adsr", True)  # Mark as ADSR area
+        envelope_layout = QHBoxLayout()
+        env_group.setLayout(envelope_layout)
+        envelope_layout.setSpacing(5)
+        envelope_layout.addWidget(self.filter_adsr_widget)
+
+        # Generate the ADSR waveform icon
+        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
+        adsr_pixmap = base64_to_pixmap(adsr_icon_base64)  # Convert to QPixmap
+
+        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
+        adsr_icon_label = QLabel()
+        adsr_icon_label.setPixmap(adsr_pixmap)
+        adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        adsr_icon_row_layout = QHBoxLayout()
+        adsr_icon_row_layout.addWidget(adsr_icon_label)
+        filter_group_layout.addLayout(adsr_icon_row_layout)
+        filter_group_layout.addWidget(env_group)
+        filter_group_layout.addStretch()
+        return filter_group
 
     def _create_amp_section(self):
         """Create the Amp section"""
@@ -783,37 +562,6 @@ class AnalogSynthEditor(SynthEditor):
         sub_layout.addStretch()
         layout.addLayout(sub_layout)
         return group
-
-    def update_adsr_spinbox_from_param(self, control_map, param, value):
-        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
-        spinbox = control_map[param]
-        if param in [
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = midi_cc_to_frac(value)
-        else:
-            new_value = midi_cc_to_ms(value)
-        if spinbox.value() != new_value:
-            spinbox.blockSignals(True)
-            spinbox.setValue(new_value)
-            spinbox.blockSignals(False)
-            self.amp_env_adsr_widget.valueChanged()
-
-    def update_slider_from_adsr(self, param, value):
-        """Updates external control from ADSR widget, avoiding infinite loops."""
-        control = self.controls[param]
-        if param in [
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = frac_to_midi_cc(value)
-        else:
-            new_value = ms_to_midi_cc(value)
-        if control.value() != new_value:
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
 
     def _create_lfo_section(self):
         """Create the LFO section"""
@@ -905,6 +653,137 @@ class AnalogSynthEditor(SynthEditor):
 
         return group
 
+    def _on_parameter_received(self, address, value):
+        """Handle parameter updates from MIDI messages."""
+        area_code = address[0]
+        if address[0] == TEMPORARY_ANALOG_SYNTH_AREA:
+            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
+            parameter_address = tuple(address[2:])  # (80, 0)
+
+            # Retrieve the corresponding DigitalParameter
+            param = get_analog_parameter_by_address(parameter_address)
+            partial_no = address[1]
+            if param:
+                logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
+
+                # Update the corresponding slider
+                if param in self.controls:
+                    slider_value = param.convert_from_midi(value)
+                    logging.info(
+                        f"midi value {value} converted to slider value {slider_value}"
+                    )
+                    slider = self.controls[param]
+                    slider.blockSignals(True)  # Prevent feedback loop
+                    slider.setValue(slider_value)
+                    slider.blockSignals(False)
+
+                # Handle OSC_WAVE parameter to update waveform buttons
+                if param == AnalogParameter.OSC_WAVEFORM:
+                    self._update_waveform_buttons(value)
+                    logging.debug(
+                        "updating waveform buttons for param {param} with {value}"
+                    )
+
+    def update_instrument_image(self):
+        def load_and_set_image(image_path, secondary_image_path=None):
+            """Helper function to load and set the image on the label."""
+            file_to_load = ""
+
+            if os.path.exists(image_path):
+                file_to_load = image_path
+            elif os.path.exists(secondary_image_path):
+                file_to_load = secondary_image_path
+            else:
+                file_to_load = os.path.join(
+                    "resources", self.instrument_icon_folder, "analog.png"
+                )
+            pixmap = QPixmap(file_to_load)
+            scaled_pixmap = pixmap.scaledToHeight(
+                150, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 250px height
+            self.image_label.setPixmap(scaled_pixmap)
+            return True
+
+        selected_instrument_text = (
+            self.instrument_selection_combo.combo_box.currentText()
+        )
+
+        # Try to extract synth name from the selected text
+        image_loaded = False
+        if instrument_matches := re.search(
+                r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+        ):
+            selected_instrument_name = (
+                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
+            )
+            selected_instrument_type = (
+                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
+            )
+            logging.info(
+                f"selected instrument image preset_type: {selected_instrument_type}"
+            )
+            specific_image_path = os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                f"{selected_instrument_name}.png",
+            )
+            generic_image_path = os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                f"{selected_instrument_type}.png",
+            )
+            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
+
+        default_image_path = os.path.join("resources", "drum_kits", "drums.png")
+        # Fallback to default image if no specific image is found
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
+
+    def _update_pw_controls_state(self, waveform: Waveform):
+        """Enable/disable PW controls based on waveform"""
+        pw_enabled = waveform == Waveform.PULSE
+        self.osc_pulse_width.setEnabled(pw_enabled)
+        self.osc_pulse_width_mod_depth.setEnabled(pw_enabled)
+        # Update the visual state
+        self.osc_pulse_width.setStyleSheet(
+            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+        )
+        self.osc_pulse_width_mod_depth.setStyleSheet(
+            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+        )
+
+    def update_slider_from_adsr(self, param, value):
+        """Updates external control from ADSR widget, avoiding infinite loops."""
+        control = self.controls[param]
+        if param in [
+            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+        ]:
+            new_value = frac_to_midi_cc(value)
+        else:
+            new_value = ms_to_midi_cc(value)
+        if control.value() != new_value:
+            control.blockSignals(True)
+            control.setValue(new_value)
+            control.blockSignals(False)
+
+    def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
+        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
+        spinbox = control_map[param]
+        if param in [
+            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+        ]:
+            new_value = midi_cc_to_frac(value)
+        else:
+            new_value = midi_cc_to_ms(value)
+        if spinbox.value() != new_value:
+            spinbox.blockSignals(True)
+            spinbox.setValue(new_value)
+            spinbox.blockSignals(False)
+            self.filter_adsr_widget.valueChanged()
+
     def _on_waveform_selected(self, waveform: Waveform):
         """Handle waveform button selection KEEP!"""
         if self.midi_helper:
@@ -956,54 +835,6 @@ class AnalogSynthEditor(SynthEditor):
             if selected_btn:
                 selected_btn.setChecked(True)
                 selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
-
-    def _on_lfo_sync_changed(self, value: int):
-        """
-        Handle LFO sync change
-        """
-        if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.LFO_TEMPO_SYNC_SWITCH.value[0],
-                                        value=value)
-            self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_lfo_sync_note_changed(self, value: int):
-        """
-        Handle LFO sync note change
-        """
-        if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.LFO_TEMPO_SYNC_NOTE.value[0],
-                                        value=value)
-            self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_lfo_pitch_changed(self, value: int):
-        """Handle LFO pitch depth change"""
-        if self.midi_helper:
-            # Convert -63 to +63 range to 1-127
-            midi_value = value + 64 if value >= 0 else abs(value)
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.LFO_PITCH_DEPTH.value[0],
-                                        value=midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
-
-    def _on_lfo_filter_changed(self, value: int):
-        """Handle LFO filter depth change"""
-        if self.midi_helper:
-            # Convert -63 to +63 range to 1-127
-            midi_value = value + 64 if value >= 0 else abs(value)
-            sysex_message = RolandSysEx(area=self.area,
-                                        section=self.part,
-                                        group=self.group,
-                                        param=AnalogParameter.LFO_FILTER_DEPTH.value[0],
-                                        value=midi_value)
-            self.midi_helper.send_midi_message(sysex_message)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""

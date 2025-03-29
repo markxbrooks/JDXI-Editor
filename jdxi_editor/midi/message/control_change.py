@@ -50,7 +50,7 @@ class ControlChangeMessage(MidiMessage):
         self.data1 = self.controller  # Controller number
         self.data2 = self.value  # Control value
 
-    def to_list(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert Control Change message to a list of bytes for sending"""
         status_byte = self.status | (self.channel & 0x0F)  # Ensures correct channel encoding
         return [status_byte, self.data1 & 0x7F, self.data2 & 0x7F]  # Proper MIDI CC message
