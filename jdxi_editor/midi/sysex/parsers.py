@@ -70,6 +70,15 @@ def get_synth_tone(byte_value: int) -> str:
 
 def extract_tone_name(data: List[int]) -> str:
     """Extract and clean the tone name from SysEx data."""
+    if len(data) < 24:  # Ensure sufficient length
+        return "Unknown"
+
+    raw_name = bytes(data[12:24]).decode(errors="ignore").strip("\x00\r ")  # Start at index 12
+    return raw_name  # Strip null and carriage return
+
+
+def extract_tone_name_old(data: List[int]) -> str:
+    """Extract and clean the tone name from SysEx data."""
     if len(data) < 23:  # Ensure sufficient length for full extraction
         return "Unknown"
 
@@ -82,92 +91,61 @@ def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
-def parse_sysex_new(data: List[int]) -> Dict[str, str]:
-    """Parses JD-Xi tone data from SysEx messages."""
-
-    def initialize_parameters() -> Dict[str, str]:
-        """Initialize parameters with essential fields."""
+def initialize_parameters(data: List[int]) -> Dict[str, str]:
+    """Initialize parameters with essential fields."""
+    if len(data) < 11:  # Ensure data has at least enough bytes for ADDRESS
         return {
-            "JD_XI_HEADER": extract_hex(data, 0, 7),
-            "ADDRESS": extract_hex(data, 7, 11),
-            "TEMPORARY_AREA": get_temporary_area(data) if len(data) > 7 else "Unknown",
-            "SYNTH_TONE": get_synth_tone(data[10]) if len(data) > 10 else "Unknown",
-            "TONE_NAME": extract_tone_name(data),
+            "JD_XI_HEADER": extract_hex(data, 0, 7) if len(data) >= 7 else "Unknown",
+            "ADDRESS": extract_hex(data, 7, 11) if len(data) >= 11 else "Unknown",
+            "TEMPORARY_AREA": "Unknown",
+            "SYNTH_TONE": "Unknown",
+            "TONE_NAME": "Unknown",
         }
 
-    if len(data) <= 7:
-        logging.warning("Insufficient data length for parsing.")
-        return initialize_parameters()
-
-    parameters = initialize_parameters()
-    temporary_area, synth_tone = parameters["TEMPORARY_AREA"], parameters["SYNTH_TONE"]
-
-    area_mappings = {
-        "TEMPORARY_PROGRAM_AREA": ProgramCommonParameter,
-        "TEMPORARY_ANALOG_SYNTH_AREA": AnalogParameter,
-        "TEMPORARY_DRUM_KIT_AREA": DrumPartialParameter,
+    return {
+        "JD_XI_HEADER": extract_hex(data, 0, 7),
+        "ADDRESS": extract_hex(data, 7, 11),
+        "TEMPORARY_AREA": get_temporary_area(data) or "Unknown",
+        "SYNTH_TONE": get_synth_tone(data[10]) if len(data) > 10 else "Unknown",
+        "TONE_NAME": extract_tone_name(data) if len(data) >= 24 else "Unknown",
     }
-
-    if temporary_area in area_mappings:
-        parameters.update(parse_parameters(data, area_mappings[temporary_area]))
-
-    elif temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
-        tone_mappings = {
-            "TONE_COMMON": DigitalCommonParameter,
-            "TONE_MODIFY": EffectParameter,
-        }
-        parameters.update(parse_parameters(data, tone_mappings.get(synth_tone, DigitalPartialParameter)))
-
-    elif temporary_area == "TEMPORARY_DRUM_KIT_AREA" and synth_tone == "TONE_COMMON":
-        parameters.update(parse_parameters(data, DrumCommonParameter))
-
-    logging.info(f"Address: {parameters['ADDRESS']}")
-    logging.info(f"Temporary Area: {temporary_area}")
-
-    return parameters
 
 
 def parse_sysex(data: List[int]) -> Dict[str, str]:
     """Parses JD-Xi tone data from SysEx messages."""
-    if len(data) <= 7:
+    if len(data) < 11:  # Ensure at least ADDRESS section is present
         logging.warning("Insufficient data length for parsing.")
         return {
-            "JD_XI_HEADER": extract_hex(data, 0, 7),
-            "ADDRESS": extract_hex(data, 7, 11),
+            "JD_XI_HEADER": extract_hex(data, 0, 7) if len(data) >= 7 else "Unknown",
+            "ADDRESS": extract_hex(data, 7, 11) if len(data) >= 11 else "Unknown",
             "TEMPORARY_AREA": "Unknown",
             "SYNTH_TONE": "Unknown",
         }
 
-    parameters = {
-        "JD_XI_HEADER": extract_hex(data, 0, 7),
-        "ADDRESS": extract_hex(data, 7, 11),
-        "TEMPORARY_AREA": get_temporary_area(data),
-        "SYNTH_TONE": get_synth_tone(data[10]) if len(data) > 10 else "Unknown",
-        "TONE_NAME": extract_tone_name(data),
-    }
+    temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
+    synth_tone = get_synth_tone(data[10]) if len(data) > 10 else "Unknown"
 
-    temporary_area = parameters["TEMPORARY_AREA"]
-    synth_tone = parameters["SYNTH_TONE"]
+    parameters = initialize_parameters(data)
 
     if temporary_area == "TEMPORARY_PROGRAM_AREA":
         parameters.update(parse_parameters(data, ProgramCommonParameter))
 
-    if temporary_area in [
-        "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-        "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-    ]:
+    elif temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DigitalCommonParameter))
         elif synth_tone == "TONE_MODIFY":
             parameters.update(parse_parameters(data, EffectParameter))
         else:
             parameters.update(parse_parameters(data, DigitalPartialParameter))
+
     elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
         parameters.update(parse_parameters(data, AnalogParameter))
+
     elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
         if synth_tone == "TONE_COMMON":
             parameters.update(parse_parameters(data, DrumCommonParameter))
         parameters.update(parse_parameters(data, DrumPartialParameter))
+
     logging.info(f"Address: {parameters['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")
 

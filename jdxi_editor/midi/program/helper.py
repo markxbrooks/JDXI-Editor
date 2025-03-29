@@ -28,7 +28,9 @@ This class is typically used within a larger MIDI control application to handle
 preset changes and communicate them to the UI and MIDI engine.
 
 """
+import asyncio
 import logging
+import time
 from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
@@ -110,4 +112,5 @@ class ProgramHelper(QObject):
     def data_request(self):
         for midi_request in self.midi_requests:
             byte_list_message = bytes.fromhex(midi_request)
+            time.sleep(0.075)  # 75ms delay
             self.midi_helper.send_raw_message(byte_list_message)

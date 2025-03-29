@@ -39,6 +39,8 @@ Usage example:
 """
 
 from typing import Optional
+
+from jdxi_editor.midi.data.constants.arpeggio import ARP_GROUP
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
@@ -78,3 +80,6 @@ class ArpeggioParameter(SynthParameter):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+
+    def get_address_for_partial(self, partial_num: int = 0):
+        return ARP_GROUP, 0x00
