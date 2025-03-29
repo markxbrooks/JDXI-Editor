@@ -55,14 +55,14 @@ class PatternSequencer(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper],
-        preset_handler: Optional[PresetHelper],
+        preset_helper: Optional[PresetHelper],
         parent=None,
     ):
         super().__init__(parent)
         self.muted_channels = []
         self.total_measures = None
         self.midi_helper = midi_helper
-        self.preset_handler = preset_handler
+        self.preset_helper = preset_helper
         self.buttons = []
         self.measures = []
         self.timer = None

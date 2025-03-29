@@ -1,5 +1,5 @@
 """
-Module: preset_handler
+Module: preset_helper
 ======================
 
 This module defines the `PresetHandler` class, which extends `PresetHelper` to manage

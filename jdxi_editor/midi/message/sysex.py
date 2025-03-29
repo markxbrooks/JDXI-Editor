@@ -96,7 +96,7 @@ class SysexParameter(Enum):
 class SysExMessage(MidiMessage):
     """Base class for MIDI System Exclusive (SysEx) messages."""
     start_of_sysex: int = START_OF_SYSEX  # Start of SysEx
-    manufacturer_id: List[int] = None  # Manufacturer ID (e.g., [0x41] for Roland)
+    manufacturer_id: int = None  # Manufacturer ID (e.g., [0x41] for Roland)
     device_id: int = 0x10  # Default device ID
     model_id: List[int] = None  # Model ID (4 bytes)
     command: int = 0x00  # SysEx command (DT1, RQ1, etc.)
@@ -115,29 +115,23 @@ class SysExMessage(MidiMessage):
         if self.data is None:
             self.data = []
 
-    def calculate_checksum(self, method: str = "roland") -> Optional[int]:
-        """Calculate checksum based on the specified method (default: Roland)."""
-        if method == "roland":
-            if not self.address and not self.data:
-                return 0
-            return (128 - (sum(self.address + self.data) & 0x7F)) & 0x7F
-        elif method == "basic":  # Example: simple sum mod 128
-            return sum(self.address + self.data) % 128
-        else:
-            return None  # Unsupported checksum type
+    def calculate_checksum(self) -> int:
+        """Calculate Roland checksum: (128 - sum(bytes) & 0x7F)."""
+        checksum_data = self.address + self.data
+        return (128 - (sum(checksum_data) & 0x7F)) & 0x7F if checksum_data else 0
 
-    def to_list(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert the SysEx message to a list of integers."""
         msg = (
             [self.start_of_sysex]
-            + self.manufacturer_id
+            + [self.manufacturer_id]
             + [self.device_id]
             + self.model_id
             + [self.command]
             + self.address
             + self.data
         )
-        if self.manufacturer_id == [0x41]:  # Roland messages require checksum
+        if self.manufacturer_id == 0x41:  # Roland messages require checksum
             msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
         return msg
@@ -158,7 +152,7 @@ class SysExMessage(MidiMessage):
         message_data = list(data[12:-2])  # Extract data before checksum and EOX
 
         return cls(
-            manufacturer_id=manufacturer_id,
+            manufacturer_id=data[1],
             device_id=device_id,
             model_id=model_id,
             command=command,

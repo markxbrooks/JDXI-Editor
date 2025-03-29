@@ -108,7 +108,7 @@ class DrumCommonEditor(SynthEditor):
 
         # Presets
         self.preset_type = SynthType.DRUMS
-        self.preset_handler = preset_helper
+        self.preset_helper = preset_helper
         self.preset_list = DRUM_PRESETS_ENUMERATED
 
         # midi parameters
@@ -189,7 +189,7 @@ class DrumCommonEditor(SynthEditor):
         self.instrument_selection_combo = PresetComboBox(DRUM_KIT_LIST)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_handler.preset_number
+            self.preset_helper.preset_number
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image

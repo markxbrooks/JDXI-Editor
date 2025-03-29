@@ -383,14 +383,14 @@ class JdxiInstrument(JdxiUi):
 
         self.current_preset_index -= 1
         presets = self._get_presets_for_current_synth()
-        preset_handler = self._get_preset_helper_for_current_synth()
+        preset_helper = self._get_preset_helper_for_current_synth()
 
         self._update_display_preset(
             self.current_preset_index,
             presets[self.current_preset_index],
             self.channel,
         )
-        preset_handler.load_preset_by_program_change(self.current_preset_index)
+        preset_helper.load_preset_by_program_change(self.current_preset_index)
 
     def _next_tone(self):
         """Increment the tone index and update the display."""
@@ -406,14 +406,14 @@ class JdxiInstrument(JdxiUi):
 
         self.current_preset_index += 1
         presets = self._get_presets_for_current_synth()
-        preset_handler = self._get_preset_helper_for_current_synth()
+        preset_helper = self._get_preset_helper_for_current_synth()
 
         self._update_display_preset(
             self.current_preset_index,
             presets[self.current_preset_index],
             self.channel,
         )
-        preset_handler.load_preset_by_program_change(self.current_preset_index)
+        preset_helper.load_preset_by_program_change(self.current_preset_index)
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth preset_type and preset index."""
@@ -1140,7 +1140,7 @@ class JdxiInstrument(JdxiUi):
 
             # Send request
             if self.midi_helper:
-                self.midi_helper.send_raw_message(identity_request.to_list())
+                self.midi_helper.send_raw_message(identity_request.to_message_list())
                 logging.debug("Sent JD-Xi identity request")
 
         except Exception as ex:

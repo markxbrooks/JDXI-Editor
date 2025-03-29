@@ -77,12 +77,12 @@ class ProgramEditor(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_handler: PresetHelper = None,
+        preset_helper: PresetHelper = None,
     ):
         super().__init__()
         self.setWindowFlag(Qt.Window)
         self.midi_helper = midi_helper
-        self.preset_handler = preset_handler
+        self.preset_helper = preset_helper
         self.channel = (
             MIDI_CHANNEL_PROGRAMS  # Default MIDI channel: 16 for programs, 0-based
         )
@@ -315,7 +315,7 @@ class ProgramEditor(SynthEditor):
 
     def populate_programs(self):
         """Populate the program list with available presets."""
-        if not self.preset_handler:
+        if not self.preset_helper:
             return
 
         selected_bank = self.bank_combo_box.currentText()
@@ -420,9 +420,9 @@ class ProgramEditor(SynthEditor):
 
     def load_preset(self, program_number: int):
         """Load preset data and update UI."""
-        if not self.preset_handler:
+        if not self.preset_helper:
             return
-        self.preset_handler.load_preset(program_number)
+        self.preset_helper.load_preset(program_number)
         self.data_request()
 
     def _update_program_list(self):

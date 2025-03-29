@@ -139,7 +139,7 @@ class MidiOutHandler(MidiIOController):
         channel_message = ChannelMessage(
             status, data1, data2, channel - 1
         )  # convert to 0-based
-        message_bytes_list = channel_message.to_list()
+        message_bytes_list = channel_message.to_message_list()
         self.send_raw_message(message_bytes_list)
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
@@ -174,7 +174,7 @@ class MidiOutHandler(MidiIOController):
         logging.debug("Sending identity request")
         try:
             identity_request_message = IdentityRequestMessage()
-            identity_request_bytes_list = identity_request_message.to_list()
+            identity_request_bytes_list = identity_request_message.to_message_list()
             logging.info(
                 f"sending identity request message: "
                 f"{type(identity_request_bytes_list)} {identity_request_bytes_list}"
@@ -197,7 +197,7 @@ class MidiOutHandler(MidiIOController):
             True if successful, False otherwise.
         """
         try:
-            message = sysex_message.to_list()
+            message = sysex_message.to_message_list()
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
@@ -257,7 +257,7 @@ class MidiOutHandler(MidiIOController):
             program_change_message = ProgramChangeMessage(
                 channel=channel, program=program
             )
-            message = program_change_message.to_list()
+            message = program_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
             logging.error(f"Error sending program change: {ex}")
@@ -291,7 +291,7 @@ class MidiOutHandler(MidiIOController):
             return False
         try:
             control_change_message = ControlChangeMessage(channel, controller, value)
-            message = control_change_message.to_list()
+            message = control_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
             logging.error(f"send_control_change: Error sending control change: {ex}")

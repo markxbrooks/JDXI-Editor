@@ -80,13 +80,13 @@ class PresetEditor(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_handler: PresetHelper = None,
+        preset_helper: PresetHelper = None,
     ):
         super().__init__()
         self.digital_preset_type_combo = None
         self.setWindowFlag(Qt.Window)
         self.midi_helper = midi_helper
-        self.preset_handler = preset_handler
+        self.preset_helper = preset_helper
         self.midi_channel = (
             MIDI_CHANNEL_DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
         )
@@ -364,7 +364,7 @@ class PresetEditor(SynthEditor):
 
     def _populate_presets(self, search_text: str = ""):
         """Populate the program list with available presets."""
-        if not self.preset_handler:
+        if not self.preset_helper:
             return
 
         selected_part = self.digital_preset_type_combo.currentText()
@@ -464,9 +464,9 @@ class PresetEditor(SynthEditor):
 
     def load_preset_temp(self, preset_number: int):
         """Load preset data and update UI."""
-        if not self.preset_handler:
+        if not self.preset_helper:
             return
-        self.preset_handler.load_preset(preset_number)
+        self.preset_helper.load_preset(preset_number)
         self.data_request()
 
     def _update_preset_list(self):

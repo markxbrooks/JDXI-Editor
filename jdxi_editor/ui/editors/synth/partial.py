@@ -45,7 +45,7 @@ class PartialEditor(SynthBase):
         self.group = 0x00
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
-        self.preset_handler = None
+        self.preset_helper = None
 
         # Store parameter controls for easy access
         self.controls: Dict[SynthParameter, QWidget] = {}

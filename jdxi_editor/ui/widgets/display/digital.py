@@ -93,7 +93,7 @@ class DigitalDisplay(QWidget):
         gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
 
         painter.setBrush(gradient)
-        painter.setPen(QPen(QColor("#000000"), 2))  # Orange border
+        painter.setPen(QPen(QColor("#000000"), 2))  # black border
         painter.drawRect(display_x, display_y, display_width, display_height)
 
         # 2. Set font for digital display

@@ -29,7 +29,6 @@ from typing import List
 
 from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12, RQ1_COMMAND_11, MODEL_ID_1, \
     MODEL_ID_2, MODEL_ID_3, MODEL_ID_4, ROLAND_ID, DEVICE_ID, END_OF_SYSEX, START_OF_SYSEX, SETUP_AREA, PLACEHOLDER_BYTE
-from jdxi_editor.midi.data.control_change.drum import DrumKitCC
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
@@ -64,7 +63,7 @@ class RolandSysEx(SysExMessage):
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
-    def to_list(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert the SysEx message to a list of integers."""
         msg = (
                 [START_OF_SYSEX, self.manufacturer_id, self.device_id]
@@ -73,11 +72,6 @@ class RolandSysEx(SysExMessage):
                 + self.address
                 + self.data  # Directly append value (no extra list around it)
         )
-        print(f"self.command {self.command}")
-        print(f"self.address {self.address}")
-        print(f"self.data {self.data}")
-        print(f"self.size {self.size}")
-        # if self.manufacturer_id == [0x41]:  # Roland messages require checksum
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
         return msg
@@ -299,7 +293,7 @@ class Effect1Message(ParameterMessage):
     """Effect 1 parameter message"""
 
     area: int = 0x18  # Program area
-    section: int = 0x04  # Effect 1 section
+    section: int = 0x02  # Effect 1 section
 
 
 @dataclass
@@ -307,7 +301,7 @@ class Effect2Message(ParameterMessage):
     """Effect 2 parameter message"""
 
     area: int = 0x18  # Program area
-    section: int = 0x05  # Effect 2 section
+    section: int = 0x04  # Effect 2 section
 
 
 @dataclass
@@ -539,7 +533,7 @@ class DigitalTonePartialMessage(ParameterMessage):
 
 
 @dataclass
-class AnalogToneMessage:
+class AnalogToneMessage(ParameterMessage):
     """Message for analog tone parameters"""
 
     area: int
@@ -548,7 +542,7 @@ class AnalogToneMessage:
     param: int
     value: int
 
-    def to_sysex(self) -> List[int]:
+    def to_message_list(self) -> List[int]:
         """Convert to SysEx message bytes"""
         return [
             START_OF_SYSEX,  # Start of SysEx
@@ -567,20 +561,6 @@ class AnalogToneMessage:
             PLACEHOLDER_BYTE,  # Checksum placeholder
             END_OF_SYSEX,  # End of SysEx
         ]
-
-    def calculate_checksum(self, data: List[int]) -> int:
-        """Calculate Roland checksum
-
-        Args:
-            data: List of bytes to checksum
-
-        Returns:
-            Checksum value (0-127)
-        """
-        checksum = 0
-        for byte in data[8:-2]:  # Skip header and end bytes
-            checksum += byte
-        return (128 - (checksum % 128)) & 0x7F
 
 
 @dataclass
@@ -635,169 +615,6 @@ class DrumKitPartialMessage(ParameterMessage):
 
         # Default handling for other parameters
         return super().convert_data(data)
-
-
-@dataclass
-class DigitalToneCCMessage:
-    """SuperNATURAL Synth Tone Control Change message"""
-
-    channel: int = 0  # MIDI channel (0-15)
-    cc: int = 0  # CC number
-    value: int = 0  # CC value (0-127)
-    is_nrpn: bool = False  # Whether this is an NRPN message
-
-    def to_bytes(self) -> bytes:
-        """Convert to MIDI message bytes"""
-        if not self.is_nrpn:
-            # Standard CC message
-            return bytes(
-                [
-                    0xB0 | self.channel,  # Control Change status
-                    self.cc,  # CC number
-                    self.value,  # Value
-                ]
-            )
-        else:
-            # NRPN message sequence
-            return bytes(
-                [
-                    0xB0 | self.channel,  # CC for NRPN MSB
-                    0x63,  # NRPN MSB (99)
-                    0x00,  # MSB value = 0
-                    0xB0 | self.channel,  # CC for NRPN LSB
-                    0x62,  # NRPN LSB (98)
-                    self.cc,  # LSB value = parameter
-                    0xB0 | self.channel,  # CC for Data Entry
-                    0x06,  # Data Entry MSB
-                    self.value,  # Value
-                ]
-            )
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Create message from MIDI bytes"""
-        if len(data) == 3:
-            # Standard CC message
-            return cls(channel=data[0] & 0x0F, cc=data[1], value=data[2], is_nrpn=False)
-        elif len(data) == 9:
-            # NRPN message
-            return cls(
-                channel=data[0] & 0x0F,
-                cc=data[5],  # NRPN parameter number
-                value=data[8],  # NRPN value
-                is_nrpn=True,
-            )
-        raise ValueError("Invalid CC message length")
-
-
-@dataclass
-class AnalogToneCCMessage:
-    """Analog Synth Tone Control Change message"""
-
-    channel: int = 0  # MIDI channel (0-15)
-    cc: int = 0  # CC number
-    value: int = 0  # CC value (0-127)
-    is_nrpn: bool = False  # Whether this is an NRPN message
-
-    def to_bytes(self) -> bytes:
-        """Convert to MIDI message bytes"""
-        if not self.is_nrpn:
-            # Standard CC message
-            return bytes(
-                [
-                    0xB0 | self.channel,  # Control Change status
-                    self.cc,  # CC number
-                    self.value,  # Value
-                ]
-            )
-        else:
-            # NRPN message sequence
-            return bytes(
-                [
-                    0xB0 | self.channel,  # CC for NRPN MSB
-                    0x63,  # NRPN MSB (99)
-                    0x00,  # MSB value = 0
-                    0xB0 | self.channel,  # CC for NRPN LSB
-                    0x62,  # NRPN LSB (98)
-                    self.cc,  # LSB value = parameter
-                    0xB0 | self.channel,  # CC for Data Entry
-                    0x06,  # Data Entry MSB
-                    self.value,  # Value
-                ]
-            )
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Create message from MIDI bytes"""
-        if len(data) == 3:
-            # Standard CC message
-            return cls(channel=data[0] & 0x0F, cc=data[1], value=data[2], is_nrpn=False)
-        elif len(data) == 9:
-            # NRPN message
-            return cls(
-                channel=data[0] & 0x0F,
-                cc=data[5],  # NRPN parameter number
-                value=data[8],  # NRPN value
-                is_nrpn=True,
-            )
-        raise ValueError("Invalid CC message length")
-
-
-@dataclass
-class DrumKitCCMessage:
-    """Drum Kit Control Change message"""
-
-    channel: int = 0  # MIDI channel (0-15)
-    msb: int = 0  # NRPN MSB value
-    note: int = 36  # MIDI note number (36-72)
-    value: int = 0  # CC value (0-127)
-
-    def __post_init__(self):
-        """Validate all parameters"""
-        # Validate channel
-        if not 0 <= self.channel <= 15:
-            raise ValueError(f"Invalid MIDI channel: {self.channel}")
-
-        # Validate MSB
-        if not DrumKitCC.validate_msb(self.msb):
-            raise ValueError(f"Invalid MSB value: {self.msb}")
-
-        # Validate note
-        if not DrumKitCC.validate_note(self.note):
-            raise ValueError(f"Invalid drum note: {self.note}")
-
-        # Validate value
-        if not DrumKitCC.validate_value(self.value):
-            raise ValueError(f"Invalid parameter value: {self.value}")
-
-    def to_bytes(self) -> bytes:
-        """Convert to MIDI message bytes"""
-        # NRPN message sequence
-        return bytes(
-            [
-                0xB0 | self.channel,  # CC for NRPN MSB
-                0x63,  # NRPN MSB (99)
-                self.msb,  # MSB value
-                0xB0 | self.channel,  # CC for NRPN LSB
-                0x62,  # NRPN LSB (98)
-                self.note,  # LSB value = note number
-                0xB0 | self.channel,  # CC for Data Entry
-                0x06,  # Data Entry MSB
-                self.value,  # Value
-            ]
-        )
-
-    @classmethod
-    def from_bytes(cls, data: bytes):
-        """Create message from MIDI bytes"""
-        if len(data) == 9:
-            return cls(
-                channel=data[0] & 0x0F,
-                msb=data[2],  # MSB value
-                note=data[5],  # Note number
-                value=data[8],  # Parameter value
-            )
-        raise ValueError("Invalid CC message length")
 
 
 def create_sysex_message(
