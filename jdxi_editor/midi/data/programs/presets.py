@@ -2433,6 +2433,7 @@ DIGITAL_PRESET_LIST = [
 
 ]
 
+
 def generate_preset_list():
     """Generate a list of presets from RAW_PRESETS_CSV data."""
     presets = []
@@ -2440,7 +2441,7 @@ def generate_preset_list():
     reader = csv.DictReader(csv_file)
     
     for row in reader:
-        print(row)
+        # print(row)
         # Convert numeric fields to integers
         msb = int(row['msb'])
         lsb = int(row['lsb'])

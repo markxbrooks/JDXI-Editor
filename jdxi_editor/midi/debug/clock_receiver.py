@@ -41,10 +41,10 @@ class MIDIClockReceiver:
 
         elif msg[0] in (SONG_CONTINUE, SONG_START):
             self.running = True
-            print("START/CONTINUE received.")
+            logging.info("START/CONTINUE received.")
         elif msg[0] == SONG_STOP:
             self.running = False
-            print("STOP received.")
+            logging.info("STOP received.")
 
 
 def main(args=None):
@@ -65,15 +65,15 @@ def main(args=None):
     m_in.ignore_types(timing=False)
 
     try:
-        print("Waiting for clock sync...")
+        logging.info("Waiting for clock sync...")
         while True:
             time.sleep(1)
 
             if clock.running:
                 if clock.sync:
-                    print("%.2f bpm" % clock.bpm)
+                    logging.info("%.2f bpm" % clock.bpm)
                 else:
-                    print("%.2f bpm (no sync)" % clock.bpm)
+                    logging.info("%.2f bpm (no sync)" % clock.bpm)
 
     except KeyboardInterrupt:
         pass

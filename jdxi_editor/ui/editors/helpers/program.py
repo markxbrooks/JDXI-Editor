@@ -79,12 +79,12 @@ def get_program_id_by_name_new(name: str) -> Optional[str]:
 
 def get_program_id_by_name_new(name: str) -> Optional[str]:
     """Retrieve a program's ID from PROGRAM_LIST by matching its name flexibly."""
-    print(f"Searching for program name: {name}")
+    logging.info(f"Searching for program name: {name}")
 
     for program in PROGRAM_LIST:
         # Match 'name' as a substring of 'program["name"]' (correct order)
         if re.search(re.escape(fr"{name}"), fr'{program["name"]}', re.IGNORECASE):
-            print(program)
+            logging.info(program)
             return program["id"]
 
     logging.warning(f"Program named '{name}' not found.")
@@ -93,11 +93,11 @@ def get_program_id_by_name_new(name: str) -> Optional[str]:
 
 def get_program_id_by_name(name: str) -> Optional[str]:
     """Retrieve a program's ID from PROGRAM_LIST by matching its name as a substring."""
-    print(f"Searching for program name: {name}")
+    logging.info(f"Searching for program name: {name}")
 
     for program in PROGRAM_LIST:
         if name in program["name"]:  # Check if 'name' is a substring
-            print(program)
+            logging.info(program)
             return program["id"]
 
     logging.warning(f"Program named '{name}' not found.")

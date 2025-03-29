@@ -130,6 +130,35 @@ DRUMS_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
                                SYSEX_CONSTANTS['DRUMS'],
                                "00 00 00 00 00 12")
 
+DRUMS_BD1_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
+                                   SYSEX_CONSTANTS['DRUMS'],
+                                   "2E 00 00 00 01 43")
+
+DRUMS_RIM_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
+                                   SYSEX_CONSTANTS['DRUMS'],
+                                   "30 00 00 00 01 43")
+
+DRUMS_BD2_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
+                                   SYSEX_CONSTANTS['DRUMS'],
+                                   "32 00 00 00 01 43")
+
+DRUMS_CLAP_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
+                                   SYSEX_CONSTANTS['DRUMS'],
+                                   "34 00 00 00 01 43")
+
+DRUMS_BD3_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
+                                   SYSEX_CONSTANTS['DRUMS'],
+                                   "36 00 00 00 01 43")
+
+DRUMS_REQUESTS = [
+    DRUMS_REQUEST,
+    DRUMS_BD1_REQUEST,
+    DRUMS_RIM_REQUEST,
+    DRUMS_BD2_REQUEST,
+    DRUMS_CLAP_REQUEST,
+    DRUMS_BD3_REQUEST
+]
+
 DIGITAL1_REQUESTS = [
     DIGITAL1_COMMON_REQUEST,
     DIGITAL1_PARTIAL1_REQUEST,
@@ -144,7 +173,6 @@ DIGITAL2_REQUESTS = [
     DIGITAL2_PARTIAL3_REQUEST,
     DIGITAL2_MODIFY_REQUEST
 ]
-
 
 # Define program and tone name requests
 PROGRAM_TONE_NAME_PARTIAL_REQUESTS = [

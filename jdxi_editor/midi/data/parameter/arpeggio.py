@@ -30,8 +30,8 @@ Usage example:
     param = ArpeggioParameter(address=0x01, min_val=0, max_val=8)
 
     # Access display range values
-    print(param.display_min)  # Output: 0
-    print(param.display_max)  # Output: 8
+    logging.info(param.display_min)  # Output: 0
+    logging.info(param.display_max)  # Output: 8
 
     # Validate a value for the parameter
     valid_value = param.validate_value(5)

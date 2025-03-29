@@ -83,6 +83,7 @@ from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, DRUMS_REQUEST, DRUMS_REQUESTS
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style
@@ -99,7 +100,7 @@ class DrumCommonEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, preset_handler=None, parent=None
+        self, midi_helper: Optional[MidiIOHelper] = None, preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
 
@@ -107,7 +108,7 @@ class DrumCommonEditor(SynthEditor):
 
         # Presets
         self.preset_type = SynthType.DRUMS
-        self.preset_handler = preset_handler
+        self.preset_handler = preset_helper
         self.preset_list = DRUM_PRESETS_ENUMERATED
 
         # midi parameters
@@ -145,14 +146,7 @@ class DrumCommonEditor(SynthEditor):
             "OTH1": 24,
             "OTH2": 25,
         }
-        self.midi_requests = [
-            "F0 41 10 00 00 00 0E 11 19 70 00 00 00 00 00 12 65 F7",
-            "F0 41 10 00 00 00 0E 11 19 70 2E 00 00 00 01 43 05 F7",
-            "F0 41 10 00 00 00 0E 11 19 70 30 00 00 00 01 43 03 F7",
-            "F0 41 10 00 00 00 0E 11 19 70 32 00 00 00 01 43 01 F7",
-            "F0 41 10 00 00 00 0E 11 19 70 34 00 00 00 01 43 7F F7",
-            "F0 41 10 00 00 00 0E 11 19 70 36 00 00 00 01 43 7D F7",
-        ]
+        self.midi_requests = DRUMS_REQUESTS
         self.midi_channel = MIDI_CHANNEL_DRUMS
 
         # UI parameters
