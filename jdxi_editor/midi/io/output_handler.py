@@ -336,7 +336,6 @@ class MidiOutHandler(MidiIOController):
     
         return success
 
-
     def send_bank_select_and_program_change(
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
     ) -> bool:
@@ -344,7 +343,7 @@ class MidiOutHandler(MidiIOController):
         Sends Bank Select and Program Change messages.
 
         Args:
-            channel: MIDI channel (0-15).
+            channel: MIDI channel (1-16).
             bank_msb: Bank MSB value.
             bank_lsb: Bank LSB value.
             program: Program number.
@@ -352,6 +351,7 @@ class MidiOutHandler(MidiIOController):
             True if all messages are sent successfully, False otherwise.
         """
         try:
+            
             logging.info(f"send_bank_select_and_program_change "
                          f"channel: {channel} "
                          f" bank_msb: {bank_msb} "
@@ -376,6 +376,7 @@ class MidiOutHandler(MidiIOController):
             return True
         except Exception as ex:
             logging.info(f"Error {ex} occurred sending bank and program change message")
+            return False
 
     def get_parameter(
         self, area: int, part: int, group: int, param: int

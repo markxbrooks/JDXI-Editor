@@ -212,6 +212,8 @@ class JdxiInstrument(JdxiUi):
                                                 DRUM_PRESETS_ENUMERATED,
                                                 channel=MIDI_CHANNEL_DRUMS,
                                                 preset_type=SynthType.DRUMS)
+
+
         self.digital_1_preset_helper.update_display.connect(
             self.update_display_callback
         )
@@ -239,6 +241,27 @@ class JdxiInstrument(JdxiUi):
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+
+        # Initialize preset handlers dynamically
+        preset_configs = [
+            (SynthType.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MIDI_CHANNEL_DIGITAL1),
+            (SynthType.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MIDI_CHANNEL_DIGITAL2),
+            (SynthType.ANALOG, ANALOG_PRESETS_ENUMERATED, MIDI_CHANNEL_ANALOG),
+            (SynthType.DRUMS, DRUM_PRESETS_ENUMERATED, MIDI_CHANNEL_DRUMS),
+        ]
+
+        self.preset_helpers = {
+            synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
+            for synth_type, presets, channel in preset_configs
+        }
+
+    def _get_preset_helper_for_current_synth(self):
+        """Return the appropriate preset handler based on the current synth preset_type."""
+        handler = self.preset_helpers.get(self.current_synth_type)
+        if handler is None:
+            logging.warning(f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1")
+            return self.preset_helpers[SynthType.DIGITAL_1]  # Safe fallback
+        return handler
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:

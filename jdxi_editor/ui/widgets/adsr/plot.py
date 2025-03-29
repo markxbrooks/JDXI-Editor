@@ -63,6 +63,8 @@ class ADSRPlot(QWidget):
         }
         # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
+        self.setMaximumHeight(height)
+        self.setMaximumWidth(width)
         # Use dark gray background
         self.setStyleSheet("""
         QWidget {
@@ -96,6 +98,8 @@ class ADSRPlot(QWidget):
         pen = QPen(QColor("orange"))
         axis_pen = QPen(QColor("white"))
         pen.setWidth(2)
+        painter.setRenderHint(QPainter.Antialiasing, False)
+        painter.setPen(QPen(Qt.PenStyle.SolidLine))
         painter.setPen(pen)
         painter.setFont(QFont("Consolas", 10))
 
@@ -134,24 +138,6 @@ class ADSRPlot(QWidget):
         plot_w = w - left_padding - right_padding
         plot_h = h - top_padding - bottom_padding
 
-        # Create a list of points for the envelope polyline.
-        points = []
-        num_points = 500
-        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-        for i in indices:
-            t = i / self.sample_rate  # time in seconds
-            x = left_padding + (t / total_time) * plot_w
-            y = top_padding + plot_h - (envelope[i] * plot_h)
-            points.append((x, y))
-
-        # Draw the envelope polyline
-        if points:
-            path = QPainterPath()
-            path.moveTo(*points[0])
-            for pt in points[1:]:
-                path.lineTo(*pt)
-            painter.drawPath(path)
-
         # Optionally draw axis lines and labels
         painter.setPen(axis_pen)
         painter.drawLine(left_padding, top_padding, left_padding, top_padding + plot_h)  # Y-axis
@@ -172,7 +158,7 @@ class ADSRPlot(QWidget):
         # Draw the envelope label at the top center of the widget
         painter.setPen(QPen(QColor("orange")))
         painter.setFont(QFont("Consolas", 12))
-        painter.drawText(left_padding + plot_w / 2 - 10, top_padding / 2, "ADSR") # half way up top padding
+        painter.drawText(left_padding + plot_w / 2 - 40, top_padding / 2, "ADSR Envelope") # half way up top padding
 
         # Write legend label for x-axis at the bottom center of the widget
         painter.setPen(QPen(QColor("white")))
@@ -197,6 +183,27 @@ class ADSRPlot(QWidget):
         for i in range(1, 5):
             y = top_padding + i * plot_h / 5
             painter.drawLine(left_padding, y, left_padding + plot_w, y)
+
+
+        # Draw the envelope polyline last, on top of the grid
+        # Create a list of points for the envelope polyline.
+        painter.setPen(QPen(QColor("orange")))
+        points = []
+        num_points = 500
+        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+        for i in indices:
+            t = i / self.sample_rate  # time in seconds
+            x = left_padding + (t / total_time) * plot_w
+            y = top_padding + plot_h - (envelope[i] * plot_h)
+            points.append((x, y))
+
+        # Draw the envelope polyline
+        if points:
+            path = QPainterPath()
+            path.moveTo(*points[0])
+            for pt in points[1:]:
+                path.lineTo(*pt)
+            painter.drawPath(path)
 
     def paintEventNew(self, event):
         painter = QPainter(self)

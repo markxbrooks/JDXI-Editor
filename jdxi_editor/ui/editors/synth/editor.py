@@ -28,9 +28,12 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import SynthType
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
+from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DRUMS, MIDI_CHANNEL_ANALOG, \
+    MIDI_CHANNEL_DIGITAL2
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
@@ -108,6 +111,26 @@ class SynthEditor(SynthBase):
             logging.error("MIDI helper not initialized")
         self.preset_loader = PresetHelper(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        # Initialize preset handlers dynamically
+        preset_configs = [
+            (SynthType.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MIDI_CHANNEL_DIGITAL1),
+            (SynthType.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MIDI_CHANNEL_DIGITAL2),
+            (SynthType.ANALOG, ANALOG_PRESETS_ENUMERATED, MIDI_CHANNEL_ANALOG),
+            (SynthType.DRUMS, DRUM_PRESETS_ENUMERATED, MIDI_CHANNEL_DRUMS),
+        ]
+
+        self.preset_helpers = {
+            synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
+            for synth_type, presets, channel in preset_configs
+        }
+
+    def _get_preset_helper_for_current_synth(self):
+        """Return the appropriate preset handler based on the current synth preset_type."""
+        handler = self.preset_helpers.get(self.preset_type)
+        if handler is None:
+            logging.warning(f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1")
+            return self.preset_helpers[SynthType.DIGITAL_1]  # Safe fallback
+        return handler
 
     def _dispatch_sysex_to_area(self):
         raise NotImplementedError
@@ -201,15 +224,16 @@ class SynthEditor(SynthBase):
             number=preset_index,
             channel=self.midi_channel,
         )
-        if not self.preset_helper:
-            self.preset_helper = PresetHelper(
+        preset_helper = self._get_preset_helper_for_current_synth()
+        if not preset_helper:
+            preset_helper = PresetHelper(
                 self.midi_helper,
                 DIGITAL_PRESETS_ENUMERATED,
                 channel=MIDI_CHANNEL_DIGITAL1,
                 preset_type=SynthType.DIGITAL_1,
             )
-        if self.preset_helper:
-            self.preset_helper.load_preset(preset_data)
+        if preset_helper:
+            preset_helper.load_preset(preset_data)
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
