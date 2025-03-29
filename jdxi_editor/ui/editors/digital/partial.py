@@ -666,6 +666,7 @@ class DigitalPartialEditor(PartialEditor):
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)
         amp_env_adsr_vlayout.addLayout(env_layout)
         amp_section_layout.addWidget(env_group)
+        amp_section_layout.addStretch()
 
         # Keyfollow and aftertouch
         controls_layout.addWidget(
