@@ -48,7 +48,7 @@ from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
-class EffectsEditor(SynthEditor):
+class EffectsCommonEditor(SynthEditor):
     """Effects Editor Window"""
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
