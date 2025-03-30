@@ -106,7 +106,7 @@ class DigitalCommonEditor(SynthEditor):
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-
+        self.default_image = "jdxi_vector.png"
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
@@ -165,7 +165,7 @@ class DigitalCommonEditor(SynthEditor):
         # Title and instrument selection
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(
-            f"Digital Synth:\n {self.presets[0]}" if self.presets else "Digital Synth"
+            f"Current Tone:\n {self.presets[0]}" if self.presets else "Current Tone:"
         )
         self.instrument_title_label.setStyleSheet(
             """
@@ -186,7 +186,7 @@ class DigitalCommonEditor(SynthEditor):
         # Title and drum kit selection
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(
-            f"Digital Synth:\n {self.presets[0]}" if self.presets else "Digital Synth"
+            f"Current Tone:\n {self.presets[0]}" if self.presets else "Current Tone"
         )
         instrument_preset_group.setStyleSheet("""
                         width: 100px;
@@ -488,65 +488,6 @@ class DigitalCommonEditor(SynthEditor):
             pc - 1  # Convert 1-based PC to 0-based
         )
         self.data_request()
-
-    def update_instrument_image(self):
-        """Update the instrument image based on the selected synth."""
-        logging.info(f"loading instrument image")
-
-        def load_and_set_image(image_path, secondary_image_path=None):
-            """Helper function to load and set the image on the label."""
-            file_to_load = ""
-            if os.path.exists(image_path):
-                file_to_load = image_path
-            elif os.path.exists(secondary_image_path):
-                file_to_load = secondary_image_path
-            else:
-                file_to_load = os.path.join(
-                    "resources", self.instrument_icon_folder, "jdxi_vector.png"
-                )
-            pixmap = QPixmap(file_to_load)
-            scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-
-        default_image_path = os.path.join(
-            "resources", self.instrument_icon_folder, "jdxi_vector.png"
-        )
-        selected_instrument_text = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )
-        logging.info(f"selected instrument text: {selected_instrument_text}")
-        # Try to extract synth name from the selected text
-        image_loaded = False
-        if instrument_matches := re.search(
-            r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
-        ):
-            selected_instrument_name = (
-                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            logging.info(f"selected instrument text: {selected_instrument_name}")
-            selected_instrument_type = (
-                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
-            )
-            logging.info(f"selected_instrument_type: {selected_instrument_type}")
-            specific_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_name}.png",
-            )
-            generic_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_type}.png",
-            )
-            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
-
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def _on_partial_state_changed(
         self, partial: DigitalPartial, enabled: bool, selected: bool

@@ -105,6 +105,7 @@ class AnalogSynthEditor(SynthEditor):
             self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
+        self.default_image = "analog.png"
         self.bipolar_parameters = [
             AnalogParameter.FILTER_ENV_VELOCITY_SENS,
             AnalogParameter.AMP_LEVEL_KEYFOLLOW,
@@ -683,62 +684,6 @@ class AnalogSynthEditor(SynthEditor):
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
                     )
-
-    def update_instrument_image(self):
-        def load_and_set_image(image_path, secondary_image_path=None):
-            """Helper function to load and set the image on the label."""
-            file_to_load = ""
-
-            if os.path.exists(image_path):
-                file_to_load = image_path
-            elif os.path.exists(secondary_image_path):
-                file_to_load = secondary_image_path
-            else:
-                file_to_load = os.path.join(
-                    "resources", self.instrument_icon_folder, "analog.png"
-                )
-            pixmap = QPixmap(file_to_load)
-            scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-
-        selected_instrument_text = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )
-
-        # Try to extract synth name from the selected text
-        image_loaded = False
-        if instrument_matches := re.search(
-                r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
-        ):
-            selected_instrument_name = (
-                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            selected_instrument_type = (
-                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
-            )
-            logging.info(
-                f"selected instrument image preset_type: {selected_instrument_type}"
-            )
-            specific_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_name}.png",
-            )
-            generic_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_type}.png",
-            )
-            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
-
-        default_image_path = os.path.join("resources", "drum_kits", "drums.png")
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def _update_pw_controls_state(self, waveform: Waveform):
         """Enable/disable PW controls based on waveform"""
