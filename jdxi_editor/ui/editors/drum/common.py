@@ -148,14 +148,14 @@ class DrumCommonEditor(SynthEditor):
         }
         self.midi_requests = DRUMS_REQUESTS
         self.midi_channel = MIDI_CHANNEL_DRUMS
-
+        self.instrument_icon_folder = "drum_kits"
+        self.default_image = "drums.png"
         # UI parameters
         self.main_window = parent
         self.partial_editors = {}
         self.partial_tab_widget = QTabWidget()
 
         self.image_label = None
-        self.instrument_icon_folder = "drum_kits"
         # Main layout
         self.controls: Dict[DrumPartialParameter, QWidget] = {}
 
@@ -372,42 +372,6 @@ class DrumCommonEditor(SynthEditor):
             logging.info(f"Updated to partial {partial_name} (index {index})")
         except IndexError:
             logging.error(f"Invalid partial index: {index}")
-
-    def update_instrument_image(self):
-        """update"""
-
-        def load_and_set_image(image_path):
-            """Helper function to load and set the image on the label."""
-            if os.path.exists(image_path):
-                pixmap = QPixmap(image_path)
-                scaled_pixmap = pixmap.scaledToHeight(
-                    250, Qt.TransformationMode.SmoothTransformation
-                )  # Resize to 250px height
-                self.image_label.setPixmap(scaled_pixmap)
-                return True
-            return False
-
-        # Define paths
-        default_image_path = os.path.join("resources", "drum_kits", "drums.png")
-        selected_kit_text = self.instrument_selection_combo.combo_box.currentText()
-
-        # Try to extract drum kit name from the selected text
-        image_loaded = False
-        if drum_kit_matches := re.search(
-            r"(\d{3}) - (\S+).+", selected_kit_text, re.IGNORECASE
-        ):
-            selected_kit_name = (
-                drum_kit_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            specific_image_path = os.path.join(
-                "resources", "drum_kits", f"{selected_kit_name}.png"
-            )
-            image_loaded = load_and_set_image(specific_image_path)
-
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
