@@ -28,6 +28,7 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.midi.data.constants.analog import ControlChange
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
@@ -41,6 +42,33 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import Style
 
 
+def _log_changes(previous_data, current_data):
+    """Log changes between previous and current JSON data."""
+    changes = []
+    if not current_data or not previous_data:
+        return
+    for key, current_value in current_data.items():
+        previous_value = previous_data.get(key)
+        if previous_value != current_value:
+            changes.append((key, previous_value, current_value))
+
+    changes = [
+        change
+        for change in changes
+        if change[0]
+        not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+    ]
+
+    if changes:
+        logging.info("Changes detected:")
+        for key, prev, curr in changes:
+            logging.info(
+                f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
+            )
+    else:
+        logging.info("No changes detected.")
+
+
 class SynthEditor(SynthBase):
     """Base class for all editor windows"""
 
@@ -50,20 +78,25 @@ class SynthEditor(SynthBase):
         self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(midi_helper, parent)
-        self.default_image = None
+        self.presets = None
+        self.midi_helper = midi_helper
+        self.cc_parameters = dict()
+        self.nrpn_parameters = dict()
+        self.nrpn_map = dict()
+        self.controls = list()
+        self.bipolar_parameters = list()
+        # Midi request for Temporary program
+        self.midi_requests = list()
+        self.instrument_default_image = None
         self.instrument_title_label = None
-        self.image_label = None
+        self.instrument_image_label = None
         self.instrument_icon_folder = None
-        self.controls = {}
-        self.partial_num = None
+        self.partial_number = None
         self.midi_channel = None
         self.preset_helper = None
         self.instrument_selection_combo = None
         self.preset_type = None
-        self.midi_helper = midi_helper
-        self.bipolar_parameters = []
-        # Midi request for Temporary program
-        self.midi_requests = []
+
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
@@ -133,6 +166,9 @@ class SynthEditor(SynthBase):
             return self.preset_helpers[SynthType.DIGITAL_1]  # Safe fallback
         return handler
 
+    def _on_parameter_received(self, address, value):
+        raise NotImplementedError("Should be implemented by subclass")
+
     def _dispatch_sysex_to_area(self):
         raise NotImplementedError
 
@@ -172,7 +208,7 @@ class SynthEditor(SynthBase):
         if not preset_helper:
             preset_helper = PresetHelper(
                 self.midi_helper,
-                DIGITAL_PRESETS_ENUMERATED,
+                self.presets,
                 channel=MIDI_CHANNEL_DIGITAL1,
                 preset_type=SynthType.DIGITAL_1,
             )
@@ -214,31 +250,16 @@ class SynthEditor(SynthBase):
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
 
-    def _log_changes(self, previous_data, current_data):
-        """Log changes between previous and current JSON data."""
-        changes = []
-        if not current_data or not previous_data:
-            return
-        for key, current_value in current_data.items():
-            previous_value = previous_data.get(key)
-            if previous_value != current_value:
-                changes.append((key, previous_value, current_value))
-
-        changes = [
-            change
-            for change in changes
-            if change[0]
-            not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
-        ]
-
-        if changes:
-            logging.info("Changes detected:")
-            for key, prev, curr in changes:
-                logging.info(
-                    f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
-                )
-        else:
-            logging.info("No changes detected.")
+    def send_control_change(self, control_change: ControlChange, value: int):
+        """Send MIDI CC message"""
+        if self.midi_helper:
+            # Convert enum to int if needed
+            control_change_number = (
+                control_change.value
+                if isinstance(control_change, ControlChange)
+                else control_change
+            )
+            self.midi_helper.send_control_change(control_change_number, value, self.midi_channel)
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
@@ -253,17 +274,17 @@ class SynthEditor(SynthBase):
                 file_to_load = secondary_image_path
             else:
                 file_to_load = os.path.join(
-                    "resources", self.instrument_icon_folder, self.default_image
+                    "resources", self.instrument_icon_folder, self.instrument_default_image
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
                 250, Qt.TransformationMode.SmoothTransformation
             )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
+            self.instrument_image_label.setPixmap(scaled_pixmap)
             return True
 
         default_image_path = os.path.join(
-            "resources", self.instrument_icon_folder, self.default_image
+            "resources", self.instrument_icon_folder, self.instrument_default_image
         )
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
@@ -297,5 +318,59 @@ class SynthEditor(SynthBase):
         # Fallback to default image if no specific image is found
         if not image_loaded:
             if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
+                self.instrument_image_label.clear()  # Clear label if default image is also missing
+
+    def _update_slider(self, param, value):
+        """Safely update sliders from NRPN messages."""
+        slider = self.controls.get(param)
+        if slider:
+            slider_value = param.convert_from_midi(value)
+            slider.blockSignals(True)
+            slider.setValue(slider_value)
+            slider.blockSignals(False)
+            logging.info(f"Updated {param.name} slider to {slider_value}")
+            
+    def send_analog_synth_parameter(self, parameter: str, value: int, channel: int = 0) -> bool:
+        """
+        Send a MIDI Control Change or NRPN message for an Analog Synth parameter.
+
+        Args:
+            parameter: The name of the parameter to modify.
+            value: The parameter value (0-127).
+            channel: The MIDI channel (0-15).
+
+        Returns:
+            True if successful, False otherwise.
+        """
+
+        if parameter in self.cc_parameters:
+            # Send as a Control Change (CC) message
+            controller = self.cc_parameters[parameter]
+            return self.midi_helper.send_control_change(controller, value, channel)
+
+        elif parameter in self.nrpn_parameters:
+            # Send as an NRPN message
+            msb, lsb = self.nrpn_parameters[parameter]
+            return self.midi_helper.send_nrpn((msb << 7) | lsb, value, channel)
+
+        else:
+            logging.error(f"Invalid Analog Synth parameter: {parameter}")
+            return False
+
+    def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
+        """Process incoming NRPN messages and update UI controls."""
+        logging.info(f"Received NRPN {nrpn_address} with value {value} on channel {channel}")
+
+        # Find matching parameter
+        msb = nrpn_address >> 7
+        lsb = nrpn_address & 0x7F
+        param_name = self.nrpn_map.get((msb, lsb))
+
+        if param_name:
+            # Update slider or control
+            param = AnalogParameter.get_by_name(param_name) # FIXME: make generic
+            if param:
+                self._update_slider(param, value)
+        else:
+            logging.warning(f"Unrecognized NRPN {nrpn_address}")
 

@@ -130,7 +130,7 @@ class ADSRPlot(QWidget):
         # Prepare points for drawing
         w = self.width()
         h = self.height()
-        top_padding = 40  # Custom top padding value
+        top_padding = 50  # Custom top padding value
         right_padding = 50  # Custom right padding value
         bottom_padding = 80  # Bottom padding remains the same
         left_padding = 80  # Left padding remains the same

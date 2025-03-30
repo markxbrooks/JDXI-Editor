@@ -29,9 +29,7 @@ Dependencies:
 
 """
 
-import os
 import json
-import re
 import logging
 from typing import Dict, Optional, Union
 
@@ -58,7 +56,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.sysex.requests import DIGITAL1_REQUESTS, DIGITAL2_REQUESTS
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
@@ -102,11 +100,11 @@ class DigitalCommonEditor(SynthEditor):
         )
 
         self.presets = DIGITAL_PRESETS_ENUMERATED
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        self.default_image = "jdxi_vector.png"
+        self.instrument_default_image = "jdxi_vector.png"
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
@@ -239,7 +237,7 @@ class DigitalCommonEditor(SynthEditor):
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         upper_layout.addWidget(instrument_preset_group)
-        upper_layout.addWidget(self.image_label)
+        upper_layout.addWidget(self.instrument_image_label)
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
 
@@ -557,7 +555,7 @@ class DigitalCommonEditor(SynthEditor):
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
             self.current_data = sysex_data
-            self._log_changes(self.previous_data, sysex_data)
+            _log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return
@@ -708,7 +706,7 @@ class DigitalCommonEditor(SynthEditor):
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
             self.current_data = sysex_data
-            self._log_changes(self.previous_data, sysex_data)
+            _log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return
@@ -849,7 +847,7 @@ class DigitalCommonEditor(SynthEditor):
                 sysex_data = json.loads(json_data)
                 self.previous_data = self.current_data
                 self.current_data = sysex_data
-                self._log_changes(self.previous_data, sysex_data)
+                _log_changes(self.previous_data, sysex_data)
                 return sysex_data
             except json.JSONDecodeError as ex:
                 logging.error(f"Invalid JSON format: {ex}")
