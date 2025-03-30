@@ -257,7 +257,7 @@ class SynthEditor(SynthBase):
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
+                250, Qt.TransformationMode.SmoothTransformation
             )  # Resize to 250px height
             self.image_label.setPixmap(scaled_pixmap)
             return True
