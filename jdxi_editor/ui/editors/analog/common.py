@@ -38,6 +38,80 @@ Example:
     preset_helper = PresetHandler()
     editor = AnalogSynthEditor(midi_helper, preset_helper)
     editor.show()
+    
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel, QTabWidget, QGroupBox, QPushButton
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QShortcut, QKeySequence
+
+from jdxi_editor.ui.sections.oscillator_section import OscillatorSection
+from jdxi_editor.ui.sections.filter_section import FilterSection
+from jdxi_editor.ui.sections.amp_section import AmpSection
+from jdxi_editor.ui.sections.lfo_section import LFOSection
+
+class AnalogCommonEditor(SynthEditor):
+    def __init__(self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None):
+        super().__init__(midi_helper, parent)
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle("Analog Synth")
+        self.setMinimumSize(800, 600)
+        self.resize(900, 600)
+        self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
+
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
+
+        # Main layout
+        main_layout.addLayout(self.create_instrument_selection_layout())
+
+        # Create scroll area for resizable content
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+
+        self.tab_widget = QTabWidget()
+        container_layout.addWidget(self.tab_widget)
+
+        self.tab_widget.addTab(OscillatorSection(self.controls), "Oscillator")
+        self.tab_widget.addTab(FilterSection(self.controls), "Filter")
+        self.tab_widget.addTab(AmpSection(self.controls), "Amp")
+        self.tab_widget.addTab(LFOSection(self.controls), "LFO")
+
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
+
+    def create_instrument_selection_layout(self):
+        upper_layout = QHBoxLayout()
+        instrument_preset_group = QGroupBox("Analog Synth")
+        self.instrument_title_label = QLabel("Analog Synth")
+        instrument_title_group_layout = QVBoxLayout()
+        instrument_preset_group.setLayout(instrument_title_group_layout)
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+
+        self.instrument_selection_label = QLabel("Select an Analog synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
+        self.instrument_selection_combo.setEditable(True)
+        self.instrument_selection_combo.currentIndexChanged.connect(self.update_instrument_image)
+        self.instrument_selection_combo.currentIndexChanged.connect(self.update_instrument_title)
+        self.instrument_selection_combo.load_button.clicked.connect(self.update_instrument_preset)
+        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+
+        upper_layout.addWidget(instrument_preset_group)
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        upper_layout.addWidget(self.instrument_image_label)
+
+        return upper_layout
+
+    # ... Additional methods for handling UI updates
 
 """
 
