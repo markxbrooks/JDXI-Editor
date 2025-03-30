@@ -37,7 +37,7 @@ from jdxi_editor.ui.widgets.switch.switch import Switch
 
 class SynthBase(QWidget):
     """ base class for all synth editors """
-    def __init__(self, midi_helper, parent):
+    def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = []
         self.group = None

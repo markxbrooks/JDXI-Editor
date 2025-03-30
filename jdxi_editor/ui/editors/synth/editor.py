@@ -50,6 +50,7 @@ class SynthEditor(SynthBase):
         self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(midi_helper, parent)
+        self.default_image = None
         self.instrument_title_label = None
         self.image_label = None
         self.instrument_icon_folder = None
@@ -136,7 +137,7 @@ class SynthEditor(SynthBase):
         raise NotImplementedError
 
     def set_instrument_title_label(self, name: str):
-        self.instrument_title_label.setText(f"Synth:\n {name}")
+        self.instrument_title_label.setText(f"Tone:\n {name}")
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -146,7 +147,7 @@ class SynthEditor(SynthBase):
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         logging.info(f"selected_synth_text: {selected_synth_text}")
-        self.instrument_title_label.setText(f"Analog Synth:\n {selected_synth_text}")
+        self.instrument_title_label.setText(f"Current Tone:\n {selected_synth_text}")
 
     def update_instrument_preset(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
@@ -159,63 +160,6 @@ class SynthEditor(SynthBase):
             one_based_preset_index = int(selected_synth_padded_number)
             logging.info(f"preset_index: {one_based_preset_index}")
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
-
-    def update_instrument_image(self):
-        """tart up ui with image"""
-        class_name = self.__class__.__name__.lower()  # Get class name in lowercase
-        default_image_path = os.path.join("resources", class_name, f"{class_name}.png")
-
-        def load_and_set_image(image_path, secondary_image_path=None):
-            """Helper function to load and set the image on the label."""
-            file_to_load = ""
-
-            if os.path.exists(image_path):
-                file_to_load = image_path
-            elif os.path.exists(secondary_image_path):
-                file_to_load = secondary_image_path
-            else:
-                file_to_load = os.path.join(
-                    "resources", self.instrument_icon_folder, "analog.png"
-                )
-            pixmap = QPixmap(file_to_load)
-            scaled_pixmap = pixmap.scaledToHeight(
-                250, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-
-        selected_instrument_text = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )
-
-        # Try to extract synth name from the selected text
-        image_loaded = False
-        if instrument_matches := re.search(
-            r"(\d{3}): (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
-        ):
-            selected_instrument_name = (
-                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
-            )
-            selected_instrument_type = (
-                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
-            )
-            logging.info(f"selected_instrument_type: {selected_instrument_type}")
-            specific_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_name}.png",
-            )
-            generic_image_path = os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_type}.png",
-            )
-            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
-
-        # Fallback to default image if no specific image is found
-        if not image_loaded:
-            if not load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def load_preset(self, preset_index):
         """Load address preset by index"""
@@ -295,3 +239,63 @@ class SynthEditor(SynthBase):
                 )
         else:
             logging.info("No changes detected.")
+
+    def update_instrument_image(self):
+        """Update the instrument image based on the selected synth."""
+        logging.info(f"loading instrument image")
+
+        def load_and_set_image(image_path, secondary_image_path=None):
+            """Helper function to load and set the image on the label."""
+            file_to_load = ""
+            if os.path.exists(image_path):
+                file_to_load = image_path
+            elif os.path.exists(secondary_image_path):
+                file_to_load = secondary_image_path
+            else:
+                file_to_load = os.path.join(
+                    "resources", self.instrument_icon_folder, self.default_image
+                )
+            pixmap = QPixmap(file_to_load)
+            scaled_pixmap = pixmap.scaledToHeight(
+                150, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 250px height
+            self.image_label.setPixmap(scaled_pixmap)
+            return True
+
+        default_image_path = os.path.join(
+            "resources", self.instrument_icon_folder, self.default_image
+        )
+        selected_instrument_text = (
+            self.instrument_selection_combo.combo_box.currentText()
+        )
+        logging.info(f"selected instrument text: {selected_instrument_text}")
+        # Try to extract synth name from the selected text
+        image_loaded = False
+        if instrument_matches := re.search(
+            r"(\d{3}) - (\S+)\s(\S+)+", selected_instrument_text, re.IGNORECASE
+        ):
+            selected_instrument_name = (
+                instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
+            )
+            logging.info(f"selected instrument text: {selected_instrument_name}")
+            selected_instrument_type = (
+                instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
+            )
+            logging.info(f"selected_instrument_type: {selected_instrument_type}")
+            specific_image_path = os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                f"{selected_instrument_name}.png",
+            )
+            generic_image_path = os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                f"{selected_instrument_type}.png",
+            )
+            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
+
+        # Fallback to default image if no specific image is found
+        if not image_loaded:
+            if not load_and_set_image(default_image_path):
+                self.image_label.clear()  # Clear label if default image is also missing
+

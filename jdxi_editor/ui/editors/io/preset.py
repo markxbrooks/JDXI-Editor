@@ -193,7 +193,7 @@ class PresetEditor(SynthEditor):
                 color: {Style.ACCENT};
             """
         )
-        self.digital_synth_1_current_synth = QLabel("Current Synth:")
+        self.digital_synth_1_current_synth = QLabel("Current Tone:")
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_synth)
         self.digital_synth_1_current_synth.setStyleSheet(
             f"""
@@ -218,7 +218,7 @@ class PresetEditor(SynthEditor):
                 color: {Style.ACCENT};
             """
         )
-        self.digital_synth_2_current_synth = QLabel("Current Synth:")
+        self.digital_synth_2_current_synth = QLabel("Current Tone:")
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_synth)
         self.digital_synth_2_current_synth.setStyleSheet(
             f"""
@@ -243,7 +243,7 @@ class PresetEditor(SynthEditor):
                 color: {Style.ACCENT};
             """
         )
-        self.drum_kit_current_synth = QLabel("Current Synth:")
+        self.drum_kit_current_synth = QLabel("Current Tone:")
         self.drum_kit_hlayout.addWidget(self.drum_kit_current_synth)
         self.drum_kit_current_synth.setStyleSheet(
             f"""
@@ -269,7 +269,8 @@ class PresetEditor(SynthEditor):
                 color: {Style.ACCENT_ANALOG};
             """
         )
-        self.analog_synth_current_synth = QLabel("Current Synth:")
+        self.analog_synth_current_synth = QLabel("Current Tone:")
+        self.analog_synth_current_synth = QLabel("Current Tone:")
         self.analog_synth_hlayout.addWidget(self.analog_synth_current_synth)
         self.analog_synth_current_synth.setStyleSheet(
             f"""

@@ -30,10 +30,9 @@ Dependencies:
 
 """
 
-from PySide6.QtGui import QPainter, QColor, QPen, QFont, QLinearGradient
 from PySide6.QtWidgets import QWidget, QSizePolicy
+from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
 
-from jdxi_editor.midi.program.helper import get_previous_program_bank_and_number
 from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name
 
 
@@ -72,11 +71,8 @@ class DigitalDisplay(QWidget):
         painter = QPainter(self)
         if not painter.isActive():
             return  # Prevents drawing if painter failed to initialize
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.Antialiasing, False)
         self.draw_display(painter)
-
-    from PySide6.QtGui import QPainter, QLinearGradient, QRadialGradient, QColor, QPen, QFont
-    from PySide6.QtCore import Qt
 
     def draw_display(self, painter: QPainter):
         """Draws the JD-Xi style digital display with a gradient glow effect."""
@@ -93,6 +89,7 @@ class DigitalDisplay(QWidget):
         gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
 
         painter.setBrush(gradient)
+        painter.setRenderHint(QPainter.Antialiasing, False)
         painter.setPen(QPen(QColor("#000000"), 2))  # black border
         painter.drawRect(display_x, display_y, display_width, display_height)
 
@@ -122,34 +119,6 @@ class DigitalDisplay(QWidget):
         painter.drawText(display_x + 7, display_y + 50, tone_name_text)
         painter.drawText(display_x + 7, display_y + 20, program_text)
         painter.drawText(display_x + display_width - 80, display_y + 50, oct_text)
-
-    def draw_display_old(self, painter: QPainter):
-        """Draws the digital display contents."""
-        display_x, display_y = 0, 0
-        display_width, display_height = self.width(), self.height()
-
-        # Draw display background
-        painter.setBrush(QColor("#1A1A1A"))
-        painter.setPen(QPen(QColor("#FF8C00"), 1))
-        painter.drawRect(display_x, display_y, display_width, display_height)
-
-        # Set up font for digital display
-        display_font = QFont(self.digital_font_family, 12)
-        painter.setFont(display_font)
-        painter.setPen(QPen(QColor("#FF8C00")))  # Orange color for text
-
-        # Draw preset number and name
-        tone_name_text = f" {self.active_synth}:{self.tone_name}"
-        tone_name_text = tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
-        # program_text = f"{self.program_bank_letter}{self.program_number:02d}:{self.program_name}"
-        program_text = f"{self.program_id}:{self.program_name}"
-        program_text = program_text[:21] + "…" if len(program_text) > 22 else program_text
-        painter.drawText(display_x + 7, display_y + 50, tone_name_text)
-        painter.drawText(display_x + 7, display_y + 20, program_text)
-
-        # Draw octave display
-        oct_text = f"Octave {self.current_octave:+}" if self.current_octave else "Octave 0"
-        painter.drawText(display_x + display_width - 60, display_y + 50, oct_text)
 
     # --- Property Setters ---
     def setPresetText(self, text: str):

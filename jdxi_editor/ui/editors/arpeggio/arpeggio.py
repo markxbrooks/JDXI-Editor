@@ -60,7 +60,7 @@ from jdxi_editor.midi.data.constants.arpeggio import (
 )
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors import SynthEditor
 
 
 class ArpeggioEditor(SynthEditor):
@@ -74,6 +74,8 @@ class ArpeggioEditor(SynthEditor):
         self.part = ARP_PART
         self.group = ARP_GROUP
         self.partial_number = 0
+        self.instrument_icon_folder = "arpeggiator"
+        self.default_image = "arpeggiator2.png"
         if parent:
             if parent.current_synth_type:
                 if parent.current_synth_type == "Digital 1":
@@ -195,7 +197,7 @@ class ArpeggioEditor(SynthEditor):
 
         # Define paths
         default_image_path = os.path.join(
-            "resources", "arpeggiator", "arpeggiator2.png"
+            "resources", self.instrument_icon_folder, self.default_image
         )
 
         if not image_loaded:
