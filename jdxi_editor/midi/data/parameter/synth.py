@@ -119,9 +119,4 @@ class SynthParameter(Enum):
         if self.max_val <= 127:
             return 1
         else:
-            return 4  # dont know of any other sizes
-
-    def convert_to_midi_test(self) -> int:
-        """ convert to midi value"""
-        return value
-
+            return 4  # I don't know of any other sizes

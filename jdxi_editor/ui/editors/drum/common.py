@@ -87,7 +87,7 @@ from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, DRUMS_REQUES
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
@@ -109,7 +109,7 @@ class DrumCommonEditor(SynthEditor):
         # Presets
         self.preset_type = SynthType.DRUMS
         self.preset_helper = preset_helper
-        self.preset_list = DRUM_PRESETS_ENUMERATED
+        self.presets = DRUM_PRESETS_ENUMERATED
 
         # midi parameters
         self.partial_num = 1
@@ -149,13 +149,13 @@ class DrumCommonEditor(SynthEditor):
         self.midi_requests = DRUMS_REQUESTS
         self.midi_channel = MIDI_CHANNEL_DRUMS
         self.instrument_icon_folder = "drum_kits"
-        self.default_image = "drums.png"
+        self.instrument_default_image = "drums.png"
         # UI parameters
         self.main_window = parent
         self.partial_editors = {}
         self.partial_tab_widget = QTabWidget()
 
-        self.image_label = None
+        self.instrument_image_label = None
         # Main layout
         self.controls: Dict[DrumPartialParameter, QWidget] = {}
 
@@ -215,11 +215,11 @@ class DrumCommonEditor(SynthEditor):
         upper_layout.addWidget(drum_group)
 
         # Image display
-        self.image_label = QLabel()
-        self.image_label.setAlignment(
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        upper_layout.addWidget(self.image_label)
+        upper_layout.addWidget(self.instrument_image_label)
 
         # Common controls
         common_group = QGroupBox("Common")
@@ -373,6 +373,10 @@ class DrumCommonEditor(SynthEditor):
         except IndexError:
             logging.error(f"Invalid partial index: {index}")
 
+    def _on_parameter_received(self, address, value):
+        """Fixme: to implement"""
+        pass
+
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
@@ -413,7 +417,7 @@ class DrumCommonEditor(SynthEditor):
                 sysex_data = json.loads(json_data)
                 self.previous_data = self.current_data
                 self.current_data = sysex_data
-                self._log_changes(self.previous_data, sysex_data)
+                _log_changes(self.previous_data, sysex_data)
                 return sysex_data
             except json.JSONDecodeError as ex:
                 logging.error(f"Invalid JSON format: {ex}")
@@ -563,7 +567,7 @@ class DrumCommonEditor(SynthEditor):
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
             self.current_data = sysex_data
-            self._log_changes(self.previous_data, sysex_data)
+            _log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return

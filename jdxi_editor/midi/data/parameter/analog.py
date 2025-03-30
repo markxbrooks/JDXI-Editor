@@ -77,7 +77,7 @@ class AnalogParameter(SynthParameter):
     # OSC_DETUNE = (0x04, 14, 114)
     OSC_PULSE_WIDTH = (0x19, 0, 127)
     OSC_PULSE_WIDTH_MOD_DEPTH = (0x1A, 0, 127)
-    OSC_PITCH_ENV_VELOCITY_SENS = (0x1B, 1, 127, -63, 63)  # -63 - +63
+    OSC_PITCH_ENV_VELOCITY_SENSITIVITY = (0x1B, 1, 127, -63, 63)  # -63 - +63
     OSC_PITCH_ENV_ATTACK_TIME = (0x1C, 0, 127)
     OSC_PITCH_ENV_DECAY = (0x1D, 0, 127)
     OSC_PITCH_ENV_DEPTH = (0x1E, 1, 127, -63, 63)  # -63 - +63
@@ -88,7 +88,7 @@ class AnalogParameter(SynthParameter):
     FILTER_CUTOFF = (0x21, 0, 127, 0, 127)  # 0-127
     FILTER_CUTOFF_KEYFOLLOW = (0x22, 54, 74)
     FILTER_RESONANCE = (0x23, 0, 127, 0, 127)
-    FILTER_ENV_VELOCITY_SENS = (0x24, 1, 127, -63, 63)  # -63 - +63
+    FILTER_ENV_VELOCITY_SENSITIVITY = (0x24, 1, 127, -63, 63)  # -63 - +63
     FILTER_ENV_ATTACK_TIME = (0x25, 0, 127)
     FILTER_ENV_DECAY_TIME = (0x26, 0, 127)
     FILTER_ENV_SUSTAIN_LEVEL = (0x27, 0, 127)
@@ -98,7 +98,7 @@ class AnalogParameter(SynthParameter):
     # Amplifier Parameters
     AMP_LEVEL = (0x2A, 0, 127)
     AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74, -100, 100)  # -100 - +100
-    AMP_LEVEL_VELOCITY_SENS = (0x2C, 1, 127, -63, 63)  # -63 - +63
+    AMP_LEVEL_VELOCITY_SENSITIVITY = (0x2C, 1, 127, -63, 63)  # -63 - +63
     AMP_ENV_ATTACK_TIME = (0x2D, 0, 127)
     AMP_ENV_DECAY_TIME = (0x2E, 0, 127)
     AMP_ENV_SUSTAIN_LEVEL = (0x2F, 0, 127)
@@ -136,16 +136,20 @@ class AnalogParameter(SynthParameter):
             "LFO_TEMPO_SYNC_SWITCH",
         ]
         self.bipolar_parameters = [
-            "FILTER_ENV_VELOCITY_SENS",
+            "LFO_PITCH_DEPTH",
+            "LFO_FILTER_DEPTH",
+            "LFO_AMP_DEPTH",
+            "FILTER_ENV_VELOCITY_SENSITIVITY",
+            "AMP_LEVEL_VELOCITY_SENSITIVITY",
             "AMP_LEVEL_KEYFOLLOW",
-            "OSC_PITCH_ENV_VELOCITY_SENS",
+            "OSC_PITCH_ENV_VELOCITY_SENSITIVITY",
             "OSC_PITCH_COARSE",
             "OSC_PITCH_FINE",
             "LFO_PITCH_MODULATION_CONTROL",
             "LFO_AMP_MODULATION_CONTROL",
             "LFO_FILTER_MODULATION_CONTROL",
-            "OSC_PITCH_ENV_DEPTH",
             "LFO_RATE_MODULATION_CONTROL",
+            "OSC_PITCH_ENV_DEPTH",
             "FILTER_ENV_DEPTH",
         ]
 
@@ -220,55 +224,6 @@ class AnalogParameter(SynthParameter):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
-    def convert_from_display(self, display_value: int) -> int:
-        """Convert from display value to MIDI value (0-127)"""
-        # Handle bipolar parameters
-        if self in [
-            self.OSC_PITCH_COARSE,
-            self.OSC_PITCH_FINE,
-            self.FILTER_CUTOFF_KEYFOLLOW,
-            self.FILTER_ENV_VELOCITY_SENS,
-            self.LFO_AMP_DEPTH,
-            self.AMP_LEVEL_KEYFOLLOW,
-            self.OSC_PITCH_ENV_DEPTH,
-            self.OSC_PITCH_ENV_VELOCITY_SENS,
-            self.LFO_PITCH_MODULATION_CONTROL,
-            self.LFO_AMP_MODULATION_CONTROL,
-            self.LFO_FILTER_MODULATION_CONTROL,
-            self.LFO_RATE_MODULATION_CONTROL,
-            self.FILTER_ENV_DEPTH,
-        ]:
-
-            # Convert from display range to MIDI range
-            if self == self.OSC_PITCH_COARSE:
-                return display_value + 24
-            elif self == self.OSC_PITCH_FINE:
-                return display_value + 50
-            elif self in [
-                self.FILTER_CUTOFF_KEYFOLLOW,
-                self.FILTER_ENV_VELOCITY_SENS,
-                self.LFO_AMP_DEPTH,
-                self.AMP_LEVEL_KEYFOLLOW,
-                self.OSC_PITCH_ENV_VELOCITY_SENS,
-                self.LFO_PITCH_MODULATION_CONTROL,
-                self.LFO_AMP_MODULATION_CONTROL,
-                self.LFO_FILTER_MODULATION_CONTROL,
-                self.LFO_RATE_MODULATION_CONTROL,
-                self.FILTER_ENV_DEPTH,
-            ]:
-                return display_value + 64  # -63 to +63 -> 0 to 127
-            else:
-                return display_value + 63  # -63 to +63 -> 0 to 126
-
-        return display_value
-
-    @staticmethod
-    def convert_to_display(value, min_val, max_val, display_min, display_max):
-        """Convert address value to address display value within address range."""
-        if min_val == max_val:
-            return display_min
-        return int((value - min_val) * (display_max - display_min) / (max_val - min_val) + display_min)
-
     def convert_to_midi(self, display_value: int) -> int:
         """Convert from display value to MIDI value"""
         # Handle special bipolar cases first
@@ -325,4 +280,3 @@ class AnalogParameter(SynthParameter):
         group_map = {0: 0x00}
         group = group_map.get(partial_num, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
-

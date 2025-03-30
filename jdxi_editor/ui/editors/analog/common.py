@@ -41,11 +41,8 @@ Example:
 
 """
 
-import os
-import re
 import json
 import logging
-from functools import partial
 from typing import Optional, Dict, Union
 
 from PySide6.QtWidgets import (
@@ -60,7 +57,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QPixmap, QShortcut, QKeySequence
+from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
@@ -78,7 +75,6 @@ from jdxi_editor.midi.utils.conversions import (
 )
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_editor.midi.data.constants.analog import (
-    AnalogControlChange,
     Waveform,
     SubOscType,
     ANALOG_PART,
@@ -86,8 +82,7 @@ from jdxi_editor.midi.data.constants.analog import (
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
 from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
-from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import Style
@@ -105,21 +100,49 @@ class AnalogCommonEditor(SynthEditor):
             self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
-        self.default_image = "analog.png"
         self.bipolar_parameters = [
-            AnalogParameter.FILTER_ENV_VELOCITY_SENS,
+            AnalogParameter.LFO_PITCH_DEPTH,
+            AnalogParameter.LFO_FILTER_DEPTH,
+            AnalogParameter.LFO_AMP_DEPTH,
+            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
+            AnalogParameter.AMP_LEVEL_VELOCITY_SENSITIVITY,
             AnalogParameter.AMP_LEVEL_KEYFOLLOW,
-            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENS,
+            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
             AnalogParameter.OSC_PITCH_COARSE,
             AnalogParameter.OSC_PITCH_FINE,
             AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
             AnalogParameter.LFO_AMP_MODULATION_CONTROL,
             AnalogParameter.LFO_FILTER_MODULATION_CONTROL,
-            AnalogParameter.OSC_PITCH_ENV_DEPTH,
             AnalogParameter.LFO_RATE_MODULATION_CONTROL,
+            AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
+            AnalogParameter.OSC_PITCH_ENV_DEPTH,
             AnalogParameter.FILTER_ENV_DEPTH,
             # Add other bipolar parameters as needed
         ]
+        # Define parameter mappings
+        self.cc_parameters = {
+            "Cutoff": 102,
+            "Resonance": 105,
+            "Level": 117,
+            "LFO Rate": 16,
+        }
+        self.nrpn_parameters = {
+            "Envelope": (0, 124),
+            "LFO Shape": (0, 3),
+            "LFO Pitch Depth": (0, 15),
+            "LFO Filter Depth": (0, 18),
+            "LFO Amp Depth": (0, 21),
+            "Pulse Width": (0, 37),
+        }
+        # NRPN Address Mapping
+        self.nrpn_map = {
+            (0, 124): "Envelope",
+            (0, 3): "LFO Shape",
+            (0, 15): "LFO Pitch Depth",
+            (0, 18): "LFO Filter Depth",
+            (0, 21): "LFO Amp Depth",
+            (0, 37): "Pulse Width",
+        }
         self.area = TEMPORARY_TONE_AREA
         self.group = ANALOG_OSC_GROUP
         self.part = ANALOG_PART
@@ -130,9 +153,10 @@ class AnalogCommonEditor(SynthEditor):
         # Allow resizing
         self.setMinimumSize(800, 600)
         self.resize(900, 600)
-        self.image_label = QLabel()
+        self.instrument_default_image = "analog.png"
+        self.instrument_image_label = QLabel()
         self.instrument_icon_folder = "analog_synths"
-        self.image_label.setAlignment(
+        self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
         self.main_window = parent
@@ -205,7 +229,7 @@ class AnalogCommonEditor(SynthEditor):
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         upper_layout.addWidget(instrument_preset_group)
-        upper_layout.addWidget(self.image_label)
+        upper_layout.addWidget(self.instrument_image_label)
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
         # Add sections side by side
@@ -342,7 +366,7 @@ class AnalogCommonEditor(SynthEditor):
         pitch_env_group.setLayout(pitch_env_layout)
 
         self.pitch_env_velo = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENS, "Mod Depth"
+            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
         )
         self.pitch_env_attack = self._create_parameter_slider(
             AnalogParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
@@ -436,7 +460,7 @@ class AnalogCommonEditor(SynthEditor):
         )
 
         self.filter_env_velocity_sens = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_VELOCITY_SENS, "Env. Velocity Sens."
+            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Env. Velocity Sens."
         )
         filter_group_layout.addWidget(self.filter_cutoff)
         filter_group_layout.addWidget(self.filter_resonance)
@@ -685,50 +709,6 @@ class AnalogCommonEditor(SynthEditor):
                         "updating waveform buttons for param {param} with {value}"
                     )
 
-    def _update_pw_controls_state(self, waveform: Waveform):
-        """Enable/disable PW controls based on waveform"""
-        pw_enabled = waveform == Waveform.PULSE
-        self.osc_pulse_width.setEnabled(pw_enabled)
-        self.osc_pulse_width_mod_depth.setEnabled(pw_enabled)
-        # Update the visual state
-        self.osc_pulse_width.setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
-        )
-        self.osc_pulse_width_mod_depth.setStyleSheet(
-            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
-        )
-
-    def update_slider_from_adsr(self, param, value):
-        """Updates external control from ADSR widget, avoiding infinite loops."""
-        control = self.controls[param]
-        if param in [
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = frac_to_midi_cc(value)
-        else:
-            new_value = ms_to_midi_cc(value)
-        if control.value() != new_value:
-            control.blockSignals(True)
-            control.setValue(new_value)
-            control.blockSignals(False)
-
-    def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
-        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
-        spinbox = control_map[param]
-        if param in [
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = midi_cc_to_frac(value)
-        else:
-            new_value = midi_cc_to_ms(value)
-        if spinbox.value() != new_value:
-            spinbox.blockSignals(True)
-            spinbox.setValue(new_value)
-            spinbox.blockSignals(False)
-            self.filter_adsr_widget.valueChanged()
-
     def _on_waveform_selected(self, waveform: Waveform):
         """Handle waveform button selection KEEP!"""
         if self.midi_helper:
@@ -749,17 +729,6 @@ class AnalogCommonEditor(SynthEditor):
                 selected_btn.setChecked(True)
                 selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
             self._update_pw_controls_state(waveform)
-
-    def send_control_change(self, control_change: AnalogControlChange, value: int):
-        """Send MIDI CC message"""
-        if self.midi_helper:
-            # Convert enum to int if needed
-            control_change_number = (
-                control_change.value
-                if isinstance(control_change, AnalogControlChange)
-                else control_change
-            )
-            self.midi_helper.send_control_change(control_change_number, value, MIDI_CHANNEL_ANALOG)
 
     def _on_lfo_shape_changed(self, value: int):
         """Handle LFO shape change"""
@@ -793,7 +762,7 @@ class AnalogCommonEditor(SynthEditor):
 
         # Compare with previous data and log changes
         if self.previous_json_data:
-            self._log_changes(self.previous_json_data, current_sysex_data)
+            _log_changes(self.previous_json_data, current_sysex_data)
 
         # Store the current data for future comparison
         self.previous_json_data = current_sysex_data
@@ -952,82 +921,15 @@ class AnalogCommonEditor(SynthEditor):
         else:
             logging.warning(f"Unknown LFO shape value: {value}")
 
-    def send_analog_synth_parameter(self, parameter: str, value: int, channel: int = 0) -> bool:
-        """
-        Send a MIDI Control Change or NRPN message for an Analog Synth parameter.
-
-        Args:
-            parameter: The name of the parameter to modify.
-            value: The parameter value (0-127).
-            channel: The MIDI channel (0-15).
-
-        Returns:
-            True if successful, False otherwise.
-        """
-        # Define parameter mappings
-        cc_parameters = {
-            "Cutoff": 102,
-            "Resonance": 105,
-            "Level": 117,
-            "LFO Rate": 16,
-        }
-
-        nrpn_parameters = {
-            "Envelope": (0, 124),
-            "LFO Shape": (0, 3),
-            "LFO Pitch Depth": (0, 15),
-            "LFO Filter Depth": (0, 18),
-            "LFO Amp Depth": (0, 21),
-            "Pulse Width": (0, 37),
-        }
-
-        if parameter in cc_parameters:
-            # Send as a Control Change (CC) message
-            controller = cc_parameters[parameter]
-            return self.midi_helper.send_control_change(controller, value, channel)
-
-        elif parameter in nrpn_parameters:
-            # Send as an NRPN message
-            msb, lsb = nrpn_parameters[parameter]
-            return self.midi_helper.send_nrpn((msb << 7) | lsb, value, channel)
-
-        else:
-            logging.error(f"Invalid Analog Synth parameter: {parameter}")
-            return False
-
-    def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
-        """Process incoming NRPN messages and update UI controls."""
-        logging.info(f"Received NRPN {nrpn_address} with value {value} on channel {channel}")
-
-        # NRPN Address Mapping
-        nrpn_map = {
-            (0, 124): "Envelope",
-            (0, 3): "LFO Shape",
-            (0, 15): "LFO Pitch Depth",
-            (0, 18): "LFO Filter Depth",
-            (0, 21): "LFO Amp Depth",
-            (0, 37): "Pulse Width",
-        }
-
-        # Find matching parameter
-        msb = nrpn_address >> 7
-        lsb = nrpn_address & 0x7F
-        param_name = nrpn_map.get((msb, lsb))
-
-        if param_name:
-            # Update slider or control
-            param = AnalogParameter.get_by_name(param_name)
-            if param:
-                self._update_slider(param, value)
-        else:
-            logging.warning(f"Unrecognized NRPN {nrpn_address}")
-
-    def _update_slider(self, param, value):
-        """Safely update sliders from NRPN messages."""
-        slider = self.controls.get(param)
-        if slider:
-            slider_value = param.convert_from_midi(value)
-            slider.blockSignals(True)
-            slider.setValue(slider_value)
-            slider.blockSignals(False)
-            logging.info(f"Updated {param.name} slider to {slider_value}")
+    def _update_pw_controls_state(self, waveform: Waveform):
+        """Enable/disable PW controls based on waveform"""
+        pw_enabled = waveform == Waveform.PULSE
+        self.osc_pulse_width.setEnabled(pw_enabled)
+        self.osc_pulse_width_mod_depth.setEnabled(pw_enabled)
+        # Update the visual state
+        self.osc_pulse_width.setStyleSheet(
+            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+        )
+        self.osc_pulse_width_mod_depth.setStyleSheet(
+            "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
+        )

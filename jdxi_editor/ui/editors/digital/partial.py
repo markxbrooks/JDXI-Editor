@@ -335,18 +335,20 @@ class DigitalPartialEditor(PartialEditor):
         type_row = QHBoxLayout()
 
         # Filter mode switch
-        self.filter_mode = Switch(
-            "Mode", ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"]
-        )
-        self.filter_mode.valueChanged.connect(lambda v: self._on_filter_mode_changed(v))
-        type_row.addWidget(self.filter_mode)
+        self.filter_mode_switch = self._create_parameter_switch(DigitalPartialParameter.FILTER_MODE,
+                                                                "Mode",
+                                                                ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3",
+                                                                 "LPF4"]
+                                                                )
+        self.filter_mode_switch.valueChanged.connect(lambda v: self._on_filter_mode_changed(v))
+        type_row.addWidget(self.filter_mode_switch)
 
         # Filter slope switch
-        self.filter_slope = Switch("Slope", ["-12dB", "-24dB"])
-        self.filter_slope.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalPartialParameter.FILTER_SLOPE, v)
-        )
-        type_row.addWidget(self.filter_slope)
+        self.filter_slope_switch = self._create_parameter_switch(DigitalPartialParameter.FILTER_SLOPE,
+                                                                 "Slope",
+                                                                 ["-12dB", "-24dB"])
+        self.filter_slope_switch = Switch("Slope", ["-12dB", "-24dB"])
+        type_row.addWidget(self.filter_slope_switch)
         filter_layout.addLayout(type_row)
 
         # Main filter controls
@@ -541,8 +543,6 @@ class DigitalPartialEditor(PartialEditor):
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
-        # Send MIDI message
-        self._on_parameter_changed(DigitalPartialParameter.FILTER_MODE, mode)
 
         # Update control states
         self._update_filter_controls_state(mode)
@@ -726,7 +726,7 @@ class DigitalPartialEditor(PartialEditor):
 
         # Ensure `depths_group` layout is only set once
         if (
-            not depths_group.layout()
+                not depths_group.layout()
         ):  # Check if the area already has address layout assigned
             depths_group.setLayout(depths_layout)
 
