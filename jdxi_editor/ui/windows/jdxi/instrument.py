@@ -56,11 +56,11 @@ from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
 from jdxi_editor.ui.editors import (
-    AnalogSynthEditor,
+    AnalogCommonEditor,
     DigitalCommonEditor,
     DrumCommonEditor,
     ArpeggioEditor,
-    EffectsEditor,
+    EffectsCommonEditor,
     VocalFXEditor,
     ProgramEditor,
     MidiFileEditor,
@@ -503,7 +503,7 @@ class JdxiInstrument(JdxiUi):
         )
 
     def _show_analog_synth_editor(self, editor_type: str):
-        self._show_editor("Analog Synth", AnalogSynthEditor)
+        self._show_editor("Analog Synth", AnalogCommonEditor)
         self.channel = MIDI_CHANNEL_ANALOG
         self.preset_type = SynthType.ANALOG
 
@@ -696,7 +696,7 @@ class JdxiInstrument(JdxiUi):
             if editor_class in [
                 DigitalCommonEditor,
                 DrumCommonEditor,
-                AnalogSynthEditor,
+                AnalogCommonEditor,
                 PatternSequencer,
                 ProgramEditor,
                 PresetEditor,
@@ -749,7 +749,7 @@ class JdxiInstrument(JdxiUi):
         self.midi_in_indicator.flash()
 
     def _open_analog_synth(self):
-        self._show_editor("Analog Synth", AnalogSynthEditor)
+        self._show_editor("Analog Synth", AnalogCommonEditor)
         self.preset_type = SynthType.ANALOG
         self.current_synth_type = SynthType.ANALOG
         self.channel = MIDI_CHANNEL_ANALOG
@@ -798,7 +798,7 @@ class JdxiInstrument(JdxiUi):
         """Show the effects editor window"""
         try:
             if not hasattr(self, "effects_editor"):
-                self.effects_editor = EffectsEditor(
+                self.effects_editor = EffectsCommonEditor(
                     midi_helper=self.midi_helper,  # Pass midi_helper instead of midi_out
                     parent=self,
                 )

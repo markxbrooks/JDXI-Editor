@@ -96,7 +96,7 @@ from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
-class AnalogSynthEditor(SynthEditor):
+class AnalogCommonEditor(SynthEditor):
     """Analog Synth"""
 
     # preset_changed = Signal(int, str, int)
