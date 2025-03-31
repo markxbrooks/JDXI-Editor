@@ -22,6 +22,7 @@ Classes:
 import logging
 import time
 from tokenize import group
+from typing import Dict
 
 from PySide6.QtWidgets import QWidget
 
@@ -43,7 +44,9 @@ class SynthBase(QWidget):
         self.group = None
         self.area = None
         self.part = None
-        self.controls = None
+        self.controls: Dict[
+            SynthParameter, QWidget
+        ] = {}
         self.midi_helper = midi_helper
         self.midi_requests = []
 
