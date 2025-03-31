@@ -96,7 +96,7 @@ class JdxiUi(QMainWindow):
         self.digital_font_family = None
 
         # Initialize MIDI helper
-        self.midi_helper = MidiIOHelper(parent=self)
+        self.midi_helper = MidiIOHelper()
         # Initialize MIDI indicators
         self.midi_in_indicator = MIDIIndicator()
         self.midi_out_indicator = MIDIIndicator()

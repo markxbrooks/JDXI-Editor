@@ -93,9 +93,6 @@ def _find_jdxi_port(ports, port_type):
 
 
 class JdxiInstrument(JdxiUi):
-    midi_program_changed = Signal(
-        int, int
-    )  # Add signal for program changes (channel, program) @@@
 
     def __init__(self):
         super().__init__()
@@ -125,7 +122,7 @@ class JdxiInstrument(JdxiUi):
             self.midi_out.delete()  # Use delete() instead of close()
         if self.midi_helper:
             self.midi_helper.close_ports()
-        self.midi_helper = MidiIOHelper(parent=self)
+        self.midi_helper = MidiIOHelper()
         # Initialize windows to None
         self.log_viewer = None
         self.midi_debugger = None
