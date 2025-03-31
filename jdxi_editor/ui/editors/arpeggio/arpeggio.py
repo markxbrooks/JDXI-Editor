@@ -37,11 +37,12 @@ Dependencies:
 """
 
 import os
+from typing import Dict
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
-    QLabel,
+    QLabel, QWidget,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
@@ -58,7 +59,9 @@ from jdxi_editor.midi.data.constants.arpeggio import (
     ARP_GROUP,
     ArpOctaveRange, ArpMotif,
 )
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
+from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
 
@@ -76,6 +79,10 @@ class ArpeggioEditor(SynthEditor):
         self.partial_number = 0
         self.instrument_icon_folder = "arpeggiator"
         self.default_image = "arpeggiator2.png"
+        self.controls: Dict[
+            SynthParameter, QWidget
+        ] = {}
+
         if parent:
             if parent.current_synth_type:
                 if parent.current_synth_type == "Digital 1":
@@ -98,6 +105,7 @@ class ArpeggioEditor(SynthEditor):
             font-weight: bold;
             """
         )
+
         layout.addWidget(self.title_label)
         # Image display
         self.image_label = QLabel()
@@ -113,6 +121,7 @@ class ArpeggioEditor(SynthEditor):
                                                       "Master Arpeggiator",
                                                       ["OFF", "ON"])
         program_zone_row.addWidget(common_button)
+
         layout.addLayout(program_zone_row)
 
         # Add on-off switch
