@@ -123,6 +123,7 @@ class JdxiInstrument(JdxiUi):
         if self.midi_helper:
             self.midi_helper.close_ports()
         self.midi_helper = MidiIOHelper()
+        self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         # Initialize windows to None
         self.log_viewer = None
         self.midi_debugger = None
@@ -251,6 +252,10 @@ class JdxiInstrument(JdxiUi):
             synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
             for synth_type, presets, channel in preset_configs
         }
+
+    def _handle_program_change(self):
+        """ perform data request """
+        self.data_request()
 
     def _get_preset_helper_for_current_synth(self):
         """Return the appropriate preset handler based on the current synth preset_type."""
