@@ -95,7 +95,7 @@ def _find_jdxi_port(ports, port_type):
 class JdxiInstrument(JdxiUi):
     midi_program_changed = Signal(
         int, int
-    )  # Add signal for program changes (channel, program)
+    )  # Add signal for program changes (channel, program) @@@
 
     def __init__(self):
         super().__init__()
