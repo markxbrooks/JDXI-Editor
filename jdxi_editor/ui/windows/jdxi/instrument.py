@@ -283,7 +283,8 @@ class JdxiInstrument(JdxiUi):
         self.current_program_id = get_program_id_by_name(program_name)
         if not self.current_program_id:
             self.current_program_number = 0
-        self.current_program_number = int(self.current_program_id[1:])
+        else:
+            self.current_program_number = int(self.current_program_id[1:])
         self._update_display()
 
     def set_current_program_number(self, channel: int, program_number: int):
@@ -302,7 +303,7 @@ class JdxiInstrument(JdxiUi):
         # Define SysEx messages as byte arrays
         for request in self.midi_requests:
             request = bytes.fromhex(request)
-            time.sleep(0.075)
+            # time.sleep(0.075)
             # Send each SysEx message
             self.midi_helper.send_raw_message(request)
 

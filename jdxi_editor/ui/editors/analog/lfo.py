@@ -1,0 +1,89 @@
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PySide6.QtCore import QSize
+import qtawesome as qta
+
+from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+
+
+class LfoSection(QWidget):
+    def __init__(self, create_parameter_slider, create_parameter_switch, create_parameter_combo_box,
+                 on_lfo_shape_changed, lfo_shape_buttons):
+        super().__init__()
+        self._create_parameter_slider = create_parameter_slider
+        self._create_parameter_switch = create_parameter_switch
+        self._create_parameter_combo_box = create_parameter_combo_box
+        self._on_lfo_shape_changed = on_lfo_shape_changed
+        self.lfo_shape_buttons = lfo_shape_buttons
+        self._init_ui()
+
+    def _init_ui(self):
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        # Shape row
+        shape_row = QHBoxLayout()
+        shape_row.addWidget(QLabel("Shape"))
+        shape_row.addStretch(1)
+
+        lfo_shapes = [
+            ("TRI", "mdi.triangle-wave", 0),
+            ("SIN", "mdi.sine-wave", 1),
+            ("SAW", "mdi.sawtooth-wave", 2),
+            ("SQR", "mdi.square-wave", 3),
+            ("S&H", "mdi.waveform", 4),
+            ("RND", "mdi.wave", 5),
+        ]
+
+        for name, icon_name, value in lfo_shapes:
+            btn = QPushButton(name)
+            btn.setCheckable(True)
+            btn.setProperty("value", value)
+            btn.setIcon(qta.icon(icon_name))
+            btn.setIconSize(QSize(24, 24))
+            btn.setFixedSize(80, 40)
+            btn.setToolTip(name)
+            btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
+            self.lfo_shape_buttons[value] = btn
+            shape_row.addWidget(btn)
+            shape_row.addStretch(1)
+
+        layout.addLayout(shape_row)
+
+        # Rate and Fade Time
+        self.lfo_rate = self._create_parameter_slider(AnalogParameter.LFO_RATE,
+                                                      "Rate")
+        self.lfo_fade = self._create_parameter_slider(AnalogParameter.LFO_FADE_TIME,
+                                                      "Fade Time")
+
+        # Tempo Sync controls
+        sync_row = QHBoxLayout()
+        self.lfo_sync_switch = self._create_parameter_switch(AnalogParameter.LFO_TEMPO_SYNC_SWITCH,
+                                                             "Tempo Sync",
+                                                             ["OFF", "ON"])
+        sync_row.addWidget(self.lfo_sync_switch)
+        self.lfo_sync_note = self._create_parameter_combo_box(AnalogParameter.LFO_TEMPO_SYNC_NOTE,
+                                                              "Sync Note",
+                                                              options=["1/1", "1/2", "1/4", "1/8", "1/16"])
+        sync_row.addWidget(self.lfo_sync_note)
+
+        # Depth controls
+        self.lfo_pitch = self._create_parameter_slider(AnalogParameter.LFO_PITCH_DEPTH,
+                                                       "Pitch Depth")
+        self.lfo_filter = self._create_parameter_slider(AnalogParameter.LFO_FILTER_DEPTH,
+                                                        "Filter Depth")
+        self.lfo_amp = self._create_parameter_slider(AnalogParameter.LFO_AMP_DEPTH,
+                                                     "Amp Depth")
+
+        # Key Trigger switch
+        self.key_trigger_switch = self._create_parameter_switch(AnalogParameter.LFO_KEY_TRIGGER,
+                                                                "Key Trigger",
+                                                                ["OFF", "ON"])
+
+        # Add all controls to layout
+        layout.addWidget(self.lfo_rate)
+        layout.addWidget(self.lfo_fade)
+        layout.addLayout(sync_row)
+        layout.addWidget(self.lfo_pitch)
+        layout.addWidget(self.lfo_filter)
+        layout.addWidget(self.lfo_amp)
+        layout.addWidget(self.key_trigger_switch)

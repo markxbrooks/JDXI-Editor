@@ -153,6 +153,9 @@ class AnalogParameter(SynthParameter):
             "FILTER_ENV_DEPTH",
         ]
 
+    def get_bipolar_parameters(self):
+        return self.bipolar_parameters
+
     def validate_value(self, value: int) -> int:
         """Validate that the parameter value is within the allowed range."""
         if not isinstance(value, int):

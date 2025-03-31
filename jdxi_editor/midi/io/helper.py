@@ -19,6 +19,8 @@ Dependencies:
 """
 
 import logging
+from typing import Callable
+
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 
@@ -63,3 +65,4 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
     def midi_callback(self, event):
         self.midi_callback(event=event)
+

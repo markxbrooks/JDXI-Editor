@@ -63,7 +63,7 @@ class SynthBase(QWidget):
         # Define SysEx messages as byte arrays
         for request in self.midi_requests:
             request = bytes.fromhex(request)
-            time.sleep(0.075)  # 75ms delay
+            # time.sleep(0.075)  # 75ms delay
             # Send each SysEx message
             self.send_message(request)
 
@@ -146,7 +146,7 @@ class SynthBase(QWidget):
             is_bipolar=param.is_bipolar,
         )
 
-        if param in self.bipolar_parameters or param.is_bipolar:
+        if param.name in self.bipolar_parameters or param.is_bipolar:
             slider.setValueDisplayFormat(lambda v: f"{v:+d}" if v != 0 else "0")
             slider.setCenterMark(0)
             slider.setTickPosition(Slider.TickPosition.TicksBothSides)

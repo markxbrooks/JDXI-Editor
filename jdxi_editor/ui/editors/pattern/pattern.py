@@ -232,7 +232,7 @@ class PatternSequencer(SynthEditor):
         control_panel.addWidget(transport_group)
 
         self.layout.addLayout(control_panel)
-        self.midi_helper.midi_incoming_message.connect(self._update_combo_boxes)
+        self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
 
         for row_idx, label_text in enumerate(row_labels):
             row_layout = QVBoxLayout()
@@ -311,13 +311,13 @@ class PatternSequencer(SynthEditor):
 
     def on_learn_pattern_button_clicked(self):
         """Connect the MIDI input to the learn pattern function."""
-        self.midi_helper.midi_incoming_message.connect(self._learn_pattern)
-        self.midi_helper.midi_incoming_message.disconnect(self._update_combo_boxes)
+        self.midi_helper.midi_message_incoming.connect(self._learn_pattern)
+        self.midi_helper.midi_message_incoming.disconnect(self._update_combo_boxes)
 
     def on_stop_learn_pattern_button_clicked(self):
         """Disconnect the MIDI input from the learn pattern function and update combo boxes."""
-        self.midi_helper.midi_incoming_message.disconnect(self._learn_pattern)
-        self.midi_helper.midi_incoming_message.connect(self._update_combo_boxes)
+        self.midi_helper.midi_message_incoming.disconnect(self._learn_pattern)
+        self.midi_helper.midi_message_incoming.connect(self._update_combo_boxes)
 
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""

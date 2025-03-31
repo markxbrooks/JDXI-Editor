@@ -112,5 +112,5 @@ class ProgramHelper(QObject):
     def data_request(self):
         for midi_request in self.midi_requests:
             byte_list_message = bytes.fromhex(midi_request)
-            time.sleep(0.075)  # 75ms delay
+            # time.sleep(0.075)  # 75ms delay
             self.midi_helper.send_raw_message(byte_list_message)
