@@ -27,6 +27,7 @@ from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
+from jdxi_editor.midi.utils.json import log_json
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
@@ -111,7 +112,7 @@ def initialize_parameters(data: List[int]) -> Dict[str, str]:
     }
 
 
-def parse_sysex(data: List[int]) -> Dict[str, str]:
+def parse_sysex(data: bytes) -> Dict[str, str]:
     """Parses JD-Xi tone data from SysEx messages."""
     if len(data) < 11:  # Ensure at least ADDRESS section is present
         logging.warning("Insufficient data length for parsing.")
@@ -148,5 +149,5 @@ def parse_sysex(data: List[int]) -> Dict[str, str]:
 
     logging.info(f"Address: {parameters['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")
-
+    log_json(parameters)
     return parameters

@@ -38,80 +38,6 @@ Example:
     preset_helper = PresetHandler()
     editor = AnalogSynthEditor(midi_helper, preset_helper)
     editor.show()
-    
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel, QTabWidget, QGroupBox, QPushButton
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QShortcut, QKeySequence
-
-from jdxi_editor.ui.sections.oscillator_section import OscillatorSection
-from jdxi_editor.ui.sections.filter_section import FilterSection
-from jdxi_editor.ui.sections.amp_section import AmpSection
-from jdxi_editor.ui.sections.lfo_section import LFOSection
-
-class AnalogCommonEditor(SynthEditor):
-    def __init__(self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None):
-        super().__init__(midi_helper, parent)
-        self.init_ui()
-
-    def init_ui(self):
-        self.setWindowTitle("Analog Synth")
-        self.setMinimumSize(800, 600)
-        self.resize(900, 600)
-        self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
-
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
-
-        # Main layout
-        main_layout.addLayout(self.create_instrument_selection_layout())
-
-        # Create scroll area for resizable content
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        container = QWidget()
-        container_layout = QVBoxLayout()
-        container.setLayout(container_layout)
-
-        self.tab_widget = QTabWidget()
-        container_layout.addWidget(self.tab_widget)
-
-        self.tab_widget.addTab(OscillatorSection(self.controls), "Oscillator")
-        self.tab_widget.addTab(FilterSection(self.controls), "Filter")
-        self.tab_widget.addTab(AmpSection(self.controls), "Amp")
-        self.tab_widget.addTab(LFOSection(self.controls), "LFO")
-
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
-
-    def create_instrument_selection_layout(self):
-        upper_layout = QHBoxLayout()
-        instrument_preset_group = QGroupBox("Analog Synth")
-        self.instrument_title_label = QLabel("Analog Synth")
-        instrument_title_group_layout = QVBoxLayout()
-        instrument_preset_group.setLayout(instrument_title_group_layout)
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
-
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        instrument_title_group_layout.addWidget(self.read_request_button)
-
-        self.instrument_selection_label = QLabel("Select an Analog synth:")
-        instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
-        self.instrument_selection_combo.setEditable(True)
-        self.instrument_selection_combo.currentIndexChanged.connect(self.update_instrument_image)
-        self.instrument_selection_combo.currentIndexChanged.connect(self.update_instrument_title)
-        self.instrument_selection_combo.load_button.clicked.connect(self.update_instrument_preset)
-        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
-
-        upper_layout.addWidget(instrument_preset_group)
-        self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        upper_layout.addWidget(self.instrument_image_label)
-
-        return upper_layout
-
-    # ... Additional methods for handling UI updates
 
 """
 
@@ -144,24 +70,23 @@ from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, ANALOG_REQUE
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
-    frac_to_midi_cc,
-    ms_to_midi_cc,
 )
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_editor.midi.data.constants.analog import (
     Waveform,
-    SubOscType,
     ANALOG_PART,
-    ANALOG_OSC_GROUP, LFO_TEMPO_SYNC_NOTES,
+    ANALOG_OSC_GROUP
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
+from jdxi_editor.ui.editors.analog.amp import AmpSection
+from jdxi_editor.ui.editors.analog.filter import FilterSection
+from jdxi_editor.ui.editors.analog.lfo import LfoSection
+from jdxi_editor.ui.editors.analog.oscillator import OscillatorSection
 from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
-from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
@@ -174,25 +99,8 @@ class AnalogCommonEditor(SynthEditor):
             self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
-        self.bipolar_parameters = [
-            AnalogParameter.LFO_PITCH_DEPTH,
-            AnalogParameter.LFO_FILTER_DEPTH,
-            AnalogParameter.LFO_AMP_DEPTH,
-            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
-            AnalogParameter.AMP_LEVEL_VELOCITY_SENSITIVITY,
-            AnalogParameter.AMP_LEVEL_KEYFOLLOW,
-            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENSITIVITY,
-            AnalogParameter.OSC_PITCH_COARSE,
-            AnalogParameter.OSC_PITCH_FINE,
-            AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
-            AnalogParameter.LFO_AMP_MODULATION_CONTROL,
-            AnalogParameter.LFO_FILTER_MODULATION_CONTROL,
-            AnalogParameter.LFO_RATE_MODULATION_CONTROL,
-            AnalogParameter.LFO_PITCH_MODULATION_CONTROL,
-            AnalogParameter.OSC_PITCH_ENV_DEPTH,
-            AnalogParameter.FILTER_ENV_DEPTH,
-            # Add other bipolar parameters as needed
-        ]
+        self.wave_buttons = {}
+        self.bipolar_parameters = AnalogParameter.LFO_RATE.bipolar_parameters
         # Define parameter mappings
         self.cc_parameters = {
             "Cutoff": 102,
@@ -241,6 +149,7 @@ class AnalogCommonEditor(SynthEditor):
         self.preset_type = SynthType.ANALOG
         self.midi_requests = [PROGRAM_COMMON_REQUEST, ANALOG_REQUEST]
         self.midi_channel = MIDI_CHANNEL_ANALOG
+        self.lfo_shape_buttons = {}
         # Create scroll area for resizable content
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -309,37 +218,43 @@ class AnalogCommonEditor(SynthEditor):
         # Add sections side by side
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        self.tab_widget.addTab(
-            self._create_oscillator_section(),
-            qta.icon("mdi.triangle-wave", color="#666666"),
-            "Oscillator",
-        )
-        self.tab_widget.addTab(
-            self._create_filter_section(),
-            qta.icon("ri.filter-3-fill", color="#666666"),
-            "Filter",
-        )
-        self.tab_widget.addTab(
-            self._create_amp_section(),
-            qta.icon("mdi.amplifier", color="#666666"),
-            "Amp",
-        )
-        self.tab_widget.addTab(
-            self._create_lfo_section(),
-            qta.icon("mdi.sine-wave", color="#666666"),
-            "LFO",
-        )
+        self.oscillator_section = OscillatorSection(self._create_parameter_slider,
+                                                    self._create_parameter_switch,
+                                                    self._on_waveform_selected,
+                                                    self.wave_buttons)
+        self.tab_widget.addTab(self.oscillator_section,
+                               qta.icon("mdi.triangle-wave", color="#666666"),
+                               "Oscillator")
+        self.filter_section = FilterSection(self._create_parameter_slider,
+                                            self._create_parameter_switch,
+                                            self.send_control_change,
+                                            self.midi_helper,
+                                            self.area,
+                                            self.part,
+                                            self.group)
+        self.tab_widget.addTab(self.filter_section,
+                               qta.icon("ri.filter-3-fill", color="#666666"),
+                               "Filter")
+        self.amp_section = AmpSection(self.midi_helper, self.area, self.part, self.group,
+                                      self._create_parameter_slider,
+                                      generate_waveform_icon,
+                                      base64_to_pixmap)
+        self.tab_widget.addTab(self.amp_section, qta.icon("mdi.amplifier", color="#666666"),
+                               "Amp")
+        self.lfo_section = LfoSection(self._create_parameter_slider,
+                                          self._create_parameter_switch,
+                                          self._create_parameter_combo_box,
+                                          self._on_lfo_shape_changed,
+                                          self.lfo_shape_buttons)
+        self.tab_widget.addTab(self.lfo_section, qta.icon(
+            "mdi.sine-wave",
+            color="#666666"),
+            "LFO")
 
         # Add container to scroll area
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
-        # Connect filter controls
-        self.filter_resonance.valueChanged.connect(
-            lambda v: self.send_control_change(
-                AnalogParameter.FILTER_RESONANCE.value[0], v
-            )
-        )
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         for param, slider in self.controls.items():
             if isinstance(slider, QSlider):  # Ensure it's address slider
@@ -367,390 +282,6 @@ class AnalogCommonEditor(SynthEditor):
         self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-
-    def _create_oscillator_section(self):
-        group = QWidget()
-        layout = QVBoxLayout()
-        layout.setContentsMargins(1, 1, 1, 1)  # Remove margins
-        group.setLayout(layout)
-
-        # Waveform buttons
-        wave_layout = QHBoxLayout()
-        self.wave_buttons = {}
-        for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
-            btn = AnalogWaveformButton(waveform)
-            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
-
-            # Set icons for each waveform
-            if waveform == Waveform.SAW:
-                saw_icon_base64 = generate_waveform_icon("upsaw", "#FFFFFF", 1.0)
-                saw_pixmap = base64_to_pixmap(saw_icon_base64)
-                btn.setIcon(QIcon(saw_pixmap))
-            elif waveform == Waveform.TRIANGLE:
-                tri_icon_base64 = generate_waveform_icon("triangle", "#FFFFFF", 1.0)
-                tri_pixmap = base64_to_pixmap(tri_icon_base64)
-                btn.setIcon(QIcon(tri_pixmap))
-            elif waveform == Waveform.PULSE:
-                pulse_icon_base64 = generate_waveform_icon("pwsqu", "#FFFFFF", 1.0)
-                pulse_pixmap = base64_to_pixmap(pulse_icon_base64)
-                btn.setIcon(QIcon(pulse_pixmap))
-
-            btn.waveform_selected.connect(self._on_waveform_selected)
-            self.wave_buttons[waveform] = btn
-            wave_layout.addWidget(btn)
-        layout.addLayout(wave_layout)
-
-        # Tuning controls
-        tuning_group = QGroupBox("Tuning")
-        tuning_layout = QVBoxLayout()
-        tuning_group.setLayout(tuning_layout)
-
-        self.osc_pitch_coarse = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_COARSE, "Coarse"
-        )
-        self.osc_pitch_fine = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_FINE, "Fine"
-        )
-
-        tuning_layout.addWidget(self.osc_pitch_coarse)
-        tuning_layout.addWidget(self.osc_pitch_fine)
-        layout.addWidget(tuning_group)
-
-        # Pulse Width controls
-        pw_group = QGroupBox("Pulse Width")
-        pw_layout = QVBoxLayout()
-        pw_group.setLayout(pw_layout)
-
-        self.osc_pulse_width = self._create_parameter_slider(
-            AnalogParameter.OSC_PULSE_WIDTH,
-            "Width",
-        )
-        self.osc_pulse_width_mod_depth = self._create_parameter_slider(
-            AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH,
-            "Mod Depth",
-        )
-
-        pw_layout.addWidget(self.osc_pulse_width)
-        pw_layout.addWidget(self.osc_pulse_width_mod_depth)
-        layout.addWidget(pw_group)
-
-        # Pitch Envelope
-        pitch_env_group = QGroupBox("Pitch Envelope")
-        pitch_env_layout = QVBoxLayout()
-        pitch_env_group.setLayout(pitch_env_layout)
-
-        self.pitch_env_velo = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
-        )
-        self.pitch_env_attack = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
-        )
-        self.pitch_env_decay = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_ENV_DECAY, "Decay"
-        )
-        self.pitch_env_depth = self._create_parameter_slider(
-            AnalogParameter.OSC_PITCH_ENV_DEPTH, "Depth"
-        )
-
-        pitch_env_layout.addWidget(self.pitch_env_velo)
-        pitch_env_layout.addWidget(self.pitch_env_attack)
-        pitch_env_layout.addWidget(self.pitch_env_decay)
-        pitch_env_layout.addWidget(self.pitch_env_depth)
-        layout.addWidget(pitch_env_group)
-
-        # Sub Oscillator
-        sub_group = QGroupBox("Sub Oscillator")
-        sub_layout = QVBoxLayout()
-        sub_group.setLayout(sub_layout)
-
-        self.sub_oscillator_type_switch = self._create_parameter_switch(AnalogParameter.SUB_OSCILLATOR_TYPE,
-            "Type",
-            [
-                SubOscType.OFF.display_name,
-                SubOscType.OCT_DOWN_1.display_name,
-                SubOscType.OCT_DOWN_2.display_name,
-            ],
-        )
-        sub_layout.addWidget(self.sub_oscillator_type_switch)
-        layout.addWidget(sub_group)
-
-        # Update PW controls enabled state based on current waveform
-        self._update_pw_controls_state(Waveform.SAW)  # Initial state
-
-        return group
-
-    def _create_filter_section(self):
-        """Create the filter section"""
-        filter_group = QWidget()
-        filter_group_layout = QVBoxLayout()
-        filter_group.setLayout(filter_group_layout)
-
-        # prettify with icons
-        adsr_icon_row_layout = QHBoxLayout()
-        for icon in [
-            "mdi.triangle-wave",
-            "mdi.sine-wave",
-            "fa5s.wave-square",
-            "mdi.cosine-wave",
-            "mdi.triangle-wave",
-            "mdi.waveform",
-        ]:
-            adsr_icon_label = QLabel()
-            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
-            adsr_pixmap = icon.pixmap(30, 30)  # Set the desired size
-            adsr_icon_label.setPixmap(adsr_pixmap)
-            adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            adsr_icon_row_layout.addWidget(adsr_icon_label)
-        filter_group_layout.addLayout(adsr_icon_row_layout)
-
-        # Filter controls
-        self.filter_switch = self._create_parameter_switch(AnalogParameter.FILTER_SWITCH,
-                                                           "Filter",
-                                                           ["BYPASS", "LPF"])
-        filter_group_layout.addWidget(self.filter_switch)
-        self.filter_cutoff = self._create_parameter_slider(
-            AnalogParameter.FILTER_CUTOFF, "Cutoff"
-        )
-        self.filter_resonance = self._create_parameter_slider(
-            AnalogParameter.FILTER_RESONANCE, "Resonance"
-        )
-        self.filter_cutoff_keyfollow = self._create_parameter_slider(
-            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
-        )
-        # Create ADSRWidget
-        self.filter_adsr_widget = ADSR(
-            AnalogParameter.FILTER_ENV_ATTACK_TIME,
-            AnalogParameter.FILTER_ENV_DECAY_TIME,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.FILTER_ENV_RELEASE_TIME,
-            self.midi_helper,
-            area=self.area,
-            part=self.part,
-            group=self.group
-        )
-        self.filter_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
-        self.filter_env_depth = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_DEPTH, "Depth"
-        )
-
-        self.filter_env_velocity_sens = self._create_parameter_slider(
-            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Env. Velocity Sens."
-        )
-        filter_group_layout.addWidget(self.filter_cutoff)
-        filter_group_layout.addWidget(self.filter_resonance)
-        filter_group_layout.addWidget(self.filter_cutoff_keyfollow)
-
-        filter_group_layout.addWidget(self.filter_env_depth)
-        filter_group_layout.addWidget(self.filter_env_velocity_sens)
-
-        # Add spacing
-        filter_group_layout.addSpacing(10)
-
-        # Generate the ADSR waveform icon
-        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
-        adsr_pixmap = base64_to_pixmap(adsr_icon_base64)  # Convert to QPixmap
-
-        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
-        sub_layout = QVBoxLayout()
-
-        adsr_icon_label = QLabel()
-        adsr_icon_label.setPixmap(adsr_pixmap)
-        adsr_icon_label.setAlignment(Qt.AlignHCenter)
-        adsr_icon_row_layout = QHBoxLayout()
-        adsr_icon_row_layout.addWidget(adsr_icon_label)
-        sub_layout.addLayout(adsr_icon_row_layout)
-
-        # Filter envelope
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR area
-        envelope_layout = QHBoxLayout()
-        env_group.setLayout(envelope_layout)
-        envelope_layout.setSpacing(5)
-        envelope_layout.addWidget(self.filter_adsr_widget)
-
-        # Generate the ADSR waveform icon
-        adsr_icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
-        adsr_pixmap = base64_to_pixmap(adsr_icon_base64)  # Convert to QPixmap
-
-        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
-        adsr_icon_label = QLabel()
-        adsr_icon_label.setPixmap(adsr_pixmap)
-        adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        adsr_icon_row_layout = QHBoxLayout()
-        adsr_icon_row_layout.addWidget(adsr_icon_label)
-        filter_group_layout.addLayout(adsr_icon_row_layout)
-        filter_group_layout.addWidget(env_group)
-        filter_group_layout.addStretch()
-        return filter_group
-
-    def _create_amp_section(self):
-        """Create the Amp section"""
-        group = QWidget()
-        layout = QVBoxLayout()
-        layout.setSpacing(5)
-        layout.setContentsMargins(5, 15, 5, 5)
-        group.setLayout(layout)
-
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "mdi.volume-variant-off",
-            "mdi6.volume-minus",
-            "mdi.amplifier",
-            "mdi6.volume-plus",
-            "mdi.waveform",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon, color="#666666")  # Set icon color to grey
-            pixmap = icon.pixmap(
-                Style.ICON_SIZE, Style.ICON_SIZE
-            )  # Set the desired size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
-
-        # Level control
-        self.amp_level = self._create_parameter_slider(
-            AnalogParameter.AMP_LEVEL, "Level"
-        )
-        self.amp_level_keyfollow = self._create_parameter_slider(
-            AnalogParameter.AMP_LEVEL_KEYFOLLOW, "Keyfollow"
-        )
-        layout.addWidget(self.amp_level)
-        layout.addWidget(self.amp_level_keyfollow)
-
-        # Add spacing
-        layout.addSpacing(10)
-
-        # Amp envelope
-        env_group = QGroupBox("Envelope")
-        env_group.setProperty("adsr", True)  # Mark as ADSR area
-        # env_group.setMaximumHeight(300)
-        amp_env_adsr_vlayout = QVBoxLayout()
-        env_layout = QHBoxLayout()
-        env_layout.setSpacing(5)
-        env_layout.setContentsMargins(5, 15, 5, 5)
-        env_group.setLayout(amp_env_adsr_vlayout)
-
-        # Generate the ADSR waveform icon
-        icon_base64 = generate_waveform_icon("adsr", "#FFFFFF", 2.0)
-        pixmap = base64_to_pixmap(icon_base64)  # Convert to QPixmap
-
-        # Vbox to vertically arrange icons and ADSR(D) Envelope controls
-        sub_layout = QVBoxLayout()
-
-        icon_label = QLabel()
-        icon_label.setPixmap(pixmap)
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        icons_hlayout = QHBoxLayout()
-        icons_hlayout.addWidget(icon_label)
-        sub_layout.addLayout(icons_hlayout)
-        self.amp_env_adsr_widget = ADSR(
-            AnalogParameter.AMP_ENV_ATTACK_TIME,
-            AnalogParameter.AMP_ENV_DECAY_TIME,
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.AMP_ENV_RELEASE_TIME,
-            self.midi_helper,
-            area=self.area,
-            part=self.part,
-            group=self.group
-        )
-        self.amp_env_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
-        amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
-        sub_layout.addWidget(env_group)
-        sub_layout.addStretch()
-        layout.addLayout(sub_layout)
-        return group
-
-    def _create_lfo_section(self):
-        """Create the LFO section"""
-        group = QWidget()
-        layout = QVBoxLayout()
-        group.setLayout(layout)
-
-        # Replace the LFO Shape selector combo box with buttons
-        shape_row = QHBoxLayout()
-        shape_row.addWidget(QLabel("Shape"))
-        shape_row.addStretch(1)  # Add stretch before buttons
-        self.lfo_shape_buttons = {}
-
-        # Create buttons for each LFO shape
-        lfo_shapes = [
-            ("TRI", "mdi.triangle-wave", 0),
-            ("SIN", "mdi.sine-wave", 1),
-            ("SAW", "mdi.sawtooth-wave", 2),
-            ("SQR", "mdi.square-wave", 3),
-            ("S&H", "mdi.waveform", 4),  # Sample & Hold
-            ("RND", "mdi.wave", 5),  # Random
-        ]
-
-        for name, icon_name, value in lfo_shapes:
-            btn = QPushButton(name)  # Add text to button
-            btn.setCheckable(True)
-            btn.setProperty("value", value)
-            icon = qta.icon(icon_name)
-            btn.setIcon(icon)
-            btn.setIconSize(QSize(24, 24))
-            btn.setFixedSize(80, 40)  # Make buttons wider to accommodate text
-            btn.setToolTip(name)
-            btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
-            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
-            self.lfo_shape_buttons[value] = btn
-            shape_row.addWidget(btn)
-            shape_row.addStretch(1)  # Add stretch after each button
-
-        layout.addLayout(shape_row)
-
-        # Rate and Fade Time
-        self.lfo_rate = self._create_parameter_slider(AnalogParameter.LFO_RATE, "Rate")
-
-        self.lfo_fade = self._create_parameter_slider(
-            AnalogParameter.LFO_FADE_TIME, "Fade Time"
-        )
-
-        # Tempo Sync controls
-        sync_row = QHBoxLayout()
-        self.lfo_sync_switch = self._create_parameter_switch(AnalogParameter.LFO_TEMPO_SYNC_SWITCH,
-                                                             "Tempo Sync",
-                                                             ["OFF", "ON"])
-        sync_row.addWidget(self.lfo_sync_switch)
-
-        self.lfo_sync_note_label = QLabel("Sync note")
-        self.lfo_sync_note = self._create_parameter_combo_box(
-            AnalogParameter.LFO_TEMPO_SYNC_NOTE, "", options=LFO_TEMPO_SYNC_NOTES, show_label=False
-        )
-        sync_row.addWidget(self.lfo_sync_note_label)
-        sync_row.addWidget(self.lfo_sync_note)
-
-        # Depth controls
-        self.lfo_pitch = self._create_parameter_slider(
-            AnalogParameter.LFO_PITCH_DEPTH, "Pitch Depth"
-        )
-
-        self.lfo_filter = self._create_parameter_slider(
-            AnalogParameter.LFO_FILTER_DEPTH,
-            "Filter Depth",
-        )
-
-        self.lfo_amp = self._create_parameter_slider(
-            AnalogParameter.LFO_AMP_DEPTH, "Amp Depth"
-        )
-
-        # Key Trigger switch
-        self.key_trigger_switch = self._create_parameter_switch(AnalogParameter.LFO_KEY_TRIGGER,
-                                                                "Key Trigger",
-                                                                ["OFF", "ON"])
-
-        # Add all controls to layout
-        layout.addWidget(self.lfo_rate)
-        layout.addWidget(self.lfo_fade)
-        layout.addLayout(sync_row)
-        layout.addWidget(self.lfo_pitch)
-        layout.addWidget(self.lfo_filter)
-        layout.addWidget(self.lfo_amp)
-        layout.addWidget(self.key_trigger_switch)
-
-        return group
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
@@ -889,14 +420,14 @@ class AnalogCommonEditor(SynthEditor):
             )
 
             adsr_mapping = {
-                AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_env_adsr_widget.attack_sb,
-                AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_env_adsr_widget.decay_sb,
-                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_env_adsr_widget.sustain_sb,
-                AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_env_adsr_widget.release_sb,
-                AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_adsr_widget.attack_sb,
-                AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_adsr_widget.decay_sb,
-                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_adsr_widget.sustain_sb,
-                AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_adsr_widget.release_sb,
+                AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_sb,
+                AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_sb,
+                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_sb,
+                AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_sb,
+                AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_sb,
+                AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_sb,
+                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_sb,
+                AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_sb,
             }
 
             if param in adsr_mapping:
@@ -906,36 +437,37 @@ class AnalogCommonEditor(SynthEditor):
         for param_name, param_value in current_sysex_data.items():
             param = AnalogParameter.get_by_name(param_name)
 
-            if param: # @@
-                if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
-                    nrpn_map = {
-                        (0, 124): "Envelope",
-                        (0, 3): "LFO Shape",
-                        (0, 15): "LFO Pitch Depth",
-                        (0, 18): "LFO Filter Depth",
-                        (0, 21): "LFO Amp Depth",
-                        (0, 37): "Pulse Width",
-                    }
-                    nrpn_address = next(
-                        (addr for addr, name in nrpn_map.items() if name == param_name), None
-                    )
-                    if nrpn_address:
-                        self._handle_nrpn_message(nrpn_address, param_value, channel=1)
-                elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
+            if param:
+                # FIXME: Deal with NRPN later
+                #if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
+                #    nrpn_map = {
+                #        (0, 124): "Envelope",
+                #        (0, 3): "LFO Shape",
+                #        (0, 15): "LFO Pitch Depth",
+                #        (0, 18): "LFO Filter Depth",
+                #        (0, 21): "LFO Amp Depth",
+                #        (0, 37): "Pulse Width",
+                #    }
+                #    nrpn_address = next(
+                #        (addr for addr, name in nrpn_map.items() if name == param_name), None
+                #    )
+                #    if nrpn_address:
+                #        self._handle_nrpn_message(nrpn_address, param_value, channel=1)
+                if param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
                     self._update_lfo_shape_buttons(param_value)
-                elif (
+                if (
                         param_name == "SUB_OSCILLATOR_TYPE"
                         and param_value in sub_osc_type_map
                 ):
-                    self.sub_oscillator_type_switch.blockSignals(True)
-                    self.sub_oscillator_type_switch.setValue(sub_osc_type_map[param_value])
-                    self.sub_oscillator_type_switch.blockSignals(False)
+                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(True)
+                    self.oscillator_section.sub_oscillator_type_switch.setValue(sub_osc_type_map[param_value])
+                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(False)
                 elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                     self._update_waveform_buttons(param_value)
                 elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
-                    self.filter_switch.blockSignals(True)
-                    self.filter_switch.setValue(filter_switch_map[param_value])
-                    self.filter_switch.blockSignals(False)
+                    self.filter_section.filter_switch.blockSignals(True)
+                    self.filter_section.filter_switch.setValue(filter_switch_map[param_value])
+                    self.filter_section.filter_switch.blockSignals(False)
                 else:
                     update_slider(param, param_value)
                     update_adsr_widget(param, param_value)
@@ -998,12 +530,13 @@ class AnalogCommonEditor(SynthEditor):
     def _update_pw_controls_state(self, waveform: Waveform):
         """Enable/disable PW controls based on waveform"""
         pw_enabled = waveform == Waveform.PULSE
-        self.osc_pulse_width.setEnabled(pw_enabled)
-        self.osc_pulse_width_mod_depth.setEnabled(pw_enabled)
+        print(self.controls)
+        self.controls[AnalogParameter.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
+        self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
         # Update the visual state
-        self.osc_pulse_width.setStyleSheet(
+        self.controls[AnalogParameter.OSC_PULSE_WIDTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
-        self.osc_pulse_width_mod_depth.setStyleSheet(
+        self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )

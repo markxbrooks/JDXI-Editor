@@ -29,6 +29,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.midi.data.constants.analog import ControlChange
+from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
@@ -173,7 +174,7 @@ class SynthEditor(SynthBase):
         raise NotImplementedError
 
     def set_instrument_title_label(self, name: str):
-        self.instrument_title_label.setText(f"Tone:\n {name}")
+        self.instrument_title_label.setText(f"Current Tone:\n {name}")
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -368,7 +369,7 @@ class SynthEditor(SynthBase):
 
         if param_name:
             # Update slider or control
-            param = AnalogParameter.get_by_name(param_name) # FIXME: make generic
+            param = SynthParameter.get_by_name(param_name) # FIXME: make generic
             if param:
                 self._update_slider(param, value)
         else:
