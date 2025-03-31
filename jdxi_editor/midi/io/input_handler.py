@@ -36,7 +36,7 @@ from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter
-from jdxi_editor.midi.utils.json import log_json
+from jdxi_editor.midi.utils.json import log_to_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.midi.preset.data import Preset
@@ -262,17 +262,17 @@ class MidiInHandler(MidiIOController):
             logging.debug("SysEx message received (%d bytes)", len(message.data))
 
             # Reconstruct SysEx message bytes
-            sysex_message_byte_list = bytes(
+            sysex_message_bytes = bytes(
                 [0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7]
             )
 
             # If the message contains tone data, attempt to parse it
             if len(message.data) > 20:
                 try:
-                    parsed_data = parse_sysex(sysex_message_byte_list)
-                    self._emit_program_or_tone_name(parsed_data)
-                    self.midi_sysex_json.emit(json.dumps(parsed_data))
-                    log_json(parsed_data)
+                    parsed_data_dict = parse_sysex(sysex_message_bytes)
+                    self._emit_program_or_tone_name(parsed_data_dict)
+                    self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
+                    log_to_json(parsed_data_dict)
                 except Exception as parse_ex:
                     logging.info("Failed to parse JD-Xi tone data: %s", parse_ex)
             extract_command_info(message)
@@ -296,6 +296,7 @@ class MidiInHandler(MidiIOController):
             control,
             value,
         )
+        self.midi_control_changed.emit(channel, control, value)
         if control == 99:  # NRPN MSB
             self.nrpn_msb = value
         elif control == 98:  # NRPN LSB
@@ -308,8 +309,6 @@ class MidiInHandler(MidiIOController):
             # Reset NRPN state
             self.nrpn_msb = None
             self.nrpn_lsb = None
-        else:
-            self.midi_control_changed.emit(channel, control, value)
         if control == 0:
             self.cc_msb_value = value
         elif control == 32:
@@ -332,31 +331,6 @@ class MidiInHandler(MidiIOController):
         )
 
         self.midi_program_changed.emit(channel, program_number)
-
-        preset_mapping: Dict[int, SynthType] = {
-            95: SynthType.DIGITAL_1,
-            94: SynthType.ANALOG,
-            86: SynthType.DRUMS,
-        }
-
-        if self.cc_msb_value in preset_mapping:
-            preset_data.type = preset_mapping[self.cc_msb_value]
-            # Adjust preset number based on LSB value
-            self.preset_number = program_number + (
-                128 if self.cc_lsb_value == 65 else 0
-            )
-            preset_name = (
-                DIGITAL_PRESETS_ENUMERATED[self.preset_number]
-                if self.preset_number < len(DIGITAL_PRESETS_ENUMERATED)
-                else "Unknown Preset"
-            )
-            pub.sendMessage(
-                "update_display_preset",
-                preset_number=self.preset_number,
-                preset_name=preset_name,
-                channel=channel,
-            )
-            logging.info("Preset changed to: %d", self.preset_number)
 
     def _handle_dt1_message(self, data: List[int]) -> None:
         """

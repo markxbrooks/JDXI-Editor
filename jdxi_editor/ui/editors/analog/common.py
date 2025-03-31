@@ -54,7 +54,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QPushButton,
     QSlider,
-    QTabWidget,
+    QTabWidget, QComboBox, QSpinBox,
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
@@ -421,6 +421,7 @@ class AnalogCommonEditor(SynthEditor):
             slider = self.controls.get(param)
             if slider:
                 slider_value = param.convert_from_midi(value)
+                # set_widget_value_safely(slider, slider_value)
                 slider.blockSignals(True)
                 slider.setValue(slider_value)
                 slider.blockSignals(False)

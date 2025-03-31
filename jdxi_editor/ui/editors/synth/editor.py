@@ -23,7 +23,7 @@ Dependencies:
 import re
 import os
 import logging
-from typing import Optional
+from typing import Optional, Any
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
@@ -134,6 +134,7 @@ class SynthEditor(SynthBase):
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            # self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             logging.info("MIDI helper initialized")
             # register callback
             if hasattr(self.midi_helper, "set_callback"):
@@ -222,17 +223,6 @@ class SynthEditor(SynthBase):
             f"Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request()
-        if hasattr(self, "address") and channel == self.midi_channel:
-            self.data_request()
-
-    def _handle_control_change(self, channel: int, control: int, value: int):
-        """Handle program change messages by requesting updated data"""
-        logging.info(
-            f"Control change {control} detected on channel {channel}, value {value} requesting data update"
-        )
-        self.data_request()
-        if hasattr(self, "address") and channel == self.midi_channel:
-            self.data_request()
 
     def _handle_dt1_message(self, data):
         """Handle Data Set 1 (DT1) messages
@@ -369,9 +359,49 @@ class SynthEditor(SynthBase):
 
         if param_name:
             # Update slider or control
-            param = SynthParameter.get_by_name(param_name) # FIXME: make generic
+            param = SynthParameter.get_by_name(param_name)  # FIXME: make generic or subclass
             if param:
                 self._update_slider(param, value)
         else:
             logging.warning(f"Unrecognized NRPN {nrpn_address}")
+
+    def _handle_control_change(self, channel, control, value) -> None:  # @@
+        """
+        Handle Control Change (CC) MIDI messages.
+
+        :param message: The MIDI Control Change message.
+        :param preset_data: Dictionary for preset data modifications.
+        """
+        try:
+            logging.info(
+                f"Control change {control} detected on channel {channel}, value {value} "
+                f"requesting data update"
+            )
+            self.data_request()
+            logging.info(
+                "Control Change - Channel: %d, Control: %d, Value: %d",
+                channel,
+                control,
+                value,
+            )
+            if control == 99:  # NRPN MSB
+                self.nrpn_msb = value
+            elif control == 98:  # NRPN LSB
+                self.nrpn_lsb = value
+            elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
+                # We have both MSB and LSB; reconstruct NRPN address
+                nrpn_address = (self.nrpn_msb << 7) | self.nrpn_lsb
+                self._handle_nrpn_message(nrpn_address, value, channel)
+
+                # Reset NRPN state
+                self.nrpn_msb = None
+                self.nrpn_lsb = None
+            if control == 0:
+                self.cc_msb_value = value
+            elif control == 32:
+                self.cc_lsb_value = value
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred handling control change")
+
+
 

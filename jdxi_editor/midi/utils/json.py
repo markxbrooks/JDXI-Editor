@@ -1,8 +1,9 @@
 import json
 import logging
+from typing import Dict
 
 
-def log_json(data):
+def log_to_json(data: Dict) -> None:
     """Helper function to log JSON data as address single line."""
     # Ensure `data` is address dictionary, if it's address string, try parsing it as JSON
     if isinstance(data, str):

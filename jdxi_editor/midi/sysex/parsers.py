@@ -27,7 +27,7 @@ from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
-from jdxi_editor.midi.utils.json import log_json
+from jdxi_editor.midi.utils.json import log_to_json
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
@@ -126,28 +126,28 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
     synth_tone = get_synth_tone(data[10]) if len(data) > 10 else "Unknown"
 
-    parameters = initialize_parameters(data)
+    parsed_data = initialize_parameters(data)
 
     if temporary_area == "TEMPORARY_PROGRAM_AREA":
-        parameters.update(parse_parameters(data, ProgramCommonParameter))
+        parsed_data.update(parse_parameters(data, ProgramCommonParameter))
 
     elif temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
         if synth_tone == "TONE_COMMON":
-            parameters.update(parse_parameters(data, DigitalCommonParameter))
+            parsed_data.update(parse_parameters(data, DigitalCommonParameter))
         elif synth_tone == "TONE_MODIFY":
-            parameters.update(parse_parameters(data, EffectParameter))
+            parsed_data.update(parse_parameters(data, EffectParameter))
         else:
-            parameters.update(parse_parameters(data, DigitalPartialParameter))
+            parsed_data.update(parse_parameters(data, DigitalPartialParameter))
 
     elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
-        parameters.update(parse_parameters(data, AnalogParameter))
+        parsed_data.update(parse_parameters(data, AnalogParameter))
 
     elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
         if synth_tone == "TONE_COMMON":
-            parameters.update(parse_parameters(data, DrumCommonParameter))
-        parameters.update(parse_parameters(data, DrumPartialParameter))
+            parsed_data.update(parse_parameters(data, DrumCommonParameter))
+        parsed_data.update(parse_parameters(data, DrumPartialParameter))
 
-    logging.info(f"Address: {parameters['ADDRESS']}")
+    logging.info(f"Address: {parsed_data['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")
-    log_json(parameters)
-    return parameters
+    log_to_json(parsed_data)
+    return parsed_data
