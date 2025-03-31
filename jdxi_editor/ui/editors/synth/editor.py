@@ -133,7 +133,7 @@ class SynthEditor(SynthBase):
 
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
-            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            # self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             # self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             logging.info("MIDI helper initialized")
             # register callback

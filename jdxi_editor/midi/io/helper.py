@@ -40,9 +40,10 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
         :param parent: Optional parent widget or object.
         """
-        super().__init__(parent)
+        super().__init__()
         self.midi_messages = []
-        self.parent = parent
+        if parent:
+            self.parent = parent
 
     def load_patch(self, file_path):
         try:
