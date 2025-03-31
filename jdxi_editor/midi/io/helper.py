@@ -26,6 +26,45 @@ from jdxi_editor.midi.io.output_handler import MidiOutHandler
 
 
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(MidiIOHelper, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    def __init__(self, parent=None):
+        if not hasattr(self, 'initialized'):  # To avoid reinitialization
+            super().__init__()
+            self.midi_messages = []
+            if parent:
+                self.parent = parent
+            self.initialized = True
+
+    def load_patch(self, file_path):
+        try:
+            with open(file_path, "rb") as file:
+                sysex_data = file.read()
+
+            if not sysex_data.startswith(b"\xF0") or not sysex_data.endswith(b"\xF7"):
+                logging.error("Invalid SysEx file format")
+                return
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred opening file")
+
+        self.midi_messages.append(sysex_data)
+        try:
+            logging.info(f"attempting to send message: {sysex_data}")
+            sysex_list = list(sysex_data)
+            self.send_raw_message(sysex_list)
+        except Exception as ex:
+            logging.info(f"Error {ex} sending sysex list")
+
+    def midi_callback(self, event):
+        self.midi_callback(event=event)
+
+
+class MidiIOHelperOld(MidiInHandler, MidiOutHandler):
     """
     Helper class for MIDI communication with the JD-Xi.
 
