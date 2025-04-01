@@ -116,7 +116,7 @@ class Style:
     TAB_BUTTON_RECT_RADIUS = 6
 
     # Fonts
-    FONT_FAMILY = "Myriad Pro, Arial, sans-serif"
+    FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
     FONT_SIZE = "12px"
     # Define button styles
     JDXI_BUTTON_ROUND = generate_button_style(
