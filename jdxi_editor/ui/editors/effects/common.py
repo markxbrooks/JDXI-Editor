@@ -65,21 +65,7 @@ class EffectsCommonEditor(SynthEditor):
         upper_layout = QHBoxLayout()
 
         self.title_label = QLabel("Effects")
-        """
-        drum_group.setStyleSheet(
-            ""
-            QGroupBox {
-            width: 300px;
-            }
-        ""
-        )
-        """
-        self.title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-        """
-        )
+        self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         self.area = TEMPORARY_PROGRAM_AREA
         self.part = PROGRAM_COMMON
         main_layout.addLayout(upper_layout)

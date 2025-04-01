@@ -199,12 +199,7 @@ class AnalogCommonEditor(SynthEditor):
             }
         """
         )
-        self.instrument_title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-        """
-        )
+        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)

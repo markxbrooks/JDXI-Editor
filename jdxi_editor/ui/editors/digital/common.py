@@ -192,23 +192,7 @@ class DigitalCommonEditor(SynthEditor):
         """)
         # self.instrument_title_label = DigitalDisplay()
         # self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
-        self.instrument_title_label.setStyleSheet(
-            """
-            color: #FFBB33;
-            font-size: 16px;
-            font-weight: bold;
-            width: 80px;
-            font-family: "Consolas";
-            QGroupBox {
-                qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
-                stop: 0 #321212,
-                stop: 0.3 #331111,
-                stop: 0.5 #551100,
-                stop: 0.7 #331111,  
-                stop: 1 #111111
-                );
-            }
-        """
+        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL
         )
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
@@ -219,7 +203,7 @@ class DigitalCommonEditor(SynthEditor):
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
 
-        self.instrument_selection_label = QLabel("Select address Digital synth:")
+        self.instrument_selection_label = QLabel("Select preset for Digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
         # Preset ComboBox
