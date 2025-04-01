@@ -138,13 +138,6 @@ class SynthEditor(SynthBase):
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             # self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             logging.info("MIDI helper initialized")
-            # register callback
-            if hasattr(self.midi_helper, "set_callback"):
-                self.midi_helper.set_callback(self.midi_helper.midi_callback)
-                logging.info("MIDI callback set")
-
-            else:
-                logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
         self.preset_loader = PresetHelper(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)

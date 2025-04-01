@@ -82,14 +82,6 @@ class MIDIConnection:
         except Exception as ex:
             logging.error(f"Error sending MIDI message: {str(ex)}")
 
-    def set_input_callback(self, callback):
-        """Set MIDI input callback"""
-        if self._midi_in:
-            self._midi_in.set_callback(callback)
-            logging.debug("MIDI input callback set")
-        else:
-            logging.warning("No MIDI input port available")
-
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
