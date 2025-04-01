@@ -162,6 +162,25 @@ class DigitalDisplay(DigitalDisplayBase):
         self.current_octave = octave
         self.update_display_content()
 
+    def repaint_display(self,
+                        current_octave,
+                        tone_number,
+                        tone_name,
+                        program_name,
+                        program_number=1,
+                        program_bank_letter="A",
+                        active_synth="D1"):
+        self.current_octave = current_octave
+        self.tone_number = tone_number
+        self.tone_name = tone_name
+        self.program_name = program_name
+        # self.program_number = program_number
+        # self.program_bank_letter = program_bank_letter
+        # self.program_bank_letter, self.program_number
+        self.program_id = get_program_id_by_name(self.program_name)
+        self.active_synth = active_synth
+        self.update()
+
 
 class DigitalTitleOld(QWidget):
     """Digital LCD-style display widget."""

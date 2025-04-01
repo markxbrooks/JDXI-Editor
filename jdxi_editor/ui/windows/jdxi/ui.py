@@ -503,20 +503,40 @@ class JdxiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
+        status_bar.setStyleSheet("border: none;")
+        # status_bar.setStyleSheet("background-color: black;")
+        spacer = QLabel(" ")
+        spacer.setMinimumWidth(10)  # Adjust as needed
+        status_bar.addPermanentWidget(spacer)
 
         # Create MIDI indicators
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
 
         # Add labels and indicators
-        status_bar.addPermanentWidget(QLabel("MIDI IN:"))
-        status_bar.addPermanentWidget(self.midi_in_indicator)
-        status_bar.addPermanentWidget(QLabel("MIDI OUT:"))
-        status_bar.addPermanentWidget(self.midi_out_indicator)
+        midi_indicator_container = QWidget()
+        midi_indicator_container_vbox = QVBoxLayout()
+        midi_indicator_container.setLayout(midi_indicator_container_vbox)
+        status_bar.addPermanentWidget(midi_indicator_container)
+        midi_indicator_container_vbox.addStretch()
+        midi_indicator_row = QHBoxLayout()
+        midi_indicator_container_vbox.addLayout(midi_indicator_row)
+        midi_indicator_row.addWidget(QLabel("MIDI IN:"))
+        midi_indicator_row.addWidget(self.midi_in_indicator)
+        midi_indicator_row.addWidget(QLabel("MIDI OUT:"))
+        midi_indicator_row.addWidget(self.midi_out_indicator)
+        # status_bar.addPermanentWidget(QLabel("MIDI IN:"))
+        # status_bar.addPermanentWidget(self.midi_in_indicator)
+        # status_bar.addPermanentWidget(QLabel("MIDI OUT:"))
+        # status_bar.addPermanentWidget(self.midi_out_indicator)
 
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        self.midi_in_indicator.setStyleSheet("background-color: black;")
+        self.midi_out_indicator.setStyleSheet("background-color: black;")
+        status_bar.findChildren(QLabel)[0].setStyleSheet("color: white; background-color: black;")
+        status_bar.findChildren(QLabel)[1].setStyleSheet("color: white; background-color: black;")
 
     def _add_arpeggiator_buttons(self, widget):
         """Add arpeggiator up/down buttons to the interface"""
@@ -673,7 +693,10 @@ class JdxiUi(QMainWindow):
         title_layout = QHBoxLayout()
         title_container.setLayout(title_layout)
         self.title_label = QLabel("JD-Xi Editor", parent=self)
-        font = QFont("Myriad Pro", 28)  # "Myriad Pro", size 28pt
+        font = QFont()
+        font.setFamilies(["Myriad Pro", "Segoe UI"])  # Qt 6+
+        font.setStyleHint(QFont.SansSerif)
+        font.setPointSize(24)
         font.setBold(True)  # Optionally make it bold
 
         # Apply the font to the QLabel
