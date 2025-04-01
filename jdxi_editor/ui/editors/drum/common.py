@@ -311,11 +311,6 @@ class DrumCommonEditor(SynthEditor):
         # Register the callback for incoming MIDI messages
         if self.midi_helper:
             logging.info("MIDI helper initialized")
-            if hasattr(self.midi_helper, "set_callback"):
-                self.midi_helper.set_callback(self.midi_helper.midi_callback)
-                logging.info("MIDI callback set")
-            else:
-                logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
         self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)

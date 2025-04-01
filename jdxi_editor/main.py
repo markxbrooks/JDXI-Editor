@@ -37,14 +37,6 @@ from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
 
-# Custom class to emit signals for MIDI messages
-class MidiSignalEmitter(QObject):
-    midi_message_received = Signal(object)
-
-
-# Create an instance of the signal emitter
-midi_signal_emitter = MidiSignalEmitter()
-
 
 def midi_callback(msg):
     """
@@ -177,27 +169,27 @@ def main():
 
 if __name__ == "__main__":
     # List available MIDI input ports
-    input_ports = mido.get_input_names()
-    if not input_ports:
-        print("No MIDI input ports available!")
-        # exit()
+    #input_ports = mido.get_input_names()
+    #if not input_ports:
+    #    print("No MIDI input ports available!")
+    #    # exit()
 
-    print("Available MIDI input ports:")
-    for i, port in enumerate(input_ports):
-        print(f"{i}: {port}")
+    #print("Available MIDI input ports:")
+    #for i, port in enumerate(input_ports):
+    #    print(f"{i}: {port}")
 
     # Choose the first available port
-    try:
-        port_name = input_ports[0]
-        print(f"Using port: {port_name}")
-
-        # Start the listener in address separate thread
-        listener_thread = threading.Thread(
-            target=listen_midi, args=(port_name, midi_callback), daemon=True
-        )
-        listener_thread.start()
-    except Exception as ex:
-        print(f"Error starting listener thread: {str(ex)}")
+    #try:
+    #    port_name = input_ports[0]
+    #    print(f"Using port: {port_name}")
+    #
+    #    # Start the listener in address separate thread
+    #    #listener_thread = threading.Thread(
+    #    #    target=listen_midi, args=(port_name, midi_callback), daemon=True
+    #    #)
+    #    #listener_thread.start()
+    # except Exception as ex:
+    #    print(f"Error starting listener thread: {str(ex)}")
     try:
         sys.exit(main())
     except Exception as ex:

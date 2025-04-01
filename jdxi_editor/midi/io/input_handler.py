@@ -25,14 +25,11 @@ import logging
 import threading
 
 import mido
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
-from pubsub import pub
 
 from jdxi_editor.midi.data.constants.constants import ROLAND_ID
 from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
-from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter
@@ -40,6 +37,21 @@ from jdxi_editor.midi.utils.json import log_to_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.midi.preset.data import Preset
+
+
+def nibble_data(data):
+    """Sanitize the data by splitting bytes greater than 127 into 4-bit nibbles."""
+    sanitized_data = []
+    for byte in data:
+        if byte > 127:
+            high_nibble = (byte >> 4) & 0x0F
+            low_nibble = byte & 0x0F
+            # Combine nibbles into valid data bytes (0-127)
+            sanitized_data.append(high_nibble)
+            sanitized_data.append(low_nibble)
+        else:
+            sanitized_data.append(byte)
+    return sanitized_data
 
 
 def extract_command_info(message: Any) -> None:
@@ -64,6 +76,41 @@ def rtmidi_to_mido(rtmidi_message):
     except ValueError as err:
         logging.error("Failed to convert rtmidi message: %s", err)
         return None
+
+
+def convert_to_mido_message(message_content):
+    """ with nibbles"""
+    if not message_content:
+        return None
+
+    status_byte = message_content[0]
+
+    # **SysEx Message Handling**
+    if status_byte == 0xF0 and message_content[-1] == 0xF7:
+        sys_ex_data = nibble_data(message_content[1:-1])
+        # If data length exceeds 128 bytes, split into 4-byte nibbles
+        if len(sys_ex_data) > 128:
+            nibbles = [sys_ex_data[i:i + 4] for i in range(0, len(sys_ex_data), 4)]
+            return [mido.Message("sysex", data=nibble) for nibble in nibbles]
+
+        return mido.Message("sysex", data=sys_ex_data)
+
+    # **Program Change (PC) Handling**
+    if 0xC0 <= status_byte <= 0xCF:  # Program Change (0xC0 - 0xCF)
+        channel = status_byte & 0x0F  # Extract channel (0-15)
+        program = message_content[1]  # Program number (0-127)
+        return mido.Message("program_change", channel=channel, program=program)
+
+    # **Control Change (CC) Handling**
+    if 0xB0 <= status_byte <= 0xBF:  # Control Change (0xB0 - 0xBF)
+        channel = status_byte & 0x0F  # Extract channel (0-15)
+        control = message_content[1]  # CC number (0-127)
+        value = message_content[2]  # CC value (0-127)
+        return mido.Message("control_change", channel=channel, control=control, value=value)
+
+    # **Other Messages (Optional)**
+    print(f"Unhandled MIDI message: {message_content}")
+    return None
 
 
 def mido_message_data_to_byte_list(message):
@@ -150,9 +197,20 @@ class MidiInHandler(MidiIOController):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
-        from jdxi_editor.main import midi_signal_emitter  # Import here to avoid circular import
-        midi_signal_emitter.midi_message_received.connect(self._handle_midi_message)
-        pub.subscribe(self.pub_handle_incoming_midi_message, "midi_incoming_message")
+        self.midi_in.set_callback(self.rtmidi_callback)
+        self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
+
+    def rtmidi_callback(self, message, data):
+        """ callback for rtmidi
+        mido doesn't have callbacks, so we convert
+        """
+        try:
+            message_content, data = message
+            mido_message = convert_to_mido_message(message_content)
+            if mido_message:
+                self._handle_midi_message(mido_message)
+        except Exception as ex:
+            print(ex)
 
     def register_callback(self, callback: Callable) -> None:
         """

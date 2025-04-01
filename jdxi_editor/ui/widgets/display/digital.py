@@ -63,7 +63,10 @@ class DigitalTitle(QWidget):
         """Handles the rendering of the digital display."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, False)
-        self.draw_display(painter)
+        try:
+            self.draw_display(painter)
+        finally:
+            painter.end()  # Ensure the painter is properly closed
 
     def draw_display(self, painter: QPainter):
         """Draws the JD-Xi style digital display with a gradient glow effect."""
@@ -91,14 +94,6 @@ class DigitalTitle(QWidget):
 
         # Draw text with glowing effect
         tone_name_text = self.tone_name
-
-        # Glow effect simulation (by drawing text multiple times with slight offsets)
-        offsets = [(-2, -2), (1, -1), (-1, 1), (1, 1)]
-        glow_color = QColor("#FF00")  # Darker orange for glow effect
-        for dx, dy in offsets:
-            painter.setPen(QPen(glow_color))
-            painter.drawText(display_x + 7 + dx, display_y + 50 + dy, tone_name_text)
-
         # Draw the main text on top
         painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
         painter.drawText(display_x + 7, display_y + 50, tone_name_text)

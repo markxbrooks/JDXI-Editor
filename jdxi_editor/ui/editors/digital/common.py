@@ -271,11 +271,6 @@ class DigitalCommonEditor(SynthEditor):
         # Register the callback for incoming MIDI messages
         if self.midi_helper:
             logging.info("MIDI helper initialized")
-            if hasattr(self.midi_helper, "set_callback"):
-                self.midi_helper.set_callback(self.midi_helper.midi_callback)
-                logging.info("MIDI callback set")
-            else:
-                logging.error("MIDI set_callback method not found")
         else:
             logging.error("MIDI helper not initialized")
         print(f"self.controls: {self.controls}")
@@ -569,8 +564,8 @@ class DigitalCommonEditor(SynthEditor):
         temporary_area = _check_sysex_area(sysex_data)
         if not temporary_area:
             logging.info(
-                "SysEx data does not belong to self.area {self.area}. "
-                "Skipping update. temporary_area: {temporary_area}"
+                f"SysEx data does not belong to self.area {self.area}. "
+                f"Skipping update. temporary_area: {temporary_area}"
             )
             return
         else:
