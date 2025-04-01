@@ -150,6 +150,8 @@ class MidiInHandler(MidiIOController):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
+        from jdxi_editor.main import midi_signal_emitter  # Import here to avoid circular import
+        midi_signal_emitter.midi_message_received.connect(self._handle_midi_message)
         pub.subscribe(self.pub_handle_incoming_midi_message, "midi_incoming_message")
 
     def register_callback(self, callback: Callable) -> None:

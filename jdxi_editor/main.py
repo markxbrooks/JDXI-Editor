@@ -27,6 +27,7 @@ import threading
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 import mido
+from PySide6.QtCore import QObject, Signal
 from pubsub import pub
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPixmap, QColor
@@ -34,6 +35,15 @@ from PySide6.QtGui import QIcon, QPixmap, QColor
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
+
+
+# Custom class to emit signals for MIDI messages
+class MidiSignalEmitter(QObject):
+    midi_message_received = Signal(object)
+
+
+# Create an instance of the signal emitter
+midi_signal_emitter = MidiSignalEmitter()
 
 
 def midi_callback(msg):
@@ -44,6 +54,7 @@ def midi_callback(msg):
     pub.sendMessage(
         "midi_incoming_message", message=msg
     )  # Publish the message to subscribers
+    midi_signal_emitter.midi_message_received.emit(msg)
 
 
 def listen_midi(port_name, callback):
