@@ -197,10 +197,10 @@ class MidiInHandler(MidiIOController):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
-        self.midi_in.set_callback(self.rtmidi_callback)
+        self.midi_in.set_callback(self.midi_callback)
         self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
 
-    def rtmidi_callback(self, message, data):
+    def midi_callback(self, message, data):
         """ callback for rtmidi
         mido doesn't have callbacks, so we convert
         """
@@ -231,14 +231,6 @@ class MidiInHandler(MidiIOController):
             self.midi_in.set_callback(callback)
         except Exception as ex:
             logging.info(f"Error {ex} occurred calling self.midi_in.set_callback(callback)")
-
-    def midi_callback(self, message_data):
-        message = rtmidi_to_mido(message_data)
-        if message:
-            self._handle_midi_message(message)
-
-    def pub_handle_incoming_midi_message(self, message):
-        self._handle_midi_message(message)
 
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
@@ -421,27 +413,3 @@ class MidiInHandler(MidiIOController):
         param = get_parameter_from_address(address)
         if param:
             self.midi_parameter_changed.emit(param, value)
-
-    def start_thread(self):
-        """ start input thread """
-        input_ports = mido.get_input_names()
-        if not input_ports:
-            logging.info("No MIDI input ports available!")
-            # exit()
-
-        logging.info("Available MIDI input ports:")
-        for i, port in enumerate(input_ports):
-            logging.info(f"{i}: {port}")
-
-        # Choose the first available port
-        try:
-            port_name = input_ports[0]
-            logging.info(f"Using port: {port_name}")
-
-            # Start the listener in address separate thread
-            listener_thread = threading.Thread(
-                target=listen_midi, args=(port_name, self.midi_callback), daemon=True
-            )
-            listener_thread.start()
-        except Exception as ex:
-            logging.info(f"Error starting listener thread: {str(ex)}")
