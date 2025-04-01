@@ -187,6 +187,7 @@ class SynthEditor(SynthBase):
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         logging.info(f"selected_synth_text: {selected_synth_text}")
+        # self.instrument_title_label.setText(f"Current Tone:\n {selected_synth_text}")
         self.instrument_title_label.setText(f"Current Tone:\n {selected_synth_text}")
 
     def update_instrument_preset(self):

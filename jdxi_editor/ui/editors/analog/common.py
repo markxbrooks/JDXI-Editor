@@ -87,6 +87,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
@@ -189,17 +190,9 @@ class AnalogCommonEditor(SynthEditor):
 
         # Title and drum kit selection
         instrument_preset_group = QGroupBox("Analog Synth")
-        self.instrument_title_label = QLabel(
-            f"Analog Synth:\n {self.presets[0]}" if self.presets else "Analog Synth"
-        )
-        instrument_preset_group.setStyleSheet(
-            """
-            QGroupBox {
-            width: 100px;
-            }
-        """
-        )
-        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
+        self.instrument_title_label = DigitalTitle()
+
+        # self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)

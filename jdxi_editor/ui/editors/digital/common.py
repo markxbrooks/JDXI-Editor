@@ -60,7 +60,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
+from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.midi.data.digital import (
     OscWave,
@@ -164,9 +164,10 @@ class DigitalCommonEditor(SynthEditor):
 
         # Title and instrument selection
         instrument_preset_group = QGroupBox("Digital Synth")
-        self.instrument_title_label = QLabel(
-            f"Current Tone:\n {self.presets[0]}" if self.presets else "Current Tone:"
-        )
+        #self.instrument_title_label = QLabel(
+        #    f"Current Tone:\n {self.presets[0]}" if self.presets else "Current Tone:"
+        #)
+        self.instrument_title_label = DigitalTitle()
         self.instrument_title_label.setStyleSheet(
             """
             font-size: 16px;
@@ -193,8 +194,9 @@ class DigitalCommonEditor(SynthEditor):
         """)
         # self.instrument_title_label = DigitalDisplay()
         # self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
-        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL
-        )
+        self.instrument_title_label = DigitalTitle()
+        #self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL
+        #)
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
@@ -287,6 +289,9 @@ class DigitalCommonEditor(SynthEditor):
             self.midi_helper.update_digital2_tone_name.connect(self.set_instrument_title_label)
         else:
             self.midi_helper.update_digital1_tone_name.connect(self.set_instrument_title_label)
+
+    def update_instrument_title(self, text):
+        self.instrument_title_label.setText(text)
 
     def _create_common_controls_section(self):
         """Create common controls section"""
@@ -561,6 +566,17 @@ class DigitalCommonEditor(SynthEditor):
             }
             return temp_area == area_map.get(self.area)
 
+        temporary_area = _check_sysex_area(sysex_data)
+        if not temporary_area:
+            logging.info(
+                "SysEx data does not belong to self.area {self.area}. "
+                "Skipping update. temporary_area: {temporary_area}"
+            )
+            return
+        else:
+            logging.info(f"SysEx data belongs to self.area {self.area} "
+                         f"temporary_area: {temporary_area}")
+
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
             partial_map = {
@@ -572,6 +588,7 @@ class DigitalCommonEditor(SynthEditor):
                 "TONE_PARTIAL_3": 3
             }
             partial_no = partial_map.get(synth_tone)
+            logging.info(f"partial_no: {partial_no}")
             if partial_no is None:
                 logging.warning(f"Unknown synth tone: {synth_tone}")
             return partial_no
@@ -618,13 +635,18 @@ class DigitalCommonEditor(SynthEditor):
             if param in adsr_mapping:
                 spinbox = adsr_mapping[param]
                 spinbox.setValue(new_value)
-
+        """ 
         temporary_area = _check_sysex_area(sysex_data)
         if not temporary_area:
-            logging.warning(
-                "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
+            logging.info(
+                "SysEx data does not belong to self.area {self.area}. "
+                "Skipping update. temporary_area: {temporary_area}"
             )
             return
+        else:
+            logging.info(f"SysEx data belongs to self.area {self.area} "
+                         f"temporary_area: {temporary_area}")
+        """
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(synth_tone)
 
@@ -849,6 +871,8 @@ class DigitalCommonEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
+            temp_area = sysex_data.get("TEMPORARY_AREA")
+            logging.info(f"temp_area: {temp_area}")
             return sysex_data.get("TEMPORARY_AREA") in [
                 "TEMPORARY_DIGITAL_SYNTH_1_AREA",
                 "TEMPORARY_DIGITAL_SYNTH_2_AREA",

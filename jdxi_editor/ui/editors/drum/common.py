@@ -93,6 +93,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     DRUM_KIT_AREA,
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DRUMS
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
@@ -166,11 +167,12 @@ class DrumCommonEditor(SynthEditor):
         self.setMinimumSize(1000, 500)
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
-        self.instrument_title_label = QLabel(
-            f"Drum Kit:\n {DRUM_PRESETS_ENUMERATED[0]}"
-            if DRUM_PRESETS_ENUMERATED
-            else "Drum Kit"
-        )
+        #self.instrument_title_label = QLabel(
+        #    f"Drum Kit:\n {DRUM_PRESETS_ENUMERATED[0]}"
+        #    if DRUM_PRESETS_ENUMERATED
+        #    else "Drum Kit"
+        #)
+        self.instrument_title_label = DigitalTitle()
         drum_group.setStyleSheet(Style.JDXI_DRUM_GROUP)
         self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         drum_group_layout = QVBoxLayout()

@@ -38,6 +38,430 @@ from jdxi_editor.ui.style import Style
 # Precompile the regex pattern at module level or in the class constructor
 ENVELOPE_PATTERN = re.compile(r'(attack|decay|release)', re.IGNORECASE)
 
+from PySide6.QtCore import Signal, QObject
+from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
+from enum import Enum, auto
+
+
+class ADSRParameter(Enum):
+    ATTACK = auto()
+    DECAY = auto()
+    SUSTAIN = auto()
+    RELEASE = auto()
+
+
+class ADSR_newest(QWidget):
+    envelopeChanged = Signal(dict)
+
+    def __init__(self, attack_param: SynthParameter, decay_param: SynthParameter,
+                 sustain_param: SynthParameter, release_param: SynthParameter, midi_helper=None, group=None, area=None,
+                 part=None, parent=None):
+        super().__init__(parent)
+
+        self.parameters = {
+            ADSRParameter.ATTACK: attack_param,
+            ADSRParameter.DECAY: decay_param,
+            ADSRParameter.SUSTAIN: sustain_param,
+            ADSRParameter.RELEASE: release_param
+        }
+
+        self.envelope = {
+            ADSRParameter.ATTACK: 300,
+            ADSRParameter.DECAY: 800,
+            ADSRParameter.SUSTAIN: 0.8,
+            ADSRParameter.RELEASE: 500,
+        }
+
+        self.midi_helper = midi_helper
+        self.group = group if group else ANALOG_OSC_GROUP
+        self.area = area if area else TEMPORARY_TONE_AREA
+        self.part = part if part else ANALOG_PART
+        self.updating_from_spinbox = False
+
+        self.setMinimumHeight(100)  # Adjust height as needed
+
+        # Create spin boxes
+        self.spin_boxes = {
+            ADSRParameter.ATTACK: self.create_spinbox(0, 1000, " ms", self.envelope[ADSRParameter.ATTACK]),
+            ADSRParameter.DECAY: self.create_spinbox(0, 1000, " ms", self.envelope[ADSRParameter.DECAY]),
+            ADSRParameter.SUSTAIN: self.create_double_spinbox(0, 1, 0.01, self.envelope[ADSRParameter.SUSTAIN]),
+            ADSRParameter.RELEASE: self.create_spinbox(0, 1000, " ms", self.envelope[ADSRParameter.RELEASE])
+        }
+
+        self.setStyleSheet(Style.JDXI_ADSR_ANALOG)
+
+        # Create layout
+        self.layout = QGridLayout(self)
+        self.plot = ADSRPlot(width=300, height=250)
+
+        # Create sliders
+        self.sliders = {
+            param: self.create_parameter_slider(param, param.name.capitalize(), self.envelope[param])
+            for param in ADSRParameter
+        }
+
+        # Add sliders and spin boxes to layout
+        for i, param in enumerate(ADSRParameter):
+            self.layout.addWidget(self.sliders[param], 0, i)
+            self.layout.addWidget(self.spin_boxes[param], 1, i)
+
+        # Add plot
+        self.layout.addWidget(self.plot, 0, 4, 3, 1)
+        self.layout.setColumnMinimumWidth(4, 150)
+
+        # Connect signals
+        for sb in self.spin_boxes.values():
+            sb.valueChanged.connect(self.valueChanged)
+
+        for slider in self.sliders.values():
+            slider.valueChanged.connect(self.update_plot)
+
+        self.setLayout(self.layout)
+        self.plot.set_values(self.envelope)
+        self.update_from_envelope()
+
+    def update_from_envelope(self):
+        """Initialize controls with parameter values"""
+        self.update_spinboxes_from_envelope()
+        self.update_sliders_from_envelope()
+
+    def set_envelope(self, envelope: Dict[ADSRParameter, Union[int, float]]):
+        """Set envelope values and update controls"""
+        self.envelope.update(envelope)
+        self.update_from_envelope()
+        self.plot.set_values(self.envelope)
+
+    def create_parameter_slider(self, param: ADSRParameter, label: str, value: int = None) -> Slider:
+        """Create a slider for a parameter with proper display conversion"""
+        synth_param = self.parameters[param]
+        if hasattr(synth_param, "get_display_value"):
+            display_min, display_max = synth_param.get_display_value()
+        else:
+            display_min, display_max = synth_param.min_val, synth_param.max_val
+
+        slider = Slider(label, display_min, display_max, vertical=True, show_value_label=False)
+        slider.setValue(value)
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(synth_param, v))
+
+        return slider
+
+    def update_envelope_from_controls(self):
+        """Update envelope values from slider controls."""
+        for param, slider in self.sliders.items():
+            if param == ADSRParameter.SUSTAIN:
+                self.envelope[param] = slider.value() / 127
+            else:
+                self.envelope[param] = midi_cc_to_ms(slider.value())
+
+    def update_controls_from_envelope(self):
+        """Update slider controls from envelope values."""
+        for param, slider in self.sliders.items():
+            if param == ADSRParameter.SUSTAIN:
+                slider.setValue(int(self.envelope[param] * 127))
+            else:
+                slider.setValue(ms_to_midi_cc(self.envelope[param]))
+
+    def _on_parameter_changed(self, param: SynthParameter, value: int):
+        """Handle parameter value changes and update envelope accordingly."""
+        self.update_envelope_from_controls()
+        self.update_spin_box(param)
+        try:
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(value)
+            else:
+                midi_value = param.validate_value(value)
+
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+        except ValueError as ex:
+            logging.error(f"Error updating parameter: {ex}")
+        self.plot.set_values(self.envelope)
+        self.envelopeChanged.emit(self.envelope)
+
+    def update_spin_box(self, param: SynthParameter):
+        """Update the corresponding spin box based on the given parameter."""
+        param_mapping = {
+            self.parameters[ADSRParameter.ATTACK]: (self.spin_boxes[ADSRParameter.ATTACK], ADSRParameter.ATTACK),
+            self.parameters[ADSRParameter.DECAY]: (self.spin_boxes[ADSRParameter.DECAY], ADSRParameter.DECAY),
+            self.parameters[ADSRParameter.SUSTAIN]: (self.spin_boxes[ADSRParameter.SUSTAIN], ADSRParameter.SUSTAIN),
+            self.parameters[ADSRParameter.RELEASE]: (self.spin_boxes[ADSRParameter.RELEASE], ADSRParameter.RELEASE),
+        }
+
+        if param in param_mapping:
+            spin_box, envelope_key = param_mapping[param]
+            spin_box.blockSignals(True)
+            spin_box.setValue(self.envelope[envelope_key])
+            spin_box.blockSignals(False)
+
+    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
+        """Send MIDI parameter with error handling"""
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
+
+        try:
+            group = self.group
+            param_address = param.address
+            sysex_message = RolandSysEx(area=self.area, section=self.part, group=group, param=param_address,
+                                        value=value)
+            return self.midi_helper.send_midi_message(sysex_message)
+        except Exception as e:
+            logging.error(f"MIDI error setting {param}: {str(e)}")
+            return False
+
+    def update_sliders_from_envelope(self):
+        """Update sliders from envelope values and update the plot."""
+        self.update_controls_from_envelope()
+        self.plot.set_values(self.envelope)
+
+    def valueChanged(self):
+        """Update envelope values when spin boxes change"""
+        self.updating_from_spinbox = True
+        self.blockSignals(True)
+        self.update_envelope_from_spinboxes()
+        self.update_sliders_from_envelope()
+        self.updating_from_spinbox = False
+        self.blockSignals(False)
+        self.plot.set_values(self.envelope)
+        self.envelopeChanged.emit(self.envelope)
+
+    def update_envelope_from_spinboxes(self):
+        """Update envelope values from spin boxes."""
+        self.envelope[ADSRParameter.ATTACK] = self.spin_boxes[ADSRParameter.ATTACK].value()
+        self.envelope[ADSRParameter.DECAY] = self.spin_boxes[ADSRParameter.DECAY].value()
+        self.envelope[ADSRParameter.RELEASE] = self.spin_boxes[ADSRParameter.RELEASE].value()
+        self.envelope[ADSRParameter.SUSTAIN] = self.spin_boxes[ADSRParameter.SUSTAIN].value()
+
+    def update_spinboxes_from_envelope(self):
+        """Update spin boxes from envelope values."""
+        self.blockSignals(True)
+        for param, spin_box in self.spin_boxes.items():
+            spin_box.setValue(self.envelope[param])
+        self.blockSignals(False)
+
+    def create_spinbox(self, min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
+        """Create a QSpinBox with the given parameters."""
+        sb = QSpinBox()
+        sb.setRange(min_value, max_value)
+        sb.setSuffix(suffix)
+        sb.setValue(value)
+        return sb
+
+    def create_double_spinbox(self, min_value: float, max_value: float, step: float, value: float) -> QDoubleSpinBox:
+        """Create a QDoubleSpinBox with the given parameters."""
+        sb = QDoubleSpinBox()
+        sb.setRange(min_value, max_value)
+        sb.setSingleStep(step)
+        sb.setValue(value)
+        return sb
+
+    def update_plot(self):
+        """Update the plot based on the current envelope values."""
+        self.update_envelope_from_controls()
+        self.plot.set_values(self.envelope)
+
+class ADSR_penul(QWidget):
+    envelopeChanged = Signal(dict)
+
+    def __init__(self, attack_param: SynthParameter, decay_param: SynthParameter,
+                 sustain_param: SynthParameter, release_param: SynthParameter, midi_helper=None, group=None, area=None,
+                 part=None, parent=None):
+        super().__init__(parent)
+
+        self.parameters = {
+            ADSRParameter.ATTACK: attack_param,
+            ADSRParameter.DECAY: decay_param,
+            ADSRParameter.SUSTAIN: sustain_param,
+            ADSRParameter.RELEASE: release_param
+        }
+
+        self.envelope = {
+            ADSRParameter.ATTACK: 300,
+            ADSRParameter.DECAY: 800,
+            ADSRParameter.SUSTAIN: 0.8,
+            ADSRParameter.RELEASE: 500,
+        }
+
+        self.midi_helper = midi_helper
+        self.group = group if group else ANALOG_OSC_GROUP
+        self.area = area if area else TEMPORARY_TONE_AREA
+        self.part = part if part else ANALOG_PART
+        self.updating_from_spinbox = False
+
+        self.setMinimumHeight(100)  # Adjust height as needed
+
+        # Create spin boxes
+        self.spin_boxes = {
+            ADSRParameter.ATTACK: self.create_spinbox(0, 1000, " ms", self.envelope[ADSRParameter.ATTACK]),
+            ADSRParameter.DECAY: self.create_spinbox(0, 1000, " ms", self.envelope[ADSRParameter.DECAY]),
+            ADSRParameter.SUSTAIN: self.create_double_spinbox(0, 1, 0.01, self.envelope[ADSRParameter.SUSTAIN]),
+            ADSRParameter.RELEASE: self.create_spinbox(0, 1000, " ms", self.envelope[ADSRParameter.RELEASE])
+        }
+
+        self.setStyleSheet(Style.JDXI_ADSR_ANALOG)
+
+        # Create layout
+        self.layout = QGridLayout(self)
+        self.plot = ADSRPlot(width=300, height=250)
+
+        # Create sliders
+        self.sliders = {
+            param: self.create_parameter_slider(param, param.name.capitalize(), self.envelope[param])
+            for param in ADSRParameter
+        }
+
+        # Add sliders and spin boxes to layout
+        for i, param in enumerate(ADSRParameter):
+            self.layout.addWidget(self.sliders[param], 0, i)
+            self.layout.addWidget(self.spin_boxes[param], 1, i)
+
+        # Add plot
+        self.layout.addWidget(self.plot, 0, 4, 3, 1)
+        self.layout.setColumnMinimumWidth(4, 150)
+
+        # Connect signals
+        for sb in self.spin_boxes.values():
+            sb.valueChanged.connect(self.valueChanged)
+
+        self.setLayout(self.layout)
+        self.plot.set_values(self.envelope)
+        self.update_from_envelope()
+
+    def update_from_envelope(self):
+        """Initialize controls with parameter values"""
+        self.update_spinboxes_from_envelope()
+        self.update_sliders_from_envelope()
+
+    def set_envelope(self, envelope: Dict[ADSRParameter, Union[int, float]]):
+        """Set envelope values and update controls"""
+        self.envelope.update(envelope)
+        self.update_from_envelope()
+        self.plot.set_values(self.envelope)
+
+    def create_parameter_slider(self, param: ADSRParameter, label: str, value: int = None) -> Slider:
+        """Create a slider for a parameter with proper display conversion"""
+        synth_param = self.parameters[param]
+        if hasattr(synth_param, "get_display_value"):
+            display_min, display_max = synth_param.get_display_value()
+        else:
+            display_min, display_max = synth_param.min_val, synth_param.max_val
+
+        slider = Slider(label, display_min, display_max, vertical=True, show_value_label=False)
+        slider.setValue(value)
+        slider.valueChanged.connect(lambda v: self._on_parameter_changed(synth_param, v))
+
+        return slider
+
+    def update_envelope_from_controls(self):
+        """Update envelope values from slider controls."""
+        for param, slider in self.sliders.items():
+            if param == ADSRParameter.SUSTAIN:
+                self.envelope[param] = slider.value() / 127
+            else:
+                self.envelope[param] = midi_cc_to_ms(slider.value())
+
+    def update_controls_from_envelope(self):
+        """Update slider controls from envelope values."""
+        for param, slider in self.sliders.items():
+            if param == ADSRParameter.SUSTAIN:
+                slider.setValue(int(self.envelope[param] * 127))
+            else:
+                slider.setValue(ms_to_midi_cc(self.envelope[param]))
+
+    def _on_parameter_changed(self, param: SynthParameter, value: int):
+        """Handle parameter value changes and update envelope accordingly."""
+        self.update_envelope_from_controls()
+        self.update_spin_box(param)
+        try:
+            if hasattr(param, "convert_from_display"):
+                midi_value = param.convert_from_display(value)
+            else:
+                midi_value = param.validate_value(value)
+
+            if not self.send_midi_parameter(param, midi_value):
+                logging.warning(f"Failed to send parameter {param.name}")
+        except ValueError as ex:
+            logging.error(f"Error updating parameter: {ex}")
+        self.plot.set_values(self.envelope)
+        self.envelopeChanged.emit(self.envelope)
+
+    def update_spin_box(self, param: SynthParameter):
+        """Update the corresponding spin box based on the given parameter."""
+        param_mapping = {
+            self.parameters[ADSRParameter.ATTACK]: (self.spin_boxes[ADSRParameter.ATTACK], ADSRParameter.ATTACK),
+            self.parameters[ADSRParameter.DECAY]: (self.spin_boxes[ADSRParameter.DECAY], ADSRParameter.DECAY),
+            self.parameters[ADSRParameter.SUSTAIN]: (self.spin_boxes[ADSRParameter.SUSTAIN], ADSRParameter.SUSTAIN),
+            self.parameters[ADSRParameter.RELEASE]: (self.spin_boxes[ADSRParameter.RELEASE], ADSRParameter.RELEASE),
+        }
+
+        if param in param_mapping:
+            spin_box, envelope_key = param_mapping[param]
+            spin_box.blockSignals(True)
+            spin_box.setValue(self.envelope[envelope_key])
+            spin_box.blockSignals(False)
+
+    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
+        """Send MIDI parameter with error handling"""
+        if not self.midi_helper:
+            logging.debug("No MIDI helper available - parameter change ignored")
+            return False
+
+        try:
+            group = self.group
+            param_address = param.address
+            sysex_message = RolandSysEx(area=self.area, section=self.part, group=group, param=param_address,
+                                        value=value)
+            return self.midi_helper.send_midi_message(sysex_message)
+        except Exception as e:
+            logging.error(f"MIDI error setting {param}: {str(e)}")
+            return False
+
+    def update_sliders_from_envelope(self):
+        """Update sliders from envelope values and update the plot."""
+        self.update_controls_from_envelope()
+        self.plot.set_values(self.envelope)
+
+    def valueChanged(self):
+        """Update envelope values when spin boxes change"""
+        self.updating_from_spinbox = True
+        self.blockSignals(True)
+        self.update_envelope_from_spinboxes()
+        self.update_sliders_from_envelope()
+        self.updating_from_spinbox = False
+        self.blockSignals(False)
+        self.plot.set_values(self.envelope)
+        self.envelopeChanged.emit(self.envelope)
+
+    def update_envelope_from_spinboxes(self):
+        """Update envelope values from spin boxes."""
+        self.envelope[ADSRParameter.ATTACK] = self.spin_boxes[ADSRParameter.ATTACK].value()
+        self.envelope[ADSRParameter.DECAY] = self.spin_boxes[ADSRParameter.DECAY].value()
+        self.envelope[ADSRParameter.RELEASE] = self.spin_boxes[ADSRParameter.RELEASE].value()
+        self.envelope[ADSRParameter.SUSTAIN] = self.spin_boxes[ADSRParameter.SUSTAIN].value()
+
+    def update_spinboxes_from_envelope(self):
+        """Update spin boxes from envelope values."""
+        self.blockSignals(True)
+        for param, spin_box in self.spin_boxes.items():
+            spin_box.setValue(self.envelope[param])
+        self.blockSignals(False)
+
+    def create_spinbox(self, min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
+        """Create a QSpinBox with the given parameters."""
+        sb = QSpinBox()
+        sb.setRange(min_value, max_value)
+        sb.setSuffix(suffix)
+        sb.setValue(value)
+        return sb
+
+    def create_double_spinbox(self, min_value: float, max_value: float, step: float, value: float) -> QDoubleSpinBox:
+        """Create a QDoubleSpinBox with the given parameters."""
+        sb = QDoubleSpinBox()
+        sb.setRange(min_value, max_value)
+        sb.setSingleStep(step)
+        sb.setValue(value)
+        return sb
+
 
 class ADSR(QWidget):
     envelopeChanged = Signal(dict)
