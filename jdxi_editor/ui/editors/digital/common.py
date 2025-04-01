@@ -76,7 +76,8 @@ from jdxi_editor.midi.data.constants import (
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, DIGITAL_1_PART, \
     DIGITAL_2_PART
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, \
+    TEMPORARY_DIGITAL_SYNTH_2_AREA
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
 
 
@@ -120,11 +121,11 @@ class DigitalCommonEditor(SynthEditor):
         self.synth_num = synth_num
         if self.synth_num == 2:
             self.midi_channel = MIDI_CHANNEL_DIGITAL2
-            self.area = DIGITAL_SYNTH_2_AREA
+            self.area = TEMPORARY_DIGITAL_SYNTH_2_AREA
             self.part = DIGITAL_2_PART
         else:
             self.midi_channel = MIDI_CHANNEL_DIGITAL1
-            self.area = DIGITAL_SYNTH_1_AREA
+            self.area = TEMPORARY_DIGITAL_SYNTH_1_AREA
             self.part = DIGITAL_1_PART
         # midi message parameters
 
@@ -550,12 +551,15 @@ class DigitalCommonEditor(SynthEditor):
             logging.error(f"Invalid JSON format: {ex}")
             return
 
-        def _is_valid_sysex_area(sysex_data):
+        def _check_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") in [
-                "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-                "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-            ]
+            temp_area = sysex_data.get("TEMPORARY_AREA")
+            logging.info(f"@@@ TEMPORARY_AREA: {temp_area} self.area {self.area}")
+            area_map = {
+                TEMPORARY_DIGITAL_SYNTH_1_AREA: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+                TEMPORARY_DIGITAL_SYNTH_2_AREA: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+            }
+            return temp_area == area_map.get(self.area)
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
@@ -615,12 +619,12 @@ class DigitalCommonEditor(SynthEditor):
                 spinbox = adsr_mapping[param]
                 spinbox.setValue(new_value)
 
-        if not _is_valid_sysex_area(sysex_data):
+        temporary_area = _check_sysex_area(sysex_data)
+        if not temporary_area:
             logging.warning(
                 "SysEx data does not belong to TEMPORARY_DIGITAL_SYNTH_1_AREA or TEMPORARY_DIGITAL_SYNTH_2_AREA. Skipping update."
             )
             return
-
         synth_tone = sysex_data.get("SYNTH_TONE")
         partial_no = _get_partial_number(synth_tone)
 
@@ -801,8 +805,8 @@ class DigitalCommonEditor(SynthEditor):
         def _parse_sysex_json(json_data):
             """Parse JSON safely and log changes."""
             try:
-                sysex_data = json.loads(json_data)
-                return sysex_data
+                sysex_dict = json.loads(json_data)
+                return sysex_dict
             except json.JSONDecodeError as ex:
                 logging.error(f"Invalid JSON format: {ex}")
                 return None

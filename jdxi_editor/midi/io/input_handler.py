@@ -107,6 +107,16 @@ def handle_identity_request(message):
     }
 
 
+def listen_midi(port_name, callback):
+    """
+    Function to listen for MIDI messages and call address callback.
+    """
+    with mido.open_input(port_name) as inport:
+        logging.info(f"Listening on port: {port_name}")
+        for msg in inport:
+            callback(msg)  # Call the provided callback function
+
+
 class MidiInHandler(MidiIOController):
     """
     Helper class for MIDI communication with the JD-Xi.
@@ -140,7 +150,6 @@ class MidiInHandler(MidiIOController):
         self.preset_number: int = 0
         self.cc_msb_value: int = 0
         self.cc_lsb_value: int = 0
-        # self.midi_in.set_callback(lambda msg, data: self.rtmidi_callback(msg, data))
         pub.subscribe(self.pub_handle_incoming_midi_message, "midi_incoming_message")
 
     def register_callback(self, callback: Callable) -> None:
@@ -352,21 +361,6 @@ class MidiInHandler(MidiIOController):
         param = get_parameter_from_address(address)
         if param:
             self.midi_parameter_changed.emit(param, value)
-
-    def rtmidi_callback(self, *args):
-        message = args[0]
-        timestamp = args[1]
-        logging.info(f"Message: {message}")
-        logging.info(f"Timestamp: {timestamp}")
-
-    def listen_midi(self, port_name, callback):
-        """
-        Function to listen for MIDI messages and call address callback.
-        """
-        with mido.open_input(port_name) as inport:
-            logging.info(f"Listening on port: {port_name}")
-            for msg in inport:
-                callback(msg)  # Call the provided callback function
 
     def start_thread(self):
         """ start input thread """
