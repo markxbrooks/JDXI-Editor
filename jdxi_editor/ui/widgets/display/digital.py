@@ -45,8 +45,125 @@ from PySide6.QtCore import Qt, QRect
 from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
 from PySide6.QtWidgets import QWidget, QSizePolicy
 
+from PySide6.QtWidgets import QWidget, QSizePolicy
+from PySide6.QtGui import QPainter, QLinearGradient, QColor, QFont, QPen
+from PySide6.QtCore import Qt
 
-class DigitalTitle(QWidget):
+
+class DigitalDisplayBase(QWidget):
+    """Base class for JD-Xi style digital displays."""
+
+    def __init__(self, digital_font_family="Consolas", parent=None):
+        super().__init__(parent)
+        self.digital_font_family = digital_font_family
+        self.display_texts = []
+        self.setMinimumSize(210, 70)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+
+    def paintEvent(self, event):
+        """Handles rendering of the digital display."""
+        painter = QPainter(self)
+        if not painter.isActive():
+            return
+        painter.setRenderHint(QPainter.Antialiasing, False)
+        self.draw_display(painter)
+
+    def draw_display(self, painter: QPainter):
+        """Draws the LCD-style display with a gradient glow effect."""
+        display_width, display_height = self.width(), self.height()
+
+        # Gradient background
+        gradient = QLinearGradient(0, 0, display_width, display_height)
+        gradient.setColorAt(0.0, QColor("#321212"))
+        gradient.setColorAt(0.3, QColor("#331111"))
+        gradient.setColorAt(0.5, QColor("#551100"))
+        gradient.setColorAt(0.7, QColor("#331111"))
+        gradient.setColorAt(1.0, QColor("#111111"))
+
+        painter.setBrush(gradient)
+        painter.setPen(QPen(QColor("#000000"), 2))
+        painter.drawRect(0, 0, display_width, display_height)
+
+        # Set font
+        display_font = QFont(self.digital_font_family, 13, QFont.Bold)
+        painter.setFont(display_font)
+
+        # Draw text
+        y_offset = 20
+        for text in self.display_texts:
+            painter.setPen(QPen(QColor("#FFAA33")))
+            painter.drawText(10, y_offset, text)
+            y_offset += 30  # Space out text lines
+
+    def update_display(self, texts):
+        """Update the display text and trigger repaint."""
+        self.display_texts = texts
+        self.update()
+
+
+class DigitalTitle(DigitalDisplayBase):
+    """Simplified display showing only the current tone name."""
+
+    def __init__(self, tone_name="Init Tone", digital_font_family="Consolas", parent=None):
+        super().__init__(digital_font_family, parent)
+        self.setMinimumSize(330, 70)
+        self.set_tone_name(tone_name)
+
+    def set_tone_name(self, tone_name):
+        """Update the tone name display."""
+        self.update_display([f"Current Tone:", tone_name])
+
+    @property
+    def text(self):
+        return self.display_texts[-1] if self.display_texts else ""
+
+    def setText(self, value):
+        """Alias for set_tone_name."""
+        self.set_tone_name(value)
+
+
+class DigitalDisplay(DigitalDisplayBase):
+    """Full-featured display showing active synth, tone, program, and octave."""
+
+    def __init__(self, current_octave=0, active_synth="D1", tone_name="Init Tone",
+                 program_name="Init Program", program_bank_letter="A", program_number=1,
+                 digital_font_family="Consolas", parent=None):
+        super().__init__(digital_font_family, parent)
+
+        self.current_octave = current_octave
+        self.active_synth = active_synth
+        self.tone_name = tone_name
+        self.program_name = program_name
+        self.program_id = f"{program_bank_letter}{program_number}"
+
+        self.update_display_content()
+
+    def update_display_content(self):
+        """Rebuilds the displayed text and updates the widget."""
+        tone_text = f"{self.active_synth}: {self.tone_name}"[:22]
+        program_text = f"{self.program_id}: {self.program_name}"[:22]
+        octave_text = f"Octave {self.current_octave:+}" if self.current_octave else "Octave 0"
+
+        self.update_display([program_text, tone_text, octave_text])
+
+    def set_tone(self, tone_name):
+        """Set tone name and update display."""
+        self.tone_name = tone_name
+        self.update_display_content()
+
+    def set_program(self, program_name, program_number, bank_letter="A"):
+        """Set program details and update display."""
+        self.program_name = program_name
+        self.program_id = f"{bank_letter}{program_number}"
+        self.update_display_content()
+
+    def set_octave(self, octave):
+        """Set octave and update display."""
+        self.current_octave = octave
+        self.update_display_content()
+
+
+class DigitalTitleOld(QWidget):
     """Digital LCD-style display widget."""
 
     def __init__(self,
@@ -109,7 +226,7 @@ class DigitalTitle(QWidget):
         self.update()
 
 
-class DigitalDisplay(QWidget):
+class DigitalDisplayOld(QWidget):
     """Digital LCD-style display widget."""
 
     def __init__(
