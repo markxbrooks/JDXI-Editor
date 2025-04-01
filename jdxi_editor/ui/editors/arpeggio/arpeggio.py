@@ -64,6 +64,7 @@ from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.style import Style
 
 
 class ArpeggioEditor(SynthEditor):
@@ -99,20 +100,17 @@ class ArpeggioEditor(SynthEditor):
         self.setLayout(layout)
 
         self.title_label = QLabel("Arpeggiator")
-        self.title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-            """
-        )
+        self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
+        title_row_layout = QHBoxLayout()
+        title_row_layout.addWidget(self.title_label)
 
-        layout.addWidget(self.title_label)
+        layout.addLayout(title_row_layout)
         # Image display
         self.image_label = QLabel()
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        layout.addWidget(self.image_label)
+        title_row_layout.addWidget(self.image_label)
         self.update_instrument_image()
 
         # Add on-off switch

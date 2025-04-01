@@ -668,9 +668,23 @@ class Style:
             """
 
     JDXI_INSTRUMENT_TITLE_LABEL = """
+            color: #FFBB33;
             font-size: 16px;
             font-weight: bold;
-        """
+            font-family: "Consolas";
+
+            QGroupBox {
+                border: 2px solid black;
+                border-radius: 5px;
+                background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #321212,
+                    stop: 0.3 #331111,
+                    stop: 0.5 #551100,
+                    stop: 0.7 #331111,
+                    stop: 1 #321212
+                );
+            }
+            """
 
     JDXI_LABEL_SYNTH_PART = """
                 font-family: "Myriad Pro", Arial;

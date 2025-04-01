@@ -22,7 +22,7 @@ Dependencies:
 """
 
 import os
-from typing import Optional
+from typing import Optional, Dict
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QWidget,
@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
+from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
@@ -71,6 +72,9 @@ class VocalFXEditor(SynthEditor):
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
+        self.controls: Dict[
+            SynthParameter, QWidget
+        ] = {}
 
         # Create scroll area
         scroll = QScrollArea()
@@ -84,12 +88,7 @@ class VocalFXEditor(SynthEditor):
         container.setLayout(container_layout)
 
         self.title_label = QLabel("Vocal Effects")
-        self.title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-        """
-        )
+        self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
         container_layout.addLayout(title_layout)
