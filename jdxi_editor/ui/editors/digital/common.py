@@ -60,6 +60,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.midi.data.digital import (
     OscWave,
@@ -173,7 +174,7 @@ class DigitalCommonEditor(SynthEditor):
         )
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
+        # instrument_title_group_layout.addWidget(self.instrument_title_label)
 
         self.instrument_selection_label = QLabel("Select address digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
@@ -189,19 +190,24 @@ class DigitalCommonEditor(SynthEditor):
         instrument_preset_group.setStyleSheet("""
                         width: 100px;
         """)
-        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
+        # self.instrument_title_label = DigitalDisplay()
+        # self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         self.instrument_title_label.setStyleSheet(
             """
-            QGroupBox {
-            width: 80px;
-            }
-        """
-        )
-        self.instrument_title_label.setStyleSheet(
-            """
+            color: #FFBB33;
             font-size: 16px;
             font-weight: bold;
             width: 80px;
+            font-family: "Consolas";
+            QGroupBox {
+                qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                stop: 0 #321212,
+                stop: 0.3 #331111,
+                stop: 0.5 #551100,
+                stop: 0.7 #331111,  
+                stop: 1 #111111
+                );
+            }
         """
         )
         instrument_title_group_layout = QVBoxLayout()

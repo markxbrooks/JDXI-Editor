@@ -422,7 +422,7 @@ class JdxiInstrument(JdxiUi):
             presets[self.current_preset_index],
             self.channel,
         )
-        preset_helper.load_preset_by_program_change(self.current_preset_index)
+        preset_helper.load_preset_by_program_change(self.current_preset_index, self.current_synth_type)
 
     def _next_tone(self):
         """Increment the tone index and update the display."""
@@ -439,13 +439,12 @@ class JdxiInstrument(JdxiUi):
         self.current_preset_index += 1
         presets = self._get_presets_for_current_synth()
         preset_helper = self._get_preset_helper_for_current_synth()
-
         self._update_display_preset(
             self.current_preset_index,
             presets[self.current_preset_index],
             self.channel,
         )
-        preset_helper.load_preset_by_program_change(self.current_preset_index)
+        preset_helper.load_preset_by_program_change(self.current_preset_index, self.current_synth_type)
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth preset_type and preset index."""
