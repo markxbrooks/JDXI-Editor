@@ -96,7 +96,8 @@ class DigitalTitle(QWidget):
         tone_name_text = self.tone_name
         # Draw the main text on top
         painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
-        painter.drawText(display_x + 7, display_y + 50, tone_name_text)
+        painter.drawText(display_x + 12, display_y + 30, "Current Tone:")
+        painter.drawText(display_x + 12, display_y + 60, tone_name_text)
 
     @property
     def text(self):
@@ -105,75 +106,6 @@ class DigitalTitle(QWidget):
     def setText(self, value: str):
         """Set preset name and trigger repaint."""
         self.tone_name = value
-        self.update()
-
-class DigitalTitleOld(QWidget):
-    """Digital LCD-style display widget."""
-
-    def __init__(
-            self,
-
-            digital_font_family: str = "Consolas",
-            tone_name: str = "Init Tone",
-            parent=None,
-    ):
-        super().__init__(parent)
-        self.digital_font_family = digital_font_family
-        self.tone_name = tone_name
-        self.margin = 10  # Default margin for display elements
-        self.setMinimumSize(330, 80)  # Set size matching display
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-
-    def paintEvent(self, event):
-        """Handles the rendering of the digital display."""
-        painter = QPainter(self)
-        if not painter.isActive():
-            return  # Prevents drawing if painter failed to initialize
-        painter.setRenderHint(QPainter.Antialiasing, False)
-        self.draw_display(painter)
-
-    def draw_display(self, painter: QPainter):
-        """Draws the JD-Xi style digital display with a gradient glow effect."""
-
-        display_x, display_y = 0, 0
-        display_width, display_height = self.width(), self.height()
-
-        # 1. Create an orange glow gradient background
-        gradient = QLinearGradient(0, 0, display_width, display_height)
-        gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
-        gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
-        gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
-        gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
-        gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
-
-        painter.setBrush(gradient)
-        painter.setRenderHint(QPainter.Antialiasing, False)
-        painter.setPen(QPen(QColor("#000000"), 2))  # black border
-        painter.drawRect(display_x, display_y, display_width, display_height)
-
-        # 2. Set font for digital display
-        display_font = QFont(self.digital_font_family, 18, QFont.Bold)
-        painter.setFont(display_font)
-        painter.setPen(QPen(QColor("#FFBB33")))  # Lighter orange for text
-
-        # 3. Draw text with glowing effect
-        tone_name_text = self.tone_name
-
-        # Glow effect simulation (by drawing text multiple times with slight offsets)
-        offsets = [(-2, -2), (1, -1), (-1, 1), (1, 1)]
-        glow_color = QColor("#FF00")  # Darker orange for glow effect
-        for dx, dy in offsets:
-            painter.setPen(QPen(glow_color))
-            painter.drawText(display_x + 7 + dx, display_y + 50 + dy, tone_name_text)
-
-        # Draw the main text on top
-        painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
-        painter.drawText(display_x + 7, display_y + 50, tone_name_text)
-
-    # --- Property Setters ---
-    def setText(self, text: str):
-        """Set preset name and trigger repaint."""
-        self.tone_name = text
         self.update()
 
 

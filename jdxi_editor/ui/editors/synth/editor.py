@@ -170,7 +170,7 @@ class SynthEditor(SynthBase):
         raise NotImplementedError
 
     def set_instrument_title_label(self, name: str):
-        self.instrument_title_label.setText(f"Current Tone:\n {name}")
+        self.instrument_title_label.setText(name)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -180,8 +180,7 @@ class SynthEditor(SynthBase):
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         logging.info(f"selected_synth_text: {selected_synth_text}")
-        # self.instrument_title_label.setText(f"Current Tone:\n {selected_synth_text}")
-        self.instrument_title_label.setText(f"Current Tone:\n {selected_synth_text}")
+        self.instrument_title_label.setText(selected_synth_text)
 
     def update_instrument_preset(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()

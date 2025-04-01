@@ -1052,10 +1052,6 @@ class JdxiInstrument(JdxiUi):
         self.midi_message_debug.show()
         self.midi_message_debug.raise_()
 
-    def _midi_message_debug_closed(self):
-        """Handle MIDI message debug window closure"""
-        self.midi_message_debug = None
-
     def _handle_midi_message(self, message, timestamp):
         """Handle incoming MIDI message"""
         data = message[0]  # Get the raw MIDI data
@@ -1069,10 +1065,6 @@ class JdxiInstrument(JdxiUi):
                 # Blink the input indicator
                 if hasattr(self, "midi_in_indicator"):
                     self.midi_in_indicator.blink()
-
-                # Forward to MIDI helper
-                if hasattr(self, "midi_helper"):
-                    self.midi_helper.pub_handle_incoming_midi_message(message, timestamp)
 
     def _edit_patch_name(self):
         """Edit current patch name"""

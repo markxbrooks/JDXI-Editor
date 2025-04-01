@@ -187,7 +187,7 @@ class DigitalCommonEditor(SynthEditor):
         # Title and drum kit selection
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(
-            f"Current Tone:\n {self.presets[0]}" if self.presets else "Current Tone"
+            self.presets[0] if self.presets else ""
         )
         instrument_preset_group.setStyleSheet("""
                         width: 100px;

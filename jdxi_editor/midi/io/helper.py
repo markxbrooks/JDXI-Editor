@@ -19,7 +19,6 @@ Dependencies:
 """
 
 import logging
-from typing import Callable
 
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
@@ -59,50 +58,3 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.send_raw_message(sysex_list)
         except Exception as ex:
             logging.info(f"Error {ex} sending sysex list")
-
-    def midi_callback(self, event):
-        self.midi_callback(event=event)
-
-
-class MidiIOHelperOld(MidiInHandler, MidiOutHandler):
-    """
-    Helper class for MIDI communication with the JD-Xi.
-
-    This class integrates both input and output MIDI functionalities by inheriting
-    from MIDIInHandler and MIDIOutHandler. It also provides address JSON-formatted SysEx
-    signal for convenient handling of SysEx messages.
-    """
-
-    def __init__(self, parent=None):
-        """
-        Initialize the MIDIHelper.
-
-        :param parent: Optional parent widget or object.
-        """
-        super().__init__()
-        self.midi_messages = []
-        if parent:
-            self.parent = parent
-
-    def load_patch(self, file_path):
-        try:
-            with open(file_path, "rb") as file:
-                sysex_data = file.read()
-
-            if not sysex_data.startswith(b"\xF0") or not sysex_data.endswith(b"\xF7"):
-                logging.error("Invalid SysEx file format")
-                return
-        except Exception as ex:
-            logging.info(f"Error {ex} occurred opening file")
-
-        self.midi_messages.append(sysex_data)
-        try:
-            logging.info(f"attempting to send message: {sysex_data}")
-            sysex_list = list(sysex_data)
-            self.send_raw_message(sysex_list)
-        except Exception as ex:
-            logging.info(f"Error {ex} sending sysex list")
-
-    def midi_callback(self, event):
-        self.midi_callback(event=event)
-
