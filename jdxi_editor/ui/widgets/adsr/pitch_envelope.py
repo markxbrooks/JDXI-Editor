@@ -21,7 +21,7 @@ from typing import Dict, Union
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA, TEMPORARY_TONE_AREA
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
+from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot, ADSRParameter
 from jdxi_editor.ui.widgets.slider.slider import Slider
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.data.constants.analog import (
@@ -78,16 +78,31 @@ class PitchEnvelope(QWidget):
         }
 
         self.setMinimumHeight(100)
-        self.attack_sb = self.create_spinbox(0, 1000, " ms", self.envelope["attack_time"])
-        self.decay_sb = self.create_spinbox(0, 1000, " ms", self.envelope["decay_time"])
-        self.depth_sb = self.create_spinbox(-63, 63, " ", self.envelope["depth"])
+        self.attack_sb = self.create_spinbox(0,
+                                             1000,
+                                             " ms",
+                                             self.envelope[ADSRParameter.ATTACK_TIME])
+        self.decay_sb = self.create_spinbox(0,
+                                            1000,
+                                            " ms",
+                                            self.envelope[ADSRParameter.DECAY_TIME])
+        self.depth_sb = self.create_spinbox(-63,
+                                            63,
+                                            " ",
+                                            self.envelope[ADSRParameter.PEAK_LEVEL])
 
         self.layout = QGridLayout(self)
 
         # Create sliders
-        self.attack_slider = self._create_parameter_slider(attack_param, "Attack", value=self.envelope["attack_time"])
-        self.decay_slider = self._create_parameter_slider(decay_param, "Decay", value=self.envelope["decay_time"])
-        self.depth_slider = self._create_parameter_slider(depth_param, "Depth", value=self.envelope["depth"])
+        self.attack_slider = self._create_parameter_slider(attack_param,
+                                                           "Attack",
+                                                           value=self.envelope[ADSRParameter.ATTACK_TIME])
+        self.decay_slider = self._create_parameter_slider(decay_param,
+                                                          "Decay",
+                                                          value=self.envelope[ADSRParameter.DECAY_TIME])
+        self.depth_slider = self._create_parameter_slider(depth_param,
+                                                          "Depth",
+                                                          value=self.envelope[ADSRParameter.PEAK_LEVEL])
 
         # Add sliders to layout
         self.layout.addWidget(self.attack_slider, 0, 0)
@@ -117,7 +132,7 @@ class PitchEnvelope(QWidget):
         """Update slider controls from envelope values."""
         for param, slider in self.controls.items():
             #if param == self.parameters['sustain']:
-            #    slider.setValue(int(self.envelope["sustain_level"] * 127))
+            #    slider.setValue(int(self.envelope[ADSRParameter.SUSTAIN_LEVEL] * 127))
             #else:
             if match := ENVELOPE_PATTERN.search(param.name):
                 key = f"{match.group().lower()}_time"
@@ -155,10 +170,10 @@ class PitchEnvelope(QWidget):
         return slider
 
     def valueChanged(self):
-        self.envelope["attack_time"] = self.attack_sb.value()
-        self.envelope["decay_time"] = self.decay_sb.value()
-        self.envelope["depth"] = self.depth_sb.value()
-        self.envelope["release_time"] = 500
+        self.envelope[ADSRParameter.ATTACK_TIME] = self.attack_sb.value()
+        self.envelope[ADSRParameter.DECAY_TIME] = self.decay_sb.value()
+        self.envelope[ADSRParameter.PEAK_LEVEL] = self.depth_sb.value()
+        self.parameters[ADSRParameter.RELEASE_TIME] = 500
 
         self.update_sliders_from_envelope()
         self.envelopeChanged.emit(self.envelope)
@@ -176,9 +191,9 @@ class PitchEnvelope(QWidget):
         """Update the corresponding spin box based on the given parameter."""
         # Mapping of parameters to their corresponding spin box and envelope keys
         param_mapping = {
-            self.parameters['decay']: (self.decay_sb, "decay_time"),
-            self.parameters['attack']: (self.attack_sb, "attack_time"),
-            self.parameters['depth']: (self.depth_sb, "depth"),
+            self.parameters['decay']: (self.decay_sb, ADSRParameter.DECAY_TIME),
+            self.parameters['attack']: (self.attack_sb, ADSRParameter.ATTACK_TIME),
+            self.parameters['depth']: (self.depth_sb, ADSRParameter.PEAK_LEVEL),
         }
 
         # Update the corresponding spin box if the parameter is in the mapping
@@ -214,25 +229,15 @@ class PitchEnvelope(QWidget):
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
-    def _on_parameter_changed_old(self, param, value):
-        if param == self.parameters['attack']:
-            self.envelope["attack_time"] = value
-        elif param == self.parameters['decay']:
-            self.envelope["decay_time"] = value
-        elif param == self.parameters['depth']:
-            self.envelope["depth"] = value
-        self.update_spinboxes_from_envelope()
-        self.envelopeChanged.emit(self.envelope)
-
     def update_sliders_from_envelope(self):
-        self.attack_slider.setValue(self.envelope["attack_time"])
-        self.decay_slider.setValue(self.envelope["decay_time"])
-        self.depth_slider.setValue(self.envelope["depth"])
+        self.attack_slider.setValue(self.envelope[ADSRParameter.ATTACK_TIME])
+        self.decay_slider.setValue(self.envelope[ADSRParameter.DECAY_TIME])
+        self.depth_slider.setValue(self.envelope[ADSRParameter.PEAK_LEVEL])
 
     def update_spinboxes_from_envelope(self):
-        self.attack_sb.setValue(self.envelope["attack_time"])
-        self.decay_sb.setValue(self.envelope["decay_time"])
-        self.depth_sb.setValue(self.envelope["depth"])
+        self.attack_sb.setValue(self.envelope[ADSRParameter.ATTACK_TIME])
+        self.decay_sb.setValue(self.envelope[ADSRParameter.DECAY_TIME])
+        self.depth_sb.setValue(self.envelope[ADSRParameter.PEAK_LEVEL])
 
     def create_spinbox(self, min_value, max_value, suffix, value):
         sb = QSpinBox()

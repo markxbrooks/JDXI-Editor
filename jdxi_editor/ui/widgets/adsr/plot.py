@@ -58,10 +58,12 @@ from jdxi_editor.ui.widgets.display.digital import DigitalDisplayBase
 
 
 class ADSRParameter(Enum):
-    ATTACK = "attack_time"
-    DECAY = "decay_time"
-    SUSTAIN = "sustain_level"
-    RELEASE = "release_time"
+    ATTACK_TIME = "attack_time"
+    DECAY_TIME = "decay_time"
+    SUSTAIN_LEVEL = "sustain_level"
+    RELEASE_TIME = "release_time"
+    INITIAL_LEVEL = "initial_level"
+    PEAK_LEVEL = "peak_level"
 
 
 class ADSRPlot_Newest(QWidget):
@@ -69,12 +71,12 @@ class ADSRPlot_Newest(QWidget):
         super().__init__(parent)
         # Default envelope parameters (times in ms)
         self.envelope = {
-            ADSRParameter.ATTACK: 100,
-            ADSRParameter.DECAY: 400,
-            ADSRParameter.SUSTAIN: 0.8,
-            ADSRParameter.RELEASE: 100,
-            "initial_level": 0,
-            "peak_level": 1,
+            ADSRParameter.ATTACK_TIME: 100,
+            ADSRParameter.DECAY_TIME: 400,
+            ADSRParameter.SUSTAIN_LEVEL: 0.8,
+            ADSRParameter.RELEASE_TIME: 100,
+            ADSRParameter.INITIAL_LEVEL: 0,
+            ADSRParameter.PEAK_LEVEL: 1,
         }
         # Set a fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
@@ -117,12 +119,12 @@ class ADSRPlot_Newest(QWidget):
         painter.setFont(QFont("Consolas", 10))
 
         # Compute envelope segments in seconds
-        attack_time = self.envelope[ADSRParameter.ATTACK] / 1000.0
-        decay_time = self.envelope[ADSRParameter.DECAY] / 1000.0
-        release_time = self.envelope[ADSRParameter.RELEASE] / 1000.0
-        sustain_level = self.envelope[ADSRParameter.SUSTAIN]
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
+        attack_time = self.envelope[ADSRParameter.ATTACK_TIME] / 1000.0
+        decay_time = self.envelope[ADSRParameter.DECAY_TIME] / 1000.0
+        release_time = self.envelope[ADSRParameter.RELEASE_TIME] / 1000.0
+        sustain_level = self.envelope[ADSRParameter.SUSTAIN_LEVEL]
+        peak_level = self.envelope[ADSRParameter.PEAK_LEVEL]
+        initial_level = self.envelope[ADSRParameter.INITIAL_LEVEL]
 
         # Convert times to sample counts
         attack_samples = int(attack_time * self.sample_rate)
@@ -221,12 +223,12 @@ class ADSRPlot(DigitalDisplayBase):
         super().__init__(parent)
         # Default envelope parameters (times in ms)
         self.envelope = {
-            "attack_time": 100,
-            "decay_time": 400,
-            "release_time": 100,
-            "initial_level": 0,
-            "peak_level": 1,
-            "sustain_level": 0.8,
+            ADSRParameter.ATTACK_TIME: 100,
+            ADSRParameter.DECAY_TIME: 400,
+            ADSRParameter.SUSTAIN_LEVEL: 0.8,
+            ADSRParameter.RELEASE_TIME: 100,
+            ADSRParameter.INITIAL_LEVEL: 0,
+            ADSRParameter.PEAK_LEVEL: 1,
         }
         # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
@@ -271,12 +273,12 @@ class ADSRPlot(DigitalDisplayBase):
         painter.setFont(QFont("Consolas", 10))
 
         # Compute envelope segments in seconds
-        attack_time = self.envelope["attack_time"] / 1000.0
-        decay_time = self.envelope["decay_time"] / 1000.0
-        release_time = self.envelope["release_time"] / 1000.0
-        sustain_level = self.envelope["sustain_level"]
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
+        attack_time = self.envelope[ADSRParameter.ATTACK_TIME] / 1000.0
+        decay_time = self.envelope[ADSRParameter.DECAY_TIME] / 1000.0
+        release_time = self.envelope[ADSRParameter.RELEASE_TIME] / 1000.0
+        sustain_level = self.envelope[ADSRParameter.SUSTAIN_LEVEL]
+        peak_level = self.envelope[ADSRParameter.PEAK_LEVEL]
+        initial_level = self.envelope[ADSRParameter.INITIAL_LEVEL]
 
         # Convert times to sample counts
         attack_samples = int(attack_time * self.sample_rate)
@@ -415,12 +417,12 @@ class ADSRMatplot(QWidget):
         self.ax.set_xlim(0, 5)
 
         # Extract envelope parameters
-        attack_time = self.envelope["attack_time"] / 1000
-        decay_time = self.envelope["decay_time"] / 1000
-        release_time = self.envelope["release_time"] / 1000
-        sustain_level = self.envelope["sustain_level"]
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
+        attack_time = self.envelope[ADSRParameter.ATTACK_TIME] / 1000
+        decay_time = self.envelope[ADSRParameter.DECAY_TIME] / 1000
+        release_time = self.parameters[ADSRParameter.RELEASE_TIME] / 1000
+        sustain_level = self.envelope[ADSRParameter.SUSTAIN_LEVEL]
+        peak_level = self.envelope[ADSRParameter.PEAK_LEVEL]
+        initial_level = self.envelope[ADSRParameter.INITIAL_LEVEL]
 
         # Convert to samples (assuming address 44.1 kHz sample rate)
         attack_samples = int(attack_time * 44100)
