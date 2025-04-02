@@ -642,15 +642,15 @@ class Style:
         }}
     """
 
-    JDXI_LABEL_SUB = """
-            font-family: "Myriad Pro", Arial;
+    JDXI_LABEL_SUB = f"""
+            font-family: "{FONT_FAMILY}";
             font-size: 13px;
             color: #d51e35;
             font-weight: bold;
         """
 
-    JDXI_LABEL = """
-            font-family: "Myriad Pro", Arial;
+    JDXI_LABEL = f"""
+            font-family: "{FONT_FAMILY}";
             font-size: 14px;
             color: #d51e35;
             font-weight: bold;
@@ -686,15 +686,15 @@ class Style:
             }
             """
 
-    JDXI_LABEL_SYNTH_PART = """
-                font-family: "Myriad Pro", Arial;
+    JDXI_LABEL_SYNTH_PART = f"""
+                font-family: "{FONT_FAMILY}";
                 font-size: 13px;
                 color: #d51e35;  /* Base red */
                 font-weight: bold;
             """
 
     JDXI_LABEL_ANALOG_SYNTH_PART = f"""
-                font-family: "Myriad Pro", Arial;
+                font-family: "{FONT_FAMILY}";
                 font-size: 13px;
                 color: {ACCENT_ANALOG};  /* Blue for Analog */
                 font-weight: bold;
@@ -706,42 +706,42 @@ class Style:
             }
             """
 
-    JDXI_PATCH_MANAGER = """
-            QMainWindow {
+    JDXI_PATCH_MANAGER = f"""
+            QMainWindow {{
                 background-color: #2E2E2E;
-            }
-            QWidget {
+            }}
+            QWidget {{
                 background-color: #2E2E2E;
                 color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QLineEdit {
+                font-family: "{FONT_FAMILY}";
+            }}
+            QLineEdit {{
                 background-color: #1A1A1A;
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
                 padding: 2px;
                 font-family: 'Consolas';
-            }
-            QPushButton {
+            }}
+            QPushButton {{
                 background-color: #3D3D3D;
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
                 padding: 2px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
+                font-family: "{FONT_FAMILY}";
+            }}
+            QPushButton:hover {{
                 background-color: #4D4D4D;
                 border: 1px solid #FF3333;
-            }
-            QPushButton:border_pressed {
+            }}
+            QPushButton:border_pressed {{
                 background-color: #2D2D2D;
-            }
-            QLabel {
+            }}
+            QLabel {{
                 color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
+                font-family: "{FONT_FAMILY}";
+            }}
         """
 
     JDXI_PARTIAL_SWITCH = f"""
@@ -779,58 +779,58 @@ class Style:
             }
         """  # this may be sub-classed
 
-    JDXI_DEBUGGER = """
-            QMainWindow {
+    JDXI_DEBUGGER = f"""
+            QMainWindow {{
                 background-color: #2E2E2E;
-            }
-            QWidget {
+            }}
+            QWidget {{
                 background-color: #2E2E2E;
                 color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QPlainTextEdit {
+                font-family: '{FONT_FAMILY}';
+            }}
+            QPlainTextEdit {{
                 background-color: #1A1A1A;
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
                 padding: 3px;
                 font-family: 'Consolas';
-            }
-            QTextEdit {
+            }}
+            QTextEdit {{
                 background-color: #1A1A1A;
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
                 padding: 2px;
                 font-family: 'Consolas';
-            }
-            QPushButton {
+            }}
+            QPushButton {{
                 background-color: #3D3D3D;
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
                 padding: 2px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
+                font-family: "{FONT_FAMILY}";
+            }}
+            QPushButton:hover {{
                 background-color: #4D4D4D;
                 border: 1px solid #FF3333;
-            }
-            QPushButton:border_pressed {
+            }}
+            QPushButton:border_pressed {{
                 background-color: #2D2D2D;
-            }
+            }}
         """
 
-    JDXI_SEQUENCER = """
-            font-family: "Myriad Pro", Arial;
+    JDXI_SEQUENCER = f"""
+            font-family: "{FONT_FAMILY}";
             font-size: 14px;
             color: #d51e35;
             font-weight: bold;
             background: transparent;
         """
 
-    JDXI_PARTS_SELECT = """
-            font-family: "Myriad Pro", Arial;
+    JDXI_PARTS_SELECT = f"""
+            font-family: {FONT_FAMILY};
             font-size: 14px;
             color: #d51e35;
             font-weight: bold;

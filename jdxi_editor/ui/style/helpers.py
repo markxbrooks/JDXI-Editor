@@ -111,6 +111,7 @@ def generate_button_style(
             }}
         """
 
+FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
 
 def generate_tab_style(
         bg,
@@ -121,7 +122,7 @@ def generate_tab_style(
         hover_border,
         selected_bg,
         selected_border,
-        font_family="Myriad Pro, Arial, sans-serif",
+        font_family=FONT_FAMILY,
         font_size="12px",
         padding="2px 2px",
         margin="2px",

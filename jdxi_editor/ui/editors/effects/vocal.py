@@ -52,6 +52,7 @@ from jdxi_editor.midi.data.constants.vocal_fx import (
     VocoderHPF,
 )
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParameter
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
 class VocalFXEditor(SynthEditor):
@@ -87,7 +88,9 @@ class VocalFXEditor(SynthEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        self.title_label = QLabel("Vocal Effects")
+        #self.title_label = QLabel("Vocal Effects")
+        self.title_label = DigitalTitle()
+        self.title_label.setText("Vocal Effects")
         self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)

@@ -65,6 +65,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 
 
 class ArpeggioEditor(SynthEditor):
@@ -99,7 +100,8 @@ class ArpeggioEditor(SynthEditor):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.title_label = QLabel("Arpeggiator")
+        # self.title_label = QLabel("Arpeggiator")
+        self.title_label = DigitalTitle(tone_name="Arpeggiator")
         self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         title_row_layout = QHBoxLayout()
         title_row_layout.addWidget(self.title_label)
