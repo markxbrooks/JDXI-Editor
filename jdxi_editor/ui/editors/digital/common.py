@@ -63,7 +63,7 @@ from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.midi.data.digital import (
-    OscWave,
+    DigitalOscWave,
     DigitalPartial,
     set_partial_state,
     get_digital_parameter_by_address,
@@ -654,7 +654,7 @@ class DigitalCommonEditor(SynthEditor):
         }
         sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
-        osc_waveform_map = {wave.value: wave for wave in OscWave}
+        osc_waveform_map = {wave.value: wave for wave in DigitalOscWave}
 
         failures, successes = [], []
 
@@ -1002,14 +1002,14 @@ class DigitalCommonEditor(SynthEditor):
             return
 
         waveform_map = {
-            0: OscWave.SAW,
-            1: OscWave.SQUARE,
-            2: OscWave.PW_SQUARE,
-            3: OscWave.TRIANGLE,
-            4: OscWave.SINE,
-            5: OscWave.NOISE,
-            6: OscWave.SUPER_SAW,
-            7: OscWave.PCM,
+            0: DigitalOscWave.SAW,
+            1: DigitalOscWave.SQUARE,
+            2: DigitalOscWave.PW_SQUARE,
+            3: DigitalOscWave.TRIANGLE,
+            4: DigitalOscWave.SINE,
+            5: DigitalOscWave.NOISE,
+            6: DigitalOscWave.SUPER_SAW,
+            7: DigitalOscWave.PCM,
         }
 
         selected_waveform = waveform_map.get(value)

@@ -53,7 +53,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
-from jdxi_editor.midi.data.digital import OscWave, DIGITAL_PARTIAL_NAMES
+from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA, \
     DIGITAL_PART_1, DIGITAL_PART_2
@@ -163,14 +163,14 @@ class DigitalPartialEditor(PartialEditor):
         self.wave_buttons = {}
 
         wave_icons = {
-            OscWave.SAW: generate_waveform_icon("upsaw", "#FFFFFF", 1.0),
-            OscWave.SQUARE: generate_waveform_icon("square", "#FFFFFF", 1.0),
-            OscWave.PW_SQUARE: generate_waveform_icon("pwsqu", "#FFFFFF", 1.0),
-            OscWave.TRIANGLE: generate_waveform_icon("triangle", "#FFFFFF", 1.0),
-            OscWave.SINE: generate_waveform_icon("sine", "#FFFFFF", 1.0),
-            OscWave.NOISE: generate_waveform_icon("noise", "#FFFFFF", 1.0),
-            OscWave.SUPER_SAW: generate_waveform_icon("spsaw", "#FFFFFF", 1.0),
-            OscWave.PCM: generate_waveform_icon("pcm", "#FFFFFF", 1.0),
+            DigitalOscWave.SAW: generate_waveform_icon("upsaw", "#FFFFFF", 1.0),
+            DigitalOscWave.SQUARE: generate_waveform_icon("square", "#FFFFFF", 1.0),
+            DigitalOscWave.PW_SQUARE: generate_waveform_icon("pwsqu", "#FFFFFF", 1.0),
+            DigitalOscWave.TRIANGLE: generate_waveform_icon("triangle", "#FFFFFF", 1.0),
+            DigitalOscWave.SINE: generate_waveform_icon("sine", "#FFFFFF", 1.0),
+            DigitalOscWave.NOISE: generate_waveform_icon("noise", "#FFFFFF", 1.0),
+            DigitalOscWave.SUPER_SAW: generate_waveform_icon("spsaw", "#FFFFFF", 1.0),
+            DigitalOscWave.PCM: generate_waveform_icon("pcm", "#FFFFFF", 1.0),
         }
 
         for wave, icon_base64 in wave_icons.items():
@@ -283,8 +283,8 @@ class DigitalPartialEditor(PartialEditor):
         layout.addWidget(self.super_saw_detune)
 
         # Update PW controls enabled state when waveform changes
-        self._update_pw_controls_state(OscWave.SAW)  # Initial state
-        self._update_pcm_controls_state(OscWave.PCM)  # Initial state
+        self._update_pw_controls_state(DigitalOscWave.SAW)  # Initial state
+        self._update_pcm_controls_state(DigitalOscWave.PCM)  # Initial state
 
         return oscillator_section
 
@@ -302,15 +302,15 @@ class DigitalPartialEditor(PartialEditor):
         self.pcm_wave_number.combo_box.addItems([f"{w['Wave Number']}: {w['Wave Name']}" for w in filtered_waves])
         self.pcm_wave_number.values = [w["Wave Number"] for w in filtered_waves]
 
-    def _update_pw_controls_state(self, waveform: OscWave):
+    def _update_pw_controls_state(self, waveform: DigitalOscWave):
         """Update pulse width controls enabled state based on waveform"""
-        pw_enabled = waveform == OscWave.PW_SQUARE
+        pw_enabled = waveform == DigitalOscWave.PW_SQUARE
         self.pw_slider.setEnabled(pw_enabled)
         self.pwm_slider.setEnabled(pw_enabled)
 
-    def _update_pcm_controls_state(self, waveform: OscWave):
+    def _update_pcm_controls_state(self, waveform: DigitalOscWave):
         """Update PCM wave controls visibility based on waveform"""
-        pcm_enabled = waveform == OscWave.PCM
+        pcm_enabled = waveform == DigitalOscWave.PCM
         self.pcm_wave_gain.setEnabled(pcm_enabled)
         self.pcm_wave_number.setEnabled(pcm_enabled)
 
@@ -778,7 +778,7 @@ class DigitalPartialEditor(PartialEditor):
         mod_lfo_layout.addStretch()
         return mod_lfo_group_box
 
-    def _on_waveform_selected(self, waveform: OscWave):
+    def _on_waveform_selected(self, waveform: DigitalOscWave):
         """Handle waveform button clicks"""
         # Reset all buttons to default style
         for btn in self.wave_buttons.values():

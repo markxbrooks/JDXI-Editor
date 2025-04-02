@@ -1,3 +1,34 @@
+"""
+Arpeggiator Configuration Module
+
+This module defines the settings, data structures, and parameter ranges for an arpeggiator.
+It provides enumerations, default values, and data classes to represent various arpeggiator
+configurations, including grid timing, note duration, motif patterns, and styles.
+
+### Contents:
+- **Arpeggio Settings**:
+  - `arp_grid`: Available grid timing values (e.g., 1/4, 1/8, etc.).
+  - `arp_duration`: Note duration options as percentages.
+  - `arp_motif`: Various motif patterns for the arpeggiator.
+  - `arp_style`: A collection of predefined arpeggiator styles.
+
+- **Arpeggio Parameter Ranges and Defaults**:
+  - `Arpeggio`: Defines valid parameter ranges and default values.
+  - `ArpeggioPatch`: A dataclass representing a complete arpeggio configuration.
+
+- **Enumerations**:
+  - `ArpeggioGrid`: Grid timing options.
+  - `ArpeggioDuration`: Possible note durations.
+  - `ArpeggioMotif`: Arpeggiator motif patterns.
+  - `ArpeggioParameters`: Parameter identifiers used in arpeggiator control.
+
+### Usage:
+This module can be used to configure an arpeggiator in a MIDI editor or synthesizer
+application. The `ArpeggioPatch` class allows structured representation and validation of
+arpeggiator settings, ensuring proper configuration.
+
+"""
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
@@ -166,7 +197,7 @@ DURATIONS = [
 # Available octave ranges
 OCTAVE_RANGES = [-4, -3, -2, -1, 0, 1, 2, 3, 4]
 
-class ARP:
+class Arpeggio:
     """Arpeggiator parameter ranges and defaults"""
     RANGES = {
         'switch': (0, 1),          # Off/On
@@ -193,6 +224,7 @@ class ARP:
         'rhythm': 64,             # Default rhythm
         'note': 60                # Middle C
     }
+
 
 @dataclass
 class ArpeggioPatch:
@@ -222,48 +254,13 @@ class ArpeggioPatch:
             
     def validate_param(self, param: str, value: int) -> bool:
         """Validate parameter value is in range"""
-        if param in ARP.RANGES:
-            min_val, max_val = ARP.RANGES[param]
+        if param in Arpeggio.RANGES:
+            min_val, max_val = Arpeggio.RANGES[param]
             return min_val <= value <= max_val
         return False
 
-    class ARP:
-        """Arpeggiator data and constants"""
 
-        PATTERNS = [
-            "Up",
-            "Down",
-            "Up/Down",
-            "Random",
-            "Note Order",
-            "Up x2",
-            "Down x2",
-            "Up&Down x2"
-        ]
-
-        NOTE_VALUES = [
-            "1/4",
-            "1/4T",
-            "1/8",
-            "1/8T",
-            "1/16",
-            "1/16T",
-            "1/32",
-            "1/32T"
-        ]
-
-        # Parameter ranges
-        RANGES = {
-            'pattern': (0, 7),
-            'octave': (0, 3),
-            'accent': (0, 100),
-            'rate': (0, 127),
-            'duration': (0, 100),
-            'shuffle': (0, 100)
-        }
-
-
-class ArpGrid(Enum):
+class ArpeggioGrid(Enum):
     """Arpeggio grid values"""
 
     GRID_4 = 0  # 04_
@@ -277,7 +274,7 @@ class ArpGrid(Enum):
     GRID_16T = 8  # 16t
 
 
-class ArpDuration(Enum):
+class ArpeggioDuration(Enum):
     """Arpeggio duration values"""
 
     DUR_30 = 0  # 30%
@@ -292,7 +289,7 @@ class ArpDuration(Enum):
     DUR_FULL = 9  # FULL
 
 
-class ArpMotif(Enum):
+class ArpeggioMotif(Enum):
     """Arpeggio motif values"""
 
     UP_L = 0  # UP/L
@@ -309,7 +306,7 @@ class ArpMotif(Enum):
     PHRASE = 11  # PHRASE
 
 
-class ArpParameters(Enum):
+class ArpeggioParameters(Enum):
     """Arpeggiator parameters"""
 
     GRID = 0x01  # Grid (0-8)

@@ -10,12 +10,6 @@ from jdxi_editor.midi.data.drum import (
 )
 from .parameter.analog import AnalogParameter
 
-# Import digital synth data
-from .digital import (
-    DigitalSynth,  # Constants and presets
-    # Parameter enum
-    DigitalPartial,  # Partial constants
-)
 
 # Import effects data
 from .effects import (

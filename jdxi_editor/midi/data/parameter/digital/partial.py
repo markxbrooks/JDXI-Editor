@@ -201,7 +201,7 @@ class DigitalPartialParameter(SynthParameter):
             return ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"][value]
         elif self in [self.LFO_TEMPO_SYNC_SWITCH, self.LFO_KEY_TRIGGER]:
             return "ON" if value else "OFF"
-        elif self == self.WAVE_GAIN:
+        elif self == self.PCM_WAVE_GAIN:
             return f"{[-6, 0, 6, 12][value]:+d}dB"
         return str(value)
 
