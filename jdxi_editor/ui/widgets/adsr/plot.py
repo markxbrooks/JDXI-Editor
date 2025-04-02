@@ -54,29 +54,18 @@ from PySide6.QtWidgets import QWidget
 import numpy as np
 from enum import Enum
 
-from jdxi_editor.ui.widgets.display.digital import DigitalDisplayBase
-
-
-class ADSRParameter(Enum):
-    ATTACK_TIME = "attack_time"
-    DECAY_TIME = "decay_time"
-    SUSTAIN_LEVEL = "sustain_level"
-    RELEASE_TIME = "release_time"
-    INITIAL_LEVEL = "initial_level"
-    PEAK_LEVEL = "peak_level"
-
 
 class ADSRPlot_Newest(QWidget):
     def __init__(self, width=400, height=400, parent=None):
         super().__init__(parent)
         # Default envelope parameters (times in ms)
         self.envelope = {
-            ADSRParameter.ATTACK_TIME: 100,
-            ADSRParameter.DECAY_TIME: 400,
-            ADSRParameter.SUSTAIN_LEVEL: 0.8,
-            ADSRParameter.RELEASE_TIME: 100,
-            ADSRParameter.INITIAL_LEVEL: 0,
-            ADSRParameter.PEAK_LEVEL: 1,
+            ADSRParameter.ATTACK: 100,
+            ADSRParameter.DECAY: 400,
+            ADSRParameter.SUSTAIN: 0.8,
+            ADSRParameter.RELEASE: 100,
+            "initial_level": 0,
+            "peak_level": 1,
         }
         # Set a fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
@@ -119,12 +108,12 @@ class ADSRPlot_Newest(QWidget):
         painter.setFont(QFont("Consolas", 10))
 
         # Compute envelope segments in seconds
-        attack_time = self.envelope[ADSRParameter.ATTACK_TIME] / 1000.0
-        decay_time = self.envelope[ADSRParameter.DECAY_TIME] / 1000.0
-        release_time = self.envelope[ADSRParameter.RELEASE_TIME] / 1000.0
-        sustain_level = self.envelope[ADSRParameter.SUSTAIN_LEVEL]
-        peak_level = self.envelope[ADSRParameter.PEAK_LEVEL]
-        initial_level = self.envelope[ADSRParameter.INITIAL_LEVEL]
+        attack_time = self.envelope[ADSRParameter.ATTACK] / 1000.0
+        decay_time = self.envelope[ADSRParameter.DECAY] / 1000.0
+        release_time = self.envelope[ADSRParameter.RELEASE] / 1000.0
+        sustain_level = self.envelope[ADSRParameter.SUSTAIN]
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
 
         # Convert times to sample counts
         attack_samples = int(attack_time * self.sample_rate)
@@ -218,17 +207,17 @@ class ADSRPlot_Newest(QWidget):
             painter.drawPath(path)
 
 
-class ADSRPlot(DigitalDisplayBase):
+class ADSRPlot(QWidget):
     def __init__(self, width=400, height=400, parent=None):
         super().__init__(parent)
         # Default envelope parameters (times in ms)
         self.envelope = {
-            ADSRParameter.ATTACK_TIME: 100,
-            ADSRParameter.DECAY_TIME: 400,
-            ADSRParameter.SUSTAIN_LEVEL: 0.8,
-            ADSRParameter.RELEASE_TIME: 100,
-            ADSRParameter.INITIAL_LEVEL: 0,
-            ADSRParameter.PEAK_LEVEL: 1,
+            "attack_time": 100,
+            "decay_time": 400,
+            "release_time": 100,
+            "initial_level": 0,
+            "peak_level": 1,
+            "sustain_level": 0.8,
         }
         # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
@@ -273,12 +262,12 @@ class ADSRPlot(DigitalDisplayBase):
         painter.setFont(QFont("Consolas", 10))
 
         # Compute envelope segments in seconds
-        attack_time = self.envelope[ADSRParameter.ATTACK_TIME] / 1000.0
-        decay_time = self.envelope[ADSRParameter.DECAY_TIME] / 1000.0
-        release_time = self.envelope[ADSRParameter.RELEASE_TIME] / 1000.0
-        sustain_level = self.envelope[ADSRParameter.SUSTAIN_LEVEL]
-        peak_level = self.envelope[ADSRParameter.PEAK_LEVEL]
-        initial_level = self.envelope[ADSRParameter.INITIAL_LEVEL]
+        attack_time = self.envelope["attack_time"] / 1000.0
+        decay_time = self.envelope["decay_time"] / 1000.0
+        release_time = self.envelope["release_time"] / 1000.0
+        sustain_level = self.envelope["sustain_level"]
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
 
         # Convert times to sample counts
         attack_samples = int(attack_time * self.sample_rate)
@@ -374,6 +363,123 @@ class ADSRPlot(DigitalDisplayBase):
                 path.lineTo(*pt)
             painter.drawPath(path)
 
+    def paintEventNew(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        # Draw background gradient
+        gradient = QLinearGradient(0, 0, self.width(), self.height())
+        gradient.setColorAt(0.0, QColor("#321212"))  # Darker edges
+        gradient.setColorAt(0.3, QColor("#331111"))  # Gray transition
+        gradient.setColorAt(0.5, QColor("#551100"))  # Orange glow center
+        gradient.setColorAt(0.7, QColor("#331111"))  # Gray transition
+        gradient.setColorAt(1.0, QColor("#111111"))  # Darker edges
+        painter.setBrush(gradient)
+        painter.setPen(QPen(QColor("#000000"), 0))  # no border
+        painter.drawRect(0, 0, self.width(), self.height())
+
+        # Use orange for drawing
+        pen = QPen(QColor("orange"))
+        axis_pen = QPen(QColor("white"))
+        pen.setWidth(2)
+        painter.setPen(pen)
+        painter.setFont(QFont("Consolas", 10))
+
+        # Compute envelope segments in seconds
+        attack_time = self.envelope["attack_time"] / 1000.0
+        decay_time = self.envelope["decay_time"] / 1000.0
+        release_time = self.envelope["release_time"] / 1000.0
+        sustain_level = self.envelope["sustain_level"]
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
+
+        # Convert times to sample counts
+        attack_samples = int(attack_time * self.sample_rate)
+        decay_samples = int(decay_time * self.sample_rate)
+        sustain_samples = int(self.sample_rate * 2)  # Fixed 2 seconds sustain
+        release_samples = int(release_time * self.sample_rate)
+
+        # Construct the ADSR envelope as one concatenated array
+        attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
+        decay = np.linspace(peak_level, sustain_level, decay_samples, endpoint=False)
+        sustain = np.full(sustain_samples, sustain_level)
+        release = np.linspace(sustain_level, 0, release_samples)
+
+        envelope = np.concatenate([attack, decay, sustain, release])
+        total_samples = len(envelope)
+        total_time = 5  # in seconds
+
+        # Prepare points for drawing
+        w = self.width()
+        h = self.height()
+        padding = 80
+        plot_w = w - 2 * padding
+        plot_h = h - 2 * padding
+
+        # Create a list of points for the envelope polyline.
+        points = []
+        num_points = 500
+        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+        for i in indices:
+            t = i / self.sample_rate  # time in seconds
+            x = padding + (t / total_time) * plot_w
+            y = padding + plot_h - (envelope[i] * plot_h)
+            points.append((x, y))
+
+        # Draw the envelope polyline
+        if points:
+            path = QPainterPath()
+            path.moveTo(*points[0])
+            for pt in points[1:]:
+                path.lineTo(*pt)
+            painter.drawPath(path)
+
+        # Optionally draw axis lines and labels
+        painter.setPen(axis_pen)
+        painter.drawLine(padding, padding, padding, padding + plot_h)  # Y-axis
+        painter.drawLine(padding, padding + plot_h, padding + plot_w, padding + plot_h)  # X-axis
+        painter.drawText(padding, padding + plot_h + 20, "0")
+        painter.drawText(padding + plot_w - 10, padding + plot_h + 20, "5")
+        for i in range(1, 5):
+            x = padding + i * plot_w / 5
+            painter.drawLine(x, padding + plot_h, x, padding + plot_h + 5)
+            painter.drawText(x - 10, padding + plot_h + 20, f"{i}")
+        for i in range(1, 5):
+            y = padding + i * plot_h / 5
+            painter.drawLine(padding, y, padding - 5, y)
+            painter.drawText(padding - 35, y + 5, f"{1 - i * 0.2:.1f}")
+        painter.drawText(padding - 35, padding + 5, "1")
+        painter.drawText(padding - 35, padding + plot_h, "0")
+
+        # Draw the envelope label at the top center of the widget
+        painter.setPen(QPen(QColor("orange")))
+        painter.setFont(QFont("Consolas", 12))
+        painter.drawText(padding + plot_w / 2 - 10, padding - 30, "ADSR")
+
+        # Write legend label for x-axis at the bottom center of the widget
+        painter.setPen(QPen(QColor("white")))
+        painter.setFont(QFont("Consolas", 12))
+        painter.drawText(padding + plot_w / 2 - 10, padding + plot_h + 35, "Time (s)")
+
+        # Draw y-axis label rotated 90 degrees
+        painter.save()
+        painter.translate(padding - 50, padding + plot_h / 2 + 25)
+        painter.rotate(-90)
+        painter.drawText(0, 0, "Amplitude")
+        painter.restore()
+
+        # Draw background grid as dashed dark gray lines
+        pen = QPen(Qt.GlobalColor.darkGray, 2)
+        pen.setStyle(Qt.PenStyle.DashLine)
+        pen.setWidth(1)
+        painter.setPen(pen)
+        for i in range(1, 5):
+            x = padding + i * plot_w / 5
+            painter.drawLine(x, padding, x, padding + plot_h)
+        for i in range(1, 5):
+            y = padding + i * plot_h / 5
+            painter.drawLine(padding, y, padding + plot_w, y)
+
 
 class ADSRMatplot(QWidget):
     def __init__(self):
@@ -417,12 +523,12 @@ class ADSRMatplot(QWidget):
         self.ax.set_xlim(0, 5)
 
         # Extract envelope parameters
-        attack_time = self.envelope[ADSRParameter.ATTACK_TIME] / 1000
-        decay_time = self.envelope[ADSRParameter.DECAY_TIME] / 1000
-        release_time = self.parameters[ADSRParameter.RELEASE_TIME] / 1000
-        sustain_level = self.envelope[ADSRParameter.SUSTAIN_LEVEL]
-        peak_level = self.envelope[ADSRParameter.PEAK_LEVEL]
-        initial_level = self.envelope[ADSRParameter.INITIAL_LEVEL]
+        attack_time = self.envelope["attack_time"] / 1000
+        decay_time = self.envelope["decay_time"] / 1000
+        release_time = self.envelope["release_time"] / 1000
+        sustain_level = self.envelope["sustain_level"]
+        peak_level = self.envelope["peak_level"]
+        initial_level = self.envelope["initial_level"]
 
         # Convert to samples (assuming address 44.1 kHz sample rate)
         attack_samples = int(attack_time * 44100)

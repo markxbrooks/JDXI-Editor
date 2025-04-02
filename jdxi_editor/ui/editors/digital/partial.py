@@ -67,7 +67,6 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.adsr.plot import ADSRParameter
 # from jdxi_editor.ui.widgets.adsr.pitch_envelope import PitchEnvelope
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
