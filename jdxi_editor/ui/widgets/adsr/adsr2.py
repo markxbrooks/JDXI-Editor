@@ -38,8 +38,9 @@ from jdxi_editor.ui.style import Style
 # Precompile the regex pattern at module level or in the class constructor
 ENVELOPE_PATTERN = re.compile(r'(attack|decay|release)', re.IGNORECASE)
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
+from enum import Enum, auto
 
 
 class ADSR(QWidget):
@@ -107,10 +108,9 @@ class ADSR(QWidget):
 
         # Create sliders
         self.attack_slider = self._create_parameter_slider(attack_param, "Attack", value=self.envelope[ADSRParameter.ATTACK_TIME])
-        self.decay_slider = self._create_parameter_slider(decay_param, "Decay",
+        self.decay_slider = self._create_parameter_slider(decay_param, "Decay", 
                                                           value=self.envelope[ADSRParameter.DECAY_TIME])
         self.sustain_slider = self._create_parameter_slider(sustain_param, "Sustain",
-
                                                             value=self.envelope[ADSRParameter.SUSTAIN_LEVEL] * 127)
         self.release_slider = self._create_parameter_slider(release_param, "Release",
                                                             value=self.envelope[ADSRParameter.RELEASE_TIME])

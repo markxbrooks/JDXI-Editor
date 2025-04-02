@@ -67,6 +67,7 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.widgets.adsr.plot import ADSRParameter
 # from jdxi_editor.ui.widgets.adsr.pitch_envelope import PitchEnvelope
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
@@ -465,81 +466,17 @@ class DigitalPartialEditor(PartialEditor):
     def on_adsr_envelope_changed(self, envelope):
         if not self.updating_from_spinbox:
             self.controls[DigitalPartialParameter.FILTER_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope["attack_time"], 10, 1000)
+                ms_to_midi_cc(envelope[ADSRParameter.ATTACK_TIME], 10, 1000)
             )
             self.controls[DigitalPartialParameter.FILTER_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope["decay_time"], 10, 1000)
+                ms_to_midi_cc(envelope[ADSRParameter.DECAY_TIME], 10, 1000)
             )
             self.controls[DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
+                ms_to_midi_cc(envelope[ADSRParameter.SUSTAIN_LEVEL], 0.1, 1)
             )
             self.controls[DigitalPartialParameter.FILTER_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope["release_time"], 10, 1000)
+                ms_to_midi_cc(envelope[ADSRParameter.RELEASE_TIME], 10, 1000)
             )
-
-    def filter_adsr_value_changed(self):
-        self.updating_from_spinbox = True
-        self.filter_adsr_widget.envelope["attack_time"] = (
-            self.filter_adsr_widget.attack_sb.value()
-        )
-        self.filter_adsr_widget.envelope["decay_time"] = (
-            self.filter_adsr_widget.decay_sb.value()
-        )
-        self.filter_adsr_widget.envelope["release_time"] = (
-            self.filter_adsr_widget.release_sb.value()
-        )
-        # self.filter_adsr_widget.envelope["initial_level"] = (
-        #    self.filter_adsr_widget.initial_sb.value()
-        # )
-        # self.filter_adsr_widget.envelope["peak_level"] = (
-        #    self.filter_adsr_widget.peak_sb.value()
-        # )
-        self.filter_adsr_widget.envelope["sustain_level"] = (
-            self.filter_adsr_widget.sustain_sb.value()
-        )
-        self.filter_adsr_widget.plot.set_values(self.filter_adsr_widget.envelope)
-        self.filter_adsr_widget.envelopeChanged.emit(self.filter_adsr_widget.envelope)
-        self.updating_from_spinbox = False
-
-    def on_amp_env_adsr_envelope_changed(self, envelope):
-        if not self.updating_from_spinbox:
-            self.controls[DigitalPartialParameter.AMP_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope["attack_time"], 10, 1000)
-            )
-            self.controls[DigitalPartialParameter.AMP_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope["decay_time"], 10, 1000)
-            )
-            self.controls[DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope["sustain_level"], 0.1, 1)
-            )
-            self.controls[DigitalPartialParameter.AMP_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope["release_time"], 10, 1000)
-            )
-
-    def amp_env_adsr_value_changed(self):
-        """dynamic updates of ADSR values"""
-        self.updating_from_spinbox = True
-        self.amp_env_adsr_widget.envelope["attack_time"] = (
-            self.amp_env_adsr_widget.attack_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["decay_time"] = (
-            self.amp_env_adsr_widget.decay_sb.value()
-        )
-        self.amp_env_adsr_widget.envelope["release_time"] = (
-            self.amp_env_adsr_widget.release_sb.value()
-        )
-        # self.amp_env_adsr_widget.envelope["initial_level"] = (
-        #    self.amp_env_adsr_widget.initial_sb.value()
-        # )
-        # self.amp_env_adsr_widget.envelope["peak_level"] = (
-        #    self.amp_env_adsr_widget.peak_sb.value()
-        # )
-        self.amp_env_adsr_widget.envelope["sustain_level"] = (
-            self.amp_env_adsr_widget.sustain_sb.value()
-        )
-        self.amp_env_adsr_widget.plot.set_values(self.amp_env_adsr_widget.envelope)
-        self.amp_env_adsr_widget.envelopeChanged.emit(self.amp_env_adsr_widget.envelope)
-        self.updating_from_spinbox = False
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
