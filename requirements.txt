@@ -29,3 +29,4 @@ zipp==3.21.0
 
 setuptools~=70.3.0
 pandas~=2.2.3
+pyo~=1.0.5
