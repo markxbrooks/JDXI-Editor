@@ -81,7 +81,7 @@ class PitchEnvelope(QWidget):
         self.attack_sb = self.create_spinbox(0,
                                              1000,
                                              " ms",
-                                             self.envelope[ADSRParameter.ATTACK_TIME])
+                                             self.envelope["attack_time"])
         self.decay_sb = self.create_spinbox(0,
                                             1000,
                                             " ms",
@@ -96,7 +96,7 @@ class PitchEnvelope(QWidget):
         # Create sliders
         self.attack_slider = self._create_parameter_slider(attack_param,
                                                            "Attack",
-                                                           value=self.envelope[ADSRParameter.ATTACK_TIME])
+                                                           value=self.envelope["attack_time"])
         self.decay_slider = self._create_parameter_slider(decay_param,
                                                           "Decay",
                                                           value=self.envelope[ADSRParameter.DECAY_TIME])
@@ -170,7 +170,7 @@ class PitchEnvelope(QWidget):
         return slider
 
     def valueChanged(self):
-        self.envelope[ADSRParameter.ATTACK_TIME] = self.attack_sb.value()
+        self.envelope["attack_time"] = self.attack_sb.value()
         self.envelope[ADSRParameter.DECAY_TIME] = self.decay_sb.value()
         self.envelope[ADSRParameter.PEAK_LEVEL] = self.depth_sb.value()
         self.parameters[ADSRParameter.RELEASE_TIME] = 500
@@ -230,12 +230,12 @@ class PitchEnvelope(QWidget):
         self.envelopeChanged.emit(self.envelope)
 
     def update_sliders_from_envelope(self):
-        self.attack_slider.setValue(self.envelope[ADSRParameter.ATTACK_TIME])
+        self.attack_slider.setValue(self.envelope["attack_time"])
         self.decay_slider.setValue(self.envelope[ADSRParameter.DECAY_TIME])
         self.depth_slider.setValue(self.envelope[ADSRParameter.PEAK_LEVEL])
 
     def update_spinboxes_from_envelope(self):
-        self.attack_sb.setValue(self.envelope[ADSRParameter.ATTACK_TIME])
+        self.attack_sb.setValue(self.envelope["attack_time"])
         self.decay_sb.setValue(self.envelope[ADSRParameter.DECAY_TIME])
         self.depth_sb.setValue(self.envelope[ADSRParameter.PEAK_LEVEL])
 
