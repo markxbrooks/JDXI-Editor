@@ -89,7 +89,7 @@ class DigitalDisplayBase(QWidget):
         painter.setFont(display_font)
 
         # Draw text
-        y_offset = 20
+        y_offset = 25
         for text in self.display_texts:
             painter.setPen(QPen(QColor("#FFAA33")))
             painter.drawText(10, y_offset, text)
@@ -111,7 +111,7 @@ class DigitalTitle(DigitalDisplayBase):
 
     def set_tone_name(self, tone_name):
         """Update the tone name display."""
-        self.update_display([f"Current Tone:", tone_name])
+        self.update_display([f"Currently Editing:", tone_name])
 
     @property
     def text(self):
@@ -122,7 +122,7 @@ class DigitalTitle(DigitalDisplayBase):
         self.set_tone_name(value)
 
 
-class DigitalDisplay(DigitalDisplayBase):
+class DigitalDisplayNew(DigitalDisplayBase):
     """Full-featured display showing active synth, tone, program, and octave."""
 
     def __init__(self, current_octave=0, active_synth="D1", tone_name="Init Tone",
@@ -245,7 +245,7 @@ class DigitalTitleOld(QWidget):
         self.update()
 
 
-class DigitalDisplayOld(QWidget):
+class DigitalDisplay(QWidget):
     """Digital LCD-style display widget."""
 
     def __init__(
@@ -312,22 +312,22 @@ class DigitalDisplayOld(QWidget):
         tone_name_text = tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
         program_text = f"{self.program_id}:{self.program_name}"
         program_text = program_text[:21] + "…" if len(program_text) > 22 else program_text
-        oct_text = f"Octave {self.current_octave:+}" if self.current_octave else "Octave 0"
+        oct_text = f"Oct {self.current_octave:+}" if self.current_octave else "Oct 0"
 
         # Glow effect simulation (by drawing text multiple times with slight offsets)
         offsets = [(-2, -2), (1, -1), (-1, 1), (1, 1)]
         glow_color = QColor("#FF00")  # Darker orange for glow effect
         for dx, dy in offsets:
             painter.setPen(QPen(glow_color))
-            painter.drawText(display_x + 7 + dx, display_y + 50 + dy, tone_name_text)
             painter.drawText(display_x + 7 + dx, display_y + 20 + dy, program_text)
-            painter.drawText(display_x + display_width - 80 + dx, display_y + 50 + dy, oct_text)
+            painter.drawText(display_x + 3 + dx, display_y + 50 + dy, tone_name_text)
+            painter.drawText(display_x + display_width - 20 + dx, display_y + 30 + dy, oct_text)
 
         # Draw the main text on top
         painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
         painter.drawText(display_x + 7, display_y + 50, tone_name_text)
         painter.drawText(display_x + 7, display_y + 20, program_text)
-        painter.drawText(display_x + display_width - 80, display_y + 50, oct_text)
+        painter.drawText(display_x + display_width - 56, display_y + 50, oct_text)
 
     # --- Property Setters ---
     def setPresetText(self, text: str):

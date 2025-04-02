@@ -46,6 +46,7 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
 class EffectsCommonEditor(SynthEditor):
@@ -64,7 +65,8 @@ class EffectsCommonEditor(SynthEditor):
         main_layout = QVBoxLayout()
         upper_layout = QHBoxLayout()
 
-        self.title_label = QLabel("Effects")
+        #self.title_label = QLabel("Effects")
+        self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         self.area = TEMPORARY_PROGRAM_AREA
         self.part = PROGRAM_COMMON
