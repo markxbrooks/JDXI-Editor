@@ -89,7 +89,7 @@ class SynthBase(QWidget):
             else:
                 group = PROGRAM_GROUP
             logging.info(
-                f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
+                f"Sending param={param.name}, partial={self.part}, group={self.group}, value={value}"
             )
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()

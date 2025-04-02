@@ -51,7 +51,7 @@ class DrumPartialEditor(PartialEditor):
         self.partial_name = partial_name  # This is now the numerical index
         self.preset_helper = None
         self.area = TEMPORARY_TONE_AREA
-        self.group = DRUM_KIT_AREA
+        self.part = DRUM_KIT_AREA
         # Calculate the address for this partial
         try:
             self.partial_address = get_address_for_partial_name(self.partial_name)
