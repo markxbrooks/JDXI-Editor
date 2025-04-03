@@ -96,54 +96,56 @@ class DigitalSynthEditor(SynthEditor):
         preset_helper=None,
     ):
         super().__init__(parent)
-        # Image display
+        # Core attributes
         self.partial_num = None
         self.current_data = None
         self.preset_type = (
             SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
         )
-
         self.presets = DIGITAL_PRESETS_ENUMERATED
+        self.instrument_default_image = "jdxi_vector.png"
+        self.midi_helper = midi_helper
+        self.preset_helper = preset_helper or (
+            parent.digital_1_preset_helper
+            if self.preset_type == SynthType.DIGITAL_1
+            else parent.digital_2_preset_helper
+        )
+        self.main_window = parent
+        self.synth_num = synth_num
+        self.midi_channel = MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1
+        self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
+        self.area = (
+            TEMPORARY_DIGITAL_SYNTH_2_AREA if synth_num == 2 else TEMPORARY_DIGITAL_SYNTH_1_AREA
+        )
+        self.part = DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART
+        self.group = COMMON_AREA
+        self.controls: Dict[Union[DigitalPartialParameter, DigitalCommonParameter], QWidget] = {}
+        self.setup_ui(synth_num)
+        self.update_instrument_image()
+        self.initialize_partial_states()
+        self.data_request()
+
+        if self.midi_helper:
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            if synth_num == 2:
+                self.midi_helper.update_digital2_tone_name.connect(self.set_instrument_title_label)
+            else:
+                self.midi_helper.update_digital1_tone_name.connect(self.set_instrument_title_label)
+
+        self.show()
+
+    def setup_ui(self, synth_num):
+        self.setWindowTitle(f"Digital Synth {synth_num}")
+        self.setMinimumSize(800, 300)
+        self.resize(930, 600)
+        # Image display
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
         self.instrument_default_image = "jdxi_vector.png"
-        self.midi_helper = midi_helper
-        self.preset_helper = preset_helper
-        self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
         self.instrument_icon_folder = "digital_synths"
-        if preset_helper:
-            self.preset_helper = preset_helper
-        else:
-            if self.preset_type == SynthType.DIGITAL_1:
-                self.preset_helper = parent.digital_1_preset_helper
-            else:
-                self.preset_helper = parent.digital_2_preset_helper
-        self.synth_num = synth_num
-        if self.synth_num == 2:
-            self.midi_channel = MIDI_CHANNEL_DIGITAL2
-            self.area = TEMPORARY_DIGITAL_SYNTH_2_AREA
-            self.part = DIGITAL_2_PART
-        else:
-            self.midi_channel = MIDI_CHANNEL_DIGITAL1
-            self.area = TEMPORARY_DIGITAL_SYNTH_1_AREA
-            self.part = DIGITAL_1_PART
-        # midi message parameters
-
-        self.group = COMMON_AREA
-        self.setWindowTitle(f"Digital Synth {synth_num}")
-        self.main_window = parent
-
-        # Store parameter controls for easy access
-        self.controls: Dict[
-            Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
-        ] = {}
-
-        # Allow resizing
-        self.setMinimumSize(800, 300)
-        self.resize(930, 600)
-
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
@@ -166,27 +168,41 @@ class DigitalSynthEditor(SynthEditor):
 
         # Title and instrument selection
         instrument_preset_group = QGroupBox("Digital Synth")
-        #self.instrument_title_label = QLabel(
-        #    f"Current Tone:\n {self.presets[0]}" if self.presets else "Current Tone:"
-        #)
         self.instrument_title_label = DigitalTitle()
-        self.instrument_title_label.setStyleSheet(
-            """
-            font-size: 16px;
-            font-weight: bold;
-        """
-        )
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
-        # instrument_title_group_layout.addWidget(self.instrument_title_label)
-
         self.instrument_selection_label = QLabel("Select address digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 
-        # Title and drum kit selection
+        # Title and instrument selection selection
+        self._create_instrument_group(container_layout, upper_layout)
+
+        # Add partials panel at the top
+        self.partials_panel = PartialsPanel()
+        container_layout.addWidget(self.partials_panel)
+        self.partials_panel.setStyleSheet(Style.JDXI_TABS)
+
+        self._create_partial_tab_widget(container_layout, self.midi_helper)
+
+        # Add container to scroll area
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
+
+        # Connect partial switches to enable/disable tabs
+        for switch in self.partials_panel.switches.values():
+            switch.stateChanged.connect(self._on_partial_state_changed)
+        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
+        # Initialize with default states
+        self.initialize_partial_states()
+        self.data_request()
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
+        self.show()
+
+    def _create_instrument_group(self, container_layout, upper_layout):
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(
             self.presets[0] if self.presets else ""
@@ -198,23 +214,19 @@ class DigitalSynthEditor(SynthEditor):
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
-
         # Add the "Read Request" button
         self.read_request_button = QPushButton("Send Read Request to Synth")
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
-
         self.instrument_selection_label = QLabel("Select preset for Digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        # Preset ComboBox
         self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESET_LIST)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_helper.current_preset_zero_indexed
         )
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
@@ -232,16 +244,11 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
 
-        # Add partials panel at the top
-        self.partials_panel = PartialsPanel()
-        container_layout.addWidget(self.partials_panel)
-        self.partials_panel.setStyleSheet(Style.JDXI_TABS)
-
+    def _create_partial_tab_widget(self, container_layout, midi_helper):
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()
         self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
         self.partial_editors = {}
-
         # Create editor for each partial
         for i in range(1, 4):
             editor = DigitalPartialEditor(midi_helper, i, self.part)
@@ -255,37 +262,7 @@ class DigitalSynthEditor(SynthEditor):
                                                             self._create_parameter_combo_box,
                                                             self._create_parameter_switch)
         self.partial_tab_widget.addTab(self.tone_modify_section, "Tone Modify")
-
         container_layout.addWidget(self.partial_tab_widget)
-
-        # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
-
-        # Connect partial switches to enable/disable tabs
-        for switch in self.partials_panel.switches.values():
-            switch.stateChanged.connect(self._on_partial_state_changed)
-        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
-        # Initialize with default states
-        self.initialize_partial_states()
-        self.data_request()
-
-        # Register the callback for incoming MIDI messages
-        if self.midi_helper:
-            logging.info("MIDI helper initialized")
-        else:
-            logging.error("MIDI helper not initialized")
-        print(f"self.controls: {self.controls}")
-        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
-        self.refresh_shortcut.activated.connect(self.data_request)
-        if self.midi_helper:
-            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-        self.show()
-        if self.synth_num == 2:
-            self.midi_helper.update_digital2_tone_name.connect(self.set_instrument_title_label)
-        else:
-            self.midi_helper.update_digital1_tone_name.connect(self.set_instrument_title_label)
 
     def update_instrument_title(self, text):
         self.instrument_title_label.setText(text)
