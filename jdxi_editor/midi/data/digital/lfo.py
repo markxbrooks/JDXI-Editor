@@ -11,6 +11,16 @@ class DigitalLFOShape(IntEnum):
     SAMPLE_HOLD = 4  # S&H
     RANDOM = 5
 
+    def display_name(self):
+        names = {0: "TRI",
+                 1: "SIN",
+                 2: "SAW",
+                 3: "SQR",
+                 4: "S&H",
+                 5: "RND"
+        }
+        return names.get(self.value, "???")
+
 
 class DigitalLFOTempoSyncNote(IntEnum):
     """Tempo sync note values"""

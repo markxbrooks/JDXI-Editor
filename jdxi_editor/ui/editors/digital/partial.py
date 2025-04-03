@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
     QTabWidget, QGridLayout, QFormLayout, QComboBox,
 )
 
+from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
@@ -337,7 +338,7 @@ class DigitalPartialEditor(PartialEditor):
         type_row = QHBoxLayout()
 
         # Filter mode switch
-        self.filter_mode_switch = self._create_parameter_switch(DigitalPartialParameter.FILTER_MODE,
+        self.filter_mode_switch = self._create_parameter_switch(DigitalPartialParameter.FILTER_SWITCH,
                                                                 "Mode",
                                                                 ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3",
                                                                  "LPF4"]
@@ -584,35 +585,32 @@ class DigitalPartialEditor(PartialEditor):
         top_row = QHBoxLayout()
 
         # Shape switch
-        self.lfo_shape = Switch("Shape", ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
-        self.lfo_shape.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalPartialParameter.LFO_SHAPE, v)
-        )
+        self.lfo_shape = self._create_parameter_switch(DigitalPartialParameter.LFO_SHAPE,
+                                                       "Shape",
+                                                       ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
         top_row.addWidget(self.lfo_shape)
 
         # Sync switch
-        self.lfo_tempo_sync_switch = Switch("Tempo Sync", ["OFF", "ON"])
-        self.lfo_tempo_sync_switch.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalPartialParameter.LFO_TEMPO_SYNC_SWITCH, v
-            )
-        )
+        self.lfo_tempo_sync_switch = self._create_parameter_switch(DigitalPartialParameter.LFO_TEMPO_SYNC_SWITCH,
+                                                             "Tempo Sync",
+                                                            ["OFF", "ON"])
         top_row.addWidget(self.lfo_tempo_sync_switch)
         layout.addLayout(top_row)
 
         # Rate and fade controls
         layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_RATE, "Rate")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_RATE,
+                                          "Rate")
         )
         layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_FADE_TIME, "Fade")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_FADE_TIME,
+                                          "Fade")
         )
 
         # Key trigger switch
-        self.lfo_trigger = Switch("Key Trigger", ["OFF", "ON"])
-        self.lfo_trigger.valueChanged.connect(
-            lambda v: self._on_parameter_changed(DigitalPartialParameter.LFO_KEY_TRIGGER, v)
-        )
+        self.lfo_trigger = self._create_parameter_switch(DigitalPartialParameter.LFO_KEY_TRIGGER,
+                                                         "Key Trigger",
+                                                         ["OFF", "ON"])
         layout.addWidget(self.lfo_trigger)
 
         # Modulation depths
@@ -626,16 +624,20 @@ class DigitalPartialEditor(PartialEditor):
             depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_PITCH_DEPTH, "Pitch")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_PITCH_DEPTH,
+                                          "Pitch")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_FILTER_DEPTH, "Filter")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_FILTER_DEPTH,
+                                          "Filter")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_AMP_DEPTH, "Amp")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_AMP_DEPTH,
+                                          "Amp")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH, "Pan")
+            self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH,
+                                          "Pan")
         )
         layout.addWidget(depths_group)
         layout.addStretch()
@@ -654,7 +656,7 @@ class DigitalPartialEditor(PartialEditor):
         self.mod_lfo_shape = self._create_parameter_combo_box(
             DigitalPartialParameter.MOD_LFO_SHAPE,
             "Shape",
-            ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
+            [shape.display_name for shape in DigitalLFOShape]
         )
         self.mod_lfo_shape.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalPartialParameter.MOD_LFO_SHAPE, v)

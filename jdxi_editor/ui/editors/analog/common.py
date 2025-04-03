@@ -282,6 +282,20 @@ class AnalogCommonEditor(SynthEditor):
         self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
 
+    def update_filter_controls_state(self, mode: int):
+        """Update filter controls enabled state based on mode"""
+        enabled = mode != 0  # Enable if not BYPASS
+        for param in [
+            AnalogParameter.FILTER_CUTOFF,
+            AnalogParameter.FILTER_RESONANCE,
+            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW,
+            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
+            AnalogParameter.FILTER_ENV_DEPTH,
+        ]:
+            if param in self.controls:
+                self.controls[param].setEnabled(enabled)
+            self.filter_section.filter_adsr_widget.setEnabled(enabled)
+
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
@@ -294,9 +308,12 @@ class AnalogCommonEditor(SynthEditor):
             partial_no = address[1]
             if param:
                 logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
+            elif param == AnalogParameter.FILTER_SWITCH:
+                self.update_filter_state(value=AnalogParameter.FILTER_SWITCH.value)
 
                 # Update the corresponding slider
                 if param in self.controls:
+
                     slider_value = param.convert_from_midi(value)
                     logging.info(
                         f"midi value {value} converted to slider value {slider_value}"
@@ -312,6 +329,10 @@ class AnalogCommonEditor(SynthEditor):
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
                     )
+
+    def update_filter_state(self, value):
+        """ update_filter_state """
+        self.update_filter_controls_state(value)
 
     def _on_waveform_selected(self, waveform: AnalogOscWaveform):
         """Handle waveform button selection """

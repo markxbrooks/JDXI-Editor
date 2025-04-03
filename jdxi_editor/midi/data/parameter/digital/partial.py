@@ -121,7 +121,7 @@ class DigitalPartialParameter(SynthParameter):
     OSC_PITCH_ENV_DECAY_TIME = (0x08, 0, 127)  # Pitch Envelope Decay
     OSC_PITCH_ENV_DEPTH = (0x09, -63, 63)  # Pitch Envelope Depth (-63 to +63)
 
-    FILTER_MODE = (0x0A, 0, 7)  # Filter mode
+    FILTER_SWITCH = (0x0A, 0, 7)  # Filter mode
     FILTER_SLOPE = (0x0B, 0, 1)  # Filter slope
     FILTER_CUTOFF = (0x0C, 0, 127, 0, 127)  # Cutoff frequency
     FILTER_CUTOFF_KEYFOLLOW = (0x0D, 54, 74, -100, 100)  # Key follow
@@ -189,7 +189,7 @@ class DigitalPartialParameter(SynthParameter):
         """Get display text for switch values"""
         if self == self.OSC_WAVE_VARIATION:
             return ["A", "B", "C"][value]
-        elif self == self.FILTER_MODE:
+        elif self == self.FILTER_SWITCH:
             return ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"][value]
         elif self == self.FILTER_SLOPE:
             return ["-12dB", "-24dB"][value]
