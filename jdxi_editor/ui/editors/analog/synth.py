@@ -82,7 +82,7 @@ from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
 from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
-from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import Style
@@ -393,7 +393,7 @@ class AnalogSynthEditor(SynthEditor):
 
         # Compare with previous data and log changes
         if self.previous_json_data:
-            _log_changes(self.previous_json_data, current_sysex_data)
+            log_changes(self.previous_json_data, current_sysex_data)
 
         # Store the current data for future comparison
         self.previous_json_data = current_sysex_data
