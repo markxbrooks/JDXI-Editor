@@ -43,7 +43,7 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import Style
 
 
-def _log_changes(previous_data, current_data):
+def log_changes(previous_data, current_data):
     """Log changes between previous and current JSON data."""
     changes = []
     if not current_data or not previous_data:
@@ -182,7 +182,7 @@ class SynthEditor(SynthBase):
         logging.info(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(selected_synth_text)
 
-    def update_instrument_preset(self):
+    def update_instrument_preset(self, text):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         if synth_matches := re.search(
             r"(\d{3}): (\S+).+", selected_synth_text, re.IGNORECASE

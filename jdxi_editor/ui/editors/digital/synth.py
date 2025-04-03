@@ -58,7 +58,7 @@ from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
-from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParameter
 from jdxi_editor.ui.style import Style
@@ -372,7 +372,7 @@ class DigitalSynthEditor(SynthEditor):
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
             self.current_data = sysex_data
-            _log_changes(self.previous_data, sysex_data)
+            log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return
@@ -545,7 +545,7 @@ class DigitalSynthEditor(SynthEditor):
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
             self.current_data = sysex_data
-            _log_changes(self.previous_data, sysex_data)
+            log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return
@@ -686,7 +686,7 @@ class DigitalSynthEditor(SynthEditor):
                 sysex_data = json.loads(json_data)
                 self.previous_data = self.current_data
                 self.current_data = sysex_data
-                _log_changes(self.previous_data, sysex_data)
+                log_changes(self.previous_data, sysex_data)
                 return sysex_data
             except json.JSONDecodeError as ex:
                 logging.error(f"Invalid JSON format: {ex}")

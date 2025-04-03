@@ -87,7 +87,7 @@ from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, DRUMS_REQUES
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
+from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
@@ -414,7 +414,7 @@ class DrumCommonEditor(SynthEditor):
                 sysex_data = json.loads(json_data)
                 self.previous_data = self.current_data
                 self.current_data = sysex_data
-                _log_changes(self.previous_data, sysex_data)
+                log_changes(self.previous_data, sysex_data)
                 return sysex_data
             except json.JSONDecodeError as ex:
                 logging.error(f"Invalid JSON format: {ex}")
@@ -564,7 +564,7 @@ class DrumCommonEditor(SynthEditor):
             sysex_data = json.loads(json_sysex_data)
             self.previous_data = self.current_data
             self.current_data = sysex_data
-            _log_changes(self.previous_data, sysex_data)
+            log_changes(self.previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return
