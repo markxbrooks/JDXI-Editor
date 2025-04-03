@@ -9,7 +9,7 @@ from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
-class FilterSection(QWidget):
+class AnalogFilterSection(QWidget):
     def __init__(self, create_parameter_slider, create_parameter_switch, send_control_change, midi_helper, area, part, group):
         super().__init__()
         self.filter_resonance = None

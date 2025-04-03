@@ -47,17 +47,15 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.data.arpeggio import (
-    arp_style,
-    arp_grid,
-    arp_duration,
+from jdxi_editor.midi.data.arpeggio.arpeggio import (
+    ArpeggioMotif, ArpeggioOctaveRange,
 )
+from jdxi_editor.midi.data.arpeggio.data import ARPEGGIO_GRID, ARP_DURATION, ARPEGGIO_STYLE
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.constants.arpeggio import (
     TEMPORARY_PROGRAM,
     ARP_PART,
     ARP_GROUP,
-    ArpOctaveRange, ArpMotif,
 )
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
@@ -135,7 +133,7 @@ class ArpeggioEditor(SynthEditor):
         # Create address combo box for Arpeggio Style
         self.style_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_STYLE,
                                                             "Style",
-                                                            arp_style)
+                                                            ARPEGGIO_STYLE)
         style_row = QHBoxLayout()
         style_row.addWidget(self.style_combo)
         layout.addLayout(style_row)
@@ -145,7 +143,7 @@ class ArpeggioEditor(SynthEditor):
         grid_row = QHBoxLayout()
         self.grid_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_GRID,
                                                            "Grid:",
-                                                           arp_grid)
+                                                           ARPEGGIO_GRID)
         grid_row.addWidget(self.grid_combo)
         layout.addLayout(grid_row)
 
@@ -154,7 +152,7 @@ class ArpeggioEditor(SynthEditor):
         # Create address combo box for Arpeggio Duration
         self.duration_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_DURATION,
                                                                "Duration",
-                                                               arp_duration)
+                                                               ARP_DURATION)
         duration_row.addWidget(self.duration_combo)
         layout.addLayout(duration_row)
 
@@ -175,8 +173,8 @@ class ArpeggioEditor(SynthEditor):
         octave_row = QHBoxLayout()
         self.octave_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_OCTAVE_RANGE,
                                                              "Octave Range:",
-                                                             [octave.display_name for octave in ArpOctaveRange],
-                                                             [octave.midi_value for octave in ArpOctaveRange])
+                                                             [octave.display_name for octave in ArpeggioOctaveRange],
+                                                             [octave.midi_value for octave in ArpeggioOctaveRange])
         # Set default to 0
         self.octave_combo.combo_box.setCurrentIndex(3)  # Index 3 is OCT_ZERO
         octave_row.addWidget(self.octave_combo)

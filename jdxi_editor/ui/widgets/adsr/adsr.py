@@ -24,8 +24,8 @@ from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.data.constants.analog import (
     ANALOG_PART,
-    ANALOG_OSC_GROUP,
 )
+from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     ms_to_midi_cc,

@@ -47,7 +47,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_editor.midi.data.constants.lfo import LFOSyncNote
+from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST

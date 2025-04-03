@@ -73,15 +73,14 @@ from jdxi_editor.midi.utils.conversions import (
 )
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_editor.midi.data.constants.analog import (
-    Waveform,
-    ANALOG_PART,
-    ANALOG_OSC_GROUP
+    ANALOG_PART
 )
+from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP, AnalogOscWaveform
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
 from jdxi_editor.ui.editors.analog.amp import AmpSection
-from jdxi_editor.ui.editors.analog.filter import FilterSection
-from jdxi_editor.ui.editors.analog.lfo import LfoSection
-from jdxi_editor.ui.editors.analog.oscillator import OscillatorSection
+from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
+from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
+from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
 from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -112,8 +111,6 @@ def set_widget_value_safely(widget, value):
     
 class AnalogCommonEditor(SynthEditor):
     """Analog Synth"""
-
-    # preset_changed = Signal(int, str, int)
 
     def __init__(
             self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
@@ -225,20 +222,20 @@ class AnalogCommonEditor(SynthEditor):
         # Add sections side by side
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        self.oscillator_section = OscillatorSection(self._create_parameter_slider,
-                                                    self._create_parameter_switch,
-                                                    self._on_waveform_selected,
-                                                    self.wave_buttons)
+        self.oscillator_section = AnalogOscillatorSection(self._create_parameter_slider,
+                                                          self._create_parameter_switch,
+                                                          self._on_waveform_selected,
+                                                          self.wave_buttons)
         self.tab_widget.addTab(self.oscillator_section,
                                qta.icon("mdi.triangle-wave", color="#666666"),
                                "Oscillator")
-        self.filter_section = FilterSection(self._create_parameter_slider,
-                                            self._create_parameter_switch,
-                                            self.send_control_change,
-                                            self.midi_helper,
-                                            self.area,
-                                            self.part,
-                                            self.group)
+        self.filter_section = AnalogFilterSection(self._create_parameter_slider,
+                                                  self._create_parameter_switch,
+                                                  self.send_control_change,
+                                                  self.midi_helper,
+                                                  self.area,
+                                                  self.part,
+                                                  self.group)
         self.tab_widget.addTab(self.filter_section,
                                qta.icon("ri.filter-3-fill", color="#666666"),
                                "Filter")
@@ -248,11 +245,11 @@ class AnalogCommonEditor(SynthEditor):
                                       base64_to_pixmap)
         self.tab_widget.addTab(self.amp_section, qta.icon("mdi.amplifier", color="#666666"),
                                "Amp")
-        self.lfo_section = LfoSection(self._create_parameter_slider,
-                                          self._create_parameter_switch,
-                                          self._create_parameter_combo_box,
-                                          self._on_lfo_shape_changed,
-                                          self.lfo_shape_buttons)
+        self.lfo_section = AnalogLFOSection(self._create_parameter_slider,
+                                            self._create_parameter_switch,
+                                            self._create_parameter_combo_box,
+                                            self._on_lfo_shape_changed,
+                                            self.lfo_shape_buttons)
         self.tab_widget.addTab(self.lfo_section, qta.icon(
             "mdi.sine-wave",
             color="#666666"),
@@ -316,8 +313,8 @@ class AnalogCommonEditor(SynthEditor):
                         "updating waveform buttons for param {param} with {value}"
                     )
 
-    def _on_waveform_selected(self, waveform: Waveform):
-        """Handle waveform button selection KEEP!"""
+    def _on_waveform_selected(self, waveform: AnalogOscWaveform):
+        """Handle waveform button selection """
         if self.midi_helper:
             sysex_message = RolandSysEx(area=self.area,
                                         section=self.part,
@@ -395,7 +392,7 @@ class AnalogCommonEditor(SynthEditor):
         # Define mapping dictionaries
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}
         filter_switch_map = {0: 0, 1: 1}
-        osc_waveform_map = {0: Waveform.SAW, 1: Waveform.TRIANGLE, 2: Waveform.PULSE}
+        osc_waveform_map = {0: AnalogOscWaveform.SAW, 1: AnalogOscWaveform.TRIANGLE, 2: AnalogOscWaveform.PULSE}
 
         failures, successes = [], []
 
@@ -486,9 +483,9 @@ class AnalogCommonEditor(SynthEditor):
         logging.debug(f"Updating waveform buttons with value {value}")
 
         waveform_map = {
-            0: Waveform.SAW,
-            1: Waveform.TRIANGLE,
-            2: Waveform.PULSE,
+            0: AnalogOscWaveform.SAW,
+            1: AnalogOscWaveform.TRIANGLE,
+            2: AnalogOscWaveform.PULSE,
         }
 
         selected_waveform = waveform_map.get(value)
@@ -530,9 +527,9 @@ class AnalogCommonEditor(SynthEditor):
         else:
             logging.warning(f"Unknown LFO shape value: {value}")
 
-    def _update_pw_controls_state(self, waveform: Waveform):
+    def _update_pw_controls_state(self, waveform: AnalogOscWaveform):
         """Enable/disable PW controls based on waveform"""
-        pw_enabled = waveform == Waveform.PULSE
+        pw_enabled = waveform == AnalogOscWaveform.PULSE
         print(self.controls)
         self.controls[AnalogParameter.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
         self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)

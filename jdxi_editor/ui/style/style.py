@@ -183,10 +183,10 @@ class Style:
         hover="#444444",
         border_pressed=ACCENT_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=1,
-        font_family="Arial, sans-serif",
-        font_size="12px",
-        button_padding=5
+        button_border_width=BUTTON_BORDER_WIDTH,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE,
+        button_padding=BUTTON_PADDING
     )
 
     JDXI_BUTTON_WAVEFORM_ANALOG = generate_button_style(
@@ -197,10 +197,10 @@ class Style:
         hover="#444444",
         border_pressed=ACCENT_ANALOG,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
-        button_border_width=1,
-        font_family="Arial, sans-serif",
-        font_size="12px",
-        button_padding=5
+        button_border_width=BUTTON_BORDER_WIDTH,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE,
+        button_padding=BUTTON_PADDING
     )
 
     # Define Tab styles using get_tab_style function

@@ -75,7 +75,7 @@ Usage Example
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.effects import EffectCommonParameter
+from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 

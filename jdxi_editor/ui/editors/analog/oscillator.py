@@ -1,7 +1,7 @@
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
-from jdxi_editor.midi.data.constants.analog import SubOscType, Waveform
+from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWaveform
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -9,7 +9,7 @@ from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 
-class OscillatorSection(QWidget):
+class AnalogOscillatorSection(QWidget):
     def __init__(self, create_parameter_slider, create_parameter_switch, waveform_selected_callback, wave_buttons):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
@@ -41,15 +41,15 @@ class OscillatorSection(QWidget):
     def create_waveform_buttons(self):
         wave_layout = QHBoxLayout()
 
-        for waveform in [Waveform.SAW, Waveform.TRIANGLE, Waveform.PULSE]:
+        for waveform in [AnalogOscWaveform.SAW, AnalogOscWaveform.TRIANGLE, AnalogOscWaveform.PULSE]:
             btn = AnalogWaveformButton(waveform)
             btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
             # Set icons
-            icon_name = "upsaw" if waveform == Waveform.SAW else "triangle" if waveform == Waveform.TRIANGLE else "pwsqu"
-            icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 1.0)
+            icon_name = "upsaw" if waveform == AnalogOscWaveform.SAW else "triangle" if waveform == AnalogOscWaveform.TRIANGLE else "pwsqu"
+            icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 0.7)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
-
+            btn.setFixedSize(60, 30)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
             wave_layout.addWidget(btn)
@@ -95,7 +95,7 @@ class OscillatorSection(QWidget):
         sub_group.setLayout(sub_layout)
         self.sub_oscillator_type_switch = self._create_parameter_switch(
             AnalogParameter.SUB_OSCILLATOR_TYPE, "Type",
-            [SubOscType.OFF.display_name, SubOscType.OCT_DOWN_1.display_name, SubOscType.OCT_DOWN_2.display_name]
+            [AnalogSubOscType.OFF.display_name, AnalogSubOscType.OCT_DOWN_1.display_name, AnalogSubOscType.OCT_DOWN_2.display_name]
         )
         sub_layout.addWidget(self.sub_oscillator_type_switch)
 

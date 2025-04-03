@@ -1,11 +1,14 @@
-class AnalogCC:
-    """Analog Synth Tone Control Change parameters"""
+from jdxi_editor.midi.data.control_change.base import ControlChange
+
+
+class AnalogControlChange(ControlChange):
+    """Analog synth CC parameters"""
 
     # Direct CC parameters
-    CUTOFF = 102  # Cutoff (0-127)
-    RESONANCE = 105  # Resonance (0-127)
-    LEVEL = 117  # Level (0-127)
-    LFO_RATE = 16  # LFO Rate (0-127)
+    CUTOFF_CC = 102  # Cutoff (0-127)
+    RESONANCE_CC = 105  # Resonance (0-127)
+    LEVEL_CC = 117  # Level (0-127)
+    LFO_RATE_CC = 16  # LFO Rate (0-127)
 
     # NRPN parameters (MSB=0)
     NRPN_ENV = 124  # Envelope (0-127)
