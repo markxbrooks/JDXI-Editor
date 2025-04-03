@@ -74,7 +74,7 @@ def validate_value(param: DigitalPartialParameter, value: int) -> Optional[int]:
             except ValueError:
                 raise ValueError(f"Invalid oscillator wave value: {value}")
 
-    elif param == DigitalPartialParameter.FILTER_MODE:
+    elif param == DigitalPartialParameter.FILTER_SWITCH:
         if not isinstance(value, DigitalFilterMode):
             try:
                 value = DigitalFilterMode(value).value

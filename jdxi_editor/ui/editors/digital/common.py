@@ -535,8 +535,8 @@ class DigitalCommonEditor(SynthEditor):
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
                     )
-                elif param == DigitalPartialParameter.FILTER_MODE:
-                    self.update_filter_state(partial_no, DigitalPartialParameter.FILTER_MODE.value)
+                elif param == DigitalPartialParameter.FILTER_SWITCH:
+                    self.update_filter_state(partial_no, DigitalPartialParameter.FILTER_SWITCH.value)
 
     def update_filter_state(self, partial_no, value):
         """ update_filter_state """
@@ -694,7 +694,7 @@ class DigitalCommonEditor(SynthEditor):
             if param:
                 if param == DigitalPartialParameter.OSC_WAVE:
                     self._update_waveform_buttons(partial_no, param_value)
-                elif param == DigitalPartialParameter.FILTER_MODE:
+                elif param == DigitalPartialParameter.FILTER_SWITCH:
                     self.update_filter_state(partial_no, value=param_value)
                 else:
                     _update_slider(param, param_value)
