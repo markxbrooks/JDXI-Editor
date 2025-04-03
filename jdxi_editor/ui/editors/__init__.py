@@ -4,8 +4,8 @@
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 # Then import specific editors
-from jdxi_editor.ui.editors.analog.common import AnalogCommonEditor
-from jdxi_editor.ui.editors.digital.common import DigitalCommonEditor
+from jdxi_editor.ui.editors.analog.synth import AnalogSynthEditor
+from jdxi_editor.ui.editors.digital.synth import DigitalSynthEditor
 from jdxi_editor.ui.editors.drum.common import DrumCommonEditor
 from jdxi_editor.ui.editors.arpeggio.arpeggio import ArpeggioEditor
 from jdxi_editor.ui.editors.effects.common import EffectsCommonEditor
@@ -15,8 +15,8 @@ from jdxi_editor.ui.editors.io.midi_file import MidiFileEditor
 
 __all__ = [
     "SynthEditor",
-    "AnalogCommonEditor",
-    "DigitalCommonEditor",
+    "AnalogSynthEditor",
+    "DigitalSynthEditor",
     "DrumCommonEditor",
     "ArpeggioEditor",
     "EffectsCommonEditor",

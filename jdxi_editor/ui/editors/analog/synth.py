@@ -109,7 +109,7 @@ def set_widget_value_safely(widget, value):
     widget.blockSignals(False)
     
     
-class AnalogCommonEditor(SynthEditor):
+class AnalogSynthEditor(SynthEditor):
     """Analog Synth"""
 
     def __init__(
