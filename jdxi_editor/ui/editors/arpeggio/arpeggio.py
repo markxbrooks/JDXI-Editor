@@ -47,10 +47,11 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from jdxi_editor.midi.data.arpeggio import ArpeggioSwitch
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
-    ArpeggioMotif, ArpeggioOctaveRange,
+    ArpeggioMotif, ArpeggioOctaveRange, ArpeggioGrid, ArpeggioDuration
 )
-from jdxi_editor.midi.data.arpeggio.data import ARPEGGIO_GRID, ARP_DURATION, ARPEGGIO_STYLE
+from jdxi_editor.midi.data.arpeggio.data import ARPEGGIO_GRID, ARP_DURATION, ARPEGGIO_STYLE, ArpeggioStyle
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.constants.arpeggio import (
     TEMPORARY_PROGRAM,
@@ -117,7 +118,7 @@ class ArpeggioEditor(SynthEditor):
         program_zone_row = QHBoxLayout()
         common_button = self._create_parameter_switch(ProgramZoneParameter.ARPEGGIO_SWITCH,
                                                       "Master Arpeggiator",
-                                                      ["OFF", "ON"])
+                                                      [switch_setting.display_name for switch_setting in ArpeggioSwitch])
         program_zone_row.addWidget(common_button)
 
         layout.addLayout(program_zone_row)
@@ -126,7 +127,7 @@ class ArpeggioEditor(SynthEditor):
         switch_row = QHBoxLayout()
         self.switch_button = self._create_parameter_switch(ArpeggioParameter.ARPEGGIO_SWITCH,
                                                            "Arpeggiator",
-                                                           ["OFF", "ON"])
+                                                           [switch_setting.display_name for switch_setting in ArpeggioSwitch])
         switch_row.addWidget(self.switch_button)
         layout.addLayout(switch_row)
 
@@ -143,7 +144,7 @@ class ArpeggioEditor(SynthEditor):
         grid_row = QHBoxLayout()
         self.grid_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_GRID,
                                                            "Grid:",
-                                                           ARPEGGIO_GRID)
+                                                           [grid.display_name for grid in ArpeggioGrid])
         grid_row.addWidget(self.grid_combo)
         layout.addLayout(grid_row)
 
@@ -152,7 +153,7 @@ class ArpeggioEditor(SynthEditor):
         # Create address combo box for Arpeggio Duration
         self.duration_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_DURATION,
                                                                "Duration",
-                                                               ARP_DURATION)
+                                                               [duration.display_name for duration in ArpeggioDuration])
         duration_row.addWidget(self.duration_combo)
         layout.addLayout(duration_row)
 
@@ -184,7 +185,7 @@ class ArpeggioEditor(SynthEditor):
         motif_row = QHBoxLayout()
         self.motif_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_MOTIF,
                                                             "Motif:",
-                                                            [motif.name for motif in ArpMotif])
+                                                            [motif.name for motif in ArpeggioMotif])
         motif_row.addWidget(self.motif_combo)
         layout.addLayout(motif_row)
 

@@ -40,17 +40,14 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import Style
-from jdxi_editor.midi.data.constants.vocal_fx import (
+from jdxi_editor.midi.data.constants.vocal import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,
     VOCAL_FX_GROUP,
-    AutoPitchType,
-    OutputAssign,
-    AutoPitchKey,
-    AutoPitchNote,
-    VocoderEnvelope,
-    VocoderHPF,
 )
+from jdxi_editor.midi.data.vocal_effects.vocal import VocalAutoPitchType, VocalOutputAssign, VocalAutoPitchKey, \
+    VocalAutoPitchNote, \
+    VocoderEnvelope, VocoderHPF, VocalOctaveRange, VocalFxSwitch
 from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParameter
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
@@ -63,8 +60,8 @@ class VocalFXEditor(SynthEditor):
     ):
         super().__init__(midi_helper, parent)
         self.setWindowTitle("Vocal FX")
-        self.setMinimumHeight(700)
-        self.setMinimumWidth(500)
+        self.setMinimumHeight(750)
+        self.setMinimumWidth(650)
         self.area = VOCAL_FX_AREA
         self.part = VOCAL_FX_PART
         self.group = VOCAL_FX_GROUP
@@ -287,8 +284,8 @@ class VocalFXEditor(SynthEditor):
         self.output_assign = self._create_parameter_combo_box(
             VocalFXParameter.OUTPUT_ASSIGN,
             "Output",
-            [output.display_name for output in OutputAssign],
-            [output.value for output in OutputAssign],
+            [output.display_name for output in VocalOutputAssign],
+            [output.value for output in VocalOutputAssign],
         )
         output_row.addWidget(self.output_assign)
         layout.addLayout(output_row)
@@ -309,22 +306,20 @@ class VocalFXEditor(SynthEditor):
 
         self.pitch_switch = self._create_parameter_switch(VocalFXParameter.AUTO_PITCH_SWITCH,
                                                           "Auto Pitch",
-                                                          ["OFF", "ON"])
+                                                          [switch.display_name for switch in VocalFxSwitch])
 
         # Type selector
         type_row = QHBoxLayout()
-        type_row.addWidget(QLabel("Type"))
         self.auto_pitch_type = self._create_parameter_combo_box(
             VocalFXParameter.AUTO_PITCH_TYPE,
             "Pitch Type",
-            [pitch_type.display_name for pitch_type in AutoPitchType],
-            [pitch_type.value for pitch_type in AutoPitchType],
+            [pitch_type.display_name for pitch_type in VocalAutoPitchType],
+            [pitch_type.value for pitch_type in VocalAutoPitchType],
         )
         type_row.addWidget(self.auto_pitch_type)
 
         # Scale selector
         scale_row = QHBoxLayout()
-        scale_row.addWidget(QLabel("Scale"))
         self.pitch_scale = self._create_parameter_combo_box(
             VocalFXParameter.AUTO_PITCH_SCALE,
             "Scale",
@@ -335,23 +330,21 @@ class VocalFXEditor(SynthEditor):
 
         # Key selector
         key_row = QHBoxLayout()
-        key_row.addWidget(QLabel("Key"))
         self.pitch_key = self._create_parameter_combo_box(
             VocalFXParameter.AUTO_PITCH_KEY,
             "Key",
-            [key.display_name for key in AutoPitchKey],
-            [key.value for key in AutoPitchKey],
+            [key.display_name for key in VocalAutoPitchKey],
+            [key.value for key in VocalAutoPitchKey],
         )
         key_row.addWidget(self.pitch_key)
 
         # Note selector
         note_row = QHBoxLayout()
-        note_row.addWidget(QLabel("Note"))
         self.pitch_note = self._create_parameter_combo_box(
             VocalFXParameter.AUTO_PITCH_NOTE,
             "Note",
-            [note.display_name for note in AutoPitchNote],
-            [note.value for note in AutoPitchNote],
+            [note.display_name for note in VocalAutoPitchNote],
+            [note.value for note in VocalAutoPitchNote],
         )
         note_row.addWidget(self.pitch_note)
 
@@ -362,7 +355,7 @@ class VocalFXEditor(SynthEditor):
 
         self.octave = self._create_parameter_switch(VocalFXParameter.AUTO_PITCH_OCTAVE,
                                                     "Octave",
-                                                    ["-1", "0", "+1"])
+                                                    [range.name for range in VocalOctaveRange])
 
         # Dry/Wet Balance
         self.auto_pitch_balance = self._create_parameter_slider(

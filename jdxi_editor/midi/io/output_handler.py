@@ -19,10 +19,12 @@ Example usage:
 
 import logging
 import time
+import json
 from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.constants.sysex import (
     ROLAND_ID,
     DEVICE_ID,
@@ -434,3 +436,85 @@ class MidiOutHandler(MidiIOController):
         except (TimeoutError, OSError, IOError) as ex:
             logging.error(f"Error getting parameter: {ex}")
             return None
+
+    def save_patch(self, file_path: str) -> bool:
+        """Save current patch state to JSON file
+
+        Args:
+            file_path: Path to save the .jdx file
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Ensure file has .jdx extension
+            if not file_path.endswith('.jdx'):
+                file_path += '.jdx'
+
+            # Collect patch data
+            patch_data = {
+                'version': '1.0',
+                'name': 'Untitled Patch',  # TODO: Get actual patch name
+                'type': 'JD-Xi Patch',
+                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'parameters': {
+                    'digital': self._get_digital_parameters(),
+                    'analog': self._get_analog_parameters(),
+                    'drums': self._get_drum_parameters(),
+                    'effects': self._get_effects_parameters()
+                }
+            }
+
+            # Save to file
+            with open(file_path, 'w') as f:
+                json.dump(patch_data, f, indent=2)
+
+            logging.info(f"Patch saved to {file_path}")
+            return True
+        except Exception as e:
+            logging.error(f"Error saving patch: {str(e)}")
+            return False
+        
+    def _get_digital_parameters(self):
+        """Get digital parameters"""
+        parameters = {}
+        for area in DIGITAL_SYNTH_1_AREA:
+            for part in range(0x00, 0x03):
+                for group in range(0x00, 0x03):
+                    for param in range(0x00, 0x03):
+                        value = self.get_parameter(area, part, group, param)
+                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+        return parameters
+    
+    def _get_analog_parameters(self):
+        """Get analog parameters"""
+        parameters = {}
+        for area in range(0x00, 0x03):
+            for part in range(0x00, 0x03):
+                for group in range(0x00, 0x03):
+                    for param in range(0x00, 0x03):
+                        value = self.get_parameter(area, part, group, param)
+                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+        return parameters
+    
+    def _get_drum_parameters(self):
+        """Get drum parameters"""
+        parameters = {}
+        for area in range(0x00, 0x03):
+            for part in range(0x00, 0x03):
+                for group in range(0x00, 0x03):
+                    for param in range(0x00, 0x03):
+                        value = self.get_parameter(area, part, group, param)
+                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+        return parameters
+    
+    def _get_effects_parameters(self):
+        """Get effects parameters"""
+        parameters = {}
+        for area in range(0x00, 0x03):
+            for part in range(0x00, 0x03):
+                for group in range(0x00, 0x03):
+                    for param in range(0x00, 0x03):
+                        value = self.get_parameter(area, part, group, param)
+                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+        return parameters

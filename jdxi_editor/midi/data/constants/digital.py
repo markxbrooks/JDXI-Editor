@@ -32,8 +32,6 @@ access to parameter values, ensuring accurate automation and control.
 """
 
 
-from enum import Enum
-
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_DIGITAL_SYNTH_1_AREA
 
 
@@ -52,80 +50,3 @@ PART_1 = DIGITAL_PART_1  # For backwards compatibility
 PART_2 = DIGITAL_PART_2  # For backwards compatibility
 PART_3 = DIGITAL_PART_3  # For backwards compatibility
 PART_4 = DIGITAL_PART_4  # For backwards compatibility
-
-# Parameter Groups
-OSC_1_GROUP = 0x20      # Oscillator 1 parameters
-OSC_2_GROUP = 0x21      # Oscillator 2 parameters
-FILTER_GROUP = 0x22     # Filter parameters
-AMP_GROUP = 0x23        # Amplifier parameters
-LFO_1_GROUP = 0x24      # LFO 1 parameters
-LFO_2_GROUP = 0x25      # LFO 2 parameters
-EFFECTS_GROUP = 0x26    # Effects parameters
-
-# Parameter Groups (alternative names)
-OSC_PARAM_GROUP = OSC_1_GROUP  # For backwards compatibility
-LFO_PARAM_GROUP = LFO_1_GROUP  # For backwards compatibility
-ENV_PARAM_GROUP = 0x60         # Envelope parameters
-
-
-# Parameter value ranges
-FILTER_RANGES = {
-    'cutoff': (0, 127),
-    'resonance': (0, 127),
-    'keyfollow': (-100, 100),  # Actual values: 54-74 mapped to -100 to +100
-    'env_velocity': (-63, 63),  # Actual values: 1-127 mapped to -63 to +63
-    'env_depth': (-63, 63)     # Actual values: 1-127 mapped to -63 to +63
-}
-
-AMP_RANGES = {
-    'level': (0, 127),
-    'velocity_sens': (-63, 63),  # Actual values: 1-127 mapped to -63 to +63
-    'pan': (-64, 63)            # Actual values: 0-127 mapped to L64-63R
-}
-
-LFO_RANGES = {
-    'rate': (0, 127),
-    'fade_time': (0, 127),
-    'pitch_depth': (-63, 63),   # Actual values: 1-127 mapped to -63 to +63
-    'filter_depth': (-63, 63),  # Actual values: 1-127 mapped to -63 to +63
-    'amp_depth': (-63, 63),     # Actual values: 1-127 mapped to -63 to +63
-    'pan_depth': (-63, 63)      # Actual values: 1-127 mapped to -63 to +63
-}
-
-# Subgroups
-SUBGROUP_ZERO = 0x00
-
-
-def validate_value(param: int, value: int) -> bool:
-    """Validate parameter value is within allowed range"""
-    ranges = {
-        # Tone name (0x00-0x0B): ASCII 32-127
-        range(0x00, 0x0C): lambda v: 32 <= v <= 127,
-        
-        # Level: 0-127
-        0x0C: lambda v: 0 <= v <= 127,
-        
-        # Switches: 0-1
-        0x12: lambda v: v in (0, 1),  # Portamento
-        0x14: lambda v: v in (0, 1),  # Mono
-        
-        # Portamento time: 0-127
-        0x13: lambda v: 0 <= v <= 127,
-        
-        # Octave shift: 61-67 (-3 to +3)
-        0x15: lambda v: 61 <= v <= 67,
-        
-        # Pitch bend ranges: 0-24
-        0x16: lambda v: 0 <= v <= 24,
-        0x17: lambda v: 0 <= v <= 24
-    }
-    
-    # Find matching range
-    for param_range, validator in ranges.items():
-        if isinstance(param_range, range):
-            if param in param_range:
-                return validator(value)
-        elif param == param_range:
-            return validator(value)
-            
-    return True  # Allow other parameters to pass through

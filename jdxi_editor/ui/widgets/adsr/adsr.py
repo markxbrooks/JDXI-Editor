@@ -153,6 +153,10 @@ class ADSR(QWidget):
         self.update_controls_from_envelope()
         self.plot.set_values(self.envelope)
 
+    def setEnabled(self, enabled):
+        for _, slider in self.controls.items():
+            slider.setEnabled(enabled)
+
     def _create_parameter_slider(self, param: SynthParameter, label: str, value: int = None) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
