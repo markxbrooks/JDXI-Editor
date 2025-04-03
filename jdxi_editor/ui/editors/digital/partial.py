@@ -52,7 +52,7 @@ from PySide6.QtWidgets import (
     QTabWidget, QGridLayout, QFormLayout, QComboBox,
 )
 
-from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape
+from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape, DigitalLFOTempoSyncNote
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
@@ -338,7 +338,7 @@ class DigitalPartialEditor(PartialEditor):
         type_row = QHBoxLayout()
 
         # Filter mode switch
-        self.filter_mode_switch = self._create_parameter_switch(DigitalPartialParameter.FILTER_SWITCH,
+        self.filter_mode_switch = self._create_parameter_switch(DigitalPartialParameter.FILTER_MODE_SWITCH,
                                                                 "Mode",
                                                                 ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3",
                                                                  "LPF4"]
@@ -667,7 +667,7 @@ class DigitalPartialEditor(PartialEditor):
         self.mod_lfo_sync = self._create_parameter_combo_box(
             DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_SWITCH,
             "Sync",
-            [switch.display_name for switch in LFOSyncNote]
+            [switch.display_name for switch in DigitalLFOTempoSyncNote]
         )
         top_row.addWidget(self.mod_lfo_sync)
         mod_lfo_layout.addLayout(top_row)
@@ -682,7 +682,7 @@ class DigitalPartialEditor(PartialEditor):
         self.mod_lfo_note = self._create_parameter_combo_box(
             DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_NOTE,
             "Note",
-            [note.display_name for note in LFOSyncNote],
+            [note.display_name for note in DigitalLFOTempoSyncNote],
             [note.value for note in LFOSyncNote]
         )
         rate_row.addWidget(self.mod_lfo_note)

@@ -89,3 +89,4 @@ class AnalogLFOSection(QWidget):
         layout.addWidget(self.lfo_filter)
         layout.addWidget(self.lfo_amp)
         layout.addWidget(self.key_trigger_switch)
+        layout.addStretch()

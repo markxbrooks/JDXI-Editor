@@ -154,6 +154,19 @@ class ADSR(QWidget):
         self.plot.set_values(self.envelope)
 
     def setEnabled(self, enabled):
+        super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
+
+        for slider in self.controls.values():
+            slider.setEnabled(enabled)
+
+        self.attack_sb.setEnabled(enabled)
+        self.decay_sb.setEnabled(enabled)
+        self.sustain_sb.setEnabled(enabled)
+        self.release_sb.setEnabled(enabled)
+
+        self.plot.setEnabled(enabled)  # Disable the ADSR plot interaction if needed
+
+    def setEnabledOld(self, enabled):
         for _, slider in self.controls.items():
             slider.setEnabled(enabled)
 

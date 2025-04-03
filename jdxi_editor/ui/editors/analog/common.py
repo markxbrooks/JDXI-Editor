@@ -231,6 +231,7 @@ class AnalogCommonEditor(SynthEditor):
                                "Oscillator")
         self.filter_section = AnalogFilterSection(self._create_parameter_slider,
                                                   self._create_parameter_switch,
+                                                  self._on_filter_mode_changed,
                                                   self.send_control_change,
                                                   self.midi_helper,
                                                   self.area,
@@ -294,7 +295,12 @@ class AnalogCommonEditor(SynthEditor):
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
-            self.filter_section.filter_adsr_widget.setEnabled(enabled)
+        self.filter_section.filter_adsr_widget.setEnabled(enabled)
+
+    def _on_filter_mode_changed(self, mode: int):
+        """Handle filter mode changes"""
+        # Update control states
+        self.update_filter_controls_state(mode)
 
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
@@ -308,8 +314,8 @@ class AnalogCommonEditor(SynthEditor):
             partial_no = address[1]
             if param:
                 logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
-            elif param == AnalogParameter.FILTER_SWITCH:
-                self.update_filter_state(value=AnalogParameter.FILTER_SWITCH.value)
+            elif param == AnalogParameter.FILTER_MODE_SWITCH:
+                self.update_filter_state(value=AnalogParameter.FILTER_MODE_SWITCH.value)
 
                 # Update the corresponding slider
                 if param in self.controls:
@@ -485,10 +491,11 @@ class AnalogCommonEditor(SynthEditor):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(False)
                 elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                     self._update_waveform_buttons(param_value)
-                elif param_name == "FILTER_SWITCH" and param_value in filter_switch_map:
-                    self.filter_section.filter_switch.blockSignals(True)
-                    self.filter_section.filter_switch.setValue(filter_switch_map[param_value])
-                    self.filter_section.filter_switch.blockSignals(False)
+                elif param == AnalogParameter.FILTER_MODE_SWITCH and param_value in filter_switch_map:
+                    self.filter_section.filter_mode_switch.blockSignals(True)
+                    self.filter_section.filter_mode_switch.setValue(filter_switch_map[param_value])
+                    self.filter_section.filter_mode_switch.blockSignals(False)
+                    self.update_filter_controls_state(bool(param_value))
                 else:
                     update_slider(param, param_value)
                     update_adsr_widget(param, param_value)

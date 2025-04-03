@@ -84,7 +84,7 @@ class AnalogParameter(SynthParameter):
     SUB_OSCILLATOR_TYPE = (0x1F, 0, 2)
 
     # Filter Parameters
-    FILTER_SWITCH = (0x20, 0, 1)  # BYPASS, LPF
+    FILTER_MODE_SWITCH = (0x20, 0, 1)  # BYPASS, LPF
     FILTER_CUTOFF = (0x21, 0, 127, 0, 127)  # 0-127
     FILTER_CUTOFF_KEYFOLLOW = (0x22, 54, 74)
     FILTER_RESONANCE = (0x23, 0, 127, 0, 127)

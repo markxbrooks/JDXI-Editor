@@ -10,11 +10,19 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class AnalogFilterSection(QWidget):
-    def __init__(self, create_parameter_slider, create_parameter_switch, send_control_change, midi_helper, area, part, group):
+    def __init__(self, create_parameter_slider,
+                 create_parameter_switch,
+                 on_filter_mode_changed,
+                 send_control_change,
+                 midi_helper,
+                 area,
+                 part,
+                 group):
         super().__init__()
         self.filter_resonance = None
         self.create_parameter_slider = create_parameter_slider
         self.create_parameter_switch = create_parameter_switch
+        self._on_filter_mode_changed = on_filter_mode_changed
         self.send_control_change = send_control_change
         self.midi_helper = midi_helper
         self.area = area
@@ -40,9 +48,10 @@ class AnalogFilterSection(QWidget):
         layout.addLayout(adsr_icon_row_layout)
 
         # Filter Controls
-        self.filter_switch = self.create_parameter_switch(AnalogParameter.FILTER_SWITCH,
+        self.filter_mode_switch = self.create_parameter_switch(AnalogParameter.FILTER_MODE_SWITCH,
                                                           "Filter",
-                                                          ["BYPASS", "LPF"])
+                                                               ["BYPASS", "LPF"])
+        self.filter_mode_switch.valueChanged.connect(lambda v: self._on_filter_mode_changed(v))
         self.filter_cutoff = self.create_parameter_slider(AnalogParameter.FILTER_CUTOFF,
                                                           "Cutoff")
         self.filter_resonance = self.create_parameter_slider(AnalogParameter.FILTER_RESONANCE,
@@ -50,7 +59,7 @@ class AnalogFilterSection(QWidget):
         self.filter_cutoff_keyfollow = self.create_parameter_slider(AnalogParameter.FILTER_CUTOFF_KEYFOLLOW,
                                                                     "Keyfollow")
 
-        layout.addWidget(self.filter_switch)
+        layout.addWidget(self.filter_mode_switch)
         layout.addWidget(self.filter_cutoff)
         layout.addWidget(self.filter_resonance)
         layout.addWidget(self.filter_cutoff_keyfollow)
