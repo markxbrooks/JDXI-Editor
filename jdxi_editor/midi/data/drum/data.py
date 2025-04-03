@@ -1,6 +1,4 @@
-from dataclasses import dataclass
-from enum import Enum, auto
-from typing import Dict, List, Tuple
+from typing import Tuple, Dict
 
 DRUM_PARTIAL_NAMES = [
     "COM",
@@ -43,7 +41,6 @@ DRUM_PARTIAL_NAMES = [
     "C5",
     "C#5",
 ]
-
 DRUM_ADDRESSES = (
     b"\x19\x70\x00\x00",
     b"\x19\x70\x2E\x00",
@@ -85,22 +82,6 @@ DRUM_ADDRESSES = (
     b"\x19\x70\x76\x00",
     b"\x19\x70\x78\x00",
 )
-
-
-def get_address_for_partial(partial_num: int) -> Tuple[int, int]:
-    """Get parameter area and address adjusted for partial number"""
-    LO = DRUM_ADDRESSES[partial_num][
-        2
-    ]  # Skip the first row (common area), then extract the 3rd byte (zero-based index)
-    HI = LO + 1
-    return int(f"{LO:02X}", 16), int(f"{HI:02X}", 16)
-
-def get_address_for_partial_new(partial_num: int) -> int:
-    """Get parameter area and address adjusted for partial number"""
-    address = DRUM_ADDRESSES[partial_num][2]
-    return int(f"{address:02X}", 16)
-
-# Drum parameter offsets and ranges
 DR = {
     "common": {
         "level": (0x00, 0, 127),
@@ -121,8 +102,6 @@ DR = {
         "fx_send": (0x08, 0, 127),
     },
 }
-
-# Drum address categories
 DRUM_PARTS = {
     "KICK": ["Kick 1", "Kick 2", "Kick 3", "TR-808 Kick", "TR-909 Kick"],
     "SNARE": ["Snare 1", "Snare 2", "Rim Shot", "TR-808 Snare", "TR-909 Snare"],
@@ -131,101 +110,6 @@ DRUM_PARTS = {
     "TOM": ["Tom Hi", "Tom Mid", "Tom Low", "TR-808 Tom Hi", "TR-808 Tom Low"],
     "PERCUSSION": ["Conga Hi", "Conga Low", "Bongo Hi", "Bongo Low", "Timbale"],
 }
-
-
-class MuteGroup(Enum):
-    """Drum pad mute groups"""
-
-    OFF = 0
-    GROUPS = range(1, 32)  # Groups 1-31
-
-
-class Note(Enum):
-    """MIDI note numbers for drum pads"""
-
-    PAD_1 = 36  # C1
-    PAD_2 = 37  # C#1
-    PAD_3 = 38  # D1
-    PAD_4 = 39  # D#1
-    PAD_5 = 40  # E1
-    PAD_6 = 41  # F1
-    PAD_7 = 42  # F#1
-    PAD_8 = 43  # G1
-    PAD_9 = 44  # G#1
-    PAD_10 = 45  # A1
-    PAD_11 = 46  # A#1
-    PAD_12 = 47  # B1
-    PAD_13 = 48  # C2
-    PAD_14 = 49  # C#2
-    PAD_15 = 50  # D2
-    PAD_16 = 51  # D#2
-
-
-class DrumPad:
-    """Represents address single drum pad's settings"""
-    
-    # Parameter offsets within each pad
-    PARAM_OFFSET = 0x10  # Each pad takes 16 bytes of parameter space
-    
-    # Parameter addresses within pad
-    WAVE = 0x00
-    LEVEL = 0x01 
-    PAN = 0x02
-    MUTE_GROUP = 0x03
-    TUNE = 0x04
-    DECAY = 0x05
-    REVERB_SEND = 0x06
-    DELAY_SEND = 0x07
-    FX_SEND = 0x08
-
-    def __init__(self):
-        self.wave = 0
-        self.level = 100
-        self.pan = 64  # Center
-        self.mute_group = 0
-        self.tune = 0
-        self.decay = 64
-        self.reverb_send = 0
-        self.delay_send = 0 
-        self.fx_send = 0
-
-
-@dataclass
-class DrumPadSettings:
-    """Settings for address single drum pad"""
-
-    wave: int = 0
-    level: int = 100
-    pan: int = 64  # Center
-    tune: int = 0
-    decay: int = 64
-    mute_group: int = 0  # OFF
-    reverb_send: int = 0
-    delay_send: int = 0
-    fx_send: int = 0
-
-
-@dataclass
-class DrumKitPatch:
-    """Complete drum kit patch data"""
-
-    # Common parameters
-    level: int = 100
-    pan: int = 64  # Center
-    reverb_send: int = 0
-    delay_send: int = 0
-    fx_send: int = 0
-    
-    # Individual pad settings
-    pads: Dict[int, DrumPadSettings] = None
-    
-    def __post_init__(self):
-        """Initialize pad settings"""
-        if self.pads is None:
-            self.pads = {i: DrumPadSettings() for i in range(16)} 
-
-
-# SuperNATURAL drum kit presets
 SN_PRESETS = [
     "001: Studio Standard",
     "002: Studio Rock",
@@ -257,9 +141,7 @@ SN_PRESETS = [
     "028: User Kit 2",
     "029: User Kit 3",
     "030: User Kit 4",
-] 
-
-# Drum kit presets
+]
 DRUM_PRESETS: Tuple[str, ...] = (
     "001: TR-909 Kit 1",
     "002: TR-808 Kit 1",
@@ -295,8 +177,6 @@ DRUM_PRESETS: Tuple[str, ...] = (
     "032: Jazz Kit",
     "033: Latin Kit",
 )
-
-# Drum kit categories
 DRUM_CATEGORIES: Dict[str, list] = {
     "VINTAGE ROLAND": [
         "001: TR-909 Kit 1",
@@ -342,23 +222,6 @@ DRUM_CATEGORIES: Dict[str, list] = {
         "033: Latin Kit",
     ],
 }
-
-
-def _on_tva_level_velocity_sens_slider_changed(self, value: int):
-    """Handle TVA Level Velocity Sens change"""
-    if self.midi_helper:
-        # Convert -63 to +63 range to MIDI value (0 to 127)
-        midi_value = value + 63  # Center at 63
-        self.midi_helper.send_parameter(
-            area=DRUM_KIT_AREA,
-            part=DRUM_PART,
-            group=DRUM_LEVEL,
-            param=0x137,  # Address for TVA Level Velocity Sens
-            value=midi_value,
-        )
-        logging.info(f"TVA Level Velocity Sens changed to {midi_value}")
-
-
 rm_waves = [
     "000: OFF ",
     "001: 78 Kick P",

@@ -28,7 +28,7 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
-from jdxi_editor.midi.data.constants.analog import ControlChange
+from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED

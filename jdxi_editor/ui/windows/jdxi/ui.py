@@ -707,7 +707,7 @@ class JdxiUi(QMainWindow):
         parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 35
         parts_y = int(self.display_y - (
-            self.height * 0.14
+            self.height * 0.16
         ))  # Move up by 20% of window height
 
         parts_container.setGeometry(parts_x + 10, parts_y, 200, 250)

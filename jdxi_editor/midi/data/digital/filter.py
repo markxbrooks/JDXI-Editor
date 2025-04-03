@@ -1,21 +1,43 @@
-from enum import IntEnum
+from enum import IntEnum, Enum
 
 
-class DigitalFilterMode(IntEnum):
+class DigitalFilterMode(Enum):
     """Filter mode types"""
+    BYPASS = 0x00
+    LPF = 0x01     # Low-pass filter
+    HPF = 0x02     # High-pass filter
+    BPF = 0x03     # Band-pass filter
+    PKG = 0x04     # Peaking filter
+    LPF2 = 0x05    # Low-pass filter 2
+    LPF3 = 0x06    # Low-pass filter 3
+    LPF4 = 0x07    # Low-pass filter 4
 
-    BYPASS = 0
-    LPF = 1  # Low Pass Filter
-    HPF = 2  # High Pass Filter
-    BPF = 3  # Band Pass Filter
-    PKG = 4  # Peak/Notch Filter
-    LPF2 = 5  # -12dB/oct Low Pass
-    LPF3 = 6  # -18dB/oct Low Pass
-    LPF4 = 7  # -24dB/oct Low Pass
+    @property
+    def display_name(self) -> str:
+        """Get display name for filter mode"""
+        names = {
+            0: "BYPASS",
+            1: "LPF",
+            2: "HPF",
+            3: "BPF",
+            4: "PKG",
+            5: "LPF2",
+            6: "LPF3",
+            7: "LPF4"
+        }
+        return names.get(self.value, "???")
 
 
-class DigitalFilterSlope(IntEnum):
+class DigitalFilterSlope(Enum):
     """Filter slope values"""
+    DB_12 = 0x00  # -12 dB/octave
+    DB_24 = 0x01  # -24 dB/octave
 
-    DB_12 = 0  # -12 dB/octave
-    DB_24 = 1  # -24 dB/octave
+    @property
+    def display_name(self) -> str:
+        """Get display name for filter slope"""
+        names = {
+            0: "-12dB",
+            1: "-24dB"
+        }
+        return names.get(self.value, "???")

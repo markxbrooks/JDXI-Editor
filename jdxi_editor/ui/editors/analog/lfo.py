@@ -3,9 +3,10 @@ from PySide6.QtCore import QSize
 import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.ui.style import Style
 
 
-class LfoSection(QWidget):
+class AnalogLFOSection(QWidget):
     def __init__(self, create_parameter_slider, create_parameter_switch, create_parameter_combo_box,
                  on_lfo_shape_changed, lfo_shape_buttons):
         super().__init__()
@@ -38,9 +39,10 @@ class LfoSection(QWidget):
             btn = QPushButton(name)
             btn.setCheckable(True)
             btn.setProperty("value", value)
-            btn.setIcon(qta.icon(icon_name))
-            btn.setIconSize(QSize(24, 24))
-            btn.setFixedSize(80, 40)
+            btn.setIcon(qta.icon(icon_name, color="#FFFFFF", icon_size=0.7))
+            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
+            btn.setIconSize(QSize(20, 20))
+            btn.setFixedSize(60, 30)
             btn.setToolTip(name)
             btn.clicked.connect(lambda checked, v=value: self._on_lfo_shape_changed(v))
             self.lfo_shape_buttons[value] = btn

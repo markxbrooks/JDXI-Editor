@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
-from jdxi_editor.midi.data.effects import EffectCommonParameter
+from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRAM_COMMON
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.editor import SynthEditor

@@ -176,7 +176,7 @@ class DigitalPartialEditor(PartialEditor):
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
             btn.setStyleSheet(Style.JDXI_BUTTON_RECT)  # Apply default styles
-
+            btn.setFixedSize(60, 30)
             # Set waveform icons
             wave_pixmap = base64_to_pixmap(icon_base64)
             btn.setIcon(QIcon(wave_pixmap))
@@ -237,18 +237,18 @@ class DigitalPartialEditor(PartialEditor):
         )
 
         # Create ComboBoxes
-        self.category_combo = QComboBox()
+        self.pcm_category_combo = QComboBox()
 
         # Populate categories (with "No selection" option)
-        self.categories = ["No selection"] + sorted(set(w["Category"] for w in PCM_WAVES_CATEGORIZED))
-        self.category_combo.addItems(self.categories)
+        self.pcm_categories = ["No selection"] + sorted(set(w["Category"] for w in PCM_WAVES_CATEGORIZED))
+        self.pcm_category_combo.addItems(self.pcm_categories)
 
         # Connect signal to update waves
-        self.category_combo.currentIndexChanged.connect(self.update_waves)
+        self.pcm_category_combo.currentIndexChanged.connect(self.update_waves)
 
         pcm_layout.addWidget(self.pcm_wave_gain, 0, 0)
         pcm_layout.addWidget(QLabel("Category"), 0, 1)
-        pcm_layout.addWidget(self.category_combo, 0, 2)
+        pcm_layout.addWidget(self.pcm_category_combo, 0, 2)
         pcm_layout.addWidget(self.pcm_wave_number, 0, 3)
 
         self.update_waves()
@@ -289,7 +289,7 @@ class DigitalPartialEditor(PartialEditor):
         return oscillator_section
 
     def update_waves(self):
-        selected_category = self.category_combo.currentText()
+        selected_category = self.pcm_category_combo.currentText()
 
         # Filter waves or show all if "No selection"
         if selected_category == "No selection":
@@ -312,6 +312,7 @@ class DigitalPartialEditor(PartialEditor):
         """Update PCM wave controls visibility based on waveform"""
         pcm_enabled = waveform == DigitalOscWave.PCM
         self.pcm_wave_gain.setEnabled(pcm_enabled)
+        self.pcm_category_combo.setEnabled(pcm_enabled)
         self.pcm_wave_number.setEnabled(pcm_enabled)
 
     def _create_filter_section(self):

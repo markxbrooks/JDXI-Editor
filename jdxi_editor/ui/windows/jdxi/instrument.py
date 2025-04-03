@@ -35,6 +35,7 @@ from pubsub import pub
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal
 
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
@@ -43,7 +44,7 @@ from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_P
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
     MIDI_CHANNEL_DRUMS, START_OF_SYSEX, END_OF_SYSEX, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID, JD_XI_HEADER, \
     MIDI_CHANNEL_PROGRAMS
-from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP, ArpParameter
+from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA,
 )
@@ -978,7 +979,7 @@ class JdxiInstrument(JdxiUi):
         """Send arpeggiator on/off command"""
         try:
             if self.midi_helper:
-                param_address = ArpParameter.SWITCH.value  # On/Off parameter @@@  FIXME: Should be ArpeggioParameter
+                param_address = ArpeggioParameter.ARPEGGIO_SWITCH.value  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
                 self.send_midi_parameter(
                     ARP_GROUP, param_address, value
