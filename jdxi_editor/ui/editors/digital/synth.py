@@ -56,6 +56,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.sysex.requests import DIGITAL1_REQUESTS, DIGITAL2_REQUESTS
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
+from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, _log_changes
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
@@ -250,7 +251,10 @@ class DigitalSynthEditor(SynthEditor):
                                                    self._create_parameter_switch,
                                                    self.controls)
         self.partial_tab_widget.addTab(self.common_section, "Common")
-        self.partial_tab_widget.addTab(self._create_tone_modify_section(), "Tone Modify")
+        self.tone_modify_section = DigitalToneModifySection(self._create_parameter_slider,
+                                                            self._create_parameter_combo_box,
+                                                            self._create_parameter_switch)
+        self.partial_tab_widget.addTab(self.tone_modify_section, "Tone Modify")
 
         container_layout.addWidget(self.partial_tab_widget)
 
@@ -285,48 +289,6 @@ class DigitalSynthEditor(SynthEditor):
 
     def update_instrument_title(self, text):
         self.instrument_title_label.setText(text)
-
-    def _create_tone_modify_section(self):
-        """Create tone modify section"""
-        group = QWidget()
-        layout = QVBoxLayout()
-        group.setLayout(layout)
-        attack_time_interval_sens = self._create_parameter_slider(
-            DigitalModifyParameter.ATTACK_TIME_INTERVAL_SENS, "Attack Time Interval Sens"
-        )
-        layout.addWidget(attack_time_interval_sens)
-        release_time_interval_sens = self._create_parameter_slider(
-            DigitalModifyParameter.RELEASE_TIME_INTERVAL_SENS, "Release Time Interval Sens"
-        )
-        layout.addWidget(release_time_interval_sens)
-        portamento_time_interval_sens = self._create_parameter_slider(
-            DigitalModifyParameter.PORTAMENTO_TIME_INTERVAL_SENS, "Portamento Time Interval Sens"
-        )
-        layout.addWidget(portamento_time_interval_sens)
-
-        envelope_loop_mode_row = QHBoxLayout()
-        envelope_loop_mode = self._create_parameter_combo_box(
-            DigitalModifyParameter.ENVELOPE_LOOP_MODE, "Envelope Loop Mode", ["OFF", "FREE-RUN", "TEMPO-SYNC"]
-        )
-        envelope_loop_mode_row.addWidget(envelope_loop_mode)
-        layout.addLayout(envelope_loop_mode_row)
-
-        envelope_loop_sync_note_row = QHBoxLayout()
-        envelope_loop_sync_note = self._create_parameter_combo_box(
-            DigitalModifyParameter.ENVELOPE_LOOP_SYNC_NOTE, "Envelope Loop Sync Note",
-            LFOSyncNote.get_all_display_names())
-        envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note)
-        layout.addLayout(envelope_loop_sync_note_row)
-
-        chromatic_portamento_row = QHBoxLayout()
-        chromatic_portamento_label = QLabel("Chromatic Portamento")
-        chromatic_portamento_row.addWidget(chromatic_portamento_label)
-        chromatic_portamento = self._create_parameter_switch(
-            DigitalModifyParameter.CHROMATIC_PORTAMENTO, "Chromatic Portamento", ["OFF", "ON"]
-        )
-        layout.addWidget(chromatic_portamento)
-        layout.addStretch()
-        return group
 
     def load_preset(self, preset_index):
         """Load a preset by program change."""
