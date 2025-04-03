@@ -466,6 +466,7 @@ class ADSRPlot(QWidget):
     def __init__(self, width=400, height=400, parent=None):
         super().__init__(parent)
         # Default envelope parameters (times in ms)
+        self.enabled = True
         self.envelope = {
             "attack_time": 100,
             "decay_time": 400,
@@ -486,6 +487,10 @@ class ADSRPlot(QWidget):
         """)
         # Sample rate for converting times to samples
         self.sample_rate = 256
+
+    def setEnabled(self, enabled):
+        super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
+        self.enabled = enabled
 
     def set_values(self, envelope):
         """Update envelope values and trigger address redraw."""
@@ -597,26 +602,26 @@ class ADSRPlot(QWidget):
             y = top_padding + i * plot_h / 5
             painter.drawLine(left_padding, y, left_padding + plot_w, y)
 
+        if self.enabled:
+            # Draw the envelope polyline last, on top of the grid
+            # Create a list of points for the envelope polyline.
+            painter.setPen(QPen(QColor("orange")))
+            points = []
+            num_points = 500
+            indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+            for i in indices:
+                t = i / self.sample_rate  # time in seconds
+                x = left_padding + (t / total_time) * plot_w
+                y = top_padding + plot_h - (envelope[i] * plot_h)
+                points.append((x, y))
 
-        # Draw the envelope polyline last, on top of the grid
-        # Create a list of points for the envelope polyline.
-        painter.setPen(QPen(QColor("orange")))
-        points = []
-        num_points = 500
-        indices = np.linspace(0, total_samples - 1, num_points).astype(int)
-        for i in indices:
-            t = i / self.sample_rate  # time in seconds
-            x = left_padding + (t / total_time) * plot_w
-            y = top_padding + plot_h - (envelope[i] * plot_h)
-            points.append((x, y))
-
-        # Draw the envelope polyline
-        if points:
-            path = QPainterPath()
-            path.moveTo(*points[0])
-            for pt in points[1:]:
-                path.lineTo(*pt)
-            painter.drawPath(path)
+            # Draw the envelope polyline
+            if points:
+                path = QPainterPath()
+                path.moveTo(*points[0])
+                for pt in points[1:]:
+                    path.lineTo(*pt)
+                painter.drawPath(path)
 
 
 class ADSRMatplot(QWidget):

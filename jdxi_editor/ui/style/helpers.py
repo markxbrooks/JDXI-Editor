@@ -236,6 +236,10 @@ def generate_editor_style(
             padding: 3px;
             color: {foreground};
         }}
+        
+        QComboBox:disabled {{
+            color: #333333;
+        }}
 
         QScrollBar::handle {{
             background: {slider_handle_border};

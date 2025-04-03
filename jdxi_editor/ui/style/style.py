@@ -337,6 +337,20 @@ class Style:
                          stop:0 #000066, stop:1 #1a1aff);
             border-radius: 3px;
         }
+        /* Handle (Knob) */
+        QSlider::handle:vertical:disabled {
+            background: black;
+            border: 2px solid #333333; /* grey border */
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -10px;
+            border-radius: 5px;
+        }
+        /* greyed out groove */
+        QSlider::sub-page:vertical:disabled {
+            background: #333333;
+            border-radius: 3px;
+        }
 
         /* Unfilled portion */
         QSlider::add-page:vertical {
