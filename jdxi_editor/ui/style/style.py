@@ -391,6 +391,20 @@ class Style:
             margin: -10px;
             border-radius: 5px;
         }
+        /* Handle (Knob) */
+        QSlider::handle:vertical:disabled {
+            background: black;
+            border: 2px solid #333333; /* grey border */
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -10px;
+            border-radius: 5px;
+        }
+        /* greyed out groove */
+        QSlider::sub-page:vertical:disabled {
+            background: #333333;
+            border-radius: 3px;
+        }
 
         /* Glowing effect when moving */
         QSlider::sub-page:vertical {

@@ -283,6 +283,14 @@ def generate_editor_style(
             margin: -9px 0;
             border-radius: 9px;
         }}
+        QSlider::handle:vertical:disabled{{
+            background: {slider_handle};
+            border: 2px solid #333333; /* grey border */
+            width: 18px;  /* More rectangular */
+            height: 12px;  
+            margin: -9px;
+            border-radius: 4px;
+        }}
                 /* Glowing effect when moving */
         QSlider::sub-page:horizontal {{
             background: qlineargradient(x1:1, y1:0, x2:0, y2:0, 

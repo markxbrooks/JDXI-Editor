@@ -1,34 +1,4 @@
-"""
-Vocal FX MIDI Constants Module
-
-This module defines MIDI constants and enumerations for controlling vocal effects
-on Roland JD-Xi and similar synthesizers. It includes:
-
-- Memory area, part, and group identifiers for vocal FX processing
-- Enumerations for various vocal FX parameters, including:
-  - Vocal FX switch states
-  - Auto Note and Auto Pitch settings
-  - Output assignments
-  - Auto Pitch key and note values
-  - Octave range settings
-  - Vocoder envelope types
-  - Vocoder high-pass filter (HPF) frequency settings
-
-Each enumeration provides:
-- `display_name`: A human-readable label for the parameter value
-- `midi_value`: The corresponding MIDI value for the parameter
-
-These constants and enums help structure MIDI control over vocal FX, ensuring
-consistent and manageable parameter adjustments.
-"""
-
-
 from enum import Enum
-
-# Areas and Parts
-VOCAL_FX_AREA = 0x18
-VOCAL_FX_PART = 0x00
-VOCAL_FX_GROUP = 0x01  # Different area from arpeggiator
 
 
 class VocalFxSwitch(Enum):
@@ -47,7 +17,7 @@ class VocalFxSwitch(Enum):
         return self.value
 
 
-class AutoNoteSwitch(Enum):
+class VocalAutoNoteSwitch(Enum):
     """Auto Note switch values"""
     OFF = 0
     ON = 1
@@ -63,7 +33,7 @@ class AutoNoteSwitch(Enum):
         return self.value
 
 
-class AutoPitchType(Enum):
+class VocalAutoPitchType(Enum):
     """Auto Pitch preset_type values"""
     SOFT = 0
     HARD = 1
@@ -84,10 +54,10 @@ class AutoPitchType(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for pitch preset_type"""
-        return self.value 
+        return self.value
 
 
-class OutputAssign(Enum):
+class VocalOutputAssign(Enum):
     """Output assignment values"""
     EFX1 = 0
     EFX2 = 1
@@ -103,10 +73,10 @@ class OutputAssign(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for output assignment"""
-        return self.value 
+        return self.value
 
 
-class AutoPitchKey(Enum):
+class VocalAutoPitchKey(Enum):
     """Auto Pitch key values"""
     C = 0
     Db = 1
@@ -148,10 +118,10 @@ class AutoPitchKey(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for key"""
-        return self.value 
+        return self.value
 
 
-class OctaveRange(Enum):
+class VocalOctaveRange(Enum):
     """Octave range values"""
     MINUS_ONE = 0
     ZERO = 1
@@ -166,10 +136,10 @@ class OctaveRange(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for octave"""
-        return self.value 
+        return self.value
 
 
-class AutoPitchNote(Enum):
+class VocalAutoPitchNote(Enum):
     """Auto Pitch note values"""
     C = 0
     C_SHARP = 1
@@ -206,7 +176,7 @@ class AutoPitchNote(Enum):
     @property
     def midi_value(self) -> int:
         """Get MIDI value for note"""
-        return self.value 
+        return self.value
 
 
 class VocoderEnvelope(Enum):
@@ -304,37 +274,3 @@ class VoiceKey(Enum):
     A = 0x09
     Bb = 0x0A
     B = 0x0B
-
-
-class VocalFX(Enum):
-    """Vocal effects types and parameters"""
-
-    # Effect types
-    VOCODER = 0x00
-    AUTO_PITCH = 0x01
-    HARMONIST = 0x02
-
-    # Common parameters
-    LEVEL = 0x00
-    PAN = 0x01
-    REVERB_SEND = 0x02
-    DELAY_SEND = 0x03
-
-    # Vocoder parameters
-    MIC_SENS = 0x10
-    CARRIER_MIX = 0x11
-    FORMANT = 0x12
-    CUTOFF = 0x13
-    RESONANCE = 0x14
-
-    # Auto-Pitch parameters
-    SCALE = 0x20
-    KEY = 0x21
-    GENDER = 0x22
-    BALANCE = 0x23
-
-    # Harmonist parameters
-    HARMONY_1 = 0x30
-    HARMONY_2 = 0x31
-    HARMONY_3 = 0x32
-    DETUNE = 0x33

@@ -153,6 +153,7 @@ class ArpeggioDuration(Enum):
     D90 = 6  # 90%
     D100 = 7  # 100%
     D120 = 8  # 120%
+    FUL = 9  # FULL
 
     @property
     def display_name(self) -> str:
@@ -167,6 +168,7 @@ class ArpeggioDuration(Enum):
             6: "90%",
             7: "100%",
             8: "120%",
+            9: "Full",
         }
         return names.get(self.value, "???")
 

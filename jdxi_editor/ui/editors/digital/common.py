@@ -535,6 +535,12 @@ class DigitalCommonEditor(SynthEditor):
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
                     )
+                elif param == DigitalPartialParameter.FILTER_MODE:
+                    self.update_filter_state(partial_no, DigitalPartialParameter.FILTER_MODE.value)
+
+    def update_filter_state(self, partial_no, value):
+        """ update_filter_state """
+        self.partial_editors[partial_no].update_filter_controls_state(value)
 
     def _update_partial_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
@@ -688,6 +694,8 @@ class DigitalCommonEditor(SynthEditor):
             if param:
                 if param == DigitalPartialParameter.OSC_WAVE:
                     self._update_waveform_buttons(partial_no, param_value)
+                elif param == DigitalPartialParameter.FILTER_MODE:
+                    self.update_filter_state(partial_no, value=param_value)
                 else:
                     _update_slider(param, param_value)
                     update_adsr_widget(param, param_value)

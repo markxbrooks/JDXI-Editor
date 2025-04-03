@@ -702,6 +702,7 @@ class JdxiInstrument(JdxiUi):
                 PatternSequencer,
                 ProgramEditor,
                 PresetEditor,
+                MidiFileEditor
             ]:
                 preset_helper = self._get_preset_helper_for_current_synth()
                 editor = editor_class(

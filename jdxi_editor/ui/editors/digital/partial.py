@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
     QTabWidget, QGridLayout, QFormLayout, QComboBox,
 )
 
+from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
@@ -436,70 +437,27 @@ class DigitalPartialEditor(PartialEditor):
         env_group.setStyleSheet("QGroupBox { margin-top: 10px; }")
         self.filter_adsr_widget.updateGeometry()
         env_group.updateGeometry()
-
-        # HPF cutoff
-        controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.HPF_CUTOFF, "HPF Cutoff")
-        )
-        # Aftertouch sensitivity
-        controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.CUTOFF_AFTERTOUCH, "AT Sens")
-        )
         return filter_section
-
-    def update_filter_adsr_spinbox_from_param(self, control_map, param, value):
-        """Updates an ADSR parameter from an external control, avoiding feedback loops."""
-        spinbox = control_map[param]
-        if param in [
-            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
-        ]:
-            new_value = midi_cc_to_frac(value)
-        else:
-            new_value = midi_cc_to_ms(value)
-        if spinbox.value() != new_value:
-            spinbox.blockSignals(True)
-            spinbox.setValue(new_value)
-            spinbox.blockSignals(False)
-            self.filter_adsr_widget.valueChanged()
-
-    def on_adsr_envelope_changed(self, envelope):
-        if not self.updating_from_spinbox:
-            self.controls[DigitalPartialParameter.FILTER_ENV_ATTACK_TIME].setValue(
-                ms_to_midi_cc(envelope[ADSRParameter.ATTACK_TIME], 10, 1000)
-            )
-            self.controls[DigitalPartialParameter.FILTER_ENV_DECAY_TIME].setValue(
-                ms_to_midi_cc(envelope[ADSRParameter.DECAY_TIME], 10, 1000)
-            )
-            self.controls[DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL].setValue(
-                ms_to_midi_cc(envelope[ADSRParameter.SUSTAIN_LEVEL], 0.1, 1)
-            )
-            self.controls[DigitalPartialParameter.FILTER_ENV_RELEASE_TIME].setValue(
-                ms_to_midi_cc(envelope[ADSRParameter.RELEASE_TIME], 10, 1000)
-            )
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
-
         # Update control states
-        self._update_filter_controls_state(mode)
+        self.update_filter_controls_state(mode)
 
-    def _update_filter_controls_state(self, mode: int):
+    def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
             DigitalPartialParameter.FILTER_CUTOFF,
             DigitalPartialParameter.FILTER_RESONANCE,
+            DigitalPartialParameter.FILTER_CUTOFF_KEYFOLLOW,
             DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
-            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
-            DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
-            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
             DigitalPartialParameter.FILTER_ENV_DEPTH,
             DigitalPartialParameter.FILTER_SLOPE,
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
+            self.filter_adsr_widget.setEnabled(enabled)
 
     def _create_amp_section(self):
         """Create the amplifier section of the partial editor"""
@@ -693,18 +651,21 @@ class DigitalPartialEditor(PartialEditor):
         top_row = QHBoxLayout()
 
         # Shape switch
-        self.mod_lfo_shape = Switch("Shape", ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
+        self.mod_lfo_shape = self._create_parameter_combo_box(
+            DigitalPartialParameter.MOD_LFO_SHAPE,
+            "Shape",
+            ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
+        )
         self.mod_lfo_shape.valueChanged.connect(
             lambda v: self._on_parameter_changed(DigitalPartialParameter.MOD_LFO_SHAPE, v)
         )
         top_row.addWidget(self.mod_lfo_shape)
 
         # Sync switch
-        self.mod_lfo_sync = Switch("Sync", ["OFF", "ON"])
-        self.mod_lfo_sync.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_SWITCH, v
-            )
+        self.mod_lfo_sync = self._create_parameter_combo_box(
+            DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_SWITCH,
+            "Sync",
+            [switch.display_name for switch in LFOSyncNote]
         )
         top_row.addWidget(self.mod_lfo_sync)
         mod_lfo_layout.addLayout(top_row)
@@ -712,39 +673,15 @@ class DigitalPartialEditor(PartialEditor):
         # Rate and note controls
         rate_row = QHBoxLayout()
         rate_row.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_RATE, "Rate")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_RATE, 
+                                          "Rate")
         )
-
         # Note selection (only visible when sync is ON)
-        self.mod_lfo_note = Switch(
+        self.mod_lfo_note = self._create_parameter_combo_box(
+            DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_NOTE,
             "Note",
-            [
-                "16",
-                "12",
-                "8",
-                "4",
-                "2",
-                "1",
-                "3/4",
-                "2/3",
-                "1/2",
-                "3/8",
-                "1/3",
-                "1/4",
-                "3/16",
-                "1/6",
-                "1/8",
-                "3/32",
-                "1/12",
-                "1/16",
-                "1/24",
-                "1/32",
-            ],
-        )
-        self.mod_lfo_note.valueChanged.connect(
-            lambda v: self._on_parameter_changed(
-                DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_NOTE, v
-            )
+            [note.display_name for note in LFOSyncNote],
+            [note.value for note in LFOSyncNote]
         )
         rate_row.addWidget(self.mod_lfo_note)
         mod_lfo_layout.addLayout(rate_row)
@@ -755,25 +692,30 @@ class DigitalPartialEditor(PartialEditor):
         depths_group.setLayout(depths_layout)
 
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PITCH_DEPTH, "Pitch")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PITCH_DEPTH, 
+                                          "Pitch")
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.MOD_LFO_FILTER_DEPTH, "Filter"
+                DigitalPartialParameter.MOD_LFO_FILTER_DEPTH, 
+                "Filter"
             )
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_AMP_DEPTH, "Amp")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_AMP_DEPTH, 
+                                          "Amp")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PAN, "Pan")
+            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PAN, 
+                                          "Pan")
         )
         mod_lfo_layout.addWidget(depths_group)
 
         # Rate control
         mod_lfo_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
+                DigitalPartialParameter.MOD_LFO_RATE_CTRL, 
+                "Rate Ctrl"
             )
         )
         mod_lfo_layout.addStretch()
