@@ -193,11 +193,7 @@ class DigitalSynthEditor(SynthEditor):
         instrument_preset_group.setStyleSheet("""
                         width: 100px;
         """)
-        # self.instrument_title_label = DigitalDisplay()
-        # self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
         self.instrument_title_label = DigitalTitle()
-        #self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL
-        #)
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
         instrument_title_group_layout.addWidget(self.instrument_title_label)
@@ -250,9 +246,6 @@ class DigitalSynthEditor(SynthEditor):
             editor = DigitalPartialEditor(midi_helper, i, self.part)
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
-        #self.partial_tab_widget.addTab(
-        #    self._create_common_section(), "Common Controls"
-        #)
         self.common_section = DigitalCommonSection(self._create_parameter_slider,
                                                    self._create_parameter_switch,
                                                    self.controls)
@@ -292,131 +285,6 @@ class DigitalSynthEditor(SynthEditor):
 
     def update_instrument_title(self, text):
         self.instrument_title_label.setText(text)
-
-    def _create_common_section_old(self):
-        """Create common controls section"""
-        group = QWidget()
-        # area = QGroupBox("Common Controls")
-        layout = QVBoxLayout()
-        group.setLayout(layout)
-        # prettify with icons
-
-        icons_hlayout = QHBoxLayout()
-        for icon in [
-            "ph.bell-ringing-bold",
-            "mdi.call-merge",
-            "mdi.account-voice",
-            "ri.voiceprint-fill",
-            "mdi.piano",
-        ]:
-            icon_label = QLabel()
-            icon = qta.icon(icon, color="#666666")
-            pixmap = icon.pixmap(
-                Style.ICON_SIZE, Style.ICON_SIZE
-            )  # Set the desired size
-            icon_label.setPixmap(pixmap)
-            icon_label.setAlignment(Qt.AlignHCenter)
-            icons_hlayout.addWidget(icon_label)
-        layout.addLayout(icons_hlayout)
-
-        mono_switch_row = QHBoxLayout()
-        self.mono_switch = self._create_parameter_switch(DigitalCommonParameter.MONO_SWITCH, "Mono",
-                                                         ["OFF", "ON"])
-        mono_switch_row.addWidget(self.mono_switch)
-        layout.addLayout(mono_switch_row)
-
-        self.pitch_bend_row = QHBoxLayout()
-        self.pitch_bend_up = self._create_parameter_slider(
-            DigitalCommonParameter.PITCH_BEND_UP, "Pitch Bend Up"
-        )
-        self.pitch_bend_down = self._create_parameter_slider(
-            DigitalCommonParameter.PITCH_BEND_DOWN, "Pitch Bend Down"
-        )
-        self.pitch_bend_row.addWidget(self.pitch_bend_up)
-        self.pitch_bend_row.addWidget(self.pitch_bend_down)
-        layout.addLayout(self.pitch_bend_row)
-
-        # Create tone level row
-        self.tone_level_row = QHBoxLayout()
-        self.tone_level = self._create_parameter_slider(
-            DigitalCommonParameter.TONE_LEVEL, "Tone Level"
-        )
-        self.tone_level_row.addWidget(self.tone_level)
-        layout.addLayout(self.tone_level_row)
-
-        # Ring Modulator switch
-        self.ring_row = QHBoxLayout()
-        self.ring_switch = self._create_parameter_switch(DigitalCommonParameter.RING_SWITCH, "Ring", ["OFF", "---", "ON"])
-        self.ring_row.addWidget(self.ring_switch)
-        layout.addLayout(self.ring_row)
-
-        # Unison switch and size
-        self.unison_switch_row = QHBoxLayout()
-        self.unison_switch = self._create_parameter_switch(DigitalCommonParameter.UNISON_SWITCH,
-                                                           "Unison",
-                                                           ["OFF", "ON"])
-        self.unison_switch_row.addWidget(self.unison_switch)
-        layout.addLayout(self.unison_switch_row)
-
-        self.unison_size = self._create_parameter_switch(DigitalCommonParameter.UNISON_SIZE,
-                                                         "Size",
-                                                         ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"])
-        self.unison_switch_row.addWidget(self.unison_size)
-        self.controls[DigitalCommonParameter.UNISON_SIZE] = self.unison_size
-        layout.addLayout(self.unison_switch_row)
-
-        self.portamento_row = QHBoxLayout()
-        self.portamento_switch = self._create_parameter_switch(DigitalCommonParameter.PORTAMENTO_SWITCH,
-                                                               "Portamento",
-                                                               ["OFF", "ON"])
-        self.portamento_row.addWidget(self.portamento_switch)
-        layout.addLayout(self.portamento_row)
-
-        self.portamento_time_row = QHBoxLayout()
-        self.portamento_time = self._create_parameter_slider(
-            DigitalCommonParameter.PORTAMENTO_TIME, "Portamento Time"
-        )
-        self.portamento_time_row.addWidget(self.portamento_time)
-        self.controls[DigitalCommonParameter.PORTAMENTO_TIME] = self.portamento_time
-        layout.addLayout(self.portamento_time_row)
-
-        # Portamento mode and legato
-        self.portamento_mode = self._create_parameter_switch(DigitalCommonParameter.PORTAMENTO_MODE,
-                                                             "Portamento Mode",
-                                                             ["NORMAL", "LEGATO"])
-        self.portamento_row.addWidget(self.portamento_mode)
-
-        self.legato_row = QHBoxLayout()
-        self.legato_switch = self._create_parameter_switch(DigitalCommonParameter.LEGATO_SWITCH,
-                                                           "Legato",
-                                                           ["OFF", "ON"])
-        self.legato_row.addWidget(self.legato_switch)
-
-        # Analog Feel and Wave Shape
-        self.analog_feel = self._create_parameter_slider(
-            DigitalCommonParameter.ANALOG_FEEL, "Analog Feel"
-        )
-        self.wave_shape = self._create_parameter_slider(
-            DigitalCommonParameter.WAVE_SHAPE, "Wave Shape"
-        )
-        self.controls[DigitalCommonParameter.ANALOG_FEEL] = self.analog_feel
-        self.controls[DigitalCommonParameter.WAVE_SHAPE] = self.wave_shape
-        # Add all controls to layout
-        layout.addLayout(mono_switch_row)
-        layout.addLayout(self.tone_level_row)
-        layout.addLayout(self.ring_row)
-        layout.addLayout(self.unison_switch_row)
-        layout.addLayout(self.legato_row)
-        layout.addWidget(self.analog_feel)
-        layout.addWidget(self.wave_shape)
-        self.update_instrument_image()
-        return group
-
-    def _create_common_section(self):
-        self.common_section = DigitalCommonSection(self._create_parameter_slider,
-                                                   self._create_parameter_switch,
-                                                   self.controls)
-        self.partial_tab_widget.addTab(self.common_section, "Common")
 
     def _create_tone_modify_section(self):
         """Create tone modify section"""
