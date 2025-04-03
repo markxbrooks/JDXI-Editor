@@ -1,7 +1,7 @@
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
-from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWaveform
+from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -41,12 +41,12 @@ class AnalogOscillatorSection(QWidget):
     def create_waveform_buttons(self):
         wave_layout = QHBoxLayout()
 
-        for waveform in [AnalogOscWaveform.SAW, AnalogOscWaveform.TRIANGLE, AnalogOscWaveform.PULSE]:
+        for waveform in [AnalogOscWave.SAW, AnalogOscWave.TRIANGLE, AnalogOscWave.PULSE]:
             btn = AnalogWaveformButton(waveform)
             btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
 
             # Set icons
-            icon_name = "upsaw" if waveform == AnalogOscWaveform.SAW else "triangle" if waveform == AnalogOscWaveform.TRIANGLE else "pwsqu"
+            icon_name = "upsaw" if waveform == AnalogOscWave.SAW else "triangle" if waveform == AnalogOscWave.TRIANGLE else "pwsqu"
             icon_base64 = generate_waveform_icon(icon_name, "#FFFFFF", 0.7)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.setFixedSize(60, 30)
@@ -71,8 +71,11 @@ class AnalogOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        pw_layout.addWidget(self._create_parameter_slider(AnalogParameter.OSC_PULSE_WIDTH, "Width"))
-        pw_layout.addWidget(self._create_parameter_slider(AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth"))
+        pw_slider = self._create_parameter_slider(AnalogParameter.OSC_PULSE_WIDTH, "Width")
+        pwm_slider = self._create_parameter_slider(AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth")
+
+        pw_layout.addWidget(pw_slider)
+        pw_layout.addWidget(pwm_slider)
 
         return pw_group
 
@@ -100,3 +103,9 @@ class AnalogOscillatorSection(QWidget):
         sub_layout.addWidget(self.sub_oscillator_type_switch)
 
         return sub_group
+
+    def _update_pw_controls_state(self, waveform: AnalogOscWave):
+        """Update pulse width controls enabled state based on waveform"""
+        pw_enabled = waveform == AnalogOscWave.PW_SQUARE
+        self.pw_slider.setEnabled(pw_enabled)
+        self.pwm_slider.setEnabled(pw_enabled)

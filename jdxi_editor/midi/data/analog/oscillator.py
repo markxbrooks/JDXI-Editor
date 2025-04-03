@@ -3,7 +3,7 @@ from enum import Enum
 ANALOG_OSC_GROUP = 0x00  # Oscillator parameters
 
 
-class AnalogOscWaveform(Enum):
+class AnalogOscWave(Enum):
     """Analog oscillator waveform types"""
 
     SAW = 0

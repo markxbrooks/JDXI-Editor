@@ -75,7 +75,7 @@ from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY
 from jdxi_editor.midi.data.constants.analog import (
     ANALOG_PART
 )
-from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP, AnalogOscWaveform
+from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP, AnalogOscWave
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
 from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
@@ -340,7 +340,7 @@ class AnalogSynthEditor(SynthEditor):
         """ update_filter_state """
         self.update_filter_controls_state(value)
 
-    def _on_waveform_selected(self, waveform: AnalogOscWaveform):
+    def _on_waveform_selected(self, waveform: AnalogOscWave):
         """Handle waveform button selection """
         if self.midi_helper:
             sysex_message = RolandSysEx(area=self.area,
@@ -419,7 +419,7 @@ class AnalogSynthEditor(SynthEditor):
         # Define mapping dictionaries
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}
         filter_switch_map = {0: 0, 1: 1}
-        osc_waveform_map = {0: AnalogOscWaveform.SAW, 1: AnalogOscWaveform.TRIANGLE, 2: AnalogOscWaveform.PULSE}
+        osc_waveform_map = {0: AnalogOscWave.SAW, 1: AnalogOscWave.TRIANGLE, 2: AnalogOscWave.PULSE}
 
         failures, successes = [], []
 
@@ -511,9 +511,9 @@ class AnalogSynthEditor(SynthEditor):
         logging.debug(f"Updating waveform buttons with value {value}")
 
         waveform_map = {
-            0: AnalogOscWaveform.SAW,
-            1: AnalogOscWaveform.TRIANGLE,
-            2: AnalogOscWaveform.PULSE,
+            0: AnalogOscWave.SAW,
+            1: AnalogOscWave.TRIANGLE,
+            2: AnalogOscWave.PULSE,
         }
 
         selected_waveform = waveform_map.get(value)
@@ -555,9 +555,9 @@ class AnalogSynthEditor(SynthEditor):
         else:
             logging.warning(f"Unknown LFO shape value: {value}")
 
-    def _update_pw_controls_state(self, waveform: AnalogOscWaveform):
+    def _update_pw_controls_state(self, waveform: AnalogOscWave):
         """Enable/disable PW controls based on waveform"""
-        pw_enabled = waveform == AnalogOscWaveform.PULSE
+        pw_enabled = waveform == AnalogOscWave.PULSE
         print(self.controls)
         self.controls[AnalogParameter.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
         self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
