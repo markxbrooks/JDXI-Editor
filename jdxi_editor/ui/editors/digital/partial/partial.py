@@ -66,6 +66,12 @@ from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     ms_to_midi_cc,
 )
+from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
+from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
+from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
+from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
+
+from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.style import Style
@@ -121,31 +127,53 @@ class DigitalPartialEditor(PartialEditor):
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
         # Add sections in address vertical layout
-        self.tab_widget.addTab(
-            self._create_oscillator_section(),
-            qta.icon("mdi.triangle-wave", color="#666666"),
-            "Oscillator",
-        )
-        self.tab_widget.addTab(
-            self._create_filter_section(),
-            qta.icon("ri.filter-3-fill", color="#666666"),
-            "Filter",
-        )
-        self.tab_widget.addTab(
-            self._create_amp_section(),
-            qta.icon("mdi.amplifier", color="#666666"),
-            "Amp",
-        )
-        self.tab_widget.addTab(
-            self._create_lfo_section(),
-            qta.icon("mdi.sine-wave", color="#666666"),
-            "LFO",
-        )
-        self.tab_widget.addTab(
-            self._create_mod_lfo_section(),
-            qta.icon("mdi.waveform", color="#666666"),
-            "Mod LFO",
-        )
+        self.oscillator_tab = DigitalOscillatorSection(self._create_parameter_slider,
+                                         self._create_parameter_switch,
+                                         self._create_parameter_combo_box,
+                                         self.send_midi_parameter,
+                                         self.partial_number,
+                                         self.midi_helper,
+                                         self.controls,
+                                         self.part,
+                                         parent)
+        self.tab_widget.addTab(self.oscillator_tab,
+                               qta.icon("mdi.triangle-wave", color="#666666"),
+                               "Oscillator")
+        self.amp_tab = DigitalAmpSection(self._create_parameter_slider,
+                                         self.partial_number,
+                                         self.midi_helper,
+                                         self.controls,
+                                         self.part,
+                                         parent)
+        self.tab_widget.addTab(self.amp_tab, qta.icon("mdi.amplifier",
+                                        color="#666666"),
+                                        "Amplifier")
+        self.filter_tab = DigitalFilterSection(self._create_parameter_slider,
+                                            self._create_parameter_switch,
+                                         self.partial_number,
+                                         self.midi_helper,
+                                         self.controls,
+                                         self.part,
+                                         parent)
+        self.tab_widget.addTab(self.filter_tab, qta.icon("ri.filter-3-fill",
+                                        color="#666666"),
+                                        "Filter")
+
+        self.lfo_tab = DigitalLFOSection(self._create_parameter_slider,
+                                            self._create_parameter_switch,
+                                         self.controls,
+                                         parent)
+        self.tab_widget.addTab(self.lfo_tab, qta.icon("mdi.sine-wave",
+                                        color="#666666"),
+                                        "LFO")
+        self.mod_lfo_tab = DigitalModLFOSection(self._create_parameter_slider,
+                                            self._create_parameter_switch,
+                                            self._on_parameter_changed,
+                                         self.controls,
+                                         parent)
+        self.tab_widget.addTab(self.mod_lfo_tab, qta.icon("mdi.waveform",
+                                        color="#666666"),
+                                        "Mod LFO")
 
         # Add container to scroll area
         main_layout.addWidget(container)
