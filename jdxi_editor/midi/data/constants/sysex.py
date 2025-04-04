@@ -113,7 +113,7 @@ TEMPORARY_AREAS = [
 # Part Numbers AKA "Temporary Tone"
 DIGITAL_PART_1 = 0x01  # Digital synth 1 address
 DIGITAL_PART_2 = 0x02  # Digital synth 2 address
-ANALOG_PART = 0x00  # Analog synth address
+ANALOG_PART = 0x42  # Analog synth address
 DRUM_PART = 0x00  # Drum address
 VOCAL_PART = 0x00  # Vocal address
 SYSTEM_PART = 0x00  # System address

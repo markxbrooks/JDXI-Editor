@@ -60,6 +60,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
+from jdxi_editor.midi.data.editor.data import AnalogSynthData
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
@@ -72,9 +73,6 @@ from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_frac,
 )
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
-from jdxi_editor.midi.data.constants.analog import (
-    ANALOG_PART
-)
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP, AnalogOscWave
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
 from jdxi_editor.ui.editors.analog.amp import AmpSection
@@ -107,105 +105,85 @@ def set_widget_value_safely(widget, value):
         widget.setValue(value)
     # Add other widget types as needed
     widget.blockSignals(False)
-    
-    
+
+
 class AnalogSynthEditor(SynthEditor):
-    """Analog Synth"""
+    """Analog Synth Editor UI."""
 
     def __init__(
             self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
-        self.wave_buttons = {}
-        self.bipolar_parameters = AnalogParameter.LFO_RATE.bipolar_parameters
-        # Define parameter mappings
-        self.cc_parameters = {
-            "Cutoff": 102,
-            "Resonance": 105,
-            "Level": 117,
-            "LFO Rate": 16,
-        }
-        self.nrpn_parameters = {
-            "Envelope": (0, 124),
-            "LFO Shape": (0, 3),
-            "LFO Pitch Depth": (0, 15),
-            "LFO Filter Depth": (0, 18),
-            "LFO Amp Depth": (0, 21),
-            "Pulse Width": (0, 37),
-        }
-        # NRPN Address Mapping
-        self.nrpn_map = {
-            (0, 124): "Envelope",
-            (0, 3): "LFO Shape",
-            (0, 15): "LFO Pitch Depth",
-            (0, 18): "LFO Filter Depth",
-            (0, 21): "LFO Amp Depth",
-            (0, 37): "Pulse Width",
-        }
-        self.area = TEMPORARY_TONE_AREA
-        self.group = ANALOG_OSC_GROUP
-        self.part = ANALOG_PART
+
         self.preset_helper = preset_helper
-        self.preset_type = SynthType.ANALOG
-        self.setWindowTitle("Analog Synth")
+        self.wave_buttons = {}
+        self.lfo_shape_buttons = {}
+        self.controls: Dict[Union[AnalogParameter], QWidget] = {}
+        self.updating_from_spinbox = False
         self.previous_json_data = None
-        # Allow resizing
+        self.main_window = parent
+
+        self._init_parameter_mappings()
+        self._init_synth_data()
+        self.setup_ui()
+
+        if self.midi_helper:
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
+            self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
+            self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
+            logging.info("MIDI helper initialized")
+        else:
+            logging.error("MIDI helper not initialized")
+
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
+
+        self.data_request()
+
+    def setup_ui(self):
+        """Set up the Analog Synth Editor UI."""
         self.setMinimumSize(600, 600)
         self.resize(900, 600)
-        self.instrument_default_image = "analog.png"
-        self.instrument_image_label = QLabel()
-        self.instrument_icon_folder = "analog_synths"
-        self.instrument_image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )  # Center align the image
-        self.main_window = parent
-        # Main layout
+        self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
+
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-        self.presets = ANALOG_PRESETS_ENUMERATED
-        self.preset_list = ANALOG_PRESET_LIST
-        self.preset_type = SynthType.ANALOG
-        self.midi_requests = [PROGRAM_COMMON_REQUEST, ANALOG_REQUEST]
-        self.midi_channel = MIDI_CHANNEL_ANALOG
-        self.lfo_shape_buttons = {}
-        # Create scroll area for resizable content
+
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        # Store parameter controls for easy access
-        self.controls: Dict[Union[AnalogParameter], QWidget] = {}
-        self.updating_from_spinbox = False
-        # Create container widget for scroll area
-        container = QWidget()
-        container_layout = QVBoxLayout()
-        container.setLayout(container_layout)
 
-        # Additional styling specific to analog editor
-        self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        scroll.setWidget(container)
+        main_layout.addWidget(scroll)
+
+        # Top layout with title and image
         upper_layout = QHBoxLayout()
         container_layout.addLayout(upper_layout)
 
-        # Title and drum kit selection
         instrument_preset_group = QGroupBox("Analog Synth")
-        self.instrument_title_label = DigitalTitle()
+        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
 
-        # self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
-        instrument_title_group_layout = QVBoxLayout()
-        instrument_preset_group.setLayout(instrument_title_group_layout)
+        self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout.addWidget(self.instrument_title_label)
 
-        # Add the "Read Request" button
         self.read_request_button = QPushButton("Send Read Request to Synth")
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
 
         self.instrument_selection_label = QLabel("Select an Analog synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        # Synth selection
+
         self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
         self.instrument_selection_combo.setStyleSheet(Style.JDXI_COMBO_BOX_ANALOG)
-        self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
+        self.instrument_selection_combo.combo_box.setEditable(True)
+
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
         )
@@ -215,74 +193,119 @@ class AnalogSynthEditor(SynthEditor):
         self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+
         upper_layout.addWidget(instrument_preset_group)
         upper_layout.addWidget(self.instrument_image_label)
-        container_layout.addLayout(upper_layout)
+
         self.update_instrument_image()
-        # Add sections side by side
+
+        # Tab sections
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
-        self.oscillator_section = AnalogOscillatorSection(self._create_parameter_slider,
-                                                          self._create_parameter_switch,
-                                                          self._on_waveform_selected,
-                                                          self.wave_buttons)
-        self.tab_widget.addTab(self.oscillator_section,
-                               qta.icon("mdi.triangle-wave", color="#666666"),
-                               "Oscillator")
-        self.filter_section = AnalogFilterSection(self._create_parameter_slider,
-                                                  self._create_parameter_switch,
-                                                  self._on_filter_mode_changed,
-                                                  self.send_control_change,
-                                                  self.midi_helper,
-                                                  self.area,
-                                                  self.part,
-                                                  self.group)
-        self.tab_widget.addTab(self.filter_section,
-                               qta.icon("ri.filter-3-fill", color="#666666"),
-                               "Filter")
-        self.amp_section = AmpSection(self.midi_helper, self.area, self.part, self.group,
-                                      self._create_parameter_slider,
-                                      generate_waveform_icon,
-                                      base64_to_pixmap)
-        self.tab_widget.addTab(self.amp_section, qta.icon("mdi.amplifier", color="#666666"),
-                               "Amp")
-        self.lfo_section = AnalogLFOSection(self._create_parameter_slider,
-                                            self._create_parameter_switch,
-                                            self._create_parameter_combo_box,
-                                            self._on_lfo_shape_changed,
-                                            self.lfo_shape_buttons)
-        self.tab_widget.addTab(self.lfo_section, qta.icon(
-            "mdi.sine-wave",
-            color="#666666"),
-            "LFO")
 
-        # Add container to scroll area
-        scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        self.oscillator_section = AnalogOscillatorSection(
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self._on_waveform_selected,
+            self.wave_buttons
+        )
+        self.tab_widget.addTab(
+            self.oscillator_section,
+            qta.icon("mdi.triangle-wave", color="#666666"),
+            "Oscillator"
+        )
 
-        self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
+        self.filter_section = AnalogFilterSection(
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self._on_filter_mode_changed,
+            self.send_control_change,
+            self.midi_helper,
+            self.area,
+            self.part,
+            self.group
+        )
+        self.tab_widget.addTab(
+            self.filter_section,
+            qta.icon("ri.filter-3-fill", color="#666666"),
+            "Filter"
+        )
+
+        self.amp_section = AmpSection(
+            self.midi_helper,
+            self.area,
+            self.part,
+            self.group,
+            self._create_parameter_slider,
+            generate_waveform_icon,
+            base64_to_pixmap
+        )
+        self.tab_widget.addTab(
+            self.amp_section,
+            qta.icon("mdi.amplifier", color="#666666"),
+            "Amp"
+        )
+
+        self.lfo_section = AnalogLFOSection(
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self._create_parameter_combo_box,
+            self._on_lfo_shape_changed,
+            self.lfo_shape_buttons
+        )
+        self.tab_widget.addTab(
+            self.lfo_section,
+            qta.icon("mdi.sine-wave", color="#666666"),
+            "LFO"
+        )
+
+        # Configure sliders
         for param, slider in self.controls.items():
-            if isinstance(slider, QSlider):  # Ensure it's address slider
-                slider.setTickPosition(
-                    QSlider.TickPosition.TicksBothSides
-                )  # Tick marks on both sides
-                slider.setTickInterval(10)  # Adjust interval as needed
-        self.data_request()
-        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
-        # Initialize previous JSON data storage
-        self.previous_json_data = None
-        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
-        self.refresh_shortcut.activated.connect(self.data_request)
-        if self.midi_helper:
-            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            # Register the callback for incoming MIDI messages
-            logging.info("MIDI helper initialized")
-        else:
-            logging.error("MIDI helper not initialized")
-        self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
-        self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+            if isinstance(slider, QSlider):
+                slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
+                slider.setTickInterval(10)
+
+    def _init_parameter_mappings(self):
+        """Initialize MIDI parameter mappings."""
+        self.cc_parameters = {
+            "Cutoff": 102,
+            "Resonance": 105,
+            "Level": 117,
+            "LFO Rate": 16,
+        }
+
+        self.nrpn_parameters = {
+            "Envelope": (0, 124),
+            "LFO Shape": (0, 3),
+            "LFO Pitch Depth": (0, 15),
+            "LFO Filter Depth": (0, 18),
+            "LFO Amp Depth": (0, 21),
+            "Pulse Width": (0, 37),
+        }
+
+        # Reverse lookup map
+        self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
+
+    def _init_synth_data(self):
+        """Initialize synth-specific data."""
+        self.synth_data = AnalogSynthData()
+        data = self.synth_data
+
+        self.area = data.area
+        self.group = data.group
+        self.part = data.part
+        self.setWindowTitle(data.window_title)
+
+        self.preset_type = data.preset_type
+        self.instrument_default_image = data.instrument_default_image
+        self.instrument_icon_folder = data.instrument_icon_folder
+        self.presets = data.presets
+        self.preset_list = data.preset_list
+        self.midi_requests = data.midi_requests
+        self.midi_channel = data.midi_channel
 
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""

@@ -44,9 +44,9 @@ from jdxi_editor.midi.sysex.requests import DRUMS_REQUESTS, DIGITAL1_REQUESTS, D
     PROGRAM_COMMON_REQUEST, ANALOG_REQUEST
 
 
-
 @dataclass
 class SynthData:
+    """Data class for synthesizer configurations."""
     area: int
     part: int
     group: int
@@ -57,8 +57,9 @@ class SynthData:
     presets: list[int]
     preset_list: list[int]
     preset_type: SynthType
+    window_title: str
 
-    def __init__(self, area, part, group, icon_folder, default_image, midi_requests, midi_channel, presets, preset_list, preset_type):
+    def __init__(self, area, part, group, icon_folder, default_image, midi_requests, midi_channel, presets, preset_list, preset_type, window_title):
         self.area = area
         self.part = part
         self.group = group
@@ -69,6 +70,7 @@ class SynthData:
         self.presets = presets
         self.preset_list = preset_list
         self.preset_type = preset_type
+        self.window_title = window_title
 
 
 class DrumsSynthData(SynthData):
@@ -83,7 +85,8 @@ class DrumsSynthData(SynthData):
             midi_channel=MIDI_CHANNEL_DRUMS,
             presets=DRUM_PRESETS_ENUMERATED,
             preset_list=DRUM_KIT_LIST,
-            preset_type=SynthType.DRUMS
+            preset_type=SynthType.DRUMS,
+            window_title="Drums"
         )
 
 
@@ -99,7 +102,8 @@ class DigitalSynthData(SynthData):
             midi_channel=MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1,
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
-            preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1
+            preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
+            window_title=f"Digital Synth {synth_num}"
         )
 
 
@@ -115,5 +119,6 @@ class AnalogSynthData(SynthData):
             midi_channel=MIDI_CHANNEL_ANALOG,
             presets=ANALOG_PRESETS_ENUMERATED,
             preset_list=ANALOG_PRESET_LIST,
-            preset_type=SynthType.ANALOG
+            preset_type=SynthType.ANALOG,
+            window_title="Analog Synth"
         )
