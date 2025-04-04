@@ -1,17 +1,16 @@
+"""
+ LFO section of the digital partial editor.
+"""
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
-from jdxi_editor.ui.image.utils import base64_to_pixmap
-from jdxi_editor.ui.image.waveform import generate_waveform_icon
-#from jdxi_editor.midi.data.parameter.analog import DigiParameter
-from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class DigitalLFOSection(QWidget):
+    """ LFO section for the digital partial editor. """
     def __init__(self, create_parameter_slider, create_parameter_switch, controls, parent=None):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider

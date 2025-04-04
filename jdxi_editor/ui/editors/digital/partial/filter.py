@@ -1,3 +1,7 @@
+"""
+Digital Filter Section for the JDXI Editor
+"""
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
@@ -6,7 +10,6 @@ from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-# from jdxi_editor.midi.data.parameter.analog import DigiParameter
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
@@ -106,7 +109,6 @@ class DigitalFilterSection(QWidget):
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
-        # Update control states
         self.update_filter_controls_state(mode)
 
     def update_filter_controls_state(self, mode: int):

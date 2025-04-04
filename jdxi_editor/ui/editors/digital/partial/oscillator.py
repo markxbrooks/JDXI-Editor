@@ -1,21 +1,21 @@
+"""
+Digital Oscillator Section for the JDXI Editor
+"""
+
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox, QGridLayout, QComboBox
-from PySide6.QtCore import Qt
-import qtawesome as qta
 
-from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.digital import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.presets.pcm_waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-#from jdxi_editor.midi.data.parameter.analog import DigiParameter
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 
 
 class DigitalOscillatorSection(QWidget):
+    """ Digital Oscillator Section for the JDXI Editor """
     def __init__(self,
                  create_parameter_slider,
                  create_parameter_switch,

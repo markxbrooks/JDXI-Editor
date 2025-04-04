@@ -1,3 +1,6 @@
+"""
+    Digital Tone Modify Section
+"""
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
@@ -6,11 +9,19 @@ from jdxi_editor.midi.data.parameter.digital.modify import DigitalModifyParamete
 
 
 class DigitalToneModifySection(QWidget):
-    def __init__(self, create_parameter_slider, create_parameter_combo_box, create_parameter_switch):
+    def __init__(
+        self,
+        create_parameter_slider,
+        create_parameter_combo_box,
+        create_parameter_switch,
+        controls,
+    ):
+        """Digital Tone Modify Section"""
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self._create_parameter_switch = create_parameter_switch
+        self.controls = controls
         self.init_ui()
 
     def init_ui(self):
@@ -19,19 +30,19 @@ class DigitalToneModifySection(QWidget):
 
         attack_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParameter.ATTACK_TIME_INTERVAL_SENS,
-            "Attack Time Interval Sens"
+            "Attack Time Interval Sens",
         )
         layout.addWidget(attack_time_interval_sens)
 
         release_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParameter.RELEASE_TIME_INTERVAL_SENS,
-            "Release Time Interval Sens"
+            "Release Time Interval Sens",
         )
         layout.addWidget(release_time_interval_sens)
 
         portamento_time_interval_sens = self._create_parameter_slider(
             DigitalModifyParameter.PORTAMENTO_TIME_INTERVAL_SENS,
-            "Portamento Time Interval Sens"
+            "Portamento Time Interval Sens",
         )
         layout.addWidget(portamento_time_interval_sens)
 
@@ -39,7 +50,7 @@ class DigitalToneModifySection(QWidget):
         envelope_loop_mode = self._create_parameter_combo_box(
             DigitalModifyParameter.ENVELOPE_LOOP_MODE,
             "Envelope Loop Mode",
-            ["OFF", "FREE-RUN", "TEMPO-SYNC"]
+            ["OFF", "FREE-RUN", "TEMPO-SYNC"],
         )
         envelope_loop_mode_row.addWidget(envelope_loop_mode)
         layout.addLayout(envelope_loop_mode_row)
@@ -48,7 +59,7 @@ class DigitalToneModifySection(QWidget):
         envelope_loop_sync_note = self._create_parameter_combo_box(
             DigitalModifyParameter.ENVELOPE_LOOP_SYNC_NOTE,
             "Envelope Loop Sync Note",
-            LFOSyncNote.get_all_display_names()
+            LFOSyncNote.get_all_display_names(),
         )
         envelope_loop_sync_note_row.addWidget(envelope_loop_sync_note)
         layout.addLayout(envelope_loop_sync_note_row)
@@ -60,7 +71,7 @@ class DigitalToneModifySection(QWidget):
         chromatic_portamento = self._create_parameter_switch(
             DigitalModifyParameter.CHROMATIC_PORTAMENTO,
             "Chromatic Portamento",
-            ["OFF", "ON"]
+            ["OFF", "ON"],
         )
         layout.addWidget(chromatic_portamento)
         layout.addStretch()

@@ -140,8 +140,8 @@ class Style:
         text_color=FOREGROUND,
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
-        font_size="16px",
-        button_padding=3
+        font_size=FONT_SIZE,
+        button_padding=BUTTON_PADDING,
     )
     JDXI_BUTTON_RECT = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
@@ -294,13 +294,13 @@ class Style:
             QGroupBox {
                 border: none;
                 border-top: 1px solid #333333;
-                margin-top: 1em;
-                padding-top: 0.5em;
+                margin: 1px;
+                padding: 1px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 subcontrol-position: top center;
-                padding: 0 3px;
+                padding: 0 1px;
                 background-color: black;
             }
             QLabel {
@@ -328,7 +328,7 @@ class Style:
             height: 10px;  
             margin: -10px;
             border-radius: 5px;
-            padding: 4px;
+            padding: 1px;
         }
 
         /* Glowing effect when moving */
@@ -377,7 +377,7 @@ class Style:
             background-color: #222;
             border: 1px solid #00A0E9;
             border-radius: 3px;
-            padding: 4px;
+            padding: 1px;
             margin: -2px;
             width: 40px;
             color: #00A0E9;
@@ -452,7 +452,7 @@ class Style:
             background-color: #222;
             border: 1px solid #ff1a1a;
             border-radius: 3px;
-            padding: 2px;
+            padding: 1px;
             margin: -2px;
             color: #ff1a1a;
         }
@@ -601,7 +601,7 @@ class Style:
         background-color: {BACKGROUND};
         border: 1px solid {ACCENT};
         border-radius: 3px;
-        padding: 3px;
+        padding: 1px;
         color: {FOREGROUND};
     }}
 
@@ -638,7 +638,7 @@ class Style:
             background-color: {BACKGROUND};
             border: 1px solid {ACCENT_ANALOG};
             border-radius: 3px;
-            padding: 3px;
+            padding: 1px;
             color: {FOREGROUND};
         }}
 
@@ -704,6 +704,8 @@ class Style:
             QGroupBox {
                 border: 2px solid black;
                 border-radius: 5px;
+                padding: 1px;
+                margin: 1px;
                 background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
                     stop: 0 #321212,
                     stop: 0.3 #331111,
@@ -748,7 +750,7 @@ class Style:
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
-                padding: 2px;
+                padding: 1px;
                 font-family: 'Consolas';
             }}
             QPushButton {{
@@ -796,13 +798,14 @@ class Style:
                 font-size: 12px;
                 border: 0px solid #444444;
                 border-radius: 3px;
-                margin-top: 2px;
-                padding: 2px;
+                margin-top: 1px;
+                padding: 1px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 subcontrol-position: top center;
-                padding: 0 2px;
+                padding: 0 1px;
+                margin-top: 1px;
                 background-color: #2D2D2D;
             }
         """  # this may be sub-classed
@@ -821,7 +824,7 @@ class Style:
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
-                padding: 3px;
+                padding: 2px;
                 font-family: 'Consolas';
             }}
             QTextEdit {{

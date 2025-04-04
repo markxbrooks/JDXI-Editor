@@ -166,7 +166,7 @@ class SynthEditor(SynthBase):
     def _on_parameter_received(self, address, value):
         raise NotImplementedError("Should be implemented by subclass")
 
-    def _dispatch_sysex_to_area(self):
+    def _dispatch_sysex_to_area(self, data: str):
         raise NotImplementedError
 
     def set_instrument_title_label(self, name: str):
