@@ -68,6 +68,7 @@ from jdxi_editor.midi.data.digital import (
     set_partial_state,
     get_digital_parameter_by_address,
 )
+
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.constants import (
@@ -155,7 +156,22 @@ class DigitalSynthEditor(SynthEditor):
         self.setMinimumSize(800, 300)
         self.resize(930, 600)
         # Image display
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
         self.instrument_image_label = QLabel()
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(f"""
+        QGroupBox {{
+            height: 100px;
+            width: 120px;
+            background-color: #000000;
+            border: 1px solid #666666;
+            border-radius: 5px;
+            padding: 5px;
+            margin: 5px;
+            }}
+        """)
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
@@ -217,7 +233,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_title_label = QLabel(self.presets[0] if self.presets else "")
         instrument_preset_group.setStyleSheet(
             """
-                        width: 100px;
+                        width: 250px;
         """
         )
         self.instrument_title_label = DigitalTitle()
@@ -250,7 +266,8 @@ class DigitalSynthEditor(SynthEditor):
         )
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         upper_layout.addWidget(instrument_preset_group)
-        upper_layout.addWidget(self.instrument_image_label)
+        upper_layout.addStretch(1)
+        upper_layout.addWidget(self.instrument_image_group)
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
 

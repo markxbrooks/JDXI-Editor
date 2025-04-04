@@ -281,9 +281,15 @@ class SynthEditor(SynthBase):
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
-                250, Qt.TransformationMode.SmoothTransformation
+                160, Qt.TransformationMode.SmoothTransformation
             )  # Resize to 250px height
             self.instrument_image_label.setPixmap(scaled_pixmap)
+            self.instrument_image_label.setScaledContents(True)
+            self.instrument_image_label.setStyleSheet("""
+                QLabel {
+                    height: 150px;
+                    background-color: transparent;
+                    border: none;""")
             return True
 
         default_image_path = os.path.join(
