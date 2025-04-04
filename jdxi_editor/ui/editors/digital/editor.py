@@ -90,6 +90,18 @@ from jdxi_editor.midi.data.constants.sysex import (
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
 
 
+def _sysex_area_matches(sysex_data: dict, area) -> bool:
+    temp_area = sysex_data.get("TEMPORARY_AREA")
+    area_map = {
+        TEMPORARY_DIGITAL_SYNTH_1_AREA: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        TEMPORARY_DIGITAL_SYNTH_2_AREA: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+    }
+    expected_area = area_map.get(area)
+    match = temp_area == expected_area
+    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    return match
+
+
 class DigitalSynthEditor(SynthEditor):
     """class for Digital Synth Editor containing 3 partials"""
 
@@ -345,17 +357,6 @@ class DigitalSynthEditor(SynthEditor):
             logging.error(f"Invalid JSON format: {ex}")
             return None
 
-    def _sysex_area_matches(self, sysex_data: dict) -> bool:
-        temp_area = sysex_data.get("TEMPORARY_AREA")
-        area_map = {
-            TEMPORARY_DIGITAL_SYNTH_1_AREA: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-            TEMPORARY_DIGITAL_SYNTH_2_AREA: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-        }
-        expected_area = area_map.get(self.area)
-        match = temp_area == expected_area
-        logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
-        return match
-
     def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict):
         debug_param_updates = True
         debug_stats = True
@@ -387,17 +388,8 @@ class DigitalSynthEditor(SynthEditor):
         logging.info("Updating UI components from SysEx data")
         failures, successes = [], []
 
-        def _parse_sysex_json(json_data):
-            """Parse JSON safely and log changes."""
-            try:
-                sysex_dict = json.loads(json_data)
-                return sysex_dict
-            except json.JSONDecodeError as ex:
-                logging.error(f"Invalid JSON format: {ex}")
-                return None
-
         # Parse SysEx data
-        sysex_data = _parse_sysex_json(json_sysex_data)
+        sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
 
@@ -425,7 +417,7 @@ class DigitalSynthEditor(SynthEditor):
         if not sysex_data:
             return
 
-        if not self._sysex_area_matches(sysex_data):
+        if not _sysex_area_matches(sysex_data, self.area):
             logging.info("SysEx area mismatch. Skipping update.")
             return
 
