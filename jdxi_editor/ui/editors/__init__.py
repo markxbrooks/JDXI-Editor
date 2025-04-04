@@ -4,9 +4,9 @@
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 
 # Then import specific editors
-from jdxi_editor.ui.editors.analog.synth import AnalogSynthEditor
-from jdxi_editor.ui.editors.digital.synth import DigitalSynthEditor
-from jdxi_editor.ui.editors.drum.common import DrumCommonEditor
+from jdxi_editor.ui.editors.analog.editor import AnalogSynthEditor
+from jdxi_editor.ui.editors.digital.editor import DigitalSynthEditor
+from jdxi_editor.ui.editors.drum.editor import DrumCommonEditor
 from jdxi_editor.ui.editors.arpeggio.arpeggio import ArpeggioEditor
 from jdxi_editor.ui.editors.effects.common import EffectsCommonEditor
 from jdxi_editor.ui.editors.effects.vocal import VocalFXEditor

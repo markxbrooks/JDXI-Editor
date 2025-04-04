@@ -1,1 +1,1 @@
-from .partial import DigitalPartialEditor
+from .editor import DigitalPartialEditor

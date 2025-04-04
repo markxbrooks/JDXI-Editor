@@ -57,8 +57,7 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-import os
-import re
+
 import logging
 from typing import Optional, Dict
 import json
@@ -75,7 +74,6 @@ from PySide6.QtWidgets import (
     QPushButton,
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
@@ -83,7 +81,7 @@ from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, DRUMS_REQUEST, DRUMS_REQUESTS
+from jdxi_editor.midi.sysex.requests import DRUMS_REQUESTS
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import Style

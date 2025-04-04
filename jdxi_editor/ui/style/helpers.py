@@ -124,8 +124,8 @@ def generate_tab_style(
         selected_border,
         font_family=FONT_FAMILY,
         font_size="12px",
-        padding="2px 2px",
-        margin="2px",
+        padding="1px 1px",
+        margin="1px",
 ):
     """Generate address tab style dynamically."""
     return f"""
@@ -190,7 +190,7 @@ def generate_editor_style(
         QGroupBox {{
             border: 1px solid {accent};
             border-radius: 3px;
-            margin-top: 2px;
+            margin-top: 1px;
             padding: {padding}px;
         }}
 
@@ -212,7 +212,7 @@ def generate_editor_style(
         QGroupBox::title {{
             subcontrol-origin: margin;
             subcontrol-position: top center;
-            padding: 0 3px;
+            padding: 0 1px;
             color: {foreground};
         }}
 
@@ -233,7 +233,7 @@ def generate_editor_style(
             background-color: {background};
             border: 1px solid {accent};
             border-radius: 3px;
-            padding: 3px;
+            padding: 1px;
             color: {foreground};
         }}
         
@@ -262,7 +262,7 @@ def generate_editor_style(
             width: 8px;  /* More rectangular */
             height: 2px;  
             margin: -6px;
-            padding: 2px;
+            padding: 1px;
             border-radius: 4px;
         }}
         QSlider::handle:disabled{{
@@ -271,7 +271,7 @@ def generate_editor_style(
             width: 8px;  /* More rectangular */
             height: 2px;  
             margin: -6px;
-            padding: 2px;
+            padding: 1px;
             border-radius: 4px;
         }}
         /* Unfilled portion */

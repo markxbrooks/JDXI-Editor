@@ -150,7 +150,7 @@ class AnalogSynthEditor(SynthEditor):
         self.setWindowTitle("Analog Synth")
         self.previous_json_data = None
         # Allow resizing
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(600, 600)
         self.resize(900, 600)
         self.instrument_default_image = "analog.png"
         self.instrument_image_label = QLabel()
