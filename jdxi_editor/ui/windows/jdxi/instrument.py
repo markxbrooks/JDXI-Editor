@@ -67,6 +67,7 @@ from jdxi_editor.ui.editors import (
     MidiFileEditor,
 )
 from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_program_name_by_id
+from jdxi_editor.ui.editors.io.player import MidiPlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.style import Style
@@ -533,7 +534,7 @@ class JdxiInstrument(JdxiUi):
             logging.error(f"Error showing Program editor: {str(ex)}")
 
     def _open_midi_file(self, editor_type: str):
-        self._show_editor("MIDI File", MidiFileEditor)
+        self._show_editor("MIDI File", MidiPlayer)
 
     def _save_favorite(self, button, index):
         """Save the current preset as an address favorite and prevent toggling off."""
@@ -702,7 +703,7 @@ class JdxiInstrument(JdxiUi):
                 PatternSequencer,
                 ProgramEditor,
                 PresetEditor,
-                MidiFileEditor
+                MidiPlayer,
             ]:
                 preset_helper = self._get_preset_helper_for_current_synth()
                 editor = editor_class(
@@ -736,6 +737,8 @@ class JdxiInstrument(JdxiUi):
                 self.preset_editor = editor
             elif title == "Program":
                 self.program_editor = editor
+            elif title == "MIDI File":
+                self.midi_file_editor = editor
             logging.info(f"midi channel: {self.channel}")
             # Show editor
             editor.show()

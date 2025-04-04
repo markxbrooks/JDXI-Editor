@@ -1,7 +1,11 @@
+"""
+This module contains utility functions for handling SysEx data related to digital synths.
+"""
+
 import logging
 
 from jdxi_editor.midi.data.constants import TEMPORARY_DIGITAL_SYNTH_1_AREA
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_2_AREA
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_2_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA
 
 
 def _log_debug_info(data, successes, failures, enabled):
@@ -15,6 +19,7 @@ def _log_debug_info(data, successes, failures, enabled):
 
 
 def _filter_sysex_keys(sysex_data: dict) -> dict:
+    """Filter out unwanted keys from the SysEx data."""
     ignored_keys = {
         "JD_XI_HEADER",
         "ADDRESS",
@@ -26,6 +31,7 @@ def _filter_sysex_keys(sysex_data: dict) -> dict:
 
 
 def _get_partial_number(synth_tone: str) -> int:
+    """Get the partial number based on the synth tone."""
     partial_map = {
         "PARTIAL_1": 1,
         "PARTIAL_2": 2,
@@ -43,6 +49,7 @@ def _get_partial_number(synth_tone: str) -> int:
 
 
 def _is_valid_sysex_area(sysex_data):
+    """Check if the SysEx data is from a valid digital synth area."""
     area = sysex_data.get("TEMPORARY_AREA")
     logging.info(f"temp_area: {area}")
     return area in [
@@ -52,10 +59,25 @@ def _is_valid_sysex_area(sysex_data):
 
 
 def _log_synth_area_info(sysex_data):
+    """Log information about the SysEx area."""
     if not _is_valid_sysex_area(sysex_data):
         logging.warning("SysEx data not from a valid digital synth area. Skipping.")
         return
 
 
 def _is_digital_synth_area(area_code):
+    """Check if the area code corresponds to a digital synth area."""
     return area_code in [TEMPORARY_DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]
+
+
+def _sysex_area_matches(sysex_data: dict, area) -> bool:
+    """Check if the SysEx data matches the expected area."""
+    temp_area = sysex_data.get("TEMPORARY_AREA")
+    area_map = {
+        TEMPORARY_DIGITAL_SYNTH_1_AREA: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        TEMPORARY_DIGITAL_SYNTH_2_AREA: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+    }
+    expected_area = area_map.get(area)
+    match = temp_area == expected_area
+    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    return match

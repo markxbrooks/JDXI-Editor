@@ -15,14 +15,16 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class DigitalFilterSection(QWidget):
-    def __init__(self,
-                 create_parameter_slider,
-                 create_parameter_switch,
-                 partial_number,
-                 midi_helper,
-                 controls,
-                 part,
-                 parent=None):
+    """Filter section for the digital partial editor."""
+    def __init__(
+        self,
+        create_parameter_slider,
+        create_parameter_switch,
+        partial_number,
+        midi_helper,
+        controls,
+        part
+    ):
         super().__init__()
         self.partial_number = partial_number
         self.midi_helper = midi_helper
@@ -34,6 +36,7 @@ class DigitalFilterSection(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
+        """Set up the UI for the filter section."""
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -52,7 +55,7 @@ class DigitalFilterSection(QWidget):
         self.filter_mode_switch = self._create_parameter_switch(
             DigitalPartialParameter.FILTER_MODE_SWITCH,
             "Mode",
-            ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"]
+            ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"],
         )
         self.filter_mode_switch.valueChanged.connect(self._on_filter_mode_changed)
         type_row.addWidget(self.filter_mode_switch)
@@ -67,12 +70,26 @@ class DigitalFilterSection(QWidget):
         controls_group = QGroupBox("Controls")
         controls_layout = QVBoxLayout()
         controls_group.setLayout(controls_layout)
-        controls_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.FILTER_CUTOFF, "Cutoff"))
-        controls_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.FILTER_RESONANCE, "Resonance"))
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"))
+            self._create_parameter_slider(
+                DigitalPartialParameter.FILTER_CUTOFF, "Cutoff"
+            )
+        )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"))
+            self._create_parameter_slider(
+                DigitalPartialParameter.FILTER_RESONANCE, "Resonance"
+            )
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalPartialParameter.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"
+            )
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"
+            )
+        )
         layout.addWidget(controls_group)
 
         # Filter Envelope
@@ -89,7 +106,12 @@ class DigitalFilterSection(QWidget):
         env_layout.addWidget(icon_label)
 
         # ADSR Widget
-        group_address, _ = DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(self.partial_number)
+        (
+            group_address,
+            _,
+        ) = DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+            self.partial_number
+        )
         self.filter_adsr_widget = ADSR(
             DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
             DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
@@ -104,7 +126,11 @@ class DigitalFilterSection(QWidget):
         env_layout.addWidget(self.filter_adsr_widget)
 
         # Envelope Depth
-        env_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.FILTER_ENV_DEPTH, "Depth"))
+        env_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalPartialParameter.FILTER_ENV_DEPTH, "Depth"
+            )
+        )
         layout.addWidget(env_group)
 
     def _on_filter_mode_changed(self, mode: int):

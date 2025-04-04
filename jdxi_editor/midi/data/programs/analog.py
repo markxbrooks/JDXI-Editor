@@ -384,7 +384,7 @@ ANALOG_PRESET_LIST_OLD = [
   }
 ]
 
-ANALOG_PRESET_LIST = ANALOG_PRESET_LIST = [
+ANALOG_PRESET_LIST = [
     {"id": "001", "name": "Toxic Bass 1", "msb": 94.0, "lsb": 64.0, "pc": 1.0, "category": "Bass"},
     {"id": "002", "name": "Sub Bass 1", "msb": 94.0, "lsb": 64.0, "pc": 6.0, "category": "Bass"},
     {"id": "007", "name": "Pulse Bass 1", "msb": 94.0, "lsb": 64.0, "pc": 7.0, "category": "Bass"},

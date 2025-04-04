@@ -109,6 +109,7 @@ class DrumCommonEditor(SynthEditor):
         self.preset_type = SynthType.DRUMS
         self.preset_helper = preset_helper
         self.presets = DRUM_PRESETS_ENUMERATED
+        self.preset_list = DRUM_KIT_LIST
 
         # midi parameters
         self.partial_num = 1
@@ -314,35 +315,6 @@ class DrumCommonEditor(SynthEditor):
         self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
         self.data_request() # this is giving an error
-
-    def load_preset(self, preset_index):
-        """Load a preset by program change."""
-        preset_name = self.instrument_selection_combo.combo_box.currentText()  # Get the selected preset name
-        logging.info(f"combo box preset_name : {preset_name}")
-        program_number = preset_name[:3]
-        logging.info(f"combo box program_number : {program_number}")
-
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", program_number, DRUM_KIT_LIST)
-        lsb = get_preset_parameter_value("lsb", program_number, DRUM_KIT_LIST)
-        pc = get_preset_parameter_value("pc", program_number, DRUM_KIT_LIST)
-
-        if None in [msb, lsb, pc]:
-            logging.error(f"Could not retrieve preset parameters for program {program_number}")
-            return
-
-        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
-        log_midi_info(msb, lsb, pc)
-
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
-        self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1  # Convert 1-based PC to 0-based
-        )
-        self.data_request()
 
     def _setup_partial_editors(self):
         """Setup all partial editors and tabs"""

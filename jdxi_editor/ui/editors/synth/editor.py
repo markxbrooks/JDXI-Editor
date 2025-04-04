@@ -39,6 +39,7 @@ from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MID
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.ui.editors.helpers.program import log_midi_info, get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import Style
 
@@ -79,6 +80,7 @@ class SynthEditor(SynthBase):
         self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(midi_helper, parent)
+        self.preset_list = None
         self.presets = None
         # self.midi_helper = midi_helper
         self.midi_helper = MidiIOHelper()
@@ -195,22 +197,37 @@ class SynthEditor(SynthBase):
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def load_preset(self, preset_index):
-        """Load address preset by index"""
-        preset_data = Preset(
-            type=self.preset_type,  # Ensure this is address valid preset_type
-            number=preset_index,
-            channel=self.midi_channel,
-        )
-        preset_helper = self._get_preset_helper_for_current_synth()
-        if not preset_helper:
-            preset_helper = PresetHelper(
-                self.midi_helper,
-                self.presets,
-                channel=MIDI_CHANNEL_DIGITAL1,
-                preset_type=SynthType.DIGITAL_1,
+        """Load a preset by program change."""
+        preset_name = (
+            self.instrument_selection_combo.combo_box.currentText()
+        )  # Get the selected preset name
+        logging.info(f"combo box preset_name : {preset_name}")
+        program_number = preset_name[:3]
+        logging.info(f"combo box program_number : {program_number}")
+
+        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
+        msb = get_preset_parameter_value("msb", program_number, self.preset_list)
+        lsb = get_preset_parameter_value("lsb", program_number, self.preset_list)
+        pc = get_preset_parameter_value("pc", program_number, self.preset_list)
+
+        if None in [msb, lsb, pc]:
+            logging.error(
+                f"Could not retrieve preset parameters for program {program_number}"
             )
-        if preset_helper:
-            preset_helper.load_preset(preset_data)
+            return
+
+        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log_midi_info(msb, lsb, pc)
+
+        # Send bank select and program change
+        # Note: PC is 0-based in MIDI, so subtract 1
+        self.midi_helper.send_bank_select_and_program_change(
+            self.midi_channel,  # MIDI channel
+            msb,  # MSB is already correct
+            lsb,  # LSB is already correct
+            pc - 1,  # Convert 1-based PC to 0-based
+        )
+        self.data_request()
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
