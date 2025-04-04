@@ -29,10 +29,22 @@ Example usage:
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DRUMS, DIGITAL_2_PART, DIGITAL_1_PART, \
-    MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_ANALOG
-from jdxi_editor.midi.data.constants.sysex import TEMPORARY_DIGITAL_SYNTH_2_AREA, TEMPORARY_DIGITAL_SYNTH_1_AREA, \
-    TEMPORARY_TONE_AREA, DRUM_KIT_AREA, COMMON_AREA, ANALOG_PART
+from jdxi_editor.midi.data.constants.constants import (
+    MIDI_CHANNEL_DRUMS,
+    DIGITAL_2_PART,
+    DIGITAL_1_PART,
+    MIDI_CHANNEL_DIGITAL2,
+    MIDI_CHANNEL_DIGITAL1,
+    MIDI_CHANNEL_ANALOG,
+)
+from jdxi_editor.midi.data.constants.sysex import (
+    TEMPORARY_DIGITAL_SYNTH_2_AREA,
+    TEMPORARY_DIGITAL_SYNTH_1_AREA,
+    TEMPORARY_TONE_AREA,
+    DRUM_KIT_AREA,
+    COMMON_AREA,
+    ANALOG_PART,
+)
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
@@ -40,13 +52,19 @@ from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
-from jdxi_editor.midi.sysex.requests import DRUMS_REQUESTS, DIGITAL1_REQUESTS, DIGITAL2_REQUESTS, \
-    PROGRAM_COMMON_REQUEST, ANALOG_REQUEST
+from jdxi_editor.midi.sysex.requests import (
+    DRUMS_REQUESTS,
+    DIGITAL1_REQUESTS,
+    DIGITAL2_REQUESTS,
+    PROGRAM_COMMON_REQUEST,
+    ANALOG_REQUEST,
+)
 
 
 @dataclass
 class SynthData:
     """Data class for synthesizer configurations."""
+
     area: int
     part: int
     group: int
@@ -59,7 +77,20 @@ class SynthData:
     preset_type: SynthType
     window_title: str
 
-    def __init__(self, area, part, group, icon_folder, default_image, midi_requests, midi_channel, presets, preset_list, preset_type, window_title):
+    def __init__(
+        self,
+        area,
+        part,
+        group,
+        icon_folder,
+        default_image,
+        midi_requests,
+        midi_channel,
+        presets,
+        preset_list,
+        preset_type,
+        window_title,
+    ):
         self.area = area
         self.part = part
         self.group = group
@@ -86,24 +117,30 @@ class DrumsSynthData(SynthData):
             presets=DRUM_PRESETS_ENUMERATED,
             preset_list=DRUM_KIT_LIST,
             preset_type=SynthType.DRUMS,
-            window_title="Drums"
+            window_title="Drums",
         )
 
 
 class DigitalSynthData(SynthData):
     def __init__(self, synth_num: int):
         super().__init__(
-            area=TEMPORARY_DIGITAL_SYNTH_2_AREA if synth_num == 2 else TEMPORARY_DIGITAL_SYNTH_1_AREA,
+            area=(
+                TEMPORARY_DIGITAL_SYNTH_2_AREA
+                if synth_num == 2
+                else TEMPORARY_DIGITAL_SYNTH_1_AREA
+            ),
             part=DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART,
             group=COMMON_AREA,
             icon_folder="digital_synths",
             default_image="jdxi_vector.png",
             midi_requests=DIGITAL2_REQUESTS if synth_num == 2 else DIGITAL1_REQUESTS,
-            midi_channel=MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1,
+            midi_channel=(
+                MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1
+            ),
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
             preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
-            window_title=f"Digital Synth {synth_num}"
+            window_title=f"Digital Synth {synth_num}",
         )
 
 
@@ -120,5 +157,5 @@ class AnalogSynthData(SynthData):
             presets=ANALOG_PRESETS_ENUMERATED,
             preset_list=ANALOG_PRESET_LIST,
             preset_type=SynthType.ANALOG,
-            window_title="Analog Synth"
+            window_title="Analog Synth",
         )
