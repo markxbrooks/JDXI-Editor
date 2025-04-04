@@ -89,10 +89,12 @@ class DigitalDisplayBase(QWidget):
         painter.setFont(display_font)
 
         # Draw text
-        y_offset = 25
+        y_offset = 10
         for text in self.display_texts:
             painter.setPen(QPen(QColor("#FFAA33")))
-            painter.drawText(10, y_offset, text)
+            # rect = QRect(10, y_offset, self.width() - 20, 30)  # Proper text bounding area
+            rect = QRect(10, y_offset, self.width() - 20, 30)  # Proper text bounding area
+            painter.drawText(rect, 1, str(text))
             y_offset += 30  # Space out text lines
 
     def update_display(self, texts):

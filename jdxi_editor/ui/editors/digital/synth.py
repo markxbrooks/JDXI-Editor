@@ -264,9 +264,6 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.addTab(self.tone_modify_section, "Tone Modify")
         container_layout.addWidget(self.partial_tab_widget)
 
-    def update_instrument_title(self, text):
-        self.instrument_title_label.setText(text)
-
     def load_preset(self, preset_index):
         """Load a preset by program change."""
         preset_name = self.instrument_selection_combo.combo_box.currentText()  # Get the selected preset name
