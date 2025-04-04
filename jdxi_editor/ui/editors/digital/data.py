@@ -101,6 +101,7 @@ class DigitalSynthEditor(SynthEditor):
     ):
         super().__init__(parent)
         # Core attributes
+        self.instrument_image_group = None
         self.partial_num = None
         self.current_data = None
         self.preset_type = (
@@ -161,17 +162,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_group.setLayout(instrument_group_layout)
         self.instrument_image_label = QLabel()
         instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(f"""
-        QGroupBox {{
-            height: 100px;
-            width: 120px;
-            background-color: #000000;
-            border: 1px solid #666666;
-            border-radius: 5px;
-            padding: 5px;
-            margin: 5px;
-            }}
-        """)
+        self.instrument_image_group.setStyleSheet(Style.JDXI_INSTRUMENT_IMAGE_LABEL)
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
