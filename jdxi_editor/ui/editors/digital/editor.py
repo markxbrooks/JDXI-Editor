@@ -56,11 +56,7 @@ from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import _log_debug_info, _filter_sysex_keys, _get_partial_number, \
-    _is_valid_sysex_area, _log_synth_area_info, _is_digital_synth_area
-from jdxi_editor.ui.editors.helpers.program import (
-    get_preset_parameter_value,
-    log_midi_info,
-)
+    _is_valid_sysex_area, _log_synth_area_info, _is_digital_synth_area, _sysex_area_matches
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.ui.style import Style
@@ -90,18 +86,6 @@ from jdxi_editor.midi.data.constants.sysex import (
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
 
 
-def _sysex_area_matches(sysex_data: dict, area) -> bool:
-    temp_area = sysex_data.get("TEMPORARY_AREA")
-    area_map = {
-        TEMPORARY_DIGITAL_SYNTH_1_AREA: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-        TEMPORARY_DIGITAL_SYNTH_2_AREA: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-    }
-    expected_area = area_map.get(area)
-    match = temp_area == expected_area
-    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
-    return match
-
-
 class DigitalSynthEditor(SynthEditor):
     """class for Digital Synth Editor containing 3 partials"""
 
@@ -122,6 +106,7 @@ class DigitalSynthEditor(SynthEditor):
             SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
         )
         self.presets = DIGITAL_PRESETS_ENUMERATED
+        self.preset_list = DIGITAL_PRESET_LIST
         self.instrument_default_image = "jdxi_vector.png"
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
@@ -147,7 +132,7 @@ class DigitalSynthEditor(SynthEditor):
         ] = {}
         self.setup_ui(synth_num)
         self.update_instrument_image()
-        self.initialize_partial_states()
+        self._initialize_partial_states()
         self.data_request()
 
         if self.midi_helper:
@@ -307,7 +292,7 @@ class DigitalSynthEditor(SynthEditor):
         if selected:
             self.partial_tab_widget.setCurrentIndex(partial_num - 1)
 
-    def initialize_partial_states(self):
+    def _initialize_partial_states(self):
         """Initialize partial states with defaults"""
         # Default: Partial 1 enabled and selected, others disabled
         for partial in DigitalPartial.get_partials():
@@ -595,36 +580,3 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setStyleSheet(Style.JDXI_BUTTON_RECT)
         else:
             logging.warning(f"Waveform button not found for {selected_waveform}")
-
-    def load_preset(self, preset_index):
-        """Load a preset by program change."""
-        preset_name = (
-            self.instrument_selection_combo.combo_box.currentText()
-        )  # Get the selected preset name
-        logging.info(f"combo box preset_name : {preset_name}")
-        program_number = preset_name[:3]
-        logging.info(f"combo box program_number : {program_number}")
-
-        # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", program_number)
-        lsb = get_preset_parameter_value("lsb", program_number)
-        pc = get_preset_parameter_value("pc", program_number)
-
-        if None in [msb, lsb, pc]:
-            logging.error(
-                f"Could not retrieve preset parameters for program {program_number}"
-            )
-            return
-
-        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
-        log_midi_info(msb, lsb, pc)
-
-        # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
-        self.midi_helper.send_bank_select_and_program_change(
-            self.midi_channel,  # MIDI channel
-            msb,  # MSB is already correct
-            lsb,  # LSB is already correct
-            pc - 1,  # Convert 1-based PC to 0-based
-        )
-        self.data_request()

@@ -15,12 +15,21 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class DigitalAmpSection(QWidget):
-    """ Digital Amp Section for the JDXI Editor """
-    def __init__(self, create_parameter_slider, partial_number, midi_helper, controls, part, parent=None):
+    """Digital Amp Section for the JDXI Editor"""
+
+    def __init__(
+        self,
+        create_parameter_slider,
+        partial_number,
+        midi_helper,
+        controls,
+        part,
+    ):
         super().__init__()
         self.partial_number = partial_number
         self.midi_helper = midi_helper
         self.part = part
+        self.controls = controls
         self._create_parameter_slider = create_parameter_slider
         self.setup_ui()
 
@@ -46,7 +55,6 @@ class DigitalAmpSection(QWidget):
             icons_hlayout.addWidget(icon_label)
         amp_section_layout.addLayout(icons_hlayout)
 
-
         # Level and velocity controls
         controls_group = QGroupBox("Controls")
         controls_layout = QVBoxLayout()
@@ -56,10 +64,14 @@ class DigitalAmpSection(QWidget):
             self._create_parameter_slider(DigitalPartialParameter.AMP_LEVEL, "Level")
         )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.AMP_VELOCITY, "Velocity")
+            self._create_parameter_slider(
+                DigitalPartialParameter.AMP_VELOCITY, "Velocity"
+            )
         )
         # Create and center the pan slider
-        pan_slider = self._create_parameter_slider(DigitalPartialParameter.AMP_PAN, "Pan")
+        pan_slider = self._create_parameter_slider(
+            DigitalPartialParameter.AMP_PAN, "Pan"
+        )
         pan_slider.setValue(0)
         controls_layout.addWidget(pan_slider)
         amp_section_layout.addWidget(controls_group)
@@ -83,10 +95,11 @@ class DigitalAmpSection(QWidget):
         amp_section_layout.addLayout(icons_hlayout)
 
         # Create ADSRWidget
-        group_address, param_address = (
-            DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
-                self.partial_number
-            )
+        (
+            group_address,
+            _,
+        ) = DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+            self.partial_number
         )
         self.amp_env_adsr_widget = ADSR(
             DigitalPartialParameter.AMP_ENV_ATTACK_TIME,
@@ -113,5 +126,7 @@ class DigitalAmpSection(QWidget):
             )
         )
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LEVEL_AFTERTOUCH, "AT Sens")
+            self._create_parameter_slider(
+                DigitalPartialParameter.LEVEL_AFTERTOUCH, "AT Sens"
+            )
         )

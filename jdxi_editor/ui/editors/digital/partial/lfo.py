@@ -10,8 +10,11 @@ from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParame
 
 
 class DigitalLFOSection(QWidget):
-    """ LFO section for the digital partial editor. """
-    def __init__(self, create_parameter_slider, create_parameter_switch, controls, parent=None):
+    """LFO section for the digital partial editor."""
+
+    def __init__(
+        self, create_parameter_slider, create_parameter_switch, controls
+    ):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
@@ -19,6 +22,7 @@ class DigitalLFOSection(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
+        """Set up the UI for the LFO section."""
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -41,27 +45,31 @@ class DigitalLFOSection(QWidget):
 
         # Shape and sync controls
         top_row = QHBoxLayout()
-        self.lfo_shape = self._create_parameter_switch(DigitalPartialParameter.LFO_SHAPE,
-                                                       "Shape",
-                                                       ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"])
+        self.lfo_shape = self._create_parameter_switch(
+            DigitalPartialParameter.LFO_SHAPE,
+            "Shape",
+            ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"],
+        )
         top_row.addWidget(self.lfo_shape)
 
-        self.lfo_tempo_sync_switch = self._create_parameter_switch(DigitalPartialParameter.LFO_TEMPO_SYNC_SWITCH,
-                                                                   "Tempo Sync",
-                                                                   ["OFF", "ON"])
+        self.lfo_tempo_sync_switch = self._create_parameter_switch(
+            DigitalPartialParameter.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+        )
         top_row.addWidget(self.lfo_tempo_sync_switch)
         layout.addLayout(top_row)
 
         # Rate and fade controls
-        layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.LFO_RATE,
-                                                       "Rate"))
-        layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.LFO_FADE_TIME,
-                                                       "Fade"))
+        layout.addWidget(
+            self._create_parameter_slider(DigitalPartialParameter.LFO_RATE, "Rate")
+        )
+        layout.addWidget(
+            self._create_parameter_slider(DigitalPartialParameter.LFO_FADE_TIME, "Fade")
+        )
 
         # Key trigger switch
-        self.lfo_trigger = self._create_parameter_switch(DigitalPartialParameter.LFO_KEY_TRIGGER,
-                                                         "Key Trigger",
-                                                         ["OFF", "ON"])
+        self.lfo_trigger = self._create_parameter_switch(
+            DigitalPartialParameter.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+        )
         layout.addWidget(self.lfo_trigger)
 
         # Modulation depths
@@ -69,10 +77,22 @@ class DigitalLFOSection(QWidget):
         depths_layout = QVBoxLayout()
         depths_group.setLayout(depths_layout)
 
-        depths_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.LFO_PITCH_DEPTH, "Pitch"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.LFO_FILTER_DEPTH, "Filter"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.LFO_AMP_DEPTH, "Amp"))
-        depths_layout.addWidget(self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH, "Pan"))
+        depths_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalPartialParameter.LFO_PITCH_DEPTH, "Pitch"
+            )
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(
+                DigitalPartialParameter.LFO_FILTER_DEPTH, "Filter"
+            )
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalPartialParameter.LFO_AMP_DEPTH, "Amp")
+        )
+        depths_layout.addWidget(
+            self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH, "Pan")
+        )
         layout.addWidget(depths_group)
 
         layout.addStretch()

@@ -4,5 +4,5 @@
     <option name="pathToExecutable" value="$USER_HOME$/Library/Python/3.8/bin/black" />
     <option name="sdkName" value="Python 3.9 (JDXI-Manager) (3)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 virtualenv at C:\Users\MBrooks\projects\JDXI-Editor\venv" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (JDXI-Editor)" project-jdk-type="Python SDK" />
 </project>

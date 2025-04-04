@@ -163,6 +163,7 @@ class AnalogSynthEditor(SynthEditor):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
         self.presets = ANALOG_PRESETS_ENUMERATED
+        self.preset_list = ANALOG_PRESET_LIST
         self.preset_type = SynthType.ANALOG
         self.midi_requests = [PROGRAM_COMMON_REQUEST, ANALOG_REQUEST]
         self.midi_channel = MIDI_CHANNEL_ANALOG
