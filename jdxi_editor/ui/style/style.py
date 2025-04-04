@@ -716,6 +716,18 @@ class Style:
             }
             """
 
+    JDXI_INSTRUMENT_IMAGE_LABEL = f"""        
+        QGroupBox {{
+            height: 100px;
+            width: 120px;
+            background-color: #000000;
+            border: 1px solid #666666;
+            border-radius: 5px;
+            padding: 5px;
+            margin: 5px;
+            }}
+        """
+
     JDXI_LABEL_SYNTH_PART = f"""
                 font-family: "{FONT_FAMILY}";
                 font-size: 13px;
