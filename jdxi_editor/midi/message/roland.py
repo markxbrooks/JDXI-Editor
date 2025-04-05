@@ -92,7 +92,7 @@ class RolandSysEx(SysExMessage):
 
         # Convert the value into nibbles (if it's 4 bytes long)
         if isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF:  # Check for 4-byte integer
-            self.value = self.split_into_nibbles(self.value)
+            self.value = split_value_to_nibbles(self.value) # @@@@
 
         # Determine parameter and value split
         if len(data_bytes) == 1:

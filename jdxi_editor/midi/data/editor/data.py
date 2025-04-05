@@ -141,7 +141,7 @@ class DigitalSynthData(SynthData):
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
             preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
-            window_title=f"Digital Synth {synth_num}",
+            window_title=f"Digital Synth wibble {synth_num}",
         )
 
 
