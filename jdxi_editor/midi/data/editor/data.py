@@ -45,6 +45,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     COMMON_AREA,
     ANALOG_PART,
 )
+from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
@@ -109,7 +110,7 @@ class DrumsSynthData(SynthData):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
-            group=0x2E,
+            group=DRUM_ADDRESS_MAP["BD1"],
             icon_folder="drum_kits",
             default_image="drums.png",
             midi_requests=DRUMS_REQUESTS,

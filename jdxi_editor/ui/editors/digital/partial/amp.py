@@ -102,11 +102,11 @@ class DigitalAmpSection(QWidget):
             self.partial_number
         )
         self.amp_env_adsr_widget = ADSR(
-            DigitalPartialParameter.AMP_ENV_ATTACK_TIME,
-            DigitalPartialParameter.AMP_ENV_DECAY_TIME,
-            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
-            self.midi_helper,
+            attack_param=DigitalPartialParameter.AMP_ENV_ATTACK_TIME,
+            decay_param=DigitalPartialParameter.AMP_ENV_DECAY_TIME,
+            sustain_param=DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
+            release_param=DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
+            midi_helper=self.midi_helper,
             area=DIGITAL_SYNTH_1_AREA,
             part=self.part,
             group=group_address,

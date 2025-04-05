@@ -82,9 +82,14 @@ class AnalogFilterSection(QWidget):
 
         # ADSR Widget
         self.filter_adsr_widget = ADSR(
-            AnalogParameter.FILTER_ENV_ATTACK_TIME, AnalogParameter.FILTER_ENV_DECAY_TIME,
-            AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL, AnalogParameter.FILTER_ENV_RELEASE_TIME,
-            self.midi_helper, self.area, self.part, self.group
+            attack_param=AnalogParameter.FILTER_ENV_ATTACK_TIME,
+            decay_param=AnalogParameter.FILTER_ENV_DECAY_TIME,
+            sustain_param=AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            release_param=AnalogParameter.FILTER_ENV_RELEASE_TIME,
+            midi_helper=self.midi_helper,
+            area=self.area,
+            part=self.part,
+            group=self.group
         )
         self.filter_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
         env_group = QGroupBox("Envelope")

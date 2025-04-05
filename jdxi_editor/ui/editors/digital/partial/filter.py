@@ -113,11 +113,11 @@ class DigitalFilterSection(QWidget):
             self.partial_number
         )
         self.filter_adsr_widget = ADSR(
-            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
-            DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
-            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
-            self.midi_helper,
+            attack_param=DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
+            decay_param=DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
+            sustain_param=DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            release_param=DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
+            midi_helper=self.midi_helper,
             area=DIGITAL_SYNTH_1_AREA,
             part=self.part,
             group=group_address,

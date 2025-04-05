@@ -128,6 +128,17 @@ class DigitalPartialEditor(PartialEditor):
             qta.icon("mdi.triangle-wave", color="#666666"),
             "Oscillator",
         )
+        self.filter_tab = DigitalFilterSection(
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self.partial_number,
+            self.midi_helper,
+            self.controls,
+            self.part,
+        )
+        self.tab_widget.addTab(
+            self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
+        )
         self.amp_tab = DigitalAmpSection(
             self._create_parameter_slider,
             self.partial_number,
@@ -141,18 +152,6 @@ class DigitalPartialEditor(PartialEditor):
                 color="#666666"),
             "Amplifier"
         )
-        self.filter_tab = DigitalFilterSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self.partial_number,
-            self.midi_helper,
-            self.controls,
-            self.part,
-        )
-        self.tab_widget.addTab(
-            self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
-        )
-
         self.lfo_tab = DigitalLFOSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
