@@ -19,7 +19,7 @@ Dependencies:
 - `jdxi_manager.ui.style` for applying UI styles.
 
 """
-
+import json
 import re
 import os
 import logging
@@ -80,6 +80,7 @@ class SynthEditor(SynthBase):
         self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
     ):
         super().__init__(midi_helper, parent)
+        self.current_data = None
         self.preset_list = None
         self.presets = None
         # self.midi_helper = midi_helper
@@ -170,6 +171,17 @@ class SynthEditor(SynthBase):
 
     def _dispatch_sysex_to_area(self, data: str):
         raise NotImplementedError
+
+    def _parse_sysex_json(self, json_sysex_data: str) -> dict:
+        try:
+            data = json.loads(json_sysex_data)
+            self.previous_data = self.current_data
+            self.current_data = data
+            log_changes(self.previous_data, data)
+            return data
+        except json.JSONDecodeError as ex:
+            logging.error(f"Invalid JSON format: {ex}")
+            return None
 
     def set_instrument_title_label(self, name: str):
         self.instrument_title_label.setText(name)

@@ -278,18 +278,10 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         area = parsed_data.get("TEMPORARY_AREA")
+        logging.info(f"ADDRESS: {address} TEMPORARY_AREA: {area} TONE_NAME: {tone_name}")
 
         if address in valid_addresses and tone_name:
-            emit_map = {
-                "TEMPORARY_PROGRAM_AREA": self.update_program_name,
-                "TEMPORARY_DIGITAL_SYNTH_1_AREA": self.update_digital1_tone_name,
-                "TEMPORARY_DIGITAL_SYNTH_2_AREA": self.update_digital2_tone_name,
-                "TEMPORARY_ANALOG_SYNTH_AREA": self.update_analog_tone_name,
-                "TEMPORARY_DRUM_KIT_AREA": self.update_drums_tone_name,
-            }
-            if emitter := emit_map.get(area):
-                logging.info(f"Emitting tone name: {tone_name} for area: {area}")
-                emitter.emit(tone_name)
+            self._emit_signal(area, tone_name)
 
     def _emit_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
