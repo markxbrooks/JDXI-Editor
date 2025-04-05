@@ -70,11 +70,11 @@ class AmpSection(QWidget):
 
         # ADSR Widget
         self.amp_env_adsr_widget = ADSR(
-            AnalogParameter.AMP_ENV_ATTACK_TIME,
-            AnalogParameter.AMP_ENV_DECAY_TIME,
-            AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            AnalogParameter.AMP_ENV_RELEASE_TIME,
-            self.midi_helper,
+            attack_param=AnalogParameter.AMP_ENV_ATTACK_TIME,
+            decay_param=AnalogParameter.AMP_ENV_DECAY_TIME,
+            sustain_param=AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+            release_param=AnalogParameter.AMP_ENV_RELEASE_TIME,
+            midi_helper=self.midi_helper,
             area=self.area,
             part=self.part,
             group=self.group

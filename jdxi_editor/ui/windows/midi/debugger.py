@@ -44,8 +44,10 @@ from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.constants import (EFFECTS_AREA
                                              )
-from jdxi_editor.midi.data.constants.constants import DT1_COMMAND_12
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA
+from jdxi_editor.midi.data.constants.constants import DT1_COMMAND_12, ANALOG_SYNTH
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, ANALOG_PART, RQ1_COMMAND_11, DIGITAL_PART_1, \
+    DIGITAL_PART_2, DRUM_KIT_AREA
+from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.ui.style import Style
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import _validate_checksum
@@ -54,13 +56,20 @@ from jdxi_editor.ui.windows.midi.helpers.debugger import _validate_checksum
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        DIGITAL_SYNTH_1_AREA: "Digital Synth Area",
+        DIGITAL_SYNTH_1_AREA: "Temporary Tone",
         EFFECTS_AREA: "System Area",
         0x20: "Pattern Area"
     }
 
+    SYNTHS = {
+        DIGITAL_PART_1: "DIGITAL_PART_1",
+        DIGITAL_PART_2: "DIGITAL_PART_2",
+        ANALOG_PART: "ANALOG_PART",
+        DRUM_KIT_AREA: "DRUM_KIT_AREA"
+    }
+
     COMMANDS = {
-        0x11: "RQ1 (Data Request)",
+        RQ1_COMMAND_11: "RQ1 (Data Request)",
         DT1_COMMAND_12: "DT1 (Data Transfer)"
     }
 
@@ -228,7 +237,7 @@ class MIDIDebugger(QMainWindow):
 
             # Get synth number
             synth = message[9]
-            synth_str = f"Digital Synth {synth}" if synth in [1, 2] else f"Unknown Synth ({hex(synth)})"
+            synth_str = self.SYNTHS.get(synth, f"Unknown Synth ({hex(synth)})")
 
             # Get parameter address (bytes 10 and 11 separately)
             group = message[10]
@@ -290,7 +299,7 @@ class MIDIDebugger(QMainWindow):
 
             # Get synth number
             synth = message[9]
-            synth_str = f"Digital Synth {synth}" if synth in [1, 2] else f"Unknown Synth ({hex(synth)})"
+            synth_str = self.SYNTHS.get(area, f"Unknown Synth ({hex(synth)})")
 
             # Get section
             section = message[10]

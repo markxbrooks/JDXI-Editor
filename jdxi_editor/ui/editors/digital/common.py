@@ -88,8 +88,6 @@ class DigitalCommonSection(QWidget):
         unison_row.addWidget(self.unison_size)
         layout.addLayout(unison_row)
 
-        # self.controls["UNISON_SIZE"] = self.unison_size
-
         # Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
             DigitalCommonParameter.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
@@ -106,7 +104,6 @@ class DigitalCommonSection(QWidget):
         portamento_time_row.addWidget(self.portamento_time)
         layout.addLayout(portamento_time_row)
 
-        # self.controls["PORTAMENTO_TIME"] = self.portamento_time
 
         # Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(
@@ -115,7 +112,7 @@ class DigitalCommonSection(QWidget):
             ["NORMAL", "LEGATO"],
         )
         self.legato_switch = self._create_parameter_switch(
-            "LEGATO_SWITCH", "Legato", ["OFF", "ON"]
+            DigitalCommonParameter.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
         legato_row = QHBoxLayout()
         legato_row.addWidget(self.legato_switch)
@@ -130,6 +127,3 @@ class DigitalCommonSection(QWidget):
         )
         layout.addWidget(self.analog_feel)
         layout.addWidget(self.wave_shape)
-
-        # self.controls["ANALOG_FEEL"] = self.analog_feel
-        # self.controls["WAVE_SHAPE"] = self.wave_shape
