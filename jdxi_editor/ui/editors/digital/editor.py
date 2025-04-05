@@ -46,6 +46,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
+from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -104,12 +105,12 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_group = None
         self.partial_num = None
         self.current_data = None
-        self.preset_type = (
-            SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
-        )
-        self.presets = DIGITAL_PRESETS_ENUMERATED
-        self.preset_list = DIGITAL_PRESET_LIST
-        self.instrument_default_image = "jdxi_vector.png"
+        #self.preset_type = (
+        #    SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
+        #)
+        #self.presets = DIGITAL_PRESETS_ENUMERATED
+        #self.preset_list = DIGITAL_PRESET_LIST
+        #self.instrument_default_image = "jdxi_vector.png"
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
             parent.digital_1_preset_helper
@@ -118,20 +119,21 @@ class DigitalSynthEditor(SynthEditor):
         )
         self.main_window = parent
         self.synth_num = synth_num
-        self.midi_channel = (
-            MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1
-        )
-        self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
-        self.area = (
-            TEMPORARY_DIGITAL_SYNTH_2_AREA
-            if synth_num == 2
-            else TEMPORARY_DIGITAL_SYNTH_1_AREA
-        )
-        self.part = DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART
-        self.group = COMMON_AREA
+        #self.midi_channel = (
+        #    MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1
+        #)
+        #self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
+        #self.area = (
+        #    TEMPORARY_DIGITAL_SYNTH_2_AREA
+        #    if synth_num == 2
+        #    else TEMPORARY_DIGITAL_SYNTH_1_AREA
+        #)
+        #self.part = DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART
+        #self.group = COMMON_AREA
         self.controls: Dict[
             Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
         ] = {}
+        self._init_synth_data(synth_num)
         self.setup_ui(synth_num)
         self.update_instrument_image()
         self._initialize_partial_states()
@@ -152,8 +154,27 @@ class DigitalSynthEditor(SynthEditor):
         self.refresh_shortcut.activated.connect(self.data_request)
         self.show()
 
+    def _init_synth_data(self, synth_num):
+        """Initialize synth-specific data."""
+        self.synth_data = DigitalSynthData(synth_num)
+        print(self.synth_data)
+        data = self.synth_data
+
+        self.area = data.area
+        self.group = data.group
+        self.part = data.part
+        self.setWindowTitle(data.window_title)
+
+        self.preset_type = data.preset_type
+        self.instrument_default_image = data.instrument_default_image
+        self.instrument_icon_folder = data.instrument_icon_folder
+        self.presets = data.presets
+        self.preset_list = data.preset_list
+        self.midi_requests = data.midi_requests
+        self.midi_channel = data.midi_channel
+
     def setup_ui(self, synth_num):
-        self.setWindowTitle(f"Digital Synth {synth_num}")
+        # self.setWindowTitle(f"Digital Synth {synth_num}")
         self.setMinimumSize(800, 300)
         self.resize(930, 600)
         # Image display
@@ -166,8 +187,8 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        self.instrument_default_image = "jdxi_vector.png"
-        self.instrument_icon_folder = "digital_synths"
+        #self.instrument_default_image = "jdxi_vector.png"
+        #self.instrument_icon_folder = "digital_synths"
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
