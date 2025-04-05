@@ -25,8 +25,9 @@ Example usage:
     print(f"Drum Synth Default Image: {drum_synth.instrument_default_image}")
 
 """
-
+import logging
 from dataclasses import dataclass
+from typing import Tuple
 
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
 from jdxi_editor.midi.data.constants.constants import (
@@ -45,6 +46,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     COMMON_AREA,
     ANALOG_PART,
 )
+from jdxi_editor.midi.data.parameter.areas.program import ProgramArea
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -106,7 +108,7 @@ class SynthData:
 
 
 class DrumsSynthData(SynthData):
-    def __init__(self):
+    def __init__(self, partial_number: int = 1):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
             part=DRUM_KIT_AREA,
@@ -120,16 +122,13 @@ class DrumsSynthData(SynthData):
             preset_type=SynthType.DRUMS,
             window_title="Drums",
         )
+        self.partial_number = partial_number
 
 
 class DigitalSynthData(SynthData):
-    def __init__(self, synth_num: int):
+    def __init__(self, synth_num: int, partial_number: int = 1):
         super().__init__(
-            area=(
-                TEMPORARY_DIGITAL_SYNTH_2_AREA
-                if synth_num == 2
-                else TEMPORARY_DIGITAL_SYNTH_1_AREA
-            ),
+            area=TEMPORARY_TONE_AREA,
             part=DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART,
             group=COMMON_AREA,
             icon_folder="digital_synths",
@@ -141,8 +140,22 @@ class DigitalSynthData(SynthData):
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
             preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
-            window_title=f"Digital Synth wibble {synth_num}",
+            window_title=f"Digital Synth {synth_num}",
         )
+        self.group_map = {1: 0x20, 2: 0x21, 3: 0x22}
+        self.partial_number = partial_number
+
+    def get_partial_group_address(self) -> int:
+        """Get parameter area and address adjusted for partial number."""
+        if self.partial_number not in (1, 2, 3):
+            logging.info(f"Invalid partial number {self.partial_number}, defaulting to 1")
+        group = self.group_map.get(self.partial_number, 0x20)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        return group
+
+    @property
+    def partial_group(self) -> int:
+        """Get the group address for the current partial number."""
+        return self.get_partial_group_address()
 
 
 class AnalogSynthData(SynthData):

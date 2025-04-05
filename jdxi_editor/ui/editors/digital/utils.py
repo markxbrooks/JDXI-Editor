@@ -23,11 +23,23 @@ def _filter_sysex_keys(sysex_data: dict) -> dict:
     ignored_keys = {
         "JD_XI_HEADER",
         "ADDRESS",
-        "TEMPORARY_AREA",
+        #  "TEMPORARY_AREA",
         "TONE_NAME",
-        "SYNTH_TONE",
+        #  "SYNTH_TONE",
     }
     return {k: v for k, v in sysex_data.items() if k not in ignored_keys}
+
+
+def _get_synth_number(synth_tone: str) -> int:
+    """ get synth number based on the synth tone """
+    synth_map = {TEMPORARY_DIGITAL_SYNTH_1_AREA: 1,
+                 TEMPORARY_DIGITAL_SYNTH_2_AREA: 2}
+    synth_no = synth_map.get(synth_tone)
+    if synth_no is None:
+        logging.warning(f"Unknown synth tone: {synth_tone}")
+    else:
+        logging.info(f"Synth number: {synth_no}")
+    return synth_no
 
 
 def _get_partial_number(synth_tone: str) -> int:
@@ -80,4 +92,12 @@ def _sysex_area_matches(sysex_data: dict, area) -> bool:
     expected_area = area_map.get(area)
     match = temp_area == expected_area
     logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    return match
+
+
+def _sysex_group_matches(sysex_data: dict, expected_group) -> bool:
+    """Check if the SysEx data matches the expected area."""
+    found_group = sysex_data.get("SYNTH_TONE")
+    match = found_group == expected_group
+    logging.info(f"SysEx TEMP_AREA: {found_group}, expected: {expected_group}, match: {match}")
     return match

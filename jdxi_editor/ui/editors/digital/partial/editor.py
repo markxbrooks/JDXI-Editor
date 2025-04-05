@@ -46,6 +46,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
+from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
@@ -69,7 +70,7 @@ from jdxi_editor.ui.style import Style
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_number=1, parent=None):
+    def __init__(self, midi_helper=None, synth_num=1, partial_number=1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = [
             DigitalPartialParameter.OSC_DETUNE,
@@ -79,11 +80,11 @@ class DigitalPartialEditor(PartialEditor):
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
-        self.area = (
-            DIGITAL_SYNTH_1_AREA if partial_number == 1 else DIGITAL_SYNTH_2_AREA
-        )
-        self.part = DIGITAL_PART_1 if partial_number == 1 else DIGITAL_PART_2
-        # self.part = part
+        self.synth_data = DigitalSynthData(synth_num, partial_number)
+        data = self.synth_data
+        self.area = data.area
+        self.part = data.part
+        self.group = data.group
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
         else:
@@ -91,11 +92,7 @@ class DigitalPartialEditor(PartialEditor):
                 f"Invalid partial_num: {partial_number}. Using default value."
             )
             self.part_name = "Unknown"  # Provide a fallback value
-        try:
-            self.group = get_partial_address(self.part_name)
-        except Exception as ex:
-            logging.error(f"Failed to get partial address for {self.part_name}: {ex}")
-            self.group = 0x00  # Provide a default address
+
 
         # Store parameter controls for easy access
         self.controls: Dict[
