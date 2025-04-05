@@ -222,7 +222,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_selection_label = QLabel("Select preset for Digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        self.instrument_selection_combo = PresetComboBox(self.data.preset_list)
+        self.instrument_selection_combo = PresetComboBox(self.synth_data.preset_list)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_helper.current_preset_zero_indexed
@@ -323,19 +323,8 @@ class DigitalSynthEditor(SynthEditor):
             self._update_filter_state(partial_no, value)
             logging.debug(f"Updated filter state for FILTER_MODE_SWITCH: value={value}")
 
-    def _parse_sysex_json(self, json_sysex_data: str) -> dict:
-        try:
-            data = json.loads(json_sysex_data)
-            self.previous_data = self.current_data
-            self.current_data = data
-            log_changes(self.previous_data, data)
-            return data
-        except json.JSONDecodeError as ex:
-            logging.error(f"Invalid JSON format: {ex}")
-            return None
-
     def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict):
-        debug_param_updates = True
+        """Apply updates to the UI components based on SysEx data."""
         debug_stats = True
         successes, failures = [], []
 
@@ -372,11 +361,9 @@ class DigitalSynthEditor(SynthEditor):
 
         synth_tone = sysex_data.get("SYNTH_TONE")
 
-        if synth_tone == "TONE_COMMON":
+        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             logging.info("\nTone common")
-            self._update_common_sliders_from_sysex(json_sysex_data)
-        elif synth_tone == "TONE_MODIFY":
-            pass  # not yet implemented
+            self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
         elif synth_tone in ["PRC3"]:  # This is for drums but comes through
             pass
         else:
@@ -425,24 +412,36 @@ class DigitalSynthEditor(SynthEditor):
         filtered_data = _filter_sysex_keys(sysex_data)
         self._apply_partial_ui_updates(partial_no, filtered_data)
 
-    def _update_tone_common_ui(self, sysex_data, successes, failures, debug):
-        logging.info("\nTone common")
+    def _update_tone_common_modify_ui(self, sysex_data: Dict, successes: list, failures: list, debug: bool):
+        """
+        :param sysex_data: Dictionary containing SysEx data
+        :param successes: List of successful parameters
+        :param failures: List of failed parameters
+        :param debug: bool
+        :return: None
+
+        _update_tone_common_modify_ui
+        """
+        logging.info("\nTone common and modify")
         for param_name, param_value in sysex_data.items():
             param = DigitalCommonParameter.get_by_name(param_name)
-            logging.info(f"Tone common: param_name: {param} {param_value}")
+            logging.info(f"Tone common/modify : param_name: {param} {param_value}")
             if not param:
                 failures.append(param_name)
                 continue
 
             try:
-                if "SWITCH" in param_name or "SELECT" in param_name:
+                if param.name in ["PARTIAL1_SWITCH", "PARTIAL2_SWITCH", "PARTIAL3_SWITCH",
+                                  "PARTIAL1_SELECT", "PARTIAL2_SELECT", "PARTIAL3_SELECT"]:
+                    self._update_partial_selection_switch(param, param_value, successes, failures, debug)
+                elif "SWITCH" or "SHIFT" in param_name:
                     self._update_switch(param, param_value, successes, failures, debug)
                 else:
                     self._update_slider(param, param_value, successes, failures, debug)
             except Exception as ex:
                 logging.info(f"Error {ex} occurred")
 
-    def _update_common_sliders_from_sysex(self, json_sysex_data: str):
+    def _update_tone_common_modify_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and switches based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
         debug_param_updates = True
@@ -457,16 +456,14 @@ class DigitalSynthEditor(SynthEditor):
         _log_synth_area_info(sysex_data)
 
         synth_tone = sysex_data.get("SYNTH_TONE")
-        partial_no = _get_partial_number(synth_tone)
 
         filtered_data = {
             k: v for k, v in sysex_data.items() if k not in COMMON_IGNORED_KEYS
         }
 
-        if synth_tone == "TONE_COMMON":
-            self._update_tone_common_ui(filtered_data, successes, failures, debug_param_updates)
+        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+            self._update_tone_common_modify_ui(filtered_data, successes, failures, debug_param_updates)
 
-        logging.info(f"Updating sliders for Partial {partial_no}")
         _log_debug_info(filtered_data, successes, failures, debug_stats)
 
     def _update_partial_slider(self, partial_no: int, param, value, successes: list):
@@ -512,6 +509,7 @@ class DigitalSynthEditor(SynthEditor):
             spinbox.setValue(new_value)
 
     def _update_slider(self, param, value, successes, failures, debug):
+        """ Update slider based on parameter and value. """
         slider = self.controls.get(param)
         logging.info(f"Updating slider for: {param}")
         if slider:
@@ -525,6 +523,26 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def _update_switch(self, param, value, successes, failures, debug):
+        """ Update switch based on parameter and value. """
+        switch = self.controls.get(param)
+        logging.info(f"Updating switch for: {param}")
+        try:
+            value = int(value)
+            if switch:
+                switch.blockSignals(True)
+                switch.setValue(value)
+                switch.blockSignals(False)
+                successes.append(param.name)
+                if debug:
+                    logging.info(f"Updated: {param.name:50} {value}")
+            else:
+                failures.append(param.name)
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred setting switch {param.name} to {value}")
+            failures.append(param.name)
+
+    def _update_partial_selection_switch(self, param, value, successes, failures, debug):
+        """Update the partial selection switches based on parameter and value."""
         param_name = param.name
         partial_switch_map = {
             "PARTIAL1_SWITCH": 1,
