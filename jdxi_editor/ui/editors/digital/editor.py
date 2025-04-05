@@ -161,8 +161,8 @@ class DigitalSynthEditor(SynthEditor):
         data = self.synth_data
 
         self.area = data.area
-        self.group = data.group
         self.part = data.part
+        self.group = data.group
         self.setWindowTitle(data.window_title)
 
         self.preset_type = data.preset_type
@@ -290,7 +290,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_editors = {}
         # Create editor for each partial
         for i in range(1, 4):
-            editor = DigitalPartialEditor(midi_helper, i, self.part)
+            editor = DigitalPartialEditor(midi_helper, self.synth_num, i, parent=self)
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
         self.common_section = DigitalCommonSection(
@@ -428,6 +428,26 @@ class DigitalSynthEditor(SynthEditor):
         logging.info("Updating Partial UI components from SysEx data")
 
         sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+
+        if not _sysex_area_matches(sysex_data, self.area):
+            logging.info("SysEx area mismatch. Skipping update.")
+            return
+
+        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
+        if partial_no is None:
+            return
+
+        filtered_data = _filter_sysex_keys(sysex_data)
+        self._apply_partial_ui_updates(partial_no, filtered_data)
+
+    def _update_partial_sliders_from_sysex_new(self, json_sysex_data: str):
+        """Update sliders and combo boxes for a partial based on parsed SysEx data."""
+        logging.info("Updating Partial UI components from SysEx data")
+
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        print(sysex_data)
         if not sysex_data:
             return
 

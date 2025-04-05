@@ -106,6 +106,7 @@ DIGITAL1_MODIFY_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
 DIGITAL2_COMMON_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
                                          SYSEX_CONSTANTS['DIGITAL2_COMMON'],
                                          "00 00 00 00 00 40")
+
 DIGITAL2_PARTIAL1_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
                                            SYSEX_CONSTANTS['DIGITAL2_COMMON'],
                                            "20 00 00 00 00 40")
