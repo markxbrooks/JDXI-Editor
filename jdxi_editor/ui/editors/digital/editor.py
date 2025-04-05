@@ -48,11 +48,16 @@ from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
-from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.sysex.requests import DIGITAL1_REQUESTS, DIGITAL2_REQUESTS
+from jdxi_editor.midi.data.digital import (
+    DigitalOscWave,
+    DigitalPartial,
+    set_partial_state,
+    get_digital_parameter_by_address,
+)
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
@@ -63,28 +68,6 @@ from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_editor.midi.data.digital import (
-    DigitalOscWave,
-    DigitalPartial,
-    set_partial_state,
-    get_digital_parameter_by_address,
-)
-
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
-from jdxi_editor.midi.data.constants import (
-    TEMPORARY_DIGITAL_SYNTH_1_AREA,
-    COMMON_AREA,
-)
-from jdxi_editor.midi.data.constants.constants import (
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_DIGITAL2,
-    DIGITAL_1_PART,
-    DIGITAL_2_PART,
-)
-from jdxi_editor.midi.data.constants.sysex import (
-    TEMPORARY_DIGITAL_SYNTH_2_AREA,
-)
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
 
 
@@ -105,12 +88,6 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_group = None
         self.partial_num = None
         self.current_data = None
-        #self.preset_type = (
-        #    SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
-        #)
-        #self.presets = DIGITAL_PRESETS_ENUMERATED
-        #self.preset_list = DIGITAL_PRESET_LIST
-        #self.instrument_default_image = "jdxi_vector.png"
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
             parent.digital_1_preset_helper
@@ -119,17 +96,6 @@ class DigitalSynthEditor(SynthEditor):
         )
         self.main_window = parent
         self.synth_num = synth_num
-        #self.midi_channel = (
-        #    MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1
-        #)
-        #self.midi_requests = DIGITAL1_REQUESTS if synth_num == 1 else DIGITAL2_REQUESTS
-        #self.area = (
-        #    TEMPORARY_DIGITAL_SYNTH_2_AREA
-        #    if synth_num == 2
-        #    else TEMPORARY_DIGITAL_SYNTH_1_AREA
-        #)
-        #self.part = DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART
-        #self.group = COMMON_AREA
         self.controls: Dict[
             Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
         ] = {}
@@ -137,7 +103,6 @@ class DigitalSynthEditor(SynthEditor):
         self.setup_ui(synth_num)
         self.update_instrument_image()
         self._initialize_partial_states()
-        self.data_request()
 
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
@@ -152,6 +117,7 @@ class DigitalSynthEditor(SynthEditor):
                 )
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+        self.data_request()
         self.show()
 
     def _init_synth_data(self, synth_num):
@@ -174,7 +140,6 @@ class DigitalSynthEditor(SynthEditor):
         self.midi_channel = data.midi_channel
 
     def setup_ui(self, synth_num):
-        # self.setWindowTitle(f"Digital Synth {synth_num}")
         self.setMinimumSize(800, 300)
         self.resize(930, 600)
         # Image display
@@ -187,8 +152,6 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        #self.instrument_default_image = "jdxi_vector.png"
-        #self.instrument_icon_folder = "digital_synths"
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
@@ -246,7 +209,7 @@ class DigitalSynthEditor(SynthEditor):
         instrument_preset_group.setStyleSheet(
             """
                         width: 250px;
-        """
+            """
         )
         self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout = QVBoxLayout()
@@ -259,7 +222,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_selection_label = QLabel("Select preset for Digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        self.instrument_selection_combo = PresetComboBox(DIGITAL_PRESET_LIST)
+        self.instrument_selection_combo = PresetComboBox(self.data.preset_list)
         self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
         self.instrument_selection_combo.combo_box.setCurrentIndex(
             self.preset_helper.current_preset_zero_indexed
