@@ -101,7 +101,7 @@ def generate_button_style(
                 border: {button_border_width}px solid {border};
                 border-radius: {radius}px;
                 color: {text_color};
-                font-family: {font_family};
+                font-family: "{font_family}";
                 font-size: {font_size};
                 padding: {button_padding}px;
             }}
@@ -138,7 +138,7 @@ def generate_tab_style(
                 margin: {margin};
                 border: 2px solid {border};
                 border-radius: {radius}px;
-                font-family: {font_family};
+                font-family: "{font_family}";
                 font-size: {font_size};
             }}
 
@@ -146,14 +146,14 @@ def generate_tab_style(
                 background: {selected_bg};
                 color: {text_color};
                 border: 2px solid {selected_border};
-                font-family: {font_family};
+                font-family: "{font_family}";
                 font-size: {font_size};
             }}
 
             QTabBar::tab:hover {{
                 background: {hover_bg};
                 border: 2px solid {hover_border};
-                font-family: {font_family};
+                font-family: "{font_family}";
                 font-size: {font_size};
             }}
 
@@ -184,7 +184,7 @@ def generate_editor_style(
         QWidget {{
             background-color: {background};
             color: {foreground};
-            font-family: {font_family};
+            font-family: "{font_family}";
             font-size: {font_size};
             padding: 2px;
         }}

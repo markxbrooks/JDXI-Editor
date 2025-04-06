@@ -51,12 +51,15 @@ from jdxi_editor.ui.style.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
+from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
+from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
+from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.widgets.slider.filter import FilterSlider
+from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
 from jdxi_editor.ui.widgets.wheel.mod import ModWheel
 from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
@@ -783,7 +786,7 @@ class JdxiUi(QMainWindow):
 
         # Effects button in top row
         fx_container = QWidget(central_widget)
-        fx_container.setGeometry(self.width - 200, self.margin + 20, 200, 80)
+        fx_container.setGeometry(self.width - 170, self.margin + 20, 200, 80)
         fx_layout = QHBoxLayout(fx_container)
         vocal_effects_row, self.vocal_effects_button = create_button_row(
             "Vocoder", self._open_vocal_fx, vertical=True,
@@ -791,8 +794,8 @@ class JdxiUi(QMainWindow):
         effects_row, self.effects_button = create_button_row(
             "Effects", self._open_effects, vertical=True, spacing=10
         )
-
-        fx_layout.setSpacing(15)
+        vocal_effects_row.setSpacing(3)
+        fx_layout.setSpacing(3)
         fx_layout.addLayout(vocal_effects_row)
         fx_layout.addLayout(effects_row)
 
@@ -855,18 +858,46 @@ class JdxiUi(QMainWindow):
         fx_container.setStyleSheet(Style.JDXI_TRANSPARENT)
 
         filter_container = QWidget(central_widget)
-        filter_container.setGeometry(self.width - 430, self.margin -10, 80, 160)
-        filter_container_layout = QVBoxLayout(filter_container)
+        filter_container.setGeometry(self.width - 430, self.margin -10, 300, 160)
+        filter_container_layout = QHBoxLayout(filter_container)
         filter_container_layout.setSpacing(4)
-        filter_slider = FilterSlider(self.midi_helper,
-                                     partial=1,
-                                     min_value=0,
-                                     max_value=127,
-                                     label="Filter",
-                                     vertical=True)
-        filter_slider.setFixedHeight(160)
-        filter_slider.setStyleSheet(Style.JDXI_ADSR)
-        filter_container_layout.addWidget(filter_slider)
+        filter_cutoff_slider = FilterCutoffSlider(self.midi_helper,
+                                           partial=1,
+                                           min_value=0,
+                                           max_value=127,
+                                           label="Fltr. Cut",
+                                           vertical=True)
+        filter_resonance_slider = FilterResonanceSlider(self.midi_helper,
+                                           partial=1,
+                                           min_value=0,
+                                           max_value=127,
+                                           label="Fltr. Reson.",
+                                           vertical=True)
+        amp_level_slider = AmpLevelSlider(self.midi_helper,
+                                           partial=1,
+                                           min_value=0,
+                                           max_value=127,
+                                           label="Amp Lvl.",
+                                           vertical=True)
+        amp_env_slider = AmpEnvelopeSlider(self.midi_helper,
+                                           partial=1,
+                                           min_value=0,
+                                           max_value=127,
+                                           label="Amp Env.",
+                                           vertical=True)
+        filter_cutoff_slider.setFixedHeight(160)
+        amp_level_slider.setFixedHeight(160)
+        amp_env_slider.setFixedHeight(160)
+        filter_resonance_slider.setFixedHeight(160)
+        filter_cutoff_slider.setStyleSheet(Style.JDXI_ADSR)
+        filter_resonance_slider.setStyleSheet(Style.JDXI_ADSR)
+        amp_level_slider.setStyleSheet(Style.JDXI_ADSR)
+        amp_env_slider.setStyleSheet(Style.JDXI_ADSR)
+        filter_container_layout.addWidget(filter_cutoff_slider)
+        filter_container_layout.setSpacing(4)
+        filter_container_layout.addWidget(filter_resonance_slider)
+        filter_container_layout.addWidget(amp_level_slider)
+        filter_container_layout.addWidget(amp_env_slider)
 
     def _create_other(self):
         """Create other controls section"""

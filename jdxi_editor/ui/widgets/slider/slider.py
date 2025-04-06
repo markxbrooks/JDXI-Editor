@@ -108,10 +108,10 @@ class Slider(QWidget):
         # Create value display
 
         self.value_label = QLabel(str(min_val))
-        self.value_label.setMinimumWidth(30)
+        self.value_label.setMinimumWidth(20)
         if show_value_label: # Add value label if needed
             self.value_label.setAlignment(
-                Qt.AlignmentFlag.AlignRight if vertical else Qt.AlignmentFlag.AlignLeft
+                Qt.AlignmentFlag.AlignCenter if vertical else Qt.AlignmentFlag.AlignLeft
             )
             layout.addWidget(self.value_label)
         if is_bipolar:
