@@ -10,10 +10,10 @@ class FilterResonanceSlider(ControlChangeSlider):
     def __init__(
         self,
         midi_helper,
-        partial: int,
-        min_value: int,
-        max_value: int,
-        label: str,
+        label: str = "Reson.",
+        partial: int = 1,
+        min_value: int = 0,
+        max_value: int = 127,
         vertical: bool = True,
     ):
         nrpn_map = {
