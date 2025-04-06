@@ -529,12 +529,12 @@ class JdxiInstrument(JdxiUi):
             self.vocal_fx_editor.raise_()
 
     def _show_digital_synth_editor(self, editor_type: str):
-        synth_num = 1 if editor_type == "digital1" else 2
+        synth_number = 1 if editor_type == "digital1" else 2
         self._show_editor(
-            f"Digital Synth {synth_num}", DigitalSynthEditor, synth_num=synth_num
+            f"Digital Synth {synth_number}", DigitalSynthEditor, synth_num=synth_number
         )
         self.preset_type = (
-            SynthType.DIGITAL_1 if synth_num == 1 else SynthType.DIGITAL_2
+            SynthType.DIGITAL_1 if synth_number == 1 else SynthType.DIGITAL_2
         )
 
     def _show_analog_synth_editor(self, editor_type: str):
@@ -807,7 +807,7 @@ class JdxiInstrument(JdxiUi):
             logging.error(f"Error opening Digital Synth 1 editor: {str(ex)}")
 
     def _open_digital_synth2(self):
-        self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_num=2)
+        self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_number=2)
         self.channel = MIDI_CHANNEL_DIGITAL2
         self.preset_type = SynthType.DIGITAL_2
         self.current_synth_type = SynthType.DIGITAL_2
