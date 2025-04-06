@@ -1,31 +1,78 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QHBoxLayout, QGridLayout
+from PySide6.QtCore import Qt, QRect
 
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
+from jdxi_editor.ui.widgets.button import SequencerSquare
+
+
+def create_sequencer_buttons_row(
+    midi_helper,
+    on_context_menu,
+    on_save_favorite
+):
+    """Create sequencer button row layout with interactive buttons"""
+    row_layout = QHBoxLayout()
+    sequencer_buttons = []
+
+    grid = QGridLayout()
+    grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
+    grid.setGeometry(QRect(1, 1, 300, 30))
+    grid.setHorizontalSpacing(2)
+
+    for i in range(16):
+        button = SequencerSquare(i, midi_helper)
+        button.setFixedSize(25, 25)
+        button.setCheckable(True)
+        button.setChecked(False)
+        button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
+
+        button.customContextMenuRequested.connect(
+            lambda pos, b=button: on_context_menu(pos, b)
+        )
+        button.setToolTip(f"Save Favorite {i}")  # initial tooltip
+        button.toggled.connect(
+            lambda checked, btn=button: toggle_button_style(btn, checked)
+        )
+        button.clicked.connect(
+            lambda _, index=i, but=button: on_save_favorite(but, index)
+        )
+
+        grid.addWidget(button, 0, i)
+        sequencer_buttons.append(button)
+
+    row_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
+    row_layout.addLayout(grid)
+
+    return row_layout, sequencer_buttons
 
 
 def add_sequencer_container(central_widget,
                             width,
                             margin,
                             create_favorite_button_row,
-                            create_sequencer_buttons_row_layout,
+                            midi_helper,
+                            on_context_menu,
+                            on_save_favorite
                             ):
     # Beginning of sequencer section
     sequencer_container = QWidget(central_widget)
-    sequencer_container.setGeometry(width - 500, margin + 150, 500, 80)
+    sequencer_container.setGeometry(width - 500, margin + 155, 500, 80)
     sequencer_container_layout = QHBoxLayout(sequencer_container)
-    sequencer_label_layout = QHBoxLayout()
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     sequencer_label.setStyleSheet(Style.JDXI_TRANSPARENT)
-    # sequencer_label_layout.addWidget(sequencer_label)
-    # sequencer_container_layout.addLayout(sequencer_label_layout)
     sequencer_layout = QHBoxLayout()
     favorites_button_row = create_favorite_button_row()
-    sequencer, sequencer_buttons = create_sequencer_buttons_row_layout()
+    sequencer, sequencer_buttons = create_sequencer_buttons_row(
+        midi_helper=midi_helper,
+        on_context_menu=on_context_menu,
+        on_save_favorite=on_save_favorite
+    )
     sequencer_layout.addLayout(sequencer)
     sequencer_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
     sequencer_container_layout.addLayout(favorites_button_row)
     sequencer_container_layout.addLayout(sequencer_layout)
     return sequencer_buttons
-    # End of sequencer section

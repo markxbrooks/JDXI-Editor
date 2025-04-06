@@ -5,7 +5,7 @@ from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_TITLE_X, JDXI_TITLE_Y
 
 
-def _add_title_container(central_widget):
+def add_title_container(central_widget):
     title_container = QWidget(central_widget)
     title_container.setGeometry(JDXI_TITLE_X + 10, JDXI_TITLE_Y, 200, 50)
     title_container.setStyleSheet(Style.JDXI_TRANSPARENT_WHITE)
