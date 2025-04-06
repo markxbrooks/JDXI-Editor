@@ -9,11 +9,11 @@ class ControlChangeSlider(Slider):
     def __init__(
         self,
         midi_helper,
-        partial: int,
-        min_value: int,
-        max_value: int,
         label: str,
         nrpn_map: dict,
+        partial: int = 1,
+        min_value: int = 0,
+        max_value: int = 127,
         vertical: bool = True,
     ):
         super().__init__(label, int(min_value), int(max_value),
