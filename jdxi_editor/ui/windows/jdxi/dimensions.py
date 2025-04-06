@@ -8,11 +8,13 @@ JDXI_KEYBOARD_WIDTH = 800
 
 JDXI_MARGIN = 15
 
-JDXI_DISPLAY_X = JDXI_MARGIN
+
+# LED display area (enlarged for 2 rows)
+JDXI_DISPLAY_WIDTH = 180
+JDXI_DISPLAY_HEIGHT = 70
+JDXI_DISPLAY_X = JDXI_MARGIN + 20
+JDXI_DISPLAY_Y = JDXI_MARGIN + 35
 # Title above display (moved down)
 JDXI_TITLE_X = JDXI_DISPLAY_X
 JDXI_TITLE_Y = JDXI_MARGIN
-# LED display area (enlarged for 2 rows)
-JDXI_DISPLAY_Y = JDXI_TITLE_Y + 40  # 40 gives some space for the title
-JDXI_DISPLAY_WIDTH = 255
-JDXI_DISPLAY_HEIGHT = 70
+

@@ -23,7 +23,7 @@ Usage
 These functions generate and display a graphical representation of the JD-Xi’s controls,
 which can be integrated into a larger PySide6-based UI.
 """
-
+import platform
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import (
@@ -108,7 +108,12 @@ def draw_sequencer(
     :return: None
     :rtype: None
     """
-    sequencer_y = keyboard_y - 25  # Keep same distance above keyboard
+    # sequencer_y = keyboard_y + 20  # Keep same distance above keyboard
+    if platform.system() == "Windows":
+        # windows has a menu across the top
+        sequencer_y = JDXI_HEIGHT - JDXI_WHITE_KEY_HEIGHT + 20  # Keep same distance above keyboard
+    else:
+        sequencer_y = JDXI_HEIGHT - JDXI_WHITE_KEY_HEIGHT - 20  # Keep same distance above keyboard
     sequencer_width = keyboard_width * 0.53 # Use roughly half keyboard width
     sequencer_x = instrument_width - margin - sequencer_width  # Align with right edge of keyboard
     # Calculate step dimensions

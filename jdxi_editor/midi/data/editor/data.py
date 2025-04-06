@@ -26,8 +26,8 @@ Example usage:
 
 """
 import logging
-from dataclasses import dataclass
-from typing import Tuple
+from dataclasses import dataclass, field
+from typing import Tuple, List
 
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
 from jdxi_editor.midi.data.constants.constants import (
@@ -66,6 +66,95 @@ from jdxi_editor.midi.sysex.requests import (
 
 @dataclass
 class SynthData:
+    area: int
+    part: int
+    group: int
+    instrument_icon_folder: str
+    instrument_default_image: str
+    midi_requests: List[int]
+    midi_channel: int
+    presets: List[int]
+    preset_list: List[int]
+    preset_type: SynthType
+    window_title: str
+    display_prefix: str
+
+
+class DrumsSynthData(SynthData):
+    def __init__(self, partial_number: int = 1):
+        super().__init__(
+            area=TEMPORARY_TONE_AREA,
+            part=DRUM_KIT_AREA,
+            group=DRUM_ADDRESS_MAP["BD1"],
+            instrument_icon_folder="drum_kits",
+            instrument_default_image="drums.png",
+            midi_requests=DRUMS_REQUESTS,
+            midi_channel=MIDI_CHANNEL_DRUMS,
+            presets=DRUM_PRESETS_ENUMERATED,
+            preset_list=DRUM_KIT_LIST,
+            preset_type=SynthType.DRUMS,
+            window_title="Drums",
+            display_prefix="DR",
+        )
+        self.partial_number = partial_number
+
+
+class DigitalSynthData(SynthData):
+    def __init__(self, synth_num: int, partial_number: int = 1):
+        super().__init__(
+            area=TEMPORARY_TONE_AREA,
+            part=DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART,
+            group=COMMON_AREA,
+            instrument_icon_folder="digital_synths",
+            instrument_default_image="jdxi_vector.png",
+            midi_requests=DIGITAL2_REQUESTS if synth_num == 2 else DIGITAL1_REQUESTS,
+            midi_channel=MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1,
+            presets=DIGITAL_PRESETS_ENUMERATED,
+            preset_list=DIGITAL_PRESET_LIST,
+            preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
+            window_title=f"Digital Synth {synth_num}",
+            display_prefix=f"D{synth_num}",
+        )
+        self.partial_number = partial_number
+        self.group_map = {1: 0x20, 2: 0x21, 3: 0x22}
+
+    @property
+    def partial_group(self) -> int:
+        return self.group_map.get(self.partial_number, 0x20)
+
+
+class AnalogSynthData(SynthData):
+    def __init__(self):
+        super().__init__(
+            area=TEMPORARY_TONE_AREA,
+            part=ANALOG_PART,
+            group=ANALOG_OSC_GROUP,
+            instrument_icon_folder="analog_synths",
+            instrument_default_image="analog.png",
+            midi_requests=[PROGRAM_COMMON_REQUEST, ANALOG_REQUEST],
+            midi_channel=MIDI_CHANNEL_ANALOG,
+            presets=ANALOG_PRESETS_ENUMERATED,
+            preset_list=ANALOG_PRESET_LIST,
+            preset_type=SynthType.ANALOG,
+            window_title="Analog Synth",
+            display_prefix="AN",
+        )
+
+
+def create_synth_data(synth_type: SynthType, partial_number=1) -> SynthData:
+    if synth_type == SynthType.DRUMS:
+        return DrumsSynthData(partial_number=partial_number)
+    elif synth_type == SynthType.DIGITAL_1:
+        return DigitalSynthData(synth_num=1, partial_number=partial_number)
+    elif synth_type == SynthType.DIGITAL_2:
+        return DigitalSynthData(synth_num=2, partial_number=partial_number)
+    elif synth_type == SynthType.ANALOG:
+        return AnalogSynthData()
+    raise ValueError(f"Unknown synth type: {synth_type}")
+
+
+@dataclass
+class SynthDataOld:
     """Data class for synthesizer configurations."""
 
     area: int
@@ -79,6 +168,7 @@ class SynthData:
     preset_list: list[int]
     preset_type: SynthType
     window_title: str
+    display_prefix: str
 
     def __init__(
         self,
@@ -93,6 +183,7 @@ class SynthData:
         preset_list,
         preset_type,
         window_title,
+        display_prefix
     ):
         self.area = area
         self.part = part
@@ -105,9 +196,10 @@ class SynthData:
         self.preset_list = preset_list
         self.preset_type = preset_type
         self.window_title = window_title
+        self.display_prefix = display_prefix
 
 
-class DrumsSynthData(SynthData):
+class DrumsSynthDataOld(SynthDataOld):
     def __init__(self, partial_number: int = 1):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
@@ -121,11 +213,12 @@ class DrumsSynthData(SynthData):
             preset_list=DRUM_KIT_LIST,
             preset_type=SynthType.DRUMS,
             window_title="Drums",
+            display_prefix="DR",
         )
         self.partial_number = partial_number
 
 
-class DigitalSynthData(SynthData):
+class DigitalSynthDataOld(SynthDataOld):
     def __init__(self, synth_num: int, partial_number: int = 1):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
@@ -141,6 +234,7 @@ class DigitalSynthData(SynthData):
             preset_list=DIGITAL_PRESET_LIST,
             preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
             window_title=f"Digital Synth {synth_num}",
+            display_prefix=f"D{synth_num}",
         )
         self.group_map = {1: 0x20, 2: 0x21, 3: 0x22}
         self.partial_number = partial_number
@@ -158,7 +252,7 @@ class DigitalSynthData(SynthData):
         return self.get_partial_group_address()
 
 
-class AnalogSynthData(SynthData):
+class AnalogSynthDataOld(SynthDataOld):
     def __init__(self):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
@@ -172,4 +266,5 @@ class AnalogSynthData(SynthData):
             preset_list=ANALOG_PRESET_LIST,
             preset_type=SynthType.ANALOG,
             window_title="Analog Synth",
+            display_prefix="AN",
         )

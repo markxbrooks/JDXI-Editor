@@ -1221,15 +1221,6 @@ class JdxiInstrument(JdxiUi):
                 self.midi_helper.send_raw_message(msg)
                 logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
 
-    def _show_analog_presets(self):
-        """Show the analog preset editor window"""
-        self.preset_editor = PresetEditor(
-            midi_helper=self.midi_helper, parent=self, preset_type=SynthType.ANALOG
-        )
-        self.preset_editor.preset_changed.connect(self._update_display_preset)
-        self.program_helper.program_changed.connect(self._update_display_program)
-        self.preset_editor.show()
-
     def _load_last_preset(self):
         """Load the last used preset from settings"""
         try:
