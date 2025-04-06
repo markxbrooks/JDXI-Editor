@@ -62,6 +62,7 @@ import logging
 from typing import Optional, Dict
 import json
 
+from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -75,6 +76,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.midi.data.editor.data import DrumsSynthData
+from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
@@ -91,6 +94,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     DRUM_KIT_AREA,
 )
 from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DRUMS
+from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -106,50 +110,17 @@ class DrumCommonEditor(SynthEditor):
         # Initialize class attributes
 
         # Presets
-        self.preset_type = SynthType.DRUMS
         self.preset_helper = preset_helper
-        self.presets = DRUM_PRESETS_ENUMERATED
-        self.preset_list = DRUM_KIT_LIST
-
         # midi parameters
         self.partial_num = 1
-        self.area = TEMPORARY_TONE_AREA
-        self.part = DRUM_KIT_AREA
-        self.group = 0x2E
+        self._init_synth_data()
+
+
         self.current_data = None
         self.previous_data = None
-        self.partial_mapping = {
-            "BD1": 0,
-            "RIM": 1,
-            "BD2": 2,
-            "CLAP": 3,
-            "BD3": 4,
-            "SD1": 5,
-            "CHH": 6,
-            "SD2": 7,
-            "PHH": 8,
-            "SD3": 9,
-            "OHH": 10,
-            "SD4": 11,
-            "TOM1": 12,
-            "PRC1": 13,
-            "TOM2": 14,
-            "PRC2": 15,
-            "TOM3": 16,
-            "PRC3": 17,
-            "CYM1": 18,
-            "PRC4": 19,
-            "CYM2": 20,
-            "PRC5": 21,
-            "CYM3": 22,
-            "HIT": 23,
-            "OTH1": 24,
-            "OTH2": 25,
-        }
-        self.midi_requests = DRUMS_REQUESTS
-        self.midi_channel = MIDI_CHANNEL_DRUMS
-        self.instrument_icon_folder = "drum_kits"
-        self.instrument_default_image = "drums.png"
+
+        self.partial_mapping = DRUM_PARTIAL_MAPPING
+
         # UI parameters
         self.main_window = parent
         self.partial_editors = {}
@@ -158,19 +129,25 @@ class DrumCommonEditor(SynthEditor):
         self.instrument_image_label = None
         # Main layout
         self.controls: Dict[DrumPartialParameter, QWidget] = {}
+        self.setup_ui()
+        self.update_instrument_image()
+        if self.midi_helper:
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
+        self.data_request()
+        self.show()
 
+    def setup_ui(self):
         # Create layouts
         main_layout = QVBoxLayout(self)
         upper_layout = QHBoxLayout()
         main_layout.addLayout(upper_layout)
-        self.setMinimumSize(1000, 500)
+        self.setMinimumSize(1100, 500)
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
-        #self.instrument_title_label = QLabel(
-        #    f"Drum Kit:\n {DRUM_PRESETS_ENUMERATED[0]}"
-        #    if DRUM_PRESETS_ENUMERATED
-        #    else "Drum Kit"
-        #)
         self.instrument_title_label = DigitalTitle()
         drum_group.setStyleSheet(Style.JDXI_DRUM_GROUP)
         self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
@@ -216,11 +193,17 @@ class DrumCommonEditor(SynthEditor):
         upper_layout.addWidget(drum_group)
 
         # Image display
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
-        upper_layout.addWidget(self.instrument_image_label)
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(Style.JDXI_INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setMinimumWidth(350)
+        upper_layout.addWidget(self.instrument_image_group)
 
         # Common controls
         common_group = QGroupBox("Common")
@@ -316,12 +299,29 @@ class DrumCommonEditor(SynthEditor):
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
         self.data_request() # this is giving an error
 
-    def _setup_partial_editors(self):
-        """Setup all partial editors and tabs"""
-        # Map of partial names to their indices
+    def _init_synth_data(self):
+        """Initialize synth-specific data."""
+        self.synth_data = DrumsSynthData(partial_number=1)
+        data = self.synth_data
+        print(self.synth_data)
+        self.area = data.area
+        self.part = data.part
+        self.group = data.group
+        self.setWindowTitle(data.window_title)
+        self.preset_type = data.preset_type
+        self.instrument_default_image = data.instrument_default_image
+        self.instrument_icon_folder = data.instrument_icon_folder
+        self.presets = data.presets
+        self.preset_list = data.preset_list
+        self.midi_requests = data.midi_requests
+        self.midi_channel = data.midi_channel
 
-        # Create editor for each partial
-        for partial_name, partial_index in self.partial_mapping.items():
+    def _setup_partial_editors(self):
+        total = len(self.partial_mapping)
+        progress_dialog = ProgressDialog("Initializing Partials", "Loading partial editors...", total, self)
+        progress_dialog.show()
+
+        for count, (partial_name, partial_index) in enumerate(self.partial_mapping.items(), 1):
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_number=partial_index,
@@ -330,6 +330,10 @@ class DrumCommonEditor(SynthEditor):
             )
             self.partial_editors[partial_index] = editor
             self.partial_tab_widget.addTab(editor, partial_name)
+
+            progress_dialog.update_progress(count)
+
+        progress_dialog.close()
 
     def update_partial_num(self, index: int):
         """Update the current partial number based on tab index"""
