@@ -153,7 +153,7 @@ class JdxiInstrument(JdxiUi):
         pub.subscribe(self._update_display_preset, "update_display_preset")
 
         # Set black background for entire application
-        self.setStyleSheet(Style.JDXI)
+        self.setStyleSheet(Style.JDXI_TRANSPARENT)
 
         # Load custom font
         self._load_digital_font()

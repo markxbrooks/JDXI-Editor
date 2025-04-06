@@ -27,12 +27,9 @@ which can be integrated into a larger PySide6-based UI.
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import (
-    QFont,
-    QPixmap,
     QImage,
     QPainter,
     QPen,
-    QColor,
 )
 
 from jdxi_editor.ui.windows.jdxi.dimensions import (
@@ -62,6 +59,13 @@ def draw_instrument_pixmap(
     pixmap = QPixmap.fromImage(jdxi_image)
     painter = QPainter(pixmap)
     painter.setRenderHint(QPainter.Antialiasing)
+
+    # draw the background
+    gradient = QLinearGradient(0, 0, 0, jdxi_height)
+    gradient.setColorAt(0, QColor(30, 30, 30))
+    gradient.setColorAt(1, QColor(0, 0, 0))
+    painter.setBrush(gradient)
+    painter.fillRect(0, 0, jdxi_width, jdxi_height, gradient)
 
     # Use smaller margins without border
     margin = JDXI_MARGIN
@@ -98,7 +102,7 @@ def draw_sequencer(
     :return: None
     :rtype: None
     """
-    sequencer_y = keyboard_y - 42  # Keep same distance above keyboard
+    sequencer_y = keyboard_y - 25  # Keep same distance above keyboard
     sequencer_width = keyboard_width * 0.53 # Use roughly half keyboard width
     sequencer_x = instrument_width - margin - sequencer_width  # Align with right edge of keyboard
     # Calculate step dimensions

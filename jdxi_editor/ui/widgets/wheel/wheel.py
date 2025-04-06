@@ -1,3 +1,9 @@
+"""
+
+    WheelWidget
+    (c) 2025 JDXI Editor
+
+"""
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QColor, QPen, QMouseEvent, QFont, QLinearGradient
 from PySide6.QtCore import QRectF, Qt, Signal, Property, QPropertyAnimation
@@ -18,7 +24,7 @@ class WheelWidget(QWidget):
         # Smooth snap-back animation
         self.snap_animation = QPropertyAnimation(self, b"value")
         self.snap_animation.setDuration(300)
-        #self.snap_animation.setEasingCurve(Qt.EaseOutCubic)
+        # self.snap_animation.setEasingCurve(Qt.EaseOutCubic)
 
     def get_value(self):
         return self._value

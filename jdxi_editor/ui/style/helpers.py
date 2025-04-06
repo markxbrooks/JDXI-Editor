@@ -37,6 +37,9 @@ other interactive applications.
 """
 
 
+FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
+
+
 def generate_polyend_sequencer_button_style(self, is_checked: bool, is_current: bool = False) -> str:
     """Generate button style based on state and current step"""
     base_color = "#3498db" if is_checked else "#2c3e50"
@@ -111,7 +114,6 @@ def generate_button_style(
             }}
         """
 
-FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
 
 def generate_tab_style(
         bg,

@@ -106,7 +106,7 @@ class Style:
     ACCENT_ANALOG_PRESSED = "#417ffa"
 
 
-    # Dimensions
+    #  Dimensions
     BUTTON_ROUND_RADIUS = 15
     BUTTON_RECT_RADIUS = 6
     BUTTON_BORDER_WIDTH = 4
@@ -114,6 +114,8 @@ class Style:
     GROOVE_WIDTH = "2px"
     ICON_SIZE = 20
     TAB_BUTTON_RECT_RADIUS = 6
+
+    JDXI_FONT_RED = "#d51e35"  # Base red
 
     # Fonts
     FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
@@ -135,13 +137,14 @@ class Style:
     )
     JDXI_BUTTON_ROUND_SMALL = generate_button_style(
         bg=BORDER,
-        border=BORDER,
-        radius=12,
-        text_color=FOREGROUND,
+        border="black",
+        radius=10,
+        text_color="#AAAAAA",
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
         font_size=FONT_SIZE,
         button_padding=BUTTON_PADDING,
+        button_border_width=1,
     )
     JDXI_BUTTON_RECT = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
@@ -269,49 +272,91 @@ class Style:
         SLIDER_NEON_GRADIENT_STOP_ANALOG,
     )
 
-    JDXI = """
-            QMainWindow {
+    JDXI = f"""
+            QMainWindow {{
                 background-color: black;
-            }
-            QWidget {
-                background-color: black;
-                color: white;
-            }
-            QMenuBar {
+            }}
+            QWidget {{
                 background-color: black;
                 color: white;
-            }
-            QMenuBar::item:selected {
+            }}
+            QMenuBar {{
+                background-color: black;
+                color: white;
+            }}
+            QMenuBar::item:selected {{
                 background-color: #333333;
-            }
-            QMenu {
+            }}
+            QMenu {{
                 background-color: black;
                 color: white;
-            }
-            QMenu::item:selected {
+            }}
+            QMenu::item:selected {{
                 background-color: #333333;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 border: none;
                 border-top: 1px solid #333333;
                 margin: 1px;
                 padding: 1px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 subcontrol-position: top center;
                 padding: 0 1px;
                 background-color: black;
-            }
-            QLabel {
+            }}
+            QLabel {{
                 background-color: transparent;
-                color: red;
-            }
-            QStatusBar {
+                color: white;
+            }}
+            QStatusBar {{
                 background-color: black;
-                color: red;
-            }
+                color: "{ACCENT}";
+            }}
         """
+
+    JDXI_TRANSPARENT = f"""
+        QMainWindow, QWidget, QMenuBar {{
+            background-color: transparent;
+            color: "{JDXI_FONT_RED}";
+        }}
+        QPushButton {{
+            background-color: transparent;
+            border: 1px solid red;
+            color: "{JDXI_FONT_RED}";
+        }}
+        QPushButton:hover {{
+            background-color: rgba(255, 0, 0, 30);
+        }}
+        QStatusBar {{
+            background-color: transparent;
+            color: "{JDXI_FONT_RED}";
+        }}
+    """
+
+    JDXI_TRANSPARENT_WHITE = f"""
+        QMainWindow, QWidget, QMenuBar {{
+            background-color: transparent;
+            color: "{JDXI_FONT_RED}";
+        }}
+        QLabel {{
+            background-color: transparent;
+            color: "white";
+        }}
+        QPushButton {{
+            background-color: transparent;
+            border: 1px solid red;
+            color: "{JDXI_FONT_RED}";
+        }}
+        QPushButton:hover {{
+            background-color: rgba(255, 0, 0, 30);
+        }}
+        QStatusBar {{
+            background-color: transparent;
+            color: "{JDXI_FONT_RED}";
+        }}
+    """
 
     JDXI_ADSR_ANALOG = """
         /* Groove (Track) */
@@ -743,7 +788,7 @@ class Style:
     JDXI_LABEL_SYNTH_PART = f"""
                 font-family: "{FONT_FAMILY}";
                 font-size: 13px;
-                color: #d51e35;  /* Base red */
+                color: "{JDXI_FONT_RED}";  /* Base red */
                 font-weight: bold;
             """
 
