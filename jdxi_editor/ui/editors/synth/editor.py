@@ -299,9 +299,11 @@ class SynthEditor(SynthBase):
             self.instrument_image_label.setScaledContents(True)
             self.instrument_image_label.setStyleSheet("""
                 QLabel {
-                    height: 150px;
-                    background-color: transparent;
-                    border: none;""")
+                        height: 150px;
+                        background-color: transparent;
+                        border: none;
+                    }
+                """)
             return True
 
         default_image_path = os.path.join(

@@ -53,7 +53,6 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.digital import (
     DigitalOscWave,
     DigitalPartial,
-    set_partial_state,
     get_digital_parameter_by_address,
 )
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
@@ -79,14 +78,13 @@ class DigitalSynthEditor(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        synth_num=1,
+        synth_number=1,
         parent=None,
         preset_helper=None,
     ):
         super().__init__(parent)
-        # Core attributes
         self.instrument_image_group = None
-        self.partial_num = None
+        self.partial_number = None
         self.current_data = None
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
@@ -95,19 +93,19 @@ class DigitalSynthEditor(SynthEditor):
             else parent.digital_2_preset_helper
         )
         self.main_window = parent
-        self.synth_num = synth_num
+        self.synth_number = synth_number
         self.controls: Dict[
             Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
         ] = {}
-        self._init_synth_data(synth_num)
-        self.setup_ui(synth_num)
+        self._init_synth_data(synth_number)
+        self.setup_ui(synth_number)
         self.update_instrument_image()
         self._initialize_partial_states()
 
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            if synth_num == 2:
+            if synth_number == 2:
                 self.midi_helper.update_digital2_tone_name.connect(
                     self.set_instrument_title_label
                 )
@@ -120,9 +118,9 @@ class DigitalSynthEditor(SynthEditor):
         self.data_request()
         self.show()
 
-    def _init_synth_data(self, synth_num):
+    def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
-        self.synth_data = DigitalSynthData(synth_num)
+        self.synth_data = DigitalSynthData(synth_number)
         print(self.synth_data)
         data = self.synth_data
 
@@ -206,11 +204,6 @@ class DigitalSynthEditor(SynthEditor):
     def _create_instrument_group(self, container_layout, upper_layout):
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(self.presets[0] if self.presets else "")
-        instrument_preset_group.setStyleSheet(
-            """
-                        width: 250px;
-            """
-        )
         self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout = QVBoxLayout()
         instrument_preset_group.setLayout(instrument_title_group_layout)
@@ -253,7 +246,7 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_editors = {}
         # Create editor for each partial
         for i in range(1, 4):
-            editor = DigitalPartialEditor(midi_helper, self.synth_num, i, parent=self)
+            editor = DigitalPartialEditor(midi_helper, self.synth_number, i, parent=self)
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
         self.common_section = DigitalCommonSection(
@@ -273,8 +266,7 @@ class DigitalSynthEditor(SynthEditor):
         self, partial: DigitalPartial, enabled: bool, selected: bool
     ):
         """Handle partial state changes"""
-        if self.midi_helper:
-            set_partial_state(self.midi_helper, partial, enabled, selected)
+        self.set_partial_state(partial, enabled, selected)
 
         # Enable/disable corresponding tab
         partial_num = partial.value
@@ -283,6 +275,29 @@ class DigitalSynthEditor(SynthEditor):
         # Switch to selected partial's tab
         if selected:
             self.partial_tab_widget.setCurrentIndex(partial_num - 1)
+
+    def set_partial_state(self,
+                          partial: DigitalPartial,
+                          enabled: bool = True,
+                          selected: bool = True) -> bool:
+        """Set the state of address partial
+
+        Args:
+            partial: The partial to modify
+            enabled: Whether the partial is enabled (ON/OFF)
+            selected: Whether the partial is selected
+
+        Returns:
+            True if successful
+        """
+        try:
+            logging.info(f"Setting partial {partial.switch_param} state: enabled={enabled}, selected={selected}")
+            self.send_midi_parameter(param=partial.switch_param, value=1 if enabled else 0)
+            logging.info(f"Setting partial {partial.select_param} state: enabled={enabled}, selected={selected}")
+            self.send_midi_parameter(param=partial.select_param, value=1 if selected else 0)
+        except Exception as ex:
+            logging.error(f"Error setting partial {partial.name} state: {str(ex)}")
+            return False
 
     def _initialize_partial_states(self):
         """Initialize partial states with defaults"""
@@ -431,9 +446,10 @@ class DigitalSynthEditor(SynthEditor):
                 continue
 
             try:
-                if param.name in ["PARTIAL1_SWITCH", "PARTIAL2_SWITCH", "PARTIAL3_SWITCH",
-                                  "PARTIAL1_SELECT", "PARTIAL2_SELECT", "PARTIAL3_SELECT"]:
+                if param.name in ["PARTIAL1_SWITCH", "PARTIAL2_SWITCH", "PARTIAL3_SWITCH"]:
                     self._update_partial_selection_switch(param, param_value, successes, failures, debug)
+                if param.name in ["PARTIAL1_SELECT", "PARTIAL2_SELECT", "PARTIAL3_SELECT"]:
+                    self._update_partial_selected_state(param, param_value, successes, failures, debug)
                 elif "SWITCH" or "SHIFT" in param_name:
                     self._update_switch(param, param_value, successes, failures, debug)
                 else:
@@ -555,6 +571,27 @@ class DigitalSynthEditor(SynthEditor):
         if check_box:
             check_box.blockSignals(True)
             check_box.setState(bool(value), False)
+            check_box.blockSignals(False)
+            successes.append(param.name)
+            if debug:
+                logging.info(f"Updated: {param.name:50} {value}")
+        else:
+            failures.append(param.name)
+
+    def _update_partial_selected_state(self, param, value, successes, failures, debug):
+        """Update the partial selection switches based on parameter and value."""
+        param_name = param.name
+        partial_switch_map = {
+            "PARTIAL1_SELECT": 1,
+            "PARTIAL2_SELECT": 2,
+            "PARTIAL3_SELECT": 3,
+        }
+        partial_number = partial_switch_map.get(param_name)
+        check_box = self.partials_panel.switches.get(partial_number)
+        logging.info(f"Updating switch for: {param_name}, checkbox: {check_box}")
+        if check_box:
+            check_box.blockSignals(True)
+            check_box.setSelected(bool(value))
             check_box.blockSignals(False)
             successes.append(param.name)
             if debug:

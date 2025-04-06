@@ -33,7 +33,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 from pubsub import pub
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
-from PySide6.QtCore import Qt, QSettings, Signal
+from PySide6.QtCore import Qt, QSettings, Signal, QTimer
 
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
@@ -71,6 +71,7 @@ from jdxi_editor.ui.editors.io.player import MidiPlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style.helpers import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
@@ -171,6 +172,7 @@ class JdxiInstrument(JdxiUi):
         # Create display label
         self.display_label = QLabel()
         self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
+        self._toggle_illuminate_sequencer_lightshow(True)
 
 
         # Add display to layout
@@ -468,6 +470,36 @@ class JdxiInstrument(JdxiUi):
             presets[preset_index],
             channel,
         )
+
+    def _toggle_illuminate_sequencer_lightshow(self, enabled: bool) -> None:
+        """Toggle the sequencer lightshow on or off."""
+        if not enabled:
+            if hasattr(self, 'lightshow_timer') and self.lightshow_timer.isActive():
+                self.lightshow_timer.stop()
+            # Turn off any active lights
+            for btn in self.sequencer_buttons:
+                btn.setStyleSheet(generate_sequencer_button_style(False))
+                btn.setChecked(True)
+            return
+
+        self._lightshow_index = 0
+
+        def step():
+            # Turn off previous
+            for i, btn in enumerate(self.sequencer_buttons):
+                btn.setChecked(False)
+                btn.setStyleSheet(generate_sequencer_button_style(i == self._lightshow_index))
+
+            self._lightshow_index += 1
+            if self._lightshow_index >= len(self.sequencer_buttons):
+                self._lightshow_index = 0  # Loop back to start
+
+        # Create and start the timer
+        if not hasattr(self, 'lightshow_timer'):
+            self.lightshow_timer = QTimer(self)
+            self.lightshow_timer.timeout.connect(step)
+
+        self.lightshow_timer.start(500)  # Every 500 ms
 
     def show_editor(self, editor_type: str):
         """Show the specified editor window"""

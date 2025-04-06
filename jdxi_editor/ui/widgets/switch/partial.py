@@ -82,6 +82,10 @@ class PartialSwitch(QWidget):
         self.enable_check.setChecked(enabled)
         self.select_check.setChecked(selected)
 
+    def setSelected(self, selected: bool):
+        """Set the partial state"""
+        self.select_check.setChecked(selected)
+
 
 class PartialsPanel(QWidget):
     """Panel containing all partial switches"""

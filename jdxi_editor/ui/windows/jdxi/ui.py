@@ -55,6 +55,8 @@ from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.ui.widgets.wheel.mod import ModWheel
+from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_MARGIN, JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, \
     JDXI_DISPLAY_HEIGHT, JDXI_TITLE_X, JDXI_TITLE_Y
@@ -503,11 +505,30 @@ class JdxiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-        status_bar.setStyleSheet("border: none;")
-        # status_bar.setStyleSheet("background-color: black;")
-        spacer = QLabel(" ")
-        spacer.setMinimumWidth(10)  # Adjust as needed
-        status_bar.addPermanentWidget(spacer)
+        status_bar.setStyleSheet("border: none; color: red;")
+        label_layout = QHBoxLayout()
+        label_layout.setContentsMargins(0, 0, 0, 0)
+        label_layout.addStretch()
+        pitch_label = QLabel("Pitch")
+        pitch_label.setStyleSheet(Style.JDXI_QLABEL)
+        label_layout.addWidget(pitch_label)
+        label_layout.addStretch()
+        mod_label = QLabel("Mod")
+        mod_label.setStyleSheet(Style.JDXI_QLABEL)
+        label_layout.addWidget(mod_label)
+        label_layout.addStretch()
+        wheel_layout = QHBoxLayout()
+        wheel_layout.addStretch()
+        # Create a pitch wheel
+        pitch_wheel = PitchWheel()
+        pitch_wheel.setMinimumWidth(20)
+        wheel_layout.addWidget(pitch_wheel)
+        wheel_layout.addStretch()
+        # Create mod wheel
+        mod_wheel = ModWheel()
+        mod_wheel.setMinimumWidth(20)
+        wheel_layout.addWidget(mod_wheel)
+        wheel_layout.addStretch()
 
         # Create MIDI indicators
         self.midi_in_indicator = LEDIndicator()
@@ -518,6 +539,10 @@ class JdxiUi(QMainWindow):
         midi_indicator_container_vbox = QVBoxLayout()
         midi_indicator_container.setLayout(midi_indicator_container_vbox)
         status_bar.addPermanentWidget(midi_indicator_container)
+        midi_indicator_container_vbox.addStretch()
+        midi_indicator_container_vbox.addLayout(label_layout)
+        midi_indicator_container_vbox.addStretch()
+        midi_indicator_container_vbox.addLayout(wheel_layout)
         midi_indicator_container_vbox.addStretch()
         midi_indicator_row = QHBoxLayout()
         midi_indicator_container_vbox.addLayout(midi_indicator_row)
