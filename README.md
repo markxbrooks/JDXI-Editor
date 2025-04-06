@@ -1,81 +1,105 @@
 # JDXI-Editor
 
-![image info](./resources/jdxi_cartoon_600.png)
+![Roland JD-Xi Cartoon](./resources/jdxi_cartoon_600.png)
 
-A Editor for the Roland JD-Xi instrument, written in Python and the Qt Framework and RtMidi 
+**JDXI-Editor** is an editor for the **Roland JD-Xi** synthesizer, written in **Python** using the **Qt Framework** and **RtMidi**.
 
-Designed to implement as many features at possible of the Roland MIDI implementation without menu diving :-)
+It’s designed to implement as many features as possible from Roland’s MIDI implementation—without the need to dive through hardware menus. 🎛️
 
-Not at all feature-complete or even complete, but have a go and let me know your feedback.
+> ⚠️ This app is a work in progress and not yet feature-complete—but feel free to try it out and share your feedback!
 
-<a href="./resources/main_window.gif" rel="Current view of the Roland JD-Xi Editor App">![image info](./resources/main_window_high.gif ) </a>
+---
 
-Current view of the Roland JD-Xi Editor App.
+### 🖥️ Current App Preview
 
+<a href="./resources/main_window.gif" rel="Current view of the Roland JD-Xi Editor App">
+  <img src="./resources/main_window_high.gif" alt="Roland JD-Xi Main Editor Window" />
+</a>
 
-Getting started quick guide:
+---
 
-There are no builds yet, so you'll have to run it from a Python shell.
+## 🚀 Getting Started
 
-```code 
-    $ git clone https://github.com/markxbrooks/JDXI-Editor.git
-    $ cd JDXI-Editor
-    $ python -m venv venv
-    $ source venv/bin/activate
-    $ python -m pip install -r requirements.txt
-    $ python -m jdxi_editor.main
+There are no packaged builds yet, so you'll need to run the app from a Python environment:
+
+```bash
+$ git clone https://github.com/markxbrooks/JDXI-Editor.git
+$ cd JDXI-Editor
+$ python -m venv venv
+$ source venv/bin/activate
+$ python -m pip install -r requirements.txt
+$ python -m jdxi_editor.main
 ```
 
-<a href="./resources/digital_analog_synths.png" rel="Digital & Analog Synths">![image info](./resources/digital_analog_synths_600.png ) </a>
+---
 
-Digital & Analog Synths
+### 🎹 UI Previews
 
-&nbsp;
-
-<a href="./resources/effects.png" rel="Effects and Arpeggiator Windows">![image info](./resources/effects_600.png )</a>
-
-Effects and Arpeggiator Windows
-
-&nbsp;
-
-<a href="./resources/vocal_effects.png" rel="Effects and Arpeggiator Windows">![image info](./resources/vocal_effects_600.png )</a>
-
-Vocal Effects Window
+**Digital & Analog Synths**  
+<a href="./resources/digital_analog_synths.png">
+  <img src="./resources/digital_analog_synths_600.png" alt="Digital & Analog Synths" />
+</a>
 
 &nbsp;
 
-<a href="./resources/logs_and_midi.png" rel="Effects and Arpeggiator Windows">![image info](./resources/logs_and_midi_600.png )</a>
-
-Log Viewer and MIDI Debugger Windows
-
-<a href="./resources/midi_config.png" rel="Effects and Arpeggiator Windows">![image info](./resources/midi_config_200.png )</a>
-
-MIDI Config Windows
+**Effects and Arpeggiator**  
+<a href="./resources/effects.png">
+  <img src="./resources/effects_600.png" alt="Effects and Arpeggiator" />
+</a>
 
 &nbsp;
 
-## Features:
+**Vocal Effects**  
+<a href="./resources/vocal_effects.png">
+  <img src="./resources/vocal_effects_600.png" alt="Vocal Effects Window" />
+</a>
 
-1. Keyboard
-2. Preset list selection, including search
-3. Octave Key
-4. 'LCD' Display
-5. Digital Synth Parts 1 & 2, including 3 partials per synth
-6. Analog synth
-7. Effects: Reverb, Delay, Vocoder
-8. Arpeggiator 
+&nbsp;
 
-### TODO List
-1. Drums
-2. Sequencer if feasible
+**Log Viewer and MIDI Debugger**  
+<a href="./resources/logs_and_midi.png">
+  <img src="./resources/logs_and_midi_600.png" alt="Logs and MIDI Debugger" />
+</a>
 
-## Credits
+&nbsp;
 
-1) Qt Library
-2) RTmidi
-3) Cursor.ai
-4) qtawesome
-5) Various awesome JDXI Editor Programs already existing but somehow could be improved.
-6) Roland for a cool little instrument with lots of capability
+**MIDI Configuration**  
+<a href="./resources/midi_config.png">
+  <img src="./resources/midi_config_200.png" alt="MIDI Configuration Window" />
+</a>
 
+---
+
+## 🎛️ Features
+
+- On-screen Keyboard
+- Preset selection with search
+- Octave shifting
+- JD-Xi-style LCD Display
+- Digital Synth Parts 1 & 2 (including 3 partials per part)
+- Analog Synth Editor
+- Effects: Reverb, Delay, Vocoder
+- Arpeggiator Editor
+
+---
+
+## 🧩 Coming Soon
+
+- Drum Part Editor 🥁
+- Pattern Sequencer (if feasible)
+
+---
+
+## 🙏 Credits
+
+- [Qt](https://www.qt.io/)
+- [RtMidi](https://www.music.mcgill.ca/~gary/rtmidi/)
+- [Cursor.ai](https://cursor.so)
+- [qtawesome](https://github.com/spyder-ide/qtawesome)
+- Inspiration from many great JD-Xi editor projects that paved the way
+- **Roland**, for creating such a powerful little synth!
+
+---
+
+> Made with 🎹 and ☕ by @markxbrooks
 
