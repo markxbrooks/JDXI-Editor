@@ -18,7 +18,10 @@ class AmpEnvelopeSlider(Slider):
         label: str,
         vertical: bool = True,
     ):
-        super().__init__(label, int(min_value), int(max_value), vertical=True)
+        super().__init__(label, int(min_value), int(max_value),
+                         show_value_label=False,
+                         vertical=True,
+                         draw_tick_marks=False)
         self.midi_helper = midi_helper
         self.partial = partial  # 1, 2, or 3
         self.min_value = min_value
@@ -35,25 +38,20 @@ class AmpEnvelopeSlider(Slider):
             3: 126,  # Partial 3
         }
 
-    def _on_value_changed(self, value: float):
+    def _on_value_changed(self, value: int):
         """
-        Set the current value of the slider and send NRPN messages.
+        Set the current value of the slider and send Control Change (CC) messages.
         """
-        logging.info(f"filter value: {value} for nrpn slider")
+        logging.info(f"filter value: {value} for cutoff slider")
+
         if self.min_value <= value <= self.max_value:
             self.current_value = value
         else:
             raise ValueError("Value out of range.")
 
-        cc_value = int(
-            (value - self.min_value) / (self.max_value - self.min_value) * 127
-        )
-        logging.info(f"cc_value: {cc_value}")
-        nrpn_lsb = self.nrpn_map.get(self.partial)
-        if nrpn_lsb is None:
-            raise ValueError("Invalid partial number")
-
-        for channel in [0, 1, 2]:  # Optionally send to all partials
-            self.midi_helper.send_control_change(99, 0x00, channel)  # NRPN MSB
-            self.midi_helper.send_control_change(98, nrpn_lsb, channel)  # NRPN LSB
-            self.midi_helper.send_control_change(6, cc_value, channel)  # Data Entry MSB
+        for partial in [1, 2, 3]:
+            cc_number = self.nrpn_map.get(partial)
+            if cc_number is None:
+                raise ValueError("Invalid partial number")
+            for channel in [0, 1, 2]:  # Or just the channel matching this partial
+                self.midi_helper.send_control_change(cc_number, value, channel=channel)

@@ -56,6 +56,8 @@ class Slider(QWidget):
         vertical: bool = False,
         show_value_label: bool = True,
         is_bipolar: bool = False,
+        draw_center_mark: bool = True,
+        draw_tick_marks: bool = True,
         parent=None,
     ):
         super().__init__(parent)
@@ -65,6 +67,9 @@ class Slider(QWidget):
         self.has_center_mark = False
         self.center_value = 0
         self.vertical = vertical
+        self.is_bipolar = is_bipolar
+        self.draw_center_mark = draw_center_mark
+        self.draw_tick_marks = draw_tick_marks
 
         # Main layout
         layout = QVBoxLayout() if vertical else QHBoxLayout()
@@ -153,7 +158,7 @@ class Slider(QWidget):
                 self.center_value,
                 slider_rect.width()
             )
-            
+
             # Draw center mark
             painter.drawLine(
                 center_pos + slider_rect.x(),
@@ -163,13 +168,14 @@ class Slider(QWidget):
             )
         elif self.vertical:
             # draw tick mark lines perpendicular to the vertical slider
-            for position in positions:
-                painter.drawLine(
-                    slider_rect.x(),
-                    slider_rect.y() + (position * slider_rect.height()),
-                    slider_rect.x() + slider_rect.width(),
-                    slider_rect.y() + (position * slider_rect.height())
-                )
+            if self.draw_tick_marks:
+                for position in positions:
+                    painter.drawLine(
+                        slider_rect.x(),
+                        slider_rect.y() + (position * slider_rect.height()),
+                        slider_rect.x() + slider_rect.width(),
+                        slider_rect.y() + (position * slider_rect.height())
+                    )
         else:
             for position in positions:
                 painter.drawLine(

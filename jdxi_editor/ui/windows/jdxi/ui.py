@@ -812,7 +812,7 @@ class JdxiUi(QMainWindow):
         program_label_layout.addWidget(program_label)
         program_container_layout.addLayout(program_label_layout)
         program_layout = QHBoxLayout()
-        program_layout.setSpacing(4)
+        program_layout.setSpacing(3)
         program_row = self._create_program_buttons_row()
         program_layout.addLayout(program_row)
         program_container_layout.addLayout(program_layout)
@@ -822,7 +822,7 @@ class JdxiUi(QMainWindow):
         tone_container.setGeometry(self.width - 575, self.margin + 75, 150, 80)
         tone_container.setStyleSheet(Style.JDXI_TRANSPARENT)
         tone_container_layout = QVBoxLayout(tone_container)
-        tone_container_layout.setSpacing(1)
+        tone_container_layout.setSpacing(3)
         tone_label_layout = QHBoxLayout()
         tone_label = QLabel("Tone")
         tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -857,47 +857,92 @@ class JdxiUi(QMainWindow):
         parts_container.setStyleSheet(Style.JDXI_TRANSPARENT)
         fx_container.setStyleSheet(Style.JDXI_TRANSPARENT)
 
-        filter_container = QWidget(central_widget)
-        filter_container.setGeometry(self.width - 430, self.margin -10, 300, 160)
-        filter_container_layout = QHBoxLayout(filter_container)
-        filter_container_layout.setSpacing(4)
-        filter_cutoff_slider = FilterCutoffSlider(self.midi_helper,
-                                           partial=1,
-                                           min_value=0,
-                                           max_value=127,
-                                           label="Fltr. Cut",
-                                           vertical=True)
-        filter_resonance_slider = FilterResonanceSlider(self.midi_helper,
-                                           partial=1,
-                                           min_value=0,
-                                           max_value=127,
-                                           label="Fltr. Reson.",
-                                           vertical=True)
-        amp_level_slider = AmpLevelSlider(self.midi_helper,
-                                           partial=1,
-                                           min_value=0,
-                                           max_value=127,
-                                           label="Amp Lvl.",
-                                           vertical=True)
-        amp_env_slider = AmpEnvelopeSlider(self.midi_helper,
-                                           partial=1,
-                                           min_value=0,
-                                           max_value=127,
-                                           label="Amp Env.",
-                                           vertical=True)
-        filter_cutoff_slider.setFixedHeight(160)
-        amp_level_slider.setFixedHeight(160)
-        amp_env_slider.setFixedHeight(160)
-        filter_resonance_slider.setFixedHeight(160)
-        filter_cutoff_slider.setStyleSheet(Style.JDXI_ADSR)
-        filter_resonance_slider.setStyleSheet(Style.JDXI_ADSR)
-        amp_level_slider.setStyleSheet(Style.JDXI_ADSR)
-        amp_env_slider.setStyleSheet(Style.JDXI_ADSR)
-        filter_container_layout.addWidget(filter_cutoff_slider)
-        filter_container_layout.setSpacing(4)
-        filter_container_layout.addWidget(filter_resonance_slider)
-        filter_container_layout.addWidget(amp_level_slider)
-        filter_container_layout.addWidget(amp_env_slider)
+        slider_container = QWidget(central_widget)
+        slider_container.setGeometry(self.width - 430, self.margin, 250, 140)
+
+        main_layout = QVBoxLayout(slider_container)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(3)
+
+        slider_row_container = QWidget(slider_container)
+        slider_row_layout = QHBoxLayout(slider_row_container)
+        slider_row_layout.setContentsMargins(0, 0, 0, 0)
+        slider_row_layout.setSpacing(3)
+
+        slider_height = 100
+        slider_style = Style.JDXI_ADSR
+
+        def create_slider_with_label(label_text, slider_widget):
+            container = QWidget()
+            layout = QVBoxLayout(container)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(2)
+
+            label = QLabel(label_text)
+            label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            label.setMaximumHeight(20)
+
+            slider_widget.setFixedHeight(slider_height)
+            slider_widget.setStyleSheet(slider_style)
+
+            # layout.addWidget(label)
+            layout.addWidget(slider_widget)
+
+            return container
+
+        def create_columns_with_label(label_text, container1, container2):
+            container = QWidget()
+            layout = QVBoxLayout(container)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(2)
+
+            label = QLabel(label_text)
+            label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            label.setMaximumHeight(20)
+
+            layout.addWidget(label)
+            row_layout = QHBoxLayout()
+            layout.addLayout(row_layout)
+
+            row_layout.addWidget(container1)
+            row_layout.addWidget(container2)
+
+            return container
+
+        # Create sliders
+        filter_cutoff_slider = FilterCutoffSlider(
+            self.midi_helper, partial=1, min_value=0, max_value=127, label="Cutoff", vertical=True
+        )
+        filter_resonance_slider = FilterResonanceSlider(
+            self.midi_helper, partial=1, min_value=0, max_value=127, label="Reson.", vertical=True
+        )
+        amp_level_slider = AmpLevelSlider(
+            self.midi_helper, partial=1, min_value=0, max_value=127, label="Level", vertical=True
+        )
+        amp_env_slider = AmpEnvelopeSlider(
+            self.midi_helper, partial=1, min_value=0, max_value=127, label="Env", vertical=True
+        )
+
+        # Add sliders with labels to the row
+
+        filter_cutoff_container = create_slider_with_label("Cutoff",
+                                                           filter_cutoff_slider)
+        filter_resonance_container = create_slider_with_label("Reson",
+                                                              filter_resonance_slider)
+        amp_level_container = create_slider_with_label("Level",
+                                                       amp_level_slider)
+        amp_env_container = create_slider_with_label("Env",
+                                                     amp_env_slider)
+
+        slider_row_layout.addWidget(create_columns_with_label("Filter",
+                                                              filter_cutoff_container,
+                                                              filter_resonance_container))
+        slider_row_layout.addWidget(create_columns_with_label("Amp",
+                                                              amp_level_container,
+                                                              amp_env_container))
+
+        # Add to main layout
+        main_layout.addWidget(slider_row_container)
 
     def _create_other(self):
         """Create other controls section"""
