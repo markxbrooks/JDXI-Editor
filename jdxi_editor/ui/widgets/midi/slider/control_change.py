@@ -1,6 +1,7 @@
 import logging
 from jdxi_editor.ui.widgets.slider import Slider
 
+
 class ControlChangeSlider(Slider):
     """
     A base class for sliders with a common on_value_changed method to send Control Change (CC) messages.
@@ -16,10 +17,13 @@ class ControlChangeSlider(Slider):
         max_value: int = 127,
         vertical: bool = True,
     ):
-        super().__init__(label, int(min_value), int(max_value),
+        super().__init__(label,
+                         min_val=min_value,
+                         max_val=max_value,
+                         vertical=vertical,
                          show_value_label=False,
-                         vertical=True,
                          draw_tick_marks=False)
+        self.label = label
         self.midi_helper = midi_helper
         self.partial = partial  # 1, 2, or 3
         self.min_value = min_value

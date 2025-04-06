@@ -70,6 +70,12 @@ def draw_instrument_pixmap(
     # Use smaller margins without border
     margin = JDXI_MARGIN
 
+    # Draw a black rectangle 1 px wide at the margin for style, with no fill
+    pen = QPen(Qt.black, 1)
+    painter.setPen(pen)
+    painter.setBrush(Qt.NoBrush)
+    painter.drawRect(10, 50, jdxi_width - 20, jdxi_height - 100)
+
     # Keyboard section (moved up and taller)
     keyboard_width = JDXI_KEYBOARD_WIDTH
     white_key_height = JDXI_WHITE_KEY_HEIGHT

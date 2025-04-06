@@ -8,7 +8,7 @@ Designed to implement as many features at possible of the Roland MIDI implementa
 
 Not at all feature-complete or even complete, but have a go and let me know your feedback.
 
-<a href="./resources/main_window.png" rel="Current view of the Roland JD-Xi Editor App">![image info](./resources/main_window_600.png ) </a>
+<a href="./resources/main_window.gif" rel="Current view of the Roland JD-Xi Editor App">![image info](./resources/main_window_high.gif ) </a>
 
 Current view of the Roland JD-Xi Editor App.
 
