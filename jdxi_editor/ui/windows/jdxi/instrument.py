@@ -147,7 +147,7 @@ class JdxiInstrument(JdxiUi):
         # Initialize MIDI indicators
         self.midi_in_indicator.set_state(bool(self.midi_in))
         self.midi_out_indicator.set_state(bool(self.midi_out))
-        self.key_hold.clicked.connect(self._send_arp_key_hold)
+        self.key_hold_button.clicked.connect(self._send_arp_key_hold)
         self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
 
         pub.subscribe(self._update_display_preset, "update_display_preset")
