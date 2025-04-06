@@ -21,46 +21,6 @@ def get_digital_parameter_by_address(address: Tuple[int, int]):
     return None
 
 
-def set_partial_state(
-        midi_helper, partial: DigitalPartial, enabled: bool = True, selected: bool = True
-) -> bool:
-    """Set the state of address partial
-
-    Args:
-        midi_helper: MIDI helper instance
-        partial: The partial to modify
-        enabled: Whether the partial is enabled (ON/OFF)
-        selected: Whether the partial is selected
-
-    Returns:
-        True if successful
-    """
-    try:
-        # Send switch state
-        success = midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_1_AREA,
-            part=PART_1,
-            group=0x00,
-            param=partial.switch_param.address,
-            value=1 if enabled else 0,
-        )
-        if not success:
-            return False
-
-        # Send select state
-        return midi_helper.send_parameter(
-            area=DIGITAL_SYNTH_1_AREA,
-            part=PART_1,
-            group=0x00,
-            param=partial.select_param.address,
-            value=1 if selected else 0,
-        )
-
-    except Exception as e:
-        logging.error(f"Error setting partial {partial.name} state: {str(e)}")
-        return False
-
-
 def validate_value(param: DigitalPartialParameter, value: int) -> Optional[int]:
     """Validate and convert parameter value"""
     if not isinstance(value, int):

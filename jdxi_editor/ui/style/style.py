@@ -305,10 +305,11 @@ class Style:
             }
             QLabel {
                 background-color: transparent;
+                color: red;
             }
             QStatusBar {
                 background-color: black;
-                color: white;
+                color: red;
             }
         """
 
@@ -685,6 +686,17 @@ class Style:
             background: transparent;
         """
 
+    JDXI_QLABEL = f"""
+        QLabel {{
+            font-family: "{FONT_FAMILY}";
+            font-size: 14px;
+            color: #d51e35;
+            font-weight: bold;
+            background: transparent;
+        }}
+    """
+
+
     JDXI_KEYBOARD_DRUM_LABELS = """
                 QLabel {
                     color: #808080;
@@ -782,6 +794,12 @@ class Style:
             }}
             QLabel {{
                 color: #FFFFFF;
+                font-family: "{FONT_FAMILY}";
+            }}
+        """
+    JDXI_LABEL_WHEEL = f"""            
+        QLabel {{
+                color: red;
                 font-family: "{FONT_FAMILY}";
             }}
         """
