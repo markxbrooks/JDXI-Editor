@@ -3,8 +3,27 @@ import logging
 
 from jdxi_editor.ui.widgets.slider import Slider
 
+class FilterResonanceSlider(ControlChangeSlider):
+    """
+    A class to represent a filter slider for JD-Xi using NRPN.
+    """
+    def __init__(
+        self,
+        midi_helper,
+        partial: int,
+        min_value: int,
+        max_value: int,
+        label: str,
+        vertical: bool = True,
+    ):
+        nrpn_map = {
+            1: 105,  # NRPN LSB for Partial 1
+            2: 106,  # Partial 2
+            3: 107,  # Partial 3
+        }
+        super().__init__(midi_helper, partial, min_value, max_value, label, nrpn_map, vertical)
 
-class FilterResonanceSlider(Slider):
+class FilterResonanceSliderOld(Slider):
     """
     A class to represent a filter slider for JD-Xi using NRPN.
     """
