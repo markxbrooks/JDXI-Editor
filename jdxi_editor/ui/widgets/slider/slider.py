@@ -61,6 +61,7 @@ class Slider(QWidget):
         parent=None,
     ):
         super().__init__(parent)
+        self.label = label
         self.min_val = min_val
         self.max_val = max_val
         self.value_display_format = str  # Default format function

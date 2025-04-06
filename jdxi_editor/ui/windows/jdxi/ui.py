@@ -37,7 +37,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSettings, QRect
 from PySide6.QtGui import (
     QAction,
-    QFontDatabase, QFont,
+    QFontDatabase,
+    QFont,
 )
 
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
@@ -48,7 +49,10 @@ from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
-from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
+from jdxi_editor.ui.style.helpers import (
+    generate_sequencer_button_style,
+    toggle_button_style,
+)
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
 from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
@@ -63,12 +67,19 @@ from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
 from jdxi_editor.ui.widgets.wheel.mod import ModWheel
 from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_MARGIN, JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, \
-    JDXI_DISPLAY_HEIGHT, JDXI_TITLE_X, JDXI_TITLE_Y
+from jdxi_editor.ui.windows.jdxi.dimensions import (
+    JDXI_MARGIN,
+    JDXI_DISPLAY_X,
+    JDXI_DISPLAY_Y,
+    JDXI_DISPLAY_WIDTH,
+    JDXI_DISPLAY_HEIGHT,
+    JDXI_TITLE_X,
+    JDXI_TITLE_Y,
+)
 
 
 class JdxiUi(QMainWindow):
-    """ JDXI UI setup, with little or no actual functionality, which is superclassed"""
+    """JDXI UI setup, with little or no actual functionality, which is superclassed"""
 
     def __init__(self):
         super().__init__()
@@ -319,7 +330,9 @@ class JdxiUi(QMainWindow):
             button.toggled.connect(
                 lambda checked, btn=button: toggle_button_style(btn, checked)
             )
-            button.clicked.connect(lambda _, index=i, but=button: self._save_favorite(but, index))
+            button.clicked.connect(
+                lambda _, index=i, but=button: self._save_favorite(but, index)
+            )
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
             grid.setHorizontalSpacing(2)  # Add spacing between columns
             sequencer_buttons.append(button)
@@ -338,7 +351,9 @@ class JdxiUi(QMainWindow):
         grid.setGeometry(QRect(1, 1, 300, 150))
 
         # Assuming you have a way to get the current preset name or ID
-        current_presets = self.get_current_presets()  # This should return a list or dict of current presets
+        current_presets = (
+            self.get_current_presets()
+        )  # This should return a list or dict of current presets
 
         for i in range(16):
             button = QPushButton()
@@ -350,12 +365,16 @@ class JdxiUi(QMainWindow):
             if not button.isChecked():
                 button.setToolTip(f"Save Favorite {i}")
             else:
-                preset_name = current_presets.get(i, f"Preset {i}")  # Get the preset name or default
+                preset_name = current_presets.get(
+                    i, f"Preset {i}"
+                )  # Get the preset name or default
                 button.setToolTip(f"Load {preset_name}")
 
             # Connect the toggled signal to update the tooltip
             button.toggled.connect(
-                lambda checked, btn=button, idx=i: self.update_tooltip(btn, checked, idx)
+                lambda checked, btn=button, idx=i: self.update_tooltip(
+                    btn, checked, idx
+                )
             )
 
             button.clicked.connect(lambda _, idx=i: self._save_favorite(button, idx))
@@ -630,7 +649,9 @@ class JdxiUi(QMainWindow):
         # Position to align with sequencer but 25% higher (increased from 20%)
         seq_y = self.height - 50 - int(self.height * 0.1)  # Base sequencer Y position
         offset_y = int(self.height * 0.3)  # 25% of window height (increased from 0.2)
-        octave_x = self.width - int(self.width * 0.8) - 150  # Position left of sequencer
+        octave_x = (
+            self.width - int(self.width * 0.8) - 150
+        )  # Position left of sequencer
 
         # Apply the height offset to the Y position
         octave_buttons_container.setGeometry(
@@ -698,7 +719,9 @@ class JdxiUi(QMainWindow):
         central_widget.setLayout(QVBoxLayout())
 
         digital_display_container = QWidget(central_widget)
-        digital_display_container.setGeometry(JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT)
+        digital_display_container.setGeometry(
+            JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT
+        )
         digital_display_layout = QHBoxLayout()
         digital_display_container.setLayout(digital_display_layout)
         self.digital_display = DigitalDisplay(parent=self)
@@ -723,9 +746,9 @@ class JdxiUi(QMainWindow):
         # Parts Select section with Arpeggiator
         parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 35
-        parts_y = int(self.display_y - (
-                self.height * 0.15
-        ))  # Move up by 20% of window height
+        parts_y = int(
+            self.display_y - (self.height * 0.15)
+        )  # Move up by 20% of window height
 
         parts_container.setGeometry(parts_x + 10, parts_y, 200, 250)
         parts_layout = QVBoxLayout(parts_container)
@@ -744,9 +767,7 @@ class JdxiUi(QMainWindow):
         digital2_row, self.digital2_button = create_button_row(
             "Digital Synth 2", self._open_digital_synth2
         )
-        drums_row, self.drums_button = create_button_row(
-            "Drums", self._open_drums
-        )
+        drums_row, self.drums_button = create_button_row("Drums", self._open_drums)
         analog_row, self.analog_button = create_button_row(
             "Analog Synth", self._open_analog_synth
         )
@@ -754,9 +775,7 @@ class JdxiUi(QMainWindow):
             "Arpeggiator", self._open_arpeggiator
         )
 
-        self.analog_button.clicked.connect(
-            lambda: self._select_synth(SynthType.ANALOG)
-        )
+        self.analog_button.clicked.connect(lambda: self._select_synth(SynthType.ANALOG))
         self.digital1_button.clicked.connect(
             lambda: self._select_synth(SynthType.DIGITAL_1)
         )
@@ -786,10 +805,12 @@ class JdxiUi(QMainWindow):
 
         # Effects button in top row
         fx_container = QWidget(central_widget)
-        fx_container.setGeometry(self.width - 170, self.margin + 20, 200, 80)
+        fx_container.setGeometry(self.width - 170, self.margin + 20, 180, 80)
         fx_layout = QHBoxLayout(fx_container)
         vocal_effects_row, self.vocal_effects_button = create_button_row(
-            "Vocoder", self._open_vocal_fx, vertical=True,
+            "Vocoder",
+            self._open_vocal_fx,
+            vertical=True,
         )
         effects_row, self.effects_button = create_button_row(
             "Effects", self._open_effects, vertical=True, spacing=10
@@ -910,36 +931,32 @@ class JdxiUi(QMainWindow):
             return container
 
         # Create sliders
-        filter_cutoff_slider = FilterCutoffSlider(
-            self.midi_helper, partial=1, min_value=0, max_value=127, label="Cutoff", vertical=True
-        )
+        filter_cutoff_slider = FilterCutoffSlider(self.midi_helper, label="Cutoff")
         filter_resonance_slider = FilterResonanceSlider(
-            self.midi_helper, partial=1, min_value=0, max_value=127, label="Reson.", vertical=True
+            self.midi_helper, label="Reson."
         )
-        amp_level_slider = AmpLevelSlider(
-            self.midi_helper, partial=1, min_value=0, max_value=127, label="Level", vertical=True
-        )
-        amp_env_slider = AmpEnvelopeSlider(
-            self.midi_helper, partial=1, min_value=0, max_value=127, label="Env", vertical=True
-        )
+        amp_level_slider = AmpLevelSlider(self.midi_helper, label="Level")
+        amp_env_slider = AmpEnvelopeSlider(self.midi_helper, label="Env")
 
         # Add sliders with labels to the row
 
-        filter_cutoff_container = create_slider_with_label("Cutoff",
-                                                           filter_cutoff_slider)
-        filter_resonance_container = create_slider_with_label("Reson",
-                                                              filter_resonance_slider)
-        amp_level_container = create_slider_with_label("Level",
-                                                       amp_level_slider)
-        amp_env_container = create_slider_with_label("Env",
-                                                     amp_env_slider)
+        filter_cutoff_container = create_slider_with_label(
+            "Cutoff", filter_cutoff_slider
+        )
+        filter_resonance_container = create_slider_with_label(
+            "Reson", filter_resonance_slider
+        )
+        amp_level_container = create_slider_with_label("Level", amp_level_slider)
+        amp_env_container = create_slider_with_label("Env", amp_env_slider)
 
-        slider_row_layout.addWidget(create_columns_with_label("Filter",
-                                                              filter_cutoff_container,
-                                                              filter_resonance_container))
-        slider_row_layout.addWidget(create_columns_with_label("Amp",
-                                                              amp_level_container,
-                                                              amp_env_container))
+        slider_row_layout.addWidget(
+            create_columns_with_label(
+                "Filter", filter_cutoff_container, filter_resonance_container
+            )
+        )
+        slider_row_layout.addWidget(
+            create_columns_with_label("Amp", amp_level_container, amp_env_container)
+        )
 
         # Add to main layout
         main_layout.addWidget(slider_row_container)
@@ -983,24 +1000,28 @@ class JdxiUi(QMainWindow):
         """Update the JD-Xi display image"""
         if self.current_synth_type == SynthType.DIGITAL_1:
             self.current_tone_name = self.current_digital1_tone_name
-            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
-                                                                      DIGITAL_PRESET_LIST)
+            self.current_tone_number = get_preset_list_number_by_name(
+                self.current_tone_name, DIGITAL_PRESET_LIST
+            )
             active_synth = "D1"
         elif self.current_synth_type == SynthType.DIGITAL_2:
             self.current_tone_name = self.current_digital2_tone_name
             active_synth = "D2"
-            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
-                                                                      DIGITAL_PRESET_LIST)
+            self.current_tone_number = get_preset_list_number_by_name(
+                self.current_tone_name, DIGITAL_PRESET_LIST
+            )
         elif self.current_synth_type == SynthType.DRUMS:
             self.current_tone_name = self.current_drums_tone_name
             active_synth = "DR"
-            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
-                                                                      DRUM_KIT_LIST)
+            self.current_tone_number = get_preset_list_number_by_name(
+                self.current_tone_name, DRUM_KIT_LIST
+            )
         elif self.current_synth_type == SynthType.ANALOG:
             self.current_tone_name = self.current_analog_tone_name
             active_synth = "AN"
-            self.current_tone_number = get_preset_list_number_by_name(self.current_tone_name,
-                                                                      ANALOG_PRESET_LIST)
+            self.current_tone_number = get_preset_list_number_by_name(
+                self.current_tone_name, ANALOG_PRESET_LIST
+            )
         else:
             active_synth = "D1"
         logging.info(f"current tone number: {self.current_tone_number}")
@@ -1117,15 +1138,13 @@ class JdxiUi(QMainWindow):
 
         return indicator_widget
 
-    def _update_display_program(
-            self, program_name: str, program_number: int
-    ):
+    def _update_display_program(self, program_name: str, program_number: int):
         self.current_program_number = program_number
         self.current_program_name = program_name
         self._update_display()
 
     def _update_display_preset(
-            self, preset_number: int, preset_name: str, channel: int
+        self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information"""
         logging.info(
@@ -1146,7 +1165,7 @@ class JdxiUi(QMainWindow):
                 self.piano_keyboard.set_midi_channel(channel)
 
             # Update channel indicator if it exists
-            #if hasattr(self, "channel_button"):
+            # if hasattr(self, "channel_button"):
             #    self.channel_button.set_channel(channel)
 
             logging.debug(
