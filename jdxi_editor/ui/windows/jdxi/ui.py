@@ -30,7 +30,6 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QLabel,
     QPushButton,
-    QFrame,
     QButtonGroup,
     QGridLayout,
 )
@@ -38,10 +37,8 @@ from PySide6.QtCore import Qt, QSettings, QRect
 from PySide6.QtGui import (
     QAction,
     QFontDatabase,
-    QFont,
 )
 
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -54,28 +51,23 @@ from jdxi_editor.ui.style.helpers import (
     toggle_button_style,
 )
 from jdxi_editor.ui.widgets.button import SequencerSquare
-from jdxi_editor.ui.widgets.display.digital import DigitalDisplay
-from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
-from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
-from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
 from jdxi_editor.ui.widgets.wheel.mod import ModWheel
 from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
+from jdxi_editor.ui.windows.jdxi.containers.arpeggiator import add_arpeggiator_buttons
+from jdxi_editor.ui.windows.jdxi.containers.effects import add_effects_container
+from jdxi_editor.ui.windows.jdxi.containers.octave import add_octave_buttons
+from jdxi_editor.ui.windows.jdxi.containers.overlay import add_overlaid_controls
+from jdxi_editor.ui.windows.jdxi.containers.program import add_program_container
+from jdxi_editor.ui.windows.jdxi.containers.sequencer import add_sequencer_container
+from jdxi_editor.ui.windows.jdxi.containers.sliders import add_slider_container
+from jdxi_editor.ui.windows.jdxi.containers.title import _add_title_container
+from jdxi_editor.ui.windows.jdxi.containers.tone import add_tone_container
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
-from jdxi_editor.ui.windows.jdxi.dimensions import (
-    JDXI_MARGIN,
-    JDXI_DISPLAY_X,
-    JDXI_DISPLAY_Y,
-    JDXI_DISPLAY_WIDTH,
-    JDXI_DISPLAY_HEIGHT,
-    JDXI_TITLE_X,
-    JDXI_TITLE_Y,
-)
 
 
 class JdxiUi(QMainWindow):
@@ -84,6 +76,7 @@ class JdxiUi(QMainWindow):
     def __init__(self):
         super().__init__()
         # Add preset & program tracking
+        self.sequencer_buttons = []
         self.current_program_bank_letter = "A"
         self.program_helper = None
         self.current_tone_number = 1
@@ -196,6 +189,22 @@ class JdxiUi(QMainWindow):
         self.current_preset_index = 0
         self.old_pos = None
 
+    def _open_vocal_fx(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_effects(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _send_octave(self, _):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _previous_tone(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _next_tone(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+
     def _create_main_layout(self):
         """Create the main dashboard"""
         central = QWidget()
@@ -218,8 +227,33 @@ class JdxiUi(QMainWindow):
         container.layout().addWidget(self.image_label)
 
         # Add overlaid controls
-        self._add_overlaid_controls(container)
-
+        self.digital_display = add_overlaid_controls(container, self)
+        _add_title_container(container)
+        self._add_parts_container(container)
+        self.octave_down, self.octave_up = add_octave_buttons(container,
+                                                              self.height,
+                                                              self.width,
+                                                              self._send_octave)
+        self.arpeggiator_button, self.key_hold_button = add_arpeggiator_buttons(container, self.height, self.width)
+        self.vocal_effects_button, self.effects_button = add_effects_container(container,
+                                                                               self._open_vocal_fx,
+                                                                               self._open_effects,
+                                                                               self.width,
+                                                                               self.margin)
+        add_program_container(container,
+                              self._create_program_buttons_row,
+                              self.width,
+                              self.margin)
+        add_tone_container(container, self._create_tone_buttons_row,
+                           self.width,
+                           self.margin)
+        self.sequencer_buttons = add_sequencer_container(container,
+                                                         self.width,
+                                                         self.margin,
+                                                         self._create_favorite_button_row,
+                                                         self._create_sequencer_buttons_row_layout,
+                                                         )
+        add_slider_container(container, self.midi_helper, self.width, self.margin)
         layout.addWidget(container)
 
         # Initialize current preset index
@@ -227,9 +261,8 @@ class JdxiUi(QMainWindow):
 
     def _create_program_buttons_row(self):
         # create program navigation buttons
-        # self.program_label = QLabel("Program")
         self.program_down_button = QPushButton("-")
-        self.program_spacer = QLabel(" ")
+        program_spacer = QLabel(" ")
         self.program_up_button = QPushButton("+")
 
         # create program up button
@@ -244,7 +277,7 @@ class JdxiUi(QMainWindow):
         program_layout = QHBoxLayout()
         program_layout.addStretch()
         program_layout.addWidget(self.program_down_button)
-        program_layout.addWidget(self.program_spacer)
+        program_layout.addWidget(program_spacer)
         program_layout.addWidget(self.program_up_button)
         program_layout.addStretch()
         return program_layout
@@ -252,7 +285,7 @@ class JdxiUi(QMainWindow):
     def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
         self.tone_down_button = QPushButton("-")
-        self.tone_spacer = QLabel(" ")
+        tone_spacer = QLabel(" ")
         self.tone_up_button = QPushButton("+")
 
         # Calculate size for tone buttons
@@ -272,13 +305,13 @@ class JdxiUi(QMainWindow):
 
         button_label_layout = QHBoxLayout()
         button_label_layout.addStretch()
-        button_label_layout.addWidget(self.tone_spacer)
+        button_label_layout.addWidget(tone_spacer)
         button_label_layout.addStretch()
         # Button layout
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.tone_down_button)
-        button_layout.addWidget(self.tone_spacer)
+        button_layout.addWidget(tone_spacer)
         button_layout.addWidget(self.tone_up_button)
         button_layout.addStretch()
         return button_layout
@@ -340,64 +373,6 @@ class JdxiUi(QMainWindow):
         row_layout.addLayout(grid)
 
         return row_layout, sequencer_buttons
-
-    def _create_sequencer_buttons_row_layout_new(self):
-        """Create address row with label and circular button"""
-        row_layout = QHBoxLayout()
-        sequencer_buttons = []
-
-        grid = QGridLayout()
-        grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        grid.setGeometry(QRect(1, 1, 300, 150))
-
-        # Assuming you have a way to get the current preset name or ID
-        current_presets = (
-            self.get_current_presets()
-        )  # This should return a list or dict of current presets
-
-        for i in range(16):
-            button = QPushButton()
-            button.setFixedSize(25, 25)
-            button.setCheckable(True)  # Ensure the button is checkable
-            button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
-
-            # Set the initial tooltip based on the button's checked state
-            if not button.isChecked():
-                button.setToolTip(f"Save Favorite {i}")
-            else:
-                preset_name = current_presets.get(
-                    i, f"Preset {i}"
-                )  # Get the preset name or default
-                button.setToolTip(f"Load {preset_name}")
-
-            # Connect the toggled signal to update the tooltip
-            button.toggled.connect(
-                lambda checked, btn=button, idx=i: self.update_tooltip(
-                    btn, checked, idx
-                )
-            )
-
-            button.clicked.connect(lambda _, idx=i: self._save_favorite(button, idx))
-            grid.addWidget(button, 0, i)  # Row 0, column i with spacing
-            grid.setHorizontalSpacing(2)  # Add spacing between columns
-            sequencer_buttons.append(button)
-        row_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        row_layout.addLayout(grid)
-
-        return row_layout, sequencer_buttons
-
-    def update_tooltip(self, button, checked, index):
-        """Update the tooltip based on the button's checked state and current preset"""
-        if checked:
-            preset_name = self.get_current_presets().get(index, f"Preset {index}")
-            button.setToolTip(f"Load {preset_name}")
-        else:
-            button.setToolTip(f"Save Favorite {index}")
-
-    def get_current_presets(self):
-        """Retrieve the current presets. This is a placeholder for actual implementation."""
-        # This should return a dictionary or list with the current preset names or IDs
-        return {0: "Preset A", 1: "Preset B", 2: "Preset C"}  # Example data
 
     def _create_menu_bar(self):
         menubar = self.menuBar()
@@ -573,177 +548,8 @@ class JdxiUi(QMainWindow):
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         self.statusBar().setStyleSheet('background: "black";')
 
-    def _add_arpeggiator_buttons(self, widget):
-        """Add arpeggiator up/down buttons to the interface"""
-        # Create container
-        arpeggiator_buttons_container = QWidget(widget)
-
-        # Position to align with sequencer but 25% higher (increased from 20%)
-        seq_y = self.height - 50 - self.height * 0.1  # Base sequencer Y position
-        offset_y = self.height * 0.3  # 25% of window height (increased from 0.2)
-        arpeggiator_x = self.width - self.width * 0.8 - 60  # Position left of sequencer
-
-        # Apply the height offset to the Y position
-        arpeggiator_buttons_container.setGeometry(
-            arpeggiator_x - 10,
-            seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
-            120,
-            100,
-        )
-
-        arpeggiator_layout = QVBoxLayout(arpeggiator_buttons_container)
-        arpeggiator_layout.setSpacing(5)
-
-        # Add "ARPEGGIO" label at the top
-        arpeggiator_label = QLabel("ARPEGGIO")
-        arpeggiator_label.setStyleSheet(Style.JDXI_LABEL)
-        arpeggiator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        arpeggiator_layout.addWidget(arpeggiator_label)
-
-        # Create horizontal layout for Down/Up labels
-        labels_row = QHBoxLayout()
-        labels_row.setSpacing(20)  # Space between labels
-
-        # On label
-        on_label = QLabel("On")
-        on_label.setStyleSheet(Style.JDXI_LABEL_SUB)
-        labels_row.addWidget(on_label)
-
-        # Add labels row
-        arpeggiator_layout.addLayout(labels_row)
-
-        # Create horizontal layout for buttons
-        buttons_row = QHBoxLayout()
-        buttons_row.setSpacing(20)  # Space between buttons
-
-        # Down label
-        key_hold_label = QLabel("Key Hold")
-        key_hold_label.setStyleSheet(Style.JDXI_LABEL_SUB)
-        labels_row.addWidget(key_hold_label)
-
-        # Create and store arpeggiator  button
-        self.arpeggiator_button = QPushButton()
-        self.arpeggiator_button.setFixedSize(30, 30)
-        self.arpeggiator_button.setCheckable(True)
-        self.arpeggiator_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-        buttons_row.addWidget(self.arpeggiator_button)
-
-        # Create and store octave down button
-        self.key_hold = QPushButton()
-        self.key_hold.setFixedSize(30, 30)
-        self.key_hold.setCheckable(True)
-        self.key_hold.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-        buttons_row.addWidget(self.key_hold)
-
-        # Add buttons row
-        arpeggiator_layout.addLayout(buttons_row)
-
-        # Make container transparent
-        arpeggiator_buttons_container.setStyleSheet("background: transparent;")
-
-    def _add_octave_buttons(self, widget):
-        """Add octave up/down buttons to the interface"""
-        # Create container
-        octave_buttons_container = QWidget(widget)
-
-        # Position to align with sequencer but 25% higher (increased from 20%)
-        seq_y = self.height - 50 - int(self.height * 0.1)  # Base sequencer Y position
-        offset_y = int(self.height * 0.3)  # 25% of window height (increased from 0.2)
-        octave_x = (
-            self.width - int(self.width * 0.8) - 150
-        )  # Position left of sequencer
-
-        # Apply the height offset to the Y position
-        octave_buttons_container.setGeometry(
-            octave_x - 10,
-            seq_y - 60 - offset_y,  # Move up by offset_y
-            100,
-            100,
-        )
-
-        octave_layout = QVBoxLayout(octave_buttons_container)
-        octave_layout.setSpacing(5)
-
-        # Create horizontal layout for Down/Up labels
-        labels_row = QHBoxLayout()
-        labels_row.setSpacing(20)  # Space between labels
-
-        # Add "OCTAVE" label at the top
-        octave_label = QLabel("OCTAVE")
-        octave_label.setStyleSheet(Style.JDXI_LABEL)
-        octave_label.setAlignment(Qt.AlignCenter)
-        octave_layout.addWidget(octave_label)
-
-        # Down label
-        down_label = QLabel("Down")
-        down_label.setStyleSheet(Style.JDXI_LABEL_SUB)
-        labels_row.addWidget(down_label)
-
-        # Up label
-        up_label = QLabel("Up")
-        up_label.setStyleSheet(Style.JDXI_LABEL_SUB)
-        labels_row.addWidget(up_label)
-
-        # Add labels row
-        octave_layout.addLayout(labels_row)
-
-        # Create horizontal layout for buttons
-        buttons_row = QHBoxLayout()
-        buttons_row.setSpacing(20)  # Space between buttons
-
-        # Create and store octave down button
-        self.octave_down = QPushButton()
-        self.octave_down.setFixedSize(30, 30)
-        self.octave_down.setCheckable(True)
-        self.octave_down.clicked.connect(lambda: self._send_octave(-1))
-        self.octave_down.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-        buttons_row.addWidget(self.octave_down)
-
-        # Create and store octave up button
-        self.octave_up = QPushButton()
-        self.octave_up.setFixedSize(30, 30)
-        self.octave_up.setCheckable(True)
-        self.octave_up.clicked.connect(lambda: self._send_octave(1))
-        self.octave_up.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-        buttons_row.addWidget(self.octave_up)
-
-        # Add buttons row
-        octave_layout.addLayout(buttons_row)
-
-        # Make container transparent
-        octave_buttons_container.setStyleSheet("background: transparent;")
-
-    def _add_overlaid_controls(self, central_widget):
-        """Add interactive controls overlaid on the JD-Xi image"""
-        # Create absolute positioning layout
-        central_widget.setLayout(QVBoxLayout())
-
-        digital_display_container = QWidget(central_widget)
-        digital_display_container.setGeometry(
-            JDXI_DISPLAY_X, JDXI_DISPLAY_Y, JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT
-        )
-        digital_display_layout = QHBoxLayout()
-        digital_display_container.setLayout(digital_display_layout)
-        self.digital_display = DigitalDisplay(parent=self)
-        digital_display_layout.addWidget(self.digital_display)
-
-        title_container = QWidget(central_widget)
-        title_container.setGeometry(JDXI_TITLE_X + 10, JDXI_TITLE_Y, 200, 50)
-        title_container.setStyleSheet(Style.JDXI_TRANSPARENT_WHITE)
-        title_layout = QHBoxLayout()
-        title_container.setLayout(title_layout)
-        self.title_label = QLabel("JD-Xi Editor", parent=self)
-        font = QFont()
-        font.setFamilies(["Myriad Pro", "Segoe UI"])  # Qt 6+
-        font.setStyleHint(QFont.SansSerif)
-        font.setPointSize(24)
-        font.setBold(True)  # Optionally make it bold
-
-        # Apply the font to the QLabel
-        self.title_label.setFont(font)
-        title_layout.addWidget(self.title_label)
-
-        # Parts Select section with Arpeggiator
+    def _add_parts_container(self, central_widget):
+        """Parts Select section with Arpeggiator"""
         parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 35
         parts_y = int(
@@ -799,202 +605,8 @@ class JdxiUi(QMainWindow):
         parts_layout.addLayout(drums_row)
         parts_layout.addLayout(analog_row)
         parts_layout.addLayout(arp_row)
-
-        self._add_octave_buttons(central_widget)
-        self._add_arpeggiator_buttons(central_widget)
-
-        # Effects button in top row
-        fx_container = QWidget(central_widget)
-        fx_container.setGeometry(self.width - 170, self.margin + 20, 180, 80)
-        fx_layout = QHBoxLayout(fx_container)
-        vocal_effects_row, self.vocal_effects_button = create_button_row(
-            "Vocoder",
-            self._open_vocal_fx,
-            vertical=True,
-        )
-        effects_row, self.effects_button = create_button_row(
-            "Effects", self._open_effects, vertical=True, spacing=10
-        )
-        vocal_effects_row.setSpacing(3)
-        fx_layout.setSpacing(3)
-        fx_layout.addLayout(vocal_effects_row)
-        fx_layout.addLayout(effects_row)
-
-        program_container = QWidget(central_widget)
-        program_container.setGeometry(self.width - 575, self.margin + 15, 150, 80)
-        program_container_layout = QVBoxLayout(program_container)
-        program_container_layout.setSpacing(4)
-
-        program_label_layout = QHBoxLayout()
-        program_label_layout.setSpacing(1)
-        program_label = QLabel("Program")
-        program_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        program_label.setStyleSheet(Style.JDXI_TRANSPARENT)
-        program_label_layout.addWidget(program_label)
-        program_container_layout.addLayout(program_label_layout)
-        program_layout = QHBoxLayout()
-        program_layout.setSpacing(3)
-        program_row = self._create_program_buttons_row()
-        program_layout.addLayout(program_row)
-        program_container_layout.addLayout(program_layout)
-
-        # For tone buttons
-        tone_container = QWidget(central_widget)
-        tone_container.setGeometry(self.width - 575, self.margin + 75, 150, 80)
-        tone_container.setStyleSheet(Style.JDXI_TRANSPARENT)
-        tone_container_layout = QVBoxLayout(tone_container)
-        tone_container_layout.setSpacing(3)
-        tone_label_layout = QHBoxLayout()
-        tone_label = QLabel("Tone")
-        tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        tone_label.setStyleSheet(Style.JDXI_TRANSPARENT)
-        tone_label_layout.addWidget(tone_label)
-        tone_container_layout.addLayout(tone_label_layout)
-        tone_layout = QHBoxLayout()
-        tone_row = self._create_tone_buttons_row()
-        tone_layout.addLayout(tone_row)
-        tone_container_layout.addLayout(tone_layout)
-
-        # Beginning of sequencer section
-        sequencer_container = QWidget(central_widget)
-        sequencer_container.setGeometry(self.width - 500, self.margin + 150, 500, 80)
-        sequencer_container_layout = QHBoxLayout(sequencer_container)
-        sequencer_label_layout = QHBoxLayout()
-        sequencer_label = QLabel("Sequencer")
-        sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sequencer_label.setStyleSheet(Style.JDXI_TRANSPARENT)
-        # sequencer_label_layout.addWidget(sequencer_label)
-        # sequencer_container_layout.addLayout(sequencer_label_layout)
-        sequencer_layout = QHBoxLayout()
-        favorites_button_row = self._create_favorite_button_row()
-        sequencer, self.sequencer_buttons = self._create_sequencer_buttons_row_layout()
-        sequencer_layout.addLayout(sequencer)
-        sequencer_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
-        sequencer_container_layout.addLayout(favorites_button_row)
-        sequencer_container_layout.addLayout(sequencer_layout)
-        # End of sequencer section
-
         # Make containers transparent
         parts_container.setStyleSheet(Style.JDXI_TRANSPARENT)
-        fx_container.setStyleSheet(Style.JDXI_TRANSPARENT)
-
-        slider_container = QWidget(central_widget)
-        slider_container.setGeometry(self.width - 430, self.margin, 250, 140)
-
-        main_layout = QVBoxLayout(slider_container)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(3)
-
-        slider_row_container = QWidget(slider_container)
-        slider_row_layout = QHBoxLayout(slider_row_container)
-        slider_row_layout.setContentsMargins(0, 0, 0, 0)
-        slider_row_layout.setSpacing(3)
-
-        slider_height = 100
-        slider_style = Style.JDXI_ADSR
-
-        def create_slider_with_label(label_text, slider_widget):
-            container = QWidget()
-            layout = QVBoxLayout(container)
-            layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSpacing(2)
-
-            label = QLabel(label_text)
-            label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            label.setMaximumHeight(20)
-
-            slider_widget.setFixedHeight(slider_height)
-            slider_widget.setStyleSheet(slider_style)
-
-            # layout.addWidget(label)
-            layout.addWidget(slider_widget)
-
-            return container
-
-        def create_columns_with_label(label_text, container1, container2):
-            container = QWidget()
-            layout = QVBoxLayout(container)
-            layout.setContentsMargins(0, 0, 0, 0)
-            layout.setSpacing(2)
-
-            label = QLabel(label_text)
-            label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-            label.setMaximumHeight(20)
-
-            layout.addWidget(label)
-            row_layout = QHBoxLayout()
-            layout.addLayout(row_layout)
-
-            row_layout.addWidget(container1)
-            row_layout.addWidget(container2)
-
-            return container
-
-        # Create sliders
-        filter_cutoff_slider = FilterCutoffSlider(self.midi_helper, label="Cutoff")
-        filter_resonance_slider = FilterResonanceSlider(
-            self.midi_helper, label="Reson."
-        )
-        amp_level_slider = AmpLevelSlider(self.midi_helper, label="Level")
-        amp_env_slider = AmpEnvelopeSlider(self.midi_helper, label="Env")
-
-        # Add sliders with labels to the row
-
-        filter_cutoff_container = create_slider_with_label(
-            "Cutoff", filter_cutoff_slider
-        )
-        filter_resonance_container = create_slider_with_label(
-            "Reson", filter_resonance_slider
-        )
-        amp_level_container = create_slider_with_label("Level", amp_level_slider)
-        amp_env_container = create_slider_with_label("Env", amp_env_slider)
-
-        slider_row_layout.addWidget(
-            create_columns_with_label(
-                "Filter", filter_cutoff_container, filter_resonance_container
-            )
-        )
-        slider_row_layout.addWidget(
-            create_columns_with_label("Amp", amp_level_container, amp_env_container)
-        )
-
-        # Add to main layout
-        main_layout.addWidget(slider_row_container)
-
-    def _create_other(self):
-        """Create other controls section"""
-        frame = QFrame()
-        layout = QVBoxLayout(frame)
-        layout.setSpacing(10)
-
-        # Create buttons for Effects and Vocal FX
-        others = [
-            ("Effects", self._open_effects),
-            ("Vocal FX", self._open_vocal_fx),
-        ]
-
-        for text, slot in others:
-            btn = QPushButton(text)
-            btn.setFixedHeight(40)
-            btn.clicked.connect(slot)
-            layout.addWidget(btn)
-
-        # Create horizontal layout for Arpeggiator
-        arp_row = QHBoxLayout()
-
-        # Arpeggiator button
-        arp_btn = QPushButton("Arpeggio")
-        arp_btn.setFixedHeight(40)
-        arp_btn.clicked.connect(self._open_arpeggiator)
-        arp_row.addWidget(arp_btn)
-
-        # Add the horizontal row to the main layout
-        layout.addLayout(arp_row)
-
-        # Add stretch at the bottom
-        layout.addStretch()
-
-        return frame
 
     def _update_display(self):
         """Update the JD-Xi display image"""
@@ -1144,7 +756,7 @@ class JdxiUi(QMainWindow):
         self._update_display()
 
     def _update_display_preset(
-        self, preset_number: int, preset_name: str, channel: int
+            self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information"""
         logging.info(
@@ -1176,10 +788,10 @@ class JdxiUi(QMainWindow):
             logging.error(f"Error updating display: {str(ex)}")
 
     def _save_favorite(self, button, idx):
-        pass  # to be implemented in subclass
+        raise NotImplementedError("to be implemented in subclass")
 
     def _load_settings(self):
-        pass
+        raise NotImplementedError("to be implemented in subclass")
 
     def show_editor(self, param):
-        pass
+        raise NotImplementedError("to be implemented in subclass")
