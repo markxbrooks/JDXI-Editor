@@ -1,9 +1,10 @@
 """filter slider to modify nrpn parameters"""
+import logging
 
 from jdxi_editor.ui.widgets.slider import Slider
 
 
-class FilterSlider(Slider):
+class FilterCutoffSlider(Slider):
     """
     A class to represent a filter slider for JD-Xi using NRPN.
     """
@@ -24,6 +25,8 @@ class FilterSlider(Slider):
         self.max_value = max_value
         self.current_value = min_value
         self.vertical = vertical
+        self.valueChanged.connect(self._on_value_changed)
+        self.setTickPosition(self.TickPosition.NoTicks)
 
         # Map partial number to NRPN controller number for Cutoff
         self.nrpn_map = {
@@ -32,10 +35,11 @@ class FilterSlider(Slider):
             3: 104,  # Partial 3
         }
 
-    def set_value(self, value: float):
+    def _on_value_changed(self, value: float):
         """
         Set the current value of the slider and send NRPN messages.
         """
+        logging.info(f"filter value: {value} for nrpn slider")
         if self.min_value <= value <= self.max_value:
             self.current_value = value
         else:
@@ -44,6 +48,7 @@ class FilterSlider(Slider):
         cc_value = int(
             (value - self.min_value) / (self.max_value - self.min_value) * 127
         )
+        logging.info(f"cc_value: {cc_value}")
         nrpn_lsb = self.nrpn_map.get(self.partial)
         if nrpn_lsb is None:
             raise ValueError("Invalid partial number")
@@ -81,8 +86,9 @@ class FilterSliderOld(Slider):
         self.max_value = max_value
         self.current_value = min_value
         self.vertical = vertical
+        self.valueChanged.connect(self._on_value_changed)
 
-    def set_value(self, value: float):
+    def _on_value_changed(self, value: float):
         """
         Set the current value of the slider.
 
