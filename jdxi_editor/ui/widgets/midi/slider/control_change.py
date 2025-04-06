@@ -3,7 +3,7 @@ from jdxi_editor.ui.widgets.slider import Slider
 
 class ControlChangeSlider(Slider):
     """
-    A base class for sliders with a common on_value_changed method.
+    A base class for sliders with a common on_value_changed method to send Control Change (CC) messages.
     """
 
     def __init__(
@@ -13,6 +13,7 @@ class ControlChangeSlider(Slider):
         min_value: int,
         max_value: int,
         label: str,
+        nrpn_map: dict,
         vertical: bool = True,
     ):
         super().__init__(label, int(min_value), int(max_value),
@@ -27,13 +28,7 @@ class ControlChangeSlider(Slider):
         self.vertical = vertical
         self.valueChanged.connect(self.on_value_changed)
         self.setTickPosition(self.TickPosition.NoTicks)
-
-        # Map partial number to NRPN controller number for Cutoff
-        self.nrpn_map = {
-            1: 105,  # NRPN LSB for Partial 1
-            2: 106,  # Partial 2
-            3: 107,  # Partial 3
-        }
+        self.nrpn_map = nrpn_map
 
     def on_value_changed(self, value: int):
         """
