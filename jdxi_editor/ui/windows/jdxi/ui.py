@@ -40,6 +40,7 @@ from PySide6.QtGui import (
     QFontDatabase, QFont,
 )
 
+from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -55,6 +56,7 @@ from jdxi_editor.ui.widgets.button.channel import ChannelButton
 from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.ui.widgets.slider.filter import FilterSlider
 from jdxi_editor.ui.widgets.wheel.mod import ModWheel
 from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
@@ -64,6 +66,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_MARGIN, JDXI_DISPLAY_X, 
 
 class JdxiUi(QMainWindow):
     """ JDXI UI setup, with little or no actual functionality, which is superclassed"""
+
     def __init__(self):
         super().__init__()
         # Add preset & program tracking
@@ -106,7 +109,7 @@ class JdxiUi(QMainWindow):
         # pub.subscribe(self._update_display_preset, "update_display_preset")
 
         # Set black background for entire application
-        self.setStyleSheet(Style.JDXI)
+        self.setStyleSheet(Style.JDXI_TRANSPARENT)
 
         # Load custom font
         self._load_digital_font()
@@ -135,7 +138,6 @@ class JdxiUi(QMainWindow):
         self.display_label = QLabel()
         self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
 
-
         # Add display to layout
         if hasattr(self, "main_layout"):
             self.main_layout.addWidget(self.display_label)
@@ -144,13 +146,10 @@ class JdxiUi(QMainWindow):
         self.channel_button = ChannelButton()
 
         # Add to status bar before piano keyboard
-        # self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load last used preset settings
         # self._load_last_preset()
-
-
 
         # Create favorite buttons container
         self.favorites_widget = QWidget()
@@ -171,8 +170,6 @@ class JdxiUi(QMainWindow):
             self.favorite_buttons.append(button)
 
         # Add to status bar
-        # self.statusBar().addPermanentWidget(self.favorites_widget)
-        # self.statusBar().addPermanentWidget(self.channel_button)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load saved favorites
@@ -240,7 +237,6 @@ class JdxiUi(QMainWindow):
 
     def _create_tone_buttons_row(self):
         # Create Tone navigation buttons
-        # self.tone_label = QLabel("Tone")
         self.tone_down_button = QPushButton("-")
         self.tone_spacer = QLabel(" ")
         self.tone_up_button = QPushButton("+")
@@ -295,7 +291,7 @@ class JdxiUi(QMainWindow):
         self.favourites_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
         row.addWidget(self.favourites_button)
         return row
-    
+
     def _create_sequencer_buttons_row_layout(self):
         """Create address row with label and circular button"""
         row_layout = QHBoxLayout()
@@ -337,7 +333,7 @@ class JdxiUi(QMainWindow):
         grid = QGridLayout()
         grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
         grid.setGeometry(QRect(1, 1, 300, 150))
-        
+
         # Assuming you have a way to get the current preset name or ID
         current_presets = self.get_current_presets()  # This should return a list or dict of current presets
 
@@ -346,7 +342,7 @@ class JdxiUi(QMainWindow):
             button.setFixedSize(25, 25)
             button.setCheckable(True)  # Ensure the button is checkable
             button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
-            
+
             # Set the initial tooltip based on the button's checked state
             if not button.isChecked():
                 button.setToolTip(f"Save Favorite {i}")
@@ -358,7 +354,7 @@ class JdxiUi(QMainWindow):
             button.toggled.connect(
                 lambda checked, btn=button, idx=i: self.update_tooltip(btn, checked, idx)
             )
-            
+
             button.clicked.connect(lambda _, idx=i: self._save_favorite(button, idx))
             grid.addWidget(button, 0, i)  # Row 0, column i with spacing
             grid.setHorizontalSpacing(2)  # Add spacing between columns
@@ -395,7 +391,7 @@ class JdxiUi(QMainWindow):
         load_program_action = QAction("Load Program...", self)
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
-        
+
         load_preset_action = QAction("Load Preset...", self)
         load_preset_action.triggered.connect(lambda: self.show_editor("preset"))
         file_menu.addAction(load_preset_action)
@@ -505,27 +501,27 @@ class JdxiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-        status_bar.setStyleSheet("border: none; color: red;")
+        status_bar.setStyleSheet(Style.JDXI_TRANSPARENT)
         label_layout = QHBoxLayout()
         label_layout.setContentsMargins(0, 0, 0, 0)
         label_layout.addStretch()
         pitch_label = QLabel("Pitch")
-        pitch_label.setStyleSheet(Style.JDXI_QLABEL)
+        pitch_label.setStyleSheet(Style.JDXI_TRANSPARENT)
         label_layout.addWidget(pitch_label)
         label_layout.addStretch()
         mod_label = QLabel("Mod")
-        mod_label.setStyleSheet(Style.JDXI_QLABEL)
+        mod_label.setStyleSheet(Style.JDXI_TRANSPARENT)
         label_layout.addWidget(mod_label)
         label_layout.addStretch()
         wheel_layout = QHBoxLayout()
         wheel_layout.addStretch()
         # Create a pitch wheel
-        pitch_wheel = PitchWheel()
+        pitch_wheel = PitchWheel(midi_helper=self.midi_helper, bidirectional=True)
         pitch_wheel.setMinimumWidth(20)
         wheel_layout.addWidget(pitch_wheel)
         wheel_layout.addStretch()
         # Create mod wheel
-        mod_wheel = ModWheel()
+        mod_wheel = ModWheel(midi_helper=self.midi_helper, bidirectional=True)
         mod_wheel.setMinimumWidth(20)
         wheel_layout.addWidget(mod_wheel)
         wheel_layout.addStretch()
@@ -550,18 +546,10 @@ class JdxiUi(QMainWindow):
         midi_indicator_row.addWidget(self.midi_in_indicator)
         midi_indicator_row.addWidget(QLabel("MIDI OUT:"))
         midi_indicator_row.addWidget(self.midi_out_indicator)
-        # status_bar.addPermanentWidget(QLabel("MIDI IN:"))
-        # status_bar.addPermanentWidget(self.midi_in_indicator)
-        # status_bar.addPermanentWidget(QLabel("MIDI OUT:"))
-        # status_bar.addPermanentWidget(self.midi_out_indicator)
-
         # Set initial indicator states
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        self.midi_in_indicator.setStyleSheet("background-color: black;")
-        self.midi_out_indicator.setStyleSheet("background-color: black;")
-        status_bar.findChildren(QLabel)[0].setStyleSheet("color: white; background-color: black;")
-        status_bar.findChildren(QLabel)[1].setStyleSheet("color: white; background-color: black;")
+        self.statusBar().setStyleSheet('background: "black";')
 
     def _add_arpeggiator_buttons(self, widget):
         """Add arpeggiator up/down buttons to the interface"""
@@ -575,7 +563,7 @@ class JdxiUi(QMainWindow):
 
         # Apply the height offset to the Y position
         arpeggiator_buttons_container.setGeometry(
-            arpeggiator_x -10,
+            arpeggiator_x - 10,
             seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
             120,
             100,
@@ -715,6 +703,7 @@ class JdxiUi(QMainWindow):
 
         title_container = QWidget(central_widget)
         title_container.setGeometry(JDXI_TITLE_X + 10, JDXI_TITLE_Y, 200, 50)
+        title_container.setStyleSheet(Style.JDXI_TRANSPARENT_WHITE)
         title_layout = QHBoxLayout()
         title_container.setLayout(title_layout)
         self.title_label = QLabel("JD-Xi Editor", parent=self)
@@ -732,12 +721,12 @@ class JdxiUi(QMainWindow):
         parts_container = QWidget(central_widget)
         parts_x = self.display_x + self.display_width + 35
         parts_y = int(self.display_y - (
-            self.height * 0.16
+                self.height * 0.15
         ))  # Move up by 20% of window height
 
         parts_container.setGeometry(parts_x + 10, parts_y, 200, 250)
         parts_layout = QVBoxLayout(parts_container)
-        parts_layout.setSpacing(7)  # Increased from 5 to 15 for more vertical spacing
+        parts_layout.setSpacing(3)  # Increased from 5 to 15 for more vertical spacing
 
         # Add Parts Select label
         parts_label = QLabel("Parts Select")
@@ -808,27 +797,33 @@ class JdxiUi(QMainWindow):
         fx_layout.addLayout(effects_row)
 
         program_container = QWidget(central_widget)
-        program_container.setGeometry(self.width - 525, self.margin + 15, 150, 100)
+        program_container.setGeometry(self.width - 575, self.margin + 15, 150, 80)
         program_container_layout = QVBoxLayout(program_container)
+        program_container_layout.setSpacing(4)
+
         program_label_layout = QHBoxLayout()
+        program_label_layout.setSpacing(1)
         program_label = QLabel("Program")
         program_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        program_label.setStyleSheet(Style.JDXI_LABEL)
+        program_label.setStyleSheet(Style.JDXI_TRANSPARENT)
         program_label_layout.addWidget(program_label)
         program_container_layout.addLayout(program_label_layout)
         program_layout = QHBoxLayout()
+        program_layout.setSpacing(4)
         program_row = self._create_program_buttons_row()
         program_layout.addLayout(program_row)
         program_container_layout.addLayout(program_layout)
 
         # For tone buttons
         tone_container = QWidget(central_widget)
-        tone_container.setGeometry(self.width - 380, self.margin + 15, 150, 100)
+        tone_container.setGeometry(self.width - 575, self.margin + 75, 150, 80)
+        tone_container.setStyleSheet(Style.JDXI_TRANSPARENT)
         tone_container_layout = QVBoxLayout(tone_container)
+        tone_container_layout.setSpacing(1)
         tone_label_layout = QHBoxLayout()
         tone_label = QLabel("Tone")
         tone_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        tone_label.setStyleSheet(Style.JDXI_LABEL)
+        tone_label.setStyleSheet(Style.JDXI_TRANSPARENT)
         tone_label_layout.addWidget(tone_label)
         tone_container_layout.addLayout(tone_label_layout)
         tone_layout = QHBoxLayout()
@@ -843,7 +838,7 @@ class JdxiUi(QMainWindow):
         sequencer_label_layout = QHBoxLayout()
         sequencer_label = QLabel("Sequencer")
         sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        sequencer_label.setStyleSheet(Style.JDXI_SEQUENCER)
+        sequencer_label.setStyleSheet(Style.JDXI_TRANSPARENT)
         # sequencer_label_layout.addWidget(sequencer_label)
         # sequencer_container_layout.addLayout(sequencer_label_layout)
         sequencer_layout = QHBoxLayout()
@@ -856,8 +851,22 @@ class JdxiUi(QMainWindow):
         # End of sequencer section
 
         # Make containers transparent
-        parts_container.setStyleSheet("background: transparent;")
-        fx_container.setStyleSheet("background: transparent;")
+        parts_container.setStyleSheet(Style.JDXI_TRANSPARENT)
+        fx_container.setStyleSheet(Style.JDXI_TRANSPARENT)
+
+        filter_container = QWidget(central_widget)
+        filter_container.setGeometry(self.width - 430, self.margin -10, 80, 160)
+        filter_container_layout = QVBoxLayout(filter_container)
+        filter_container_layout.setSpacing(4)
+        filter_slider = FilterSlider(self.midi_helper,
+                                     partial=1,
+                                     min_value=0,
+                                     max_value=127,
+                                     label="Filter",
+                                     vertical=True)
+        filter_slider.setFixedHeight(160)
+        filter_slider.setStyleSheet(Style.JDXI_ADSR)
+        filter_container_layout.addWidget(filter_slider)
 
     def _create_other(self):
         """Create other controls section"""
@@ -1006,8 +1015,8 @@ class JdxiUi(QMainWindow):
         # Create labels
         in_label = QLabel("MIDI IN")
         out_label = QLabel("MIDI OUT")
-        in_label.setStyleSheet("color: white; font-size: 10px;")
-        out_label.setStyleSheet("color: white; font-size: 10px;")
+        in_label.setStyleSheet(Style.JDXI_TRANSPARENT)
+        out_label.setStyleSheet(Style.JDXI_TRANSPARENT)
 
         # Create container widget
         indicator_widget = QWidget(self)
@@ -1033,14 +1042,14 @@ class JdxiUi(QMainWindow):
         return indicator_widget
 
     def _update_display_program(
-        self, program_name: str, program_number: int
+            self, program_name: str, program_number: int
     ):
         self.current_program_number = program_number
         self.current_program_name = program_name
         self._update_display()
 
     def _update_display_preset(
-        self, preset_number: int, preset_name: str, channel: int
+            self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information"""
         logging.info(
@@ -1072,7 +1081,7 @@ class JdxiUi(QMainWindow):
             logging.error(f"Error updating display: {str(ex)}")
 
     def _save_favorite(self, button, idx):
-        pass # to be implemented in subclass
+        pass  # to be implemented in subclass
 
     def _load_settings(self):
         pass
