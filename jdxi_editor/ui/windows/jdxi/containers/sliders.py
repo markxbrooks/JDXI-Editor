@@ -6,6 +6,7 @@ from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
 from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
 from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
 from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 def add_slider_container(central_widget, midi_helper, width, margin):
@@ -21,7 +22,7 @@ def add_slider_container(central_widget, midi_helper, width, margin):
     slider_row_layout.setContentsMargins(0, 0, 0, 0)
     slider_row_layout.setSpacing(3)
 
-    slider_height = 100
+    slider_height = JDXIDimensions.SLIDER_HEIGHT
     slider_style = Style.JDXI_ADSR
 
     def create_slider_with_label(label_text, slider_widget):

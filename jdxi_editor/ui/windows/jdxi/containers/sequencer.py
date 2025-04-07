@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt, QRect
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style, toggle_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 def create_sequencer_buttons_row(
@@ -50,8 +51,6 @@ def create_sequencer_buttons_row(
 
 
 def add_sequencer_container(central_widget,
-                            width,
-                            margin,
                             create_favorite_button_row,
                             midi_helper,
                             on_context_menu,
@@ -59,7 +58,7 @@ def add_sequencer_container(central_widget,
                             ):
     # Beginning of sequencer section
     sequencer_container = QWidget(central_widget)
-    sequencer_container.setGeometry(width - 500, margin + 155, 500, 80)
+    sequencer_container.setGeometry(JDXIDimensions.WIDTH - 500, JDXIDimensions.MARGIN + 155, 500, 80)
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

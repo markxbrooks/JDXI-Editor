@@ -36,7 +36,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import (
     JDXI_WIDTH,
     JDXI_HEIGHT,
     JDXI_KEYBOARD_WIDTH,
-    JDXI_WHITE_KEY_HEIGHT, JDXI_MARGIN,
+    JDXI_WHITE_KEY_HEIGHT, JDXI_MARGIN, JDXIDimensions,
 )
 
 from PySide6.QtGui import QPixmap, QLinearGradient, QColor
@@ -51,8 +51,8 @@ def draw_instrument_pixmap(
     :rtype: QPixmap
     """
     # Create address black background image with correct aspect ratio
-    jdxi_width = JDXI_WIDTH
-    jdxi_height = JDXI_HEIGHT
+    jdxi_width = JDXIDimensions.WIDTH
+    jdxi_height = JDXIDimensions.HEIGHT
     jdxi_image = QImage(jdxi_width, jdxi_height, QImage.Format_RGB32)
     jdxi_image.fill(Qt.black)
 
@@ -83,22 +83,17 @@ def draw_instrument_pixmap(
 
     # Draw control sections
 
-    draw_sequencer(keyboard_width, keyboard_y, margin, painter, jdxi_width)
+    draw_sequencer(margin, painter, jdxi_width)
 
     painter.end()
     return pixmap
 
 
-def draw_sequencer(
-    keyboard_width: int, keyboard_y: int, margin: int, painter: QPainter, instrument_width: int
+def draw_sequencer(margin: int, painter: QPainter, instrument_width: int
 ):
     """
     Draw the sequencer section of the JD-Xi interface.
 
-    :param keyboard_width: Width of the keyboard section.
-    :type keyboard_width: int
-    :param keyboard_y: Y position of the keyboard section.
-    :type keyboard_y: int
     :param margin: Margin size for positioning.
     :type margin: int
     :param painter: QPainter instance used for drawing.
@@ -108,17 +103,16 @@ def draw_sequencer(
     :return: None
     :rtype: None
     """
-    # sequencer_y = keyboard_y + 20  # Keep same distance above keyboard
     if platform.system() == "Windows":
         # windows has a menu across the top
-        sequencer_y = JDXI_HEIGHT - JDXI_WHITE_KEY_HEIGHT + 20  # Keep same distance above keyboard
+        sequencer_y = JDXIDimensions.SEQUENCER_Y_WINDOWS  # Keep same distance above keyboard
     else:
-        sequencer_y = JDXI_HEIGHT - JDXI_WHITE_KEY_HEIGHT - 20  # Keep same distance above keyboard
-    sequencer_width = keyboard_width * 0.53 # Use roughly half keyboard width
-    sequencer_x = instrument_width - margin - sequencer_width  # Align with right edge of keyboard
+        sequencer_y = JDXIDimensions.SEQUENCER_Y_NON_WINDOWS  # Keep same distance above keyboard
+    sequencer_width = JDXIDimensions.SEQUENCER_WIDTH # Use roughly half keyboard width
+    sequencer_x = JDXIDimensions.SEQUENCER_X  # Align with right edge of keyboard
     # Calculate step dimensions
-    step_count = 16
-    step_size = 18  # Smaller square size
+    step_count = JDXIDimensions.SEQUENCER_STEPS
+    step_size = JDXIDimensions.SEQUENCER_SQUARE_SIZE  # Smaller square size
     total_spacing = sequencer_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
     # Draw horizontal measure lines (white)
