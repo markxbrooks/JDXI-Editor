@@ -25,19 +25,24 @@ class JDXIDimensions:
 
     HEIGHT = 400
     WIDTH = 1000
-    WHITE_KEY_HEIGHT = 127
-    KEYBOARD_WIDTH = 800
+
     MARGIN = 15
+    
+    # Title above display (moved down)
+    TITLE_X = DISPLAY_X
+    TITLE_Y = MARGIN
 
     # LED display area (enlarged for 2 rows)
     DISPLAY_WIDTH = 180
     DISPLAY_HEIGHT = 70
     DISPLAY_X = MARGIN + 20
     DISPLAY_Y = MARGIN + 35
+    
+    # Keyboard
+    WHITE_KEY_HEIGHT = 127
+    KEYBOARD_WIDTH = 800
 
-    # Title above display (moved down)
-    TITLE_X = DISPLAY_X
-    TITLE_Y = MARGIN
+
 
 # Example usage:
 # print(JDXIDimensions.HEIGHT)
