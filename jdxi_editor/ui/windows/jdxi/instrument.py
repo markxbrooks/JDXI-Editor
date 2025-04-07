@@ -522,7 +522,7 @@ class JdxiInstrument(JdxiUi):
         else:
             logging.info(f"Unknown editor preset_type: {editor_type}")
 
-    def _show_vocal_fx(self, editor_type: str):
+    def     _show_vocal_fx(self, editor_type: str):
         if not hasattr(self, "vocal_fx_editor"):
             self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
             self.vocal_fx_editor.show()

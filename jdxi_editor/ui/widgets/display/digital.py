@@ -49,7 +49,7 @@ from PySide6.QtWidgets import QWidget, QSizePolicy
 from PySide6.QtGui import QPainter, QLinearGradient, QColor, QFont, QPen
 from PySide6.QtCore import Qt
 
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 class DigitalDisplayBase(QWidget):
@@ -110,7 +110,8 @@ class DigitalTitle(DigitalDisplayBase):
 
     def __init__(self, tone_name="Init Tone", digital_font_family="Consolas", parent=None):
         super().__init__(digital_font_family, parent)
-        self.setMinimumSize(330, 70)
+        self.setMinimumSize(JDXIDimensions.DIGITAL_TITLE_WIDTH,
+                            JDXIDimensions.DIGITAL_TITLE_HEIGHT)
         self.set_tone_name(tone_name)
 
     def set_tone_name(self, tone_name):
@@ -153,8 +154,10 @@ class DigitalDisplay(DigitalDisplayBase):
         self.program_id = self.program_bank_letter + str(self.program_number)
         self.margin = 10  # Default margin for display elements
 
-        self.setMinimumSize(JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT)  # Set size matching display
-        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.setMinimumSize(JDXIDimensions.DISPLAY_WIDTH,
+                            JDXIDimensions.DISPLAY_HEIGHT)  # Set size matching display
+        self.setSizePolicy(QSizePolicy.Policy.Fixed,
+                           QSizePolicy.Policy.Fixed)
 
     def paintEvent(self, event):
         """Handles the rendering of the digital display."""
@@ -248,9 +251,6 @@ class DigitalDisplay(DigitalDisplayBase):
         self.tone_number = tone_number
         self.tone_name = tone_name
         self.program_name = program_name
-        # self.program_number = program_number
-        # self.program_bank_letter = program_bank_letter
-        # self.program_bank_letter, self.program_number
         self.program_id = get_program_id_by_name(self.program_name)
         self.active_synth = active_synth
         self.update()
