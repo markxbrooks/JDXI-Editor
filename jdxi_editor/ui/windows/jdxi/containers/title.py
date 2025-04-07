@@ -2,12 +2,13 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 from jdxi_editor.ui.style import Style
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_TITLE_X, JDXI_TITLE_Y
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 def add_title_container(central_widget):
+    """ add container for main title """
     title_container = QWidget(central_widget)
-    title_container.setGeometry(JDXI_TITLE_X + 10, JDXI_TITLE_Y, 200, 50)
+    title_container.setGeometry(JDXIDimensions.TITLE_X + 10, JDXIDimensions.TITLE_Y, 200, 50)
     title_container.setStyleSheet(Style.JDXI_TRANSPARENT_WHITE)
     title_layout = QHBoxLayout()
     title_container.setLayout(title_layout)

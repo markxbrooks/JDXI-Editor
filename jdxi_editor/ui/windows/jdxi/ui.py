@@ -62,7 +62,7 @@ from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 from jdxi_editor.ui.windows.jdxi.containers.arpeggiator import add_arpeggiator_buttons
 from jdxi_editor.ui.windows.jdxi.containers.effects import add_effects_container
 from jdxi_editor.ui.windows.jdxi.containers.octave import add_octave_buttons
-from jdxi_editor.ui.windows.jdxi.containers.overlay import add_overlaid_controls
+from jdxi_editor.ui.windows.jdxi.containers.digital_display import add_digital_display
 from jdxi_editor.ui.windows.jdxi.containers.parts import create_parts_container
 from jdxi_editor.ui.windows.jdxi.containers.program import add_program_container
 from jdxi_editor.ui.windows.jdxi.containers.sequencer import add_sequencer_container
@@ -213,7 +213,7 @@ class JdxiUi(QMainWindow):
         container.layout().addWidget(self.image_label)
 
         # Add overlaid controls
-        self.digital_display = add_overlaid_controls(container, self)
+        self.digital_display = add_digital_display(container, self)
         add_title_container(container)
         self.parts_container, self.part_buttons = create_parts_container(
             parent_widget=self,
@@ -688,4 +688,16 @@ class JdxiUi(QMainWindow):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_favorite_context_menu(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_midi_debugger(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_midi_message_debug(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_log_viewer(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_midi_config(self):
         raise NotImplementedError("Should be implemented in subclass")

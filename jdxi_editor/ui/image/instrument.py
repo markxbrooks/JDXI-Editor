@@ -32,12 +32,7 @@ from PySide6.QtGui import (
     QPen,
 )
 
-from jdxi_editor.ui.windows.jdxi.dimensions import (
-    JDXI_WIDTH,
-    JDXI_HEIGHT,
-    JDXI_KEYBOARD_WIDTH,
-    JDXI_WHITE_KEY_HEIGHT, JDXI_MARGIN, JDXIDimensions,
-)
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 from PySide6.QtGui import QPixmap, QLinearGradient, QColor
 
@@ -67,39 +62,22 @@ def draw_instrument_pixmap(
     painter.setBrush(gradient)
     painter.fillRect(0, 0, jdxi_width, jdxi_height, gradient)
 
-    # Use smaller margins without border
-    margin = JDXI_MARGIN
-
     # Draw a black rectangle 1 px wide at the margin for style, with no fill
     pen = QPen(Qt.black, 1)
     painter.setPen(pen)
     painter.setBrush(Qt.NoBrush)
     painter.drawRect(10, 50, jdxi_width - 20, jdxi_height - 100)
-
-    # Keyboard section (moved up and taller)
-    keyboard_width = JDXI_KEYBOARD_WIDTH
-    white_key_height = JDXI_WHITE_KEY_HEIGHT
-    keyboard_y = jdxi_height - white_key_height - (jdxi_height * 0.1) + (white_key_height * 0.3)
-
-    # Draw control sections
-
-    draw_sequencer(margin, painter, jdxi_width)
-
+    draw_sequencer(painter)
     painter.end()
     return pixmap
 
 
-def draw_sequencer(margin: int, painter: QPainter, instrument_width: int
-):
+def draw_sequencer(painter: QPainter):
     """
     Draw the sequencer section of the JD-Xi interface.
 
-    :param margin: Margin size for positioning.
-    :type margin: int
     :param painter: QPainter instance used for drawing.
     :type painter: QPainter
-    :param instrument_width: Width of the entire interface.
-    :type instrument_width: int
     :return: None
     :rtype: None
     """
