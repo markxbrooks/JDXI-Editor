@@ -69,8 +69,7 @@ from jdxi_editor.ui.windows.jdxi.containers.sequencer import add_sequencer_conta
 from jdxi_editor.ui.windows.jdxi.containers.sliders import add_slider_container
 from jdxi_editor.ui.windows.jdxi.containers.title import add_title_container
 from jdxi_editor.ui.windows.jdxi.containers.tone import add_tone_container
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_MARGIN, JDXI_DISPLAY_WIDTH, JDXI_WIDTH, JDXI_DISPLAY_HEIGHT, \
-    JDXI_HEIGHT
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 class JdxiUi(QMainWindow):
