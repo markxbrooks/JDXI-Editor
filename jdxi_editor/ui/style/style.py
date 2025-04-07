@@ -448,7 +448,9 @@ class Style:
             border: 2px solid #ff1a1a; /* Neon red border */
             width: 10px;  /* More rectangular */
             height: 10px;  
-            margin: -10px;
+            margin: -8px;
+            margin-bottom: 2px;
+            margin-top: 2px;
             border-radius: 5px;
         }}
         /* Handle (Knob) */

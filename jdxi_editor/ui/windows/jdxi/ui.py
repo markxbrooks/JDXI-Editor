@@ -160,9 +160,6 @@ class JdxiUi(QMainWindow):
         # Add to status bar before piano keyboard
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
-        # Load last used preset settings
-        # self._load_last_preset()
-
         # Create favorite buttons container
         self.favorites_widget = QWidget()
         favorites_layout = QVBoxLayout(self.favorites_widget)
@@ -220,10 +217,6 @@ class JdxiUi(QMainWindow):
         add_title_container(container)
         self.parts_container, self.part_buttons = create_parts_container(
             parent_widget=self,
-            display_x=self.display_x,
-            display_y=self.display_y,
-            display_width=self.display_width,
-            window_height=self.height,
             on_open_d1=self._open_digital_synth1,
             on_open_d2=self._open_digital_synth2,
             on_open_drums=self._open_drums,
@@ -239,24 +232,18 @@ class JdxiUi(QMainWindow):
         self.arp_button = self.part_buttons["arp"]
 
         self.octave_down, self.octave_up = add_octave_buttons(
-            container, self.height, self.width, self._send_octave
+            container, self._send_octave
         )
         self.arpeggiator_button, self.key_hold_button = add_arpeggiator_buttons(
-            container, self.height, self.width
+            container
         )
         self.vocal_effects_button, self.effects_button = add_effects_container(
-            container, self._open_vocal_fx, self._open_effects, self.width, self.margin
+            container, self._open_vocal_fx, self._open_effects
         )
-        add_program_container(
-            container, self._create_program_buttons_row, self.width, self.margin
-        )
-        add_tone_container(
-            container, self._create_tone_buttons_row, self.width, self.margin
-        )
+        add_program_container(container, self._create_program_buttons_row)
+        add_tone_container(container, self._create_tone_buttons_row)
         self.sequencer_buttons = add_sequencer_container(
             container,
-            self.width,
-            self.margin,
             self._create_favorite_button_row,
             midi_helper=self.midi_helper,
             on_context_menu=self._show_favorite_context_menu,
@@ -473,54 +460,64 @@ class JdxiUi(QMainWindow):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
         status_bar.setStyleSheet(Style.JDXI_TRANSPARENT)
+
+        midi_indicator_container = QWidget()
+        midi_indicator_container.setLayout(self._build_status_layout())
+        status_bar.addPermanentWidget(midi_indicator_container)
+
+        # Set initial indicator states
+        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        status_bar.setStyleSheet('background: "black";')
+
+    def _build_status_layout(self):
+        layout = QVBoxLayout()
+        layout.addStretch()
+        layout.addLayout(self._build_label_row())
+        layout.addStretch()
+        layout.addLayout(self._build_wheel_row())
+        layout.addStretch()
+        layout.addLayout(self._build_midi_indicator_row())
+        return layout
+
+    def _build_label_row(self):
         label_layout = QHBoxLayout()
         label_layout.setContentsMargins(0, 0, 0, 0)
         label_layout.addStretch()
-        pitch_label = QLabel("Pitch")
-        pitch_label.setStyleSheet(Style.JDXI_TRANSPARENT)
-        label_layout.addWidget(pitch_label)
-        label_layout.addStretch()
-        mod_label = QLabel("Mod")
-        mod_label.setStyleSheet(Style.JDXI_TRANSPARENT)
-        label_layout.addWidget(mod_label)
-        label_layout.addStretch()
+
+        for text in ["Pitch", "Mod"]:
+            label = QLabel(text)
+            label.setStyleSheet(Style.JDXI_TRANSPARENT)
+            label_layout.addWidget(label)
+            label_layout.addStretch()
+
+        return label_layout
+
+    def _build_wheel_row(self):
         wheel_layout = QHBoxLayout()
         wheel_layout.addStretch()
-        # Create a pitch wheel
+
         pitch_wheel = PitchWheel(midi_helper=self.midi_helper, bidirectional=True)
         pitch_wheel.setMinimumWidth(20)
         wheel_layout.addWidget(pitch_wheel)
         wheel_layout.addStretch()
-        # Create mod wheel
         mod_wheel = ModWheel(midi_helper=self.midi_helper, bidirectional=True)
         mod_wheel.setMinimumWidth(20)
         wheel_layout.addWidget(mod_wheel)
-        wheel_layout.addStretch()
 
-        # Create MIDI indicators
+        wheel_layout.addStretch()
+        return wheel_layout
+
+    def _build_midi_indicator_row(self):
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
 
-        # Add labels and indicators
-        midi_indicator_container = QWidget()
-        midi_indicator_container_vbox = QVBoxLayout()
-        midi_indicator_container.setLayout(midi_indicator_container_vbox)
-        status_bar.addPermanentWidget(midi_indicator_container)
-        midi_indicator_container_vbox.addStretch()
-        midi_indicator_container_vbox.addLayout(label_layout)
-        midi_indicator_container_vbox.addStretch()
-        midi_indicator_container_vbox.addLayout(wheel_layout)
-        midi_indicator_container_vbox.addStretch()
-        midi_indicator_row = QHBoxLayout()
-        midi_indicator_container_vbox.addLayout(midi_indicator_row)
-        midi_indicator_row.addWidget(QLabel("MIDI IN:"))
-        midi_indicator_row.addWidget(self.midi_in_indicator)
-        midi_indicator_row.addWidget(QLabel("MIDI OUT:"))
-        midi_indicator_row.addWidget(self.midi_out_indicator)
-        # Set initial indicator states
-        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
-        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        self.statusBar().setStyleSheet('background: "black";')
+        row = QHBoxLayout()
+        row.addWidget(QLabel("MIDI IN:"))
+        row.addWidget(self.midi_in_indicator)
+        row.addWidget(QLabel("MIDI OUT:"))
+        row.addWidget(self.midi_out_indicator)
+        return row
 
     def _update_display(self):
         synth_data = self.synth_data_map.get(self.current_synth_type)
@@ -688,4 +685,7 @@ class JdxiUi(QMainWindow):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _select_synth(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_favorite_context_menu(self):
         raise NotImplementedError("Should be implemented in subclass")

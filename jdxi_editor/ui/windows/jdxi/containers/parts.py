@@ -3,15 +3,12 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QButtonGroup
 
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
 def create_parts_container(
     parent_widget,
-    display_x,
-    display_y,
-    display_width,
-    window_height,
     on_open_d1,
     on_open_d2,
     on_open_drums,
@@ -21,8 +18,8 @@ def create_parts_container(
 ):
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
-    parts_x = display_x + display_width + 35
-    parts_y = int(display_y - (window_height * 0.15))
+    parts_x = JDXIDimensions.PARTS_X
+    parts_y = JDXIDimensions.PARTS_Y
 
     parts_container.setGeometry(parts_x + 10, parts_y, 200, 250)
     parts_layout = QVBoxLayout(parts_container)

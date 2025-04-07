@@ -2,17 +2,18 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
-def add_arpeggiator_buttons(widget, height, width):
+def add_arpeggiator_buttons(widget):
     """Add arpeggiator up/down buttons to the interface"""
     # Create container
     arpeggiator_buttons_container = QWidget(widget)
 
     # Position to align with sequencer but 25% higher (increased from 20%)
-    seq_y = height - 50 - height * 0.1  # Base sequencer Y position
-    offset_y = height * 0.3  # 25% of window height (increased from 0.2)
-    arpeggiator_x = width - width * 0.8 - 60  # Position left of sequencer
+    seq_y = JDXIDimensions.HEIGHT - 50 - JDXIDimensions.HEIGHT * 0.1  # Base sequencer Y position
+    offset_y = JDXIDimensions.HEIGHT * 0.3  # 25% of window height (increased from 0.2)
+    arpeggiator_x = JDXIDimensions.WIDTH - JDXIDimensions.WIDTH * 0.8 - 60  # Position left of sequencer
 
     # Apply the height offset to the Y position
     arpeggiator_buttons_container.setGeometry(

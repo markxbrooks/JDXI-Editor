@@ -2,18 +2,19 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
-def add_octave_buttons(widget, height, width, send_octave):
+def add_octave_buttons(widget, send_octave):
     """Add octave up/down buttons to the interface"""
     # Create container
     octave_buttons_container = QWidget(widget)
 
     # Position to align with sequencer but 25% higher (increased from 20%)
-    seq_y = height - 50 - int(height * 0.1)  # Base sequencer Y position
-    offset_y = int(height * 0.3)  # 25% of window height (increased from 0.2)
+    seq_y = JDXIDimensions.HEIGHT - 50 - int(JDXIDimensions.HEIGHT * 0.1)  # Base sequencer Y position
+    offset_y = int(JDXIDimensions.HEIGHT * 0.3)  # 25% of window height (increased from 0.2)
     octave_x = (
-            width - int(width * 0.8) - 150
+            JDXIDimensions.WIDTH - int(JDXIDimensions.WIDTH * 0.8) - 150
     )  # Position left of sequencer
 
     # Apply the height offset to the Y position

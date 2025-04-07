@@ -2,12 +2,13 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
-def add_tone_container(central_widget, create_tone_buttons_row, width, margin):
+def add_tone_container(central_widget, create_tone_buttons_row):
     """ For tone buttons """
     tone_container = QWidget(central_widget)
-    tone_container.setGeometry(width - 575, margin + 75, 150, 80)
+    tone_container.setGeometry(JDXIDimensions.WIDTH - 575, JDXIDimensions.MARGIN + 75, 150, 80)
     tone_container.setStyleSheet(Style.JDXI_TRANSPARENT)
     tone_container_layout = QVBoxLayout(tone_container)
     tone_container_layout.setSpacing(3)

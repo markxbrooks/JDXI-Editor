@@ -1,13 +1,14 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout
 
 from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
-def add_effects_container(central_widget, open_vocal_fx, open_effects, width, margin):
+def add_effects_container(central_widget, open_vocal_fx, open_effects):
     # Effects button in top row
     fx_container = QWidget(central_widget)
-    fx_container.setGeometry(width - 170, margin + 20, 180, 80)
+    fx_container.setGeometry(JDXIDimensions.WIDTH - 170, JDXIDimensions.MARGIN + 20, 180, 80)
     fx_layout = QHBoxLayout(fx_container)
     vocal_effects_row, vocal_effects_button = create_button_row(
         "Vocoder",
