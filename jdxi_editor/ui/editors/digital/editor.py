@@ -109,6 +109,7 @@ class DigitalSynthEditor(SynthEditor):
                 self.midi_helper.update_digital2_tone_name.connect(
                     self.set_instrument_title_label
                 )
+
             else:
                 self.midi_helper.update_digital1_tone_name.connect(
                     self.set_instrument_title_label
@@ -147,6 +148,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_label = QLabel()
         instrument_group_layout.addWidget(self.instrument_image_label)
         self.instrument_image_group.setStyleSheet(Style.JDXI_INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setMinimumWidth(450)
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image

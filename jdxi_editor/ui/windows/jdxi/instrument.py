@@ -960,7 +960,7 @@ class JdxiInstrument(JdxiUi):
             self._update_display()
             part_address = 0x01
             group_address = 0x00
-            param_address = DigitalCommonParameter.OCTAVE_SHIFT.value
+            param_address = DigitalCommonParameter.OCTAVE_SHIFT.value[0]
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave

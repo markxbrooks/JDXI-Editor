@@ -669,3 +669,24 @@ class JdxiUi(QMainWindow):
 
     def _next_tone(self):
         raise NotImplementedError("Should be implemented in subclass")
+
+    def _load_saved_favorites(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_digital_synth1(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_digital_synth2(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_analog_synth(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_drums(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _open_arpeggiator(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _select_synth(self):
+        raise NotImplementedError("Should be implemented in subclass")

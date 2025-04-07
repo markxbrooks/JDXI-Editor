@@ -49,6 +49,8 @@ from PySide6.QtWidgets import QWidget, QSizePolicy
 from PySide6.QtGui import QPainter, QLinearGradient, QColor, QFont, QPen
 from PySide6.QtCore import Qt
 
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT
+
 
 class DigitalDisplayBase(QWidget):
     """Base class for JD-Xi style digital displays."""
@@ -151,7 +153,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.program_id = self.program_bank_letter + str(self.program_number)
         self.margin = 10  # Default margin for display elements
 
-        self.setMinimumSize(210, 70)  # Set size matching display
+        self.setMinimumSize(JDXI_DISPLAY_WIDTH, JDXI_DISPLAY_HEIGHT)  # Set size matching display
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
     def paintEvent(self, event):
