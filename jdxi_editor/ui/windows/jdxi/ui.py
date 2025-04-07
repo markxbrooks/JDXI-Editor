@@ -109,16 +109,16 @@ class JdxiUi(QMainWindow):
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.log_file = None
         self.setWindowTitle("JD-Xi Manager")
-        self.setMinimumSize(JDXI_WIDTH, JDXI_HEIGHT)
+        self.setMinimumSize(JDXIDimensions.WIDTH, JDXIDimensions.HEIGHT)
         # Store window dimensions
-        self.width = JDXI_WIDTH
-        self.height = JDXI_HEIGHT
-        self.margin = JDXI_MARGIN
+        self.width = JDXIDimensions.WIDTH
+        self.height = JDXIDimensions.HEIGHT
+        self.margin = JDXIDimensions.MARGIN
         # Store display coordinates as class variables
-        self.display_x = JDXI_MARGIN + 20
-        self.display_y = JDXI_MARGIN + 35
-        self.display_width = JDXI_DISPLAY_WIDTH
-        self.display_height = JDXI_DISPLAY_HEIGHT
+        self.display_x = JDXIDimensions.DISPLAY_X
+        self.display_y = JDXIDimensions.DISPLAY_Y
+        self.display_width = JDXIDimensions.DISPLAY_WIDTH
+        self.display_height = JDXIDimensions.DISPLAY_HEIGHT
         self.digital_font_family = None
 
         # Initialize MIDI helper
