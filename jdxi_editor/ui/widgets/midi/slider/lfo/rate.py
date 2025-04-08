@@ -4,7 +4,7 @@ from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlide
 from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 
 
-class AmpEnvelopeSlider(NRPNSlider):
+class LFORateSlider(NRPNSlider):
     """
     A class to represent a amp slider for JD-Xi using NRPN.
     """
@@ -14,9 +14,9 @@ class AmpEnvelopeSlider(NRPNSlider):
         label: str = "Reson.",
     ):
         nrpn_map = {
-            1: 124,  # NRPN LSB for Partial 1
-            2: 125,  # Partial 2
-            3: 126,  # Partial 3
+            1: 16,  # NRPN LSB for Partial 1
+            2: 17,  # Partial 2
+            3: 18,  # Partial 3
         }
         super().__init__(
             midi_helper=midi_helper,

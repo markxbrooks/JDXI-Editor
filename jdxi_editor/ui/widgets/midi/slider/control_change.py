@@ -1,3 +1,15 @@
+"""
+
+def send_nrpn(self, channel, msb, lsb, value):
+    self.send_control_change(99, msb, channel)  # NRPN MSB
+    self.send_control_change(98, lsb, channel)  # NRPN LSB
+    self.send_control_change(6, value, channel)  # Data Entry MSB
+    # Optional: Reset NRPN selection
+    self.send_control_change(99, 127, channel)
+    self.send_control_change(98, 127, channel)
+
+"""
+
 import logging
 from jdxi_editor.ui.widgets.slider import Slider
 

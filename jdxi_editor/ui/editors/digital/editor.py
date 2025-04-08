@@ -402,6 +402,10 @@ class DigitalSynthEditor(SynthEditor):
             logging.info("SysEx area mismatch. Skipping update.")
             return
 
+        if not _sysex_part_matches(sysex_data, self.part):
+            logging.info("SysEx part mismatch. Skipping update.")
+            return
+
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
         if partial_no is None:
             return

@@ -90,7 +90,7 @@ def draw_sequencer(painter: QPainter):
     sequencer_x = JDXIDimensions.SEQUENCER_X  # Align with right edge of keyboard
     # Calculate step dimensions
     step_count = JDXIDimensions.SEQUENCER_STEPS
-    step_size = JDXIDimensions.SEQUENCER_SQUARE_SIZE  # Smaller square size
+    step_size = JDXIDimensions.SEQUENCER_STEP_SIZE  # Smaller square size
     total_spacing = sequencer_width - (step_count * step_size)
     step_spacing = total_spacing / (step_count - 1)
     # Draw horizontal measure lines (white)

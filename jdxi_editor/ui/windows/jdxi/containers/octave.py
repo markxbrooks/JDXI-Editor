@@ -10,19 +10,12 @@ def add_octave_buttons(widget, send_octave):
     # Create container
     octave_buttons_container = QWidget(widget)
 
-    # Position to align with sequencer but 25% higher (increased from 20%)
-    seq_y = JDXIDimensions.HEIGHT - 50 - int(JDXIDimensions.HEIGHT * 0.1)  # Base sequencer Y position
-    offset_y = int(JDXIDimensions.HEIGHT * 0.3)  # 25% of window height (increased from 0.2)
-    octave_x = (
-            JDXIDimensions.WIDTH - int(JDXIDimensions.WIDTH * 0.8) - 150
-    )  # Position left of sequencer
-
     # Apply the height offset to the Y position
     octave_buttons_container.setGeometry(
-        octave_x - 10,
-        seq_y - 60 - offset_y,  # Move up by offset_y
-        100,
-        100,
+        JDXIDimensions.OCTAVE_X,
+        JDXIDimensions.OCTAVE_Y,  # Move up by offset_y (now 25% instead of 20%)
+        JDXIDimensions.OCTAVE_WIDTH,
+        JDXIDimensions.OCTAVE_HEIGHT,
     )
 
     octave_layout = QVBoxLayout(octave_buttons_container)

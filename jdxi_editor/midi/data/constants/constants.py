@@ -328,5 +328,3 @@ DIGITAL_SYNTH_1 = 0x19  # 19 00 00 00: Digital Synth Part 1
 DIGITAL_SYNTH_2 = 0x19  # 19 20 00 00: Digital Synth Part 2
 ANALOG_SYNTH = 0x42  # 19 40 00 00: Analog Synth Part
 DRUM_KIT = 0x70  # 19 60 00 00: Drums Part
-DIGITAL_PART_1 = 0x01  # Digital Synth 1 offset
-DIGITAL_PART_2 = 0x02  # Digital Synth 2 offset

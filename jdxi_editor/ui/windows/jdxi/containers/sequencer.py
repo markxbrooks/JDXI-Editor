@@ -20,12 +20,16 @@ def create_sequencer_buttons_row(
 
     grid = QGridLayout()
     grid.setAlignment(Qt.AlignmentFlag.AlignLeft)
-    grid.setGeometry(QRect(1, 1, 300, 30))
+    grid.setGeometry(QRect(1,
+                           1,
+                           JDXIDimensions.SEQUENCER_GRID_WIDTH,
+                           JDXIDimensions.SEQUENCER_GRID_HEIGHT)
+                     )
     grid.setHorizontalSpacing(2)
 
     for i in range(16):
         button = SequencerSquare(i, midi_helper)
-        button.setFixedSize(25, 25)
+        button.setFixedSize(JDXIDimensions.SEQUENCER_SQUARE_SIZE, JDXIDimensions.SEQUENCER_SQUARE_SIZE)
         button.setCheckable(True)
         button.setChecked(False)
         button.setStyleSheet(generate_sequencer_button_style(button.isChecked()))
@@ -58,7 +62,10 @@ def add_sequencer_container(central_widget,
                             ):
     # Beginning of sequencer section
     sequencer_container = QWidget(central_widget)
-    sequencer_container.setGeometry(JDXIDimensions.WIDTH - 500, JDXIDimensions.MARGIN + 155, 500, 80)
+    sequencer_container.setGeometry(JDXIDimensions.SEQUENCER_CONTAINER_X,
+                                    JDXIDimensions.SEQUENCER_CONTAINER_Y,
+                                    JDXIDimensions.SEQUENCER_CONTAINER_WIDTH,
+                                    JDXIDimensions.SEQUENCER_CONTAINER_HEIGHT)
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

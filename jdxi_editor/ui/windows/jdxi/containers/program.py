@@ -12,7 +12,10 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 def add_program_container(central_widget, create_program_buttons_row):
     """ add program container """
     program_container = QWidget(central_widget)
-    program_container.setGeometry(JDXIDimensions.WIDTH - 575, JDXIDimensions.MARGIN + 15, 150, 80)
+    program_container.setGeometry(JDXIDimensions.PROGRAM_X,
+                                  JDXIDimensions.PROGRAM_Y,
+                                  JDXIDimensions.PROGRAM_WIDTH,
+                                  JDXIDimensions.PROGRAM_HEIGHT)
     program_container_layout = QVBoxLayout(program_container)
     program_container_layout.setSpacing(4)
 
