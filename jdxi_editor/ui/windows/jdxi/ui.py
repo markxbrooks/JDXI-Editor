@@ -29,10 +29,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QMessageBox,
     QLabel,
-    QPushButton,
-    QGridLayout,
 )
-from PySide6.QtCore import Qt, QSettings, QRect
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import (
     QAction,
     QFontDatabase,
@@ -47,33 +45,25 @@ from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.style import Style
-from jdxi_editor.ui.style.helpers import (
-    generate_sequencer_button_style,
-    toggle_button_style,
-)
-from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
-from jdxi_editor.ui.widgets.button.channel import ChannelButton
-from jdxi_editor.ui.widgets.indicator import MIDIIndicator, LEDIndicator
-from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
+from jdxi_editor.ui.widgets.indicator import LEDIndicator
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.widgets.wheel.mod import ModWheel
-from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 from jdxi_editor.ui.windows.jdxi.containers.arpeggiator import add_arpeggiator_buttons
 from jdxi_editor.ui.windows.jdxi.containers.effects import add_effects_container
 from jdxi_editor.ui.windows.jdxi.containers.octave import add_octave_buttons
 from jdxi_editor.ui.windows.jdxi.containers.digital_display import add_digital_display
 from jdxi_editor.ui.windows.jdxi.containers.parts import create_parts_container
-from jdxi_editor.ui.windows.jdxi.containers.program import add_program_container
-from jdxi_editor.ui.windows.jdxi.containers.sequencer import add_sequencer_container
+from jdxi_editor.ui.windows.jdxi.containers.program import add_program_container, create_program_buttons_row
+from jdxi_editor.ui.windows.jdxi.containers.sequencer import add_sequencer_container, create_favorite_button_row
 from jdxi_editor.ui.windows.jdxi.containers.sliders import add_slider_container
 from jdxi_editor.ui.windows.jdxi.containers.title import add_title_container
-from jdxi_editor.ui.windows.jdxi.containers.tone import add_tone_container
+from jdxi_editor.ui.windows.jdxi.containers.tone import add_tone_container, create_tone_buttons_row
+from jdxi_editor.ui.windows.jdxi.containers.wheels import build_wheel_label_row, build_wheel_row
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 class JdxiUi(QMainWindow):
-    """JDXI UI setup, with little or no actual functionality, which is superclassed"""
+    """JDXI UI setup, with little or no actual functionality, which is super-classed"""
 
     def __init__(self):
         super().__init__()
@@ -166,18 +156,6 @@ class JdxiUi(QMainWindow):
         favorites_layout.setSpacing(4)
         favorites_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Create favorite buttons
-        self.favorite_buttons = []
-        for i in range(4):  # Create 4 favorite slots
-            button = FavoriteButton(i, self.midi_helper)
-            button.clicked.connect(lambda checked, b=button: self._load_favorite(b))
-            button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-            button.customContextMenuRequested.connect(
-                lambda pos, b=button: self._show_favorite_context_menu(pos, b)
-            )
-            favorites_layout.addWidget(button)
-            self.favorite_buttons.append(button)
-
         # Add to status bar
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
@@ -240,11 +218,18 @@ class JdxiUi(QMainWindow):
         self.vocal_effects_button, self.effects_button = add_effects_container(
             container, self._open_vocal_fx, self._open_effects
         )
-        add_program_container(container, self._create_program_buttons_row)
-        add_tone_container(container, self._create_tone_buttons_row)
-        self.sequencer_buttons = add_sequencer_container(
+
+        (self.program_down_button,
+         self.program_up_button) = add_program_container(container,
+                                                         create_program_buttons_row)
+
+        self.tone_down_button, self.tone_up_button = add_tone_container(container,
+                                                                        create_tone_buttons_row,
+                                                                        self._previous_tone,
+                                                                        self._next_tone)
+        self.sequencer_buttons, self.favorite_button = add_sequencer_container(
             container,
-            self._create_favorite_button_row,
+            create_favorite_button_row,
             midi_helper=self.midi_helper,
             on_context_menu=self._show_favorite_context_menu,
             on_save_favorite=self._save_favorite,
@@ -254,86 +239,6 @@ class JdxiUi(QMainWindow):
 
         # Initialize current preset index
         self.current_preset_index = 0
-
-    def _create_program_buttons_row(self):
-        # create program navigation buttons
-        self.program_down_button = QPushButton("-")
-        program_spacer = QLabel(" ")
-        self.program_up_button = QPushButton("+")
-
-        # create program up button
-        self.program_up_button.setFixedSize(25, 25)
-        self.program_up_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
-
-        # create program down button
-        self.program_down_button.setFixedSize(25, 25)
-        self.program_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
-
-        # create program layout
-        program_layout = QHBoxLayout()
-        program_layout.addStretch()
-        program_layout.addWidget(self.program_down_button)
-        program_layout.addWidget(program_spacer)
-        program_layout.addWidget(self.program_up_button)
-        program_layout.addStretch()
-        return program_layout
-
-    def _create_tone_buttons_row(self):
-        # Create Tone navigation buttons
-        self.tone_down_button = QPushButton("-")
-        tone_spacer = QLabel(" ")
-        self.tone_up_button = QPushButton("+")
-
-        # Calculate size for tone buttons
-        tone_button_diameter = 25
-
-        # Create tone up button
-        self.tone_up_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_up_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
-
-        # Create tone down button
-        self.tone_down_button.setFixedSize(tone_button_diameter, tone_button_diameter)
-        self.tone_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SMALL)
-
-        # Connect buttons to functions
-        self.tone_down_button.clicked.connect(self._previous_tone)
-        self.tone_up_button.clicked.connect(self._next_tone)
-
-        button_label_layout = QHBoxLayout()
-        button_label_layout.addStretch()
-        button_label_layout.addWidget(tone_spacer)
-        button_label_layout.addStretch()
-        # Button layout
-        button_layout = QHBoxLayout()
-        button_layout.addStretch()
-        button_layout.addWidget(self.tone_down_button)
-        button_layout.addWidget(tone_spacer)
-        button_layout.addWidget(self.tone_up_button)
-        button_layout.addStretch()
-        return button_layout
-
-    def _create_favorite_button_row(self):
-        """Create address row with label and circular button"""
-        text = "Favorites"
-        row = QHBoxLayout()
-        row.setSpacing(10)
-
-        # Add label with color based on text
-        label = QLabel(text)
-        if text == "Analog Synth":
-            label.setStyleSheet(Style.JDXI_LABEL_ANALOG_SYNTH_PART)
-        else:
-            label.setStyleSheet(Style.JDXI_LABEL_SYNTH_PART)
-        # Add spacer to push button to right
-        row.addStretch()
-        # Add button
-        self.favourites_button = QPushButton()
-        self.favourites_button.setFixedSize(30, 30)
-        self.favourites_button.setCheckable(True)
-        # Style the button with brighter hover/border_pressed/selected  states
-        self.favourites_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-        row.addWidget(self.favourites_button)
-        return row
 
     def _create_menu_bar(self):
         menubar = self.menuBar()
@@ -473,40 +378,12 @@ class JdxiUi(QMainWindow):
     def _build_status_layout(self):
         layout = QVBoxLayout()
         layout.addStretch()
-        layout.addLayout(self._build_label_row())
+        layout.addLayout(build_wheel_label_row())
         layout.addStretch()
-        layout.addLayout(self._build_wheel_row())
+        layout.addLayout(build_wheel_row(midi_helper=self.midi_helper))
         layout.addStretch()
         layout.addLayout(self._build_midi_indicator_row())
         return layout
-
-    def _build_label_row(self):
-        label_layout = QHBoxLayout()
-        label_layout.setContentsMargins(0, 0, 0, 0)
-        label_layout.addStretch()
-
-        for text in ["Pitch", "Mod"]:
-            label = QLabel(text)
-            label.setStyleSheet(Style.JDXI_TRANSPARENT)
-            label_layout.addWidget(label)
-            label_layout.addStretch()
-
-        return label_layout
-
-    def _build_wheel_row(self):
-        wheel_layout = QHBoxLayout()
-        wheel_layout.addStretch()
-
-        pitch_wheel = PitchWheel(midi_helper=self.midi_helper, bidirectional=True)
-        pitch_wheel.setMinimumWidth(20)
-        wheel_layout.addWidget(pitch_wheel)
-        wheel_layout.addStretch()
-        mod_wheel = ModWheel(midi_helper=self.midi_helper, bidirectional=True)
-        mod_wheel.setMinimumWidth(20)
-        wheel_layout.addWidget(mod_wheel)
-
-        wheel_layout.addStretch()
-        return wheel_layout
 
     def _build_midi_indicator_row(self):
         self.midi_in_indicator = LEDIndicator()
@@ -585,33 +462,6 @@ class JdxiUi(QMainWindow):
         self.current_tone_name = preset_name
         self._update_display()
 
-    def show_error(self, title: str, message: str):
-        """Show error message dialog
-
-        Args:
-            title: Dialog title
-            message: Error message
-        """
-        QMessageBox.critical(self, title, message)
-
-    def show_warning(self, title: str, message: str):
-        """Show warning message dialog
-
-        Args:
-            title: Dialog title
-            message: Warning message
-        """
-        QMessageBox.warning(self, title, message)
-
-    def show_info(self, title: str, message: str):
-        """Show info message dialog
-
-        Args:
-            title: Dialog title
-            message: Info message
-        """
-        QMessageBox.information(self, title, message)
-
     def _update_display_preset(
         self, preset_number: int, preset_name: str, channel: int
     ):
@@ -639,6 +489,33 @@ class JdxiUi(QMainWindow):
 
         except Exception as ex:
             logging.error(f"Error updating display: {str(ex)}")
+
+    def show_error(self, title: str, message: str):
+        """Show error message dialog
+
+        Args:
+            title: Dialog title
+            message: Error message
+        """
+        QMessageBox.critical(self, title, message)
+
+    def show_warning(self, title: str, message: str):
+        """Show warning message dialog
+
+        Args:
+            title: Dialog title
+            message: Warning message
+        """
+        QMessageBox.warning(self, title, message)
+
+    def show_info(self, title: str, message: str):
+        """Show info message dialog
+
+        Args:
+            title: Dialog title
+            message: Info message
+        """
+        QMessageBox.information(self, title, message)
 
     def _save_favorite(self, button, idx):
         raise NotImplementedError("to be implemented in subclass")

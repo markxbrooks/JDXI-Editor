@@ -1356,7 +1356,7 @@ class JdxiInstrument(JdxiUi):
 
     def _load_saved_favorites(self):
         """Load saved favorites from settings"""
-        for button in self.favorite_buttons:
+        for button in self.sequencer_buttons:
             # Check if slot has saved preset
             synth_type = self.settings.value(
                 f"favorites/slot{button.slot_num}/synth_type", ""
