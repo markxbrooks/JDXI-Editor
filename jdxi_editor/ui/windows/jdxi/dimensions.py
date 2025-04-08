@@ -59,15 +59,15 @@ class JDXIDimensions:
     SEQUENCER_CONTAINER_HEIGHT = 80
 
     # Sliders
-    SLIDER_X = 570
+    SLIDER_X = 515
     SLIDER_Y = MARGIN
     SLIDER_WIDTH = 280
     SLIDER_HEIGHT = 120
     SLIDER_CONTAINER_HEIGHT = SLIDER_HEIGHT + 20
 
     # Parts container
-    PARTS_X = DISPLAY_X + DISPLAY_WIDTH + 35
-    PARTS_Y = MARGIN + 10
+    PARTS_X = DISPLAY_X + DISPLAY_WIDTH + 10
+    PARTS_Y = MARGIN
     PARTS_WIDTH = 180
     PARTS_HEIGHT = 220
 
@@ -84,13 +84,13 @@ class JDXIDimensions:
     ARPEGGIATOR_HEIGHT = 100
 
     # Program buttons
-    PROGRAM_X =  WIDTH - 575
+    PROGRAM_X = 385
     PROGRAM_Y = MARGIN + 15
     PROGRAM_WIDTH = 150
     PROGRAM_HEIGHT = 80
 
     # Tone buttons
-    TONE_X =  WIDTH - 575
+    TONE_X = 385
     TONE_Y = MARGIN + 75
     TONE_WIDTH = 150
     TONE_HEIGHT = 80
