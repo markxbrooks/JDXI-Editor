@@ -54,7 +54,7 @@ class PartialSwitch(QWidget):
         self.partial = partial
 
         layout = QHBoxLayout()
-        layout.setSpacing(20)
+        layout.setSpacing(5)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
@@ -94,11 +94,11 @@ class PartialsPanel(QWidget):
         super().__init__(parent)
 
         layout = QVBoxLayout()
-        layout.setSpacing(10)
+        layout.setSpacing(5)
         self.setLayout(layout)
 
         partial_layout = QHBoxLayout()
-        partial_layout.setSpacing(40)
+        partial_layout.setSpacing(5)
         self.setLayout(partial_layout)
 
         # Create switches for each partial (not structure types)
@@ -114,7 +114,7 @@ class PartialsPanel(QWidget):
             switch = PartialSwitch(partial)
             self.switches[partial] = switch 
             group_layout.addWidget(switch)
-            group_layout.setSpacing(40)
+            group_layout.setSpacing(5)
             group_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             group_box.setLayout(group_layout)
             partial_layout.addWidget(group_box)

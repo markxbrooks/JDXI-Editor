@@ -69,7 +69,7 @@ from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
 
 
-def get_area(data: tuple[int, int]) -> str:
+def get_area(data: list[int, int]) -> str:
     """Map address bytes to corresponding temporary area."""
     logging.info(f"data for temporary area: {data}")
     area_mapping = {
@@ -409,8 +409,8 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-
-        current_synth = get_area([self.area, self.part])
+        logging.info(f"finding area: {self.area} part {self.part}")
+        current_synth = get_area(self.area, self.part)
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
         if not current_synth == temp_area:

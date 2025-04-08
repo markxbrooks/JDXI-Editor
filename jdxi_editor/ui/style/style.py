@@ -314,6 +314,10 @@ class Style:
                 background-color: black;
                 color: "{ACCENT}";
             }}
+            QSlider {{
+                margin-bottom: 2px;
+                margin-top: 2px;
+            }}
         """
 
     JDXI_TRANSPARENT = f"""
@@ -373,6 +377,8 @@ class Style:
             width: 10px;  /* More rectangular */
             height: 10px;  
             margin: -10px;
+            margin-bottom: 2px;
+            margin-top: 2px;
             border-radius: 5px;
             padding: 1px;
         }

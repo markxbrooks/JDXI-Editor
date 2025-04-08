@@ -4,6 +4,8 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
 from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
+from jdxi_editor.ui.widgets.midi.slider.effects.delay import DelaySlider
+from jdxi_editor.ui.widgets.midi.slider.effects.reverb import ReverbSlider
 from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
 from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
 from jdxi_editor.ui.widgets.midi.slider.lfo.amp_depth import LFOAmpDepthSlider
@@ -83,16 +85,26 @@ def add_slider_container(central_widget, midi_helper):
     lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")
     lfo_pitch_slider = LFOPitchSlider(midi_helper, label="Pitch")
 
+    delay_slider = DelaySlider(midi_helper, label="Filter")
+    lfo_amp_slider = ReverbSlider(midi_helper, label="Amp")
+
+    # Effect 1 and Effect 2 may come later
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
     lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
 
     # Add sliders with labels to the row
 
     filter_cutoff_container = create_slider_with_label(
-        "Cutoff", filter_cutoff_slider
+        "Cut.", filter_cutoff_slider
     )
     filter_resonance_container = create_slider_with_label(
-        "Reson", filter_resonance_slider
+        "Reson.", filter_resonance_slider
+    )
+    filter_delay_container = create_slider_with_label(
+        "Cut.", filter_cutoff_slider
+    )
+    filter_depth_container = create_slider_with_label(
+        "Reson.", filter_resonance_slider
     )
     lfo_rate_container = create_slider_with_label("Rate", lfo_rate_slider)
     lfo_pitch_container = create_slider_with_label("Pitch", lfo_pitch_slider)
