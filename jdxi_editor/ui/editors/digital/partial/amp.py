@@ -10,7 +10,7 @@ from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -49,7 +49,7 @@ class DigitalAmpSection(QWidget):
         ]:
             icon_label = QLabel()
             icon = qta.icon(icon, color="#666666")
-            pixmap = icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)
+            pixmap = icon.pixmap(JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE)
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
@@ -111,7 +111,7 @@ class DigitalAmpSection(QWidget):
             part=self.part,
             group=group_address,
         )
-        self.amp_env_adsr_widget.setStyleSheet(Style.JDXI_ADSR)
+        self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)

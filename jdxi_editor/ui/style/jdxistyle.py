@@ -77,7 +77,7 @@ Attributes:
 from jdxi_editor.ui.style.helpers import generate_button_style, generate_tab_style, generate_editor_style
 
 
-class Style:
+class JDXIStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
@@ -115,19 +115,19 @@ class Style:
     ICON_SIZE = 20
     TAB_BUTTON_RECT_RADIUS = 6
 
-    JDXI_FONT_RED = "#d51e35"  # Base red
+    FONT_RED = "#d51e35"  # Base red
 
     # Fonts
     FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
     FONT_SIZE = "12px"
     # Define button styles
-    JDXI_BUTTON_ROUND = generate_button_style(
+    BUTTON_ROUND = generate_button_style(
         BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    JDXI_BUTTON_ROUND_SELECTED = generate_button_style(
+    BUTTON_ROUND_SELECTED = generate_button_style(
         BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    JDXI_BUTTON_ROUND_ACTIVE = generate_button_style(
+    BUTTON_ROUND_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
         radius=BUTTON_ROUND_RADIUS,
@@ -135,7 +135,7 @@ class Style:
         hover=ACCENT_HOVER,
         border_pressed=ACCENT_PRESSED,
     )
-    JDXI_BUTTON_ROUND_SMALL = generate_button_style(
+    BUTTON_ROUND_SMALL = generate_button_style(
         bg=BORDER,
         border="black",
         radius=10,
@@ -146,13 +146,13 @@ class Style:
         button_padding=BUTTON_PADDING,
         button_border_width=1,
     )
-    JDXI_BUTTON_RECT = generate_button_style(
+    BUTTON_RECT = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    JDXI_BUTTON_RECT_SELECTED = generate_button_style(
+    BUTTON_RECT_SELECTED = generate_button_style(
         BACKGROUND, BORDER, BUTTON_RECT_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
     )
-    JDXI_BUTTON_RECT_ACTIVE = generate_button_style(
+    BUTTON_RECT_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_HOVER,
         radius=BUTTON_RECT_RADIUS,
@@ -162,7 +162,7 @@ class Style:
     )
 
     # Analog Button Styles
-    JDXI_BUTTON_RECT_ANALOG = generate_button_style(
+    BUTTON_RECT_ANALOG = generate_button_style(
         BACKGROUND,
         ACCENT_ANALOG,
         BUTTON_RECT_RADIUS,
@@ -170,7 +170,7 @@ class Style:
         ACCENT_ANALOG_HOVER,
         ACCENT_PRESSED,
     )
-    JDXI_BUTTON_ANALOG_ACTIVE = generate_button_style(
+    BUTTON_ANALOG_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=ACCENT_ANALOG,
         radius=BUTTON_RECT_RADIUS,
@@ -178,7 +178,7 @@ class Style:
         hover=ACCENT_ANALOG_HOVER,
         border_pressed=ACCENT_ANALOG_PRESSED,
     )
-    JDXI_BUTTON_WAVEFORM = generate_button_style(
+    BUTTON_WAVEFORM = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=3,
@@ -192,7 +192,7 @@ class Style:
         button_padding=BUTTON_PADDING
     )
 
-    JDXI_BUTTON_WAVEFORM_ANALOG = generate_button_style(
+    BUTTON_WAVEFORM_ANALOG = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=3,
@@ -207,7 +207,7 @@ class Style:
     )
 
     # Define Tab styles using get_tab_style function
-    JDXI_TABS = generate_tab_style(
+    TABS = generate_tab_style(
         bg=BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=TAB_BUTTON_RECT_RADIUS,
@@ -218,7 +218,7 @@ class Style:
         selected_border="#ff6666",
     )
 
-    JDXI_TABS_ANALOG = generate_tab_style(
+    TABS_ANALOG = generate_tab_style(
         bg=BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=TAB_BUTTON_RECT_RADIUS,
@@ -229,7 +229,7 @@ class Style:
         selected_border="#00A0E9",
     )
 
-    JDXI_TABS_DRUMS = generate_tab_style(
+    TABS_DRUMS = generate_tab_style(
         bg=BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=TAB_BUTTON_RECT_RADIUS,
@@ -240,7 +240,7 @@ class Style:
         selected_border="#ff6666",
     )
 
-    JDXI_EDITOR = generate_editor_style(
+    EDITOR = generate_editor_style(
         ACCENT,
         ACCENT_HOVER,
         BACKGROUND,
@@ -256,7 +256,7 @@ class Style:
         SLIDER_NEON_GRADIENT_STOP,
     )
 
-    JDXI_EDITOR_ANALOG = generate_editor_style(
+    EDITOR_ANALOG = generate_editor_style(
         ACCENT_ANALOG,
         ACCENT_ANALOG_HOVER,
         BACKGROUND,
@@ -272,7 +272,7 @@ class Style:
         SLIDER_NEON_GRADIENT_STOP_ANALOG,
     )
 
-    JDXI = f"""
+    INSTRUMENT = f"""
             QMainWindow {{
                 background-color: black;
             }}
@@ -320,29 +320,29 @@ class Style:
             }}
         """
 
-    JDXI_TRANSPARENT = f"""
+    TRANSPARENT = f"""
         QMainWindow, QWidget, QMenuBar {{
             background-color: transparent;
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
         QPushButton {{
             background-color: transparent;
             border: 1px solid red;
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
         QPushButton:hover {{
             background-color: rgba(255, 0, 0, 30);
         }}
         QStatusBar {{
             background-color: transparent;
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
     """
 
-    JDXI_TRANSPARENT_WHITE = f"""
+    TRANSPARENT_WHITE = f"""
         QMainWindow, QWidget, QMenuBar {{
             background-color: transparent;
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
         QLabel {{
             background-color: transparent;
@@ -351,18 +351,18 @@ class Style:
         QPushButton {{
             background-color: transparent;
             border: 1px solid red;
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
         QPushButton:hover {{
             background-color: rgba(255, 0, 0, 30);
         }}
         QStatusBar {{
             background-color: transparent;
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
     """
 
-    JDXI_ADSR_ANALOG = """
+    ADSR_ANALOG = """
         /* Groove (Track) */
         QSlider::groove:vertical {
             background: #111; /* Dark background */
@@ -440,7 +440,7 @@ class Style:
         }
     """
 
-    JDXI_ADSR = f"""
+    ADSR = f"""
         /* Groove (Track) */
         QSlider::groove:vertical {{
             background: #111; /* Dark background */
@@ -512,145 +512,11 @@ class Style:
         }}
         /* QLabels */
         QLabel {{
-            color: "{JDXI_FONT_RED}";
+            color: "{FONT_RED}";
         }}
     """
 
-    JDXI_ADSR_VERY_VNEW = """
-        /* Groove (Track) */
-        QSlider::groove:vertical {
-            background: #111;
-            width: 6px;
-            border-radius: 3px;
-        }
-        /* Handle (Knob) */
-        QSlider::handle:vertical {
-            background: black;
-            border: 2px solid #ff1a1a;
-            width: 24px;
-            height: 16px;
-            margin: -6px;
-            border-radius: 2px;
-            box-shadow: 0px 0px 10px #ff1a1a;
-        }
-
-        /* Glowing effect when moving */
-        QSlider::sub-page:vertical {
-            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
-                         stop:0 #660000, stop:1 #ff1a1a);
-            border-radius: 3px;
-        }
-
-        /* Unfilled portion */
-        QSlider::add-page:vertical {
-            background: #222;
-            border-radius: 3px;
-        }
-
-        /* Tick Marks (Fake tick marks using box-shadow) */
-        QSlider::tick-mark:vertical {
-            background-color: transparent;
-            width: 6px;
-            height: 6px;
-            border-radius: 3px;
-            margin-left: -12px;  /* Positioning to the left */
-            margin-right: 12px;  /* Positioning to the right */
-            box-shadow: 
-                -8px 0px 0px 2px #ff1a1a,  /* Left ticks */
-                8px 0px 0px 2px #ff1a1a;   /* Right ticks */
-        }
-
-        /* Handle Hover Effect */
-        QSlider::handle:vertical:hover {
-            border: 2px solid #ff3333;
-            box-shadow: 0px 0px 15px #ff3333;
-        }
-    """
-
-    JDXI_ADSR_NEW = """
-    /* Groove (Track) */
-    QSlider::groove:vertical {
-        background: qlineargradient(x1:0, y1:0, x2:1, y2:1, 
-                     stop:0 #222, stop:1 #111); /* Metallic effect */
-        width: 8px;
-        border-radius: 4px;
-    }
-
-    /* Handle (Knob) */
-    QSlider::handle:vertical {
-        background: qradialgradient(cx:0.5, cy:0.5, radius:0.5, 
-                     fx:0.5, fy:0.5, stop:0 #ff4500, stop:1 #7a1c00); 
-        border: 2px solid #ff4500; /* Neon-like border */
-        width: 16px;  
-        height: 16px;
-        margin: -6px;
-        border-radius: 8px;
-    }
-
-    /* Filled portion (moving slider) */
-    QSlider::sub-page:vertical {
-        background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
-                     stop:0 #ff4500, stop:1 #ff9966);
-        border-radius: 4px;
-    }
-
-    /* Unfilled portion */
-    QSlider::add-page:vertical {
-        background: #2a2a2a;
-        border-radius: 4px;
-    }
-
-    /* Tick Marks */
-    QSlider::tick-mark {
-        background: #ff6500; /* More visible */
-        width: 3px;
-        height: 3px;
-        border-radius: 2px;
-    }
-
-    /* Glow Effect */
-    QSlider::handle:vertical:hover {
-        background: qradialgradient(cx:0.5, cy:0.5, radius:0.6, 
-                     fx:0.5, fy:0.5, stop:0 #ff5722, stop:1 #7a1c00);
-        border: 2px solid #ff9966;
-    }
-"""
-
-
-    JDXI_ADSR_OLD = """
-    QSlider::groove:vertical {
-        background: #1A1A1A; /* Dark background */
-        width: 6px; /* Thin groove */
-        border-radius: 5px;
-    }
-
-    QSlider::handle:vertical {
-        background: black;
-        border: 2px solid #ff4500; /* Bright red/orange border */
-        width: 40px;  /* Wider handle */
-        height: 12px;  /* Shorter handle */
-        margin: -2p x -5px; /* Centers the handle */
-        border-radius: 5px;
-    }
-
-    QSlider::sub-page:vertical {
-        background: rgba(255, 69, 0, 0.5); /* Glowing effect on filled portion */
-        border-radius: 3px;
-    }
-
-    QSlider::add-page:vertical {
-        background: #333333; /* Unfilled portion */
-        border-radius: 3px;
-    }
-
-    QSlider::tick-mark {
-        background: #ff4500; /* Bright tick marks */
-        width: 2px;
-        height: 2px;
-    }
-    """
-
-    JDXI_COMBO_BOX = f"""
+    COMBO_BOX = f"""
     QComboBox {{
         background-color: {BACKGROUND};
         border: 1px solid {ACCENT};
@@ -687,7 +553,7 @@ class Style:
     }}
     """
 
-    JDXI_COMBO_BOX_ANALOG = f"""
+    COMBO_BOX_ANALOG = f"""
         QComboBox {{
             background-color: {BACKGROUND};
             border: 1px solid {ACCENT_ANALOG};
@@ -724,14 +590,14 @@ class Style:
         }}
     """
 
-    JDXI_LABEL_SUB = f"""
+    LABEL_SUB = f"""
             font-family: "{FONT_FAMILY}";
             font-size: 13px;
             color: #d51e35;
             font-weight: bold;
         """
 
-    JDXI_LABEL = f"""
+    LABEL = f"""
             font-family: "{FONT_FAMILY}";
             font-size: 14px;
             color: #d51e35;
@@ -739,7 +605,7 @@ class Style:
             background: transparent;
         """
 
-    JDXI_QLABEL = f"""
+    QLABEL = f"""
         QLabel {{
             font-family: "{FONT_FAMILY}";
             font-size: 14px;
@@ -750,7 +616,7 @@ class Style:
     """
 
 
-    JDXI_KEYBOARD_DRUM_LABELS = """
+    KEYBOARD_DRUM_LABELS = """
                 QLabel {
                     color: #808080;
                     font-size: 7px;
@@ -760,7 +626,7 @@ class Style:
                 }
             """
 
-    JDXI_INSTRUMENT_TITLE_LABEL = """
+    INSTRUMENT_TITLE_LABEL = """
             color: #FFBB33;
             font-size: 16px;
             font-weight: bold;
@@ -781,7 +647,7 @@ class Style:
             }
             """
 
-    JDXI_INSTRUMENT_IMAGE_LABEL = f"""        
+    INSTRUMENT_IMAGE_LABEL = f"""        
         QGroupBox {{
             height: 100px;
             width: 120px;
@@ -793,27 +659,27 @@ class Style:
             }}
         """
 
-    JDXI_LABEL_SYNTH_PART = f"""
+    LABEL_SYNTH_PART = f"""
                 font-family: "{FONT_FAMILY}";
                 font-size: 13px;
-                color: "{JDXI_FONT_RED}";  /* Base red */
+                color: "{FONT_RED}";  /* Base red */
                 font-weight: bold;
             """
 
-    JDXI_LABEL_ANALOG_SYNTH_PART = f"""
+    LABEL_ANALOG_SYNTH_PART = f"""
                 font-family: "{FONT_FAMILY}";
                 font-size: 13px;
                 color: {ACCENT_ANALOG};  /* Blue for Analog */
                 font-weight: bold;
             """
 
-    JDXI_DRUM_GROUP = """
+    DRUM_GROUP = """
                 QGroupBox {
                 width: 100px;
             }
             """
 
-    JDXI_PATCH_MANAGER = f"""
+    PATCH_MANAGER = f"""
             QMainWindow {{
                 background-color: #2E2E2E;
             }}
@@ -850,14 +716,14 @@ class Style:
                 font-family: "{FONT_FAMILY}";
             }}
         """
-    JDXI_LABEL_WHEEL = f"""            
+    LABEL_WHEEL = f"""            
         QLabel {{
                 color: red;
                 font-family: "{FONT_FAMILY}";
             }}
         """
 
-    JDXI_PARTIAL_SWITCH = f"""
+    PARTIAL_SWITCH = f"""
                 QCheckBox {{
                     color: #CCCCCC;
                     font-size: 10px;
@@ -875,7 +741,7 @@ class Style:
                 }}
             """
 
-    JDXI_PARTIALS_PANEL = """  
+    PARTIALS_PANEL = """  
             QGroupBox {
                 color: #CCCCCC;
                 font-size: 12px;
@@ -893,7 +759,7 @@ class Style:
             }
         """  # this may be sub-classed
 
-    JDXI_DEBUGGER = f"""
+    DEBUGGER = f"""
             QMainWindow {{
                 background-color: #2E2E2E;
             }}
@@ -935,7 +801,7 @@ class Style:
             }}
         """
 
-    JDXI_SEQUENCER = f"""
+    SEQUENCER = f"""
             font-family: "{FONT_FAMILY}";
             font-size: 14px;
             color: #d51e35;
@@ -943,7 +809,7 @@ class Style:
             background: transparent;
         """
 
-    JDXI_PARTS_SELECT = f"""
+    PARTS_SELECT = f"""
             font-family: {FONT_FAMILY};
             font-size: 14px;
             color: #d51e35;

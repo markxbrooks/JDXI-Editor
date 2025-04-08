@@ -1,7 +1,7 @@
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
 
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -13,7 +13,7 @@ def add_title_container(central_widget):
         JDXIDimensions.TITLE_Y,
         JDXIDimensions.TITLE_WIDTH,
         JDXIDimensions.TITLE_HEIGHT,)
-    title_container.setStyleSheet(Style.JDXI_TRANSPARENT_WHITE)
+    title_container.setStyleSheet(JDXIStyle.TRANSPARENT_WHITE)
     title_layout = QHBoxLayout()
     title_container.setLayout(title_layout)
     title_label = QLabel("JD-Xi Editor")

@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from jdxi_editor.midi.data.constants.constants import LFO_1_GROUP
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
 from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
 from jdxi_editor.ui.widgets.midi.slider.effects.delay import DelaySlider
@@ -34,7 +34,7 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.setSpacing(3)
 
     slider_height = JDXIDimensions.SLIDER_HEIGHT
-    slider_style = Style.JDXI_ADSR
+    slider_style = JDXIStyle.ADSR
 
     def create_slider_with_label(label_text, slider_widget):
         """ create a slider with a label"""

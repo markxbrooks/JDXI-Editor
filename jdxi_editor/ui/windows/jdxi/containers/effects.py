@@ -4,7 +4,7 @@ Effects buttons
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
@@ -29,5 +29,5 @@ def add_effects_container(central_widget, open_vocal_fx, open_effects):
     fx_layout.setSpacing(6)
     fx_layout.addLayout(vocal_effects_row)
     fx_layout.addLayout(effects_row)
-    fx_container.setStyleSheet(Style.JDXI_TRANSPARENT)
+    fx_container.setStyleSheet(JDXIStyle.TRANSPARENT)
     return vocal_effects_button, effects_button

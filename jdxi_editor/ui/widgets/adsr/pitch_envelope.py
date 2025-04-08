@@ -23,7 +23,7 @@ from jdxi_editor.midi.data.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA, T
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot, ADSRParameter
 from jdxi_editor.ui.widgets.slider.slider import Slider
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.data.constants.analog import (
     ANALOG_PART,
 )
@@ -120,7 +120,7 @@ class PitchEnvelope(QWidget):
 
         self.setLayout(self.layout)
         self.update_from_envelope()
-        self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(JDXIStyle.EDITOR)
 
     def update_from_envelope(self):
         """Initialize controls with parameter values"""

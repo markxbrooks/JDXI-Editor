@@ -83,7 +83,7 @@ from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_addres
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -145,7 +145,7 @@ class AnalogSynthEditor(SynthEditor):
         """Set up the Analog Synth Editor UI."""
         self.setMinimumSize(600, 600)
         self.resize(900, 600)
-        self.setStyleSheet(Style.JDXI_TABS_ANALOG + Style.JDXI_EDITOR_ANALOG)
+        self.setStyleSheet(JDXIStyle.TABS_ANALOG + JDXIStyle.EDITOR_ANALOG)
 
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
@@ -181,7 +181,7 @@ class AnalogSynthEditor(SynthEditor):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
 
         self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
-        self.instrument_selection_combo.setStyleSheet(Style.JDXI_COMBO_BOX_ANALOG)
+        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
         self.instrument_selection_combo.combo_box.setEditable(True)
 
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
@@ -376,13 +376,13 @@ class AnalogSynthEditor(SynthEditor):
 
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
+                btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
 
             # Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
+                selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
             self._update_pw_controls_state(waveform)
 
     def _on_lfo_shape_changed(self, value: int):
@@ -397,13 +397,13 @@ class AnalogSynthEditor(SynthEditor):
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
+                btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
 
             # Apply active style to the selected button
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
+                selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
@@ -554,13 +554,13 @@ class AnalogSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
+            selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
     def _update_lfo_shape_buttons(self, value):
         """Update the LFO shape buttons with visual feedback."""
@@ -569,13 +569,13 @@ class AnalogSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
 
         # Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.JDXI_BUTTON_ANALOG_ACTIVE)
+            selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
         else:
             logging.warning(f"Unknown LFO shape value: {value}")
 

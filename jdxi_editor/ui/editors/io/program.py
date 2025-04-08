@@ -65,7 +65,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     log_midi_info
 )
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 class ProgramEditor(SynthEditor):
@@ -110,7 +110,7 @@ class ProgramEditor(SynthEditor):
         layout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(layout)
-        self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(JDXIStyle.EDITOR)
 
         self.title_label = QLabel("Programs:")
         self.title_label.setStyleSheet(
@@ -195,7 +195,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.digital_synth_1_current_synth = QLabel("Current Synth:")
@@ -204,7 +204,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
@@ -221,7 +221,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.digital_synth_2_current_synth = QLabel("Current Synth:")
@@ -230,7 +230,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;  
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
@@ -246,7 +246,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.drum_kit_current_synth = QLabel("Current Synth:")
@@ -255,7 +255,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
@@ -271,7 +271,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT_ANALOG};
+                color: {JDXIStyle.ACCENT_ANALOG};
             """
         )
         self.analog_synth_current_synth = QLabel("Current Synth:")
@@ -280,7 +280,7 @@ class ProgramEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT_ANALOG};
+                color: {JDXIStyle.ACCENT_ANALOG};
             """
         )
         self.populate_programs()

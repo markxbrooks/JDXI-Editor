@@ -44,7 +44,7 @@ from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRAM_COMMON
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
@@ -67,7 +67,7 @@ class EffectsCommonEditor(SynthEditor):
 
         #self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
-        self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
+        self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
         self.area = TEMPORARY_PROGRAM_AREA
         self.part = PROGRAM_COMMON
         main_layout.addLayout(upper_layout)
@@ -85,7 +85,7 @@ class EffectsCommonEditor(SynthEditor):
 
         # Create address tab widget
         self.tabs = QTabWidget()
-        self.tabs.setStyleSheet(Style.JDXI_TABS)
+        self.tabs.setStyleSheet(JDXIStyle.TABS)
         main_layout.addWidget(self.tabs)
 
         # Add tabs

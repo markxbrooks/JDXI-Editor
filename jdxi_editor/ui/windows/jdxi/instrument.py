@@ -70,7 +70,7 @@ from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_p
 from jdxi_editor.ui.editors.io.player import MidiPlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
 from jdxi_editor.ui.editors.io.preset import PresetEditor
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
@@ -153,7 +153,7 @@ class JdxiInstrument(JdxiUi):
         pub.subscribe(self._update_display_preset, "update_display_preset")
 
         # Set black background for entire application
-        self.setStyleSheet(Style.JDXI_TRANSPARENT)
+        self.setStyleSheet(JDXIStyle.TRANSPARENT)
 
         # Load custom font
         self._load_digital_font()
@@ -346,9 +346,9 @@ class JdxiInstrument(JdxiUi):
 
         for synth_type, button in buttons.items():
             if synth_type == self.current_synth_type:
-                button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
+                button.setStyleSheet(JDXIStyle.BUTTON_ROUND)
             else:
-                button.setStyleSheet(Style.JDXI_BUTTON_ROUND_SELECTED)
+                button.setStyleSheet(JDXIStyle.BUTTON_ROUND_SELECTED)
                 button.setChecked(False)
 
     def _get_presets_for_current_synth(self):

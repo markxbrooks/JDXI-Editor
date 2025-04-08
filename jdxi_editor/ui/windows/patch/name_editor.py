@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 import logging
 
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 class PatchNameEditor(QDialog):
@@ -63,7 +63,7 @@ class PatchNameEditor(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(JDXIStyle.EDITOR)
         
     def get_name(self):
         """Get the edited patch name"""

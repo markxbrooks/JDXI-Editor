@@ -33,7 +33,7 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.widgets.adsr.parameter import ADSRParameter
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.slider.slider import Slider
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 # Precompile the regex pattern at module level or in the class constructor
@@ -103,7 +103,7 @@ class ADSR(QWidget):
         self.sustain_sb = self.create_double_spinbox(
             0, 1, 0.01, self.envelope["sustain_level"]
         )
-        self.setStyleSheet(Style.JDXI_ADSR_ANALOG)
+        self.setStyleSheet(JDXIStyle.ADSR_ANALOG)
 
         # Create layout
         self.layout = QGridLayout(self)

@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -91,7 +91,7 @@ class AnalogFilterSection(QWidget):
             part=self.part,
             group=self.group
         )
-        self.filter_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
+        self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QHBoxLayout()

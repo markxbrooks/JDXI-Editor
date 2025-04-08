@@ -87,7 +87,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.sysex.requests import DRUMS_REQUESTS
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
@@ -149,8 +149,8 @@ class DrumCommonEditor(SynthEditor):
         # Title and drum kit selection
         drum_group = QGroupBox("Drum Kit")
         self.instrument_title_label = DigitalTitle()
-        drum_group.setStyleSheet(Style.JDXI_DRUM_GROUP)
-        self.instrument_title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
+        drum_group.setStyleSheet(JDXIStyle.DRUM_GROUP)
+        self.instrument_title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
         drum_group_layout = QVBoxLayout()
         drum_group.setLayout(drum_group_layout)
         drum_group_layout.addWidget(self.instrument_title_label)
@@ -201,7 +201,7 @@ class DrumCommonEditor(SynthEditor):
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
         instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(Style.JDXI_INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
         self.instrument_image_group.setMinimumWidth(350)
         upper_layout.addWidget(self.instrument_image_group)
 
@@ -281,7 +281,7 @@ class DrumCommonEditor(SynthEditor):
         main_layout.addWidget(scroll)
 
         # Setup tab widget
-        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
         scroll.setWidget(self.partial_tab_widget)
 
         # Initialize partial editors

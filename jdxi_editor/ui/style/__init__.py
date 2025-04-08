@@ -1,5 +1,5 @@
-from .style import Style
+from .jdxistyle import JDXIStyle
 
 all = [
-    Style
+    JDXIStyle
 ]

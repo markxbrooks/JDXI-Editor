@@ -32,7 +32,7 @@ from PySide6.QtCore import Qt
 import logging
 
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 class PatchManager(QMainWindow):
@@ -46,7 +46,7 @@ class PatchManager(QMainWindow):
         self.setMinimumSize(400, 200)
 
         # Apply dark theme styling
-        self.setStyleSheet(Style.JDXI_PATCH_MANAGER)
+        self.setStyleSheet(JDXIStyle.PATCH_MANAGER)
 
         # Create central widget and layout
         main_widget = QWidget()

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -27,18 +27,18 @@ def add_octave_buttons(widget, send_octave):
 
     # Add "OCTAVE" label at the top
     octave_label = QLabel("OCTAVE")
-    octave_label.setStyleSheet(Style.JDXI_LABEL)
+    octave_label.setStyleSheet(JDXIStyle.LABEL)
     octave_label.setAlignment(Qt.AlignCenter)
     octave_layout.addWidget(octave_label)
 
     # Down label
     down_label = QLabel("Down")
-    down_label.setStyleSheet(Style.JDXI_LABEL_SUB)
+    down_label.setStyleSheet(JDXIStyle.LABEL_SUB)
     labels_row.addWidget(down_label)
 
     # Up label
     up_label = QLabel("Up")
-    up_label.setStyleSheet(Style.JDXI_LABEL_SUB)
+    up_label.setStyleSheet(JDXIStyle.LABEL_SUB)
     labels_row.addWidget(up_label)
 
     # Add labels row
@@ -53,7 +53,7 @@ def add_octave_buttons(widget, send_octave):
     octave_down_button.setFixedSize(30, 30)
     octave_down_button.setCheckable(True)
     octave_down_button.clicked.connect(lambda: send_octave(-1))
-    octave_down_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
+    octave_down_button.setStyleSheet(JDXIStyle.BUTTON_ROUND)
     buttons_row.addWidget(octave_down_button)
 
     # Create and store octave up button
@@ -61,7 +61,7 @@ def add_octave_buttons(widget, send_octave):
     octave_up_button.setFixedSize(30, 30)
     octave_up_button.setCheckable(True)
     octave_up_button.clicked.connect(lambda: send_octave(1))
-    octave_up_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
+    octave_up_button.setStyleSheet(JDXIStyle.BUTTON_ROUND)
     buttons_row.addWidget(octave_up_button)
 
     # Add buttons row
