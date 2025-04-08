@@ -5,7 +5,8 @@ This module contains utility functions for handling SysEx data related to digita
 import logging
 
 from jdxi_editor.midi.data.constants import TEMPORARY_DIGITAL_SYNTH_1_AREA
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_2_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_2_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1, \
+    DIGITAL_PART_2
 
 
 def _log_debug_info(data, successes, failures, enabled):
@@ -87,6 +88,17 @@ def _sysex_area_matches(sysex_data: dict, area) -> bool:
     temp_area = sysex_data.get("TEMPORARY_AREA")
     area_map = {
         TEMPORARY_DIGITAL_SYNTH_1_AREA: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+    }
+    expected_area = area_map.get(area)
+    match = temp_area == expected_area
+    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    return match
+
+
+def _sysex_area2_matches(sysex_data: dict, area) -> bool:
+    """Check if the SysEx data matches the expected area."""
+    temp_area = sysex_data.get("TEMPORARY_AREA")
+    area_map = {
         TEMPORARY_DIGITAL_SYNTH_2_AREA: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
     }
     expected_area = area_map.get(area)
@@ -94,16 +106,20 @@ def _sysex_area_matches(sysex_data: dict, area) -> bool:
     logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
     return match
 
-def _sysex_part_matches(sysex_data: dict, part) -> bool:
+
+def _sysex_tone_matches(sysex_data: dict, part) -> bool:
     """Check if the SysEx data matches the expected area."""
-    part = sysex_data.get("SYNTH_TONE")
+    logging.info(f"looking for part {part}")
+
+    temp_part = sysex_data.get("SYNTH_TONE")
+    logging.info(f"found part {temp_part}")
     part_map = {
-        DIGITAL_PART_1: "DIGITAL_PART_1",
-        DIGITAL_PART_2: "DIGITAL_PART_2",
+        DIGITAL_PART_1: "PARTIAL_1",
+        DIGITAL_PART_2: "PARTIAL_2",
     }
-    expected_part = part_map.get(area)
-    match = temp_area == expected_part
-    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    expected_part = part_map.get(part)
+    match = part == expected_part
+    logging.info(f"SysEx PART: {temp_part}, expected: {expected_part}, match: {match}")
     return match
 
 

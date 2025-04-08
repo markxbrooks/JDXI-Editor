@@ -54,7 +54,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     DIGITAL_SYNTH_1_AREA,
     DIGITAL_SYNTH_2_AREA,
     DIGITAL_PART_1,
-    DIGITAL_PART_2,
+    DIGITAL_PART_2, TEMPORARY_DIGITAL_SYNTH_1_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA,
 )
 from jdxi_editor.midi.sysex.parsers import get_partial_address
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
@@ -70,7 +70,7 @@ from jdxi_editor.ui.style import Style
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, synth_num=1, partial_number=1, parent=None):
+    def __init__(self, midi_helper=None, synth_number=1, partial_number=1, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = [
             DigitalPartialParameter.OSC_DETUNE,
@@ -80,9 +80,10 @@ class DigitalPartialEditor(PartialEditor):
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
-        self.synth_data = DigitalSynthData(synth_num, partial_number)
+        self.synth_data = DigitalSynthData(synth_number=synth_number, partial_number=partial_number)
         data = self.synth_data
-        self.area = data.area
+        self.area = data.area # @@@ FIXME just to test
+        # self.area = TEMPORARY_DIGITAL_SYNTH_2_AREA  # TEMPORARY_DIGITAL_SYNTH_1_AREA
         self.part = data.part
         self.group = data.group
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):

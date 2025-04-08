@@ -338,7 +338,7 @@ class MidiOutHandler(MidiIOController):
 
         return success
 
-    def send_nrpn(self, parameter: int, value: int, channel: int = 0, use_14bit: bool = True) -> bool:
+    def send_nrpn(self, parameter: int, value: int, channel: int = 0, use_14bit: bool = False) -> bool:
         """
         Send an NRPN (Non-Registered Parameter Number) message using MIDI Control Change.
 
@@ -351,6 +351,7 @@ class MidiOutHandler(MidiIOController):
         Returns:
             True if all messages were sent successfully, False otherwise.
         """
+        logging.info(f"sending parameter {parameter} value {value} channel {channel}")
         if not 0 <= parameter <= 16383:
             logging.error(f"Invalid NRPN parameter: {parameter}. Must be 0–16383.")
             return False
@@ -360,8 +361,12 @@ class MidiOutHandler(MidiIOController):
 
         nrpn_msb = (parameter >> 7) & 0x7F
         nrpn_lsb = parameter & 0x7F
-        value_msb = (value >> 7) & 0x7F
-        value_lsb = value & 0x7F
+        if use_14bit:
+            value_msb = (value >> 7) & 0x7F
+            value_lsb = value & 0x7F
+        else:
+            value_msb = value & 0x7F
+            value_lsb = 0  # Optional; not sent anyway
 
         ok = True
         ok &= self.send_control_change(99, nrpn_msb, channel)  # NRPN MSB
