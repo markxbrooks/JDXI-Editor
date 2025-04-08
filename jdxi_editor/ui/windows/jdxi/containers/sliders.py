@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
+from jdxi_editor.midi.data.constants.constants import LFO_1_GROUP
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
 from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
@@ -76,6 +77,7 @@ def add_slider_container(central_widget, midi_helper):
 
     # Create sliders
     filter_cutoff_slider = FilterCutoffSlider(midi_helper, label="Cutoff")
+
     filter_resonance_slider = FilterResonanceSlider(
         midi_helper, label="Reson."
     )
@@ -85,12 +87,12 @@ def add_slider_container(central_widget, midi_helper):
     lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")
     lfo_pitch_slider = LFOPitchSlider(midi_helper, label="Pitch")
 
-    delay_slider = DelaySlider(midi_helper, label="Filter")
-    lfo_amp_slider = ReverbSlider(midi_helper, label="Amp")
-
     # Effect 1 and Effect 2 may come later
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
     lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
+
+    delay_slider = DelaySlider(midi_helper, label="Delay")
+    reverb_slider = ReverbSlider(midi_helper, label="Reverb")
 
     # Add sliders with labels to the row
 
@@ -100,20 +102,22 @@ def add_slider_container(central_widget, midi_helper):
     filter_resonance_container = create_slider_with_label(
         "Reson.", filter_resonance_slider
     )
-    filter_delay_container = create_slider_with_label(
-        "Cut.", filter_cutoff_slider
-    )
-    filter_depth_container = create_slider_with_label(
-        "Reson.", filter_resonance_slider
-    )
+
+    amp_level_container = create_slider_with_label("Level", amp_level_slider)
+    amp_env_container = create_slider_with_label("Env", amp_env_slider)
+
     lfo_rate_container = create_slider_with_label("Rate", lfo_rate_slider)
     lfo_pitch_container = create_slider_with_label("Pitch", lfo_pitch_slider)
 
     lfo_filter_container = create_slider_with_label("Filter", lfo_filter_slider)
     lfo_amp_container = create_slider_with_label("Amp", lfo_amp_slider)
 
-    amp_level_container = create_slider_with_label("Level", amp_level_slider)
-    amp_env_container = create_slider_with_label("Env", amp_env_slider)
+    delay_container = create_slider_with_label(
+        "Dely.", delay_slider
+    )
+    reverb_container = create_slider_with_label(
+        "Revb.", reverb_slider
+    )
 
     slider_row_layout.addWidget(
         create_columns_with_label(
@@ -128,6 +132,9 @@ def add_slider_container(central_widget, midi_helper):
     )
     slider_row_layout.addWidget(
         create_columns_with_label("LFO", lfo_filter_container, lfo_amp_container)
+    )
+    slider_row_layout.addWidget(
+        create_columns_with_label("Effects", delay_container, reverb_container)
     )
 
     # Add to main layout
