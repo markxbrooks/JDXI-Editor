@@ -249,7 +249,7 @@ class JdxiUi(QMainWindow):
             on_context_menu=self._show_favorite_context_menu,
             on_save_favorite=self._save_favorite,
         )
-        add_slider_container(container, self.midi_helper, self.width, self.margin)
+        add_slider_container(container, self.midi_helper)
         layout.addWidget(container)
 
         # Initialize current preset index
@@ -548,8 +548,6 @@ class JdxiUi(QMainWindow):
             tone_number=self.current_tone_number,
             tone_name=self.current_tone_name,
             program_name=self.current_program_name,
-            program_number=self.current_program_number,
-            program_bank_letter=self.current_program_bank_letter,
             active_synth=synth_data.display_prefix,
         )
 

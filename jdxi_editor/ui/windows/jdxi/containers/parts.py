@@ -18,10 +18,10 @@ def create_parts_container(
 ):
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
-    parts_x = JDXIDimensions.PARTS_X
-    parts_y = JDXIDimensions.PARTS_Y
-
-    parts_container.setGeometry(parts_x + 10, parts_y, 200, 250)
+    parts_container.setGeometry(JDXIDimensions.PARTS_X,
+                                JDXIDimensions.PARTS_Y,
+                                JDXIDimensions.PARTS_WIDTH,
+                                JDXIDimensions.PARTS_HEIGHT)
     parts_layout = QVBoxLayout(parts_container)
     parts_layout.setSpacing(3)
 

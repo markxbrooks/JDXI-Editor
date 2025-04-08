@@ -6,12 +6,20 @@ from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
 from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
 from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
 from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
+from jdxi_editor.ui.widgets.midi.slider.lfo.amp_depth import LFOAmpDepthSlider
+from jdxi_editor.ui.widgets.midi.slider.lfo.filter_depth import LFOFilterDepthSlider
+from jdxi_editor.ui.widgets.midi.slider.lfo.pitch_depth import LFOPitchSlider
+from jdxi_editor.ui.widgets.midi.slider.lfo.rate import LFORateSlider
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
-def add_slider_container(central_widget, midi_helper, width, margin):
+def add_slider_container(central_widget, midi_helper):
+    """ ad slider container"""
     slider_container = QWidget(central_widget)
-    slider_container.setGeometry(width - 430, margin, 250, 140)
+    slider_container.setGeometry(JDXIDimensions.SLIDER_X,
+                                 JDXIDimensions.SLIDER_Y,
+                                 JDXIDimensions.SLIDER_WIDTH,
+                                 JDXIDimensions.SLIDER_CONTAINER_HEIGHT)
 
     main_layout = QVBoxLayout(slider_container)
     main_layout.setContentsMargins(0, 0, 0, 0)
@@ -26,6 +34,7 @@ def add_slider_container(central_widget, midi_helper, width, margin):
     slider_style = Style.JDXI_ADSR
 
     def create_slider_with_label(label_text, slider_widget):
+        """ create a slider with a label"""
         container = QWidget()
         layout = QVBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -44,6 +53,7 @@ def add_slider_container(central_widget, midi_helper, width, margin):
         return container
 
     def create_columns_with_label(label_text, container1, container2):
+        """ create a column with a label"""
         container = QWidget()
         layout = QVBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -70,6 +80,12 @@ def add_slider_container(central_widget, midi_helper, width, margin):
     amp_level_slider = AmpLevelSlider(midi_helper, label="Level")
     amp_env_slider = AmpEnvelopeSlider(midi_helper, label="Env")
 
+    lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")
+    lfo_pitch_slider = LFOPitchSlider(midi_helper, label="Pitch")
+
+    lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
+    lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
+
     # Add sliders with labels to the row
 
     filter_cutoff_container = create_slider_with_label(
@@ -78,6 +94,12 @@ def add_slider_container(central_widget, midi_helper, width, margin):
     filter_resonance_container = create_slider_with_label(
         "Reson", filter_resonance_slider
     )
+    lfo_rate_container = create_slider_with_label("Rate", lfo_rate_slider)
+    lfo_pitch_container = create_slider_with_label("Pitch", lfo_pitch_slider)
+
+    lfo_filter_container = create_slider_with_label("Filter", lfo_filter_slider)
+    lfo_amp_container = create_slider_with_label("Amp", lfo_amp_slider)
+
     amp_level_container = create_slider_with_label("Level", amp_level_slider)
     amp_env_container = create_slider_with_label("Env", amp_env_slider)
 
@@ -88,6 +110,12 @@ def add_slider_container(central_widget, midi_helper, width, margin):
     )
     slider_row_layout.addWidget(
         create_columns_with_label("Amp", amp_level_container, amp_env_container)
+    )
+    slider_row_layout.addWidget(
+        create_columns_with_label("LFO", lfo_rate_container, lfo_pitch_container)
+    )
+    slider_row_layout.addWidget(
+        create_columns_with_label("LFO", lfo_filter_container, lfo_amp_container)
     )
 
     # Add to main layout

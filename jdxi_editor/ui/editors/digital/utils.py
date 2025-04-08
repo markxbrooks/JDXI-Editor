@@ -94,6 +94,18 @@ def _sysex_area_matches(sysex_data: dict, area) -> bool:
     logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
     return match
 
+def _sysex_part_matches(sysex_data: dict, part) -> bool:
+    """Check if the SysEx data matches the expected area."""
+    part = sysex_data.get("SYNTH_TONE")
+    part_map = {
+        DIGITAL_PART_1: "DIGITAL_PART_1",
+        DIGITAL_PART_2: "DIGITAL_PART_2",
+    }
+    expected_part = part_map.get(area)
+    match = temp_area == expected_part
+    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    return match
+
 
 def _sysex_group_matches(sysex_data: dict, expected_group) -> bool:
     """Check if the SysEx data matches the expected area."""

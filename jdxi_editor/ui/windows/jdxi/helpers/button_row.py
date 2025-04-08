@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 
 from jdxi_editor.ui.style import Style
@@ -30,6 +31,5 @@ def create_button_row(text, slot, vertical=False, spacing=10):
 
     # Style the button with brighter hover/border_pressed/selected  states
     button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
-
     row.addWidget(button)
     return row, button

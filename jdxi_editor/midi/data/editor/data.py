@@ -32,8 +32,6 @@ from typing import Tuple, List
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
 from jdxi_editor.midi.data.constants.constants import (
     MIDI_CHANNEL_DRUMS,
-    DIGITAL_2_PART,
-    DIGITAL_1_PART,
     MIDI_CHANNEL_DIGITAL2,
     MIDI_CHANNEL_DIGITAL1,
     MIDI_CHANNEL_ANALOG,
@@ -44,7 +42,7 @@ from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_TONE_AREA,
     DRUM_KIT_AREA,
     COMMON_AREA,
-    ANALOG_PART,
+    ANALOG_PART, DIGITAL_PART_1, DIGITAL_PART_2,
 )
 from jdxi_editor.midi.data.parameter.areas.program import ProgramArea
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
@@ -71,10 +69,10 @@ class SynthData:
     group: int
     instrument_icon_folder: str
     instrument_default_image: str
-    midi_requests: List[int]
+    midi_requests: List[str]
     midi_channel: int
-    presets: List[int]
-    preset_list: List[int]
+    presets: List[str]
+    preset_list: List[str]
     preset_type: SynthType
     window_title: str
     display_prefix: str
@@ -103,7 +101,7 @@ class DigitalSynthData(SynthData):
     def __init__(self, synth_num: int, partial_number: int = 1):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
-            part=DIGITAL_2_PART if synth_num == 2 else DIGITAL_1_PART,
+            part=DIGITAL_PART_2 if synth_num == 2 else DIGITAL_PART_1,
             group=COMMON_AREA,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",

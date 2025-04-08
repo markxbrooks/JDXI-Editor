@@ -10,17 +10,12 @@ def add_arpeggiator_buttons(widget):
     # Create container
     arpeggiator_buttons_container = QWidget(widget)
 
-    # Position to align with sequencer but 25% higher (increased from 20%)
-    seq_y = JDXIDimensions.HEIGHT - 50 - JDXIDimensions.HEIGHT * 0.1  # Base sequencer Y position
-    offset_y = JDXIDimensions.HEIGHT * 0.3  # 25% of window height (increased from 0.2)
-    arpeggiator_x = JDXIDimensions.WIDTH - JDXIDimensions.WIDTH * 0.8 - 60  # Position left of sequencer
-
     # Apply the height offset to the Y position
     arpeggiator_buttons_container.setGeometry(
-        arpeggiator_x - 10,
-        seq_y - 60 - offset_y,  # Move up by offset_y (now 25% instead of 20%)
-        120,
-        100,
+        JDXIDimensions.ARPEGGIATOR_X,
+        JDXIDimensions.ARPEGGIATOR_Y,  # Move up by offset_y (now 25% instead of 20%)
+        JDXIDimensions.ARPEGGIATOR_WIDTH,
+        JDXIDimensions.ARPEGGIATOR_HEIGHT,
     )
 
     arpeggiator_layout = QVBoxLayout(arpeggiator_buttons_container)

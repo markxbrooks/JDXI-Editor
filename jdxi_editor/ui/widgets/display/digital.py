@@ -211,7 +211,7 @@ class DigitalDisplay(DigitalDisplayBase):
         painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
         painter.drawText(display_x + 7, display_y + 50, tone_name_text)
         painter.drawText(display_x + 7, display_y + 20, program_text)
-        painter.drawText(display_x + display_width - 56, display_y + 50, oct_text)
+        painter.drawText(display_x + display_width - 66, display_y + 50, oct_text)
 
     # --- Property Setters ---
     def setPresetText(self, text: str):
@@ -244,8 +244,6 @@ class DigitalDisplay(DigitalDisplayBase):
                         tone_number,
                         tone_name,
                         program_name,
-                        program_number=1,
-                        program_bank_letter="A",
                         active_synth="D1"):
         self.current_octave = current_octave
         self.tone_number = tone_number

@@ -299,44 +299,87 @@ class MidiOutHandler(MidiIOController):
             logging.error(f"send_control_change: Error sending control change: {ex}")
             return False
 
-    def send_nrpn(self, parameter: int, value: int, channel: int = 0) -> bool:
+    def send_rpn(self, parameter: int, value: int, channel: int = 0) -> bool:
         """
-        Send an NRPN (Non-Registered Parameter Number) message using Control Change.
-    
+        Send a Registered Parameter Number (RPN) message via MIDI Control Change.
+
+        Args:
+            parameter: RPN parameter number (0–16383)
+            value: Parameter value (0–16383)
+            channel: MIDI channel (0–15)
+
+        Returns:
+            True if messages sent successfully, False otherwise
+        """
+        if not 0 <= parameter <= 16383:
+            logging.error(f"Invalid RPN parameter: {parameter}. Must be 0–16383.")
+            return False
+        if not 0 <= value <= 16383:
+            logging.error(f"Invalid RPN value: {value}. Must be 0–16383.")
+            return False
+
+        # Split into MSB/LSB
+        rpn_msb = (parameter >> 7) & 0x7F
+        rpn_lsb = parameter & 0x7F
+        value_msb = (value >> 7) & 0x7F
+        value_lsb = value & 0x7F
+
+        success = (
+                self.send_control_change(101, rpn_msb, channel) and  # RPN MSB
+                self.send_control_change(100, rpn_lsb, channel) and  # RPN LSB
+                self.send_control_change(6, value_msb, channel) and  # Data Entry MSB
+                self.send_control_change(38, value_lsb, channel)  # Data Entry LSB
+        )
+
+        if success:
+            logging.info(f"Sent RPN: Param {parameter}, Value {value}, Ch {channel}")
+        else:
+            logging.error("Failed to send RPN messages.")
+
+        return success
+
+    def send_nrpn(self, parameter: int, value: int, channel: int = 0, use_14bit: bool = True) -> bool:
+        """
+        Send an NRPN (Non-Registered Parameter Number) message using MIDI Control Change.
+
         Args:
             parameter: The NRPN parameter number (0-16383).
-            value: The value to set (0-16383).
-            channel: MIDI channel (0-15).
-    
+            value: The value to set (0-16383 for 14-bit, 0-127 for 7-bit).
+            channel: MIDI channel (0–15).
+            use_14bit: If False, only send Data Entry MSB (7-bit).
+
         Returns:
             True if all messages were sent successfully, False otherwise.
         """
         if not 0 <= parameter <= 16383:
-            logging.error(f"Invalid NRPN parameter: {parameter}. Must be 0-16383.")
+            logging.error(f"Invalid NRPN parameter: {parameter}. Must be 0–16383.")
             return False
-        if not 0 <= value <= 16383:
-            logging.error(f"Invalid NRPN value: {value}. Must be 0-16383.")
+        if not 0 <= value <= (16383 if use_14bit else 127):
+            logging.error(f"Invalid NRPN value: {value}. Must be 0–{16383 if use_14bit else 127}.")
             return False
-    
-        # Extract MSB (Most Significant Byte) and LSB (Least Significant Byte)
+
         nrpn_msb = (parameter >> 7) & 0x7F
         nrpn_lsb = parameter & 0x7F
         value_msb = (value >> 7) & 0x7F
         value_lsb = value & 0x7F
-    
-        success = (
-            self.send_control_change(99, nrpn_msb, channel) and  # NRPN MSB
-            self.send_control_change(98, nrpn_lsb, channel) and  # NRPN LSB
-            self.send_control_change(6, value_msb, channel) and  # Data Entry MSB
-            self.send_control_change(38, value_lsb, channel)     # Data Entry LSB
-        )
-    
-        if success:
-            logging.info(f"Sent NRPN: Parameter {parameter}, Value {value}, Channel {channel}")
+
+        ok = True
+        ok &= self.send_control_change(99, nrpn_msb, channel)  # NRPN MSB
+        ok &= self.send_control_change(98, nrpn_lsb, channel)  # NRPN LSB
+        ok &= self.send_control_change(6, value_msb, channel)  # Data Entry MSB
+        if use_14bit:
+            ok &= self.send_control_change(38, value_lsb, channel)  # Data Entry LSB
+
+        # Optional cleanup (nulling NRPN, not required but can prevent stuck parameters)
+        ok &= self.send_control_change(99, 127, channel)  # NRPN MSB null
+        ok &= self.send_control_change(98, 127, channel)  # NRPN LSB null
+
+        if ok:
+            logging.info(f"Sent NRPN: Param {parameter}, Value {value}, Channel {channel}, 14-bit={use_14bit}")
         else:
             logging.error("Failed to send NRPN messages.")
-    
-        return success
+
+        return ok
 
     def send_bank_select_and_program_change(
         self, channel: int, bank_msb: int, bank_lsb: int, program: int
