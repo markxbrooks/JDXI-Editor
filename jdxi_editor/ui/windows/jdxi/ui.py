@@ -78,13 +78,13 @@ class JdxiUi(QMainWindow):
     def __init__(self):
         super().__init__()
         # Add preset & program tracking
-        self.digital1_data = DigitalSynthData(synth_num=1)
-        self.digital2_data = DigitalSynthData(synth_num=2)
+        self.digital1_data = DigitalSynthData(synth_number=1)
+        self.digital2_data = DigitalSynthData(synth_number=2)
         self.drums_data = DrumsSynthData()
         self.analog_data = AnalogSynthData()
         self.synth_data_map = {
-            SynthType.DIGITAL_1: DigitalSynthData(synth_num=1),
-            SynthType.DIGITAL_2: DigitalSynthData(synth_num=2),
+            SynthType.DIGITAL_1: DigitalSynthData(synth_number=1),
+            SynthType.DIGITAL_2: DigitalSynthData(synth_number=2),
             SynthType.DRUMS: DrumsSynthData(),
             SynthType.ANALOG: AnalogSynthData(),
         }

@@ -29,9 +29,8 @@ Dependencies:
 
 """
 
-import json
 import logging
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, List
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -62,12 +61,25 @@ from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import _log_debug_info, _filter_sysex_keys, _get_partial_number, \
     _is_valid_sysex_area, _log_synth_area_info, _is_digital_synth_area, _sysex_area_matches
-from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
+from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.ui.style import Style
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
+
+
+def get_area(data: tuple[int, int]) -> str:
+    """Map address bytes to corresponding temporary area."""
+    logging.info(f"data for temporary area: {data}")
+    area_mapping = {
+        (0x18, 0x00): "TEMPORARY_PROGRAM_AREA",
+        (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
+        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+        (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA",
+    }
+    return area_mapping.get(tuple(data), "Unknown")
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -398,12 +410,10 @@ class DigitalSynthEditor(SynthEditor):
         if not sysex_data:
             return
 
-        if not _sysex_area_matches(sysex_data, self.area):
-            logging.info("SysEx area mismatch. Skipping update.")
-            return
-
-        if not _sysex_part_matches(sysex_data, self.part):
-            logging.info("SysEx part mismatch. Skipping update.")
+        current_synth = get_area([self.area, self.part])
+        logging.info(f"current_synth: {current_synth}")
+        temp_area = sysex_data.get("TEMPORARY_AREA")
+        if not current_synth == temp_area:
             return
 
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))

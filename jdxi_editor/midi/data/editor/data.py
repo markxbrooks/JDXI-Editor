@@ -98,20 +98,20 @@ class DrumsSynthData(SynthData):
 
 
 class DigitalSynthData(SynthData):
-    def __init__(self, synth_num: int, partial_number: int = 1):
+    def __init__(self, synth_number: int, partial_number: int = 1):
         super().__init__(
             area=TEMPORARY_TONE_AREA,
-            part=DIGITAL_PART_2 if synth_num == 2 else DIGITAL_PART_1,
+            part=DIGITAL_PART_2 if synth_number == 2 else DIGITAL_PART_1,
             group=COMMON_AREA,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
-            midi_requests=DIGITAL2_REQUESTS if synth_num == 2 else DIGITAL1_REQUESTS,
-            midi_channel=MIDI_CHANNEL_DIGITAL2 if synth_num == 2 else MIDI_CHANNEL_DIGITAL1,
+            midi_requests=DIGITAL2_REQUESTS if synth_number == 2 else DIGITAL1_REQUESTS,
+            midi_channel=MIDI_CHANNEL_DIGITAL2 if synth_number == 2 else MIDI_CHANNEL_DIGITAL1,
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
-            preset_type=SynthType.DIGITAL_2 if synth_num == 2 else SynthType.DIGITAL_1,
-            window_title=f"Digital Synth {synth_num}",
-            display_prefix=f"D{synth_num}",
+            preset_type=SynthType.DIGITAL_2 if synth_number == 2 else SynthType.DIGITAL_1,
+            window_title=f"Digital Synth {synth_number}",
+            display_prefix=f"D{synth_number}",
         )
         self.partial_number = partial_number
         self.group_map = {1: 0x20, 2: 0x21, 3: 0x22}
@@ -143,9 +143,9 @@ def create_synth_data(synth_type: SynthType, partial_number=1) -> SynthData:
     if synth_type == SynthType.DRUMS:
         return DrumsSynthData(partial_number=partial_number)
     elif synth_type == SynthType.DIGITAL_1:
-        return DigitalSynthData(synth_num=1, partial_number=partial_number)
+        return DigitalSynthData(synth_number=1, partial_number=partial_number)
     elif synth_type == SynthType.DIGITAL_2:
-        return DigitalSynthData(synth_num=2, partial_number=partial_number)
+        return DigitalSynthData(synth_number=2, partial_number=partial_number)
     elif synth_type == SynthType.ANALOG:
         return AnalogSynthData()
     raise ValueError(f"Unknown synth type: {synth_type}")
