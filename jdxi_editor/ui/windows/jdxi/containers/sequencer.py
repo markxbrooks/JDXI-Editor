@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtWidgets import QHBoxLayout, QGridLayout
 from PySide6.QtCore import Qt, QRect
 
@@ -71,7 +71,7 @@ def add_sequencer_container(central_widget,
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     sequencer_label.setStyleSheet(Style.JDXI_TRANSPARENT)
     sequencer_layout = QHBoxLayout()
-    favorites_button_row = create_favorite_button_row()
+    favorites_button_row, favorite_button = create_favorite_button_row()
     sequencer, sequencer_buttons = create_sequencer_buttons_row(
         midi_helper=midi_helper,
         on_context_menu=on_context_menu,
@@ -81,4 +81,30 @@ def add_sequencer_container(central_widget,
     sequencer_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
     sequencer_container_layout.addLayout(favorites_button_row)
     sequencer_container_layout.addLayout(sequencer_layout)
-    return sequencer_buttons
+    return sequencer_buttons, favorite_button
+
+
+def create_favorite_button_row():
+    """Create a circular button to set and unset favorited"""
+    text = "Favorites"
+    row = QHBoxLayout()
+    row.setSpacing(10)
+    """
+    button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+    button.customContextMenuRequested.connect(
+        lambda pos, b=button: self._show_favorite_context_menu(pos, b)
+    )
+    """
+
+    # Add label with color based on text
+    label = QLabel(text)
+    # Add spacer to push button to right
+    row.addStretch()
+    # Add button
+    favorite_button = QPushButton()
+    favorite_button.setFixedSize(30, 30)
+    favorite_button.setCheckable(True)
+    # Style the button with brighter hover/border_pressed/selected  states
+    favorite_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
+    row.addWidget(favorite_button)
+    return row, favorite_button
