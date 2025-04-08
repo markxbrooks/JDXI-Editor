@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -79,7 +79,7 @@ class AmpSection(QWidget):
             part=self.part,
             group=self.group
         )
-        self.amp_env_adsr_widget.setStyleSheet(Style.JDXI_ADSR_ANALOG)
+        self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
 
         layout.addWidget(env_group)

@@ -41,7 +41,7 @@ from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.ui.editors.helpers.program import log_midi_info, get_preset_parameter_value
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 def log_changes(previous_data, current_data):
@@ -123,7 +123,7 @@ class SynthEditor(SynthBase):
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
-        self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(JDXIStyle.EDITOR)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)

@@ -39,7 +39,7 @@ from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParamete
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.data.constants.vocal import (
     VOCAL_FX_AREA,
     VOCAL_FX_PART,
@@ -65,7 +65,7 @@ class VocalFXEditor(SynthEditor):
         self.area = VOCAL_FX_AREA
         self.part = VOCAL_FX_PART
         self.group = VOCAL_FX_GROUP
-        self.setStyleSheet(Style.JDXI_EDITOR + Style.JDXI_TABS)
+        self.setStyleSheet(JDXIStyle.EDITOR + JDXIStyle.TABS)
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -88,7 +88,7 @@ class VocalFXEditor(SynthEditor):
         #self.title_label = QLabel("Vocal Effects")
         self.title_label = DigitalTitle()
         self.title_label.setText("Vocal Effects")
-        self.title_label.setStyleSheet(Style.JDXI_INSTRUMENT_TITLE_LABEL)
+        self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
         container_layout.addLayout(title_layout)
@@ -252,7 +252,7 @@ class VocalFXEditor(SynthEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        vocoder_group.setStyleSheet(Style.JDXI_ADSR)
+        vocoder_group.setStyleSheet(JDXIStyle.ADSR)
         return vocal_effect_section
 
     def _create_mixer_section(self):

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -23,7 +23,7 @@ def add_arpeggiator_buttons(widget):
 
     # Add "ARPEGGIO" label at the top
     arpeggiator_label = QLabel("ARPEGGIO")
-    arpeggiator_label.setStyleSheet(Style.JDXI_LABEL)
+    arpeggiator_label.setStyleSheet(JDXIStyle.LABEL)
     arpeggiator_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     arpeggiator_layout.addWidget(arpeggiator_label)
 
@@ -33,7 +33,7 @@ def add_arpeggiator_buttons(widget):
 
     # On label
     on_label = QLabel("On")
-    on_label.setStyleSheet(Style.JDXI_LABEL_SUB)
+    on_label.setStyleSheet(JDXIStyle.LABEL_SUB)
     labels_row.addWidget(on_label)
 
     # Add labels row
@@ -45,21 +45,21 @@ def add_arpeggiator_buttons(widget):
 
     # Down label
     key_hold_label = QLabel("Key Hold")
-    key_hold_label.setStyleSheet(Style.JDXI_LABEL_SUB)
+    key_hold_label.setStyleSheet(JDXIStyle.LABEL_SUB)
     labels_row.addWidget(key_hold_label)
 
     # Create and store arpeggiator  button
     arpeggiator_button = QPushButton()
     arpeggiator_button.setFixedSize(30, 30)
     arpeggiator_button.setCheckable(True)
-    arpeggiator_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
+    arpeggiator_button.setStyleSheet(JDXIStyle.BUTTON_ROUND)
     buttons_row.addWidget(arpeggiator_button)
 
     # Create and store octave down button
     key_hold_button = QPushButton()
     key_hold_button.setFixedSize(30, 30)
     key_hold_button.setCheckable(True)
-    key_hold_button.setStyleSheet(Style.JDXI_BUTTON_ROUND)
+    key_hold_button.setStyleSheet(JDXIStyle.BUTTON_ROUND)
     buttons_row.addWidget(key_hold_button)
 
     # Add buttons row

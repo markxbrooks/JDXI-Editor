@@ -45,7 +45,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
 
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
 
@@ -249,9 +249,9 @@ class PatternSequencer(SynthEditor):
             header_layout.addWidget(icon_label)
             label = QLabel(label_text)
             if label_text == "Analog Synth":
-                color = Style.ACCENT_ANALOG
+                color = JDXIStyle.ACCENT_ANALOG
             else:
-                color = Style.ACCENT
+                color = JDXIStyle.ACCENT
             label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}")
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             header_layout.addWidget(label)

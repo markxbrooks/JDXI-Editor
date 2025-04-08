@@ -48,7 +48,7 @@ from jdxi_editor.midi.data.constants.constants import DT1_COMMAND_12, ANALOG_SYN
 from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, ANALOG_PART, RQ1_COMMAND_11, DIGITAL_PART_1, \
     DIGITAL_PART_2, DRUM_KIT_AREA
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import _validate_checksum
 
@@ -127,7 +127,7 @@ class MIDIDebugger(QMainWindow):
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
-        self.setStyleSheet(Style.JDXI_DEBUGGER)
+        self.setStyleSheet(JDXIStyle.DEBUGGER)
 
         # Create central widget
         central = QWidget()

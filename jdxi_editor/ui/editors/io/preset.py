@@ -68,7 +68,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     log_midi_info, get_preset_parameter_value
 )
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 class PresetEditor(SynthEditor):
@@ -114,7 +114,7 @@ class PresetEditor(SynthEditor):
         layout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(layout)
-        self.setStyleSheet(Style.JDXI_EDITOR)
+        self.setStyleSheet(JDXIStyle.EDITOR)
 
         self.title_label = QLabel("Presets:")
         self.title_label.setStyleSheet(
@@ -190,7 +190,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.digital_synth_1_current_synth = QLabel("Current Tone:")
@@ -199,7 +199,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
@@ -215,7 +215,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.digital_synth_2_current_synth = QLabel("Current Tone:")
@@ -224,7 +224,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;  
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
@@ -240,7 +240,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.drum_kit_current_synth = QLabel("Current Tone:")
@@ -249,7 +249,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT};
+                color: {JDXIStyle.ACCENT};
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
@@ -266,7 +266,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT_ANALOG};
+                color: {JDXIStyle.ACCENT_ANALOG};
             """
         )
         self.analog_synth_current_synth = QLabel("Current Tone:")
@@ -276,7 +276,7 @@ class PresetEditor(SynthEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {Style.ACCENT_ANALOG};
+                color: {JDXIStyle.ACCENT_ANALOG};
             """
         )
         self._populate_presets()

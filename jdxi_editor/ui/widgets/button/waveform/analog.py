@@ -12,7 +12,7 @@ Features:
 
 from PySide6.QtCore import Signal
 from jdxi_editor.midi.data.constants.constants import Waveform
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 
@@ -33,4 +33,4 @@ class AnalogWaveformButton(WaveformButton):
 
         # Style
         self.setMinimumWidth(60)
-        self.setStyleSheet(Style.JDXI_BUTTON_WAVEFORM_ANALOG)
+        self.setStyleSheet(JDXIStyle.BUTTON_WAVEFORM_ANALOG)

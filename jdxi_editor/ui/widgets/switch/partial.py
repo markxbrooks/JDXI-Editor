@@ -41,7 +41,7 @@ from PySide6.QtCore import Signal
 import qtawesome as qta
 
 from jdxi_editor.midi.data.digital import DigitalPartial
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 class PartialSwitch(QWidget):
@@ -69,7 +69,7 @@ class PartialSwitch(QWidget):
         layout.addWidget(self.select_check)
 
         # Style
-        self.setStyleSheet(Style.JDXI_PARTIAL_SWITCH)
+        self.setStyleSheet(JDXIStyle.PARTIAL_SWITCH)
 
     def _on_state_changed(self, _):
         """Handle checkbox state changes"""
@@ -108,7 +108,7 @@ class PartialsPanel(QWidget):
             group_layout = QHBoxLayout()
             partial_icon = QLabel()
             qta_icon = qta.icon(f"mdi.numeric-{partial}-circle-outline", color="#666666")
-            partial_icon_pixmap = qta_icon.pixmap(Style.ICON_SIZE, Style.ICON_SIZE)  # Set the desired size
+            partial_icon_pixmap = qta_icon.pixmap(JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE)  # Set the desired size
             partial_icon.setPixmap(partial_icon_pixmap)
             group_layout.addWidget(partial_icon)
             switch = PartialSwitch(partial)
@@ -121,4 +121,4 @@ class PartialsPanel(QWidget):
 
         layout.addLayout(partial_layout)
         # Style
-        self.setStyleSheet(Style.JDXI_PARTIALS_PANEL)
+        self.setStyleSheet(JDXIStyle.PARTIALS_PANEL)

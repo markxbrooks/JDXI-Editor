@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 
 
 class PresetComboBox(QWidget):
@@ -56,7 +56,7 @@ class PresetComboBox(QWidget):
         self.load_button.clicked.connect(self._on_load_clicked)
         layout.addWidget(self.load_button)
         self._populate_presets()
-        self.setStyleSheet(Style.JDXI_COMBO_BOX)
+        self.setStyleSheet(JDXIStyle.COMBO_BOX)
 
     def _on_load_clicked(self):
         preset_name = self.combo_box.currentText()

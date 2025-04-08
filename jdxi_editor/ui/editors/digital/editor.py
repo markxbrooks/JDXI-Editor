@@ -63,7 +63,7 @@ from jdxi_editor.ui.editors.digital.utils import _log_debug_info, _filter_sysex_
     _is_valid_sysex_area, _log_synth_area_info, _is_digital_synth_area, _sysex_area_matches
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
@@ -159,7 +159,7 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_group.setLayout(instrument_group_layout)
         self.instrument_image_label = QLabel()
         instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(Style.JDXI_INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
         self.instrument_image_group.setMinimumWidth(450)
         self.instrument_image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
@@ -167,7 +167,7 @@ class DigitalSynthEditor(SynthEditor):
         # Main layout
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
-        self.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
+        self.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
         # Create scroll area
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -201,7 +201,7 @@ class DigitalSynthEditor(SynthEditor):
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
         container_layout.addWidget(self.partials_panel)
-        self.partials_panel.setStyleSheet(Style.JDXI_TABS)
+        self.partials_panel.setStyleSheet(JDXIStyle.TABS)
 
         self._create_partial_tab_widget(container_layout, self.midi_helper)
 
@@ -256,7 +256,7 @@ class DigitalSynthEditor(SynthEditor):
     def _create_partial_tab_widget(self, container_layout, midi_helper):
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()
-        self.partial_tab_widget.setStyleSheet(Style.JDXI_TABS + Style.JDXI_EDITOR)
+        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
         self.partial_editors = {}
         # Create editor for each partial
         for i in range(1, 4):
@@ -654,12 +654,12 @@ class DigitalSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(Style.JDXI_BUTTON_RECT)
+            btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(Style.JDXI_BUTTON_RECT)
+            selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
         else:
             logging.warning(f"Waveform button not found for {selected_waveform}")

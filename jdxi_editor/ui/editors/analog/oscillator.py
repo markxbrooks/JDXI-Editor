@@ -5,7 +5,7 @@ from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscW
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import Style
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 
@@ -43,7 +43,7 @@ class AnalogOscillatorSection(QWidget):
 
         for waveform in [AnalogOscWave.SAW, AnalogOscWave.TRIANGLE, AnalogOscWave.PULSE]:
             btn = AnalogWaveformButton(waveform)
-            btn.setStyleSheet(Style.JDXI_BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
 
             # Set icons
             icon_name = "upsaw" if waveform == AnalogOscWave.SAW else "triangle" if waveform == AnalogOscWave.TRIANGLE else "pwsqu"

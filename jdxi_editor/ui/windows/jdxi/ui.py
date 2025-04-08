@@ -44,7 +44,7 @@ from jdxi_editor.midi.data.editor.data import (
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
-from jdxi_editor.ui.style.style import Style
+from jdxi_editor.ui.style.jdxistyle import JDXIStyle
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.indicator import LEDIndicator
 from jdxi_editor.midi.io import MidiIOHelper
@@ -114,7 +114,7 @@ class JdxiUi(QMainWindow):
         self.midi_helper = MidiIOHelper()
 
         # Set black background for entire application
-        self.setStyleSheet(Style.JDXI_TRANSPARENT)
+        self.setStyleSheet(JDXIStyle.TRANSPARENT)
 
         # Load custom font
         self._load_digital_font()
@@ -364,7 +364,7 @@ class JdxiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-        status_bar.setStyleSheet(Style.JDXI_TRANSPARENT)
+        status_bar.setStyleSheet(JDXIStyle.TRANSPARENT)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())
