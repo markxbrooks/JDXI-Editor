@@ -1,7 +1,7 @@
 """
-JD-Xi Manager UI setup.
+JD-Xi Editor UI setup.
 
-This class defines the main user interface for the JD-Xi Manager application, inheriting from QMainWindow. It handles the creation of the UI elements, including the main layout, menus, status bar, and MIDI indicators. It also provides functionality for displaying and managing synth presets, favorites, and MIDI connectivity.
+This class defines the main user interface for the JD-Xi Editor application, inheriting from QMainWindow. It handles the creation of the UI elements, including the main layout, menus, status bar, and MIDI indicators. It also provides functionality for displaying and managing synth presets, favorites, and MIDI connectivity.
 
 Key Features:
 - Sets up a frameless window with a customizable layout.
@@ -97,7 +97,7 @@ class JdxiUi(QMainWindow):
 
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.log_file = None
-        self.setWindowTitle("JD-Xi Manager")
+        self.setWindowTitle("JD-Xi Editor")
         self.setMinimumSize(JDXIDimensions.WIDTH, JDXIDimensions.HEIGHT)
         # Store window dimensions
         self.width = JDXIDimensions.WIDTH
