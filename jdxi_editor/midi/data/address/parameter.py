@@ -1,5 +1,6 @@
 
 from enum import Enum
+from typing import Optional
 
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
@@ -11,7 +12,8 @@ DIGITAL_PARTIAL_MAP = {1: 0x20, 2: 0x21, 3: 0x22}
 
 
 class Parameter(Enum):
-    def get_parameter_by_address(address: int) -> Parameter | None:
+    @staticmethod
+    def get_parameter_by_address(address: int) -> Optional["Parameter"]:
         for param in Parameter:
             if param.value == address:
                 return param
