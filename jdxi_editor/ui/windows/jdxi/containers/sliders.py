@@ -88,7 +88,6 @@ def add_slider_container(central_widget, midi_helper):
     lfo_rate_slider = LFORateSlider(midi_helper, label="Rate")
     lfo_pitch_slider = LFOPitchSlider(midi_helper, label="Pitch")
 
-    # Effect 1 and Effect 2 may come later
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
     lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
 
@@ -97,8 +96,6 @@ def add_slider_container(central_widget, midi_helper):
 
     delay_slider = DelaySlider(midi_helper, label="Delay")
     reverb_slider = ReverbSlider(midi_helper, label="Reverb")
-
-    # Add sliders with labels to the row
 
     filter_cutoff_container = create_slider_with_label(
         "Cut.", filter_cutoff_slider
