@@ -74,16 +74,6 @@ class DigitalModifyParameter(SynthParameter):
             raise ValueError(f"Value {value} out of range for {self.name} (valid range: 0-19)")
 
         return value
-    
-    def validate_value_old(self, value: int) -> int:
-        """Validate and convert parameter value"""
-        if not isinstance(value, int):
-            raise ValueError(f"Value must be integer, got {type(value)}")
-        
-        if self == self.ENVELOPE_LOOP_SYNC_NOTE:
-            if value < 0 or value > 19:
-                raise ValueError(f"Value {value} out of range for {self.name} (valid range: 0-19)")
-        return value        
 
     def get_address_for_partial(self, partial_num: int = 0):
         return TONE_MODIFY, 0

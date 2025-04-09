@@ -4,9 +4,9 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
+from jdxi_editor.midi.data.address.parameter import TemporaryParameter
 from jdxi_editor.midi.data.constants import TEMPORARY_DIGITAL_SYNTH_1_AREA
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_2_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA, DIGITAL_PART_1, \
-    DIGITAL_PART_2
+from jdxi_editor.midi.data.constants.sysex import TEMPORARY_DIGITAL_SYNTH_2_AREA
 
 
 def _log_debug_info(data, successes, failures, enabled):
@@ -80,7 +80,7 @@ def _log_synth_area_info(sysex_data):
 
 def _is_digital_synth_area(area_code):
     """Check if the area code corresponds to a digital synth area."""
-    return area_code in [TEMPORARY_DIGITAL_SYNTH_1_AREA, DIGITAL_SYNTH_2_AREA]
+    return area_code in [ProgramAreaParameter.TEMPORARY_TONE_AREA]
 
 
 def _sysex_area_matches(sysex_data: dict, area) -> bool:
@@ -114,8 +114,8 @@ def _sysex_tone_matches(sysex_data: dict, part) -> bool:
     temp_part = sysex_data.get("SYNTH_TONE")
     logging.info(f"found part {temp_part}")
     part_map = {
-        DIGITAL_PART_1: "PARTIAL_1",
-        DIGITAL_PART_2: "PARTIAL_2",
+        TemporaryParameter.DIGITAL_PART_1: "PARTIAL_1",
+        TemporaryParameter.DIGITAL_PART_2: "PARTIAL_2",
     }
     expected_part = part_map.get(part)
     match = part == expected_part

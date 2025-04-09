@@ -318,6 +318,10 @@ def generate_editor_style(
         QLabel {{
             color: {accent};
         }}
+        QSlider::horizontal {{
+            margin-left: 5px;
+            margin-right: 5px;
+        }}
     """
 
 

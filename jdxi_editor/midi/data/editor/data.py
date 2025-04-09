@@ -31,19 +31,12 @@ from typing import Tuple, List
 
 from jdxi_editor.midi.data.address.parameter import TemporaryParameter, ProgramAreaParameter, ProgramGroupParameter
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
-from jdxi_editor.midi.data.constants.constants import (
-    MIDI_CHANNEL_DRUMS,
-    MIDI_CHANNEL_DIGITAL2,
-    MIDI_CHANNEL_DIGITAL1,
-    MIDI_CHANNEL_ANALOG,
-)
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.constants.sysex import (
     TEMPORARY_DIGITAL_SYNTH_2_AREA,
     TEMPORARY_DIGITAL_SYNTH_1_AREA,
     TEMPORARY_TONE_AREA,
-    DRUM_KIT_AREA,
     COMMON_AREA,
-    ANALOG_PART, DIGITAL_PART_1, DIGITAL_PART_2,
 )
 from jdxi_editor.midi.data.parameter.areas.program import ProgramArea
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
@@ -88,7 +81,7 @@ class DrumsSynthData(SynthData):
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
             midi_requests=DRUMS_REQUESTS,
-            midi_channel=MIDI_CHANNEL_DRUMS,
+            midi_channel=MidiChannel.MIDI_CHANNEL_DRUMS,
             presets=DRUM_PRESETS_ENUMERATED,
             preset_list=DRUM_KIT_LIST,
             preset_type=SynthType.DRUMS,
@@ -103,11 +96,11 @@ class DigitalSynthData(SynthData):
         super().__init__(
             area=ProgramAreaParameter.TEMPORARY_TONE_AREA,
             part=TemporaryParameter.DIGITAL_PART_2 if synth_number == 2 else TemporaryParameter.DIGITAL_PART_1,
-            group=ProgramGroupParameter.COMMON_AREA,
+            group=ProgramGroupParameter.PROGRAM_COMMON,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
             midi_requests=DIGITAL2_REQUESTS if synth_number == 2 else DIGITAL1_REQUESTS,
-            midi_channel=MIDI_CHANNEL_DIGITAL2 if synth_number == 2 else MIDI_CHANNEL_DIGITAL1,
+            midi_channel=MidiChannel.MIDI_CHANNEL_DIGITAL2 if synth_number == 2 else MidiChannel.MIDI_CHANNEL_DIGITAL1,
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
             preset_type=SynthType.DIGITAL_2 if synth_number == 2 else SynthType.DIGITAL_1,
@@ -127,11 +120,11 @@ class AnalogSynthData(SynthData):
         super().__init__(
             area=ProgramAreaParameter.TEMPORARY_TONE_AREA,
             part=TemporaryParameter.ANALOG_PART,
-            group=ProgramGroupParameter.COMMON_AREA,
+            group=ProgramGroupParameter.PROGRAM_COMMON,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",
             midi_requests=[PROGRAM_COMMON_REQUEST, ANALOG_REQUEST],
-            midi_channel=MIDI_CHANNEL_ANALOG,
+            midi_channel=MidiChannel.MIDI_CHANNEL_ANALOG,
             presets=ANALOG_PRESETS_ENUMERATED,
             preset_list=ANALOG_PRESET_LIST,
             preset_type=SynthType.ANALOG,

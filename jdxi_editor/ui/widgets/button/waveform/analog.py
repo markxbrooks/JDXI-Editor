@@ -11,7 +11,7 @@ Features:
 
 
 from PySide6.QtCore import Signal
-from jdxi_editor.midi.data.constants.constants import Waveform
+from jdxi_editor.midi.wave.form import Waveform
 from jdxi_editor.ui.style import JDXIStyle
 
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton

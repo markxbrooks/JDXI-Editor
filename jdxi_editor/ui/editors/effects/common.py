@@ -39,6 +39,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from jdxi_editor.midi.data.address.parameter import TemporaryParameter
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_PROGRAM_AREA, PROGRAM_COMMON
@@ -68,8 +69,8 @@ class EffectsCommonEditor(SynthEditor):
         #self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.area = TEMPORARY_PROGRAM_AREA
-        self.part = PROGRAM_COMMON
+        self.area = TemporaryParameter.TEMPORARY_PROGRAM_AREA
+        self.part = ProgramGroupParameter.PROGRAM_COMMON
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 
@@ -189,7 +190,8 @@ class EffectsCommonEditor(SynthEditor):
         layout.addRow(self.efx1_reverb_send_level)
 
         self.efx1_output_assign = self._create_parameter_combo_box(
-            EffectParameter.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"], [0, 1]
+            EffectParameter.EFX1_OUTPUT_ASSIGN, "Output Assign",
+            ["DIR", "EFX2"], [0, 1]
         )
         layout.addRow(self.efx1_output_assign)
 

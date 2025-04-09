@@ -33,8 +33,7 @@ import logging
 
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG, MIDI_CHANNEL_DRUMS, MIDI_CHANNEL_DIGITAL1, \
-    MIDI_CHANNEL_DIGITAL2
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -94,13 +93,13 @@ class PresetHelper(QObject):
             SynthType.DRUMS : DRUM_KIT_LIST,
         }
         channel_map = {
-            SynthType.DIGITAL_1 : MIDI_CHANNEL_DIGITAL1,
-            SynthType.DIGITAL_2 : MIDI_CHANNEL_DIGITAL2,
-            SynthType.ANALOG : MIDI_CHANNEL_ANALOG,
-            SynthType.DRUMS : MIDI_CHANNEL_DRUMS,
+            SynthType.DIGITAL_1 : MidiChannel.MIDI_CHANNEL_DIGITAL1,
+            SynthType.DIGITAL_2 : MidiChannel.MIDI_CHANNEL_DIGITAL2,
+            SynthType.ANALOG : MidiChannel.MIDI_CHANNEL_ANALOG,
+            SynthType.DRUMS : MidiChannel.MIDI_CHANNEL_DRUMS,
         }
         preset_list = preset_list_map.get(synth_type, DIGITAL_PRESET_LIST)
-        channel = channel_map.get(synth_type, MIDI_CHANNEL_DIGITAL1)
+        channel = channel_map.get(synth_type, MidiChannel.MIDI_CHANNEL_DIGITAL1)
 
         msb, lsb, pc = get_preset_values(preset_index, preset_list)
         if None in [msb, lsb, pc]:
@@ -115,8 +114,8 @@ class PresetHelper(QObject):
 
         # Select the correct preset list based on the channel
         preset_list = {
-            MIDI_CHANNEL_DRUMS: DRUM_KIT_LIST,
-            MIDI_CHANNEL_ANALOG: ANALOG_PRESET_LIST
+            MidiChannel.MIDI_CHANNEL_DRUMS: DRUM_KIT_LIST,
+            MidiChannel.MIDI_CHANNEL_ANALOG: ANALOG_PRESET_LIST
         }.get(channel, DIGITAL_PRESET_LIST)
 
         msb, lsb, pc = get_preset_values(program_number, preset_list)

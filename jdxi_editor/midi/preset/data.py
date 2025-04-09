@@ -8,14 +8,14 @@ Classes:
     - PresetData: Stores preset metadata for MIDI program selection and management.
 
 Constants:
-    - MIDI_CHANNEL_DIGITAL1: Default MIDI channel for Digital 1 presets.
+    - MidiChannel.MIDI_CHANNEL_DIGITAL1: Default MIDI channel for Digital 1 presets.
     - PresetType.DIGITAL_1: Default preset type for Digital 1.
 """
 
 from dataclasses import dataclass
 from typing import Optional
 
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.preset.type import SynthType
 
 
@@ -24,5 +24,5 @@ class Preset:
     type: str = SynthType.DIGITAL_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0
-    channel: int = MIDI_CHANNEL_DIGITAL1
+    channel: int = MidiChannel.MIDI_CHANNEL_DIGITAL1
     name: Optional[str] = None

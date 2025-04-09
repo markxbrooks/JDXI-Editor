@@ -76,6 +76,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.midi.data.address.parameter import TemporaryParameter
 from jdxi_editor.midi.data.editor.data import DrumsSynthData
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
@@ -89,11 +90,7 @@ from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
-from jdxi_editor.midi.data.constants.sysex import (
-    TEMPORARY_TONE_AREA,
-    DRUM_KIT_AREA,
-)
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DRUMS
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
@@ -396,7 +393,7 @@ class DrumCommonEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") == DRUM_KIT_AREA
+            return sysex_data.get("TEMPORARY_AREA") == TemporaryParameter.DRUM_KIT_PART
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""
