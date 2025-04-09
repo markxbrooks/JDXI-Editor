@@ -11,6 +11,8 @@ def send_nrpn(self, channel, msb, lsb, value):
 """
 
 import logging
+
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -42,14 +44,23 @@ class ControlChangeSlider(Slider):
         self.max_value = max_value
         self.current_value = min_value
         self.vertical = vertical
+        self.update_style(min_value)
         self.valueChanged.connect(self.on_value_changed)
         self.setTickPosition(self.TickPosition.NoTicks)
         self.nrpn_map = nrpn_map
+        self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
+
+    def update_style(self, value: int):
+        if value == 0:
+            self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
+        else:
+            self.setStyleSheet(JDXIStyle.ADSR)
 
     def on_value_changed(self, value: int):
         """
         Set the current value of the slider and send Control Change (CC) messages.
         """
+        self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
         logging.info(f"filter value: {value} for cutoff slider")
 
         if self.min_value <= value <= self.max_value:
@@ -57,9 +68,12 @@ class ControlChangeSlider(Slider):
         else:
             raise ValueError("Value out of range.")
 
+        self.update_style(value)
+
         for partial in [1, 2, 3]:
             cc_number = self.nrpn_map.get(partial)
             if cc_number is None:
                 raise ValueError("Invalid partial number")
             for channel in [0, 1, 2]:  # Or just the channel matching this partial
                 self.midi_helper.send_control_change(cc_number, value, channel=channel)
+        self.update_style(value)

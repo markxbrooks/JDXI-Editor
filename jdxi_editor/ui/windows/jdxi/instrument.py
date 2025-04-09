@@ -253,6 +253,7 @@ class JdxiInstrument(JdxiUi):
             synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
             for synth_type, presets, channel in preset_configs
         }
+        self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
 
     def _handle_program_change(self):
         """ perform data request """

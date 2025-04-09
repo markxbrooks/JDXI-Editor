@@ -297,7 +297,7 @@ def generate_editor_style(
             margin: -9px;
             border-radius: 4px;
         }}
-                /* Glowing effect when moving */
+        /* Glowing effect when moving */
         QSlider::sub-page:horizontal {{
             background: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
                          stop:0 {slider_neon_gradient_stop}, stop:1 {slider_neon});
