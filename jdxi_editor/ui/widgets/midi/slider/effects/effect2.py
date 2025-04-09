@@ -20,5 +20,6 @@ class Effect2Slider(ControlChangeSlider):
         super().__init__(
             midi_helper=midi_helper,
             label=label,
-            nrpn_map=nrpn_map
+            nrpn_map=nrpn_map,
+            channels=[15]
         )

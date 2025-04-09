@@ -19,26 +19,22 @@ Requires: PySide6.QtWidgets, PySide6.QtCore, PySide6.QtGui
 """
 
 from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QRect
+from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QRect, QEasingCurve
+from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
+
+
+from PySide6.QtWidgets import QPushButton, QLabel, QGraphicsOpacityEffect
+from PySide6.QtCore import Qt, QRect, Signal, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
 
 
 class PianoKey(QPushButton):
-    """Piano key styled like JD-Xi keys with animations"""
+    """Piano key styled like JD-Xi keys with animations and LED flicker"""
 
     noteOn = Signal(int)
     noteOff = Signal(int)
 
     def __init__(self, note_num, is_black=False, width=22, height=160, parent=None) -> None:
-        """
-        Initialize the PianoKey widget with the given MIDI note number and key preset_type.
-        :param note_num: MIDI note number for the key
-        :param is_black: True if the key is address black key, False for white key
-        :param width: Width of the key in pixels
-        :param height: Height of the key in pixels
-        :param parent: Parent widget
-        :return: None
-        """
         super().__init__(parent)
         self.note_num = note_num
         self.is_black = is_black
@@ -46,18 +42,92 @@ class PianoKey(QPushButton):
         self.setFixedSize(width, height)
         self.setFlat(True)
 
-        # Animation setup
+        self._geometry_initialized = False
+
+        # Press/release animations
         self.press_animation = QPropertyAnimation(self, b"geometry")
         self.press_animation.setDuration(50)
 
         self.release_animation = QPropertyAnimation(self, b"geometry")
-        self.release_animation.setDuration(100)
+        self.release_animation.setDuration(150)
+
+        # LED flicker setup
+        self.stripe = QLabel(self)
+        self.stripe.setGeometry(0, 0, width, 2)
+
+        self.led = QLabel(self)
+        self.led.setGeometry(0, 0, width, 5)
+        self.led.setStyleSheet("background-color: #ff1a1a; border-radius: 3px;")
+        self.led_effect = QGraphicsOpacityEffect(self.led)
+        self.led.setGraphicsEffect(self.led_effect)
+        self.led_effect.setOpacity(0)
+
+        self.led_anim = QPropertyAnimation(self.led_effect, b"opacity")
+        self.led_anim.setDuration(600)
+        self.led_anim.setKeyValues([
+            (0.0, 0.0),
+            (0.2, 1.0),
+            (1.0, 0.0)
+        ])
+        self.led_anim.setEasingCurve(QEasingCurve.OutQuad)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        if not self._geometry_initialized:
+            self.original_geometry = self.geometry()
+            self._geometry_initialized = True
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.is_pressed = True
+            self.noteOn.emit(self.note_num)
+            self.update()
+
+            move_amount = 3 if not self.is_black else 2
+            pressed_geometry = QRect(
+                self.original_geometry.x(),
+                self.original_geometry.y() + move_amount,
+                self.original_geometry.width(),
+                self.original_geometry.height() - move_amount,
+            )
+
+            self.press_animation.stop()
+            self.press_animation.setStartValue(self.geometry())
+            self.press_animation.setEndValue(pressed_geometry)
+            self.press_animation.start()
+
+            # Flicker the LED
+            self.led_anim.stop()
+            self.led_anim.start()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.is_pressed = False
+            self.noteOff.emit(self.note_num)
+            self.update()
+
+            bounce_up = QRect(
+                self.original_geometry.x(),
+                self.original_geometry.y() - 2,
+                self.original_geometry.width(),
+                self.original_geometry.height() + 2,
+            )
+
+            bounce_back = self.original_geometry
+
+            self.release_animation.stop()
+            self.release_animation.setDuration(150)
+            self.release_animation.setKeyValues([
+                (0.0, self.geometry()),
+                (0.4, bounce_up),
+                (1.0, bounce_back),
+            ])
+            self.release_animation.setEasingCurve(QEasingCurve.OutBounce)
+            self.release_animation.start()
 
     def paintEvent(self, event):
-        """Custom paint for JD-Xi style keys"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-
         gradient = QLinearGradient(0, 0, 0, self.height())
 
         if self.is_black:
@@ -84,44 +154,3 @@ class PianoKey(QPushButton):
 
         painter.setPen(QPen(QColor(60, 60, 60), 1))
         painter.drawRect(0, 0, self.width() - 1, self.height() - 1)
-
-    def mousePressEvent(self, event):
-        """Handle mouse press event to trigger note on and animation"""
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.is_pressed = True
-            self.noteOn.emit(self.note_num)
-            self.update()
-
-            # Adjust movement amount based on key preset_type
-            move_amount = 3 if not self.is_black else 2  # Black keys move less
-
-            self.press_animation.setStartValue(self.geometry())
-            self.press_animation.setEndValue(
-                QRect(
-                    self.x(),
-                    self.y() + move_amount,
-                    self.width(),
-                    self.height() - move_amount,
-                )
-            )
-            self.press_animation.start()
-
-    def mouseReleaseEvent(self, event):
-        """Handle mouse release event to trigger note off and animation"""
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.is_pressed = False
-            self.noteOff.emit(self.note_num)
-            self.update()
-
-            move_amount = 3 if not self.is_black else 2  # Restore position
-
-            self.release_animation.setStartValue(self.geometry())
-            self.release_animation.setEndValue(
-                QRect(
-                    self.x(),
-                    self.y() - move_amount,
-                    self.width(),
-                    self.height() + move_amount,
-                )
-            )
-            self.release_animation.start()

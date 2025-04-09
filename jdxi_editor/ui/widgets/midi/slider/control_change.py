@@ -30,6 +30,7 @@ class ControlChangeSlider(Slider):
         min_value: int = 0,
         max_value: int = 127,
         vertical: bool = True,
+        channels: list = [0, 1, 2]
     ):
         super().__init__(label,
                          min_val=min_value,
@@ -37,6 +38,7 @@ class ControlChangeSlider(Slider):
                          vertical=vertical,
                          show_value_label=False,
                          draw_tick_marks=False)
+        self.channels = channels
         self.label = label
         self.midi_helper = midi_helper
         self.partial = partial  # 1, 2, or 3
@@ -74,6 +76,6 @@ class ControlChangeSlider(Slider):
             cc_number = self.nrpn_map.get(partial)
             if cc_number is None:
                 raise ValueError("Invalid partial number")
-            for channel in [0, 1, 2]:  # Or just the channel matching this partial
+            for channel in self.channels:  # Or just the channel matching this partial
                 self.midi_helper.send_control_change(cc_number, value, channel=channel)
         self.update_style(value)

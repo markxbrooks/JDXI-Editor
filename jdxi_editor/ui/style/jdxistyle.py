@@ -522,7 +522,7 @@ class JDXIStyle:
 
         /* Glowing effect when moving */
         QSlider::sub-page:vertical {
-            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
                          stop:0 #000066, stop:1 #1a1aff);
             border-radius: 3px;
         }
@@ -613,7 +613,7 @@ class JDXIStyle:
 
         /* Glowing effect when moving */
         QSlider::sub-page:vertical {{
-            background: qlineargradient(x1:0, y1:1, x2:0, y2:0, 
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
                          stop:0 #660000, stop:1 #ff1a1a);
             border-radius: 3px;
         }}

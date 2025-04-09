@@ -13,12 +13,13 @@ class ReverbSlider(ControlChangeSlider):
         label: str = "Reverb.",
     ):
         nrpn_map = {
-            1: 13,  # NRPN LSB for Partial 1
-            2: 13,  # Partial 2
-            3: 13,  # Partial 3
+            1: 12,  # NRPN LSB for Partial 1
+            2: 12,  # Partial 2
+            3: 12,  # Partial 3
         }
         super().__init__(
             midi_helper=midi_helper,
             label=label,
-            nrpn_map=nrpn_map
+            nrpn_map=nrpn_map,
+            channels=[15]
         )
