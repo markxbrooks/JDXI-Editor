@@ -25,21 +25,15 @@ Example usage:
     print(f"Drum Synth Default Image: {drum_synth.instrument_default_image}")
 
 """
-import logging
-from dataclasses import dataclass, field
-from typing import Tuple, List
 
-from jdxi_editor.midi.data.address.parameter import TemporaryParameter, ProgramAreaParameter, ProgramGroupParameter
-from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
+from dataclasses import dataclass
+from typing import List
+
+from jdxi_editor.midi.data.address.parameter import (
+    TemporaryParameter,
+    ProgramAreaParameter,
+    ProgramGroupParameter)
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.constants.sysex import (
-    TEMPORARY_DIGITAL_SYNTH_2_AREA,
-    TEMPORARY_DIGITAL_SYNTH_1_AREA,
-    TEMPORARY_TONE_AREA,
-    COMMON_AREA,
-)
-from jdxi_editor.midi.data.parameter.areas.program import ProgramArea
-from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
