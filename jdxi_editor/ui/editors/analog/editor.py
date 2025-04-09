@@ -60,21 +60,17 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
+from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter
 from jdxi_editor.midi.data.editor.data import AnalogSynthData
-from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.sysex.requests import PROGRAM_COMMON_REQUEST, ANALOG_REQUEST
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
 )
-from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
-from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP, AnalogOscWave
-from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
@@ -329,7 +325,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        if address[0] == TEMPORARY_ANALOG_SYNTH_AREA:
+        if address[0] == ProgramAreaParameter.TEMPORARY_ANALOG_SYNTH_AREA:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
 

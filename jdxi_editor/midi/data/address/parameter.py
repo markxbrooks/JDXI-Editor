@@ -20,6 +20,16 @@ class Parameter(IntEnum):
         return None
 
 
+class HeaderParameter(Parameter):
+    ROLAND_ID = 0x41
+    DEVICE_ID = 0x10
+    # Model ID bytes
+    MODEL_ID_1 = 0x00  # Manufacturer ID extension
+    MODEL_ID_2 = 0x00  # Device family code MSB
+    MODEL_ID_3 = 0x00  # Device family code LSB
+    MODEL_ID_4 = 0x0E  # JD-XI Product code
+
+
 class CommandParameter(Parameter):
     # Roland Commands
     DT1_COMMAND_12 = 0x12  # Data Set 1
@@ -32,6 +42,9 @@ class ProgramAreaParameter(Parameter):
     TEMPORARY_PROGRAM_AREA = 0x18
     TEMPORARY_TONE_AREA = 0x19
     EFFECTS_AREA = 0x16
+    TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x19  # Digital synth 1 area
+    TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x1A
+    TEMPORARY_ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
 
 
 class TemporaryParameter(Parameter):

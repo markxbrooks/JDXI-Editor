@@ -24,10 +24,9 @@ from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.midi.data.address.parameter import HeaderParameter, CommandParameter
 from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.constants.sysex import (
-    ROLAND_ID,
-    DEVICE_ID,
     RQ1_COMMAND_11,
     END_OF_SYSEX,
 )
@@ -454,10 +453,10 @@ class MidiOutHandler(MidiIOController):
         try:
             # Construct SysEx request using SysExMessage
             request = SysExMessage(
-                manufacturer_id=[ROLAND_ID],
-                device_id=DEVICE_ID,
+                manufacturer_id=[HeaderParameter.ROLAND_ID],
+                device_id=HeaderParameter.DEVICE_ID,
                 model_id=[0x00, 0x00, 0x3B, 0x00],  # Example model ID
-                command=RQ1_COMMAND_11,  # RQ1 (Request Data) command for Roland
+                command=CommandParameter.RQ1_COMMAND_11,  # RQ1 (Request Data) command for Roland
                 address=[area, part, group, param],  # Address of parameter
                 data=[],  # No payload for request
             )

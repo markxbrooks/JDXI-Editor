@@ -14,18 +14,14 @@ through an animated envelope curve.
 
 import re
 import logging
-from typing import Dict, Union, Optional
+from typing import Dict, Union
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
+from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter, ProgramGroupParameter, TemporaryParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.data.constants.analog import (
-    ANALOG_PART,
-)
-from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     ms_to_midi_cc,
@@ -38,10 +34,6 @@ from jdxi_editor.ui.style import JDXIStyle
 
 # Precompile the regex pattern at module level or in the class constructor
 ENVELOPE_PATTERN = re.compile(r'(attack|decay|release)', re.IGNORECASE)
-
-from PySide6.QtCore import Signal, QObject
-from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
-from enum import Enum, auto
 
 
 class ADSR(QWidget):
@@ -81,9 +73,9 @@ class ADSR(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.group = group if group else ANALOG_OSC_GROUP
-        self.area = area if area else TEMPORARY_TONE_AREA
-        self.part = part if part else ANALOG_PART
+        self.group = group if group else ProgramGroupParameter.ANALOG_OSC_GROUP
+        self.area = area if area else ProgramAreaParameter.TEMPORARY_TONE_AREA
+        self.part = part if part else TemporaryParameter.ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
 

@@ -38,7 +38,7 @@ Example usage:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS
 """
 from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter
-from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, RQ1_COMMAND_11, TEMPORARY_PROGRAM_AREA, JD_XI_HEADER
+from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER
 from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
 
 # Define constants in the SYSEX_CONSTANTS dictionary
