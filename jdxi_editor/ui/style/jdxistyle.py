@@ -320,10 +320,147 @@ class JDXIStyle:
             }}
         """
 
+    SLIDER = f"""
+            QSlider::handle:horizontal{{
+                background: {SLIDER_HANDLE};
+                border: 3px solid {SLIDER_NEON}; /* Neon red border */
+                width: 8px;  /* More rectangular */
+                height: 2px;  
+                margin: -6px;
+                padding: 1px;
+                border-radius: 4px;
+            }}
+            QSlider::handle:disabled{{
+                background: {SLIDER_HANDLE};
+                border: 2px solid #333333; /* grey border */
+                width: 8px;  /* More rectangular */
+                height: 2px;  
+                margin: -6px;
+                padding: 1px;
+                border-radius: 4px;
+            }}
+            /* Unfilled portion */
+            QSlider::add-page:horizontal {{
+                background: #222;
+                border-radius: 3px;
+            }}
+            QSlider::handle:vertical {{
+                background: {SLIDER_HANDLE};
+                border: 2px solid {SLIDER_HANDLE_BORDER};
+                width: 18px;
+                height: 12px;
+                margin: -9px 0;
+                border-radius: 9px;
+            }}
+            QSlider::handle:vertical:disabled{{
+                background: {SLIDER_HANDLE};
+                border: 2px solid #333333; /* grey border */
+                width: 18px;  /* More rectangular */
+                height: 12px;  
+                margin: -9px;
+                border-radius: 4px;
+            }}
+            /* Glowing effect when moving */
+            QSlider::sub-page:horizontal {{
+                background: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
+                             stop:0 {SLIDER_NEON_GRADIENT_STOP}, stop:1 {SLIDER_NEON});
+                border-radius: 3px;
+            }}
+            /* Glowing effect when moving */
+            QSlider::sub-page:horizontal:disabled {{
+                background: #333333;
+                border-radius: 3px;
+            }}
+
+            /* Unfilled portion */
+            QSlider::add-page:horizontal {{
+                background: #222;
+                border-radius: 3px;
+            }}
+            /* QLabels */
+            QLabel {{
+                color: {ACCENT};
+            }}
+            QSlider::horizontal {{
+                margin-left: 5px;
+                margin-right: 5px;
+            }}
+        """
+
+    SLIDER_DISABLED = f"""
+                QSlider::handle:horizontal{{
+                background: {SLIDER_HANDLE};
+                border: 3px solid #333333; /* Neon red border */
+                width: 8px;  /* More rectangular */
+                height: 2px;  
+                margin: -6px;
+                padding: 1px;
+                border-radius: 4px;
+            }}
+            QSlider::handle:disabled{{
+                background: {SLIDER_HANDLE};
+                border: 2px solid #333333; /* grey border */
+                width: 8px;  /* More rectangular */
+                height: 2px;  
+                margin: -6px;
+                padding: 1px;
+                border-radius: 4px;
+            }}
+            /* Unfilled portion */
+            QSlider::add-page:horizontal {{
+                background: #222;
+                border-radius: 3px;
+            }}
+            QSlider::handle:vertical {{
+                background: {SLIDER_HANDLE};
+                border: 2px solid #333333;
+                width: 18px;
+                height: 12px;
+                margin: -9px 0;
+                border-radius: 9px;
+            }}
+            QSlider::handle:vertical:disabled{{
+                background: {SLIDER_HANDLE};
+                border: 2px solid #333333; /* grey border */
+                width: 18px;  /* More rectangular */
+                height: 12px;  
+                margin: -9px;
+                border-radius: 4px;
+            }}
+            /* Glowing effect when moving */
+            QSlider::sub-page:horizontal {{
+                background: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
+                             stop:0 {SLIDER_NEON_GRADIENT_STOP}, stop:1 {SLIDER_NEON});
+                border-radius: 3px;
+            }}
+            /* Glowing effect when moving */
+            QSlider::sub-page:horizontal:disabled {{
+                background: #333333;
+                border-radius: 3px;
+            }}
+
+            /* Unfilled portion */
+            QSlider::add-page:horizontal {{
+                background: #222;
+                border-radius: 3px;
+            }}
+            /* QLabels */
+            QLabel {{
+                color: {ACCENT};
+            }}
+            QSlider::horizontal {{
+                margin-left: 5px;
+                margin-right: 5px;
+            }}
+        """
+
     TRANSPARENT = f"""
         QMainWindow, QWidget, QMenuBar {{
             background-color: transparent;
             color: "{FONT_RED}";
+        }}
+        QSlider {{
+            border: #333333;
         }}
         QPushButton {{
             background-color: transparent;
@@ -519,6 +656,85 @@ class JDXIStyle:
             color: "{FONT_RED}";
         }}
     """
+
+    ADSR_DISABLED = f"""
+            /* Groove (Track) */
+            QSlider::groove:vertical {{
+                background: #111; /* Dark background */
+                width: 6px;
+                border-radius: 3px;
+            }}
+
+            /* Handle (Knob) */
+            QSlider::handle:vertical {{
+                background: black;
+                border: 2px solid #333333; /* Neon red border */
+                width: 10px;  /* More rectangular */
+                height: 10px;  
+                margin: -8px;
+                margin-bottom: 2px;
+                margin-top: 2px;
+                border-radius: 5px;
+            }}
+            /* Handle (Knob) */
+            QSlider::handle:vertical:disabled {{
+                background: black;
+                border: 2px solid #333333; /* grey border */
+                width: 10px;  /* More rectangular */
+                height: 10px;  
+                margin: -10px;
+                border-radius: 5px;
+            }}
+            /* greyed out groove */
+            QSlider::sub-page:vertical:disabled {{
+                background: #333333;
+                border-radius: 3px;
+            }}
+
+            /* Glowing effect when moving */
+            QSlider::sub-page:vertical {{
+                background: #333333;
+                border-radius: 3px;
+            }}
+
+            /* Unfilled portion */
+            QSlider::add-page:vertical {{
+                background: #222;
+                border-radius: 3px;
+            }}
+
+            /* Tick Marks (Small dashes on both sides) */
+            QSlider::tick-mark {{
+                background: #333333;
+                width: 4px;
+                height: 2px;
+                border-radius: 1px;
+                margin-left: -8px;
+                margin-right: 8px;
+            }}
+            QSlider::horizontal {{
+                margin-left: 6px;
+                margin-right: 6x;
+            }}
+
+            /* Handle Hover Effect */
+            QSlider::handle:vertical:hover {{
+                border: 2px solid #ff1a1a;
+            }}
+            /* Spin Box */
+            QSpinBox, QDoubleSpinBox {{
+                background-color: #222;
+                border: 1px solid #ff1a1a;
+                border-radius: 3px;
+                padding: 1px;
+                margin: -2px;
+                color: #ff1a1a;
+            }}
+            /* QLabels */
+            QLabel {{
+                color: "{FONT_RED}";
+            }}
+        """
 
     COMBO_BOX = f"""
     QComboBox {{

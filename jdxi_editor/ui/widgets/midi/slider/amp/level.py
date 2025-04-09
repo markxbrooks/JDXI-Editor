@@ -3,7 +3,6 @@
 import logging
 
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
-from jdxi_editor.ui.widgets.slider import Slider
 
 
 class AmpLevelSlider(ControlChangeSlider):

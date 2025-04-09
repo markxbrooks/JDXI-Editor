@@ -152,4 +152,5 @@ def add_slider_container(central_widget, midi_helper):
     )
 
     # Add to main layout
+    slider_row_container.setStyleSheet(JDXIStyle.ADSR_DISABLED)
     main_layout.addWidget(slider_row_container)
