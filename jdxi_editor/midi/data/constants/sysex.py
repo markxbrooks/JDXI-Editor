@@ -28,13 +28,11 @@ Constants:
 This module facilitates structured MIDI communication with Roland devices,
 ensuring correct message formatting and parameter access.
 """
-
+from jdxi_editor.midi.data.address.parameter import HeaderParameter
 
 # SysEx Headers
 START_OF_SYSEX = 0xF0
 END_OF_SYSEX = 0xF7
-ROLAND_ID = 0x41
-DEVICE_ID = 0x10
 
 ID_NUMBER = 0x7E  # 7EH ID number (Universal Non-realtime Message)
 
@@ -44,26 +42,32 @@ SUB_ID_2 = 0x01
 
 PLACEHOLDER_BYTE = 0x00
 
-# Model ID bytes
-MODEL_ID_1 = 0x00  # Manufacturer ID extension
-MODEL_ID_2 = 0x00  # Device family code MSB
-MODEL_ID_3 = 0x00  # Device family code LSB
-MODEL_ID_4 = 0x0E  # JD-XI Product code
-
 # Full Model ID array
-MODEL_ID = [MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
+MODEL_ID = [
+    HeaderParameter.MODEL_ID_1,
+    HeaderParameter.MODEL_ID_2,
+    HeaderParameter.MODEL_ID_3,
+    HeaderParameter.MODEL_ID_4
+]
 
 JD_XI_HEADER = [
-    ROLAND_ID,
-    DEVICE_ID,
-    MODEL_ID_1,
-    MODEL_ID_2,
-    MODEL_ID_3,
-    MODEL_ID_4,
+    HeaderParameter.ROLAND_ID,
+    HeaderParameter.DEVICE_ID,
+    HeaderParameter.MODEL_ID_1,
+    HeaderParameter.MODEL_ID_2,
+    HeaderParameter.MODEL_ID_3,
+    HeaderParameter.MODEL_ID_4,
 ]  # Complete device ID
 
 # Device Identification
-JD_XI_ID_LIST = [ROLAND_ID, DEVICE_ID, MODEL_ID_1, MODEL_ID_2, MODEL_ID_3, MODEL_ID_4]
+JD_XI_ID_LIST = [
+    HeaderParameter.ROLAND_ID,
+    HeaderParameter.DEVICE_ID,
+    HeaderParameter.MODEL_ID_1,
+    HeaderParameter.MODEL_ID_2,
+    HeaderParameter.MODEL_ID_3,
+    HeaderParameter.MODEL_ID_4
+]
 JD_XI_HEADER_LIST = JD_XI_ID_LIST
 # JD_XI_HEADER_LIST = [START_OF_SYSEX] + JD_XI_ID_LIST
 
@@ -90,16 +94,9 @@ PROGRAM_GROUP = 0x00
 TONE_1_LEVEL = 0x10
 TONE_2_LEVEL = 0x11
 
-# Memory Areas
-TEMPORARY_PROGRAM_AREA = 0x18  # Temporary Program area
-TEMPORARY_TONE_AREA = 0x19  # Temporary Digital Synth area
-TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x19  # Digital synth 1 area
-TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x1A  # Digital synth 2 area
-TEMPORARY_ANALOG_SYNTH_AREA = 0x1B  # Analog synth area
-
 TONE_MODIFY = 0x50
 
 # Ones to tidy up
 PROGRAM_AREA = 0x18
-DIGITAL_SYNTH_1_AREA = 0x19
-DIGITAL_SYNTH_2_AREA = 0x1A
+
+

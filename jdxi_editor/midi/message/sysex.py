@@ -38,14 +38,8 @@ from dataclasses import dataclass
 from jdxi_editor.midi.data.constants.sysex import (
     START_OF_SYSEX,
     END_OF_SYSEX,
-    ROLAND_ID,
-    MODEL_ID_1,
-    MODEL_ID_2,
     TONE_1_LEVEL,
     TONE_2_LEVEL,
-    MODEL_ID_3,
-    MODEL_ID_4,
-    DEVICE_ID,
     PROGRAM_COMMON,
     DT1_COMMAND_12,
     RQ1_COMMAND_11,
@@ -96,7 +90,7 @@ class SysexParameter(Enum):
 class SysExMessage(MidiMessage):
     """Base class for MIDI System Exclusive (SysEx) messages."""
     start_of_sysex: int = START_OF_SYSEX  # Start of SysEx
-    manufacturer_id: int = None  # Manufacturer ID (e.g., [0x41] for Roland)
+    manufacturer_id: int = 0x41  # Manufacturer ID (e.g., [0x41] for Roland)
     device_id: int = 0x10  # Default device ID
     model_id: List[int] = None  # Model ID (4 bytes)
     command: int = 0x00  # SysEx command (DT1, RQ1, etc.)

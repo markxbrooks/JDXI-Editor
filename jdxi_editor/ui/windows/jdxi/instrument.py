@@ -35,6 +35,7 @@ from pubsub import pub
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, Signal, QTimer
 
+from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import SynthType
@@ -43,9 +44,6 @@ from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP
-from jdxi_editor.midi.data.constants.sysex import (
-    TEMPORARY_PROGRAM_AREA, TEMPORARY_TONE_AREA,
-)
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -960,7 +958,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            sysex_message = RolandSysEx(area=TEMPORARY_TONE_AREA,
+            sysex_message = RolandSysEx(area=ProgramAreaParameter.TEMPORARY_TONE_AREA,
                                         section=part_address,
                                         group=group_address,
                                         param=param_address,
@@ -978,7 +976,7 @@ class JdxiInstrument(JdxiUi):
             if not part_address:
                 part_address = ARP_PART
             if not area:
-                area = TEMPORARY_PROGRAM_AREA
+                area = ProgramAreaParameter.TEMPORARY_PROGRAM_AREA
             # Ensure value is included in the MIDI message
             sysex_message = RolandSysEx(area=area,
                                         section=part_address,

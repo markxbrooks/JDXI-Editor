@@ -16,18 +16,15 @@ import logging
 import re
 
 from PySide6.QtCore import Signal, Qt
-from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout, QSlider
+from PySide6.QtWidgets import QWidget, QSpinBox, QGridLayout, QSlider
 from typing import Dict, Union
+
+from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter, ProgramGroupParameter, TemporaryParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-from jdxi_editor.midi.data.constants.sysex import TEMPORARY_ANALOG_SYNTH_AREA, TEMPORARY_TONE_AREA
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot, ADSRParameter
 from jdxi_editor.ui.widgets.slider.slider import Slider
 from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.midi.data.constants.analog import (
-    ANALOG_PART,
-)
-from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     ms_to_midi_cc,

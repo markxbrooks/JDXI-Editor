@@ -50,8 +50,6 @@ from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.data.constants.sysex import TEMPORARY_DIGITAL_SYNTH_1_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA
-from jdxi_editor.midi.sysex.parsers import get_partial_address
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection

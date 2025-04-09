@@ -1,8 +1,8 @@
 from typing import List
 
-from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, ROLAND_ID, DEVICE_ID, MODEL_ID, \
+from jdxi_editor.midi.data.address.parameter import HeaderParameter, CommandParameter
+from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, MODEL_ID, \
     END_OF_SYSEX
-from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12
 
 
 def create_parameter_message(
@@ -11,10 +11,10 @@ def create_parameter_message(
     """Create parameter change SysEx message"""
     message = [
         START_OF_SYSEX,  # F0
-        ROLAND_ID,  # 41
-        DEVICE_ID,  # 10
+        HeaderParameter.ROLAND_ID,  # 41
+        HeaderParameter.DEVICE_ID,  # 10
         *MODEL_ID,  # 00 00 00 0E
-        DT1_COMMAND_12,  # 12
+        CommandParameter.DT1_COMMAND_12,  # 12
         area,  # 19 (Digital Synth)
         part,  # 01 (Part 1)
         group,  # 20 (OSC)
