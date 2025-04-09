@@ -54,6 +54,7 @@ class NRPNSlider(Slider):
         self.setTickPosition(self.TickPosition.NoTicks)
         self.valueChanged.connect(self.on_value_changed)
         self.param_type = param_type  # "nrpn" or "rpn"
+        self.update_style(self.current_value)
 
     def update_style(self, value: int):
         if value == 0:

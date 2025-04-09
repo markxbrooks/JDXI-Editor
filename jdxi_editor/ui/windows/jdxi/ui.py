@@ -113,9 +113,6 @@ class JdxiUi(QMainWindow):
         # Initialize MIDI helper
         self.midi_helper = MidiIOHelper()
 
-        # Set black background for entire application
-        self.setStyleSheet(JDXIStyle.TRANSPARENT)
-
         # Load custom font
         self._load_digital_font()
 

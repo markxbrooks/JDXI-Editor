@@ -148,11 +148,6 @@ class JdxiInstrument(JdxiUi):
         self.key_hold_button.clicked.connect(self._send_arp_key_hold)
         self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
 
-        pub.subscribe(self._update_display_preset, "update_display_preset")
-
-        # Set black background for entire application
-        self.setStyleSheet(JDXIStyle.TRANSPARENT)
-
         # Load custom font
         self._load_digital_font()
 
