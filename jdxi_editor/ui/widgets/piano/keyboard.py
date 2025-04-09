@@ -46,6 +46,7 @@ from jdxi_editor.midi.data.piano.keyboard import KEYBOARD_BLACK_NOTES, KEYBOARD_
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
+
 class PianoKeyboard(QWidget):
     """Widget containing a row of piano keys styled like JD-Xi"""
 
@@ -100,7 +101,7 @@ class PianoKeyboard(QWidget):
         shadow_effect = QGraphicsDropShadowEffect()
         shadow_effect.setBlurRadius(10)
         shadow_effect.setOffset(5, 5)
-        shadow_effect.setColor(QColor(0, 0, 0, 160))
+        shadow_effect.setColor(QColor(0, 0, 0, 50))
         keyboard_widget.setGraphicsEffect(shadow_effect)
 
         # Create keys
@@ -109,6 +110,58 @@ class PianoKeyboard(QWidget):
         main_layout.addWidget(keyboard_widget)
 
     def _create_keys(self, keyboard_widget):
+        """Create piano keys with individual shadows"""
+
+        def apply_shadow(widget):
+            shadow = QGraphicsDropShadowEffect()
+            shadow.setBlurRadius(10)
+            shadow.setOffset(3, 3)
+            shadow.setColor(QColor(0, 0, 0, 80))
+            widget.setGraphicsEffect(shadow)
+
+        # First create all white keys
+        for _, note in enumerate(self.white_notes):
+            key = PianoKey(
+                note,
+                is_black=False,
+                width=self.white_key_width,
+                height=self.white_key_height,
+            )
+            apply_shadow(key)
+            keyboard_widget.layout().addWidget(key)
+
+            if hasattr(self.parent(), "handle_piano_note_on"):
+                key.noteOn.connect(self.parent().handle_piano_note_on)
+            if hasattr(self.parent(), "handle_piano_note_off"):
+                key.noteOff.connect(self.parent().handle_piano_note_off)
+
+        # Add black keys
+        black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19]
+
+        for pos, note in zip(
+                black_positions, [n for n in KEYBOARD_BLACK_NOTES if n is not None]
+        ):
+            black_key = PianoKey(
+                note,
+                is_black=True,
+                width=self.black_key_width,
+                height=self.black_key_height,
+            )
+            black_key.setParent(keyboard_widget)
+            apply_shadow(black_key)
+
+            x_pos = (pos * self.white_key_width) + (
+                    self.white_key_width - self.black_key_width // 2
+            )
+            black_key.move(x_pos, 0)
+            black_key.show()
+
+            if hasattr(self.parent(), "handle_piano_note_on"):
+                black_key.noteOn.connect(self.parent().handle_piano_note_on)
+            if hasattr(self.parent(), "handle_piano_note_off"):
+                black_key.noteOff.connect(self.parent().handle_piano_note_off)
+
+    def _create_keys_old(self, keyboard_widget):
         """Create piano keys"""
         # First create all white keys
         for _, note in enumerate(self.white_notes):
@@ -220,6 +273,58 @@ class PianoKeyboardOld(QWidget):
         main_layout.addWidget(keyboard_widget)
 
     def _create_keys(self, keyboard_widget):
+        """Create piano keys with individual shadows"""
+
+        def apply_shadow(widget):
+            shadow = QGraphicsDropShadowEffect()
+            shadow.setBlurRadius(10)
+            shadow.setOffset(3, 3)
+            shadow.setColor(QColor(0, 0, 0, 80))
+            widget.setGraphicsEffect(shadow)
+
+        # First create all white keys
+        for _, note in enumerate(self.white_notes):
+            key = PianoKey(
+                note,
+                is_black=False,
+                width=self.white_key_width,
+                height=self.white_key_height,
+            )
+            apply_shadow(key)
+            keyboard_widget.layout().addWidget(key)
+
+            if hasattr(self.parent(), "handle_piano_note_on"):
+                key.noteOn.connect(self.parent().handle_piano_note_on)
+            if hasattr(self.parent(), "handle_piano_note_off"):
+                key.noteOff.connect(self.parent().handle_piano_note_off)
+
+        # Add black keys
+        black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19]
+
+        for pos, note in zip(
+                black_positions, [n for n in KEYBOARD_BLACK_NOTES if n is not None]
+        ):
+            black_key = PianoKey(
+                note,
+                is_black=True,
+                width=self.black_key_width,
+                height=self.black_key_height,
+            )
+            black_key.setParent(keyboard_widget)
+            apply_shadow(black_key)
+
+            x_pos = (pos * self.white_key_width) + (
+                    self.white_key_width - self.black_key_width // 2
+            )
+            black_key.move(x_pos, 0)
+            black_key.show()
+
+            if hasattr(self.parent(), "handle_piano_note_on"):
+                black_key.noteOn.connect(self.parent().handle_piano_note_on)
+            if hasattr(self.parent(), "handle_piano_note_off"):
+                black_key.noteOff.connect(self.parent().handle_piano_note_off)
+
+    def _create_keys_old(self, keyboard_widget):
         """Create piano keys"""
         # First create all white keys
         for _, note in enumerate(self.white_notes):
