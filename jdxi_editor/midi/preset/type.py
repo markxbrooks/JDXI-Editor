@@ -11,6 +11,7 @@ Methods:
     - get_area_code(synth_type): Returns the MIDI area code for a given synth type.
 
 """
+from jdxi_editor.midi.data.address.parameter import TemporaryParameter
 
 
 class SynthType:
@@ -24,9 +25,9 @@ class SynthType:
     def get_area_code(synth_type: str) -> int:
         """Get MIDI area code for preset preset_type"""
         area_codes = {
-            SynthType.ANALOG: 0x22,
-            SynthType.DIGITAL_1: 0x20,
-            SynthType.DIGITAL_2: 0x19,
-            SynthType.DRUMS: 0x23
+            SynthType.ANALOG: TemporaryParameter.ANALOG_PART,
+            SynthType.DIGITAL_1: TemporaryParameter.DIGITAL_PART_1,
+            SynthType.DIGITAL_2: TemporaryParameter.DIGITAL_PART_2,
+            SynthType.DRUMS: TemporaryParameter.DRUM_KIT_PART
         }
         return area_codes.get(synth_type)
