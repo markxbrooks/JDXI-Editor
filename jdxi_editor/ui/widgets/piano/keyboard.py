@@ -38,7 +38,10 @@ from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 
-class PianoKeyboard(QWidget):
+
+
+
+class PianoKeyboardOld(QWidget):
     """Widget containing address row of piano keys styled like JD-Xi"""
 
     def __init__(self, parent=None):
