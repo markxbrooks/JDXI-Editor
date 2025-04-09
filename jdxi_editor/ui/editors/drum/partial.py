@@ -34,6 +34,8 @@ from PySide6.QtWidgets import (
     QComboBox,
     QTabWidget,
 )
+
+from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter, TemporaryParameter
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name

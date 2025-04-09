@@ -216,6 +216,7 @@ class DigitalSynthEditor(SynthEditor):
         self.show()
 
     def _create_instrument_group(self, container_layout, upper_layout):
+        """ create instrument group to show the synth"""
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(self.presets[0] if self.presets else "")
         self.instrument_title_label = DigitalTitle()
@@ -410,7 +411,7 @@ class DigitalSynthEditor(SynthEditor):
         if not sysex_data:
             return
         logging.info(f"finding area: {self.area} part {self.part}")
-        current_synth = get_area(self.area, self.part)
+        current_synth = get_area([self.area, self.part])
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
         if not current_synth == temp_area:
