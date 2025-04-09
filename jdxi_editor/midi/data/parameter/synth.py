@@ -27,7 +27,7 @@ Methods:
 from enum import Enum
 from typing import Optional
 
-from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
+# from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
 
 
 class SynthParameter(Enum):

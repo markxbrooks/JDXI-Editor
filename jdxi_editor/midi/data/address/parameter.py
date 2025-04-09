@@ -1,14 +1,147 @@
 
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, unique
 from typing import Optional
 
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
 """
 Parameter Address Map
-"""
 
+
+# jdxi_parameters.py
+
+from enum import IntEnum, unique
+from typing import Optional
+
+
+# ==========================
+# Roland IDs and Commands
+# ==========================
+
+@unique
+class RolandID(IntEnum):
+    ROLAND = 0x41
+    DEVICE = 0x10
+
+
+class HeaderParameter(IntEnum):  # ModelID
+    MODEL_ID_1 = 0x00
+    MODEL_ID_2 = 0x00
+    MODEL_ID_3 = 0x00
+    MODEL_ID_4 = 0x0E  # JD-Xi Product Code
+
+ModelID = HeaderParameter
+
+@unique
+class CommandParameter(IntEnum):
+    RQ1_COMMAND_11 = 0x12  # Data Set 1
+    RQ1 = 0x11  # Data Request 1
+    ACK = 0x4F
+    ERR = 0x4E
+
+
+# ==========================
+# Memory and Program Areas
+# ==========================
+
+@unique
+class ProgramAreaParameter(IntEnum):
+    SETUP = 0x01
+    SYSTEM = 0x02
+    EFFECTS = 0x16
+    PROGRAM = 0x18
+    DIGITAL_1 = 0x19
+    DIGITAL_2 = 0x1A
+    ANALOG = 0x1B
+
+
+@unique
+class TemporaryParameter(IntEnum):
+    DIGITAL_PART_1 = 0x01
+    DIGITAL_PART_2 = 0x21
+    ANALOG_PART = 0x42
+    DRUM_KIT_PART = 0x70
+
+
+class ProgramGroupParameter(IntEnum):
+    ANALOG_OSC_GROUP = 0x00
+    PROGRAM_COMMON = 0x00
+    DRUM_DEFAULT_PARTIAL = 0x2E  # e.g., BD1 address in drum map
+    DIGITAL_DEFAULT_PARTIAL = 0x20  # from DIGITAL_PARTIAL_MAP[1]
+
+
+class TonePartialParameter(IntEnum):
+    COMMON = 0x00
+    PARTIAL_1 = 0x20
+    PARTIAL_2 = 0x21
+    PARTIAL_3 = 0x22
+    TONE_MODIFY = 0x50
+    ANALOG_PART = 0x00
+    DRUM_KIT_COMMON = 0x00
+
+
+# Dynamically generate DRUM_KIT_PART_{1-72} = 0x2E to 0x76
+drum_kit_partials = {
+    f"DRUM_KIT_PART_{i}": 0x2E + (i - 1) for i in range(1, 73)
+}
+
+# Merge generated drum kit parts into TonePartialParameter
+for name, value in drum_kit_partials.items():
+    setattr(TonePartialParameter, name, value)
+
+
+# ==========================
+# JD-Xi SysEx Header
+# ==========================
+
+JD_XI_MODEL_ID = [
+    ModelID.MODEL_ID_1,
+    ModelID.MODEL_ID_2,
+    ModelID.MODEL_ID_3,
+    ModelID.MODEL_ID_4
+]
+
+JD_XI_HEADER = [
+    RolandID.ROLAND,
+    RolandID.DEVICE,
+    *JD_XI_MODEL_ID
+]
+
+
+# ==========================
+# Helpers
+# ==========================
+
+class Parameter(IntEnum):
+    @staticmethod
+    def get_parameter_by_address(address: int) -> Optional["Parameter"]:
+        return next((param for param in Parameter if param.value == address), None)
+
+
+# ==========================
+# Miscellaneous Constants
+# ==========================
+
+START_OF_SYSEX = 0xF0
+END_OF_SYSEX = 0xF7
+ID_NUMBER = 0x7E
+DEVICE = 0x7F
+SUB_ID_1 = 0x06
+SUB_ID_2 = 0x01
+PLACEHOLDER_BYTE = 0x00
+
+# Short maps
+DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
+
+
+"""
 DIGITAL_PARTIAL_MAP = {1: 0x20, 2: 0x21, 3: 0x22}
+
+
+@unique
+class RolandID(IntEnum):
+    ROLAND = 0x41
+    DEVICE = 0x10
 
 
 class Parameter(IntEnum):
@@ -141,7 +274,3 @@ class TonePartialParameter(Parameter):
     DRUM_KIT_PART_70 = 0x74
     DRUM_KIT_PART_71 = 0x75
     DRUM_KIT_PART_72 = 0x76
-
-
-
-

@@ -28,7 +28,7 @@ Constants:
 This module facilitates structured MIDI communication with Roland devices,
 ensuring correct message formatting and parameter access.
 """
-from jdxi_editor.midi.data.address.parameter import HeaderParameter
+from jdxi_editor.midi.data.address.parameter import HeaderParameter, RolandID
 
 # SysEx Headers
 START_OF_SYSEX = 0xF0
@@ -51,8 +51,8 @@ MODEL_ID = [
 ]
 
 JD_XI_HEADER = [
-    HeaderParameter.ROLAND_ID,
-    HeaderParameter.DEVICE_ID,
+    RolandID.ROLAND,
+    RolandID.DEVICE,
     HeaderParameter.MODEL_ID_1,
     HeaderParameter.MODEL_ID_2,
     HeaderParameter.MODEL_ID_3,
