@@ -16,6 +16,9 @@ from dataclasses import dataclass
 from typing import Optional
 
 from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.presets.analog import AN_PRESETS
+from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
+from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import SynthType
 
 
