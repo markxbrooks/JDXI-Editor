@@ -59,17 +59,7 @@ JD_XI_HEADER = [
     HeaderParameter.MODEL_ID_4,
 ]  # Complete device ID
 
-# Device Identification
-JD_XI_ID_LIST = [
-    HeaderParameter.ROLAND_ID,
-    HeaderParameter.DEVICE_ID,
-    HeaderParameter.MODEL_ID_1,
-    HeaderParameter.MODEL_ID_2,
-    HeaderParameter.MODEL_ID_3,
-    HeaderParameter.MODEL_ID_4
-]
-JD_XI_HEADER_LIST = JD_XI_ID_LIST
-# JD_XI_HEADER_LIST = [START_OF_SYSEX] + JD_XI_ID_LIST
+JD_XI_HEADER_LIST = JD_XI_HEADER
 
 ERR_COMMAND = 0x4E  # Error
 ACK_COMMAND = 0x4F  # Acknowledgment
@@ -98,5 +88,3 @@ TONE_MODIFY = 0x50
 
 # Ones to tidy up
 PROGRAM_AREA = 0x18
-
-
