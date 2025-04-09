@@ -35,7 +35,7 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.setSpacing(3)
 
     slider_height = JDXIDimensions.SLIDER_HEIGHT
-    slider_style = JDXIStyle.ADSR
+    slider_style = JDXIStyle.ADSR_DISABLED
 
     def create_slider_with_label(label_text, slider_widget):
         """ create a slider with a label"""
