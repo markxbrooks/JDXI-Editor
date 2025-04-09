@@ -39,8 +39,7 @@ from PySide6.QtCore import Qt, QTimer
 from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage, bpm2tempo
 from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_ANALOG, \
-    MIDI_CHANNEL_DRUMS
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
 
@@ -323,13 +322,13 @@ class PatternSequencer(SynthEditor):
         """Update the combo box index to match the note for each channel."""
         logging.info(f"message note: {message.note} channel: {message.channel}")
         if message.type == "note_on":
-            if message.channel == MIDI_CHANNEL_DIGITAL1:
+            if message.channel == MidiChannel.MIDI_CHANNEL_DIGITAL1:
                 self.digital1_selector.setCurrentIndex(message.note - 36)
-            elif message.channel == MIDI_CHANNEL_DIGITAL2:
+            elif message.channel == MidiChannel.MIDI_CHANNEL_DIGITAL2:
                 self.digital2_selector.setCurrentIndex(message.note - 36)
-            elif message.channel == MIDI_CHANNEL_ANALOG:
+            elif message.channel == MidiChannel.MIDI_CHANNEL_ANALOG:
                 self.analog_selector.setCurrentIndex(message.note - 36)
-            elif message.channel == MIDI_CHANNEL_DRUMS:
+            elif message.channel == MidiChannel.MIDI_CHANNEL_DRUMS:
                 self.drum_selector.setCurrentIndex(message.note - 36)
 
     def _midi_note_to_combo_index(self, row, midi_note):

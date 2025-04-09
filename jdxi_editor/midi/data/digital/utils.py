@@ -1,8 +1,7 @@
 import logging
 from typing import Tuple, Optional
 
-from jdxi_editor.midi.data.constants.constants import PART_1
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA
+from jdxi_editor.midi.data.address.parameter import ProgramGroupParameter, TemporaryParameter, ProgramAreaParameter
 from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscPcmWaveGain
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape, DigitalLFOTempoSyncNote
@@ -95,17 +94,17 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
     try:
         # Get switch state
         switch_value = midi_helper.get_parameter(
-            area=DIGITAL_SYNTH_1_AREA,
-            part=PART_1,
-            group=0x00,
+            area=ProgramAreaParameter.TEMPORARY_TONE_AREA,
+            part=TemporaryParameter.DIGITAL_PART_1,
+            group=ProgramGroupParameter.PROGRAM_COMMON,
             param=partial.switch_param.address,
         )
 
         # Get select state
         select_value = midi_helper.get_parameter(
-            area=DIGITAL_SYNTH_1_AREA,
-            part=PART_1,
-            group=0x00,
+            area=ProgramAreaParameter.TEMPORARY_TONE_AREA,
+            part=TemporaryParameter.DIGITAL_PART_1,
+            group=ProgramGroupParameter.PROGRAM_COMMON,
             param=partial.select_param.address,
         )
 

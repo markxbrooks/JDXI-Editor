@@ -37,18 +37,17 @@ Example usage:
     To retrieve a list of all program and tone name requests:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS
 """
-
-from jdxi_editor.midi.data.constants.constants import JD_XI_HEADER
-from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, RQ1_COMMAND_11, TEMPORARY_PROGRAM_AREA
+from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter
+from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, END_OF_SYSEX, RQ1_COMMAND_11, TEMPORARY_PROGRAM_AREA, JD_XI_HEADER
 from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
 
 # Define constants in the SYSEX_CONSTANTS dictionary
 SYSEX_CONSTANTS = {
     "START": to_hex_string(START_OF_SYSEX),
     "END": to_hex_string(END_OF_SYSEX),
-    "RQ1_COMMAND_11": to_hex_string(RQ1_COMMAND_11),
+    "RQ1_COMMAND_11": to_hex_string(CommandParameter.RQ1_COMMAND_11),
     "JDXI_HEADER": bytes_to_hex_string(JD_XI_HEADER),
-    "TEMPORARY_PROGRAM_AREA": to_hex_string(TEMPORARY_PROGRAM_AREA),
+    "TEMPORARY_PROGRAM_AREA": to_hex_string(ProgramAreaParameter.TEMPORARY_PROGRAM_AREA),
     "TEMPORARY_TONE_AREA": "19",
     "PROGRAM_COMMON_AREA": "00",
     "FOUR_ZERO_BYTES": "00 00 00 00",

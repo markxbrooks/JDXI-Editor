@@ -28,8 +28,7 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.midi.data.constants.constants import ROLAND_ID
-from jdxi_editor.midi.data.constants.sysex import DEVICE_ID
+from jdxi_editor.midi.data.constants.sysex import DEVICE_ID, ROLAND_ID
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter

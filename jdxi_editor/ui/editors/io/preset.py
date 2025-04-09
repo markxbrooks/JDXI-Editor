@@ -57,8 +57,7 @@ from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST, get_preset_parameters
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS, MIDI_CHANNEL_DIGITAL1, \
-    MIDI_CHANNEL_DIGITAL2, MIDI_CHANNEL_DRUMS, MIDI_CHANNEL_ANALOG
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS, PROGRAM_TONE_NAME_REQUESTS
@@ -88,7 +87,7 @@ class PresetEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.midi_channel = (
-            MIDI_CHANNEL_DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
+            MidiChannel.MIDI_CHANNEL_DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = PROGRAM_TONE_NAME_REQUESTS
         self.layout = None
@@ -290,13 +289,13 @@ class PresetEditor(SynthEditor):
         preset_type = self.digital_preset_type_combo.currentText()
         logging.info(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
-            self.midi_channel = MIDI_CHANNEL_DIGITAL1
+            self.midi_channel = MidiChannel.MidiChannel.MIDI_CHANNEL_DIGITAL1
         elif preset_type == "Digital Synth 2":
-            self.midi_channel = MIDI_CHANNEL_DIGITAL2
+            self.midi_channel = MidiChannel.MIDI_CHANNEL_DIGITAL2
         elif preset_type == "Drums":
-            self.midi_channel = MIDI_CHANNEL_DRUMS
+            self.midi_channel = MidiChannel.MIDI_CHANNEL_DRUMS
         elif preset_type == "Analog Synth":
-            self.midi_channel = MIDI_CHANNEL_ANALOG
+            self.midi_channel = MidiChannel.MIDI_CHANNEL_ANALOG
         self._populate_presets()
         self.update_category_combo_box_categories()
 

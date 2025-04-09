@@ -50,18 +50,12 @@ from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.data.constants.sysex import (
-    DIGITAL_SYNTH_1_AREA,
-    DIGITAL_SYNTH_2_AREA,
-    DIGITAL_PART_1,
-    DIGITAL_PART_2, TEMPORARY_DIGITAL_SYNTH_1_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA,
-)
+from jdxi_editor.midi.data.constants.sysex import TEMPORARY_DIGITAL_SYNTH_1_AREA, TEMPORARY_DIGITAL_SYNTH_2_AREA
 from jdxi_editor.midi.sysex.parsers import get_partial_address
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
-
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 from jdxi_editor.ui.style import JDXIStyle
@@ -82,8 +76,7 @@ class DigitalPartialEditor(PartialEditor):
         self.partial_number = partial_number
         self.synth_data = DigitalSynthData(synth_number=synth_number, partial_number=partial_number)
         data = self.synth_data
-        self.area = data.area # @@@ FIXME just to test
-        # self.area = TEMPORARY_DIGITAL_SYNTH_2_AREA  # TEMPORARY_DIGITAL_SYNTH_1_AREA
+        self.area = data.area
         self.part = data.part
         self.group = data.group
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):

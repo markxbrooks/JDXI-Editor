@@ -36,7 +36,6 @@ from PySide6.QtWidgets import (
 )
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
-from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, DRUM_KIT_AREA
 from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 
@@ -50,8 +49,8 @@ class DrumPartialEditor(PartialEditor):
         self.partial_num = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
         self.preset_helper = None
-        self.area = TEMPORARY_TONE_AREA
-        self.part = DRUM_KIT_AREA
+        self.area = ProgramAreaParameter.TEMPORARY_TONE_AREA
+        self.part = TemporaryParameter.DRUM_KIT_PART
         # Calculate the address for this partial
         try:
             self.partial_address = get_address_for_partial_name(self.partial_name)

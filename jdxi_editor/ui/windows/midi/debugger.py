@@ -42,43 +42,40 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.constants import (EFFECTS_AREA
-                                             )
-from jdxi_editor.midi.data.constants.constants import DT1_COMMAND_12, ANALOG_SYNTH
-from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA, ANALOG_PART, RQ1_COMMAND_11, DIGITAL_PART_1, \
-    DIGITAL_PART_2, DRUM_KIT_AREA
+from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter, TemporaryParameter, \
+    TonePartialParameter
+from jdxi_editor.midi.data.constants.sysex import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
-from jdxi_editor.ui.windows.midi.helpers.debugger import _validate_checksum
+from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        DIGITAL_SYNTH_1_AREA: "Temporary Tone",
-        EFFECTS_AREA: "System Area",
-        0x20: "Pattern Area"
+        ProgramAreaParameter.TEMPORARY_TONE_AREA: "Temporary Tone",
+        ProgramAreaParameter.EFFECTS_AREA: "System Area",
     }
 
     SYNTHS = {
-        DIGITAL_PART_1: "DIGITAL_PART_1",
-        DIGITAL_PART_2: "DIGITAL_PART_2",
-        ANALOG_PART: "ANALOG_PART",
-        DRUM_KIT_AREA: "DRUM_KIT_AREA"
+        TemporaryParameter.DIGITAL_PART_1: "DIGITAL_PART_1",
+        TemporaryParameter.DIGITAL_PART_2: "DIGITAL_PART_2",
+        TemporaryParameter.ANALOG_PART: "ANALOG_PART",
+        TemporaryParameter.DRUM_KIT_PART: "DRUM_KIT_PART"
     }
 
     COMMANDS = {
-        RQ1_COMMAND_11: "RQ1 (Data Request)",
-        DT1_COMMAND_12: "DT1 (Data Transfer)"
+        CommandParameter.RQ1_COMMAND_11: "RQ1 (Data Request)",
+        CommandParameter.DT1_COMMAND_12: "DT1 (Data Transfer)"
     }
 
     SECTIONS = {
-        0x01: "PART_1",
-        0x02: "PART_2",
-        0x03: "PART_3",
-        0x04: "PART_4",
-    }
+        TonePartialParameter.COMMON: "COMMON",
+        TonePartialParameter.PARTIAL_1: "PART_1",
+        TonePartialParameter.PARTIAL_2: "PART_2",
+        TonePartialParameter.PARTIAL_3: "PART_3",
+     }
 
     GROUPS = {
         0x20: "OSC_1_GROUP",
@@ -253,7 +250,7 @@ class MIDIDebugger(QMainWindow):
 
             # Get checksum
             checksum = message[13]
-            checksum_valid = _validate_checksum(message[7:13], checksum)
+            checksum_valid = validate_checksum(message[7:13], checksum)
 
             # Format the output
             decoded = (

@@ -55,7 +55,7 @@ from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_PROGRAMS
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
@@ -84,7 +84,7 @@ class ProgramEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.channel = (
-            MIDI_CHANNEL_PROGRAMS  # Default MIDI channel: 16 for programs, 0-based
+            MidiChannel.MIDI_CHANNEL_PROGRAMS  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
         self.layout = None

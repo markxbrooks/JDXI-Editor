@@ -416,8 +416,8 @@ class JDXIStyle:
             width: 4px;
             height: 2px;
             border-radius: 1px;
-            margin-left: -8px;
-            margin-right: 8px;
+            margin-left: 2px;
+            margin-right: 2px;
         }
 
         /* Handle Hover Effect */
@@ -495,6 +495,10 @@ class JDXIStyle:
             border-radius: 1px;
             margin-left: -8px;
             margin-right: 8px;
+        }}
+        QSlider::horizontal {{
+            margin-left: 6px;
+            margin-right: 6x;
         }}
 
         /* Handle Hover Effect */

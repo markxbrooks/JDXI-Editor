@@ -13,8 +13,7 @@ from PySide6.QtWidgets import (
 )
 import qtawesome as qta
 
-
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
@@ -34,7 +33,7 @@ class MidiPlayer(SynthEditor):
         self.preset_helper = preset_helper if preset_helper else PresetHelper(
             self.midi_helper,
             presets=DIGITAL_PRESET_LIST,
-            channel=MIDI_CHANNEL_DIGITAL1
+            channel=MidiChannel.MIDI_CHANNEL_DIGITAL1
         )
 
         self.midi_file = None

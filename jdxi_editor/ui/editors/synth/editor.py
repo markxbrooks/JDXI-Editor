@@ -34,8 +34,7 @@ from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.preset.type import SynthType
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_DIGITAL1, MIDI_CHANNEL_DRUMS, MIDI_CHANNEL_ANALOG, \
-    MIDI_CHANNEL_DIGITAL2
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
@@ -147,10 +146,10 @@ class SynthEditor(SynthBase):
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
-            (SynthType.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MIDI_CHANNEL_DIGITAL1),
-            (SynthType.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MIDI_CHANNEL_DIGITAL2),
-            (SynthType.ANALOG, ANALOG_PRESETS_ENUMERATED, MIDI_CHANNEL_ANALOG),
-            (SynthType.DRUMS, DRUM_PRESETS_ENUMERATED, MIDI_CHANNEL_DRUMS),
+            (SynthType.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL1),
+            (SynthType.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL2),
+            (SynthType.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_ANALOG),
+            (SynthType.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DRUMS),
         ]
 
         self.preset_helpers = {

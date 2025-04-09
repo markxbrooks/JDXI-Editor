@@ -74,7 +74,7 @@ from jdxi_editor.midi.utils.conversions import (
 )
 from jdxi_editor.midi.data.constants.sysex import TEMPORARY_TONE_AREA, TEMPORARY_ANALOG_SYNTH_AREA
 from jdxi_editor.midi.data.analog.oscillator import ANALOG_OSC_GROUP, AnalogOscWave
-from jdxi_editor.midi.data.constants.constants import MIDI_CHANNEL_ANALOG
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection

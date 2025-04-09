@@ -53,9 +53,9 @@ class PitchEnvelope(QWidget):
 
         self.controls: Dict[SynthParameter, Slider] = {}
         self.midi_helper = midi_helper
-        self.group = group if group else ANALOG_OSC_GROUP
-        self.area = area if area else TEMPORARY_TONE_AREA
-        self.part = part if part else ANALOG_PART
+        self.area = area if area else ProgramAreaParameter.TEMPORARY_TONE_AREA
+        self.group = group if group else ProgramGroupParameter.ANALOG_OSC_GROUP
+        self.part = part if part else TemporaryParameter.ANALOG_PART
         self.updating_from_spinbox = False
         self.plot = ADSRPlot(width=300, height=250)
 
