@@ -40,11 +40,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.midi.data.constants.vocal import (
-    VOCAL_FX_AREA,
-    VOCAL_FX_PART,
-    VOCAL_FX_GROUP,
-)
+from jdxi_editor.midi.data.constants.vocal import VocalParameter
 from jdxi_editor.midi.data.vocal_effects.vocal import VocalAutoPitchType, VocalOutputAssign, VocalAutoPitchKey, \
     VocalAutoPitchNote, \
     VocoderEnvelope, VocoderHPF, VocalOctaveRange, VocalFxSwitch
@@ -62,9 +58,9 @@ class VocalFXEditor(SynthEditor):
         self.setWindowTitle("Vocal FX")
         self.setMinimumHeight(750)
         self.setMinimumWidth(650)
-        self.area = VOCAL_FX_AREA
-        self.part = VOCAL_FX_PART
-        self.group = VOCAL_FX_GROUP
+        self.area = VocalParameter.FX_AREA
+        self.part = VocalParameter.FX_PART
+        self.group = VocalParameter.FX_GROUP
         self.setStyleSheet(JDXIStyle.EDITOR + JDXIStyle.TABS)
 
         # Main layout

@@ -72,7 +72,7 @@ JD_XI_MODEL_ID = [
 
 JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
-
+@unique
 class CommandParameter(Parameter):
     """ Roland Commands """
     DT1 = 0x12  # Data Set 1

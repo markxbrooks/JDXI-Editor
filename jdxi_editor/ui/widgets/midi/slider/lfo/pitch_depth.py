@@ -11,8 +11,8 @@ CC#6 – Data Entry MSB (value: 0–127)
 CC#101 & 100 – Reset to NULL (optional, to avoid data confusion)
 
 """
+
 from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
-from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 
 

@@ -6,7 +6,6 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -107,7 +106,7 @@ class DigitalAmpSection(QWidget):
             sustain_param=DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
             release_param=DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=DIGITAL_SYNTH_1_AREA,
+            area=JdxiAddressParameter.DIGITAL_1,
             part=self.part,
             group=group_address,
         )
