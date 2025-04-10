@@ -1,5 +1,5 @@
 """
-DigitalToneCCGrouped
+DigitalControlChange
 
 Example usage
 
@@ -89,7 +89,7 @@ class DigitalSynth1ControlChange(ControlChange):
         return value + (partial_number - 1)
         
         
-class DigitalToneCCGrouped:
+class DigitalControlChange:
     """Grouped version of Control Change (CC) values for easier access."""
 
     CC = {
@@ -146,9 +146,18 @@ class DigitalToneCCGrouped:
     @staticmethod
     def get_cc_value(group: str, partial: int) -> int:
         """Retrieve CC value based on group and partial."""
-        return DigitalToneCCGrouped.CC.get(group, {}).get(partial)
+        return DigitalControlChange.CC.get(group, {}).get(partial)
 
     @staticmethod
     def get_nrpn_value(group: str, partial: int) -> int:
         """Retrieve NRPN value based on group and partial."""
-        return DigitalToneCCGrouped.NRPN.get(group, {}).get(partial)
+        return DigitalControlChange.NRPN.get(group, {}).get(partial)
+
+    @staticmethod
+    def get_display_value(value: int, group: str, partial: int) -> str:
+        """Convert raw value to display value"""
+        param = DigitalControlChange.NRPN.get(group, {}).get(partial)
+        if param in [3, 4, 5]:  # LFO Shape
+            shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
+            return shapes[value]
+        return str(value)
