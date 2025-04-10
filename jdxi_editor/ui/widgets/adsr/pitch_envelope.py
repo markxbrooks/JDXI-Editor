@@ -135,14 +135,6 @@ class PitchEnvelope(QWidget):
                 key = f"{match.group().lower()}_time"
                 slider.setValue(ms_to_midi_cc(self.envelope[key]))
 
-    def _create_parameter_slider_old(self, param, label, value=None):
-        slider = QSlider(Qt.Vertical)
-        slider.setRange(param.min_val, param.max_val)
-        slider.setValue(value)
-        slider.setTickPosition(QSlider.TicksBothSides)
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        return slider
-
     def set_envelope(self, envelope: Dict[str, Union[int, float]]):
         """Set envelope values and update controls"""
         self.envelope = envelope

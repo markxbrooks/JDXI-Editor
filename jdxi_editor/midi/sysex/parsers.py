@@ -78,15 +78,6 @@ def extract_tone_name(data: List[int]) -> str:
     return raw_name  # Strip null and carriage return
 
 
-def extract_tone_name_old(data: List[int]) -> str:
-    """Extract and clean the tone name from SysEx data."""
-    if len(data) < 23:  # Ensure sufficient length for full extraction
-        return "Unknown"
-
-    raw_name = bytes(data[11:23]).decode(errors="ignore").strip()  # Start at index 11
-    return raw_name.replace("\u0000", "").replace('\r', '')  # Remove null characters or return carriage
-
-
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
     return {param.name: safe_get(data, param.address) for param in parameter_type}

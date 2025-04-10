@@ -73,11 +73,11 @@ def get_area(data: list[int, int]) -> str:
     """Map address bytes to corresponding temporary area."""
     logging.info(f"data for temporary area: {data}")
     area_mapping = {
-        (0x18, 0x00): "TEMPORARY_PROGRAM_AREA",
-        (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
-        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-        (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA",
+        (0x18, 0x00): "PROGRAM",
+        (0x19, 0x42): "ANALOG",
+        (0x19, 0x01): "DIGITAL_1",
+        (0x19, 0x21): "DIGITAL_2",
+        (0x19, 0x70): "DRUM",
     }
     return area_mapping.get(tuple(data), "Unknown")
 
@@ -415,26 +415,6 @@ class DigitalSynthEditor(SynthEditor):
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
         if not current_synth == temp_area:
-            return
-
-        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        if partial_no is None:
-            return
-
-        filtered_data = _filter_sysex_keys(sysex_data)
-        self._apply_partial_ui_updates(partial_no, filtered_data)
-
-    def _update_partial_sliders_from_sysex_new(self, json_sysex_data: str):
-        """Update sliders and combo boxes for a partial based on parsed SysEx data."""
-        logging.info("Updating Partial UI components from SysEx data")
-
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        print(sysex_data)
-        if not sysex_data:
-            return
-
-        if not _sysex_area_matches(sysex_data, self.area):
-            logging.info("SysEx area mismatch. Skipping update.")
             return
 
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))

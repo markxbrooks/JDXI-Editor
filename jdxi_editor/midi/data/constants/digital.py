@@ -32,15 +32,3 @@ access to parameter values, ensuring accurate automation and control.
 """
 
 DIGITAL_SYNTH_1_AREA = 0x19
-DIGITAL_SYNTH_2_AREA = 0x1A
-
-# Areas and Parts
-DIGITAL_PART_1 = 0x01
-DIGITAL_PART_2 = 0x02
-DIGITAL_PART_3 = 0x03
-DIGITAL_PART_4 = 0x04
-
-PART_1 = DIGITAL_PART_1  # For backwards compatibility
-PART_2 = DIGITAL_PART_2  # For backwards compatibility
-PART_3 = DIGITAL_PART_3  # For backwards compatibility
-PART_4 = DIGITAL_PART_4  # For backwards compatibility
