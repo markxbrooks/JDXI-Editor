@@ -29,7 +29,7 @@ msg = DigitalToneMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12
+from jdxi_editor.midi.data.address.parameter import CommandParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -37,8 +37,8 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class DigitalToneMessage(RolandSysEx):
     """SuperNATURAL Synth Tone parameter message"""
 
-    command: int = DT1_COMMAND_12
-    area: int = 0x19  # Temporary area
+    command: int = CommandParameter.DT1
+    area: int = ProgramAreaParameter.DIGITAL_1  # Temporary area
     tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
     section: int = 0x00  # Section from DigitalToneSection
     param: int = 0x00  # Parameter number

@@ -27,7 +27,7 @@ Usage Example:
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.midi.data.constants.sysex import START_OF_SYSEX, ID_NUMBER, DEVICE, SUB_ID_1, SUB_ID_2, END_OF_SYSEX
+from jdxi_editor.midi.data.address.parameter import START_OF_SYSEX, END_OF_SYSEX, ID_NUMBER, DEVICE_ID, SUB_ID_1, SUB_ID_2
 from jdxi_editor.midi.message.midi import MidiMessage
 
 
@@ -45,7 +45,7 @@ class IdentityRequestMessage(MidiMessage):
         """
         return [START_OF_SYSEX,
                 ID_NUMBER,
-                DEVICE,
+                DEVICE_ID,
                 SUB_ID_1,
                 SUB_ID_2,
                 END_OF_SYSEX]

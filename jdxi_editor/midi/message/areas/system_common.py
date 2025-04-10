@@ -25,7 +25,7 @@ msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12, SYSTEM_AREA, SYSTEM_COMMON
+from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter, ProgramGroupParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -33,9 +33,9 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
 
-    command: int = DT1_COMMAND_12
-    area: int = SYSTEM_AREA  # 0x02: System area
-    section: int = SYSTEM_COMMON  # 0x00: Common section
+    command: int = CommandParameter.DT1
+    area: int = ProgramAreaParameter.SYSTEM  # 0x02: System area
+    section: int = ProgramGroupParameter.PROGRAM_COMMON  # 0x00: Common section
     group: int = 0x00  # Always 0x00
     param: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value

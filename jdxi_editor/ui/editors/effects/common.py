@@ -39,6 +39,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+import jdxi_editor.midi.data.address.parameter
 from jdxi_editor.midi.data.address.parameter import TemporaryParameter
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
