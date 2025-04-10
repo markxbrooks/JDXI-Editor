@@ -1,19 +1,19 @@
+"""
+Slider container
+"""
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.ui.widgets.midi.slider.amp.envelope import AmpEnvelopeSlider
-from jdxi_editor.ui.widgets.midi.slider.amp.level import AmpLevelSlider
-from jdxi_editor.ui.widgets.midi.slider.effects.delay import DelaySlider
-from jdxi_editor.ui.widgets.midi.slider.effects.effect1 import Effect1Slider
-from jdxi_editor.ui.widgets.midi.slider.effects.effect2 import Effect2Slider
-from jdxi_editor.ui.widgets.midi.slider.effects.reverb import ReverbSlider
-from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
-from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
-from jdxi_editor.ui.widgets.midi.slider.lfo.amp_depth import LFOAmpDepthSlider
-from jdxi_editor.ui.widgets.midi.slider.lfo.filter_depth import LFOFilterDepthSlider
-from jdxi_editor.ui.widgets.midi.slider.lfo.pitch_depth import LFOPitchSlider
-from jdxi_editor.ui.widgets.midi.slider.lfo.rate import LFORateSlider
+from jdxi_editor.ui.widgets.midi.slider.amp import AmpEnvelopeSlider, AmpLevelSlider
+from jdxi_editor.ui.widgets.midi.slider.effects import DelaySlider, Effect1Slider, Effect2Slider, ReverbSlider
+from jdxi_editor.ui.widgets.midi.slider.filter import FilterCutoffSlider, FilterResonanceSlider
+from jdxi_editor.ui.widgets.midi.slider.lfo import (
+    LFOAmpDepthSlider,
+    LFOFilterDepthSlider,
+    LFOPitchSlider,
+    LFORateSlider)
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
