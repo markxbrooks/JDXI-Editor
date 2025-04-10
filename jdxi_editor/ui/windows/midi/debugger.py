@@ -52,7 +52,7 @@ from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        ProgramAreaParameter.TEMPORARY_TONE_AREA: "Temporary Tone",
+        ProgramAreaParameter.DIGITAL_1: "Temporary Tone",
         ProgramAreaParameter.EFFECTS_AREA: "System Area",
     }
 
@@ -64,8 +64,8 @@ class MIDIDebugger(QMainWindow):
     }
 
     COMMANDS = {
-        CommandParameter.RQ1_COMMAND_11: "RQ1 (Data Request)",
-        CommandParameter.DT1_COMMAND_12: "DT1 (Data Transfer)"
+        CommandParameter.RQ1: "RQ1 (Data Request)",
+        CommandParameter.DT1: "DT1 (Data Transfer)"
     }
 
     SECTIONS = {

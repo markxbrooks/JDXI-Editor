@@ -17,7 +17,7 @@ msg = DelayMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12, PROGRAM_AREA
+from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter, ProgramParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -25,9 +25,9 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class DelayMessage(RolandSysEx):
     """Program Delay parameter message"""
 
-    command: int = DT1_COMMAND_12
-    area: int = PROGRAM_AREA  # 0x18: Program area
-    section: int = 0x06  # 0x06: Delay section
+    command: int = CommandParameter.DT1
+    area: int = ProgramAreaParameter.PROGRAM  # 0x18: Program area
+    section: int = ProgramParameter.DELAY  # 0x06: Delay section
     group: int = 0x00  # Always 0x00
     param: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value

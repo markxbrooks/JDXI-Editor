@@ -246,7 +246,7 @@ class JdxiInstrument(JdxiUi):
             synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
             for synth_type, presets, channel in preset_configs
         }
-        self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
+        self.setStyleSheet(JDXIStyle.TRANSPARENT)
 
     def _handle_program_change(self):
         """ perform data request """
@@ -958,7 +958,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            sysex_message = RolandSysEx(area=ProgramAreaParameter.TEMPORARY_TONE_AREA,
+            sysex_message = RolandSysEx(area=ProgramAreaParameter.DIGITAL_1,
                                         section=part_address,
                                         group=group_address,
                                         param=param_address,
@@ -976,7 +976,7 @@ class JdxiInstrument(JdxiUi):
             if not part_address:
                 part_address = ARP_PART
             if not area:
-                area = ProgramAreaParameter.TEMPORARY_PROGRAM_AREA
+                area = ProgramAreaParameter.PROGRAM
             # Ensure value is included in the MIDI message
             sysex_message = RolandSysEx(area=area,
                                         section=part_address,

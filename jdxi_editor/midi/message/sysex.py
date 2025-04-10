@@ -35,16 +35,8 @@ from enum import Enum
 from typing import List, Optional
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.constants.sysex import (
-    START_OF_SYSEX,
-    END_OF_SYSEX,
-    TONE_1_LEVEL,
-    TONE_2_LEVEL,
-    PROGRAM_COMMON,
-    DT1_COMMAND_12,
-    RQ1_COMMAND_11,
-    JD_XI_HEADER_LIST,
-)
+from jdxi_editor.midi.data.address.parameter import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST,\
+    CommandParameter, ToneParameter, ProgramGroupParameter
 from jdxi_editor.midi.message.midi import MidiMessage
 
 # MIDI Constants
@@ -54,14 +46,12 @@ JD_XI_HEADER_BYTES = bytes(JD_XI_HEADER_LIST)
 class SysexParameter(Enum):
     """SysEx Parameters for Roland JD-Xi"""
 
-    JD_XI_HEADER_BYTES = JD_XI_HEADER_BYTES
+    DT1_COMMAND_12 = ("Data Set 1", CommandParameter.DT1)
+    RQ1_COMMAND_11 = ("Data Request 1", CommandParameter.RQ1)
 
-    DT1_COMMAND_12 = ("Data Set 1", DT1_COMMAND_12)
-    RQ1_COMMAND_11 = ("Data Request 1", RQ1_COMMAND_11)
-
-    PROGRAM_COMMON = ("PROGRAM_COMMON", PROGRAM_COMMON)
-    TONE_1_LEVEL = ("TONE_1_LEVEL", TONE_1_LEVEL)
-    TONE_2_LEVEL = ("TONE_2_LEVEL", TONE_2_LEVEL)
+    PROGRAM_COMMON = ("PROGRAM_COMMON", ProgramGroupParameter.PROGRAM_COMMON)
+    TONE_1_LEVEL = ("TONE_1_LEVEL", ToneParameter.TONE_1_LEVEL)
+    TONE_2_LEVEL = ("TONE_2_LEVEL", ToneParameter.TONE_2_LEVEL)
 
     def __new__(cls, *args):
         if len(args) == 1:

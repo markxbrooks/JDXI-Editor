@@ -325,7 +325,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        if address[0] == ProgramAreaParameter.TEMPORARY_ANALOG_SYNTH_AREA:
+        if address[0] == ProgramAreaParameter.ANALOG:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
 

@@ -266,8 +266,8 @@ class Effect1(Enum):
 class Effect1Message(RolandSysEx):
     """Program Effect 1 parameter message"""
 
-    command: int = CommandParameter.DT1_COMMAND_12
-    area: int = ProgramAreaParameter.TEMPORARY_PROGRAM_AREA  # 0x18: Program area
+    command: int = CommandParameter.DT1
+    area: int = ProgramAreaParameter.PROGRAM  # 0x18: Program area
     section: int = 0x02  # 0x02: Effect 1 section
     group: int = ProgramGroupParameter.PROGRAM_COMMON  # Always 0x00
     param: int = 0x00  # Parameter number
@@ -336,8 +336,8 @@ class Effect2(Enum):
 class Effect2Message(RolandSysEx):
     """Program Effect 2 parameter message"""
 
-    command: int = CommandParameter.DT1_COMMAND_12
-    area: int = ProgramAreaParameter.TEMPORARY_PROGRAM_AREA  # 0x18: Program area
+    command: int = CommandParameter.DT1
+    area: int = ProgramAreaParameter.PROGRAM  # 0x18: Program area
     section: int = 0x04  # 0x04: Effect 2 section
     group: int = 0x00  # Always 0x00
     param: int = 0x00  # Parameter number

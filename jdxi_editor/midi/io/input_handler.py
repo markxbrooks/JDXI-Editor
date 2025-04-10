@@ -27,7 +27,7 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.midi.data.address.parameter import HeaderParameter
+from jdxi_editor.midi.data.address.parameter import ModelID
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter
@@ -134,11 +134,11 @@ def handle_identity_request(message):
     version = message.data[9:12]  # Extract firmware version bytes
 
     version_str = ".".join(str(byte) for byte in version)
-    if device_id == HeaderParameter.DEVICE_ID:
+    if device_id == ModelID.DEVICE_ID:
         device_name = "JD-XI"
     else:
         device_name = "Unknown"
-    if manufacturer_id == HeaderParameter.ROLAND_ID:
+    if manufacturer_id == RolandID.ROLAND_ID:
         manufacturer_name = "Roland"
     else:
         manufacturer_name = "Unknown"

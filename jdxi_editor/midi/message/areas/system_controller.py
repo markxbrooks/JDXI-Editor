@@ -25,7 +25,7 @@ msg = SystemControllerMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.constants.sysex import DT1_COMMAND_12, SYSTEM_AREA, SYSTEM_CONTROLLER
+from jdxi_editor.midi.data.address.parameter import SystemParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -33,9 +33,9 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class SystemControllerMessage(RolandSysEx):
     """System Controller parameter message"""
 
-    command: int = DT1_COMMAND_12
-    area: int = SYSTEM_AREA  # 0x02: System area
-    section: int = SYSTEM_CONTROLLER  # 0x03: Controller section
+    command: int = CommandParameter.DT1
+    area: int = ProgramAreaParameter.SETUP  # 0x02: Setup area
+    section: int = SystemParameter.SYSTEM_CONTROLLER  # 0x03: Controller section
     group: int = 0x00  # Always 0x00
     param: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
