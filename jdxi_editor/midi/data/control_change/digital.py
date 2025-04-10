@@ -1,3 +1,18 @@
+"""
+DigitalToneCCGrouped
+
+Example usage
+
+# Get Cutoff CC value for Partial 2
+cutoff_partial_2 = DigitalToneCCGrouped.get_cc_value("Cutoff", 2)
+print(f"Cutoff (Partial 2): {cutoff_partial_2}")
+
+# Get Envelope NRPN value for Partial 3
+envelope_partial_3 = DigitalToneCCGrouped.get_nrpn_value("Envelope", 3)
+print(f"Envelope (Partial 3): {envelope_partial_3}")
+"""
+
+
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 
