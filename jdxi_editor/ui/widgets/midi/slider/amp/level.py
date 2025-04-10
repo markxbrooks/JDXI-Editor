@@ -15,14 +15,7 @@ class AmpLevelSlider(ControlChangeSlider):
         midi_helper,
         label: str = "Levl.",
     ):
-        nrpn_map = {
-            1: 117,  # NRPN LSB for Partial 1
-            2: 118,  # Partial 2
-            3: 119,  # Partial 3
-        }
-        print(nrpn_map)
         nrpn_map = DigitalControlChange.get_cc_map("Level")
-        print(nrpn_map)
         super().__init__(
             midi_helper=midi_helper,
             label=label,

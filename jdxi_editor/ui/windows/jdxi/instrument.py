@@ -123,18 +123,6 @@ class JdxiInstrument(JdxiUi):
         self._auto_connect_jdxi()
         self.midi_helper.send_identity_request()
         self.program_helper = ProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
-        # Show MIDI config if auto-connect failed
-        if (
-                not self.midi_helper.current_in_port
-                or not self.midi_helper.current_out_port
-        ):
-            self._show_midi_config()
-        # Initialize MIDI indicators
-        self.midi_in_indicator.set_state(bool(self.midi_in))
-        self.midi_out_indicator.set_state(bool(self.midi_out))
-        self.key_hold_button.clicked.connect(self._send_arp_key_hold)
-        self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
-
         # Load custom font
         self._load_digital_font()
 
@@ -151,8 +139,21 @@ class JdxiInstrument(JdxiUi):
 
         # Create display label
         self.display_label = QLabel()
-        self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
+        # self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
         self._toggle_illuminate_sequencer_lightshow(True)
+        if platform.system() == "Windows":
+            self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
+        # Show MIDI config if auto-connect failed
+        if (
+                not self.midi_helper.current_in_port
+                or not self.midi_helper.current_out_port
+        ):
+            self._show_midi_config()
+        # Initialize MIDI indicators
+        self.midi_in_indicator.set_state(bool(self.midi_in))
+        self.midi_out_indicator.set_state(bool(self.midi_out))
+        self.key_hold_button.clicked.connect(self._send_arp_key_hold)
+        self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
 
 
         # Add display to layout
@@ -235,8 +236,7 @@ class JdxiInstrument(JdxiUi):
             synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
             for synth_type, presets, channel in preset_configs
         }
-        if platform.system() == "Windows":
-            self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
+
 
     def _handle_program_change(self):
         """ perform data request """

@@ -54,8 +54,6 @@ from jdxi_editor.midi.data.arpeggio.arpeggio import (
 from jdxi_editor.midi.data.arpeggio.data import ARPEGGIO_GRID, ARP_DURATION, ARPEGGIO_STYLE, ArpeggioStyle
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.constants.arpeggio import (
-    TEMPORARY_PROGRAM,
-    ARP_PART,
     ARP_GROUP,
 )
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
@@ -74,9 +72,9 @@ class ArpeggioEditor(SynthEditor):
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.setFixedWidth(450)
-        self.area = TEMPORARY_PROGRAM
-        self.part = ARP_PART
-        self.group = ARP_GROUP
+        self.area = ArpeggioParameter.TEMPORARY_PROGRAM
+        self.part = ArpeggioParameter.ARP_PART
+        self.group = ArpeggioParameter.ARP_GROUP
         self.partial_number = 0
         self.instrument_icon_folder = "arpeggiator"
         self.default_image = "arpeggiator2.png"
