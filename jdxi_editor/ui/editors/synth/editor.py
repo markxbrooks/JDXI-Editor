@@ -146,10 +146,10 @@ class SynthEditor(SynthBase):
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
-            (JDXISynth.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL1),
-            (JDXISynth.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL2),
-            (JDXISynth.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_ANALOG),
-            (JDXISynth.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DRUMS),
+            (JDXISynth.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.DIGITAL1),
+            (JDXISynth.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.DIGITAL2),
+            (JDXISynth.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
+            (JDXISynth.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
         ]
 
         self.preset_helpers = {

@@ -84,7 +84,7 @@ class ProgramEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.channel = (
-            MidiChannel.MIDI_CHANNEL_PROGRAMS  # Default MIDI channel: 16 for programs, 0-based
+            MidiChannel.PROGRAM  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
         self.layout = None

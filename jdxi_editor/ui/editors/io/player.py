@@ -33,7 +33,7 @@ class MidiPlayer(SynthEditor):
         self.preset_helper = preset_helper if preset_helper else PresetHelper(
             self.midi_helper,
             presets=DIGITAL_PRESET_LIST,
-            channel=MidiChannel.MIDI_CHANNEL_DIGITAL1
+            channel=MidiChannel.DIGITAL1
         )
 
         self.midi_file = None

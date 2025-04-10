@@ -76,7 +76,7 @@ class TestPresetLoader(unittest.TestCase):
 
     def test_load_drums_preset_1(self):
         """Test loading Drums preset 1 sends correct MIDI messages"""
-        PresetLoader.load_preset(self.midi_helper, PresetType.DRUMS, 1)
+        PresetLoader.load_preset(self.midi_helper, PresetType.DRUM, 1)
         
         expected_calls = [
             # First message - Set bank and parameters

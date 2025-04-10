@@ -158,10 +158,6 @@ class ADSR(QWidget):
 
         self.plot.setEnabled(enabled)  # Disable the ADSR plot interaction if needed
 
-    def setEnabledOld(self, enabled):
-        for _, slider in self.controls.items():
-            slider.setEnabled(enabled)
-
     def _create_parameter_slider(self, param: SynthParameter, label: str, value: int = None) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):

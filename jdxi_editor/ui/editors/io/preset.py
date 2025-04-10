@@ -87,7 +87,7 @@ class PresetEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.midi_channel = (
-            MidiChannel.MIDI_CHANNEL_DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
+            MidiChannel.DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = PROGRAM_TONE_NAME_REQUESTS
         self.layout = None
@@ -289,13 +289,13 @@ class PresetEditor(SynthEditor):
         preset_type = self.digital_preset_type_combo.currentText()
         logging.info(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
-            self.midi_channel = MidiChannel.MidiChannel.MIDI_CHANNEL_DIGITAL1
+            self.midi_channel = MidiChannel.MidiChannel.DIGITAL1
         elif preset_type == "Digital Synth 2":
-            self.midi_channel = MidiChannel.MIDI_CHANNEL_DIGITAL2
+            self.midi_channel = MidiChannel.DIGITAL2
         elif preset_type == "Drums":
-            self.midi_channel = MidiChannel.MIDI_CHANNEL_DRUMS
+            self.midi_channel = MidiChannel.DRUM
         elif preset_type == "Analog Synth":
-            self.midi_channel = MidiChannel.MIDI_CHANNEL_ANALOG
+            self.midi_channel = MidiChannel.ANALOG
         self._populate_presets()
         self.update_category_combo_box_categories()
 

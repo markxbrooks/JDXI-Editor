@@ -166,18 +166,6 @@ class AnalogParameter(SynthParameter):
 
         return value
 
-    def validate_value_old(self, value: int) -> int:
-        """Validate and convert parameter value to MIDI range (0-127)"""
-        if not isinstance(value, int):
-            raise ValueError(f"Value must be integer, got {type(value)}")
-
-        if value < self.min_val or value > self.max_val:
-            raise ValueError(
-                f"Value {value} out of range for {self.name} "
-                f"(valid range: {self.min_val}-{self.max_val})"
-            )
-        return value
-
     @staticmethod
     def get_by_name(param_name):
         """Get the AnalogParameter by name."""

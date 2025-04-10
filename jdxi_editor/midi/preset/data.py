@@ -27,7 +27,7 @@ class Preset:
     type: str = JDXISynth.DIGITAL_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0
-    channel: int = MidiChannel.MIDI_CHANNEL_DIGITAL1
+    channel: int = MidiChannel.DIGITAL1
     name: Optional[str] = None
 
 

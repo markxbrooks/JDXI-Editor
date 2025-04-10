@@ -24,9 +24,9 @@ from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_editor.midi.data.address.parameter import ModelID, CommandParameter, END_OF_SYSEX, RolandID
-from jdxi_editor.midi.data.constants.digital import DIGITAL_SYNTH_1_AREA
+from jdxi_editor.midi.data.address.parameter import CommandParameter, END_OF_SYSEX, RolandID, JdxiAddressParameter
 from jdxi_editor.midi.io.controller import MidiIOController
+from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string, construct_address, increment_group
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.midi import MidiMessage
 from jdxi_editor.midi.message.program_change import ProgramChangeMessage
@@ -35,25 +35,6 @@ from jdxi_editor.midi.message.channel import ChannelMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
-
-
-def format_midi_message_to_hex_string(message):
-    """hexlify message"""
-    formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
-    return formatted_message
-
-
-def construct_address(area, group, param, part):
-    """Address construction"""
-    address = [area, part, group & 0xFF, param & 0xFF]
-    return address
-
-
-def increment_group(group, param):
-    """Adjust group if param exceeds 127"""
-    if param > 127:
-        group += 1
-    return group
 
 
 class MidiOutHandler(MidiIOController):
@@ -521,7 +502,7 @@ class MidiOutHandler(MidiIOController):
     def _get_digital_parameters(self):
         """Get digital parameters"""
         parameters = {}
-        for area in DIGITAL_SYNTH_1_AREA:
+        for area in JdxiAddressParameter.DIGITAL_1:
             for part in range(0x00, 0x03):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):
