@@ -1,7 +1,5 @@
 from enum import Enum
 
-ANALOG_OSC_GROUP = 0x00  # Oscillator parameters
-
 
 class AnalogOscWave(Enum):
     """Analog oscillator waveform types"""

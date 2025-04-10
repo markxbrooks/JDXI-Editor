@@ -468,7 +468,8 @@ class JDXIStyle:
             color: "{FONT_RED}";
         }}
         QPushButton:hover {{
-            background-color: rgba(255, 0, 0, 30);
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+            stop:0 #660000, stop:1 #ff1a1a);
         }}
         QStatusBar {{
             background-color: transparent;
@@ -504,6 +505,8 @@ class JDXIStyle:
         QSlider::groove:vertical {
             background: #111; /* Dark background */
             width: 6px;
+            border-radius: 3px;
+            border-radius: 3px;
             border-radius: 3px;
         }
 
@@ -617,6 +620,12 @@ class JDXIStyle:
                          stop:0 #660000, stop:1 #ff1a1a);
             border-radius: 3px;
         }}
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical:disabled:hover {{
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }}
 
         /* Unfilled portion */
         QSlider::add-page:vertical {{
@@ -641,6 +650,8 @@ class JDXIStyle:
         /* Handle Hover Effect */
         QSlider::handle:vertical:hover {{
             border: 2px solid #ff3333;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+             stop:0 #660000, stop:1 #ff1a1a);
         }}
         /* Spin Box */
         QSpinBox, QDoubleSpinBox {{
@@ -925,7 +936,8 @@ class JDXIStyle:
                 font-family: "{FONT_FAMILY}";
             }}
             QPushButton:hover {{
-                background-color: #4D4D4D;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
                 border: 1px solid #FF3333;
             }}
             QPushButton:border_pressed {{
@@ -1013,7 +1025,8 @@ class JDXIStyle:
                 font-family: "{FONT_FAMILY}";
             }}
             QPushButton:hover {{
-                background-color: #4D4D4D;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
                 border: 1px solid #FF3333;
             }}
             QPushButton:border_pressed {{

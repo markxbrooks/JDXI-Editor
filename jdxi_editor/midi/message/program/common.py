@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter
+from jdxi_editor.midi.data.address.parameter import CommandParameter, JdxiAddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -9,7 +9,7 @@ class ProgramCommonParameterMessage(RolandSysEx):
     """Program Common parameter message"""
 
     command: int = CommandParameter.DT1
-    area: int = ProgramAreaParameter.PROGRAM  # 0x18: Program area
+    area: int = JdxiAddressParameter.PROGRAM  # 0x18: Program area
     section: int = 0x00  # 0x00: Common section
     group: int = 0x00  # Always 0x00
     param: int = 0x00  # Parameter number

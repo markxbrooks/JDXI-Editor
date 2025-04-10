@@ -60,7 +60,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter
+from jdxi_editor.midi.data.address.parameter import JdxiAddressParameter
 from jdxi_editor.midi.data.editor.data import AnalogSynthData
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
@@ -325,7 +325,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_parameter_received(self, address, value):
         """Handle parameter updates from MIDI messages."""
         area_code = address[0]
-        if address[0] == ProgramAreaParameter.ANALOG:
+        if address[0] == JdxiAddressParameter.ANALOG:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
 

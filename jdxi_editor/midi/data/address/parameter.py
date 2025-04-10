@@ -2,8 +2,7 @@
 Parameter Address Map
 """
 
-
-from enum import Enum, IntEnum, unique
+from enum import IntEnum, unique
 from typing import Optional
 
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
@@ -13,6 +12,7 @@ from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 # Miscellaneous Constants
 # ==========================
 
+
 START_OF_SYSEX = 0xF0
 END_OF_SYSEX = 0xF7
 ID_NUMBER = 0x7E
@@ -21,30 +21,37 @@ SUB_ID_1 = 0x06
 SUB_ID_2 = 0x01
 PLACEHOLDER_BYTE = 0x00
 
+
 # ==========================
 # Helpers
 # ==========================
+
 
 class Parameter(IntEnum):
     @staticmethod
     def get_parameter_by_address(address: int) -> Optional["Parameter"]:
         return next((param for param in Parameter if param.value == address), None)
 
+
 # Short maps
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
+
 
 # ==========================
 # Roland IDs and Commands
 # ==========================
+
 
 @unique
 class RolandID(IntEnum):
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
 
+
 # ==========================
 # JD-Xi SysEx Header
 # ==========================
+
 
 class ModelID(Parameter):
     ROLAND_ID = 0x41
@@ -55,36 +62,37 @@ class ModelID(Parameter):
     MODEL_ID_3 = 0x00  # Device family code LSB
     MODEL_ID_4 = 0x0E  # JD-XI Product code
 
+
 JD_XI_MODEL_ID = [
     ModelID.MODEL_ID_1,
     ModelID.MODEL_ID_2,
     ModelID.MODEL_ID_3,
-    ModelID.MODEL_ID_4
+    ModelID.MODEL_ID_4,
 ]
 
-JD_XI_HEADER_LIST = [
-    RolandID.ROLAND_ID,
-    RolandID.DEVICE_ID,
-    *JD_XI_MODEL_ID
-]
+JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
+
 
 class CommandParameter(Parameter):
-    # Roland Commands
+    """ Roland Commands """
     DT1 = 0x12  # Data Set 1
     RQ1 = 0x11  # Data Request 1
 
 
 @unique
 class ResponseParameter(IntEnum):
+    """ midi responses """
     ACK = 0x4F  # Acknowledge
     ERR = 0x4E  # Error
+
 
 # ==========================
 # Memory and Program Areas
 # ==========================
 
+
 @unique
-class ProgramAreaParameter(Parameter):
+class JdxiAddressParameter(Parameter):
     SYSTEM = 0x01
     SETUP = 0x02
     PROGRAM = 0x18
@@ -94,6 +102,13 @@ class ProgramAreaParameter(Parameter):
     ANALOG = 0x1B  # Analog synth area
 
 
+@unique
+class SystemParameter(Parameter):
+    COMMON = 0x00
+    CONTROLLER = 0x03
+
+
+@unique
 class SuperNATURALSynthTone(Parameter):
     COMMON = 0x00
     PARTIAL_1 = 0x20
@@ -102,6 +117,7 @@ class SuperNATURALSynthTone(Parameter):
     TONE_MODIFY = 0x50
 
 
+@unique
 class TemporaryParameter(Parameter):
     DIGITAL_PART_1 = 0x01
     DIGITAL_PART_2 = 0x21
@@ -109,24 +125,15 @@ class TemporaryParameter(Parameter):
     DRUM_KIT_PART = 0x70
 
 
-class SystemParameter(Parameter):
-    COMMON = 0x00
-    CONTROLLER = 0x03
-
-
-class ProgramGroupParameter(Parameter):
-    ANALOG_OSC_GROUP = 0x00
-    PROGRAM_COMMON = 0x00
-    DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
-    DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
-
-
-class ToneParameter(Parameter): # I'm not convinced these are real
+@unique
+class ToneParameter(Parameter):  # I'm not convinced these are real
     TONE_1_LEVEL = 0x10
     TONE_2_LEVEL = 0x11
 
 
+@unique
 class ProgramParameter(Parameter):
+    """ Program """
     COMMON = 0x00
     VOCAL_EFFECT = 0x01
     EFFECT_1 = 0x02
@@ -144,21 +151,26 @@ class ProgramParameter(Parameter):
     CONTROLLER = 0x40
 
 
-class TonePartialParameter(IntEnum):
+@unique
+class ProgramGroupParameter(Parameter):
+    PROGRAM_COMMON = 0x00
+    DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
+    DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
+
+
+@unique
+class DrumKitParameter(IntEnum):
+    """ Drum Kit """
     COMMON = 0x00
     PARTIAL_1 = 0x20
     PARTIAL_2 = 0x21
     PARTIAL_3 = 0x22
     TONE_MODIFY = 0x50
-    ANALOG_PART = 0x00
-    DRUM_KIT_COMMON = 0x00
 
 
 # Dynamically generate DRUM_KIT_PART_{1-72} = 0x2E to 0x76
-drum_kit_partials = {
-    f"DRUM_KIT_PART_{i}": 0x2E + (i - 1) for i in range(1, 73)
-}
+drum_kit_partials = {f"DRUM_KIT_PART_{i}": 0x2E + (i - 1) for i in range(1, 73)}
 
 # Merge generated drum kit parts into TonePartialParameter
 for name, value in drum_kit_partials.items():
-    setattr(TonePartialParameter, name, value)
+    setattr(DrumKitParameter, name, value)

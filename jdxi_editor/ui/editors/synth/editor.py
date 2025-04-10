@@ -116,8 +116,8 @@ class SynthEditor(SynthBase):
             ANALOG_SYNTH_AREA, 
             DRUM_KIT_AREA
         """
-        self.part = None  #
-        self.group = None  # ANALOG_OSC_GROUP
+        self.part = None
+        self.group = None
         # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 
