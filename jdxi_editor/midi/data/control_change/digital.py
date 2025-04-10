@@ -4,12 +4,14 @@ DigitalControlChange
 Example usage
 
 # Get Cutoff CC value for Partial 2
-cutoff_partial_2 = DigitalToneCCGrouped.get_cc_value("Cutoff", 2)
+cutoff_partial_2 = DigitalControlChange.get_cc_value("Cutoff", 2)
 print(f"Cutoff (Partial 2): {cutoff_partial_2}")
 
 # Get Envelope NRPN value for Partial 3
-envelope_partial_3 = DigitalToneCCGrouped.get_nrpn_value("Envelope", 3)
+envelope_partial_3 = DigitalControlChange.get_nrpn_value("Envelope", 3)
 print(f"Envelope (Partial 3): {envelope_partial_3}")
+
+envelope_map = DigitalControlChange.get_nrpn_map("Envelope")
 """
 
         
@@ -36,6 +38,16 @@ class DigitalControlChange:
             1: 16,  # Partial 1
             2: 17,  # Partial 2
             3: 18,  # Partial 3
+        },
+        "Reverb": {
+            1: 12,  # NRPN LSB for Partial 1
+            2: 12,  # Partial 2
+            3: 12,  # Partial 3
+        },
+        "Delay" : {
+            1: 13,  # NRPN LSB for Partial 1
+            2: 13,  # Partial 2
+            3: 13,  # Partial 3
         }
     }
 
@@ -61,6 +73,11 @@ class DigitalControlChange:
             3: 20,  # Partial 3
         },
         "LFO_Amp": {
+            1: 21,  # Partial 1
+            2: 22,  # Partial 2
+            3: 23,  # Partial 3
+        },
+        "LFO_Rate": {
             1: 21,  # Partial 1
             2: 22,  # Partial 2
             3: 23,  # Partial 3

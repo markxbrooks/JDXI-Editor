@@ -141,9 +141,9 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.addWidget(
         create_columns_with_label("LFO", lfo_filter_container, lfo_amp_container)
     )
-    slider_row_layout.addWidget(
-        create_columns_with_label("Effects", effect1_container, effect2_container)
-    )
+    # slider_row_layout.addWidget(
+    #     create_columns_with_label("Effects", effect1_container, effect2_container)
+    # )
     slider_row_layout.addWidget(
         create_columns_with_label("Effects", delay_container, reverb_container)
     )

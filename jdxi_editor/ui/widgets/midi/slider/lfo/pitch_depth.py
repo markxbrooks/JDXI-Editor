@@ -11,7 +11,7 @@ CC#6 – Data Entry MSB (value: 0–127)
 CC#101 & 100 – Reset to NULL (optional, to avoid data confusion)
 
 """
-
+from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 
@@ -22,11 +22,7 @@ class LFOPitchSlider(NRPNSlider):
     """
 
     def __init__(self, midi_helper, label: str = "LFO Pitch Depth"):
-        nrpn_map = {
-            1: 15,
-            2: 16,
-            3: 17,
-        }
+        nrpn_map = DigitalControlChange.get_nrpn_map("LFO_Pitch")
         super().__init__(
             midi_helper=midi_helper,
             label=label,

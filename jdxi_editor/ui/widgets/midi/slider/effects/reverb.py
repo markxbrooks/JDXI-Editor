@@ -1,5 +1,5 @@
 """filter slider to modify nrpn parameters"""
-
+from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 
 
@@ -12,11 +12,7 @@ class ReverbSlider(ControlChangeSlider):
         midi_helper,
         label: str = "Reverb.",
     ):
-        nrpn_map = {
-            1: 12,  # NRPN LSB for Partial 1
-            2: 12,  # Partial 2
-            3: 12,  # Partial 3
-        }
+        nrpn_map = DigitalControlChange.get_cc_map("Reverb")
         super().__init__(
             midi_helper=midi_helper,
             label=label,

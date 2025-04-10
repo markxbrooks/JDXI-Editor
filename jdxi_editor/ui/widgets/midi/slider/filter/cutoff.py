@@ -1,4 +1,5 @@
 """filter slider to modify nrpn parameters"""
+from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 from jdxi_editor.midi.nrpn.map import NRPNMap
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 
@@ -10,13 +11,9 @@ class FilterCutoffSlider(ControlChangeSlider):
     def __init__(
         self,
         midi_helper,
-        label: str = "Reson.",
+        label: str = "Cutoff.",
     ):
-        nrpn_map = {
-            1: 102,  # NRPN LSB for Partial 1
-            2: 103,  # Partial 2
-            3: 104,  # Partial 3
-        }
+        nrpn_map = DigitalControlChange.get_cc_map("Cutoff")
         super().__init__(
             midi_helper=midi_helper,
             label=label,
