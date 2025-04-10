@@ -19,12 +19,12 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.presets.analog import AN_PRESETS
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 
 
 @dataclass
 class Preset:
-    type: str = SynthType.DIGITAL_1  # Adjust the type as needed
+    type: str = JDXISynth.DIGITAL_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0
     channel: int = MidiChannel.MIDI_CHANNEL_DIGITAL1
@@ -45,17 +45,17 @@ class PresetData:
         :param preset_num: The preset number
         :return: A dictionary with presets, bank_msb, bank_lsb, and program
         """
-        if synth_type == SynthType.ANALOG:
+        if synth_type == JDXISynth.ANALOG:
             presets = AN_PRESETS
             bank_msb = 0
             bank_lsb = preset_num // 7
             program = preset_num % 7
-        elif synth_type == SynthType.DIGITAL_1:
+        elif synth_type == JDXISynth.DIGITAL_1:
             presets = DIGITAL_PRESETS_ENUMERATED
             bank_msb = 1
             bank_lsb = preset_num // 16
             program = preset_num % 16
-        elif synth_type == SynthType.DIGITAL_2:
+        elif synth_type == JDXISynth.DIGITAL_2:
             presets = DIGITAL_PRESETS_ENUMERATED
             bank_msb = 2
             bank_lsb = preset_num // 16

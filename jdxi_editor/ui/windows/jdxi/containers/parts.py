@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QButtonGroup
 
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
@@ -37,10 +37,10 @@ def create_parts_container(
     arp_row, arp_button = create_button_row("Arpeggiator", on_open_arp)
 
     # Connect buttons to synth selector
-    analog_button.clicked.connect(lambda: on_select_synth(SynthType.ANALOG))
-    digital1_button.clicked.connect(lambda: on_select_synth(SynthType.DIGITAL_1))
-    digital2_button.clicked.connect(lambda: on_select_synth(SynthType.DIGITAL_2))
-    drums_button.clicked.connect(lambda: on_select_synth(SynthType.DRUMS))
+    analog_button.clicked.connect(lambda: on_select_synth(JDXISynth.ANALOG))
+    digital1_button.clicked.connect(lambda: on_select_synth(JDXISynth.DIGITAL_1))
+    digital2_button.clicked.connect(lambda: on_select_synth(JDXISynth.DIGITAL_2))
+    drums_button.clicked.connect(lambda: on_select_synth(JDXISynth.DRUMS))
 
     # Button group ensures one active selection
     button_group = QButtonGroup()

@@ -42,7 +42,7 @@ from jdxi_editor.midi.data.editor.data import (
     AnalogSynthData,
 )
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
@@ -73,10 +73,10 @@ class JdxiUi(QMainWindow):
         self.drums_data = DrumsSynthData()
         self.analog_data = AnalogSynthData()
         self.synth_data_map = {
-            SynthType.DIGITAL_1: DigitalSynthData(synth_number=1),
-            SynthType.DIGITAL_2: DigitalSynthData(synth_number=2),
-            SynthType.DRUMS: DrumsSynthData(),
-            SynthType.ANALOG: AnalogSynthData(),
+            JDXISynth.DIGITAL_1: DigitalSynthData(synth_number=1),
+            JDXISynth.DIGITAL_2: DigitalSynthData(synth_number=2),
+            JDXISynth.DRUMS: DrumsSynthData(),
+            JDXISynth.ANALOG: AnalogSynthData(),
         }
 
         self.sequencer_buttons = []
@@ -91,7 +91,7 @@ class JdxiUi(QMainWindow):
         self.current_analog_tone_name = "Init Tone"
         self.current_drums_tone_name = "Init Tone"
         # Initialize synth preset_type
-        self.current_synth_type = SynthType.DIGITAL_1
+        self.current_synth_type = JDXISynth.DIGITAL_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
 
@@ -397,16 +397,16 @@ class JdxiUi(QMainWindow):
         synth_data = self.synth_data_map.get(self.current_synth_type)
         if not synth_data:
             logging.warning("Unknown synth type. Defaulting to DIGITAL_1.")
-            synth_data = self.synth_data_map[SynthType.DIGITAL_1]
+            synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
 
         # Get the current tone name based on synth type
-        if synth_data.preset_type == SynthType.DIGITAL_1:
+        if synth_data.preset_type == JDXISynth.DIGITAL_1:
             self.current_tone_name = self.current_digital1_tone_name
-        elif synth_data.preset_type == SynthType.DIGITAL_2:
+        elif synth_data.preset_type == JDXISynth.DIGITAL_2:
             self.current_tone_name = self.current_digital2_tone_name
-        elif synth_data.preset_type == SynthType.DRUMS:
+        elif synth_data.preset_type == JDXISynth.DRUMS:
             self.current_tone_name = self.current_drums_tone_name
-        elif synth_data.preset_type == SynthType.ANALOG:
+        elif synth_data.preset_type == JDXISynth.ANALOG:
             self.current_tone_name = self.current_analog_tone_name
 
         # Update tone number
