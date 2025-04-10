@@ -33,7 +33,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import Preset
@@ -146,10 +146,10 @@ class SynthEditor(SynthBase):
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
-            (SynthType.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL1),
-            (SynthType.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL2),
-            (SynthType.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_ANALOG),
-            (SynthType.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DRUMS),
+            (JDXISynth.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL1),
+            (JDXISynth.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL2),
+            (JDXISynth.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_ANALOG),
+            (JDXISynth.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DRUMS),
         ]
 
         self.preset_helpers = {
@@ -162,7 +162,7 @@ class SynthEditor(SynthBase):
         handler = self.preset_helpers.get(self.preset_type)
         if handler is None:
             logging.warning(f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1")
-            return self.preset_helpers[SynthType.DIGITAL_1]  # Safe fallback
+            return self.preset_helpers[JDXISynth.DIGITAL_1]  # Safe fallback
         return handler
 
     def _on_parameter_received(self, address, value):

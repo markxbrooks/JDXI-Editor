@@ -37,7 +37,7 @@ from PySide6.QtCore import Qt, QSettings, QTimer
 from jdxi_editor.midi.data.address.parameter import JdxiAddressParameter
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
@@ -93,9 +93,9 @@ class JdxiInstrument(JdxiUi):
         self.analog_editor = None
         self.last_preset = None
         self.log_file = None
-        self.preset_type = SynthType.DIGITAL_1  # Default preset
+        self.preset_type = JDXISynth.DIGITAL_1  # Default preset
         # Initialize state variables
-        self.current_synth_type = SynthType.DIGITAL_1
+        self.current_synth_type = JDXISynth.DIGITAL_1
         self.current_preset_num = 1  # Initialize preset number
         self.current_preset_name = "JD Xi"  # Initialize preset name
         self.midi_in = None
@@ -163,7 +163,7 @@ class JdxiInstrument(JdxiUi):
         # FIXME: self._load_last_preset()
 
         # Initialize synth preset_type
-        self.current_synth_type = SynthType.DIGITAL_1
+        self.current_synth_type = JDXISynth.DIGITAL_1
 
         # Load saved favorites
         self._load_saved_favorites()
@@ -181,18 +181,18 @@ class JdxiInstrument(JdxiUi):
         self.digital_1_preset_helper = PresetHelper(self.midi_helper,
                                                     DIGITAL_PRESETS_ENUMERATED,
                                                     channel=MidiChannel.MIDI_CHANNEL_DIGITAL1,
-                                                    preset_type=SynthType.DIGITAL_1)
+                                                    preset_type=JDXISynth.DIGITAL_1)
         self.digital_2_preset_helper = PresetHelper(self.midi_helper,
                                                     DIGITAL_PRESETS_ENUMERATED,
                                                     channel=MidiChannel.MIDI_CHANNEL_DIGITAL2,
-                                                    preset_type=SynthType.DIGITAL_2)
+                                                    preset_type=JDXISynth.DIGITAL_2)
         self.analog_preset_helper = PresetHelper(self.midi_helper, ANALOG_PRESETS_ENUMERATED,
                                                  channel=MidiChannel.MIDI_CHANNEL_ANALOG,
-                                                 preset_type=SynthType.ANALOG)
+                                                 preset_type=JDXISynth.ANALOG)
         self.drums_preset_helper = PresetHelper(self.midi_helper,
                                                 DRUM_PRESETS_ENUMERATED,
                                                 channel=MidiChannel.MIDI_CHANNEL_DRUMS,
-                                                preset_type=SynthType.DRUMS)
+                                                preset_type=JDXISynth.DRUMS)
 
 
         self.digital_1_preset_helper.update_display.connect(
@@ -225,10 +225,10 @@ class JdxiInstrument(JdxiUi):
 
         # Initialize preset handlers dynamically
         preset_configs = [
-            (SynthType.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL1),
-            (SynthType.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL2),
-            (SynthType.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_ANALOG),
-            (SynthType.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DRUMS),
+            (JDXISynth.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL1),
+            (JDXISynth.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DIGITAL2),
+            (JDXISynth.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_ANALOG),
+            (JDXISynth.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.MIDI_CHANNEL_DRUMS),
         ]
 
         self.preset_helpers = {
@@ -247,7 +247,7 @@ class JdxiInstrument(JdxiUi):
         handler = self.preset_helpers.get(self.current_synth_type)
         if handler is None:
             logging.warning(f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1")
-            return self.preset_helpers[SynthType.DIGITAL_1]  # Safe fallback
+            return self.preset_helpers[JDXISynth.DIGITAL_1]  # Safe fallback
         return handler
 
     def mousePressEvent(self, event):
@@ -319,10 +319,10 @@ class JdxiInstrument(JdxiUi):
     def _update_synth_button_styles(self):
         """Update styles for synth buttons based on selection."""
         buttons = {
-            SynthType.ANALOG: self.analog_button,
-            SynthType.DIGITAL_1: self.digital1_button,
-            SynthType.DIGITAL_2: self.digital2_button,
-            SynthType.DRUMS: self.drums_button,
+            JDXISynth.ANALOG: self.analog_button,
+            JDXISynth.DIGITAL_1: self.digital1_button,
+            JDXISynth.DIGITAL_2: self.digital2_button,
+            JDXISynth.DRUMS: self.drums_button,
         }
 
         for synth_type, button in buttons.items():
@@ -335,10 +335,10 @@ class JdxiInstrument(JdxiUi):
     def _get_presets_for_current_synth(self):
         """Return the appropriate preset list based on the current synth preset_type."""
         preset_map = {
-            SynthType.ANALOG: AN_PRESETS,
-            SynthType.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
-            SynthType.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
-            SynthType.DRUMS: DRUM_PRESETS_ENUMERATED,
+            JDXISynth.ANALOG: AN_PRESETS,
+            JDXISynth.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
+            JDXISynth.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
+            JDXISynth.DRUMS: DRUM_PRESETS_ENUMERATED,
         }
 
         presets = preset_map.get(self.current_synth_type, None)
@@ -352,10 +352,10 @@ class JdxiInstrument(JdxiUi):
     def _get_preset_helper_for_current_synth(self):
         """Return the appropriate preset handler based on the current synth preset_type."""
         handler_map = {
-            SynthType.ANALOG: self.analog_preset_helper,
-            SynthType.DIGITAL_1: self.digital_1_preset_helper,
-            SynthType.DIGITAL_2: self.digital_2_preset_helper,
-            SynthType.DRUMS: self.drums_preset_helper,
+            JDXISynth.ANALOG: self.analog_preset_helper,
+            JDXISynth.DIGITAL_1: self.digital_1_preset_helper,
+            JDXISynth.DIGITAL_2: self.digital_2_preset_helper,
+            JDXISynth.DRUMS: self.drums_preset_helper,
         }
         handler = handler_map.get(self.current_synth_type, None)
         if handler is None:
@@ -515,18 +515,18 @@ class JdxiInstrument(JdxiUi):
             f"Digital Synth {synth_number}", DigitalSynthEditor, synth_num=synth_number
         )
         self.preset_type = (
-            SynthType.DIGITAL_1 if synth_number == 1 else SynthType.DIGITAL_2
+            JDXISynth.DIGITAL_1 if synth_number == 1 else JDXISynth.DIGITAL_2
         )
 
     def _show_analog_synth_editor(self, editor_type: str):
         self._show_editor("Analog Synth", AnalogSynthEditor)
         self.channel = MidiChannel.MIDI_CHANNEL_ANALOG
-        self.preset_type = SynthType.ANALOG
+        self.preset_type = JDXISynth.ANALOG
 
     def _show_drums_editor(self, editor_type: str):
         self._show_editor("Drums", DrumCommonEditor)
         self.channel = MidiChannel.MIDI_CHANNEL_DRUMS
-        self.preset_type = SynthType.DRUMS
+        self.preset_type = JDXISynth.DRUMS
 
     def _open_vocal_effects(self, title, editor_type: str):
         self._show_editor("Vocal Effects", VocalFXEditor)
@@ -600,10 +600,10 @@ class JdxiInstrument(JdxiUi):
             preset_type = self.current_synth_type
             preset_number = self.current_preset_index
             preset_map = {
-                SynthType.ANALOG: ANALOG_PRESETS_ENUMERATED,
-                SynthType.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
-                SynthType.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
-                SynthType.DRUMS: DRUM_PRESETS_ENUMERATED,
+                JDXISynth.ANALOG: ANALOG_PRESETS_ENUMERATED,
+                JDXISynth.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
+                JDXISynth.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
+                JDXISynth.DRUMS: DRUM_PRESETS_ENUMERATED,
             }
             # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
             presets = preset_map.get(preset_type, DIGITAL_PRESETS_ENUMERATED)
@@ -617,16 +617,16 @@ class JdxiInstrument(JdxiUi):
         """Get the name of the currently selected preset"""
         try:
             synth_type = self.settings.value(
-                "last_preset/synth_type", SynthType.ANALOG
+                "last_preset/synth_type", JDXISynth.ANALOG
             )
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
 
             # Get preset name - adjust index to be 0-based
-            if synth_type == SynthType.ANALOG:
+            if synth_type == JDXISynth.ANALOG:
                 return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
-            if synth_type == SynthType.DIGITAL_1:
+            if synth_type == JDXISynth.DIGITAL_1:
                 return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
-            if synth_type == SynthType.DIGITAL_2:
+            if synth_type == JDXISynth.DIGITAL_2:
                 return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
             else:
                 return DRUM_PRESETS_ENUMERATED[preset_num - 1]
@@ -769,13 +769,13 @@ class JdxiInstrument(JdxiUi):
 
     def _open_analog_synth(self):
         self._show_editor("Analog Synth", AnalogSynthEditor)
-        self.preset_type = SynthType.ANALOG
-        self.current_synth_type = SynthType.ANALOG
+        self.preset_type = JDXISynth.ANALOG
+        self.current_synth_type = JDXISynth.ANALOG
         self.channel = MidiChannel.MIDI_CHANNEL_ANALOG
 
     def _open_digital_synth1(self):
         """Open the Digital Synth 1 editor and send SysEx message."""
-        self.current_synth_type = SynthType.DIGITAL_1
+        self.current_synth_type = JDXISynth.DIGITAL_1
         self.channel = MidiChannel.MIDI_CHANNEL_DIGITAL1
         try:
             if not hasattr(self, "digital_synth1_editor"):
@@ -790,14 +790,14 @@ class JdxiInstrument(JdxiUi):
     def _open_digital_synth2(self):
         self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_number=2)
         self.channel = MidiChannel.MIDI_CHANNEL_DIGITAL2
-        self.preset_type = SynthType.DIGITAL_2
-        self.current_synth_type = SynthType.DIGITAL_2
+        self.preset_type = JDXISynth.DIGITAL_2
+        self.current_synth_type = JDXISynth.DIGITAL_2
 
     def _open_drums(self):
         self.channel = MidiChannel.MIDI_CHANNEL_DRUMS
         self._show_editor("Drums", DrumCommonEditor)
-        self.preset_type = SynthType.DRUMS
-        self.current_synth_type = SynthType.DRUMS
+        self.preset_type = JDXISynth.DRUMS
+        self.current_synth_type = JDXISynth.DRUMS
 
     def _open_arpeggiator(self):
         """Show the arpeggiator editor window"""
@@ -1207,23 +1207,23 @@ class JdxiInstrument(JdxiUi):
         try:
             # Get last preset info from settings
             synth_type = self.settings.value(
-                "last_preset/synth_type", SynthType.DIGITAL_1
+                "last_preset/synth_type", JDXISynth.DIGITAL_1
             )
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
             channel = self.settings.value("last_preset/channel", 0, type=int)
 
             # Get preset list based on synth preset_type
-            if synth_type == SynthType.ANALOG:
+            if synth_type == JDXISynth.ANALOG:
                 presets = AN_PRESETS
                 bank_msb = 0
                 bank_lsb = preset_num // 7
                 program = preset_num % 7
-            elif synth_type == SynthType.DIGITAL_1:
+            elif synth_type == JDXISynth.DIGITAL_1:
                 presets = DIGITAL_PRESETS_ENUMERATED
                 bank_msb = 1
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
-            elif synth_type == SynthType.DIGITAL_2:
+            elif synth_type == JDXISynth.DIGITAL_2:
                 presets = DIGITAL_PRESETS_ENUMERATED
                 bank_msb = 2
                 bank_lsb = preset_num // 16
@@ -1310,7 +1310,7 @@ class JdxiInstrument(JdxiUi):
         if hasattr(self, "current_preset_num"):
             # Get current preset info from settings
             synth_type = self.settings.value(
-                "last_preset/synth_type", SynthType.ANALOG
+                "last_preset/synth_type", JDXISynth.ANALOG
             )
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
             channel = self.settings.value("last_preset/channel", 0, type=int)

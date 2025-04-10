@@ -14,7 +14,7 @@ Methods:
 from jdxi_editor.midi.data.address.parameter import TemporaryParameter
 
 
-class SynthType:
+class JDXISynth:
     """Synth types and their MIDI area codes"""
     ANALOG = "Analog"
     DIGITAL_1 = "Digital 1"  # Main digital synth
@@ -25,9 +25,9 @@ class SynthType:
     def get_area_code(synth_type: str) -> int:
         """Get MIDI area code for preset preset_type"""
         area_codes = {
-            SynthType.ANALOG: TemporaryParameter.ANALOG_PART,
-            SynthType.DIGITAL_1: TemporaryParameter.DIGITAL_PART_1,
-            SynthType.DIGITAL_2: TemporaryParameter.DIGITAL_PART_2,
-            SynthType.DRUMS: TemporaryParameter.DRUM_KIT_PART
+            JDXISynth.ANALOG: TemporaryParameter.ANALOG_PART,
+            JDXISynth.DIGITAL_1: TemporaryParameter.DIGITAL_PART_1,
+            JDXISynth.DIGITAL_2: TemporaryParameter.DIGITAL_PART_2,
+            JDXISynth.DRUMS: TemporaryParameter.DRUM_KIT_PART
         }
         return area_codes.get(synth_type)

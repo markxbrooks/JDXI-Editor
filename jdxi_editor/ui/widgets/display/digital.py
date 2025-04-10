@@ -37,7 +37,7 @@ from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_preset_list_number_by_name
 
 
@@ -265,22 +265,22 @@ class DigitalDisplay(DigitalDisplayBase):
                         program_bank_letter="A"  # Default bank
                         ):
         """Update the JD-Xi display image"""
-        if synth_type == SynthType.DIGITAL_1:
+        if synth_type == JDXISynth.DIGITAL_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(tone_name,
                                                          DIGITAL_PRESET_LIST)
             active_synth = "D1"
-        elif synth_type == SynthType.DIGITAL_2:
+        elif synth_type == JDXISynth.DIGITAL_2:
             tone_name = digital2_tone_name
             active_synth = "D2"
             tone_number = get_preset_list_number_by_name(tone_name,
                                                          DIGITAL_PRESET_LIST)
-        elif synth_type == SynthType.DRUMS:
+        elif synth_type == JDXISynth.DRUMS:
             tone_name = drums_tone_name
             active_synth = "DR"
             tone_number = get_preset_list_number_by_name(tone_name,
                                                          DRUM_KIT_LIST)
-        elif synth_type == SynthType.ANALOG:
+        elif synth_type == JDXISynth.ANALOG:
             tone_name = analog_tone_name
             active_synth = "AN"
             tone_number = get_preset_list_number_by_name(tone_name,

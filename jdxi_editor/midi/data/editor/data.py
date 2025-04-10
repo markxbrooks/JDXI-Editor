@@ -40,7 +40,7 @@ from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.sysex.requests import (
     DRUMS_REQUESTS,
     DIGITAL1_REQUESTS,
@@ -61,7 +61,7 @@ class SynthData:
     midi_channel: int
     presets: List[str]
     preset_list: List[str]
-    preset_type: SynthType
+    preset_type: JDXISynth
     window_title: str
     display_prefix: str
 
@@ -78,7 +78,7 @@ class DrumsSynthData(SynthData):
             midi_channel=MidiChannel.MIDI_CHANNEL_DRUMS,
             presets=DRUM_PRESETS_ENUMERATED,
             preset_list=DRUM_KIT_LIST,
-            preset_type=SynthType.DRUMS,
+            preset_type=JDXISynth.DRUMS,
             window_title="Drums",
             display_prefix="DR",
         )
@@ -97,7 +97,7 @@ class DigitalSynthData(SynthData):
             midi_channel=MidiChannel.MIDI_CHANNEL_DIGITAL2 if synth_number == 2 else MidiChannel.MIDI_CHANNEL_DIGITAL1,
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
-            preset_type=SynthType.DIGITAL_2 if synth_number == 2 else SynthType.DIGITAL_1,
+            preset_type=JDXISynth.DIGITAL_2 if synth_number == 2 else JDXISynth.DIGITAL_1,
             window_title=f"Digital Synth {synth_number}",
             display_prefix=f"D{synth_number}",
         )
@@ -121,19 +121,19 @@ class AnalogSynthData(SynthData):
             midi_channel=MidiChannel.MIDI_CHANNEL_ANALOG,
             presets=ANALOG_PRESETS_ENUMERATED,
             preset_list=ANALOG_PRESET_LIST,
-            preset_type=SynthType.ANALOG,
+            preset_type=JDXISynth.ANALOG,
             window_title="Analog Synth",
             display_prefix="AN",
         )
 
 
-def create_synth_data(synth_type: SynthType, partial_number=1) -> SynthData:
-    if synth_type == SynthType.DRUMS:
+def create_synth_data(synth_type: JDXISynth, partial_number=1) -> SynthData:
+    if synth_type == JDXISynth.DRUMS:
         return DrumsSynthData(partial_number=partial_number)
-    elif synth_type == SynthType.DIGITAL_1:
+    elif synth_type == JDXISynth.DIGITAL_1:
         return DigitalSynthData(synth_number=1, partial_number=partial_number)
-    elif synth_type == SynthType.DIGITAL_2:
+    elif synth_type == JDXISynth.DIGITAL_2:
         return DigitalSynthData(synth_number=2, partial_number=partial_number)
-    elif synth_type == SynthType.ANALOG:
+    elif synth_type == JDXISynth.ANALOG:
         return AnalogSynthData()
     raise ValueError(f"Unknown synth type: {synth_type}")

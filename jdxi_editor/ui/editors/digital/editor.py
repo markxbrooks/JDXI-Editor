@@ -47,7 +47,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
-from jdxi_editor.midi.preset.type import SynthType
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.digital import (
     DigitalOscWave,
@@ -101,7 +101,7 @@ class DigitalSynthEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
             parent.digital_1_preset_helper
-            if self.preset_type == SynthType.DIGITAL_1
+            if self.preset_type == JDXISynth.DIGITAL_1
             else parent.digital_2_preset_helper
         )
         self.main_window = parent
