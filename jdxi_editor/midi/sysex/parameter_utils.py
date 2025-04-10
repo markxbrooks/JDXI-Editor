@@ -1,7 +1,7 @@
 from typing import List
 
 from jdxi_editor.midi.data.address.parameter import ModelID, CommandParameter, START_OF_SYSEX, END_OF_SYSEX, \
-    MODEL_ID
+    MODEL_ID, RolandID
 
 
 def create_parameter_message(

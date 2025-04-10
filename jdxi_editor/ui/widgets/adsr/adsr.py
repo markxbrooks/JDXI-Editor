@@ -19,7 +19,7 @@ from typing import Dict, Union
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
-from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter, ProgramGroupParameter, TemporaryParameter
+from jdxi_editor.midi.data.address.parameter import JdxiAddressParameter, ProgramGroupParameter, TemporaryParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
@@ -73,8 +73,8 @@ class ADSR(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.group = group if group else ProgramGroupParameter.ANALOG_OSC_GROUP
-        self.area = area if area else ProgramAreaParameter.DIGITAL_1
+        self.group = group if group else ProgramGroupParameter.PROGRAM_COMMON
+        self.area = area if area else JdxiAddressParameter.DIGITAL_1
         self.part = part if part else TemporaryParameter.ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
@@ -171,6 +171,7 @@ class ADSR(QWidget):
 
         # Create vertical slider
         slider = Slider(label, display_min, display_max, vertical=True, show_value_label=False)
+
         slider.setValue(value)
         # Connect value changed signal
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))

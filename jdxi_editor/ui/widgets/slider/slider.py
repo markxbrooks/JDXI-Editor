@@ -122,6 +122,7 @@ class Slider(QWidget):
             layout.addWidget(self.value_label)
         if is_bipolar:
             self.value_label.setText("0")
+        self.slider.setInvertedAppearance(False)
 
     def setValueDisplayFormat(self, format_func):
         """Set custom format function for value display"""

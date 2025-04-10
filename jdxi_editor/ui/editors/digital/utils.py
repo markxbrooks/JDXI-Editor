@@ -4,7 +4,7 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
-from jdxi_editor.midi.data.address.parameter import TemporaryParameter, ProgramAreaParameter
+from jdxi_editor.midi.data.address.parameter import TemporaryParameter, JdxiAddressParameter
 
 
 def _log_debug_info(data, successes, failures, enabled):
@@ -31,8 +31,8 @@ def _filter_sysex_keys(sysex_data: dict) -> dict:
 
 def _get_synth_number(synth_tone: str) -> int:
     """ get synth number based on the synth tone """
-    synth_map = {ProgramAreaParameter.DIGITAL_1: 1,
-                 ProgramAreaParameter.DIGITAL_2: 2}
+    synth_map = {JdxiAddressParameter.DIGITAL_1: 1,
+                 JdxiAddressParameter.DIGITAL_2: 2}
     synth_no = synth_map.get(synth_tone)
     if synth_no is None:
         logging.warning(f"Unknown synth tone: {synth_tone}")
@@ -78,14 +78,14 @@ def _log_synth_area_info(sysex_data):
 
 def _is_digital_synth_area(area_code):
     """Check if the area code corresponds to a digital synth area."""
-    return area_code in [ProgramAreaParameter.DIGITAL_1]
+    return area_code in [JdxiAddressParameter.DIGITAL_1]
 
 
 def _sysex_area_matches(sysex_data: dict, area) -> bool:
     """Check if the SysEx data matches the expected area."""
     temp_area = sysex_data.get("TEMPORARY_AREA")
     area_map = {
-        ProgramAreaParameter.DIGITAL_1: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        JdxiAddressParameter.DIGITAL_1: "TEMPORARY_DIGITAL_SYNTH_1_AREA",
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
@@ -97,7 +97,7 @@ def _sysex_area2_matches(sysex_data: dict, area) -> bool:
     """Check if the SysEx data matches the expected area."""
     temp_area = sysex_data.get("TEMPORARY_AREA")
     area_map = {
-        ProgramAreaParameter.DIGITAL_2: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+        JdxiAddressParameter.DIGITAL_2: "TEMPORARY_DIGITAL_SYNTH_2_AREA",
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area

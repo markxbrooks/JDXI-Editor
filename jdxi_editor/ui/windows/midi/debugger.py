@@ -42,8 +42,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter, TemporaryParameter, \
-    TonePartialParameter
+from jdxi_editor.midi.data.address.parameter import CommandParameter, JdxiAddressParameter, TemporaryParameter, \
+    DrumKitParameter
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
@@ -52,8 +52,8 @@ from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        ProgramAreaParameter.DIGITAL_1: "Temporary Tone",
-        ProgramAreaParameter.EFFECTS_AREA: "System Area",
+        JdxiAddressParameter.DIGITAL_1: "Temporary Tone",
+        JdxiAddressParameter.EFFECTS_AREA: "System Area",
     }
 
     SYNTHS = {
@@ -69,10 +69,10 @@ class MIDIDebugger(QMainWindow):
     }
 
     SECTIONS = {
-        TonePartialParameter.COMMON: "COMMON",
-        TonePartialParameter.PARTIAL_1: "PART_1",
-        TonePartialParameter.PARTIAL_2: "PART_2",
-        TonePartialParameter.PARTIAL_3: "PART_3",
+        DrumKitParameter.COMMON: "COMMON",
+        DrumKitParameter.PARTIAL_1: "PART_1",
+        DrumKitParameter.PARTIAL_2: "PART_2",
+        DrumKitParameter.PARTIAL_3: "PART_3",
      }
 
     GROUPS = {

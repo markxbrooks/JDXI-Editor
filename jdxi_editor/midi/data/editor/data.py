@@ -31,7 +31,7 @@ from typing import List
 
 from jdxi_editor.midi.data.address.parameter import (
     TemporaryParameter,
-    ProgramAreaParameter,
+    JdxiAddressParameter,
     ProgramGroupParameter)
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
@@ -69,7 +69,7 @@ class SynthData:
 class DrumsSynthData(SynthData):
     def __init__(self, partial_number: int = 1):
         super().__init__(
-            area=ProgramAreaParameter.DIGITAL_1,
+            area=JdxiAddressParameter.DIGITAL_1,
             part=TemporaryParameter.DRUM_KIT_PART,
             group=ProgramGroupParameter.DRUM_DEFAULT_PARTIAL,
             instrument_icon_folder="drum_kits",
@@ -88,7 +88,7 @@ class DrumsSynthData(SynthData):
 class DigitalSynthData(SynthData):
     def __init__(self, synth_number: int, partial_number: int = 1):
         super().__init__(
-            area=ProgramAreaParameter.DIGITAL_1,
+            area=JdxiAddressParameter.DIGITAL_1,
             part=TemporaryParameter.DIGITAL_PART_2 if synth_number == 2 else TemporaryParameter.DIGITAL_PART_1,
             group=ProgramGroupParameter.PROGRAM_COMMON,
             instrument_icon_folder="digital_synths",
@@ -112,7 +112,7 @@ class DigitalSynthData(SynthData):
 class AnalogSynthData(SynthData):
     def __init__(self):
         super().__init__(
-            area=ProgramAreaParameter.DIGITAL_1,
+            area=JdxiAddressParameter.DIGITAL_1,
             part=TemporaryParameter.ANALOG_PART,
             group=ProgramGroupParameter.PROGRAM_COMMON,
             instrument_icon_folder="analog_synths",

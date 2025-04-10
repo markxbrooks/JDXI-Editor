@@ -27,8 +27,6 @@ Methods:
 from enum import Enum
 from typing import Optional
 
-# from jdxi_editor.midi.data.constants.sysex import PROGRAM_GROUP
-
 
 class SynthParameter(Enum):
 
@@ -90,7 +88,7 @@ class SynthParameter(Enum):
         :return: int default area
         to be subclassed
         """
-        return PROGRAM_GROUP, 0x00
+        return 0x00
 
     def convert_to_midi(self, value: int) -> int:
         """Convert parameter value to MIDI range (0-127)."""

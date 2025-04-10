@@ -19,7 +19,7 @@ from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import QWidget, QSpinBox, QGridLayout, QSlider
 from typing import Dict, Union
 
-from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter, ProgramGroupParameter, TemporaryParameter
+from jdxi_editor.midi.data.address.parameter import JdxiAddressParameter, ProgramGroupParameter, TemporaryParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot, ADSRParameter
@@ -50,8 +50,8 @@ class PitchEnvelope(QWidget):
 
         self.controls: Dict[SynthParameter, Slider] = {}
         self.midi_helper = midi_helper
-        self.area = area if area else ProgramAreaParameter.DIGITAL_1
-        self.group = group if group else ProgramGroupParameter.ANALOG_OSC_GROUP
+        self.area = area if area else JdxiAddressParameter.DIGITAL_1
+        self.group = group if group else ProgramGroupParameter.PROGRAM_COMMON
         self.part = part if part else TemporaryParameter.ANALOG_PART
         self.updating_from_spinbox = False
         self.plot = ADSRPlot(width=300, height=250)

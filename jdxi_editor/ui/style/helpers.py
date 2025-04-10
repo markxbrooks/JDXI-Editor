@@ -55,6 +55,8 @@ def generate_polyend_sequencer_button_style(self, is_checked: bool, is_current: 
         }}
         QPushButton:hover {{
             background-color: {'#2980b9' if is_checked else '#34495e'};
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+            stop:0 #660000, stop:1 #ff1a1a);
         }}
         QPushButton:pressed {{
             background-color: {'#2472a4' if is_checked else '#2c3e50'};
@@ -107,6 +109,8 @@ def generate_button_style(
             }}
             QPushButton:hover {{
                 background-color: {hover};
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 #660000, stop:1 {hover});
             }}
             QPushButton:border_pressed, QPushButton:checked {{
                 background-color: {background_pressed};
@@ -288,6 +292,9 @@ def generate_editor_style(
             height: 12px;
             margin: -9px 0;
             border-radius: 9px;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 {slider_neon_gradient_stop}, stop:1 {slider_neon});
+            border-radius: 3px;
         }}
         QSlider::handle:vertical:disabled{{
             background: {slider_handle};
@@ -299,7 +306,7 @@ def generate_editor_style(
         }}
         /* Glowing effect when moving */
         QSlider::sub-page:horizontal {{
-            background: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
+            background: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
                          stop:0 {slider_neon_gradient_stop}, stop:1 {slider_neon});
             border-radius: 3px;
         }}
@@ -337,8 +344,8 @@ def get_button_styles(active):
             border: 4px solid #ff6666;
         }
         QPushButton:hover {
-            background-color: #1A1A1A;
-            border: 4px solid #ff4d4d;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+            stop:0 #660000, stop:1 #ff1a1a);
         }
     """
     if active:

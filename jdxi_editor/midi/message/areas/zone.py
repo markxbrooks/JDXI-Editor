@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter
+from jdxi_editor.midi.data.address.parameter import CommandParameter, JdxiAddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -9,5 +9,5 @@ class ZoneMessage(RolandSysEx):
     """Program Zone parameter message"""
 
     command: int = CommandParameter.DT1
-    area: int = ProgramAreaParameter.PROGRAM
+    area: int = JdxiAddressParameter.PROGRAM
     section: int = 0x01  # Zone section

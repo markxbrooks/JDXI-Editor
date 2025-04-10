@@ -37,7 +37,7 @@ Example usage:
     To retrieve a list of all program and tone name requests:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS
 """
-from jdxi_editor.midi.data.address.parameter import CommandParameter, ProgramAreaParameter, START_OF_SYSEX, \
+from jdxi_editor.midi.data.address.parameter import CommandParameter, JdxiAddressParameter, START_OF_SYSEX, \
     END_OF_SYSEX, JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
 
@@ -47,7 +47,7 @@ SYSEX_CONSTANTS = {
     "END": to_hex_string(END_OF_SYSEX),
     "RQ1_COMMAND_11": to_hex_string(CommandParameter.RQ1),
     "JDXI_HEADER": bytes_to_hex_string(JD_XI_HEADER_LIST),
-    "TEMPORARY_PROGRAM_AREA": to_hex_string(ProgramAreaParameter.PROGRAM),
+    "TEMPORARY_PROGRAM_AREA": to_hex_string(JdxiAddressParameter.PROGRAM),
     "TEMPORARY_TONE_AREA": "19",
     "PROGRAM_COMMON_AREA": "00",
     "FOUR_ZERO_BYTES": "00 00 00 00",

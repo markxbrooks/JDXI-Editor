@@ -26,16 +26,15 @@ Methods:
 
 
 import logging
-import time
+import platform
 from typing import Union
 
 from PySide6.QtGui import QShortcut, QKeySequence
-from pubsub import pub
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
-from PySide6.QtCore import Qt, QSettings, Signal, QTimer
+from PySide6.QtCore import Qt, QSettings, QTimer
 
-from jdxi_editor.midi.data.address.parameter import ProgramAreaParameter
+from jdxi_editor.midi.data.address.parameter import JdxiAddressParameter
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import SynthType
@@ -60,7 +59,6 @@ from jdxi_editor.ui.editors import (
     EffectsCommonEditor,
     VocalFXEditor,
     ProgramEditor,
-    MidiFileEditor,
 )
 from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_program_name_by_id
 from jdxi_editor.ui.editors.io.player import MidiPlayer
@@ -69,6 +67,7 @@ from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.windows.jdxi.helpers.port import _find_jdxi_port
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.message_debug import MIDIMessageDebug
@@ -79,16 +78,6 @@ from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
-
-
-def _find_jdxi_port(ports, port_type):
-    """Helper function to find address JD-Xi MIDI port."""
-    jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
-    for port in ports:
-        if any(name in port.lower() for name in jdxi_names):
-            logging.info(f"Auto-detected JD-Xi {port_type}: {port}")
-            return port
-    return None
 
 
 class JdxiInstrument(JdxiUi):
@@ -246,7 +235,8 @@ class JdxiInstrument(JdxiUi):
             synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
             for synth_type, presets, channel in preset_configs
         }
-        self.setStyleSheet(JDXIStyle.TRANSPARENT)
+        if platform.system() == "Windows":
+            self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
 
     def _handle_program_change(self):
         """ perform data request """
@@ -958,7 +948,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            sysex_message = RolandSysEx(area=ProgramAreaParameter.DIGITAL_1,
+            sysex_message = RolandSysEx(area=JdxiAddressParameter.DIGITAL_1,
                                         section=part_address,
                                         group=group_address,
                                         param=param_address,
@@ -976,7 +966,7 @@ class JdxiInstrument(JdxiUi):
             if not part_address:
                 part_address = ARP_PART
             if not area:
-                area = ProgramAreaParameter.PROGRAM
+                area = JdxiAddressParameter.PROGRAM
             # Ensure value is included in the MIDI message
             sysex_message = RolandSysEx(area=area,
                                         section=part_address,

@@ -41,13 +41,13 @@ from jdxi_editor.midi.data.editor.data import (
     DrumsSynthData,
     AnalogSynthData,
 )
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.type import SynthType
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.indicator import LEDIndicator
-from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.windows.jdxi.containers.arpeggiator import add_arpeggiator_buttons
 from jdxi_editor.ui.windows.jdxi.containers.effects import add_effects_container
 from jdxi_editor.ui.windows.jdxi.containers.octave import add_octave_buttons
