@@ -12,13 +12,9 @@ class AmpEnvelopeSlider(NRPNSlider):
     def __init__(
         self,
         midi_helper,
-        label: str = "Reson.",
+        label: str = "Envelope.",
     ):
-        nrpn_map = {
-            1: 124,  # NRPN LSB for Partial 1
-            2: 125,  # Partial 2
-            3: 126,  # Partial 3
-        }
+        nrpn_map = DigitalControlChange.get_nrpn_map("Envelope")
         super().__init__(
             midi_helper=midi_helper,
             label=label,

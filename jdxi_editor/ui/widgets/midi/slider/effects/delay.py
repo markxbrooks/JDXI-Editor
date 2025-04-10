@@ -1,5 +1,5 @@
 """filter slider to modify nrpn parameters"""
-
+from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 
 
@@ -12,11 +12,7 @@ class DelaySlider(ControlChangeSlider):
         midi_helper,
         label: str = "Delay",
     ):
-        nrpn_map = {
-            1: 13,  # NRPN LSB for Partial 1
-            2: 13,  # Partial 2
-            3: 13,  # Partial 3
-        }
+        nrpn_map = DigitalControlChange.get_cc_map("Delay")
         super().__init__(
             midi_helper=midi_helper,
             label=label,
