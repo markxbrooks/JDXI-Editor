@@ -1,6 +1,6 @@
 from typing import List
 
-from jdxi_editor.midi.data.address.parameter import ModelID, CommandParameter, START_OF_SYSEX, END_OF_SYSEX, \
+from jdxi_editor.midi.data.address.address import ModelID, CommandID, START_OF_SYSEX, END_OF_SYSEX, \
     MODEL_ID, RolandID
 
 
@@ -13,7 +13,7 @@ def create_parameter_message(
         RolandID.ROLAND_ID,  # 41
         RolandID.DEVICE_ID,  # 10
         *MODEL_ID,  # 00 00 00 0E
-        CommandParameter.DT1,  # 12
+        CommandID.DT1,  # 12
         area,  # 19 (Digital Synth)
         part,  # 01 (Part 1)
         group,  # 20 (OSC)

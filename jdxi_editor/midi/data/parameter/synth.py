@@ -25,7 +25,7 @@ Methods:
 """
 
 from enum import Enum
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class SynthParameter(Enum):
@@ -82,13 +82,13 @@ class SynthParameter(Enum):
         # Return the parameter member by name, or None if not found
         return SynthParameter.__members__.get(param_name, None)
 
-    def get_address_for_partial(self, partial_num: int = 0):
+    def get_address_for_partial(self, partial_num: int = 0) -> Tuple[int, int]:
         """
         :param partial_num: int
         :return: int default area
         to be subclassed
         """
-        return 0x00
+        return 0x00, 0x00
 
     def convert_to_midi(self, value: int) -> int:
         """Convert parameter value to MIDI range (0-127)."""

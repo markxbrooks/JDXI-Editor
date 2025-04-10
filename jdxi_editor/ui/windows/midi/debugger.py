@@ -42,8 +42,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.parameter import CommandParameter, JdxiAddressParameter, TemporaryParameter, \
-    DrumKitParameter
+from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress, TemporaryToneAddressOffset, \
+    DrumKitAddressOffset
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
@@ -52,27 +52,27 @@ from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        JdxiAddressParameter.DIGITAL_1: "Temporary Tone",
-        JdxiAddressParameter.EFFECTS_AREA: "System Area",
+        MemoryAreaAddress.DIGITAL_1: "Temporary Tone",
+        MemoryAreaAddress.EFFECTS_AREA: "System Area",
     }
 
     SYNTHS = {
-        TemporaryParameter.DIGITAL_PART_1: "DIGITAL_PART_1",
-        TemporaryParameter.DIGITAL_PART_2: "DIGITAL_PART_2",
-        TemporaryParameter.ANALOG_PART: "ANALOG_PART",
-        TemporaryParameter.DRUM_KIT_PART: "DRUM_KIT_PART"
+        TemporaryToneAddressOffset.DIGITAL_PART_1: "DIGITAL_PART_1",
+        TemporaryToneAddressOffset.DIGITAL_PART_2: "DIGITAL_PART_2",
+        TemporaryToneAddressOffset.ANALOG_PART: "ANALOG_PART",
+        TemporaryToneAddressOffset.DRUM_KIT_PART: "DRUM_KIT_PART"
     }
 
     COMMANDS = {
-        CommandParameter.RQ1: "RQ1 (Data Request)",
-        CommandParameter.DT1: "DT1 (Data Transfer)"
+        CommandID.RQ1: "RQ1 (Data Request)",
+        CommandID.DT1: "DT1 (Data Transfer)"
     }
 
     SECTIONS = {
-        DrumKitParameter.COMMON: "COMMON",
-        DrumKitParameter.PARTIAL_1: "PART_1",
-        DrumKitParameter.PARTIAL_2: "PART_2",
-        DrumKitParameter.PARTIAL_3: "PART_3",
+        DrumKitAddressOffset.COMMON: "COMMON",
+        DrumKitAddressOffset.PARTIAL_1: "PART_1",
+        DrumKitAddressOffset.PARTIAL_2: "PART_2",
+        DrumKitAddressOffset.PARTIAL_3: "PART_3",
      }
 
     GROUPS = {

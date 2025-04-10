@@ -57,7 +57,6 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-
 import logging
 from typing import Optional, Dict
 import json
@@ -71,26 +70,21 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QWidget,
     QTabWidget,
-    QFormLayout,
     QPushButton,
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.parameter import TemporaryParameter
+from jdxi_editor.midi.data.address.address import TemporaryToneAddressOffset
 from jdxi_editor.midi.data.editor.data import DrumsSynthData
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
-from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.sysex.requests import DRUMS_REQUESTS
+from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
-from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value, log_midi_info
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
-from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
@@ -100,7 +94,7 @@ class DrumCommonEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, preset_helper=None, parent=None
+            self, midi_helper: Optional[MidiIOHelper] = None, preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
 
@@ -111,7 +105,6 @@ class DrumCommonEditor(SynthEditor):
         # midi parameters
         self.partial_num = 1
         self._init_synth_data()
-
 
         self.current_data = None
         self.previous_data = None
@@ -202,72 +195,10 @@ class DrumCommonEditor(SynthEditor):
         self.instrument_image_group.setMinimumWidth(350)
         upper_layout.addWidget(self.instrument_image_group)
 
-        # Common controls
-        common_group = QGroupBox("Common")
-        common_layout = QFormLayout()
-
-        self.assign_type_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
-        )
-        common_layout.addRow(self.assign_type_combo)
-
-        # Mute Group control
-        self.mute_group_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.MUTE_GROUP,
-            "Mute Group",
-            ["OFF"] + [str(i) for i in range(1, 31)],
-            list(range(0, 31)),
-        )
-
-        common_layout.addRow(self.mute_group_combo)
-
-        # Sustain control
-        self.sustain_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_ENV_MODE,
-            "Partial ENV Mode",
-            ["SUSTAIN", "NO-SUSTAIN"],
-            [0, 1],
-        )
-
-        # Kit Level control
-        self.kit_level_slider = self._create_parameter_slider(
-            DrumCommonParameter.KIT_LEVEL, "Kit Level"
-        )
-        common_layout.addRow(self.kit_level_slider)
-
-        # Partial Pitch Bend Range
-        self.pitch_bend_range_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
-        )
-        common_layout.addRow(self.pitch_bend_range_slider)
-
-        # Partial Receive Expression
-        self.receive_expression_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_RECEIVE_EXPRESSION,
-            "Receive Expression",
-            ["OFF", "ON"],
-            [0, 1],
-        )
-
-        common_layout.addRow(self.receive_expression_combo)
-
-        # Partial Receive Hold-1
-        self.receive_hold_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_RECEIVE_HOLD_1,
-            "Receive Hold-1",
-            ["OFF", "ON"],
-            [0, 1],
-        )
-
-        common_layout.addRow(self.receive_hold_combo)
-
-        # One Shot Mode
-        self.one_shot_mode_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
-        )
-        common_layout.addRow(self.one_shot_mode_combo)
-
-        common_group.setLayout(common_layout)
+        common_group = DrumCommonSection(self.controls,
+                                         self._create_parameter_combo_box,
+                                         self._create_parameter_slider,
+                                         self.midi_helper)
         upper_layout.addWidget(common_group)
 
         # Create scroll area for partials
@@ -294,7 +225,7 @@ class DrumCommonEditor(SynthEditor):
             logging.error("MIDI helper not initialized")
         self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        self.data_request() # this is giving an error
+        self.data_request()  # this is giving an error
 
     def _init_synth_data(self):
         """Initialize synth-specific data."""
@@ -348,6 +279,7 @@ class DrumCommonEditor(SynthEditor):
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
         logging.info("Updating UI components from SysEx data")
+
         # failures, successes = [], []
 
         def _parse_sysex_json(json_data):
@@ -393,7 +325,7 @@ class DrumCommonEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") == TemporaryParameter.DRUM_KIT_PART
+            return sysex_data.get("TEMPORARY_AREA") == TemporaryToneAddressOffset.DRUM_KIT_PART
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""

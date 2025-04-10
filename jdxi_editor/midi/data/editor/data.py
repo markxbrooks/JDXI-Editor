@@ -29,10 +29,10 @@ Example usage:
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.midi.data.address.parameter import (
-    TemporaryParameter,
-    JdxiAddressParameter,
-    ProgramGroupParameter)
+from jdxi_editor.midi.data.address.address import (
+    TemporaryToneAddressOffset,
+    MemoryAreaAddress,
+    ProgramAddressGroup)
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -69,9 +69,9 @@ class SynthData:
 class DrumsSynthData(SynthData):
     def __init__(self, partial_number: int = 1):
         super().__init__(
-            area=JdxiAddressParameter.DIGITAL_1,
-            part=TemporaryParameter.DRUM_KIT_PART,
-            group=ProgramGroupParameter.DRUM_DEFAULT_PARTIAL,
+            area=MemoryAreaAddress.DIGITAL_1,
+            part=TemporaryToneAddressOffset.DRUM_KIT_PART,
+            group=ProgramAddressGroup.DRUM_DEFAULT_PARTIAL,
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
             midi_requests=DRUMS_REQUESTS,
@@ -88,9 +88,9 @@ class DrumsSynthData(SynthData):
 class DigitalSynthData(SynthData):
     def __init__(self, synth_number: int, partial_number: int = 1):
         super().__init__(
-            area=JdxiAddressParameter.DIGITAL_1,
-            part=TemporaryParameter.DIGITAL_PART_2 if synth_number == 2 else TemporaryParameter.DIGITAL_PART_1,
-            group=ProgramGroupParameter.PROGRAM_COMMON,
+            area=MemoryAreaAddress.DIGITAL_1,
+            part=TemporaryToneAddressOffset.DIGITAL_PART_2 if synth_number == 2 else TemporaryToneAddressOffset.DIGITAL_PART_1,
+            group=ProgramAddressGroup.PROGRAM_COMMON,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
             midi_requests=DIGITAL2_REQUESTS if synth_number == 2 else DIGITAL1_REQUESTS,
@@ -112,9 +112,9 @@ class DigitalSynthData(SynthData):
 class AnalogSynthData(SynthData):
     def __init__(self):
         super().__init__(
-            area=JdxiAddressParameter.DIGITAL_1,
-            part=TemporaryParameter.ANALOG_PART,
-            group=ProgramGroupParameter.PROGRAM_COMMON,
+            area=MemoryAreaAddress.DIGITAL_1,
+            part=TemporaryToneAddressOffset.ANALOG_PART,
+            group=ProgramAddressGroup.PROGRAM_COMMON,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",
             midi_requests=[PROGRAM_COMMON_REQUEST, ANALOG_REQUEST],

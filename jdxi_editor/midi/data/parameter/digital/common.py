@@ -40,7 +40,7 @@ Usage example:
 
 from typing import Optional
 
-from jdxi_editor.midi.data.address.parameter import ProgramGroupParameter
+from jdxi_editor.midi.data.address.address import ProgramAddressGroup
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
@@ -183,4 +183,4 @@ class DigitalCommonParameter(SynthParameter):
         return DigitalCommonParameter.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_num: int = 0):
-        return ProgramGroupParameter.PROGRAM_COMMON, 0
+        return ProgramAddressGroup.PROGRAM_COMMON, 0x00

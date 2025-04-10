@@ -27,7 +27,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import List
 
-from jdxi_editor.midi.data.address.parameter import ModelID, CommandParameter, START_OF_SYSEX, END_OF_SYSEX, \
+from jdxi_editor.midi.data.address.address import ModelID, CommandID, START_OF_SYSEX, END_OF_SYSEX, \
     PLACEHOLDER_BYTE, RolandID
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
@@ -45,7 +45,7 @@ class RolandSysEx(SysExMessage):
         ModelID.MODEL_ID_3,
         ModelID.MODEL_ID_4
     ])
-    command: int = CommandParameter.DT1  # Default to Data Set 1 (DT1)
+    command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
     area: int = 0x00
     section: int = 0x00
     group: int = 0x00
@@ -57,8 +57,8 @@ class RolandSysEx(SysExMessage):
     synth_type: int = field(init=False, default=None)
     part: int = field(init=False, default=None)
 
-    dt1_command: int = CommandParameter.DT1  # Write command
-    rq1_command: int = CommandParameter.RQ1  # Read command
+    dt1_command: int = CommandID.DT1  # Write command
+    rq1_command: int = CommandID.RQ1  # Read command
 
     def __post_init__(self):
         """Initialize address and data based on parameters."""
@@ -165,7 +165,7 @@ class JDXiSysEx(RolandSysEx):
         default_factory=lambda: [0x00, 0x00, 0x00, 0x0E]
     )  # JD-Xi model ID
     device_id: int = 0x10  # Default device ID
-    command: int = CommandParameter.DT1  # Default to DT1 command
+    command: int = CommandID.DT1  # Default to DT1 command
     address: List[int] = field(
         default_factory=lambda: [0x00, 0x00, 0x00, 0x00]
     )  # 4-byte address
@@ -245,7 +245,7 @@ class JDXiSysEx(RolandSysEx):
 class ParameterMessage(JDXiSysEx):
     """Base class for parameter messages"""
 
-    command: int = CommandParameter.DT1
+    command: int = CommandID.DT1
 
     def __post_init__(self):
         """Handle parameter value conversion"""
@@ -557,7 +557,7 @@ class AnalogToneMessage(ParameterMessage):
             ModelID.MODEL_ID_2,
             ModelID.MODEL_ID_3,
             ModelID.MODEL_ID_4,  # Model ID
-            CommandParameter.DT1,  # DT1 Command
+            CommandID.DT1,  # DT1 Command
             self.area,
             self.part,
             self.group,
@@ -627,7 +627,7 @@ def create_sysex_message(
 ) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
-        command=CommandParameter.DT1,
+        command=CommandID.DT1,
         area=area,
         section=section,
         group=group,
@@ -643,7 +643,7 @@ def create_patch_load_message(
     return [
         # Bank Select MSB
         JDXiSysEx(
-            command=CommandParameter.DT1,
+            command=CommandID.DT1,
             area=ProgramAreaParameter.SYSTEM,  # Setup area 0x01
             section=0x00,
             group=0x00,
@@ -652,7 +652,7 @@ def create_patch_load_message(
         ),
         # Bank Select LSB
         JDXiSysEx(
-            command=CommandParameter.DT1,
+            command=CommandID.DT1,
             area=0x01,  # Setup area
             section=0x00,
             group=0x00,
@@ -661,7 +661,7 @@ def create_patch_load_message(
         ),
         # Program Change
         JDXiSysEx(
-            command=CommandParameter.DT1,
+            command=CommandID.DT1,
             area=0x01,  # Setup area
             section=0x00,
             group=0x00,
@@ -679,7 +679,7 @@ def create_patch_save_message(
 ) -> JDXiSysEx:
     """Create address message to save patch data from temporary to permanent memory"""
     return JDXiSysEx(
-        command=CommandParameter.DT1,
+        command=CommandID.DT1,
         area=dest_area,  # Destination area (permanent memory)
         section=dest_section,
         group=0x00,
@@ -698,7 +698,7 @@ def create_patch_request_message(
 ) -> JDXiSysEx:
     """Create address message to request patch data"""
     return JDXiSysEx(
-        command=CommandParameter.RQ1,  # Data request command
+        command=CommandID.RQ1,  # Data request command
         area=area,
         section=section,
         group=0x00,

@@ -15,16 +15,16 @@ logging.info(f"Parsed Data: {parsed_data}")
 import logging
 from typing import Optional, List, Type, Dict
 
-from jdxi_editor.midi.data.address.parameter import ProgramParameter, DrumKitParameter, ToneParameter, \
-    TemporaryParameter, Parameter, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST, JdxiAddressParameter
+from jdxi_editor.midi.data.address.address import ProgramAddressOffset, DrumKitParameter, UnknownToneAddress, \
+    TemporaryToneAddressOffset, Address, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST, MemoryAreaAddress
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 
 
 import logging
 from typing import Optional, List, Type, Dict
 
-from jdxi_editor.midi.data.address.parameter import ProgramParameter, DrumKitParameter, ToneParameter, \
-    TemporaryParameter, Parameter, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.address import ProgramAddressOffset, DrumKitParameter, UnknownToneAddress, \
+    TemporaryToneAddressOffset, Address, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 
 
@@ -49,7 +49,7 @@ class SysExParser:
         address = data[len(JD_XI_HEADER_LIST)]
         print(f"Extracted address: {address}")  # Log address for debugging
         try:
-            parameter = JdxiAddressParameter.get_parameter_by_address(int(address))
+            parameter = MemoryAreaAddress.get_parameter_by_address(int(address))
             print(parameter)
         except Exception as ex:
             print(f"Exception {ex} occurred")
@@ -70,23 +70,23 @@ class SysExParser:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         return header_data == JD_XI_HEADER_LIST
 
-    def _parse_parameter(self, parameter: Parameter, data: List[int]):
+    def _parse_parameter(self, parameter: Address, data: List[int]):
         """Parses the parameter data according to the parameter type."""
-        if isinstance(parameter, ProgramParameter):
+        if isinstance(parameter, ProgramAddressOffset):
             return self._parse_program_parameter(parameter, data)
         elif isinstance(parameter, DrumKitParameter):
             return self._parse_drum_kit_parameter(parameter, data)
-        elif isinstance(parameter, ToneParameter):
+        elif isinstance(parameter, UnknownToneAddress):
             return self._parse_tone_parameter(parameter, data)
-        elif isinstance(parameter, TemporaryParameter):
+        elif isinstance(parameter, TemporaryToneAddressOffset):
             return self._parse_temporary_parameter(parameter, data)
         # Add other parameter types parsing as needed
         return {}
 
-    def _parse_program_parameter(self, parameter: ProgramParameter, data: List[int]):
+    def _parse_program_parameter(self, parameter: ProgramAddressOffset, data: List[int]):
         """Parse data for Program parameters."""
         # Example: Extract and process data for PART_DIGITAL_SYNTH_1
-        if parameter == ProgramParameter.PART_DIGITAL_SYNTH_1:
+        if parameter == ProgramAddressOffset.PART_DIGITAL_SYNTH_1:
             return {"synth_1_data": data}
         # Add other program parameter parsing logic here
         return {}
@@ -99,26 +99,26 @@ class SysExParser:
         # Add other drum kit parameter parsing logic here
         return {}
 
-    def _parse_tone_parameter(self, parameter: ToneParameter, data: List[int]):
+    def _parse_tone_parameter(self, parameter: UnknownToneAddress, data: List[int]):
         """Parse data for Tone parameters."""
         # Example: Extract and process data for Tone parameters
-        if parameter == ToneParameter.TONE_1_LEVEL:
+        if parameter == UnknownToneAddress.TONE_1_LEVEL:
             return {"tone_1_level": data[0]}  # Assuming data[0] holds the tone level for TONE_1_LEVEL
-        elif parameter == ToneParameter.TONE_2_LEVEL:
+        elif parameter == UnknownToneAddress.TONE_2_LEVEL:
             return {"tone_2_level": data[0]}  # Assuming data[0] holds the tone level for TONE_2_LEVEL
         # Add other tone parameter parsing logic here
         return {}
 
-    def _parse_temporary_parameter(self, parameter: TemporaryParameter, data: List[int]):
+    def _parse_temporary_parameter(self, parameter: TemporaryToneAddressOffset, data: List[int]):
         """Parse data for Temporary parameters."""
         # Example: Extract and process data for Temporary parameters
-        if parameter == TemporaryParameter.DIGITAL_PART_1:
+        if parameter == TemporaryToneAddressOffset.DIGITAL_PART_1:
             return {"digital_part_1_data": data}
-        elif parameter == TemporaryParameter.DIGITAL_PART_2:
+        elif parameter == TemporaryToneAddressOffset.DIGITAL_PART_2:
             return {"digital_part_2_data": data}
-        elif parameter == TemporaryParameter.ANALOG_PART:
+        elif parameter == TemporaryToneAddressOffset.ANALOG_PART:
             return {"analog_part_data": data}
-        elif parameter == TemporaryParameter.DRUM_KIT_PART:
+        elif parameter == TemporaryToneAddressOffset.DRUM_KIT_PART:
             return {"drum_kit_part_data": data}
         # Add other temporary parameter parsing logic here
         return {}

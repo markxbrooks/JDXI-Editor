@@ -26,7 +26,7 @@ from typing import Dict
 
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.data.address.parameter import ProgramGroupParameter
+from jdxi_editor.midi.data.address.address import ProgramAddressGroup
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -87,7 +87,7 @@ class SynthBase(QWidget):
             elif self.group:
                 group = self.group
             else:
-                group = ProgramGroupParameter.PROGRAM_COMMON
+                group = ProgramAddressGroup.PROGRAM_COMMON
             logging.info(
                 f"Sending param={param.name}, partial={self.part}, group={self.group}, value={value}"
             )

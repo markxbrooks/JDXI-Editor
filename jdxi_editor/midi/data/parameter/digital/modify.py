@@ -26,7 +26,7 @@ if param:
     print(param.name, param.min_val, param.max_val)
 
 """
-from jdxi_editor.midi.data.address.parameter import SuperNATURALSynthTone
+from jdxi_editor.midi.data.address.address import SuperNATURALAddressOffset
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
@@ -76,4 +76,4 @@ class DigitalModifyParameter(SynthParameter):
         return value
 
     def get_address_for_partial(self, partial_num: int = 0):
-        return SuperNATURALSynthTone.TONE_MODIFY, 0
+        return SuperNATURALAddressOffset.TONE_MODIFY, 0x00
