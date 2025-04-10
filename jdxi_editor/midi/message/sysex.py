@@ -35,8 +35,8 @@ from enum import Enum
 from typing import List, Optional
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.parameter import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST,\
-    CommandParameter, ToneParameter, ProgramGroupParameter
+from jdxi_editor.midi.data.address.address import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST,\
+    CommandID, UnknownToneAddress, ProgramAddressGroup
 from jdxi_editor.midi.message.midi import MidiMessage
 
 # MIDI Constants
@@ -46,12 +46,12 @@ JD_XI_HEADER_BYTES = bytes(JD_XI_HEADER_LIST)
 class SysexParameter(Enum):
     """SysEx Parameters for Roland JD-Xi"""
 
-    DT1_COMMAND_12 = ("Data Set 1", CommandParameter.DT1)
-    RQ1_COMMAND_11 = ("Data Request 1", CommandParameter.RQ1)
+    DT1_COMMAND_12 = ("Data Set 1", CommandID.DT1)
+    RQ1_COMMAND_11 = ("Data Request 1", CommandID.RQ1)
 
-    PROGRAM_COMMON = ("PROGRAM_COMMON", ProgramGroupParameter.PROGRAM_COMMON)
-    TONE_1_LEVEL = ("TONE_1_LEVEL", ToneParameter.TONE_1_LEVEL)
-    TONE_2_LEVEL = ("TONE_2_LEVEL", ToneParameter.TONE_2_LEVEL)
+    PROGRAM_COMMON = ("PROGRAM_COMMON", ProgramAddressGroup.PROGRAM_COMMON)
+    TONE_1_LEVEL = ("TONE_1_LEVEL", UnknownToneAddress.TONE_1_LEVEL)
+    TONE_2_LEVEL = ("TONE_2_LEVEL", UnknownToneAddress.TONE_2_LEVEL)
 
     def __new__(cls, *args):
         if len(args) == 1:

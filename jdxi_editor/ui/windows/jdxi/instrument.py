@@ -34,7 +34,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, QTimer
 
-from jdxi_editor.midi.data.address.parameter import JdxiAddressParameter
+from jdxi_editor.midi.data.address.address import MemoryAreaAddress
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import JDXISynth
@@ -42,7 +42,7 @@ from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.constants.arpeggio import ARP_PART, ARP_GROUP
+from jdxi_editor.midi.data.address.arpeggio import ARP_GROUP, ArpeggioAddress
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -948,7 +948,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            sysex_message = RolandSysEx(area=JdxiAddressParameter.DIGITAL_1,
+            sysex_message = RolandSysEx(area=MemoryAreaAddress.DIGITAL_1,
                                         section=part_address,
                                         group=group_address,
                                         param=param_address,
@@ -964,9 +964,9 @@ class JdxiInstrument(JdxiUi):
             return False
         try:
             if not part_address:
-                part_address = ARP_PART
+                part_address = ArpeggioAddress.ARP_PART
             if not area:
-                area = JdxiAddressParameter.PROGRAM
+                area = MemoryAreaAddress.PROGRAM
             # Ensure value is included in the MIDI message
             sysex_message = RolandSysEx(area=area,
                                         section=part_address,
@@ -986,7 +986,7 @@ class JdxiInstrument(JdxiUi):
                 param = 0x02  # Key Hold parameter, maybe!
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-                self.send_midi_parameter(ARP_GROUP, param, value)  # Send the parameter
+                self.send_midi_parameter(ArpeggioAddress.ARP_GROUP, param, value)  # Send the parameter
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
 
         except Exception as ex:
@@ -999,7 +999,7 @@ class JdxiInstrument(JdxiUi):
                 param_address = ArpeggioParameter.ARPEGGIO_SWITCH.value  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
                 self.send_midi_parameter(
-                    ARP_GROUP, param_address, value
+                    ArpeggioAddress.ARP_GROUP, param_address, value
                 )  # Send the parameter
                 logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 request = bytes.fromhex("F0 41 10 00 00 00 0E 12 18 00 30 03 01 34 F7")

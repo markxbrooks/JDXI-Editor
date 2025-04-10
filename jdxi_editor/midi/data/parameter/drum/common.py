@@ -13,7 +13,7 @@ Classes:
 """
 
 
-from typing import Optional
+from typing import Optional, Tuple
 
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
@@ -49,15 +49,17 @@ class DrumCommonParameter(SynthParameter):
     @property
     def display_name(self) -> str:
         """Get display name for the parameter"""
-        return {
-            self.KIT_LEVEL: "Kit level",
-        }.get(self, self.name.replace("_", " ").title())
+        address_to_name = {
+            self.KIT_LEVEL[0]: "Kit level",
+            # Add other mappings as needed
+        }
+        return address_to_name.get(self.address, self.name.replace("_", " ").title())
 
-    def get_address_for_partial(self, partial_num: int = 0) -> int:
+    def get_address_for_partial(self, partial_num: int = 0) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {0: 0x00}
         group = group_map.get(partial_num, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
-        return group
+        return group, 0x00
 
     @property
     def is_switch(self) -> bool:

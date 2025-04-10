@@ -15,7 +15,7 @@ msg = ReverbMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.parameter import CommandParameter, JdxiAddressParameter
+from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -23,8 +23,8 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class ReverbMessage(RolandSysEx):
     """Program Reverb parameter message"""
 
-    command: int = CommandParameter.DT1
-    area: int = JdxiAddressParameter.PROGRAM  # 0x18: Program area
+    command: int = CommandID.DT1
+    area: int = MemoryAreaAddress.PROGRAM  # 0x18: Program area
     section: int = ProgramParameter.REVERB  # 0x08: Reverb section
     group: int = 0x00  # Always 0x00
     param: int = 0x00  # Parameter number

@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.midi.data.address.parameter import TemporaryParameter, ProgramGroupParameter
+from jdxi_editor.midi.data.address.address import TemporaryToneAddressOffset, ProgramAddressGroup
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase
@@ -36,13 +36,13 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 class PartialEditor(SynthBase):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_number=1, part=TemporaryParameter.DIGITAL_PART_1, parent=None):
+    def __init__(self, midi_helper=None, partial_number=1, part=TemporaryToneAddressOffset.DIGITAL_PART_1, parent=None):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
         self.area = None
         self.part = part
-        self.group = ProgramGroupParameter.PROGRAM_COMMON
+        self.group = ProgramAddressGroup.PROGRAM_COMMON
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_helper = None

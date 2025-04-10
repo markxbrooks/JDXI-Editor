@@ -39,7 +39,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.data.address.parameter import TemporaryParameter, JdxiAddressParameter, ProgramGroupParameter
+from jdxi_editor.midi.data.address.address import TemporaryToneAddressOffset, MemoryAreaAddress, ProgramAddressGroup
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -68,8 +68,8 @@ class EffectsCommonEditor(SynthEditor):
         #self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.area = JdxiAddressParameter.PROGRAM
-        self.part = ProgramGroupParameter.PROGRAM_COMMON
+        self.area = MemoryAreaAddress.PROGRAM
+        self.part = ProgramAddressGroup.PROGRAM_COMMON
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 

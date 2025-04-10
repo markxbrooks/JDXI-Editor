@@ -20,7 +20,7 @@ msg = DrumKitMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.parameter import CommandParameter
+from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -28,7 +28,7 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class DrumKitMessage(RolandSysEx):
     """Drum Kit parameter message"""
 
-    command: int = CommandParameter.DT1
+    command: int = CommandID.DT1
     area: int = ProgramAreaParameter.DIGITAL_1  # Temporary area
     tone_type: int = TemporaryParameter.DRUM_KIT_PART  # Drum Kit
     section: int = 0x00  # Section (Common or Pad offset)
