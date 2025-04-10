@@ -2,6 +2,7 @@
 
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
+from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 
 
 class AmpEnvelopeSlider(NRPNSlider):
