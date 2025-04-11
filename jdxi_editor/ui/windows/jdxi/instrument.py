@@ -950,7 +950,7 @@ class JdxiInstrument(JdxiUi):
             sysex_message = RolandSysEx(area=MemoryAreaAddress.TEMPORARY_TONE,
                                         section=part_address,
                                         group=group_address,
-                                        param=param_address,
+                                        address_lsb=param_address,
                                         value=octave_value)
             return self.midi_helper.send_midi_message(sysex_message)
 
@@ -970,7 +970,7 @@ class JdxiInstrument(JdxiUi):
             sysex_message = RolandSysEx(area=area,
                                         section=part_address,
                                         group=group_address,
-                                        param=param_address,
+                                        address_lsb=param_address,
                                         value=value)
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:

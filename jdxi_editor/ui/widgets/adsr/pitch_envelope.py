@@ -251,7 +251,7 @@ class PitchEnvelope(QWidget):
             sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=group,
-                                        param=param_address,
+                                        address_lsb=param_address,
                                         value=value,
                                         size=size)
             return self.midi_helper.send_midi_message(sysex_message)

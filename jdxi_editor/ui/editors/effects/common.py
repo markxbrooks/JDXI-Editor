@@ -337,7 +337,7 @@ class EffectsCommonEditor(SynthEditor):
                 sysex_message = RolandSysEx(area=self.address_msb,
                                             section=self.part,
                                             group=common_param.address,
-                                            param=param.address,
+                                            address_lsb=param.address,
                                             value=midi_value)
                 return self.midi_helper.send_midi_message(sysex_message)
             except Exception as ex:

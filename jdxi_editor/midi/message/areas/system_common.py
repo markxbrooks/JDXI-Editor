@@ -37,7 +37,7 @@ class SystemCommonMessage(RolandSysEx):
     area: int = MemoryAreaAddress.SYSTEM  # 0x02: System area
     section: int = ProgramAddressGroup.PROGRAM_COMMON  # 0x00: Common section
     group: int = 0x00  # Always 0x00
-    param: int = 0x00  # Parameter number
+    address_lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):

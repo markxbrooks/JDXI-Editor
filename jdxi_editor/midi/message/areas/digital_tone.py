@@ -41,7 +41,7 @@ class DigitalToneMessage(RolandSysEx):
     area: int = ProgramAreaParameter.TEMPORARY_TONE  # Temporary area
     tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
     section: int = 0x00  # Section from DigitalToneSection
-    param: int = 0x00  # Parameter number
+    address_lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
