@@ -97,7 +97,7 @@ class SynthBase(QWidget):
                 area=self.address_msb,
                 section=self.address_umb,
                 group=group,
-                param=param.address,
+                address_lsb=param.address,
                 value=value,
                 size=size
             )

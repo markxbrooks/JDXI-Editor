@@ -366,7 +366,7 @@ class AnalogSynthEditor(SynthEditor):
             sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=self.group,
-                                        param=AnalogParameter.OSC_WAVEFORM.value[0],
+                                        address_lsb=AnalogParameter.OSC_WAVEFORM.value[0],
                                         value=waveform.midi_value)
             self.midi_helper.send_midi_message(sysex_message)
 
@@ -387,7 +387,7 @@ class AnalogSynthEditor(SynthEditor):
             sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=self.group,
-                                        param=AnalogParameter.LFO_SHAPE.value[0],
+                                        address_lsb=AnalogParameter.LFO_SHAPE.value[0],
                                         value=value)
             self.midi_helper.send_midi_message(sysex_message)
             # Reset all buttons to default style

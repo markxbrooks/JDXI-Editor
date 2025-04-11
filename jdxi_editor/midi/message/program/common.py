@@ -12,7 +12,7 @@ class ProgramCommonParameterMessage(RolandSysEx):
     area: int = MemoryAreaAddress.PROGRAM  # 0x18: Program area
     section: int = 0x00  # 0x00: Common section
     group: int = 0x00  # Always 0x00
-    param: int = 0x00  # Parameter number
+    address_lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):

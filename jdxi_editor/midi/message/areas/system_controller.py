@@ -37,7 +37,7 @@ class SystemControllerMessage(RolandSysEx):
     area: int = ProgramAreaParameter.SETUP  # 0x02: Setup area
     section: int = SystemAddressOffset.SYSTEM_CONTROLLER  # 0x03: Controller section
     group: int = 0x00  # Always 0x00
-    param: int = 0x00  # Parameter number
+    address_lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):

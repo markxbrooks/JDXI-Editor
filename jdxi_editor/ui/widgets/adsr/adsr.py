@@ -255,7 +255,7 @@ class ADSR(QWidget):
             sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=group,
-                                        param=param_address,
+                                        address_lsb=param_address,
                                         value=value)
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as e:

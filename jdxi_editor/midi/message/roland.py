@@ -49,7 +49,7 @@ class RolandSysEx(SysExMessage):
     address_msb: int = 0x00
     address_umb: int = 0x00
     address_lmb: int = 0x00
-    param: int = 0x00
+    address_lsb: int = 0x00
     value: int = 0x00
     size: int = 1
 
@@ -62,7 +62,7 @@ class RolandSysEx(SysExMessage):
 
     def __post_init__(self):
         """Initialize address and data based on parameters."""
-        self.address = [self.address_msb, self.address_umb, self.address_lmb, self.param]
+        self.address = [self.address_msb, self.address_umb, self.address_lmb, self.address_lsb]
         if isinstance(self.value, int) and self.size == 4:
             self.data = split_value_to_nibbles(self.value)
         else:
@@ -93,7 +93,7 @@ class RolandSysEx(SysExMessage):
             raise ValueError("Address must be a list of 4 bytes (area, synth_type, part, group).")
 
         # Update instance variables
-        self.address_msb, self.address_umb, self.address_lmb, self.param = address
+        self.address_msb, self.address_umb, self.address_lmb, self.address_lsb = address
 
         # Convert the value into nibbles (if it's 4 bytes long)
         if isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF:  # Check for 4-byte integer
@@ -335,31 +335,31 @@ class PartMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.param == 0x0B:  # Part Coarse Tune
+        if self.address_lsb == 0x0B:  # Part Coarse Tune
             return [value + 64]  # Convert -48/+48 to 16-112
-        elif self.param == 0x0C:  # Part Fine Tune
+        elif self.address_lsb == 0x0C:  # Part Fine Tune
             return [value + 64]  # Convert -50/+50 to 14-114
-        elif self.param == 0x13:  # Part Cutoff Offset
+        elif self.address_lsb == 0x13:  # Part Cutoff Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x14:  # Part Resonance Offset
+        elif self.address_lsb == 0x14:  # Part Resonance Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x15:  # Part Attack Time Offset
+        elif self.address_lsb == 0x15:  # Part Attack Time Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x16:  # Part Decay Time Offset
+        elif self.address_lsb == 0x16:  # Part Decay Time Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x17:  # Part Release Time Offset
+        elif self.address_lsb == 0x17:  # Part Release Time Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x18:  # Part Vibrato Rate
+        elif self.address_lsb == 0x18:  # Part Vibrato Rate
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x19:  # Part Vibrato Depth
+        elif self.address_lsb == 0x19:  # Part Vibrato Depth
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x1A:  # Part Vibrato Delay
+        elif self.address_lsb == 0x1A:  # Part Vibrato Delay
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.param == 0x1B:  # Part Octave Shift
+        elif self.address_lsb == 0x1B:  # Part Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
-        elif self.param == 0x1C:  # Part Velocity Sens Offset
+        elif self.address_lsb == 0x1C:  # Part Velocity Sens Offset
             return [value + 64]  # Convert -63/+63 to 1-127
-        elif self.param == 0x11:  # Part Portamento Time (2 bytes)
+        elif self.address_lsb == 0x11:  # Part Portamento Time (2 bytes)
             if value == 128:  # TONE setting
                 return [0x00, 0x80]
             else:
@@ -371,7 +371,7 @@ class PartMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, "param") else 0
+        param = cls.address_lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x0B:  # Part Coarse Tune
@@ -404,9 +404,9 @@ class ZoneMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.param == 0x19:  # Zone Octave Shift
+        if self.address_lsb == 0x19:  # Zone Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
-        elif self.param == 0x03:  # Arpeggio Switch
+        elif self.address_lsb == 0x03:  # Arpeggio Switch
             return [value & 0x01]  # Ensure boolean value
 
         # Default handling for other parameters
@@ -415,7 +415,7 @@ class ZoneMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, "param") else 0
+        param = cls.address_lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x19:  # Zone Octave Shift
@@ -437,7 +437,7 @@ class ControllerMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.param == 0x07:  # Arpeggio Octave Range
+        if self.address_lsb == 0x07:  # Arpeggio Octave Range
             return [value + 64]  # Convert -3/+3 to 61-67
 
         # Default handling for other parameters
@@ -446,7 +446,7 @@ class ControllerMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, "param") else 0
+        param = cls.address_lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x07:  # Arpeggio Octave Range
@@ -466,7 +466,7 @@ class DigitalToneCommonMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.param == 0x15:  # Octave Shift
+        if self.address_lsb == 0x15:  # Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
 
         # Default handling for other parameters
@@ -475,7 +475,7 @@ class DigitalToneCommonMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, "param") else 0
+        param = cls.address_lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x15:  # Octave Shift
@@ -514,9 +514,9 @@ class DigitalTonePartialMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.param == 0x00:  # OSC Wave
+        if self.address_lsb == 0x00:  # OSC Wave
             return [value & 0x07]  # Ensure 3-bit value (0-7)
-        elif self.param == 0x01:  # OSC Wave Variation
+        elif self.address_lsb == 0x01:  # OSC Wave Variation
             return [value & 0x03]  # Ensure 2-bit value (0-2)
 
         # Default handling for other parameters
@@ -525,7 +525,7 @@ class DigitalTonePartialMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, "param") else 0
+        param = cls.address_lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x00:  # OSC Wave
@@ -544,7 +544,7 @@ class AnalogToneMessage(ParameterMessage):
     address_msb: int
     address_umb: int
     address_lmb: int
-    param: int
+    address_lsb: int
     value: int
 
     def to_message_list(self) -> List[int]:
@@ -599,9 +599,9 @@ class DrumKitPartialMessage(ParameterMessage):
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.param == 0x10:  # Fine Tune
+        if self.address_lsb == 0x10:  # Fine Tune
             return [value + 64]  # Convert -50/+50 to 14-114
-        elif self.param == 0x14:  # Alternate Pan
+        elif self.address_lsb == 0x14:  # Alternate Pan
             return [value + 64]  # Convert L63-63R to 1-127
 
         # Default handling for other parameters
@@ -610,7 +610,7 @@ class DrumKitPartialMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.param if hasattr(cls, "param") else 0
+        param = cls.address_lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x10:  # Fine Tune
@@ -631,7 +631,7 @@ def create_sysex_message(
         area=area,
         section=section,
         group=group,
-        param=param,
+        address_lsb=param,
         value=value,
     )
 
@@ -647,7 +647,7 @@ def create_patch_load_message(
             area=ProgramAreaParameter.SYSTEM,  # Setup area 0x01
             section=0x00,
             group=0x00,
-            param=0x04,  # Bank MSB parameter
+            address_lsb=0x04,  # Bank MSB parameter
             value=bank_msb,
         ),
         # Bank Select LSB
@@ -656,7 +656,7 @@ def create_patch_load_message(
             area=0x01,  # Setup area
             section=0x00,
             group=0x00,
-            param=0x05,  # Bank LSB parameter
+            address_lsb=0x05,  # Bank LSB parameter
             value=bank_lsb,
         ),
         # Program Change
@@ -665,7 +665,7 @@ def create_patch_load_message(
             area=0x01,  # Setup area
             section=0x00,
             group=0x00,
-            param=0x06,  # Program number parameter
+            address_lsb=0x06,  # Program number parameter
             value=program,
         ),
     ]
@@ -683,7 +683,7 @@ def create_patch_save_message(
         area=dest_area,  # Destination area (permanent memory)
         section=dest_section,
         group=0x00,
-        param=0x00,
+        address_lsb=0x00,
         data=[  # Source address
             source_area,  # Source area (temporary memory)
             source_section,
@@ -702,6 +702,6 @@ def create_patch_request_message(
         area=area,
         section=section,
         group=0x00,
-        param=0x00,
+        address_lsb=0x00,
         data=[size] if size else [],  # Some requests need address size parameter
     )

@@ -70,7 +70,7 @@ class PartialEditor(SynthBase):
                 area=self.address_msb,
                 section=self.part,
                 group=group,
-                param=param.address,
+                address_lsb=param.address,
                 value=value,
                 size=size,
             )
