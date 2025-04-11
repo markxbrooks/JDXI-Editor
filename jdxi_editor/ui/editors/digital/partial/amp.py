@@ -107,7 +107,7 @@ class DigitalAmpSection(QWidget):
             sustain_param=DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
             release_param=DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=self.part,
             group=group_address,
         )

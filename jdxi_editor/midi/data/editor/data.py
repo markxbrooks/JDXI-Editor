@@ -69,7 +69,7 @@ class SynthData:
 class DrumsSynthData(SynthData):
     def __init__(self, partial_number: int = 1):
         super().__init__(
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=TemporaryToneAddressOffset.DRUM_KIT_PART,
             group=ProgramAddressGroup.DRUM_DEFAULT_PARTIAL,
             instrument_icon_folder="drum_kits",
@@ -88,7 +88,7 @@ class DrumsSynthData(SynthData):
 class DigitalSynthData(SynthData):
     def __init__(self, synth_number: int, partial_number: int = 1):
         super().__init__(
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=TemporaryToneAddressOffset.DIGITAL_PART_2 if synth_number == 2 else TemporaryToneAddressOffset.DIGITAL_PART_1,
             group=ProgramAddressGroup.PROGRAM_COMMON,
             instrument_icon_folder="digital_synths",
@@ -112,7 +112,7 @@ class DigitalSynthData(SynthData):
 class AnalogSynthData(SynthData):
     def __init__(self):
         super().__init__(
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=TemporaryToneAddressOffset.ANALOG_PART,
             group=ProgramAddressGroup.PROGRAM_COMMON,
             instrument_icon_folder="analog_synths",

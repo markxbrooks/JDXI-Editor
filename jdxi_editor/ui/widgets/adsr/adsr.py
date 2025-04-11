@@ -74,7 +74,7 @@ class ADSR(QWidget):
             "sustain_level": 0.8,
         }
         self.group = group if group else ProgramAddressGroup.PROGRAM_COMMON
-        self.area = area if area else MemoryAreaAddress.DIGITAL_1
+        self.area = area if area else MemoryAreaAddress.TEMPORARY_TONE
         self.part = part if part else TemporaryToneAddressOffset.ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False

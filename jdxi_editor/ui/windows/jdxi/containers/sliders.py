@@ -14,6 +14,7 @@ from jdxi_editor.ui.widgets.midi.slider.lfo import (
     LFOFilterDepthSlider,
     LFOPitchSlider,
     LFORateSlider)
+from jdxi_editor.ui.widgets.midi.slider.lfo.shape import LFOShapeSlider
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -91,8 +92,9 @@ def add_slider_container(central_widget, midi_helper):
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
     lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
 
-    effect1_slider = Effect1Slider(midi_helper, label="Efct.1")
-    effect2_slider = Effect2Slider(midi_helper, label="Efct.2")
+    effect1_slider = Effect1Slider(midi_helper, label="Efx1")
+    effect2_slider = Effect2Slider(midi_helper, label="Efx2")
+    lfo_shape_slider = LFOShapeSlider(midi_helper, label="LFSh")
 
     delay_slider = DelaySlider(midi_helper, label="Delay")
     reverb_slider = ReverbSlider(midi_helper, label="Reverb")
@@ -119,6 +121,9 @@ def add_slider_container(central_widget, midi_helper):
     effect2_container = create_slider_with_label(
         "Effc.2", effect2_slider
     )
+    lfo_shape_container = create_slider_with_label(
+        "LFO", lfo_shape_slider
+    )
 
     delay_container = create_slider_with_label(
         "Dely.", delay_slider
@@ -141,9 +146,9 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.addWidget(
         create_columns_with_label("LFO", lfo_filter_container, lfo_amp_container)
     )
-    # slider_row_layout.addWidget(
-    #     create_columns_with_label("Effects", effect1_container, effect2_container)
-    # )
+    #slider_row_layout.addWidget(
+    #     create_columns_with_label("Effects", effect1_container, lfo_shape_container)
+    #)
     slider_row_layout.addWidget(
         create_columns_with_label("Effects", delay_container, reverb_container)
     )

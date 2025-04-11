@@ -118,7 +118,7 @@ class DigitalFilterSection(QWidget):
             sustain_param=DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=self.part,
             group=group_address,
         )
