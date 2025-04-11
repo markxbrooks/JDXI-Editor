@@ -220,7 +220,7 @@ class AnalogSynthEditor(SynthEditor):
             self._on_filter_mode_changed,
             self.send_control_change,
             self.midi_helper,
-            self.area,
+            self.address_msb,
             self.part,
             self.group
         )
@@ -232,7 +232,7 @@ class AnalogSynthEditor(SynthEditor):
 
         self.amp_section = AmpSection(
             self.midi_helper,
-            self.area,
+            self.address_msb,
             self.part,
             self.group,
             self._create_parameter_slider,
@@ -290,9 +290,9 @@ class AnalogSynthEditor(SynthEditor):
         self.synth_data = AnalogSynthData()
         data = self.synth_data
 
-        self.area = data.area
-        self.group = data.group
-        self.part = data.part
+        self.address_msb = data.address_msb
+        self.address_lmb = data.address_lmb
+        self.address_umb = data.address_umb
         self.setWindowTitle(data.window_title)
 
         self.preset_type = data.preset_type
@@ -363,7 +363,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_waveform_selected(self, waveform: AnalogOscWave):
         """Handle waveform button selection """
         if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.area,
+            sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=self.group,
                                         param=AnalogParameter.OSC_WAVEFORM.value[0],
@@ -384,7 +384,7 @@ class AnalogSynthEditor(SynthEditor):
     def _on_lfo_shape_changed(self, value: int):
         """Handle LFO shape change"""
         if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.area,
+            sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=self.group,
                                         param=AnalogParameter.LFO_SHAPE.value[0],

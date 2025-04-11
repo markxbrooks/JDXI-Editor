@@ -40,9 +40,9 @@ class PartialEditor(SynthBase):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
-        self.area = None
-        self.part = part
-        self.group = ProgramAddressGroup.PROGRAM_COMMON
+        self.address_msb = None
+        self.address_umb = part
+        self.address_lmb = ProgramAddressGroup.PROGRAM_COMMON
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_helper = None
@@ -67,7 +67,7 @@ class PartialEditor(SynthBase):
                 size = 1
 
             sysex_message = RolandSysEx(
-                area=self.area,
+                area=self.address_msb,
                 section=self.part,
                 group=group,
                 param=param.address,

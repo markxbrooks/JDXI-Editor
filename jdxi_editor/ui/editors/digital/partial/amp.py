@@ -28,7 +28,7 @@ class DigitalAmpSection(QWidget):
         super().__init__()
         self.partial_number = partial_number
         self.midi_helper = midi_helper
-        self.part = part
+        self.address_umb = part
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
         self.setup_ui()

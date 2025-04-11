@@ -25,9 +25,9 @@ class AnalogFilterSection(QWidget):
         self._on_filter_mode_changed = on_filter_mode_changed
         self.send_control_change = send_control_change
         self.midi_helper = midi_helper
-        self.area = area
-        self.part = part
-        self.group = group
+        self.address_msb = area
+        self.address_umb = part
+        self.address_lmb = group
         self.init_ui()
 
     def init_ui(self):
@@ -87,7 +87,7 @@ class AnalogFilterSection(QWidget):
             sustain_param=AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AnalogParameter.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=self.area,
+            area=self.address_msb,
             part=self.part,
             group=self.group
         )

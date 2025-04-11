@@ -47,7 +47,7 @@ class DigitalToneMessage(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # Temporary area (0x19)
+            self.address_msb,  # Temporary area (0x19)
             self.tone_type,  # Digital 1 or 2 (0x01/0x02)
             self.section,  # Section (Common/Partial/Modify)
             self.param,  # Parameter number

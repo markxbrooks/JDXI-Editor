@@ -276,7 +276,7 @@ class Effect1Message(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # Program area (0x18)
+            self.address_msb,  # Program area (0x18)
             self.section,  # Effect 1 section (0x02)
             self.group,  # Always 0x00
             self.param,  # Parameter number
@@ -346,7 +346,7 @@ class Effect2Message(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # Program area (0x18)
+            self.address_msb,  # Program area (0x18)
             self.section,  # Effect 2 section (0x04)
             self.group,  # Always 0x00
             self.param,  # Parameter number

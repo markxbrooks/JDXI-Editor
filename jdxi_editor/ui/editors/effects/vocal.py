@@ -58,9 +58,9 @@ class VocalFXEditor(SynthEditor):
         self.setWindowTitle("Vocal FX")
         self.setMinimumHeight(750)
         self.setMinimumWidth(650)
-        self.area = VocalAddress.FX_AREA
-        self.part = VocalAddress.FX_PART
-        self.group = VocalAddress.FX_GROUP
+        self.address_msb = VocalAddress.FX_AREA
+        self.address_umb = VocalAddress.FX_PART
+        self.address_lmb = VocalAddress.FX_GROUP
         self.setStyleSheet(JDXIStyle.EDITOR + JDXIStyle.TABS)
 
         # Main layout

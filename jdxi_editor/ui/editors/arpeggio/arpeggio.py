@@ -69,9 +69,9 @@ class ArpeggioEditor(SynthEditor):
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.setFixedWidth(450)
-        self.area = ArpeggioAddress.TEMPORARY_PROGRAM
-        self.part = ArpeggioAddress.ARP_PART
-        self.group = ArpeggioAddress.ARP_GROUP
+        self.address_msb = ArpeggioAddress.TEMPORARY_PROGRAM
+        self.address_umb = ArpeggioAddress.ARP_PART
+        self.address_lmb = ArpeggioAddress.ARP_GROUP
         self.partial_number = 0
         self.instrument_icon_folder = "arpeggiator"
         self.default_image = "arpeggiator2.png"

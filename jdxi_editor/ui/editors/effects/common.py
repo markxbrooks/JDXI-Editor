@@ -68,8 +68,8 @@ class EffectsCommonEditor(SynthEditor):
         #self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.area = MemoryAreaAddress.PROGRAM
-        self.part = ProgramAddressGroup.PROGRAM_COMMON
+        self.address_msb = MemoryAreaAddress.PROGRAM
+        self.address_umb = ProgramAddressGroup.PROGRAM_COMMON
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 
@@ -334,7 +334,7 @@ class EffectsCommonEditor(SynthEditor):
                 return False
             try:
                 # Send MIDI message
-                sysex_message = RolandSysEx(area=self.area,
+                sysex_message = RolandSysEx(area=self.address_msb,
                                             section=self.part,
                                             group=common_param.address,
                                             param=param.address,

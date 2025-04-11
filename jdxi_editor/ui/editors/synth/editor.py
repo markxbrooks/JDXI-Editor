@@ -107,7 +107,7 @@ class SynthEditor(SynthBase):
         )
         # midi message bytes
         # To be over-ridden by subclasses
-        self.area = None
+        self.address_msb = None
         """ One of:
             PROGRAM_AREA, 
             ANALOG_SYNTH_AREA, 
@@ -116,8 +116,8 @@ class SynthEditor(SynthBase):
             ANALOG_SYNTH_AREA, 
             DRUM_KIT_AREA
         """
-        self.part = None
-        self.group = None
+        self.address_umb = None
+        self.address_lmb = None
         # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 

@@ -35,7 +35,7 @@ class DelayMessage(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # Program area (0x18)
+            self.address_msb,  # Program area (0x18)
             self.section,  # Delay section (0x06)
             self.group,  # Always 0x00
             self.param,  # Parameter number

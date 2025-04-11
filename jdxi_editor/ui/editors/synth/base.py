@@ -41,9 +41,9 @@ class SynthBase(QWidget):
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = []
-        self.group = None
-        self.area = None
-        self.part = None
+        self.address_lmb = None
+        self.address_msb = None
+        self.address_umb = None
         self.controls: Dict[
             SynthParameter, QWidget
         ] = {}
@@ -82,20 +82,20 @@ class SynthBase(QWidget):
             # Get parameter area and address with partial offset
             if hasattr(param, "get_address_for_partial"):
                 group, _ = param.get_address_for_partial(0)
-            elif self.group:
-                group = self.group
+            elif self.address_lmb:
+                group = self.address_lmb
             else:
                 group = ProgramAddressGroup.PROGRAM_COMMON
             logging.info(
-                f"Sending param={param.name}, partial={self.part}, group={self.group}, value={value}"
+                f"Sending param={param.name}, partial={self.address_umb}, group={self.address_lmb}, value={value}"
             )
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
             else:
                 size = 1
             sysex_message = RolandSysEx(
-                area=self.area,
-                section=self.part,
+                area=self.address_msb,
+                section=self.address_umb,
                 group=group,
                 param=param.address,
                 value=value,

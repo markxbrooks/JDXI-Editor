@@ -38,7 +38,7 @@ class DrumKitMessage(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # Temporary area (0x19)
+            self.address_msb,  # Temporary area (0x19)
             self.tone_type,  # Drum Kit (0x10)
             self.section,  # Section (Common/Pad offset)
             self.param,  # Parameter number

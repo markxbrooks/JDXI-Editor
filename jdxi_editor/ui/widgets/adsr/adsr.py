@@ -73,9 +73,9 @@ class ADSR(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.group = group if group else ProgramAddressGroup.PROGRAM_COMMON
-        self.area = area if area else MemoryAreaAddress.TEMPORARY_TONE
-        self.part = part if part else TemporaryToneAddressOffset.ANALOG_PART
+        self.address_lmb = group if group else ProgramAddressGroup.PROGRAM_COMMON
+        self.address_msb = area if area else MemoryAreaAddress.TEMPORARY_TONE
+        self.address_umb = part if part else TemporaryToneAddressOffset.ANALOG_PART
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
 
@@ -252,7 +252,7 @@ class ADSR(QWidget):
         try:
             group = self.group  # Common parameters area
             param_address = param.address
-            sysex_message = RolandSysEx(area=self.area,
+            sysex_message = RolandSysEx(area=self.address_msb,
                                         section=self.part,
                                         group=group,
                                         param=param_address,
