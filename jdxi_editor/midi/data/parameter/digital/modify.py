@@ -75,5 +75,5 @@ class DigitalModifyParameter(SynthParameter):
 
         return value
 
-    def get_address_for_partial(self, partial_num: int = 0):
+    def get_address_for_partial(self, partial_number: int = 0):
         return SuperNATURALAddressOffset.TONE_MODIFY, 0x00

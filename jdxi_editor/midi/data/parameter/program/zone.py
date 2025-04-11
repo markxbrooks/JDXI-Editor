@@ -58,10 +58,10 @@ class ProgramZoneParameter(SynthParameter):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
-    def get_address_for_partial(self, partial_num: int = 0) -> Tuple[int, int]:
+    def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {0: 0x30, 1: 0x31, 2: 0x32, 3: 0x33}
-        group = group_map.get(partial_num, 0x30)  # Default to 0x30 if partial_name is not 1, 2, or 3
+        group = group_map.get(partial_number, 0x30)  # Default to 0x30 if partial_name is not 1, 2, or 3
         return group, self.address
 
     @property
