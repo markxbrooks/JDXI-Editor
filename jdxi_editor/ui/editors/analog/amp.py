@@ -75,9 +75,9 @@ class AmpSection(QWidget):
             sustain_param=AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
             release_param=AnalogParameter.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=self.address_msb,
-            part=self.part,
-            group=self.group
+            address_msb=self.address_msb,
+            address_umb=self.address_umb,
+            address_lmb=self.address_lmb
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)

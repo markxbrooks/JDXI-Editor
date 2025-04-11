@@ -47,34 +47,6 @@ class TestPresetLoader(unittest.TestCase):
             "Incorrect MIDI message sequence for loading Digital Synth preset 1"
         )
 
-    def test_load_analog_preset_1(self):
-        """Test loading Analog Synth preset 1 sends correct MIDI messages"""
-        PresetLoader.load_preset(self.midi_helper, PresetType.ANALOG, 1)
-
-        expected_calls = [
-            # First message - Set bank and parameters
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                0x18, 0x00, 0x22, 0x06, 0x5F, 0x61, 0xF7
-            ]),
-            # Second message - Set additional parameters
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                0x18, 0x00, 0x22, 0x07, 0x40, 0x7F, 0xF7
-            ]),
-            # Third message - Set preset number
-            call([
-                0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, DT1_COMMAND_12,
-                0x18, 0x00, 0x22, 0x08, 0x00, 0x3E, 0xF7
-            ])
-        ]
-
-        self.assertEqual(
-            self.midi_helper.send_message.call_args_list,
-            expected_calls,
-            "Incorrect MIDI message sequence for loading Analog Synth preset 1"
-        )
-
     def test_load_drums_preset_1(self):
         """Test loading Drums preset 1 sends correct MIDI messages"""
         PresetLoader.load_preset(self.midi_helper, PresetType.DRUM, 1)

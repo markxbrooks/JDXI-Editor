@@ -36,7 +36,9 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 class PartialEditor(SynthBase):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_number=1, part=TemporaryToneAddressOffset.DIGITAL_PART_1, parent=None):
+    def __init__(self, midi_helper=None, partial_number=1,
+                 part=TemporaryToneAddressOffset.DIGITAL_PART_1,
+                 parent=None):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
@@ -55,11 +57,11 @@ class PartialEditor(SynthBase):
         try:
             # Get parameter area and address with partial offset
             group, _ = getattr(
-                param, "get_address_for_partial", lambda _: (self.group, None)
+                param, "get_address_for_partial", lambda _: (self.address_lmb, None)
             )(self.partial_number)
 
             logging.info(
-                f"Sending param={param.name}, partial={self.part}, group={group}, value={value}"
+                f"Sending param={param.name}, partial={self.address_umb}, group={group}, value={value}"
             )
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
@@ -67,9 +69,9 @@ class PartialEditor(SynthBase):
                 size = 1
 
             sysex_message = RolandSysEx(
-                area=self.address_msb,
-                section=self.part,
-                group=group,
+                address_msb=self.address_msb,
+                address_umb=self.address_umb,
+                address_lmb=group,
                 address_lsb=param.address,
                 value=value,
                 size=size,

@@ -49,6 +49,7 @@ PLACEHOLDER_BYTE = 0x00
 
 T = TypeVar("T", bound="Address")
 
+
 class Address(IntEnum):
     """
     Base class for Roland-style hierarchical memory address enums (e.g., 0x18, 0x19, etc.)
@@ -150,7 +151,6 @@ class MemoryAreaAddress(Address):
     TEMPORARY_TONE = 0x19
     DRUM = 0x72
     EFFECTS_AREA = 0x16
-    ANALOG = 0x1B  # Analog synth area
 
 
 @unique

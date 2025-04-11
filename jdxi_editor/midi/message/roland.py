@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from jdxi_editor.midi.data.address.address import ModelID, CommandID, START_OF_SYSEX, END_OF_SYSEX, \
-    PLACEHOLDER_BYTE, RolandID
+    PLACEHOLDER_BYTE, RolandID, MemoryAreaAddress
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
@@ -162,7 +162,10 @@ class JDXiSysEx(RolandSysEx):
     """JD-Xi specific SysEx message"""
 
     model_id: List[int] = field(
-        default_factory=lambda: [0x00, 0x00, 0x00, 0x0E]
+        default_factory=lambda: [ModelID.MODEL_ID_1,
+                                 ModelID.MODEL_ID_2,
+                                 ModelID.MODEL_ID_3,
+                                 ModelID.MODEL_ID_4]
     )  # JD-Xi model ID
     device_id: int = 0x10  # Default device ID
     command: int = CommandID.DT1  # Default to DT1 command
@@ -431,7 +434,7 @@ class ZoneMessage(ParameterMessage):
 class ControllerMessage(ParameterMessage):
     """Program Controller parameter message"""
 
-    address_msb: int = 0x18  # Program area
+    address_msb: int = MemoryAreaAddress.PROGRAM  # Program area
     address_umb: int = 0x40  # Controller section
 
     def convert_value(self, value: int) -> List[int]:
@@ -460,7 +463,7 @@ class ControllerMessage(ParameterMessage):
 class DigitalToneCommonMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Common parameter message"""
 
-    address_msb: int = 0x19  # Temporary area
+    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x00  # Common section
 
     def convert_value(self, value: int) -> List[int]:
@@ -489,7 +492,7 @@ class DigitalToneCommonMessage(ParameterMessage):
 class DigitalToneModifyMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Modify parameter message"""
 
-    address_msb: int = 0x19  # Temporary area
+    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x50  # Modify section
 
     def convert_value(self, value: int) -> List[int]:
@@ -508,7 +511,7 @@ class DigitalToneModifyMessage(ParameterMessage):
 class DigitalTonePartialMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Partial parameter message"""
 
-    address_msb: int = 0x19  # Temporary area
+    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
 
     def convert_value(self, value: int) -> List[int]:
@@ -559,9 +562,9 @@ class AnalogToneMessage(ParameterMessage):
             ModelID.MODEL_ID_4,  # Model ID
             CommandID.DT1,  # DT1 Command
             self.address_msb,
-            self.part,
+            self.address_umb,
             self.address_lmb,
-            self.param,
+            self.address_lsb,
             self.value,
             PLACEHOLDER_BYTE,  # Checksum placeholder
             END_OF_SYSEX,  # End of SysEx
@@ -572,7 +575,7 @@ class AnalogToneMessage(ParameterMessage):
 class DrumKitCommonMessage(ParameterMessage):
     """Drum Kit Common parameter message"""
 
-    address_msb: int = 0x19  # Temporary area
+    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x10  # Drum Kit section
     address_lmb: int = 0x00  # Common area
 
@@ -592,7 +595,7 @@ class DrumKitCommonMessage(ParameterMessage):
 class DrumKitPartialMessage(ParameterMessage):
     """Drum Kit Partial parameter message"""
 
-    address_msb: int = 0x19  # Temporary area
+    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x10  # Drum Kit section
     address_lmb: int = 0x01  # Partial area
 
@@ -623,15 +626,15 @@ class DrumKitPartialMessage(ParameterMessage):
 
 
 def create_sysex_message(
-    address_msb: int, address_umb: int, address_lmb: int, param: int, value: int
+    address_msb: int, address_umb: int, address_lmb: int, address_lsb: int, value: int
 ) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
         command=CommandID.DT1,
-        area=area,
-        section=section,
-        group=group,
-        address_lsb=param,
+        address_msb=address_msb,
+        address_umb=address_umb,
+        address_lmb=address_lmb,
+        address_lsb=address_lsb,
         value=value,
     )
 
@@ -644,53 +647,31 @@ def create_patch_load_message(
         # Bank Select MSB
         JDXiSysEx(
             command=CommandID.DT1,
-            area=ProgramAreaParameter.SYSTEM,  # Setup area 0x01
-            section=0x00,
-            group=0x00,
+            address_msb=MemoryAreaAddress.SYSTEM,  # Setup area 0x01
+            address_umb=0x00,
+            address_lmb=0x00,
             address_lsb=0x04,  # Bank MSB parameter
             value=bank_msb,
         ),
         # Bank Select LSB
         JDXiSysEx(
             command=CommandID.DT1,
-            area=0x01,  # Setup area
-            section=0x00,
-            group=0x00,
+            address_msb=MemoryAreaAddress.SYSTEM,  # Setup area
+            address_umb=0x00,
+            address_lmb=0x00,
             address_lsb=0x05,  # Bank LSB parameter
             value=bank_lsb,
         ),
         # Program Change
         JDXiSysEx(
             command=CommandID.DT1,
-            area=0x01,  # Setup area
-            section=0x00,
-            group=0x00,
+            address_msb=MemoryAreaAddress.SYSTEM,  # Setup area
+            address_umb=0x00,
+            address_lmb=0x00,
             address_lsb=0x06,  # Program number parameter
             value=program,
         ),
     ]
-
-
-def create_patch_save_message(
-    source_address_msb: int,
-    dest_address_msb: int,
-    source_address_umb: int = 0x00,
-    dest_address_umb: int = 0x00,
-) -> JDXiSysEx:
-    """Create address message to save patch data from temporary to permanent memory"""
-    return JDXiSysEx(
-        command=CommandID.DT1,
-        area=dest_area,  # Destination area (permanent memory)
-        section=dest_section,
-        group=0x00,
-        address_lsb=0x00,
-        data=[  # Source address
-            source_area,  # Source area (temporary memory)
-            source_section,
-            0x00,  # Always 0x00
-            0x00,  # Start from beginning
-        ],
-    )
 
 
 def create_patch_request_message(
@@ -699,9 +680,9 @@ def create_patch_request_message(
     """Create address message to request patch data"""
     return JDXiSysEx(
         command=CommandID.RQ1,  # Data request command
-        area=area,
-        section=section,
-        group=0x00,
+        address_msb=address_msb,
+        address_umb=address_umb,
+        address_lmb=0x00,
         address_lsb=0x00,
         data=[size] if size else [],  # Some requests need address size parameter
     )

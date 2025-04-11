@@ -87,9 +87,9 @@ class AnalogFilterSection(QWidget):
             sustain_param=AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AnalogParameter.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=self.address_msb,
-            part=self.part,
-            group=self.group
+            address_msb=self.address_msb,
+            address_umb=self.address_umb,
+            address_lmb=self.address_lmb
         )
         self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")

@@ -221,8 +221,8 @@ class AnalogSynthEditor(SynthEditor):
             self.send_control_change,
             self.midi_helper,
             self.address_msb,
-            self.part,
-            self.group
+            self.address_umb,
+            self.address_lmb
         )
         self.tab_widget.addTab(
             self.filter_section,
@@ -233,8 +233,8 @@ class AnalogSynthEditor(SynthEditor):
         self.amp_section = AmpSection(
             self.midi_helper,
             self.address_msb,
-            self.part,
-            self.group,
+            self.address_umb,
+            self.address_lmb,
             self._create_parameter_slider,
             generate_waveform_icon,
             base64_to_pixmap
@@ -363,9 +363,9 @@ class AnalogSynthEditor(SynthEditor):
     def _on_waveform_selected(self, waveform: AnalogOscWave):
         """Handle waveform button selection """
         if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.address_msb,
-                                        section=self.part,
-                                        group=self.group,
+            sysex_message = RolandSysEx(address_msb=self.address_msb,
+                                        address_umb=self.address_umb,
+                                        address_lmb=self.address_lmb,
                                         address_lsb=AnalogParameter.OSC_WAVEFORM.value[0],
                                         value=waveform.midi_value)
             self.midi_helper.send_midi_message(sysex_message)
@@ -384,9 +384,9 @@ class AnalogSynthEditor(SynthEditor):
     def _on_lfo_shape_changed(self, value: int):
         """Handle LFO shape change"""
         if self.midi_helper:
-            sysex_message = RolandSysEx(area=self.address_msb,
-                                        section=self.part,
-                                        group=self.group,
+            sysex_message = RolandSysEx(address_msb=self.address_msb,
+                                        address_umb=self.address_umb,
+                                        address_lmb=self.address_lmb,
                                         address_lsb=AnalogParameter.LFO_SHAPE.value[0],
                                         value=value)
             self.midi_helper.send_midi_message(sysex_message)
