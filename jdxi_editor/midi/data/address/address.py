@@ -147,8 +147,7 @@ class MemoryAreaAddress(Address):
     SYSTEM = 0x01
     SETUP = 0x02
     PROGRAM = 0x18
-    DIGITAL_1 = 0x19
-    DIGITAL_2 = 0x1A
+    TEMPORARY_TONE = 0x19
     DRUM = 0x72
     EFFECTS_AREA = 0x16
     ANALOG = 0x1B  # Analog synth area

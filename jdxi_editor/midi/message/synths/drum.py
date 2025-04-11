@@ -29,7 +29,7 @@ class DrumKitMessage(RolandSysEx):
     """Drum Kit parameter message"""
 
     command: int = CommandID.DT1
-    area: int = ProgramAreaParameter.DIGITAL_1  # Temporary area
+    area: int = ProgramAreaParameter.TEMPORARY_TONE  # Temporary area
     tone_type: int = TemporaryParameter.DRUM_KIT_PART  # Drum Kit
     section: int = 0x00  # Section (Common or Pad offset)
     param: int = 0x00  # Parameter number
