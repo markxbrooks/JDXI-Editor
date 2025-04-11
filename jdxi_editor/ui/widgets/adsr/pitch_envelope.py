@@ -42,17 +42,17 @@ class PitchEnvelope(QWidget):
                  decay_param: SynthParameter,
                  depth_param: SynthParameter,
                  midi_helper=None,
-                 group=None,
-                 area=None,
-                 part=None,
+                 address_lmb=None,
+                 address_msb=None,
+                 address_umb=None,
                  parent=None):
         super().__init__(parent)
 
         self.controls: Dict[SynthParameter, Slider] = {}
         self.midi_helper = midi_helper
-        self.address_msb = area if area else MemoryAreaAddress.TEMPORARY_TONE
-        self.address_lmb = group if group else ProgramAddressGroup.PROGRAM_COMMON
-        self.address_umb = part if part else TemporaryToneAddressOffset.ANALOG_PART
+        self.address_msb = address_msb if address_msb else MemoryAreaAddress.TEMPORARY_TONE
+        self.address_lmb = address_lmb if address_lmb else ProgramAddressGroup.PROGRAM_COMMON
+        self.address_umb = address_umb if address_umb else TemporaryToneAddressOffset.ANALOG_PART
         self.updating_from_spinbox = False
         self.plot = ADSRPlot(width=300, height=250)
 
@@ -246,11 +246,11 @@ class PitchEnvelope(QWidget):
                 size = param.get_nibbled_size()
             else:
                 size = 1
-            group = self.group  # Common parameters area
+            group = self.address_lmb  # Common parameters area
             param_address = param.address
-            sysex_message = RolandSysEx(area=self.address_msb,
-                                        section=self.part,
-                                        group=group,
+            sysex_message = RolandSysEx(address_msb=self.address_msb,
+                                        address_umb=self.address_umb,
+                                        address_lmb=group,
                                         address_lsb=param_address,
                                         value=value,
                                         size=size)

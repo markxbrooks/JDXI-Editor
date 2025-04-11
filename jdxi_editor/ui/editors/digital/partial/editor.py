@@ -110,7 +110,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.part,
+            self.address_umb,
         )
         self.tab_widget.addTab(
             self.oscillator_tab,
@@ -123,7 +123,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.part,
+            self.address_umb,
         )
         self.tab_widget.addTab(
             self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
@@ -133,7 +133,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.part,
+            self.address_umb,
         )
         self.tab_widget.addTab(
             self.amp_tab, qta.icon(

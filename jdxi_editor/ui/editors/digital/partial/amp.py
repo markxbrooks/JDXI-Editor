@@ -107,9 +107,9 @@ class DigitalAmpSection(QWidget):
             sustain_param=DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
             release_param=DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=MemoryAreaAddress.TEMPORARY_TONE,
-            part=self.part,
-            group=group_address,
+            address_msb=MemoryAreaAddress.TEMPORARY_TONE,
+            address_umb=self.address_umb,
+            address_lmb=group_address,
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
         env_layout.addLayout(amp_env_adsr_vlayout)

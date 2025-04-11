@@ -120,9 +120,9 @@ class DigitalFilterSection(QWidget):
             sustain_param=DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            area=MemoryAreaAddress.TEMPORARY_TONE,
-            part=self.address_umb,
-            group=group_address,
+            address_msb=MemoryAreaAddress.TEMPORARY_TONE,
+            address_umb=self.address_umb,
+            address_lmb=group_address,
         )
         self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
         env_layout.addWidget(self.filter_adsr_widget)

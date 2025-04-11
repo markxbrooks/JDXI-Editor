@@ -334,9 +334,9 @@ class EffectsCommonEditor(SynthEditor):
                 return False
             try:
                 # Send MIDI message
-                sysex_message = RolandSysEx(area=self.address_msb,
-                                            section=self.part,
-                                            group=common_param.address,
+                sysex_message = RolandSysEx(address_msb=self.address_msb,
+                                            address_umb=self.address_umb,
+                                            address_lmb=common_param.address,
                                             address_lsb=param.address,
                                             value=midi_value)
                 return self.midi_helper.send_midi_message(sysex_message)
