@@ -100,7 +100,9 @@ class DigitalFilterSection(QWidget):
 
         # ADSR Icon
         icon_label = QLabel()
-        icon_pixmap = base64_to_pixmap(generate_waveform_icon("adsr", "#FFFFFF", 2.0))
+        icon_pixmap = base64_to_pixmap(generate_waveform_icon("adsr",
+                                                              "#FFFFFF",
+                                                              2.0))
         icon_label.setPixmap(icon_pixmap)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         env_layout.addWidget(icon_label)
@@ -119,7 +121,7 @@ class DigitalFilterSection(QWidget):
             release_param=DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             area=MemoryAreaAddress.TEMPORARY_TONE,
-            part=self.part,
+            part=self.address_umb,
             group=group_address,
         )
         self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
