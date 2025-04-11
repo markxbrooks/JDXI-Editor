@@ -38,7 +38,7 @@ class DigitalToneMessage(RolandSysEx):
     """SuperNATURAL Synth Tone parameter message"""
 
     command: int = CommandID.DT1
-    area: int = ProgramAreaParameter.DIGITAL_1  # Temporary area
+    area: int = ProgramAreaParameter.TEMPORARY_TONE  # Temporary area
     tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
     section: int = 0x00  # Section from DigitalToneSection
     param: int = 0x00  # Parameter number
