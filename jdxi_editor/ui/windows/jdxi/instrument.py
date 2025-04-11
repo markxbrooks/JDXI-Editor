@@ -948,7 +948,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            sysex_message = RolandSysEx(area=MemoryAreaAddress.DIGITAL_1,
+            sysex_message = RolandSysEx(area=MemoryAreaAddress.TEMPORARY_TONE,
                                         section=part_address,
                                         group=group_address,
                                         param=param_address,

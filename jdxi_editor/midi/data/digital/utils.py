@@ -94,7 +94,7 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
     try:
         # Get switch state
         switch_value = midi_helper.get_parameter(
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=TemporaryToneAddressOffset.DIGITAL_PART_1,
             group=ProgramAddressGroup.PROGRAM_COMMON,
             param=partial.switch_param.address,
@@ -102,7 +102,7 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
 
         # Get select state
         select_value = midi_helper.get_parameter(
-            area=MemoryAreaAddress.DIGITAL_1,
+            area=MemoryAreaAddress.TEMPORARY_TONE,
             part=TemporaryToneAddressOffset.DIGITAL_PART_1,
             group=ProgramAddressGroup.PROGRAM_COMMON,
             param=partial.select_param.address,

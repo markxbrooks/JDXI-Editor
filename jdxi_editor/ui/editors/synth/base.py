@@ -66,8 +66,6 @@ class SynthBase(QWidget):
         # Define SysEx messages as byte arrays
         for request in self.midi_requests:
             request = bytes.fromhex(request)
-            # time.sleep(0.075)  # 75ms delay
-            # Send each SysEx message
             self.send_message(request)
 
     def _on_midi_message_received(self, message):
