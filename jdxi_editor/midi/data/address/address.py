@@ -20,11 +20,12 @@ print(sysex_address)  # b'\x18\x00\x20\x00'
 found = ProgramAddress.get_parameter_by_address(0x19)
 print(found)  # ProgramAddress.DIGITAL_1
 """
-
+import json
 from enum import IntEnum, unique
-from typing import Optional, Type, TypeVar, Union, Tuple
+from typing import Optional, Type, TypeVar, Union, Tuple, Dict, Any
 import inspect
 
+# from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
 
@@ -72,7 +73,8 @@ class Address(IntEnum):
             offset_bytes = list(offset)
         else:
             raise ValueError("Offset must be an int or a 3-byte tuple")
-
+        if any(b > 0x7F for b in offset_bytes):
+            raise ValueError("SysEx address bytes must be 7-bit (0x00 to 0x7F)")
         return (base, *offset_bytes)
 
     def to_sysex_address(self, offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)) -> bytes:
@@ -80,6 +82,12 @@ class Address(IntEnum):
         Returns the full 4-byte address as a `bytes` object, suitable for SysEx messages.
         """
         return bytes(self.add_offset(offset))
+
+    @classmethod
+    def from_sysex_bytes(cls: Type[T], address: bytes) -> Optional[T]:
+        if len(address) != 4:
+            return None
+        return cls.get_parameter_by_address(address[0])
 
     def __repr__(self):
         return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
@@ -169,6 +177,13 @@ class SuperNATURALAddressOffset(Address):
 
 
 @unique
+class DigitalPartialAddressOffset(Address):
+    PARTIAL_1 = 0x20
+    PARTIAL_2 = 0x21
+    PARTIAL_3 = 0x22
+
+
+@unique
 class TemporaryToneAddressOffset(Address):
     DIGITAL_PART_1 = 0x01
     DIGITAL_PART_2 = 0x21
@@ -204,13 +219,20 @@ class ProgramAddressGroup(Address):
 
 
 @unique
-class DrumKitAddressOffset(IntEnum):
+class DrumKitAddressOffset(Address):
     """ Drum Kit """
     COMMON = 0x00
     PARTIAL_1 = 0x20
     PARTIAL_2 = 0x21
     PARTIAL_3 = 0x22
     TONE_MODIFY = 0x50
+
+
+@unique
+class DigitalPartials(Address):
+    OSC_1 = 0x20
+    OSC_2 = 0x21
+    OSC_3 = 0x22
 
 
 # Dynamically generate DRUM_KIT_PART_{1-72} = 0x2E to 0x76
@@ -231,47 +253,93 @@ def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     return " ".join(f"{b:02X}" for b in address)
 
 
-def parse_sysex_address(address: Tuple[int, int, int, int], base_classes: Tuple[Type[IntEnum], ...]) -> Optional[str]:
-    """
-    Parses a 4-byte SysEx address and returns the symbolic parameter name path if found.
+import inspect
+import json
+from typing import Tuple, Type, Union, Dict, Any
+from enum import IntEnum
 
-    :param address: A 4-byte address tuple (A1, A2, A3, A4)
-    :param base_classes: A tuple of base IntEnum classes (e.g., (JdxiMemoryArea, ProgramParameter, ...))
-    :return: A string path like "JdxiMemoryArea.PROGRAM -> ProgramParameter.COMMON", or None
+
+def parse_sysex_address_json(
+    address: Tuple[int, int, int, int],
+    base_classes: Tuple[Type[Any], ...]
+) -> Dict[str, Any]:
+    """
+    Parses a 4-byte SysEx address into a 4-level symbolic path as JSON.
+    Supports both IntEnum subclasses and custom parameter classes with tuple values.
     """
     if len(address) != 4:
-        return None
+        return {}
 
-    for base_class in base_classes:
-        for member in base_class:
-            if isinstance(member.value, int) and address[0] == member.value:
-                remaining = address[1:]
-                nested_path = find_nested_parameter_path(remaining, base_class)
-                if nested_path:
-                    return f"{base_class.__name__}.{member.name} -> {nested_path}"
-                else:
-                    return f"{base_class.__name__}.{member.name}"
+    levels = []
+    remaining = list(address)
 
+    for i, byte in enumerate(remaining):
+        match = find_matching_symbol(byte, base_classes)
+        if match:
+            levels.append({
+                "class": match["class"].__name__,
+                "name": match["name"],
+                "value": byte
+            })
+            # Narrow down the next base_classes if it's a known nested type
+            # (This can be customized to follow a known nested order)
+        else:
+            levels.append({
+                "class": "Unknown",
+                "name": f"0x{byte:02X}",
+                "value": byte
+            })
+
+    return {f"level_{i + 1}": level for i, level in enumerate(levels)}
+
+
+def find_matching_symbol(
+    value: int,
+    base_classes: Tuple[Type[Any], ...]
+) -> Union[Dict[str, Any], None]:
+    """
+    Tries to find a matching member in any of the given base classes.
+    Supports IntEnum and custom classes with tuple attributes.
+    """
+    for cls in base_classes:
+        if issubclass(cls, IntEnum):
+            for member in cls:
+                if member.value == value:
+                    return {"class": cls, "name": member.name}
+        else:
+            # Look for attributes that are (address, min, max) tuples
+            for name, member in inspect.getmembers(cls):
+                if not name.startswith("__") and isinstance(member, tuple):
+                    if len(member) >= 1 and member[0] == value:
+                        return {"class": cls, "name": name}
     return None
 
 
-def find_nested_parameter_path(remaining_address: Tuple[int, int, int], parent_class: Type[IntEnum]) -> Optional[str]:
-    """
-    Searches for a matching nested class that corresponds to the remaining address bytes.
 
-    :param remaining_address: Remaining 3 bytes of the address
-    :param parent_class: The class to search related nested classes
-    :return: Matching path string or None
-    """
-    for _, obj in inspect.getmembers(__import__(__name__)):
-        if inspect.isclass(obj) and issubclass(obj, IntEnum) and obj is not parent_class:
-            for member in obj:
-                if isinstance(member.value, int):
-                    # Compare against full 3-byte value
-                    if member.value == int.from_bytes(remaining_address, "big"):
-                        return f"{obj.__name__}.{member.name}"
-    return None
-
+# 🧪 Test
 if __name__ == "__main__":
-    result = parse_sysex_address((0x19, 0x01, 0x20, 0x09), (MemoryAreaAddress, SystemAddressOffset, SuperNATURALAddressOffset, TemporaryToneAddressOffset, ProgramAddressOffset ))
-    print(result)  # "MemoryAreaAddress.PROGRAM -> ProgramParameter.COMMON"
+    from jdxi_editor.midi.data.address.address import (
+        MemoryAreaAddress,
+        TemporaryToneAddressOffset,
+        DigitalPartials,
+        ProgramAddressOffset,
+        SystemAddressOffset,
+        SuperNATURALAddressOffset,
+    )
+
+    address = (0x19, 0x01, 0x20, 0x00)
+    from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+    result = parse_sysex_address_json(
+        address,
+        (
+            MemoryAreaAddress,
+            TemporaryToneAddressOffset,
+            DigitalPartials,
+            DigitalCommonParameter,
+            ProgramAddressOffset,
+            SystemAddressOffset,
+            SuperNATURALAddressOffset,
+        )
+    )
+
+    print(json.dumps(result, indent=2))
