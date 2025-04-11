@@ -75,11 +75,16 @@ def get_area(data: list[int, int]) -> str:
     area_mapping = {
         (0x18, 0x00): "PROGRAM",
         (0x19, 0x42): "ANALOG",
-        (0x19, 0x01): "DIGITAL_1",
-        (0x19, 0x21): "DIGITAL_2",
+        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
         (0x19, 0x70): "DRUM",
     }
     return area_mapping.get(tuple(data), "Unknown")
+
+
+def to_hex(value: int, width: int = 2) -> str:
+    """Format an integer as a lowercase hex string with 0x prefix."""
+    return f"0x{value:0{width}x}"
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -410,10 +415,11 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        logging.info(f"finding area: {self.area} part {self.part}")
+        logging.info(f"self.area: {to_hex(self.area)} self.part {to_hex(self.part)}")
         current_synth = get_area([self.area, self.part])
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
+        logging.info(f"temp_area: {temp_area}")
         if not current_synth == temp_area:
             return
 
