@@ -415,7 +415,7 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        logging.info(f"self.address_msb: {to_hex(self.address_msb)} self.part {to_hex(self.address_umb)}")
+        logging.info(f"self.address_msb: {to_hex(self.address_msb)} self.address_umb {to_hex(self.address_umb)}")
         current_synth = get_area([self.address_msb, self.address_umb])
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
