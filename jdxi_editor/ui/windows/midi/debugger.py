@@ -52,7 +52,7 @@ from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        MemoryAreaAddress.DIGITAL_1: "Temporary Tone",
+        MemoryAreaAddress.TEMPORARY_TONE: "Temporary Tone",
         MemoryAreaAddress.EFFECTS_AREA: "System Area",
     }
 
