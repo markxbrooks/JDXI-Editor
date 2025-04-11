@@ -74,9 +74,9 @@ class DigitalPartialEditor(PartialEditor):
         self.partial_number = partial_number
         self.synth_data = DigitalSynthData(synth_number=synth_number, partial_number=partial_number)
         data = self.synth_data
-        self.area = data.area
-        self.part = data.part
-        self.group = data.group
+        self.address_msb = data.address_msb
+        self.address_umb = data.address_umb
+        self.address_lmb = data.address_lmb
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
         else:

@@ -232,9 +232,9 @@ class DrumCommonEditor(SynthEditor):
         self.synth_data = DrumsSynthData(partial_number=1)
         data = self.synth_data
         print(self.synth_data)
-        self.area = data.area
-        self.part = data.part
-        self.group = data.group
+        self.address_msb = data.address_msb
+        self.address_umb = data.address_umb
+        self.address_lmb = data.address_lmb
         self.setWindowTitle(data.window_title)
         self.preset_type = data.preset_type
         self.instrument_default_image = data.instrument_default_image

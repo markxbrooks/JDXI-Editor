@@ -18,7 +18,7 @@ class SetupMessage(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # Setup area (0x01)
+            self.address_msb,  # Setup area (0x01)
             self.section,  # Always 0x00
             self.group,  # Always 0x00
             self.param,  # Parameter number

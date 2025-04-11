@@ -43,7 +43,7 @@ class SystemControllerMessage(RolandSysEx):
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.area,  # System area (0x02)
+            self.address_msb,  # System area (0x02)
             self.section,  # Controller section (0x03)
             self.group,  # Always 0x00
             self.param,  # Parameter number

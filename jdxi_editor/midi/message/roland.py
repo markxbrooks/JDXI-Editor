@@ -46,9 +46,9 @@ class RolandSysEx(SysExMessage):
         ModelID.MODEL_ID_4
     ])
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
-    area: int = 0x00
-    section: int = 0x00
-    group: int = 0x00
+    address_msb: int = 0x00
+    address_umb: int = 0x00
+    address_lmb: int = 0x00
     param: int = 0x00
     value: int = 0x00
     size: int = 1
@@ -62,7 +62,7 @@ class RolandSysEx(SysExMessage):
 
     def __post_init__(self):
         """Initialize address and data based on parameters."""
-        self.address = [self.area, self.section, self.group, self.param]
+        self.address = [self.address_msb, self.address_umb, self.address_lmb, self.param]
         if isinstance(self.value, int) and self.size == 4:
             self.data = split_value_to_nibbles(self.value)
         else:
@@ -93,7 +93,7 @@ class RolandSysEx(SysExMessage):
             raise ValueError("Address must be a list of 4 bytes (area, synth_type, part, group).")
 
         # Update instance variables
-        self.area, self.section, self.group, self.param = address
+        self.address_msb, self.address_umb, self.address_lmb, self.param = address
 
         # Convert the value into nibbles (if it's 4 bytes long)
         if isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF:  # Check for 4-byte integer
@@ -282,14 +282,14 @@ class ParameterMessage(JDXiSysEx):
 class SystemMessage(ParameterMessage):
     """System parameter message"""
 
-    area: int = 0x02  # System area
+    address_msb: int = 0x02  # System area
 
 
 @dataclass
 class ProgramMessage(ParameterMessage):
     """Program parameter message"""
 
-    area: int = 0x18  # Program area
+    address_msb: int = 0x18  # Program area
 
 
 # Update other message classes to inherit from ParameterMessage
@@ -297,40 +297,40 @@ class ProgramMessage(ParameterMessage):
 class Effect1Message(ParameterMessage):
     """Effect 1 parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x02  # Effect 1 section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x02  # Effect 1 section
 
 
 @dataclass
 class Effect2Message(ParameterMessage):
     """Effect 2 parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x04  # Effect 2 section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x04  # Effect 2 section
 
 
 @dataclass
 class DelayMessage(ParameterMessage):
     """Delay parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x06  # Delay section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x06  # Delay section
 
 
 @dataclass
 class ReverbMessage(ParameterMessage):
     """Reverb parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x08  # Reverb section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x08  # Reverb section
 
 
 @dataclass
 class PartMessage(ParameterMessage):
     """Program Part parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x00  # Part section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x00  # Part section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -398,8 +398,8 @@ class PartMessage(ParameterMessage):
 class ZoneMessage(ParameterMessage):
     """Program Zone parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x01  # Zone section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x01  # Zone section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -431,8 +431,8 @@ class ZoneMessage(ParameterMessage):
 class ControllerMessage(ParameterMessage):
     """Program Controller parameter message"""
 
-    area: int = 0x18  # Program area
-    section: int = 0x40  # Controller section
+    address_msb: int = 0x18  # Program area
+    address_umb: int = 0x40  # Controller section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -460,8 +460,8 @@ class ControllerMessage(ParameterMessage):
 class DigitalToneCommonMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Common parameter message"""
 
-    area: int = 0x19  # Temporary area
-    section: int = 0x00  # Common section
+    address_msb: int = 0x19  # Temporary area
+    address_umb: int = 0x00  # Common section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -489,8 +489,8 @@ class DigitalToneCommonMessage(ParameterMessage):
 class DigitalToneModifyMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Modify parameter message"""
 
-    area: int = 0x19  # Temporary area
-    section: int = 0x50  # Modify section
+    address_msb: int = 0x19  # Temporary area
+    address_umb: int = 0x50  # Modify section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -508,8 +508,8 @@ class DigitalToneModifyMessage(ParameterMessage):
 class DigitalTonePartialMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Partial parameter message"""
 
-    area: int = 0x19  # Temporary area
-    section: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
+    address_msb: int = 0x19  # Temporary area
+    address_umb: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -541,9 +541,9 @@ class DigitalTonePartialMessage(ParameterMessage):
 class AnalogToneMessage(ParameterMessage):
     """Message for analog tone parameters"""
 
-    area: int
-    part: int
-    group: int
+    address_msb: int
+    address_umb: int
+    address_lmb: int
     param: int
     value: int
 
@@ -558,9 +558,9 @@ class AnalogToneMessage(ParameterMessage):
             ModelID.MODEL_ID_3,
             ModelID.MODEL_ID_4,  # Model ID
             CommandID.DT1,  # DT1 Command
-            self.area,
+            self.address_msb,
             self.part,
-            self.group,
+            self.address_lmb,
             self.param,
             self.value,
             PLACEHOLDER_BYTE,  # Checksum placeholder
@@ -572,9 +572,9 @@ class AnalogToneMessage(ParameterMessage):
 class DrumKitCommonMessage(ParameterMessage):
     """Drum Kit Common parameter message"""
 
-    area: int = 0x19  # Temporary area
-    section: int = 0x10  # Drum Kit section
-    group: int = 0x00  # Common area
+    address_msb: int = 0x19  # Temporary area
+    address_umb: int = 0x10  # Drum Kit section
+    address_lmb: int = 0x00  # Common area
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -592,9 +592,9 @@ class DrumKitCommonMessage(ParameterMessage):
 class DrumKitPartialMessage(ParameterMessage):
     """Drum Kit Partial parameter message"""
 
-    area: int = 0x19  # Temporary area
-    section: int = 0x10  # Drum Kit section
-    group: int = 0x01  # Partial area
+    address_msb: int = 0x19  # Temporary area
+    address_umb: int = 0x10  # Drum Kit section
+    address_lmb: int = 0x01  # Partial area
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -623,7 +623,7 @@ class DrumKitPartialMessage(ParameterMessage):
 
 
 def create_sysex_message(
-    area: int, section: int, group: int, param: int, value: int
+    address_msb: int, address_umb: int, address_lmb: int, param: int, value: int
 ) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
@@ -672,10 +672,10 @@ def create_patch_load_message(
 
 
 def create_patch_save_message(
-    source_area: int,
-    dest_area: int,
-    source_section: int = 0x00,
-    dest_section: int = 0x00,
+    source_address_msb: int,
+    dest_address_msb: int,
+    source_address_umb: int = 0x00,
+    dest_address_umb: int = 0x00,
 ) -> JDXiSysEx:
     """Create address message to save patch data from temporary to permanent memory"""
     return JDXiSysEx(
@@ -694,7 +694,7 @@ def create_patch_save_message(
 
 
 def create_patch_request_message(
-    area: int, section: int = 0x00, size: int = 0
+    address_msb: int, address_umb: int = 0x00, size: int = 0
 ) -> JDXiSysEx:
     """Create address message to request patch data"""
     return JDXiSysEx(

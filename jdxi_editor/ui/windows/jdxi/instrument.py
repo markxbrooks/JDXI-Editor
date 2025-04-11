@@ -237,7 +237,6 @@ class JdxiInstrument(JdxiUi):
             for synth_type, presets, channel in preset_configs
         }
 
-
     def _handle_program_change(self):
         """ perform data request """
         self.data_request()
