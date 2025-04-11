@@ -48,22 +48,22 @@ class DrumPartialEditor(PartialEditor):
     def __init__(self, midi_helper=None, partial_number=0, partial_name=None, parent=None):
         super().__init__(parent)
         self.midi_helper = midi_helper
-        self.partial_num = partial_number  # This is now the numerical index
+        self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
         self.preset_helper = None
         self.address_msb = MemoryAreaAddress.TEMPORARY_TONE
         self.address_umb = TemporaryToneAddressOffset.DRUM_KIT_PART
         # Calculate the address for this partial
         try:
-            self.partial_address = get_address_for_partial_name(self.partial_name)
+            self.address_lmb = get_address_for_partial_name(self.partial_name)
             logging.info(
-                f"Initialized partial {partial_number} with address: {hex(self.partial_address)}"
+                f"Initialized partial {partial_number} with address: {hex(self.address_lmb)}"
             )
         except Exception as ex:
             logging.error(
                 f"Error calculating address for partial {partial_number}: {str(ex)}"
             )
-            self.partial_address = 0x00
+            self.address_lmb = 0x00
 
         # Store parameter controls for easy access
         self.controls: Dict[DrumPartialParameter, QWidget] = {}

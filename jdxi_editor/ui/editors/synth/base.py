@@ -21,6 +21,7 @@ Classes:
 
 import logging
 import time
+from encodings.hex_codec import hex_decode
 from tokenize import group
 from typing import Dict
 
@@ -79,24 +80,17 @@ class SynthBase(QWidget):
     def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
-            # Get parameter area and address with partial offset
-            if hasattr(param, "get_address_for_partial"):
-                group, _ = param.get_address_for_partial(0)
-            elif self.address_lmb:
-                group = self.address_lmb
-            else:
-                group = ProgramAddressGroup.PROGRAM_COMMON
             logging.info(
-                f"Sending param={param.name}, partial={self.address_umb}, group={self.address_lmb}, value={value}"
+                f"Sending {self.partial_number} param={param.name}, partial={self.address_umb}, group={self.address_lmb}, value={value}"
             )
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
             else:
                 size = 1
             sysex_message = RolandSysEx(
-                area=self.address_msb,
-                section=self.address_umb,
-                group=group,
+                address_msb=self.address_msb,
+                address_umb=self.address_umb,
+                address_lmb=address_lmb,
                 address_lsb=param.address,
                 value=value,
                 size=size

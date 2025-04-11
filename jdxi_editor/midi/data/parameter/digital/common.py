@@ -182,5 +182,5 @@ class DigitalCommonParameter(SynthParameter):
         # Return the parameter member by name, or None if not found
         return DigitalCommonParameter.__members__.get(param_name, None)
 
-    def get_address_for_partial(self, partial_num: int = 0):
+    def get_address_for_partial(self, partial_number: int = 0):
         return ProgramAddressGroup.PROGRAM_COMMON, 0x00

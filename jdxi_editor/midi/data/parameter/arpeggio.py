@@ -81,5 +81,5 @@ class ArpeggioParameter(SynthParameter):
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
 
-    def get_address_for_partial(self, partial_num: int = 0):
+    def get_address_for_partial(self, partial_number: int = 0):
         return ARP_GROUP, 0x00

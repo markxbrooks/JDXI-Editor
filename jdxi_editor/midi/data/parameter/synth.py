@@ -82,9 +82,9 @@ class SynthParameter(Enum):
         # Return the parameter member by name, or None if not found
         return SynthParameter.__members__.get(param_name, None)
 
-    def get_address_for_partial(self, partial_num: int = 0) -> Tuple[int, int]:
+    def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """
-        :param partial_num: int
+        :param partial_number: int
         :return: int default area
         to be subclassed
         """

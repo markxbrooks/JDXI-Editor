@@ -222,10 +222,10 @@ class DigitalPartialParameter(SynthParameter):
 
         return value
 
-    def get_address_for_partial(self, partial_num: int) -> Tuple[int, int]:
+    def get_address_for_partial(self, partial_number: int) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {1: 0x20, 2: 0x21, 3: 0x22}
-        group = group_map.get(partial_num, 0x20)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        group = group_map.get(partial_number, 0x20)  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
 
     @staticmethod
