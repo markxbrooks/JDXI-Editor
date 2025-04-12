@@ -23,7 +23,7 @@ import logging
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.data.address.address import ZERO_BYTE, construct_address
+from jdxi_editor.midi.data.address.address import construct_address
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
