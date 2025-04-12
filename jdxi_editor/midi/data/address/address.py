@@ -4,21 +4,21 @@ Parameter Address Map
 Usage example:
 ==============
 
-class ProgramAddress(Address):
-    COMMON = 0x18
-    DIGITAL_1 = 0x19
+class AddressMemoryAreaMSB(Address):
+    PROGRAM = 0x18
+    TEMPORARY_TONE = 0x19
 
 # Add an offset to a base address
-addr_bytes = ProgramAddress.COMMON.add_offset((0x00, 0x20, 0x00))
+addr_bytes = AddressMemoryAreaMSB.PROGRAM.add_offset((0x00, 0x20, 0x00))
 print(addr_bytes)  # (0x18, 0x00, 0x20, 0x00)
 
 # Get SysEx-ready address
-sysex_address = ProgramAddress.COMMON.to_sysex_address((0x00, 0x20, 0x00))
+sysex_address = AddressMemoryAreaMSB.PROGRAM.to_sysex_address((0x00, 0x20, 0x00))
 print(sysex_address)  # b'\x18\x00\x20\x00'
 
 # Lookup
-found = ProgramAddress.get_parameter_by_address(0x19)
-print(found)  # ProgramAddress.DIGITAL_1
+found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
+print(found)  # ProgramAddress.TEMPORARY_TONE
 """
 
 from enum import IntEnum, unique
