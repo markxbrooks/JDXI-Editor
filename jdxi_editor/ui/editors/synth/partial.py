@@ -65,6 +65,8 @@ class PartialEditor(SynthBase):
         """Send MIDI parameter with error handling."""
         try:
             address_lmb = self.get_partial_address()
+            print("Type of address_lmb:")
+            print(type(address_lmb))
             logging.info(
                 f"Sending partial number {self.partial_number} param={param}, address_umb={self.address_umb}, address_lmb={address_lmb}, value={value}"
             )
@@ -72,10 +74,10 @@ class PartialEditor(SynthBase):
                 size = param.get_nibbled_size()
             else:
                 size = 1
-            base_address, full_address, offset = construct_address(param,
-                                                                   self.address_msb,
+            base_address, full_address, offset = construct_address(self.address_msb,
                                                                    self.address_umb,
-                                                                   address_lmb
+                                                                   address_lmb,
+                                                                   param
             )
 
             # Step 5: Extract individual bytes
@@ -104,5 +106,5 @@ class PartialEditor(SynthBase):
             self.partial_number, self.partial_address_default
         )  # Default to 0x20 if partial_name is not 1, 2, or 3
         logging.info(f"address_lmb found: {address_lmb}")
-        # address = Address(address_lmb)
-        return address_lmb
+        address = AddressOffsetProgramLMB.get_parameter_by_address(address_lmb)
+        return address

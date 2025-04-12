@@ -97,10 +97,10 @@ class Address(IntEnum):
         return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
 
 
-def construct_address(parameter: SynthParameter,
-                      area_address: Address,
+def construct_address(area_address: Address,
                       umb: Address,
-                      lmb: Address):
+                      lmb: Address,
+                      parameter: SynthParameter):
     """
 
     Build a full SysEx address by combining a base address and a parameter offset.
