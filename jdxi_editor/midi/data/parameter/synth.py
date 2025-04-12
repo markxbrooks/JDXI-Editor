@@ -22,6 +22,12 @@ Methods:
                                        corresponding to address given address.
     get_by_name(param_name: str): Static method that returns the `SynthParameter` member
                                   corresponding to address given name.
+
+# Example usage
+value = 0x123
+offset = create_offset(value)
+
+print(offset)  # Output: (0x00, 0x01, 0x23)
 """
 
 from enum import Enum
@@ -117,3 +123,14 @@ class SynthParameter(Enum):
             return 1
         else:
             return 4  # I don't know of any other sizes
+            
+    def create_offset(self) -> tuple:
+        """
+        Converts a 2-byte value into a 3-byte offset tuple for use with Address.add_offset.
+        """
+        value = self.address
+        umb = 0x00  # Default Upper Middle Byte
+        lmb = (value >> 8) & 0xFF  # Extract LMB
+        lsb = value & 0xFF         # Extract LSB
+        return (umb, lmb, lsb)
+
