@@ -20,7 +20,7 @@ msg = VocalEffectMessage(param=VocalEffect.VOCODER_ENV.value, value=1)  # SOFT
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -29,7 +29,7 @@ class VocalEffectMessage(RolandSysEx):
     """Program Vocal Effect parameter message"""
 
     command: int = CommandID.DT1
-    area: int = MemoryAreaAddress.PROGRAM  # 0x18: Program area
+    area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
     section: int = 0x01  # 0x01: Vocal Effect section
     group: int = 0x00  # Always 0x00
     address_lsb: int = 0x00  # Parameter number

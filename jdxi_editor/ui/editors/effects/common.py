@@ -39,7 +39,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.data.address.address import TemporaryToneAddressOffset, MemoryAreaAddress, ProgramAddressGroup
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -65,11 +65,11 @@ class EffectsCommonEditor(SynthEditor):
         main_layout = QVBoxLayout()
         upper_layout = QHBoxLayout()
 
-        #self.title_label = QLabel("Effects")
+        # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.address_msb = MemoryAreaAddress.PROGRAM
-        self.address_umb = ProgramAddressGroup.PROGRAM_COMMON
+        self.address_msb = AddressMemoryAreaMSB.PROGRAM
+        self.address_umb = AddressOffsetProgramLMB.COMMON
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 
@@ -336,7 +336,7 @@ class EffectsCommonEditor(SynthEditor):
                 # Send MIDI message
                 sysex_message = RolandSysEx(address_msb=self.address_msb,
                                             address_umb=self.address_umb,
-                                            address_lmb=common_param.address,
+                                            address_lmb=common_param.test_address,
                                             address_lsb=param.address,
                                             value=midi_value)
                 return self.midi_helper.send_midi_message(sysex_message)

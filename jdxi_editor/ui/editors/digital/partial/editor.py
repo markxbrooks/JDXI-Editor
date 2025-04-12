@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_editor.midi.data.address.address import DigitalPartialAddressOffset
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
@@ -68,10 +68,10 @@ class DigitalPartialEditor(PartialEditor):
                  partial_number=1,
                  parent=None):
         super().__init__(parent)
-        self.partial_address_default = DigitalPartialAddressOffset.PARTIAL_1
-        self.partial_address_map = {1: DigitalPartialAddressOffset.PARTIAL_1,
-                                    2: DigitalPartialAddressOffset.PARTIAL_2,
-                                    3: DigitalPartialAddressOffset.PARTIAL_3}
+        self.partial_address_default = AddressOffsetSuperNATURALLMB.PARTIAL_1
+        self.partial_address_map = {1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+                                    2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+                                    3: AddressOffsetSuperNATURALLMB.PARTIAL_3}
         self.bipolar_parameters = [
             DigitalPartialParameter.OSC_DETUNE,
             DigitalPartialParameter.OSC_PITCH,

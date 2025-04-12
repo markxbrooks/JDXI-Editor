@@ -74,7 +74,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.address import TemporaryToneAddressOffset
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.editor.data import DrumsSynthData
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
@@ -325,7 +325,7 @@ class DrumCommonEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") == TemporaryToneAddressOffset.DRUM_KIT_PART
+            return sysex_data.get("TEMPORARY_AREA") == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""

@@ -20,12 +20,12 @@ print(sysex_address)  # b'\x18\x00\x20\x00'
 found = ProgramAddress.get_parameter_by_address(0x19)
 print(found)  # ProgramAddress.DIGITAL_1
 """
-import json
+
 from enum import IntEnum, unique
 from typing import Optional, Type, TypeVar, Union, Tuple, Dict, Any
 import inspect
+import json
 
-# from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
 
@@ -40,7 +40,7 @@ ID_NUMBER = 0x7E
 DEVICE_ID = 0x7F
 SUB_ID_1 = 0x06
 SUB_ID_2 = 0x01
-PLACEHOLDER_BYTE = 0x00
+ZERO_BYTE = 0x00
 
 
 # ==========================
@@ -117,9 +117,9 @@ class ModelID(Address):
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
     # Model ID bytes
-    MODEL_ID_1 = 0x00  # Manufacturer ID extension
-    MODEL_ID_2 = 0x00  # Device family code MSB
-    MODEL_ID_3 = 0x00  # Device family code LSB
+    MODEL_ID_1 = ZERO_BYTE  # Manufacturer ID extension
+    MODEL_ID_2 = ZERO_BYTE  # Device family code MSB
+    MODEL_ID_3 = ZERO_BYTE  # Device family code LSB
     MODEL_ID_4 = 0x0E  # JD-XI Product code
 
 
@@ -152,7 +152,7 @@ class ResponseID(IntEnum):
 
 
 @unique
-class MemoryAreaAddress(Address):
+class AddressMemoryAreaMSB(Address):
     SYSTEM = 0x01
     SETUP = 0x02
     PROGRAM = 0x18
@@ -162,13 +162,21 @@ class MemoryAreaAddress(Address):
 
 
 @unique
-class SystemAddressOffset(Address):
+class AddressOffsetTemporaryToneUMB(Address):
+    DIGITAL_PART_1 = 0x01
+    DIGITAL_PART_2 = 0x21
+    ANALOG_PART = 0x42
+    DRUM_KIT_PART = 0x70
+
+    
+@unique
+class AddressOffsetSystemLMB(Address):
     COMMON = 0x00
     CONTROLLER = 0x03
 
 
 @unique
-class SuperNATURALAddressOffset(Address):
+class AddressOffsetSuperNATURALLMB(Address):
     COMMON = 0x00
     PARTIAL_1 = 0x20
     PARTIAL_2 = 0x21
@@ -176,23 +184,7 @@ class SuperNATURALAddressOffset(Address):
     TONE_MODIFY = 0x50
 
 
-@unique
-class DigitalPartialAddressOffset(Address):
-    PARTIAL_1 = 0x20
-    PARTIAL_2 = 0x21
-    PARTIAL_3 = 0x22
-
-
-@unique
-class TemporaryToneAddressOffset(Address):
-    DIGITAL_PART_1 = 0x01
-    DIGITAL_PART_2 = 0x21
-    ANALOG_PART = 0x42
-    DRUM_KIT_PART = 0x70
-
-
-@unique
-class ProgramAddressOffset(Address):
+class AddressOffsetProgramLMB(Address):
     """ Program """
     COMMON = 0x00
     VOCAL_EFFECT = 0x01
@@ -209,51 +201,21 @@ class ProgramAddressOffset(Address):
     ZONE_ANALOG_SYNTH = 0x32
     ZONE_DRUM = 0x33
     CONTROLLER = 0x40
-
-
-@unique
-class ProgramAddressGroup(Address):
-    PROGRAM_COMMON = 0x00
     DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
-
-
-@unique
-class DrumKitAddressOffset(Address):
-    """ Drum Kit """
-    COMMON = 0x00
-    TONE_MODIFY = 0x50
-
-
-@unique
-class DigitalPartials(Address):
-    OSC_1 = 0x20
-    OSC_2 = 0x21
-    OSC_3 = 0x22
 
 
 # Dynamically generate DRUM_KIT_PART_{1-72} = 0x2E to 0x76
 drum_kit_partials = {f"DRUM_KIT_PART_{i}": 0x2E + (i - 1) for i in range(1, 73)}
 
-# Merge generated drum kit parts into TonePartialParameter
+# Merge generated drum kit parts into AddressOffsetProgramLMB
+
 for name, value in drum_kit_partials.items():
-    setattr(DrumKitAddressOffset, name, value)
-
-
-@unique
-class UnknownToneAddress(Address):  # I'm not convinced these are real
-    TONE_1_LEVEL = 0x10
-    TONE_2_LEVEL = 0x11
+    setattr(AddressOffsetProgramLMB, name, value)
 
 
 def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     return " ".join(f"{b:02X}" for b in address)
-
-
-import inspect
-import json
-from typing import Tuple, Type, Union, Dict, Any
-from enum import IntEnum
 
 
 def parse_sysex_address_json(
@@ -315,27 +277,28 @@ def find_matching_symbol(
 
 # 🧪 Test
 if __name__ == "__main__":
+    """ 
     from jdxi_editor.midi.data.address.address import (
-        MemoryAreaAddress,
-        TemporaryToneAddressOffset,
-        DigitalPartials,
-        ProgramAddressOffset,
-        SystemAddressOffset,
-        SuperNATURALAddressOffset,
+        AddressMemoryAreaMSB,
+        AddressOffsetTemporaryToneUMB,
+        AddressOffsetProgramLMB,
+        AddressOffsetSystemLMB,
+        AddressOffsetSuperNATURALLMB,
     )
+    """
 
-    address = (0x19, 0x01, 0x20, 0x00)
+    test_address = (0x19, 0x01, 0x20, 0x00)
     from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
     result = parse_sysex_address_json(
-        address,
+        test_address,
         (
-            MemoryAreaAddress,
-            TemporaryToneAddressOffset,
-            DigitalPartials,
+            AddressMemoryAreaMSB,
+            AddressOffsetTemporaryToneUMB,
+            AddressOffsetSuperNATURALLMB,
             DigitalCommonParameter,
-            ProgramAddressOffset,
-            SystemAddressOffset,
-            SuperNATURALAddressOffset,
+            AddressOffsetProgramLMB,
+            AddressOffsetSystemLMB,
+            AddressOffsetSuperNATURALLMB,
         )
     )
 

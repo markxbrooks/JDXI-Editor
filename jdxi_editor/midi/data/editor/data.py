@@ -30,9 +30,8 @@ from dataclasses import dataclass
 from typing import List
 
 from jdxi_editor.midi.data.address.address import (
-    TemporaryToneAddressOffset,
-    MemoryAreaAddress,
-    ProgramAddressGroup)
+    AddressOffsetTemporaryToneUMB,
+    AddressMemoryAreaMSB, AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB)
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -69,9 +68,9 @@ class SynthData:
 class DrumsSynthData(SynthData):
     def __init__(self, partial_number: int = 1):
         super().__init__(
-            address_msb=MemoryAreaAddress.TEMPORARY_TONE,
-            address_umb=TemporaryToneAddressOffset.DRUM_KIT_PART,
-            address_lmb=ProgramAddressGroup.DRUM_DEFAULT_PARTIAL,
+            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            address_umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
+            address_lmb=AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL,
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
             midi_requests=DRUMS_REQUESTS,
@@ -88,9 +87,9 @@ class DrumsSynthData(SynthData):
 class DigitalSynthData(SynthData):
     def __init__(self, synth_number: int, partial_number: int = 1):
         super().__init__(
-            address_msb=MemoryAreaAddress.TEMPORARY_TONE,
-            address_umb=TemporaryToneAddressOffset.DIGITAL_PART_2 if synth_number == 2 else TemporaryToneAddressOffset.DIGITAL_PART_1,
-            address_lmb=ProgramAddressGroup.PROGRAM_COMMON,
+            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_2 if synth_number == 2 else AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+            address_lmb=AddressOffsetProgramLMB.COMMON,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
             midi_requests=DIGITAL2_REQUESTS if synth_number == 2 else DIGITAL1_REQUESTS,
@@ -102,19 +101,22 @@ class DigitalSynthData(SynthData):
             display_prefix=f"D{synth_number}",
         )
         self.partial_number = partial_number
-        self.group_map = {1: 0x20, 2: 0x21, 3: 0x22}
+        self.group_map = {1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+                          2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+                          3: AddressOffsetSuperNATURALLMB.PARTIAL_3}
 
     @property
     def partial_group(self) -> int:
-        return self.group_map.get(self.partial_number, 0x20)
+        return self.group_map.get(self.partial_number,
+                                  AddressOffsetSuperNATURALLMB.PARTIAL_1)
 
 
 class AnalogSynthData(SynthData):
     def __init__(self):
         super().__init__(
-            address_msb=MemoryAreaAddress.TEMPORARY_TONE,
-            address_umb=TemporaryToneAddressOffset.ANALOG_PART,
-            address_lmb=ProgramAddressGroup.PROGRAM_COMMON,
+            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            address_umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
+            address_lmb=AddressOffsetProgramLMB.COMMON,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",
             midi_requests=[PROGRAM_COMMON_REQUEST, ANALOG_REQUEST],

@@ -24,7 +24,7 @@ from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_editor.midi.data.address.address import CommandID, END_OF_SYSEX, RolandID, MemoryAreaAddress
+from jdxi_editor.midi.data.address.address import CommandID, END_OF_SYSEX, RolandID, AddressMemoryAreaMSB
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string, construct_address, increment_group
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -502,7 +502,7 @@ class MidiOutHandler(MidiIOController):
     def _get_digital_parameters(self):
         """Get digital parameters"""
         parameters = {}
-        for area in MemoryAreaAddress.DIGITAL_L:
+        for area in AddressMemoryAreaMSB.DIGITAL_L:
             for part in range(0x00, 0x03):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):

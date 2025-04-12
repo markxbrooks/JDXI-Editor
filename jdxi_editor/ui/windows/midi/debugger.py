@@ -42,8 +42,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress, TemporaryToneAddressOffset, \
-    DrumKitAddressOffset
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
@@ -52,15 +51,15 @@ from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
     SYSEX_AREAS = {
-        MemoryAreaAddress.TEMPORARY_TONE: "Temporary Tone",
-        MemoryAreaAddress.EFFECTS_AREA: "System Area",
+        AddressMemoryAreaMSB.TEMPORARY_TONE: "Temporary Tone",
+        AddressMemoryAreaMSB.EFFECTS_AREA: "System Area",
     }
 
     SYNTHS = {
-        TemporaryToneAddressOffset.DIGITAL_PART_1: "DIGITAL_PART_1",
-        TemporaryToneAddressOffset.DIGITAL_PART_2: "DIGITAL_PART_2",
-        TemporaryToneAddressOffset.ANALOG_PART: "ANALOG_PART",
-        TemporaryToneAddressOffset.DRUM_KIT_PART: "DRUM_KIT_PART"
+        AddressOffsetTemporaryToneUMB.DIGITAL_PART_1: "DIGITAL_PART_1",
+        AddressOffsetTemporaryToneUMB.DIGITAL_PART_2: "DIGITAL_PART_2",
+        AddressOffsetTemporaryToneUMB.ANALOG_PART: "ANALOG_PART",
+        AddressOffsetTemporaryToneUMB.DRUM_KIT_PART: "DRUM_KIT_PART"
     }
 
     COMMANDS = {
@@ -69,10 +68,10 @@ class MIDIDebugger(QMainWindow):
     }
 
     SECTIONS = {
-        DrumKitAddressOffset.COMMON: "COMMON",
-        DrumKitAddressOffset.DRUM_KIT_PART_1: "BD1",
-        DrumKitAddressOffset.DRUM_KIT_PART_2: "RIM",
-        DrumKitAddressOffset.DRUM_KIT_PART_3: "BD2",
+        AddressOffsetProgramLMB.COMMON: "COMMON",
+        AddressOffsetProgramLMB.DRUM_KIT_PART_1: "BD1",
+        AddressOffsetProgramLMB.DRUM_KIT_PART_2: "RIM",
+        AddressOffsetProgramLMB.DRUM_KIT_PART_3: "BD2",
      }
 
     GROUPS = {
