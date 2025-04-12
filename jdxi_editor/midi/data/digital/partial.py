@@ -7,9 +7,9 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParamete
 class DigitalPartialOffset(IntEnum):
     """Offsets for each partial's parameters"""
 
-    PARTIAL_1 = 0x00
-    PARTIAL_2 = 0x40  # 64 bytes offset
-    PARTIAL_3 = 0x80  # 128 bytes offset
+    PARTIAL_1 = 0x20
+    PARTIAL_2 = 0x21
+    PARTIAL_3 = 0x22
 
 
 class DigitalPartial(IntEnum):
