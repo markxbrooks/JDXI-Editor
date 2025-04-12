@@ -44,6 +44,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 class AnalogParameter(SynthParameter):
     """Analog synth parameters with area, address, and value range."""
+
     TONE_NAME_1 = (0x00, 32, 127)
     TONE_NAME_2 = (0x01, 32, 127)
     TONE_NAME_3 = (0x02, 32, 127)
@@ -124,8 +125,14 @@ class AnalogParameter(SynthParameter):
     RESERVE_3 = (0x3D, 0, 0)
     RESERVE_4 = (0x3F, 0, 0)
 
-    def __init__(self, address: int, min_val: int, max_val: int,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
@@ -162,7 +169,9 @@ class AnalogParameter(SynthParameter):
             raise ValueError(f"Value must be an integer, got {type(value).__name__}")
 
         if not (self.min_val <= value <= self.max_val):
-            raise ValueError(f"Value {value} out of range for {self.name} (valid range: {self.min_val}-{self.max_val})")
+            raise ValueError(
+                f"Value {value} out of range for {self.name} (valid range: {self.min_val}-{self.max_val})"
+            )
 
         return value
 
@@ -211,7 +220,7 @@ class AnalogParameter(SynthParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
@@ -224,9 +233,13 @@ class AnalogParameter(SynthParameter):
             return display_value + 64  # -63 to +63 -> 0 to 127
 
         # For parameters with simple linear scaling
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
-            return int(self.min_val + (display_value - self.display_min) *
-                       (self.max_val - self.min_val) / (self.display_max - self.display_min))
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
+            return int(
+                self.min_val
+                + (display_value - self.display_min)
+                * (self.max_val - self.min_val)
+                / (self.display_max - self.display_min)
+            )
         return display_value
 
     def convert_from_midi(self, midi_value: int) -> int:
@@ -238,9 +251,13 @@ class AnalogParameter(SynthParameter):
             return midi_value - 64  # 0 to 127 -> -63 to +63
 
         # For parameters with simple linear scaling
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
-            return int(self.display_min + (midi_value - self.min_val) *
-                       (self.display_max - self.display_min) / (self.max_val - self.min_val))
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
+            return int(
+                self.display_min
+                + (midi_value - self.min_val)
+                * (self.display_max - self.display_min)
+                / (self.max_val - self.min_val)
+            )
         return midi_value
 
     @staticmethod
@@ -269,5 +286,7 @@ class AnalogParameter(SynthParameter):
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {0: 0x00}
-        group = group_map.get(partial_number, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        group = group_map.get(
+            partial_number, 0x00
+        )  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address

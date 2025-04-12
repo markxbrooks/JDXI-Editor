@@ -67,11 +67,12 @@ class PresetData:
             program = preset_num % 16
 
         return {
-            'presets': presets,
-            'bank_msb': bank_msb,
-            'bank_lsb': bank_lsb,
-            'program': program
+            "presets": presets,
+            "bank_msb": bank_msb,
+            "bank_lsb": bank_lsb,
+            "program": program,
         }
+
 
 # Example usage:
 # synth_data = SynthData.get_preset_details(SynthType.DIGITAL_1, 10)

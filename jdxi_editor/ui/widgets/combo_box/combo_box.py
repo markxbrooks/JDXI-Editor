@@ -2,7 +2,7 @@
 combo_box.py
 ============
 
-This module provides a custom `ComboBox` widget that extends `QWidget`. 
+This module provides a custom `ComboBox` widget that extends `QWidget`.
 
 The `ComboBox` class combines a label and a dropdown menu (QComboBox), allowing users
 to select from a list of options, where each option is mapped to a corresponding integer value.
@@ -46,9 +46,6 @@ Methods
 
 """
 
-import logging
-
-from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel, QComboBox
 from PySide6.QtCore import Signal, Slot
 
@@ -58,11 +55,14 @@ class ComboBox(QWidget):
 
     valueChanged = Signal(int)  # Define signal to emit selected value
 
-    def __init__(self, label: str,
-                 options: list,
-                 values: list = None,
-                 parent=None,
-                 show_label: bool = True):
+    def __init__(
+        self,
+        label: str,
+        options: list,
+        values: list = None,
+        parent=None,
+        show_label: bool = True,
+    ):
         """
         Initialize the ComboBox widget.
 

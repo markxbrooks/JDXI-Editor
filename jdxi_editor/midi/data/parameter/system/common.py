@@ -28,10 +28,13 @@ class SystemCommon(SynthParameter):
             return f"{semitones:+d} st"
         elif param == SystemCommon.PROGRAM_CTRL_CH:  # Program Control Channel
             return "OFF" if value == 0 else str(value)
-        elif param in (SystemCommon.RX_PROGRAM_CHANGE, SystemCommon.RX_BANK_SELECT):  # Switches
+        elif param in (
+            SystemCommon.RX_PROGRAM_CHANGE,
+            SystemCommon.RX_BANK_SELECT,
+        ):  # Switches
             return "ON" if value else "OFF"
         return str(value)
-    
+
     def get_nibbled_byte_size(self) -> int:
         """Get the nibbled byte size of the parameter"""
         if self.max_value - self.min_value <= 255:

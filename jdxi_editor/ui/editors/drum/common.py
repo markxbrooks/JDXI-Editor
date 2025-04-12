@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 
+
 class DrumCommonSection(QWidget):
     """Drum Common Section for the JDXI Editor"""
 
@@ -21,7 +22,7 @@ class DrumCommonSection(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        """ setup UI """
+        """setup UI"""
         layout = QVBoxLayout()
         self.setLayout(layout)
 

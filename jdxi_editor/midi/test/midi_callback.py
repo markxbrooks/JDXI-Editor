@@ -11,7 +11,7 @@ import time
 
 from rtmidi.midiutil import open_midiinput
 
-log = logging.getLogger('midiin_callback')
+log = logging.getLogger("midiin_callback")
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -46,7 +46,7 @@ try:
     while True:
         time.sleep(1)
 except KeyboardInterrupt:
-    print('')
+    print("")
 finally:
     print("Exit.")
     midiin.close_port()

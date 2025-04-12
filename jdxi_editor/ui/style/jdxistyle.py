@@ -74,7 +74,12 @@ Attributes:
         JDXI_PARTS_SELECT: Style for part selection elements.
 
 """
-from jdxi_editor.ui.style.helpers import generate_button_style, generate_tab_style, generate_editor_style
+
+from jdxi_editor.ui.style.helpers import (
+    generate_button_style,
+    generate_tab_style,
+    generate_editor_style,
+)
 
 
 class JDXIStyle:
@@ -105,7 +110,6 @@ class JDXIStyle:
 
     ACCENT_ANALOG_PRESSED = "#417ffa"
 
-
     #  Dimensions
     BUTTON_ROUND_RADIUS = 15
     BUTTON_RECT_RADIUS = 6
@@ -120,12 +124,24 @@ class JDXIStyle:
     # Fonts
     FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
     FONT_SIZE = "12px"
+    GREY = "#CCCCCC"
     # Define button styles
     BUTTON_ROUND = generate_button_style(
-        BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+        BACKGROUND,
+        BORDER,
+        BUTTON_ROUND_RADIUS,
+        FOREGROUND,
+        ACCENT_HOVER,
+        ACCENT_PRESSED,
     )
+    BORDER_PRESSED = "#2D2D2D"
     BUTTON_ROUND_SELECTED = generate_button_style(
-        BACKGROUND, BORDER, BUTTON_ROUND_RADIUS, FOREGROUND, ACCENT_HOVER, ACCENT_PRESSED
+        BACKGROUND,
+        BORDER,
+        BUTTON_ROUND_RADIUS,
+        FOREGROUND,
+        ACCENT_HOVER,
+        ACCENT_PRESSED,
     )
     BUTTON_ROUND_ACTIVE = generate_button_style(
         bg=BUTTON_BACKGROUND,
@@ -182,28 +198,28 @@ class JDXIStyle:
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=3,
-        text_color="#CCCCCC",
+        text_color=GREY,
         hover="#444444",
         border_pressed=ACCENT_PRESSED,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
         button_border_width=BUTTON_BORDER_WIDTH,
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
-        button_padding=BUTTON_PADDING
+        button_padding=BUTTON_PADDING,
     )
 
     BUTTON_WAVEFORM_ANALOG = generate_button_style(
         bg=BUTTON_BACKGROUND,
         border=BACKGROUND_PRESSED,
         radius=3,
-        text_color="#CCCCCC",
+        text_color=GREY,
         hover="#444444",
         border_pressed=ACCENT_ANALOG,
         background_pressed=BUTTON_BACKGROUND_PRESSED,
         button_border_width=BUTTON_BORDER_WIDTH,
         font_family=FONT_FAMILY,
         font_size=FONT_SIZE,
-        button_padding=BUTTON_PADDING
+        button_padding=BUTTON_PADDING,
     )
 
     # Define Tab styles using get_tab_style function
@@ -846,7 +862,6 @@ class JDXIStyle:
         }}
     """
 
-
     KEYBOARD_DRUM_LABELS = """
                 QLabel {
                     color: #808080;
@@ -883,7 +898,7 @@ class JDXIStyle:
             height: 100px;
             width: 120px;
             background-color: #000000;
-            border: 1px solid #666666;
+            border: 1px solid {BACKGROUND_PRESSED};
             border-radius: 5px;
             padding: 5px;
             margin: 5px;
@@ -941,7 +956,7 @@ class JDXIStyle:
                 border: 1px solid #FF3333;
             }}
             QPushButton:border_pressed {{
-                background-color: #2D2D2D;
+                background-color: {BORDER_PRESSED};
             }}
             QLabel {{
                 color: #FFFFFF;
@@ -957,7 +972,7 @@ class JDXIStyle:
 
     PARTIAL_SWITCH = f"""
                 QCheckBox {{
-                    color: #CCCCCC;
+                    color: {GREY};
                     font-size: 10px;
                 }}
                 QCheckBox::indicator {{
@@ -968,27 +983,27 @@ class JDXIStyle:
                     border-radius: 8px;
                 }}
                 QCheckBox::indicator:checked {{
-                    background: #666666;
+                    background: {BACKGROUND_PRESSED};
                     border-color: #FF4444;
                 }}
             """
 
-    PARTIALS_PANEL = """  
-            QGroupBox {
-                color: #CCCCCC;
+    PARTIALS_PANEL = f"""  
+            QGroupBox {{
+                color: {GREY};
                 font-size: 12px;
                 border: 0px solid #444444;
                 border-radius: 3px;
                 margin-top: 1px;
                 padding: 1px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 subcontrol-position: top center;
                 padding: 0 1px;
                 margin-top: 1px;
-                background-color: #2D2D2D;
-            }
+                background-color: {BORDER_PRESSED};
+            }}
         """  # this may be sub-classed
 
     DEBUGGER = f"""
@@ -1030,7 +1045,7 @@ class JDXIStyle:
                 border: 1px solid #FF3333;
             }}
             QPushButton:border_pressed {{
-                background-color: #2D2D2D;
+                background-color: {BACKGROUND_PRESSED};
             }}
         """
 
@@ -1050,5 +1065,3 @@ class JDXIStyle:
             background: transparent;
             padding-bottom: 10px;
         """
-
-

@@ -1,8 +1,11 @@
 import logging
 from typing import Tuple, Optional
 
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, \
-    AddressMemoryAreaMSB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetTemporaryToneUMB,
+    AddressMemoryAreaMSB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscPcmWaveGain
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape, DigitalLFOTempoSyncNote
@@ -48,7 +51,10 @@ def validate_value(param: DigitalPartialParameter, value: int) -> Optional[int]:
             except ValueError:
                 raise ValueError(f"Invalid filter slope value: {value}")
 
-    elif param in [DigitalPartialParameter.LFO_SHAPE, DigitalPartialParameter.MOD_LFO_SHAPE]:
+    elif param in [
+        DigitalPartialParameter.LFO_SHAPE,
+        DigitalPartialParameter.MOD_LFO_SHAPE,
+    ]:
         if not isinstance(value, DigitalLFOShape):
             try:
                 value = DigitalLFOShape(value).value

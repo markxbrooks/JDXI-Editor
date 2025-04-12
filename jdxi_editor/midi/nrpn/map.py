@@ -2,6 +2,7 @@
 NRPN Map class
 """
 
+
 class ParameterMap:
     def __init__(self, mapping=None):
         self._map = mapping or {}
@@ -35,7 +36,6 @@ class ParameterMap:
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self._map})"
-
 
 
 class NRPNMap(ParameterMap):

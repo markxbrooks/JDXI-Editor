@@ -12,7 +12,7 @@ from jdxi_editor.midi.preset.data import Preset
 
 class SequencerSquare(QPushButton):
     """Square button for sequencer/favorites with illuminated state"""
-    
+
     def __init__(self, slot_num, midi_helper: Optional[MidiIOHelper], parent=None):
         super().__init__(parent)
         self.preset_loader = None  # we will be using this later
@@ -32,7 +32,9 @@ class SequencerSquare(QPushButton):
         self.illuminated = checked
         self.is_checked = checked
         if self.preset:
-            self.setToolTip(f"Tone: {self.preset.number} {self.preset.name}, {self.preset.type}")
+            self.setToolTip(
+                f"Tone: {self.preset.number} {self.preset.name}, {self.preset.type}"
+            )
         self.update()  # Trigger repaint
 
     def _handle_click(self, checked):
@@ -43,22 +45,24 @@ class SequencerSquare(QPushButton):
             # self._load_from_settings()
         # else:
         #    self.save_preset_as_favourite()
-        
+
     def paintEvent(self, event):
         """Custom paint for illuminated appearance"""
         super().paintEvent(event)
-        
+
         if self.isChecked():
             painter = QPainter(self)
             painter.setRenderHint(QPainter.Antialiasing)
-            
+
             # Draw red outline when illuminated
             pen = QPen(QColor("#FF0000"))  # Roland red
             pen.setWidth(2)
             painter.setPen(pen)
-            painter.drawRect(1, 1, self.width()-2, self.height()-2)
+            painter.drawRect(1, 1, self.width() - 2, self.height() - 2)
 
-    def save_preset_as_favourite(self, synth_type: str, preset_num: int, preset_name: str, channel: int):
+    def save_preset_as_favourite(
+        self, synth_type: str, preset_num: int, preset_name: str, channel: int
+    ):
         """Save current preset to this favorite slot"""
         self.preset = Preset(number=preset_num, name=preset_name, type=synth_type)
         # self._save_to_settings()
@@ -128,4 +132,3 @@ class SequencerSquare(QPushButton):
         # Update the display
         logging.debug(f"Loading favorite {self.slot_num}: {self.preset.preset_name}")
     """
-

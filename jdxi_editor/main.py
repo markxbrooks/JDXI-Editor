@@ -99,12 +99,14 @@ def main():
         app.setApplicationVersion("0.30")
         app.setOrganizationName("jdxieditor")
         app.setOrganizationDomain("com.mabinc")
-        app.setStyleSheet("""
+        app.setStyleSheet(
+            """
             QLabel {
                 color: red;
                 font-weight: bold;
             }
-        """)
+        """
+        )
 
         logging.debug("Application initialized")
 

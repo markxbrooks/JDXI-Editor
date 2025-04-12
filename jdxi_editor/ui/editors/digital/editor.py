@@ -59,8 +59,15 @@ from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParame
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
-from jdxi_editor.ui.editors.digital.utils import _log_debug_info, _filter_sysex_keys, _get_partial_number, \
-    _is_valid_sysex_area, _log_synth_area_info, _is_digital_synth_area, _sysex_area_matches
+from jdxi_editor.ui.editors.digital.utils import (
+    _log_debug_info,
+    _filter_sysex_keys,
+    _get_partial_number,
+    _is_valid_sysex_area,
+    _log_synth_area_info,
+    _is_digital_synth_area,
+    _sysex_area_matches,
+)
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.ui.style import JDXIStyle
@@ -221,7 +228,7 @@ class DigitalSynthEditor(SynthEditor):
         self.show()
 
     def _create_instrument_group(self, container_layout, upper_layout):
-        """ create instrument group to show the synth"""
+        """create instrument group to show the synth"""
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(self.presets[0] if self.presets else "")
         self.instrument_title_label = DigitalTitle()
@@ -266,7 +273,9 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_editors = {}
         # Create editor for each partial
         for i in range(1, 4):
-            editor = DigitalPartialEditor(midi_helper, self.synth_number, i, parent=self)
+            editor = DigitalPartialEditor(
+                midi_helper, self.synth_number, i, parent=self
+            )
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
         self.common_section = DigitalCommonSection(
@@ -296,10 +305,9 @@ class DigitalSynthEditor(SynthEditor):
         if selected:
             self.partial_tab_widget.setCurrentIndex(partial_num - 1)
 
-    def set_partial_state(self,
-                          partial: DigitalPartial,
-                          enabled: bool = True,
-                          selected: bool = True) -> bool:
+    def set_partial_state(
+        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
+    ) -> bool:
         """Set the state of address partial
 
         Args:
@@ -311,10 +319,18 @@ class DigitalSynthEditor(SynthEditor):
             True if successful
         """
         try:
-            logging.info(f"Setting partial {partial.switch_param} state: enabled={enabled}, selected={selected}")
-            self.send_midi_parameter(param=partial.switch_param, value=1 if enabled else 0)
-            logging.info(f"Setting partial {partial.select_param} state: enabled={enabled}, selected={selected}")
-            self.send_midi_parameter(param=partial.select_param, value=1 if selected else 0)
+            logging.info(
+                f"Setting partial {partial.switch_param} state: enabled={enabled}, selected={selected}"
+            )
+            self.send_midi_parameter(
+                param=partial.switch_param, value=1 if enabled else 0
+            )
+            logging.info(
+                f"Setting partial {partial.select_param} state: enabled={enabled}, selected={selected}"
+            )
+            self.send_midi_parameter(
+                param=partial.select_param, value=1 if selected else 0
+            )
         except Exception as ex:
             logging.error(f"Error setting partial {partial.name} state: {str(ex)}")
             return False
@@ -415,7 +431,9 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        logging.info(f"self.address_msb: {to_hex(self.address_msb)} self.address_umb {to_hex(self.address_umb)}")
+        logging.info(
+            f"self.address_msb: {to_hex(self.address_msb)} self.address_umb {to_hex(self.address_umb)}"
+        )
         current_synth = get_area([self.address_msb, self.address_umb])
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
@@ -430,7 +448,9 @@ class DigitalSynthEditor(SynthEditor):
         filtered_data = _filter_sysex_keys(sysex_data)
         self._apply_partial_ui_updates(partial_no, filtered_data)
 
-    def _update_tone_common_modify_ui(self, sysex_data: Dict, successes: list, failures: list, debug: bool):
+    def _update_tone_common_modify_ui(
+        self, sysex_data: Dict, successes: list, failures: list, debug: bool
+    ):
         """
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
@@ -449,10 +469,22 @@ class DigitalSynthEditor(SynthEditor):
                 continue
 
             try:
-                if param.name in ["PARTIAL1_SWITCH", "PARTIAL2_SWITCH", "PARTIAL3_SWITCH"]:
-                    self._update_partial_selection_switch(param, param_value, successes, failures, debug)
-                if param.name in ["PARTIAL1_SELECT", "PARTIAL2_SELECT", "PARTIAL3_SELECT"]:
-                    self._update_partial_selected_state(param, param_value, successes, failures, debug)
+                if param.name in [
+                    "PARTIAL1_SWITCH",
+                    "PARTIAL2_SWITCH",
+                    "PARTIAL3_SWITCH",
+                ]:
+                    self._update_partial_selection_switch(
+                        param, param_value, successes, failures, debug
+                    )
+                if param.name in [
+                    "PARTIAL1_SELECT",
+                    "PARTIAL2_SELECT",
+                    "PARTIAL3_SELECT",
+                ]:
+                    self._update_partial_selected_state(
+                        param, param_value, successes, failures, debug
+                    )
                 elif "SWITCH" or "SHIFT" in param_name:
                     self._update_switch(param, param_value, successes, failures, debug)
                 else:
@@ -481,7 +513,9 @@ class DigitalSynthEditor(SynthEditor):
         }
 
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            self._update_tone_common_modify_ui(filtered_data, successes, failures, debug_param_updates)
+            self._update_tone_common_modify_ui(
+                filtered_data, successes, failures, debug_param_updates
+            )
 
         _log_debug_info(filtered_data, successes, failures, debug_stats)
 
@@ -505,22 +539,30 @@ class DigitalSynthEditor(SynthEditor):
         new_value = midi_cc_to_frac(value) if use_frac else midi_cc_to_ms(value)
 
         adsr_map = {
-            DigitalPartialParameter.AMP_ENV_ATTACK_TIME:
-                self.partial_editors[partial_no].amp_tab.amp_env_adsr_widget.attack_sb,
-            DigitalPartialParameter.AMP_ENV_DECAY_TIME:
-                self.partial_editors[partial_no].amp_tab.amp_env_adsr_widget.decay_sb,
-            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL:
-                self.partial_editors[partial_no].amp_tab.amp_env_adsr_widget.sustain_sb,
-            DigitalPartialParameter.AMP_ENV_RELEASE_TIME:
-                self.partial_editors[partial_no].amp_tab.amp_env_adsr_widget.release_sb,
-            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME:
-                self.partial_editors[partial_no].filter_tab.filter_adsr_widget.attack_sb,
-            DigitalPartialParameter.FILTER_ENV_DECAY_TIME:
-                self.partial_editors[partial_no].filter_tab.filter_adsr_widget.decay_sb,
-            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL:
-                self.partial_editors[partial_no].filter_tab.filter_adsr_widget.sustain_sb,
-            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME:
-                self.partial_editors[partial_no].filter_tab.filter_adsr_widget.release_sb,
+            DigitalPartialParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
+                partial_no
+            ].amp_tab.amp_env_adsr_widget.attack_sb,
+            DigitalPartialParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
+                partial_no
+            ].amp_tab.amp_env_adsr_widget.decay_sb,
+            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                partial_no
+            ].amp_tab.amp_env_adsr_widget.sustain_sb,
+            DigitalPartialParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
+                partial_no
+            ].amp_tab.amp_env_adsr_widget.release_sb,
+            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
+                partial_no
+            ].filter_tab.filter_adsr_widget.attack_sb,
+            DigitalPartialParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
+                partial_no
+            ].filter_tab.filter_adsr_widget.decay_sb,
+            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
+                partial_no
+            ].filter_tab.filter_adsr_widget.sustain_sb,
+            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
+                partial_no
+            ].filter_tab.filter_adsr_widget.release_sb,
         }
 
         spinbox = adsr_map.get(param)
@@ -528,7 +570,7 @@ class DigitalSynthEditor(SynthEditor):
             spinbox.setValue(new_value)
 
     def _update_slider(self, param, value, successes, failures, debug):
-        """ Update slider based on parameter and value. """
+        """Update slider based on parameter and value."""
         slider = self.controls.get(param)
         logging.info(f"Updating slider for: {param}")
         if slider:
@@ -542,7 +584,7 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def _update_switch(self, param, value, successes, failures, debug):
-        """ Update switch based on parameter and value. """
+        """Update switch based on parameter and value."""
         switch = self.controls.get(param)
         logging.info(f"Updating switch for: {param}")
         try:
@@ -560,7 +602,9 @@ class DigitalSynthEditor(SynthEditor):
             logging.info(f"Error {ex} occurred setting switch {param.name} to {value}")
             failures.append(param.name)
 
-    def _update_partial_selection_switch(self, param, value, successes, failures, debug):
+    def _update_partial_selection_switch(
+        self, param, value, successes, failures, debug
+    ):
         """Update the partial selection switches based on parameter and value."""
         param_name = param.name
         partial_switch_map = {

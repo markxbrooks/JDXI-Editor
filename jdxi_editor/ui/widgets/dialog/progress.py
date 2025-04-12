@@ -2,7 +2,9 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QAppli
 
 
 class ProgressDialog(QDialog):
-    def __init__(self, title="Loading", message="Please wait...", maximum=100, parent=None):
+    def __init__(
+        self, title="Loading", message="Please wait...", maximum=100, parent=None
+    ):
         super().__init__(parent)
         self.setWindowTitle(title)
         self.setModal(True)

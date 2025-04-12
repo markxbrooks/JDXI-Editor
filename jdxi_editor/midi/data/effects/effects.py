@@ -1,13 +1,17 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, \
-    AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
 class EffectType(Enum):
     """Effect types available on JD-Xi"""
+
     THRU = 0x00
     DISTORTION = 0x01
     FUZZ = 0x02
@@ -50,69 +54,64 @@ class EffectType(Enum):
 
 class FX:
     """Effect parameter ranges and defaults"""
+
     RANGES = {
         # Common parameters
-        'level': (0, 127),
-
+        "level": (0, 127),
         # Distortion parameters
-        'dist_drive': (0, 127),
-        'dist_tone': (0, 127),
-
+        "dist_drive": (0, 127),
+        "dist_tone": (0, 127),
         # Compressor parameters
-        'comp_attack': (0, 127),
-        'comp_release': (0, 127),
-        'comp_threshold': (0, 127),
-        'comp_ratio': (0, 127),
-
+        "comp_attack": (0, 127),
+        "comp_release": (0, 127),
+        "comp_threshold": (0, 127),
+        "comp_ratio": (0, 127),
         # Bitcrusher parameters
-        'bit_depth': (0, 127),
-        'sample_rate': (0, 127),
-
+        "bit_depth": (0, 127),
+        "sample_rate": (0, 127),
         # Flanger parameters
-        'flanger_rate': (0, 127),
-        'flanger_depth': (0, 127),
-        'flanger_feedback': (0, 127),
-
+        "flanger_rate": (0, 127),
+        "flanger_depth": (0, 127),
+        "flanger_feedback": (0, 127),
         # Phaser parameters
-        'phaser_rate': (0, 127),
-        'phaser_depth': (0, 127),
-        'phaser_resonance': (0, 127),
-
+        "phaser_rate": (0, 127),
+        "phaser_depth": (0, 127),
+        "phaser_resonance": (0, 127),
         # Ring Modulator parameters
-        'ring_freq': (0, 127),
-        'ring_balance': (0, 127),
-
+        "ring_freq": (0, 127),
+        "ring_balance": (0, 127),
         # Slicer parameters
-        'slicer_rate': (0, 127),
-        'slicer_pattern': (0, 15)
+        "slicer_rate": (0, 127),
+        "slicer_pattern": (0, 15),
     }
 
     DEFAULTS = {
-        'level': 100,
-        'dist_drive': 64,
-        'dist_tone': 64,
-        'comp_attack': 0,
-        'comp_release': 50,
-        'comp_threshold': 0,
-        'comp_ratio': 0,
-        'bit_depth': 127,
-        'sample_rate': 127,
-        'flanger_rate': 64,
-        'flanger_depth': 64,
-        'flanger_feedback': 64,
-        'phaser_rate': 64,
-        'phaser_depth': 64,
-        'phaser_resonance': 64,
-        'ring_freq': 64,
-        'ring_balance': 64,
-        'slicer_rate': 64,
-        'slicer_pattern': 0
+        "level": 100,
+        "dist_drive": 64,
+        "dist_tone": 64,
+        "comp_attack": 0,
+        "comp_release": 50,
+        "comp_threshold": 0,
+        "comp_ratio": 0,
+        "bit_depth": 127,
+        "sample_rate": 127,
+        "flanger_rate": 64,
+        "flanger_depth": 64,
+        "flanger_feedback": 64,
+        "phaser_rate": 64,
+        "phaser_depth": 64,
+        "phaser_resonance": 64,
+        "ring_freq": 64,
+        "ring_balance": 64,
+        "slicer_rate": 64,
+        "slicer_pattern": 0,
     }
 
 
 @dataclass
 class EffectPatch:
     """Effect patch data"""
+
     # Effect preset_type and common parameters
     type: EffectType = EffectType.THRU
     level: int = 100
@@ -137,6 +136,7 @@ class EffectPatch:
 @dataclass
 class EffectParam:
     """Effect parameter definition"""
+
     name: str
     min_value: int = -20000
     max_value: int = 20000

@@ -40,7 +40,9 @@ other interactive applications.
 FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
 
 
-def generate_polyend_sequencer_button_style(self, is_checked: bool, is_current: bool = False) -> str:
+def generate_polyend_sequencer_button_style(
+    self, is_checked: bool, is_current: bool = False
+) -> str:
     """Generate button style based on state and current step"""
     base_color = "#3498db" if is_checked else "#2c3e50"
     border_color = "#e74c3c" if is_current else base_color
@@ -84,17 +86,17 @@ def generate_sequencer_button_style(active):
 
 
 def generate_button_style(
-        bg,
-        border,
-        radius,
-        text_color,
-        hover,
-        border_pressed,
-        background_pressed="#666666",
-        button_border_width=4,
-        font_family="Myriad Pro, Arial, sans-serif",
-        font_size="12px",
-        button_padding=4,
+    bg,
+    border,
+    radius,
+    text_color,
+    hover,
+    border_pressed,
+    background_pressed="#666666",
+    button_border_width=4,
+    font_family="Myriad Pro, Arial, sans-serif",
+    font_size="12px",
+    button_padding=4,
 ):
     """Generate address button style dynamically."""
     return f"""
@@ -120,18 +122,18 @@ def generate_button_style(
 
 
 def generate_tab_style(
-        bg,
-        border,
-        radius,
-        text_color,
-        hover_bg,
-        hover_border,
-        selected_bg,
-        selected_border,
-        font_family=FONT_FAMILY,
-        font_size="12px",
-        padding="1px 1px",
-        margin="1px",
+    bg,
+    border,
+    radius,
+    text_color,
+    hover_bg,
+    hover_border,
+    selected_bg,
+    selected_border,
+    font_family=FONT_FAMILY,
+    font_size="12px",
+    padding="1px 1px",
+    margin="1px",
 ):
     """Generate address tab style dynamically."""
     return f"""
@@ -170,19 +172,19 @@ def generate_tab_style(
 
 
 def generate_editor_style(
-        accent,
-        accent_hover,
-        background,
-        foreground,
-        font_family,
-        font_size,
-        padding,
-        button_padding,
-        slider_handle,
-        slider_handle_border,
-        slider_groove,
-        slider_neon,
-        slider_neon_gradient_stop,
+    accent,
+    accent_hover,
+    background,
+    foreground,
+    font_family,
+    font_size,
+    padding,
+    button_padding,
+    slider_handle,
+    slider_handle_border,
+    slider_groove,
+    slider_neon,
+    slider_neon_gradient_stop,
 ):
     return f"""
         QWidget {{
@@ -350,8 +352,8 @@ def get_button_styles(active):
     """
     if active:
         return (
-                base_style
-                + """
+            base_style
+            + """
             QPushButton {
                 background-color: #333333;
                 border-color: #ff6666;
@@ -360,8 +362,8 @@ def get_button_styles(active):
         )
     else:
         return (
-                base_style
-                + """
+            base_style
+            + """
             QPushButton {
                 background-color: #222222;
                 border-color: #666666;

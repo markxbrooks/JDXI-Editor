@@ -107,12 +107,16 @@ class PartialsPanel(QWidget):
             group_box = QGroupBox(f"Partial {partial}")
             group_layout = QHBoxLayout()
             partial_icon = QLabel()
-            qta_icon = qta.icon(f"mdi.numeric-{partial}-circle-outline", color="#666666")
-            partial_icon_pixmap = qta_icon.pixmap(JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE)  # Set the desired size
+            qta_icon = qta.icon(
+                f"mdi.numeric-{partial}-circle-outline", color="#666666"
+            )
+            partial_icon_pixmap = qta_icon.pixmap(
+                JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE
+            )  # Set the desired size
             partial_icon.setPixmap(partial_icon_pixmap)
             group_layout.addWidget(partial_icon)
             switch = PartialSwitch(partial)
-            self.switches[partial] = switch 
+            self.switches[partial] = switch
             group_layout.addWidget(switch)
             group_layout.setSpacing(5)
             group_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)

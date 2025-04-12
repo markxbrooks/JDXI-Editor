@@ -52,7 +52,11 @@ class ArpeggioParameter(SynthParameter):
     ARPEGGIO_DURATION = (0x02, 0, 9)  # 30, 40, 50, 60, 70, 80, 90, 100, 120, FUL
     ARPEGGIO_SWITCH = (0x03, 0, 1)  # OFF, ON
     ARPEGGIO_STYLE = (0x05, 0, 127)  # 1 - 128
-    ARPEGGIO_MOTIF = (0x06, 0, 11)  # UP/L, UP/H, UP/_, dn/L, dn/H, dn/_, Ud/L, Ud/H, Ud/_, rn/L, rn/_, PHRASE
+    ARPEGGIO_MOTIF = (
+        0x06,
+        0,
+        11,
+    )  # UP/L, UP/H, UP/_, dn/L, dn/H, dn/_, Ud/L, Ud/H, Ud/_, rn/L, rn/_, PHRASE
     ARPEGGIO_OCTAVE_RANGE = (0x07, 61, 67)  # -3 - +3
     ARPEGGIO_ACCENT_RATE = (0x09, 0, 100)  # 0 - 100
     ARPEGGIO_VELOCITY = (0x0A, 0, 127)  # REAL, 1 - 127
@@ -75,8 +79,14 @@ class ArpeggioParameter(SynthParameter):
     NOTE_3 = (0x32, 0, 127)
     NOTE_4 = (0x33, 0, 127)
 
-    def __init__(self, address: int, min_val: int, max_val: int,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val

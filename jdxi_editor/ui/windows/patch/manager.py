@@ -21,14 +21,17 @@ Dependencies:
 
 """
 
-
 from typing import Optional
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QFileDialog, QLineEdit
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
+    QFileDialog,
+    QLineEdit,
 )
-from PySide6.QtCore import Qt
 import logging
 
 from jdxi_editor.midi.io import MidiIOHelper
@@ -36,7 +39,9 @@ from jdxi_editor.ui.style import JDXIStyle
 
 
 class PatchManager(QMainWindow):
-    def __init__(self, midi_helper: Optional[MidiIOHelper] = None, parent=None, save_mode=False):
+    def __init__(
+        self, midi_helper: Optional[MidiIOHelper] = None, parent=None, save_mode=False
+    ):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.save_mode = save_mode
@@ -80,17 +85,11 @@ class PatchManager(QMainWindow):
         try:
             if self.save_mode:
                 file_path, _ = QFileDialog.getSaveFileName(
-                    self,
-                    "Save Patch File",
-                    "",
-                    "Patch Files (*.syx);;All Files (*.*)"
+                    self, "Save Patch File", "", "Patch Files (*.syx);;All Files (*.*)"
                 )
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
-                    self,
-                    "Load Patch File",
-                    "",
-                    "Patch Files (*.syx);;All Files (*.*)"
+                    self, "Load Patch File", "", "Patch Files (*.syx);;All Files (*.*)"
                 )
 
             if file_path:
@@ -121,4 +120,6 @@ class PatchManager(QMainWindow):
             self.close()
 
         except Exception as e:
-            logging.error(f"Error {'saving' if self.save_mode else 'loading'} patch: {str(e)}")
+            logging.error(
+                f"Error {'saving' if self.save_mode else 'loading'} patch: {str(e)}"
+            )

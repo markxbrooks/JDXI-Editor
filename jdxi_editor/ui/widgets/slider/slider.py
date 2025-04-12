@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QSlider,
-    QSizePolicy
+    QSizePolicy,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QPen
@@ -108,14 +108,14 @@ class Slider(QWidget):
             self.slider.setSizePolicy(
                 QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed
             )
-            layout.addWidget(self.label) # Label is added before the slider
+            layout.addWidget(self.label)  # Label is added before the slider
             layout.addWidget(self.slider)
 
         # Create value display
 
         self.value_label = QLabel(str(min_val))
         self.value_label.setMinimumWidth(20)
-        if show_value_label: # Add value label if needed
+        if show_value_label:  # Add value label if needed
             self.value_label.setAlignment(
                 Qt.AlignmentFlag.AlignCenter if vertical else Qt.AlignmentFlag.AlignLeft
             )
@@ -158,7 +158,7 @@ class Slider(QWidget):
                 self.slider.minimum(),
                 self.slider.maximum(),
                 self.center_value,
-                slider_rect.width()
+                slider_rect.width(),
             )
 
             # Draw center mark
@@ -166,7 +166,7 @@ class Slider(QWidget):
                 center_pos + slider_rect.x(),
                 slider_rect.y(),
                 center_pos + slider_rect.x(),
-                slider_rect.y() + slider_rect.height()
+                slider_rect.y() + slider_rect.height(),
             )
         elif self.vertical:
             # draw tick mark lines perpendicular to the vertical slider
@@ -176,7 +176,7 @@ class Slider(QWidget):
                         slider_rect.x(),
                         slider_rect.y() + (position * slider_rect.height()),
                         slider_rect.x() + slider_rect.width(),
-                        slider_rect.y() + (position * slider_rect.height())
+                        slider_rect.y() + (position * slider_rect.height()),
                     )
         else:
             for position in positions:
@@ -184,7 +184,7 @@ class Slider(QWidget):
                     slider_rect.x() + position * slider_rect.width(),
                     slider_rect.y(),
                     slider_rect.x() + position * slider_rect.width(),
-                    slider_rect.y() + slider_rect.height()
+                    slider_rect.y() + slider_rect.height(),
                 )
 
     def value(self) -> int:

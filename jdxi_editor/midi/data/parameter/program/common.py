@@ -40,35 +40,53 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 class ProgramCommonParameter(SynthParameter):
     """Program Common parameters"""
 
-    def __init__(self, address: int, min_val: Optional[int] = None, max_val: Optional[int] = None,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: Optional[int] = None,
+        max_val: Optional[int] = None,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
 
-    NAME_1 = 0x00      # Character 1 of name (ASCII)
-    NAME_2 = 0x01      # Character 2 of name
-    NAME_3 = 0x02      # Character 3 of name
-    NAME_4 = 0x03      # Character 4 of name
-    NAME_5 = 0x04      # Character 5 of name
-    NAME_6 = 0x05      # Character 6 of name
-    NAME_7 = 0x06      # Character 7 of name
-    NAME_8 = 0x07      # Character 8 of name
-    NAME_9 = 0x08      # Character 9 of name
-    NAME_10 = 0x09     # Character 10 of name
-    NAME_11 = 0x0A     # Character 11 of name
-    NAME_12 = 0x0B     # Character 12 of name
+    NAME_1 = 0x00  # Character 1 of name (ASCII)
+    NAME_2 = 0x01  # Character 2 of name
+    NAME_3 = 0x02  # Character 3 of name
+    NAME_4 = 0x03  # Character 4 of name
+    NAME_5 = 0x04  # Character 5 of name
+    NAME_6 = 0x05  # Character 6 of name
+    NAME_7 = 0x06  # Character 7 of name
+    NAME_8 = 0x07  # Character 8 of name
+    NAME_9 = 0x08  # Character 9 of name
+    NAME_10 = 0x09  # Character 10 of name
+    NAME_11 = 0x0A  # Character 11 of name
+    NAME_12 = 0x0B  # Character 12 of name
 
     PROGRAM_LEVEL = (0x10, 0, 127, 0, 127)  # Program Level (0-127)
-    PROGRAM_TEMPO = (0x11, 500, 30000, 500, 30000)  # Program Tempo (500-30000: 5.00-300.00 BPM)
-    VOCAL_EFFECT = (0x16, 0, 2, 0, 2)  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
+    PROGRAM_TEMPO = (
+        0x11,
+        500,
+        30000,
+        500,
+        30000,
+    )  # Program Tempo (500-30000: 5.00-300.00 BPM)
+    VOCAL_EFFECT = (
+        0x16,
+        0,
+        2,
+        0,
+        2,
+    )  # Vocal Effect (0: OFF, 1: VOCODER, 2: AUTO-PITCH)
     VOCAL_EFFECT_NUMBER = (0x1C, 0, 20, 0, 20)  # Vocal Effect Number (0-20: 1-21)
     VOCAL_EFFECT_PART = (0x1D, 0, 1, 0, 1)  # Vocal Effect Part (0: Part 1, 1: Part 2)
     AUTO_NOTE_SWITCH = (0x1E, 0, 1, 0, 1)  # Auto Note Switch (0: OFF, 1: ON)
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
@@ -82,7 +100,9 @@ class ProgramCommonParameter(SynthParameter):
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {0: 0x00}
-        group = group_map.get(partial_number, 0x00)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        group = group_map.get(
+            partial_number, 0x00
+        )  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
 
     @property

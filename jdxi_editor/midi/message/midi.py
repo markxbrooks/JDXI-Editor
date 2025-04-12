@@ -33,6 +33,7 @@ from typing import List
 @dataclass
 class MidiMessage:
     """MIDI message base class"""
+
     MIDI_MAX_VALUE = 0x7F  # 127
     MIDI_STATUS_MASK = 0xF0  # Extracts message type
     MIDI_CHANNEL_MASK = 0x0F  # Extracts channel number

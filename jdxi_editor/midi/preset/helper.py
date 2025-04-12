@@ -45,7 +45,8 @@ from jdxi_editor.ui.editors.helpers.program import log_midi_info
 
 
 class PresetHelper(QObject):
-    """ Preset Loading Class """
+    """Preset Loading Class"""
+
     # This can't be a singleton since there is 1 for each synth
     # _instance = None
     update_display = Signal(int, int, int)
@@ -56,7 +57,9 @@ class PresetHelper(QObject):
     #        cls._instance = super(PresetHelper, cls).__new__(cls)
     #    return cls._instance
 
-    def __init__(self, midi_helper, presets, channel=1, preset_type=JDXISynth.DIGITAL_1):
+    def __init__(
+        self, midi_helper, presets, channel=1, preset_type=JDXISynth.DIGITAL_1
+    ):
         # if hasattr(self, '_initialized') and self._initialized:
         #    return
         super().__init__()
@@ -70,7 +73,6 @@ class PresetHelper(QObject):
         self.sysex_message = RolandSysEx()
         self._initialized = True
 
-
     def get_current_preset(self):
         """Get the current preset details."""
         return {
@@ -83,20 +85,22 @@ class PresetHelper(QObject):
         """Get the available presets."""
         return self.presets
 
-    def load_preset_by_program_change(self, preset_index, synth_type=JDXISynth.DIGITAL_1):
+    def load_preset_by_program_change(
+        self, preset_index, synth_type=JDXISynth.DIGITAL_1
+    ):
         """Load a preset using program change."""
         logging.info(f"Preset index: {preset_index}")
         preset_list_map = {
-            JDXISynth.DIGITAL_1 : DIGITAL_PRESET_LIST,
-            JDXISynth.DIGITAL_2 : DIGITAL_PRESET_LIST,
-            JDXISynth.ANALOG : ANALOG_PRESET_LIST,
-            JDXISynth.DRUMS : DRUM_KIT_LIST,
+            JDXISynth.DIGITAL_1: DIGITAL_PRESET_LIST,
+            JDXISynth.DIGITAL_2: DIGITAL_PRESET_LIST,
+            JDXISynth.ANALOG: ANALOG_PRESET_LIST,
+            JDXISynth.DRUMS: DRUM_KIT_LIST,
         }
         channel_map = {
-            JDXISynth.DIGITAL_1 : MidiChannel.DIGITAL1,
-            JDXISynth.DIGITAL_2 : MidiChannel.DIGITAL2,
-            JDXISynth.ANALOG : MidiChannel.ANALOG,
-            JDXISynth.DRUMS : MidiChannel.DRUM,
+            JDXISynth.DIGITAL_1: MidiChannel.DIGITAL1,
+            JDXISynth.DIGITAL_2: MidiChannel.DIGITAL2,
+            JDXISynth.ANALOG: MidiChannel.ANALOG,
+            JDXISynth.DRUMS: MidiChannel.DRUM,
         }
         preset_list = preset_list_map.get(synth_type, DIGITAL_PRESET_LIST)
         channel = channel_map.get(synth_type, MidiChannel.DIGITAL1)
@@ -115,7 +119,7 @@ class PresetHelper(QObject):
         # Select the correct preset list based on the channel
         preset_list = {
             MidiChannel.DRUM: DRUM_KIT_LIST,
-            MidiChannel.ANALOG: ANALOG_PRESET_LIST
+            MidiChannel.ANALOG: ANALOG_PRESET_LIST,
         }.get(channel, DIGITAL_PRESET_LIST)
 
         msb, lsb, pc = get_preset_values(program_number, preset_list)

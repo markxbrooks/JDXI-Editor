@@ -37,8 +37,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from PySide6.QtGui import QPixmap, QLinearGradient, QColor
 
 
-def draw_instrument_pixmap(
-):
+def draw_instrument_pixmap():
     """
     Create a visual representation of the JD-Xi instrument panel.
 
@@ -83,10 +82,14 @@ def draw_sequencer(painter: QPainter):
     """
     if platform.system() == "Windows":
         # windows has a menu across the top
-        sequencer_y = JDXIDimensions.SEQUENCER_Y_WINDOWS  # Keep same distance above keyboard
+        sequencer_y = (
+            JDXIDimensions.SEQUENCER_Y_WINDOWS
+        )  # Keep same distance above keyboard
     else:
-        sequencer_y = JDXIDimensions.SEQUENCER_Y_NON_WINDOWS  # Keep same distance above keyboard
-    sequencer_width = JDXIDimensions.SEQUENCER_WIDTH # Use roughly half keyboard width
+        sequencer_y = (
+            JDXIDimensions.SEQUENCER_Y_NON_WINDOWS
+        )  # Keep same distance above keyboard
+    sequencer_width = JDXIDimensions.SEQUENCER_WIDTH  # Use roughly half keyboard width
     sequencer_x = JDXIDimensions.SEQUENCER_X  # Align with right edge of keyboard
     # Calculate step dimensions
     step_count = JDXIDimensions.SEQUENCER_STEPS
@@ -109,7 +112,9 @@ def draw_sequencer(painter: QPainter):
             else:
                 scaled_measure_width = measure_width
             x1 = int(sequencer_x + (beat_number * scaled_measure_width))
-            x2 = int((x1 + scaled_measure_width) - step_spacing)  # Stop before next measure
+            x2 = int(
+                (x1 + scaled_measure_width) - step_spacing
+            )  # Stop before next measure
             y = line_y - 25 + time_signature_number * line_spacing
             painter.drawLine(
                 int(x1),

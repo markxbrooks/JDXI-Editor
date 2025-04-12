@@ -31,7 +31,10 @@ from typing import List
 
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
-    AddressMemoryAreaMSB, AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB)
+    AddressMemoryAreaMSB,
+    AddressOffsetProgramLMB,
+    AddressOffsetSuperNATURALLMB,
+)
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
 from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
@@ -88,27 +91,36 @@ class DigitalSynthData(SynthData):
     def __init__(self, synth_number: int, partial_number: int = 1):
         super().__init__(
             address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_2 if synth_number == 2 else AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+            address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_2
+            if synth_number == 2
+            else AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
             address_lmb=AddressOffsetProgramLMB.COMMON,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
             midi_requests=DIGITAL2_REQUESTS if synth_number == 2 else DIGITAL1_REQUESTS,
-            midi_channel=MidiChannel.DIGITAL2 if synth_number == 2 else MidiChannel.DIGITAL1,
+            midi_channel=MidiChannel.DIGITAL2
+            if synth_number == 2
+            else MidiChannel.DIGITAL1,
             presets=DIGITAL_PRESETS_ENUMERATED,
             preset_list=DIGITAL_PRESET_LIST,
-            preset_type=JDXISynth.DIGITAL_2 if synth_number == 2 else JDXISynth.DIGITAL_1,
+            preset_type=JDXISynth.DIGITAL_2
+            if synth_number == 2
+            else JDXISynth.DIGITAL_1,
             window_title=f"Digital Synth {synth_number}",
             display_prefix=f"D{synth_number}",
         )
         self.partial_number = partial_number
-        self.group_map = {1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
-                          2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
-                          3: AddressOffsetSuperNATURALLMB.PARTIAL_3}
+        self.group_map = {
+            1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+            2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+            3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+        }
 
     @property
     def partial_group(self) -> int:
-        return self.group_map.get(self.partial_number,
-                                  AddressOffsetSuperNATURALLMB.PARTIAL_1)
+        return self.group_map.get(
+            self.partial_number, AddressOffsetSuperNATURALLMB.PARTIAL_1
+        )
 
 
 class AnalogSynthData(SynthData):

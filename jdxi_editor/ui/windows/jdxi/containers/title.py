@@ -6,13 +6,14 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
 def add_title_container(central_widget):
-    """ add container for main title """
+    """add container for main title"""
     title_container = QWidget(central_widget)
     title_container.setGeometry(
         JDXIDimensions.TITLE_X,
         JDXIDimensions.TITLE_Y,
         JDXIDimensions.TITLE_WIDTH,
-        JDXIDimensions.TITLE_HEIGHT,)
+        JDXIDimensions.TITLE_HEIGHT,
+    )
     title_container.setStyleSheet(JDXIStyle.TRANSPARENT_WHITE)
     title_layout = QHBoxLayout()
     title_container.setLayout(title_layout)

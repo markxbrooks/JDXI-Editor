@@ -54,7 +54,9 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QPushButton,
     QSlider,
-    QTabWidget, QComboBox, QSpinBox,
+    QTabWidget,
+    QComboBox,
+    QSpinBox,
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
@@ -87,7 +89,7 @@ from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 def set_widget_value_safely(widget, value):
     """
     Block signals for the widget, set its value, then unblock signals.
-    
+
     Args:
         widget: The widget whose value is to be set.
         value: The value to set on the widget.
@@ -107,7 +109,7 @@ class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
     def __init__(
-            self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
+        self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
     ):
         super().__init__(midi_helper, parent)
 
@@ -125,9 +127,13 @@ class AnalogSynthEditor(SynthEditor):
 
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            self.midi_helper.update_analog_tone_name.connect(self.set_instrument_title_label)
+            self.midi_helper.update_analog_tone_name.connect(
+                self.set_instrument_title_label
+            )
             self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
-            self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
+            self.midi_helper.midi_parameter_received.connect(
+                self._on_parameter_received
+            )
             logging.info("MIDI helper initialized")
         else:
             logging.error("MIDI helper not initialized")
@@ -206,12 +212,12 @@ class AnalogSynthEditor(SynthEditor):
             self._create_parameter_slider,
             self._create_parameter_switch,
             self._on_waveform_selected,
-            self.wave_buttons
+            self.wave_buttons,
         )
         self.tab_widget.addTab(
             self.oscillator_section,
             qta.icon("mdi.triangle-wave", color="#666666"),
-            "Oscillator"
+            "Oscillator",
         )
 
         self.filter_section = AnalogFilterSection(
@@ -222,12 +228,10 @@ class AnalogSynthEditor(SynthEditor):
             self.midi_helper,
             self.address_msb,
             self.address_umb,
-            self.address_lmb
+            self.address_lmb,
         )
         self.tab_widget.addTab(
-            self.filter_section,
-            qta.icon("ri.filter-3-fill", color="#666666"),
-            "Filter"
+            self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
         )
 
         self.amp_section = AmpSection(
@@ -237,12 +241,10 @@ class AnalogSynthEditor(SynthEditor):
             self.address_lmb,
             self._create_parameter_slider,
             generate_waveform_icon,
-            base64_to_pixmap
+            base64_to_pixmap,
         )
         self.tab_widget.addTab(
-            self.amp_section,
-            qta.icon("mdi.amplifier", color="#666666"),
-            "Amp"
+            self.amp_section, qta.icon("mdi.amplifier", color="#666666"), "Amp"
         )
 
         self.lfo_section = AnalogLFOSection(
@@ -250,12 +252,10 @@ class AnalogSynthEditor(SynthEditor):
             self._create_parameter_switch,
             self._create_parameter_combo_box,
             self._on_lfo_shape_changed,
-            self.lfo_shape_buttons
+            self.lfo_shape_buttons,
         )
         self.tab_widget.addTab(
-            self.lfo_section,
-            qta.icon("mdi.sine-wave", color="#666666"),
-            "LFO"
+            self.lfo_section, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
         )
 
         # Configure sliders
@@ -339,7 +339,6 @@ class AnalogSynthEditor(SynthEditor):
 
                 # Update the corresponding slider
                 if param in self.controls:
-
                     slider_value = param.convert_from_midi(value)
                     logging.info(
                         f"midi value {value} converted to slider value {slider_value}"
@@ -357,17 +356,19 @@ class AnalogSynthEditor(SynthEditor):
                     )
 
     def update_filter_state(self, value):
-        """ update_filter_state """
+        """update_filter_state"""
         self.update_filter_controls_state(value)
 
     def _on_waveform_selected(self, waveform: AnalogOscWave):
-        """Handle waveform button selection """
+        """Handle waveform button selection"""
         if self.midi_helper:
-            sysex_message = RolandSysEx(address_msb=self.address_msb,
-                                        address_umb=self.address_umb,
-                                        address_lmb=self.address_lmb,
-                                        address_lsb=AnalogParameter.OSC_WAVEFORM.value[0],
-                                        value=waveform.midi_value)
+            sysex_message = RolandSysEx(
+                address_msb=self.address_msb,
+                address_umb=self.address_umb,
+                address_lmb=self.address_lmb,
+                address_lsb=AnalogParameter.OSC_WAVEFORM.value[0],
+                value=waveform.midi_value,
+            )
             self.midi_helper.send_midi_message(sysex_message)
 
             for btn in self.wave_buttons.values():
@@ -384,11 +385,13 @@ class AnalogSynthEditor(SynthEditor):
     def _on_lfo_shape_changed(self, value: int):
         """Handle LFO shape change"""
         if self.midi_helper:
-            sysex_message = RolandSysEx(address_msb=self.address_msb,
-                                        address_umb=self.address_umb,
-                                        address_lmb=self.address_lmb,
-                                        address_lsb=AnalogParameter.LFO_SHAPE.value[0],
-                                        value=value)
+            sysex_message = RolandSysEx(
+                address_msb=self.address_msb,
+                address_umb=self.address_umb,
+                address_lmb=self.address_lmb,
+                address_lsb=AnalogParameter.LFO_SHAPE.value[0],
+                value=value,
+            )
             self.midi_helper.send_midi_message(sysex_message)
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():
@@ -439,7 +442,11 @@ class AnalogSynthEditor(SynthEditor):
         # Define mapping dictionaries
         sub_osc_type_map = {0: 0, 1: 1, 2: 2}
         filter_switch_map = {0: 0, 1: 1}
-        osc_waveform_map = {0: AnalogOscWave.SAW, 1: AnalogOscWave.TRIANGLE, 2: AnalogOscWave.PULSE}
+        osc_waveform_map = {
+            0: AnalogOscWave.SAW,
+            1: AnalogOscWave.TRIANGLE,
+            2: AnalogOscWave.PULSE,
+        }
 
         failures, successes = [], []
 
@@ -459,10 +466,10 @@ class AnalogSynthEditor(SynthEditor):
             new_value = (
                 midi_cc_to_frac(value)
                 if param
-                   in [
-                       AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-                       AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-                   ]
+                in [
+                    AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
+                    AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                ]
                 else midi_cc_to_ms(value)
             )
 
@@ -486,7 +493,7 @@ class AnalogSynthEditor(SynthEditor):
 
             if param:
                 # FIXME: Deal with NRPN later
-                #if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
+                # if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
                 #    nrpn_map = {
                 #        (0, 124): "Envelope",
                 #        (0, 3): "LFO Shape",
@@ -503,17 +510,28 @@ class AnalogSynthEditor(SynthEditor):
                 if param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
                     self._update_lfo_shape_buttons(param_value)
                 if (
-                        param_name == "SUB_OSCILLATOR_TYPE"
-                        and param_value in sub_osc_type_map
+                    param_name == "SUB_OSCILLATOR_TYPE"
+                    and param_value in sub_osc_type_map
                 ):
-                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(True)
-                    self.oscillator_section.sub_oscillator_type_switch.setValue(sub_osc_type_map[param_value])
-                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(False)
+                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(
+                        True
+                    )
+                    self.oscillator_section.sub_oscillator_type_switch.setValue(
+                        sub_osc_type_map[param_value]
+                    )
+                    self.oscillator_section.sub_oscillator_type_switch.blockSignals(
+                        False
+                    )
                 elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                     self._update_waveform_buttons(param_value)
-                elif param == AnalogParameter.FILTER_MODE_SWITCH and param_value in filter_switch_map:
+                elif (
+                    param == AnalogParameter.FILTER_MODE_SWITCH
+                    and param_value in filter_switch_map
+                ):
                     self.filter_section.filter_mode_switch.blockSignals(True)
-                    self.filter_section.filter_mode_switch.setValue(filter_switch_map[param_value])
+                    self.filter_section.filter_mode_switch.setValue(
+                        filter_switch_map[param_value]
+                    )
                     self.filter_section.filter_mode_switch.blockSignals(False)
                     self.update_filter_controls_state(bool(param_value))
                 else:

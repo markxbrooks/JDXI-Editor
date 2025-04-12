@@ -2,7 +2,7 @@
 Effects buttons
 """
 
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout
 
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
@@ -12,10 +12,12 @@ from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 def add_effects_container(central_widget, open_vocal_fx, open_effects):
     """Effects button in top row"""
     fx_container = QWidget(central_widget)
-    fx_container.setGeometry(JDXIDimensions.EFFECTS_X,
-                             JDXIDimensions.EFFECTS_Y,
-                             JDXIDimensions.EFFECTS_WIDTH,
-                             JDXIDimensions.EFFECTS_HEIGHT)
+    fx_container.setGeometry(
+        JDXIDimensions.EFFECTS_X,
+        JDXIDimensions.EFFECTS_Y,
+        JDXIDimensions.EFFECTS_WIDTH,
+        JDXIDimensions.EFFECTS_HEIGHT,
+    )
     fx_layout = QVBoxLayout(fx_container)
     vocal_effects_row, vocal_effects_button = create_button_row(
         "Vocoder",

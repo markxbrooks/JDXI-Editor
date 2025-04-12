@@ -33,7 +33,8 @@ from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 
 
 class MIDIConnection:
-    """ Midi connection object"""
+    """Midi connection object"""
+
     _instance = None
 
     def __new__(cls):

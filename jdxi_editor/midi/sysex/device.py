@@ -53,7 +53,7 @@ class DeviceInfo:
     device_id: int
     manufacturer: List[int]  # Roland = [0x41]
     family: List[int]  # JD-Xi = [0x0E, 0x03]
-    model: List[int]   # JD-Xi model identifier
+    model: List[int]  # JD-Xi model identifier
     version: List[int]  # Software version [Major, Minor, Patch, Build]
 
     @property

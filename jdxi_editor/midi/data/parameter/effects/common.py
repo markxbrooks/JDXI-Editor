@@ -3,6 +3,7 @@ from enum import Enum
 
 class EffectCommonParameter(Enum):
     """Common parameters for Effects."""
+
     PROGRAM_EFFECT_1 = 0x02
     PROGRAM_EFFECT_2 = 0x04
     PROGRAM_DELAY = 0x06

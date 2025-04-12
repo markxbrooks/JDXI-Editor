@@ -2,6 +2,7 @@ import sys
 import rtmidi
 from PySide6.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
+
 class MidiHandler:
     def __init__(self, midiin):
         self.midiin = midiin
@@ -9,6 +10,7 @@ class MidiHandler:
 
     def midi_callback(self, message, data):
         print(f"Received MIDI message: {message}")
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -33,6 +35,7 @@ class MainWindow(QWidget):
             self.midiin.open_virtual_port("My virtual input")
 
         self.midi_handler = MidiHandler(self.midiin)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

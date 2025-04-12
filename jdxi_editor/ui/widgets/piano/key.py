@@ -18,11 +18,6 @@ Usage Example:
 Requires: PySide6.QtWidgets, PySide6.QtCore, PySide6.QtGui
 """
 
-from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Qt, Signal, QPropertyAnimation, QRect, QEasingCurve
-from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
-
-
 from PySide6.QtWidgets import QPushButton, QLabel, QGraphicsOpacityEffect
 from PySide6.QtCore import Qt, QRect, Signal, QPropertyAnimation, QEasingCurve
 from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
@@ -34,7 +29,9 @@ class PianoKey(QPushButton):
     noteOn = Signal(int)
     noteOff = Signal(int)
 
-    def __init__(self, note_num, is_black=False, width=22, height=160, parent=None) -> None:
+    def __init__(
+        self, note_num, is_black=False, width=22, height=160, parent=None
+    ) -> None:
         super().__init__(parent)
         self.note_num = note_num
         self.is_black = is_black
@@ -64,11 +61,7 @@ class PianoKey(QPushButton):
 
         self.led_anim = QPropertyAnimation(self.led_effect, b"opacity")
         self.led_anim.setDuration(600)
-        self.led_anim.setKeyValues([
-            (0.0, 0.0),
-            (0.2, 1.0),
-            (1.0, 0.0)
-        ])
+        self.led_anim.setKeyValues([(0.0, 0.0), (0.2, 1.0), (1.0, 0.0)])
         self.led_anim.setEasingCurve(QEasingCurve.OutQuad)
 
     def showEvent(self, event):
@@ -117,11 +110,13 @@ class PianoKey(QPushButton):
 
             self.release_animation.stop()
             self.release_animation.setDuration(150)
-            self.release_animation.setKeyValues([
-                (0.0, self.geometry()),
-                (0.4, bounce_up),
-                (1.0, bounce_back),
-            ])
+            self.release_animation.setKeyValues(
+                [
+                    (0.0, self.geometry()),
+                    (0.4, bounce_up),
+                    (1.0, bounce_back),
+                ]
+            )
             self.release_animation.setEasingCurve(QEasingCurve.OutBounce)
             self.release_animation.start()
 

@@ -15,7 +15,9 @@ def parse_digital_parameters(data: list) -> dict:
     # Function to safely retrieve values from `data`
     def safe_get(index, default=0):
         tone_name_length = 12
-        index = index + tone_name_length # shift the index by 12 to account for the tone name
+        index = (
+            index + tone_name_length
+        )  # shift the index by 12 to account for the tone name
         return data[index] if index < len(data) else default
 
     parameters = {}

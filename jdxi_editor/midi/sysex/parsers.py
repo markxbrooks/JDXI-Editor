@@ -45,7 +45,7 @@ def get_temporary_area(data: List[int]) -> str:
     """Map address bytes to corresponding temporary area."""
     logging.info(f"data for temporary area: {data}")
     area_mapping = {
-        (0x18, 0x00):  "TEMPORARY_PROGRAM_AREA",
+        (0x18, 0x00): "TEMPORARY_PROGRAM_AREA",
         (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
         (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
         (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
@@ -74,7 +74,9 @@ def extract_tone_name(data: List[int]) -> str:
     if len(data) < 24:  # Ensure sufficient length
         return "Unknown"
 
-    raw_name = bytes(data[12:24]).decode(errors="ignore").strip("\x00\r ")  # Start at index 12
+    raw_name = (
+        bytes(data[12:24]).decode(errors="ignore").strip("\x00\r ")
+    )  # Start at index 12
     return raw_name  # Strip null and carriage return
 
 
@@ -122,7 +124,10 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     if temporary_area == "TEMPORARY_PROGRAM_AREA":
         parsed_data.update(parse_parameters(data, ProgramCommonParameter))
 
-    elif temporary_area in ["TEMPORARY_DIGITAL_SYNTH_1_AREA", "TEMPORARY_DIGITAL_SYNTH_2_AREA"]:
+    elif temporary_area in [
+        "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+    ]:
         if synth_tone == "TONE_COMMON":
             parsed_data.update(parse_parameters(data, DigitalCommonParameter))
         elif synth_tone == "TONE_MODIFY":

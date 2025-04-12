@@ -19,8 +19,11 @@ from typing import Dict, Union
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, \
-    AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressMemoryAreaMSB,
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
@@ -34,24 +37,26 @@ from jdxi_editor.ui.style import JDXIStyle
 
 
 # Precompile the regex pattern at module level or in the class constructor
-ENVELOPE_PATTERN = re.compile(r'(attack|decay|release)', re.IGNORECASE)
+ENVELOPE_PATTERN = re.compile(r"(attack|decay|release)", re.IGNORECASE)
 
 
 class ADSR(QWidget):
     envelopeChanged = Signal(dict)
 
-    def __init__(self,
-                 attack_param: SynthParameter,
-                 decay_param: SynthParameter,
-                 sustain_param: SynthParameter,
-                 release_param: SynthParameter,
-                 initial_param: SynthParameter = None,
-                 peak_param: SynthParameter = None,
-                 midi_helper=None,
-                 address_lmb=None,
-                 address_msb=None,
-                 address_umb=None,
-                 parent=None):
+    def __init__(
+        self,
+        attack_param: SynthParameter,
+        decay_param: SynthParameter,
+        sustain_param: SynthParameter,
+        release_param: SynthParameter,
+        initial_param: SynthParameter = None,
+        peak_param: SynthParameter = None,
+        midi_helper=None,
+        address_lmb=None,
+        address_msb=None,
+        address_umb=None,
+        parent=None,
+    ):
         super().__init__(parent)
 
         # Store parameter controls
@@ -74,9 +79,15 @@ class ADSR(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.address_msb = address_msb if address_msb else AddressMemoryAreaMSB.TEMPORARY_TONE
-        self.address_umb = address_umb if address_umb else AddressOffsetTemporaryToneUMB.ANALOG_PART
-        self.address_lmb = address_lmb if address_lmb else AddressOffsetProgramLMB.COMMON
+        self.address_msb = (
+            address_msb if address_msb else AddressMemoryAreaMSB.TEMPORARY_TONE
+        )
+        self.address_umb = (
+            address_umb if address_umb else AddressOffsetTemporaryToneUMB.ANALOG_PART
+        )
+        self.address_lmb = (
+            address_lmb if address_lmb else AddressOffsetProgramLMB.COMMON
+        )
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
 
@@ -103,12 +114,18 @@ class ADSR(QWidget):
         self.plot = ADSRPlot(width=300, height=250)
 
         # Create sliders
-        self.attack_slider = self._create_parameter_slider(attack_param, "Attack", value=self.envelope["attack_time"])
-        self.decay_slider = self._create_parameter_slider(decay_param, "Decay", value=self.envelope["decay_time"])
-        self.sustain_slider = self._create_parameter_slider(sustain_param, "Sustain",
-                                                            value=self.envelope["sustain_level"] * 127)
-        self.release_slider = self._create_parameter_slider(release_param, "Release",
-                                                            value=self.envelope["release_time"])
+        self.attack_slider = self._create_parameter_slider(
+            attack_param, "Attack", value=self.envelope["attack_time"]
+        )
+        self.decay_slider = self._create_parameter_slider(
+            decay_param, "Decay", value=self.envelope["decay_time"]
+        )
+        self.sustain_slider = self._create_parameter_slider(
+            sustain_param, "Sustain", value=self.envelope["sustain_level"] * 127
+        )
+        self.release_slider = self._create_parameter_slider(
+            release_param, "Release", value=self.envelope["release_time"]
+        )
 
         # Add sliders to layout
         self.layout.addWidget(self.attack_slider, 0, 0)
@@ -159,15 +176,19 @@ class ADSR(QWidget):
 
         self.plot.setEnabled(enabled)  # Disable the ADSR plot interaction if needed
 
-    def _create_parameter_slider(self, param: SynthParameter, label: str, value: int = None) -> Slider:
+    def _create_parameter_slider(
+        self, param: SynthParameter, label: str, value: int = None
+    ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
+        # if hasattr(param, "get_display_value"):
+        #    display_min, display_max = param.get_display_value()
+        # else:
+        #    display_min, display_max = param.min_val, param.max_val
 
         # Create vertical slider
-        slider = Slider(label, display_min, display_max, vertical=True, show_value_label=False)
+        slider = Slider(
+            label, display_min, display_max, vertical=True, show_value_label=False
+        )
 
         slider.setValue(value)
         # Connect value changed signal
@@ -189,7 +210,7 @@ class ADSR(QWidget):
                     key = f"{match.group().lower()}_time"
                     self.envelope[key] = midi_cc_to_ms(slider.value())
                     logging.info(f"param: {param} slider value: {slider.value()}")
-                    logging.info(f'{key}: {self.envelope[key]}')
+                    logging.info(f"{key}: {self.envelope[key]}")
 
     def update_controls_from_envelope(self):
         """Update slider controls from envelope values."""
@@ -231,10 +252,16 @@ class ADSR(QWidget):
         """Update the corresponding spin box based on the given parameter."""
         # Mapping of parameters to their corresponding spin box and envelope keys
         param_mapping = {
-            self.parameters[ADSRParameter.SUSTAIN_LEVEL]: (self.sustain_sb, "sustain_level"),
+            self.parameters[ADSRParameter.SUSTAIN_LEVEL]: (
+                self.sustain_sb,
+                "sustain_level",
+            ),
             self.parameters[ADSRParameter.ATTACK_TIME]: (self.attack_sb, "attack_time"),
             self.parameters[ADSRParameter.DECAY_TIME]: (self.decay_sb, "decay_time"),
-            self.parameters[ADSRParameter.RELEASE_TIME]: (self.release_sb, "release_time"),
+            self.parameters[ADSRParameter.RELEASE_TIME]: (
+                self.release_sb,
+                "release_time",
+            ),
         }
 
         # Update the corresponding spin box if the parameter is in the mapping
@@ -252,11 +279,13 @@ class ADSR(QWidget):
 
         try:
             param_address = param.test_address
-            sysex_message = RolandSysEx(address_msb=self.address_msb,
-                                        address_umb=self.address_umb,
-                                        address_lmb=self.address_lmb,
-                                        address_lsb=param_address,
-                                        value=value)
+            sysex_message = RolandSysEx(
+                address_msb=self.address_msb,
+                address_umb=self.address_umb,
+                address_lmb=self.address_lmb,
+                address_lsb=param_address,
+                value=value,
+            )
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as e:
             logging.error(f"MIDI error setting {param}: {str(e)}")
@@ -279,18 +308,10 @@ class ADSR(QWidget):
         self.envelopeChanged.emit(self.envelope)
 
     def update_envelope_from_spinboxes(self):
-        self.envelope["attack_time"] = (
-            self.attack_sb.value()
-        )
-        self.envelope["decay_time"] = (
-            self.decay_sb.value()
-        )
-        self.envelope["release_time"] = (
-            self.release_sb.value()
-        )
-        self.envelope["sustain_level"] = (
-            self.sustain_sb.value()
-        )
+        self.envelope["attack_time"] = self.attack_sb.value()
+        self.envelope["decay_time"] = self.decay_sb.value()
+        self.envelope["release_time"] = self.release_sb.value()
+        self.envelope["sustain_level"] = self.sustain_sb.value()
 
     def update_spinboxes_from_envelope(self):
         """Updates an ADSR parameter from an external control, avoiding feedback loops."""

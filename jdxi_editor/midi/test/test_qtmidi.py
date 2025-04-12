@@ -1,7 +1,15 @@
 import sys
 import mido
 from mido import MidiFile, Message, open_output
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QFileDialog, QLabel, QComboBox
+from PySide6.QtWidgets import (
+    QApplication,
+    QWidget,
+    QPushButton,
+    QVBoxLayout,
+    QFileDialog,
+    QLabel,
+    QComboBox,
+)
 from PySide6.QtCore import QTimer
 
 
@@ -42,7 +50,9 @@ class MidiPlayer(QWidget):
         self.setLayout(layout)
 
     def load_midi(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open MIDI File", "", "MIDI Files (*.mid)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Open MIDI File", "", "MIDI Files (*.mid)"
+        )
         if file_path:
             self.midi_file = MidiFile(file_path)
             self.file_label.setText(f"Loaded: {file_path}")

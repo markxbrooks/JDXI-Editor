@@ -13,6 +13,7 @@ midiout.close_port()
 
 import rtmidi
 
+
 class MidiTestController:
     def __init__(self, port_name=None):
         self.midiout = rtmidi.MidiOut()

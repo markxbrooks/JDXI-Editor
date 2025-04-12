@@ -486,7 +486,9 @@ class PatternSequencer(SynthEditor):
                 logging.info(f"Pattern saved to {filename}")
             except Exception as ex:
                 logging.error(f"Error saving pattern: {ex}")
-                QMessageBox.critical(self, "Error", f"Could not save pattern: {str(ex)}")
+                QMessageBox.critical(
+                    self, "Error", f"Could not save pattern: {str(ex)}"
+                )
 
     def _load_pattern_dialog(self):
         """Open load file dialog and load pattern"""
@@ -513,7 +515,9 @@ class PatternSequencer(SynthEditor):
                             break
             except Exception as ex:
                 logging.error(f"Error loading pattern: {ex}")
-                QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
+                QMessageBox.critical(
+                    self, "Error", f"Could not load pattern: {str(ex)}"
+                )
 
     def set_tempo(self, bpm: int):
         """Set the pattern tempo in BPM using mido."""
@@ -548,8 +552,8 @@ class PatternSequencer(SynthEditor):
         track = MidiTrack()
         self.midi_file.tracks.append(track)
 
-        track.append(MetaMessage('set_tempo', tempo=bpm2tempo(self.bpm)))
-        track.append(MetaMessage('time_signature', numerator=4, denominator=4))
+        track.append(MetaMessage("set_tempo", tempo=bpm2tempo(self.bpm)))
+        track.append(MetaMessage("time_signature", numerator=4, denominator=4))
 
         for row in range(4):
             channel = row if row < 3 else 9
@@ -557,14 +561,32 @@ class PatternSequencer(SynthEditor):
                 for step in range(16):
                     button = measure.buttons[row][step]
                     if button.isChecked() and button.note is not None:
-                        time = int((measure_index * 16 + step) * 120)  # Convert to ticks
-                        track.append(Message('note_on', note=button.note, velocity=100, time=time, channel=channel))
+                        time = int(
+                            (measure_index * 16 + step) * 120
+                        )  # Convert to ticks
                         track.append(
-                            Message('note_off', note=button.note, velocity=100, time=time + 120, channel=channel))
+                            Message(
+                                "note_on",
+                                note=button.note,
+                                velocity=100,
+                                time=time,
+                                channel=channel,
+                            )
+                        )
+                        track.append(
+                            Message(
+                                "note_off",
+                                note=button.note,
+                                velocity=100,
+                                time=time + 120,
+                                channel=channel,
+                            )
+                        )
 
                         note_name = (
                             self._midi_to_note_name(button.note, drums=True)
-                            if row == 3 else self._midi_to_note_name(button.note)
+                            if row == 3
+                            else self._midi_to_note_name(button.note)
                         )
                         button.setToolTip(f"Note: {note_name}")
 

@@ -42,16 +42,25 @@ from typing import Dict
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
-    QLabel, QWidget,
+    QLabel,
+    QWidget,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from jdxi_editor.midi.data.arpeggio import ArpeggioSwitch
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
-    ArpeggioMotif, ArpeggioOctaveRange, ArpeggioGrid, ArpeggioDuration
+    ArpeggioMotif,
+    ArpeggioOctaveRange,
+    ArpeggioGrid,
+    ArpeggioDuration,
 )
-from jdxi_editor.midi.data.arpeggio.data import ARPEGGIO_GRID, ARP_DURATION, ARPEGGIO_STYLE, ArpeggioStyle
+from jdxi_editor.midi.data.arpeggio.data import (
+    ARPEGGIO_GRID,
+    ARP_DURATION,
+    ARPEGGIO_STYLE,
+    ArpeggioStyle,
+)
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioAddress, ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
@@ -63,7 +72,8 @@ from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 
 
 class ArpeggioEditor(SynthEditor):
-    """ Arpeggio Editor Window"""
+    """Arpeggio Editor Window"""
+
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Arpeggio Editor")
@@ -75,9 +85,7 @@ class ArpeggioEditor(SynthEditor):
         self.partial_number = 0
         self.instrument_icon_folder = "arpeggiator"
         self.default_image = "arpeggiator2.png"
-        self.controls: Dict[
-            SynthParameter, QWidget
-        ] = {}
+        self.controls: Dict[SynthParameter, QWidget] = {}
 
         if parent:
             if parent.current_synth_type:
@@ -111,25 +119,29 @@ class ArpeggioEditor(SynthEditor):
 
         # Add on-off switch
         program_zone_row = QHBoxLayout()
-        common_button = self._create_parameter_switch(ProgramZoneParameter.ARPEGGIO_SWITCH,
-                                                      "Master Arpeggiator",
-                                                      [switch_setting.display_name for switch_setting in ArpeggioSwitch])
+        common_button = self._create_parameter_switch(
+            ProgramZoneParameter.ARPEGGIO_SWITCH,
+            "Master Arpeggiator",
+            [switch_setting.display_name for switch_setting in ArpeggioSwitch],
+        )
         program_zone_row.addWidget(common_button)
 
         layout.addLayout(program_zone_row)
 
         # Add on-off switch
         switch_row = QHBoxLayout()
-        self.switch_button = self._create_parameter_switch(ArpeggioParameter.ARPEGGIO_SWITCH,
-                                                           "Arpeggiator",
-                                                           [switch_setting.display_name for switch_setting in ArpeggioSwitch])
+        self.switch_button = self._create_parameter_switch(
+            ArpeggioParameter.ARPEGGIO_SWITCH,
+            "Arpeggiator",
+            [switch_setting.display_name for switch_setting in ArpeggioSwitch],
+        )
         switch_row.addWidget(self.switch_button)
         layout.addLayout(switch_row)
 
         # Create address combo box for Arpeggio Style
-        self.style_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_STYLE,
-                                                            "Style",
-                                                            ARPEGGIO_STYLE)
+        self.style_combo = self._create_parameter_combo_box(
+            ArpeggioParameter.ARPEGGIO_STYLE, "Style", ARPEGGIO_STYLE
+        )
         style_row = QHBoxLayout()
         style_row.addWidget(self.style_combo)
         layout.addLayout(style_row)
@@ -137,40 +149,44 @@ class ArpeggioEditor(SynthEditor):
         # Create address combo box for Arpeggio Grid
         # Add grid combo box
         grid_row = QHBoxLayout()
-        self.grid_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_GRID,
-                                                           "Grid:",
-                                                           [grid.display_name for grid in ArpeggioGrid])
+        self.grid_combo = self._create_parameter_combo_box(
+            ArpeggioParameter.ARPEGGIO_GRID,
+            "Grid:",
+            [grid.display_name for grid in ArpeggioGrid],
+        )
         grid_row.addWidget(self.grid_combo)
         layout.addLayout(grid_row)
 
         # Add grid combo box
         duration_row = QHBoxLayout()
         # Create address combo box for Arpeggio Duration
-        self.duration_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_DURATION,
-                                                               "Duration",
-                                                               [duration.display_name for duration in ArpeggioDuration])
+        self.duration_combo = self._create_parameter_combo_box(
+            ArpeggioParameter.ARPEGGIO_DURATION,
+            "Duration",
+            [duration.display_name for duration in ArpeggioDuration],
+        )
         duration_row.addWidget(self.duration_combo)
         layout.addLayout(duration_row)
 
         # Add sliders
-        self.velocity_slider = self._create_parameter_slider(ArpeggioParameter.ARPEGGIO_VELOCITY,
-                                                             "Velocity",
-                                                             0,
-                                                             127)
+        self.velocity_slider = self._create_parameter_slider(
+            ArpeggioParameter.ARPEGGIO_VELOCITY, "Velocity", 0, 127
+        )
         layout.addWidget(self.velocity_slider)
 
-        self.accent_slider = self._create_parameter_slider(ArpeggioParameter.ARPEGGIO_ACCENT_RATE,
-                                                           "Accent",
-                                                           0,
-                                                           127)
+        self.accent_slider = self._create_parameter_slider(
+            ArpeggioParameter.ARPEGGIO_ACCENT_RATE, "Accent", 0, 127
+        )
         layout.addWidget(self.accent_slider)
 
         # Add octave range combo box
         octave_row = QHBoxLayout()
-        self.octave_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_OCTAVE_RANGE,
-                                                             "Octave Range:",
-                                                             [octave.display_name for octave in ArpeggioOctaveRange],
-                                                             [octave.midi_value for octave in ArpeggioOctaveRange])
+        self.octave_combo = self._create_parameter_combo_box(
+            ArpeggioParameter.ARPEGGIO_OCTAVE_RANGE,
+            "Octave Range:",
+            [octave.display_name for octave in ArpeggioOctaveRange],
+            [octave.midi_value for octave in ArpeggioOctaveRange],
+        )
         # Set default to 0
         self.octave_combo.combo_box.setCurrentIndex(3)  # Index 3 is OCT_ZERO
         octave_row.addWidget(self.octave_combo)
@@ -178,9 +194,11 @@ class ArpeggioEditor(SynthEditor):
 
         # Add motif combo box
         motif_row = QHBoxLayout()
-        self.motif_combo = self._create_parameter_combo_box(ArpeggioParameter.ARPEGGIO_MOTIF,
-                                                            "Motif:",
-                                                            [motif.name for motif in ArpeggioMotif])
+        self.motif_combo = self._create_parameter_combo_box(
+            ArpeggioParameter.ARPEGGIO_MOTIF,
+            "Motif:",
+            [motif.name for motif in ArpeggioMotif],
+        )
         motif_row.addWidget(self.motif_combo)
         layout.addLayout(motif_row)
 

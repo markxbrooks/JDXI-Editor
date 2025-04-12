@@ -82,8 +82,4 @@ class DigitalPartial(IntEnum):
         ]
 
 
-DIGITAL_PARTIAL_NAMES = [
-    "PARTIAL_1",
-    "PARTIAL_2",
-    "PARTIAL_3"
-]
+DIGITAL_PARTIAL_NAMES = ["PARTIAL_1", "PARTIAL_2", "PARTIAL_3"]

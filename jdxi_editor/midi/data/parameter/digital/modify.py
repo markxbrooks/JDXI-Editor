@@ -36,7 +36,7 @@ class DigitalModifyParameter(SynthParameter):
     """
 
     def __init__(self, address: int, min_val: int, max_val: int):
-        super().__init__(address, min_val, max_val) 
+        super().__init__(address, min_val, max_val)
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
@@ -55,9 +55,30 @@ class DigitalModifyParameter(SynthParameter):
         elif self == self.CHROMATIC_PORTAMENTO:
             return ["OFF", "ON"][value]
         elif self == self.ENVELOPE_LOOP_SYNC_NOTE:
-            return ["16", "12", "8", "4", "2", "1", "3/4", "2/3", "1/2", "3/8", "1/3", "1/4", "3/16", "1/6", "1/8", "3/32", "1/12", "1/16", "1/24", "1/32"][value]
+            return [
+                "16",
+                "12",
+                "8",
+                "4",
+                "2",
+                "1",
+                "3/4",
+                "2/3",
+                "1/2",
+                "3/8",
+                "1/3",
+                "1/4",
+                "3/16",
+                "1/6",
+                "1/8",
+                "3/32",
+                "1/12",
+                "1/16",
+                "1/24",
+                "1/32",
+            ][value]
         return str(value)
-    
+
     @staticmethod
     def get_by_name(param_name):
         """Get the Parameter by name."""
@@ -71,7 +92,9 @@ class DigitalModifyParameter(SynthParameter):
 
         # Validate range for specific parameters
         if self == self.ENVELOPE_LOOP_SYNC_NOTE and not (0 <= value <= 19):
-            raise ValueError(f"Value {value} out of range for {self.name} (valid range: 0-19)")
+            raise ValueError(
+                f"Value {value} out of range for {self.name} (valid range: 0-19)"
+            )
 
         return value
 

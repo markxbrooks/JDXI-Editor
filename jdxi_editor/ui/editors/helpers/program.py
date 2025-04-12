@@ -62,18 +62,26 @@ def get_program_index_by_id(program_id: str) -> Optional[int]:
 
 def get_program_by_id(program_id: str) -> Optional[Dict[str, str]]:
     """Retrieve a program by its ID from PROGRAM_LIST."""
-    return next((program for program in PROGRAM_LIST if program["id"] == program_id), None)
+    return next(
+        (program for program in PROGRAM_LIST if program["id"] == program_id), None
+    )
 
 
-def get_program_by_bank_and_number(bank: str, program_number: int) -> Optional[Dict[str, str]]:
+def get_program_by_bank_and_number(
+    bank: str, program_number: int
+) -> Optional[Dict[str, str]]:
     """Retrieve a program by its bank letter and number."""
     program_id = f"{bank}{program_number:02d}"
-    return next((program for program in PROGRAM_LIST if program["id"] == program_id), None)
+    return next(
+        (program for program in PROGRAM_LIST if program["id"] == program_id), None
+    )
 
 
 def get_program_id_by_name_new(name: str) -> Optional[str]:
     """Retrieve a program's ID by its name from PROGRAM_LIST."""
-    program = next((program for program in PROGRAM_LIST if program["name"] == name), None)
+    program = next(
+        (program for program in PROGRAM_LIST if program["name"] == name), None
+    )
     return program["id"] if program else None
 
 
@@ -83,7 +91,7 @@ def get_program_id_by_name_new(name: str) -> Optional[str]:
 
     for program in PROGRAM_LIST:
         # Match 'name' as a substring of 'program["name"]' (correct order)
-        if re.search(re.escape(fr"{name}"), fr'{program["name"]}', re.IGNORECASE):
+        if re.search(re.escape(rf"{name}"), rf'{program["name"]}', re.IGNORECASE):
             logging.info(program)
             return program["id"]
 
@@ -110,15 +118,26 @@ def get_program_number_by_name(program_name: str) -> Optional[str]:
     return int(program["id"][1:]) if program else None
 
 
-def get_preset_list_number_by_name(preset_name: str, preset_list: List[Dict[str, str]]) -> Optional[int]:
+def get_preset_list_number_by_name(
+    preset_name: str, preset_list: List[Dict[str, str]]
+) -> Optional[int]:
     """Retrieve a program's number (without bank letter) by its name using regex search."""
-    preset = next((p for p in preset_list if re.search(re.escape(preset_name), p["name"], re.IGNORECASE)), None)
+    preset = next(
+        (
+            p
+            for p in preset_list
+            if re.search(re.escape(preset_name), p["name"], re.IGNORECASE)
+        ),
+        None,
+    )
     return int(preset["id"]) if preset else 0
 
 
 def get_program_name_by_id(program_id: str) -> Optional[str]:
     """Retrieve a program name by its ID from PROGRAM_LIST."""
-    program = next((program for program in PROGRAM_LIST if program["id"] == program_id), None)
+    program = next(
+        (program for program in PROGRAM_LIST if program["id"] == program_id), None
+    )
     return program["name"] if program else None
 
 
@@ -128,7 +147,9 @@ def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str
     return program.get(parameter) if program else None
 
 
-def get_preset_parameter_value(parameter: str, id: str, preset_list=DIGITAL_PRESET_LIST) -> Union[Optional[int], Any]:
+def get_preset_parameter_value(
+    parameter: str, id: str, preset_list=DIGITAL_PRESET_LIST
+) -> Union[Optional[int], Any]:
     """Retrieve a specific parameter value from a program by its ID."""
     if type(id) == int:
         id = f"{id:03d}"

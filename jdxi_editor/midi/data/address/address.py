@@ -61,7 +61,9 @@ class Address(IntEnum):
     def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
         return next((param for param in cls if param.value == address), None)
 
-    def add_offset(self, offset: Union[int, Tuple[int, int, int]]) -> Tuple[int, int, int, int]:
+    def add_offset(
+        self, offset: Union[int, Tuple[int, int, int]]
+    ) -> Tuple[int, int, int, int]:
         """
         Returns the full 4-byte address by adding a 3-byte offset to the base address.
         The base address is assumed to be a single byte (e.g., 0x18).
@@ -77,7 +79,9 @@ class Address(IntEnum):
             raise ValueError("SysEx address bytes must be 7-bit (0x00 to 0x7F)")
         return (base, *offset_bytes)
 
-    def to_sysex_address(self, offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)) -> bytes:
+    def to_sysex_address(
+        self, offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)
+    ) -> bytes:
         """
         Returns the full 4-byte address as a `bytes` object, suitable for SysEx messages.
         """
@@ -132,16 +136,19 @@ JD_XI_MODEL_ID = [
 
 JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
+
 @unique
 class CommandID(IntEnum):
-    """ Roland Commands """
+    """Roland Commands"""
+
     DT1 = 0x12  # Data Set 1
     RQ1 = 0x11  # Data Request 1
 
 
 @unique
 class ResponseID(IntEnum):
-    """ midi responses """
+    """midi responses"""
+
     ACK = 0x4F  # Acknowledge
     ERR = 0x4E  # Error
 
@@ -168,7 +175,7 @@ class AddressOffsetTemporaryToneUMB(Address):
     ANALOG_PART = 0x42
     DRUM_KIT_PART = 0x70
 
-    
+
 @unique
 class AddressOffsetSystemLMB(Address):
     COMMON = 0x00
@@ -185,7 +192,8 @@ class AddressOffsetSuperNATURALLMB(Address):
 
 
 class AddressOffsetProgramLMB(Address):
-    """ Program """
+    """Program"""
+
     COMMON = 0x00
     VOCAL_EFFECT = 0x01
     EFFECT_1 = 0x02
@@ -219,8 +227,7 @@ def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
 
 
 def parse_sysex_address_json(
-    address: Tuple[int, int, int, int],
-    base_classes: Tuple[Type[Any], ...]
+    address: Tuple[int, int, int, int], base_classes: Tuple[Type[Any], ...]
 ) -> Dict[str, Any]:
     """
     Parses a 4-byte SysEx address into a 4-level symbolic path as JSON.
@@ -235,26 +242,19 @@ def parse_sysex_address_json(
     for i, byte in enumerate(remaining):
         match = find_matching_symbol(byte, base_classes)
         if match:
-            levels.append({
-                "class": match["class"].__name__,
-                "name": match["name"],
-                "value": byte
-            })
+            levels.append(
+                {"class": match["class"].__name__, "name": match["name"], "value": byte}
+            )
             # Narrow down the next base_classes if it's a known nested type
             # (This can be customized to follow a known nested order)
         else:
-            levels.append({
-                "class": "Unknown",
-                "name": f"0x{byte:02X}",
-                "value": byte
-            })
+            levels.append({"class": "Unknown", "name": f"0x{byte:02X}", "value": byte})
 
     return {f"level_{i + 1}": level for i, level in enumerate(levels)}
 
 
 def find_matching_symbol(
-    value: int,
-    base_classes: Tuple[Type[Any], ...]
+    value: int, base_classes: Tuple[Type[Any], ...]
 ) -> Union[Dict[str, Any], None]:
     """
     Tries to find a matching member in any of the given base classes.
@@ -274,10 +274,9 @@ def find_matching_symbol(
     return None
 
 
-
 # 🧪 Test
 if __name__ == "__main__":
-    """ 
+    """
     from jdxi_editor.midi.data.address.address import (
         AddressMemoryAreaMSB,
         AddressOffsetTemporaryToneUMB,
@@ -289,6 +288,7 @@ if __name__ == "__main__":
 
     test_address = (0x19, 0x01, 0x20, 0x00)
     from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+
     result = parse_sysex_address_json(
         test_address,
         (
@@ -299,7 +299,7 @@ if __name__ == "__main__":
             AddressOffsetProgramLMB,
             AddressOffsetSystemLMB,
             AddressOffsetSuperNATURALLMB,
-        )
+        ),
     )
 
     print(json.dumps(result, indent=2))

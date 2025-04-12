@@ -91,11 +91,17 @@ class PresetComboBox(QWidget):
 
         # Clear and update items
         self.category_combo_box.clear()
-        self.category_combo_box.addItem("No Category Selected")  # Add the default option
-        self.category_combo_box.addItems(sorted(categories))  # Add the sorted categories
+        self.category_combo_box.addItem(
+            "No Category Selected"
+        )  # Add the default option
+        self.category_combo_box.addItems(
+            sorted(categories)
+        )  # Add the sorted categories
 
         # Set the default selected index
-        self.category_combo_box.setCurrentIndex(0)  # Select "No Category Selected" as default
+        self.category_combo_box.setCurrentIndex(
+            0
+        )  # Select "No Category Selected" as default
 
         self.category_combo_box.blockSignals(False)  # Unblock signals after update
 
@@ -109,7 +115,7 @@ class PresetComboBox(QWidget):
     def on_category_changed(self, _):
         """Handle category selection change."""
         self._populate_presets()
-    
+
     def _populate_presets(self, search_text: str = ""):
         """Populate the program list with available presets."""
 
@@ -122,7 +128,6 @@ class PresetComboBox(QWidget):
         filtered_list = [  # Filter programs based on bank and genre
             preset
             for preset in self.preset_list
-
             if (selected_category in ["No Category Selected", preset["category"]])
         ]
         filtered_presets = []
@@ -134,12 +139,7 @@ class PresetComboBox(QWidget):
             preset_name = preset["name"]
             preset_id = preset["id"]
             index = len(self.presets)  # Use the current number of programs
-            self.combo_box.addItem(
-                f"{preset_id} - {preset_name}", index
-            )
+            self.combo_box.addItem(f"{preset_id} - {preset_name}", index)
             self.presets[preset_name] = index
-        self.combo_box.setCurrentIndex(
-            0
-        )  # Update the UI with the new program list
+        self.combo_box.setCurrentIndex(0)  # Update the UI with the new program list
         self.combo_box.setCurrentIndex(0)  # Select "No Category Selected" as default
-

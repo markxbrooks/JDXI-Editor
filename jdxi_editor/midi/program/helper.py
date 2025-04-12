@@ -33,15 +33,24 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.midi.program.utils import get_previous_program_bank_and_number, get_next_program_bank_and_number
+from jdxi_editor.midi.program.utils import (
+    get_previous_program_bank_and_number,
+    get_next_program_bank_and_number,
+)
 from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
-from jdxi_editor.ui.editors.helpers.program import calculate_midi_values, get_program_by_bank_and_number
+from jdxi_editor.ui.editors.helpers.program import (
+    calculate_midi_values,
+    get_program_by_bank_and_number,
+)
 from jdxi_editor.midi.io import MidiIOHelper
 
 
 class ProgramHelper(QObject):
-    """ Preset Loading Class """
-    program_changed = Signal(str, int)  # Signal emitted when preset changes bank, program
+    """Preset Loading Class"""
+
+    program_changed = Signal(
+        str, int
+    )  # Signal emitted when preset changes bank, program
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -50,7 +59,7 @@ class ProgramHelper(QObject):
         return cls._instance
 
     def __init__(self, midi_helper: Optional[MidiIOHelper], channel: int):
-        if not hasattr(self, '_initialized'):
+        if not hasattr(self, "_initialized"):
             super().__init__()
             self.midi_helper = midi_helper
             self.channel = channel
@@ -65,21 +74,29 @@ class ProgramHelper(QObject):
 
     def next_program(self):
         """Increase the tone index and return the new preset."""
-        self.current_program_number, self.current_bank_letter = get_next_program_bank_and_number(
-            self.current_program_number, self.current_bank_letter)
+        (
+            self.current_program_number,
+            self.current_bank_letter,
+        ) = get_next_program_bank_and_number(
+            self.current_program_number, self.current_bank_letter
+        )
         self.load_program(self.current_bank_letter, self.current_program_number)
 
     def previous_program(self):
         """Decrease the tone index and return the new preset."""
-        self.current_bank_letter, self.current_program_number = get_previous_program_bank_and_number(
-            self.current_program_number, self.current_bank_letter)
+        (
+            self.current_bank_letter,
+            self.current_program_number,
+        ) = get_previous_program_bank_and_number(
+            self.current_program_number, self.current_bank_letter
+        )
         self.load_program(self.current_bank_letter, self.current_program_number)
 
     def get_current_program(self):
         return self.current_bank_letter, self.current_program_number
-    
+
     def load_program(self, bank_letter: str, program_number: int):
-        """ load program """
+        """load program"""
         self.current_bank_letter = bank_letter
         self.current_program_number = program_number
         self.program_changed.emit(bank_letter, program_number)

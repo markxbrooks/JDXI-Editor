@@ -8,7 +8,16 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class AmpSection(QWidget):
-    def __init__(self, midi_helper, area, part, group, create_parameter_slider, generate_waveform_icon, base64_to_pixmap):
+    def __init__(
+        self,
+        midi_helper,
+        area,
+        part,
+        group,
+        create_parameter_slider,
+        generate_waveform_icon,
+        base64_to_pixmap,
+    ):
         super().__init__()
         self.midi_helper = midi_helper
         self.address_msb = area
@@ -42,10 +51,12 @@ class AmpSection(QWidget):
         layout.addLayout(icons_hlayout)
 
         # Level controls
-        self.amp_level = self._create_parameter_slider(AnalogParameter.AMP_LEVEL,
-                                                       "Level")
-        self.amp_level_keyfollow = self._create_parameter_slider(AnalogParameter.AMP_LEVEL_KEYFOLLOW,
-                                                                 "Keyfollow")
+        self.amp_level = self._create_parameter_slider(
+            AnalogParameter.AMP_LEVEL, "Level"
+        )
+        self.amp_level_keyfollow = self._create_parameter_slider(
+            AnalogParameter.AMP_LEVEL_KEYFOLLOW, "Keyfollow"
+        )
         layout.addWidget(self.amp_level)
         layout.addWidget(self.amp_level_keyfollow)
 
@@ -77,7 +88,7 @@ class AmpSection(QWidget):
             midi_helper=self.midi_helper,
             address_msb=self.address_msb,
             address_umb=self.address_umb,
-            address_lmb=self.address_lmb
+            address_lmb=self.address_lmb,
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)

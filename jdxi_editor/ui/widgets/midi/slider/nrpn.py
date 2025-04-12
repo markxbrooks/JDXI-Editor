@@ -31,7 +31,7 @@ class NRPNSlider(Slider):
         min_value: int = 0,
         max_value: int = 127,
         vertical: bool = True,
-        param_type: str = "nrpn"
+        param_type: str = "nrpn",
     ):
         super().__init__(
             label,
@@ -83,9 +83,12 @@ class NRPNSlider(Slider):
 
             for channel in [0, 1, 2]:
                 if self.param_type == "nrpn":
-                    self.midi_helper.send_nrpn(parameter=parameter, value=value, channel=channel)
+                    self.midi_helper.send_nrpn(
+                        parameter=parameter, value=value, channel=channel
+                    )
                 elif self.param_type == "rpn":
-                    self.midi_helper.send_rpn(parameter=parameter, value=value, channel=channel)
+                    self.midi_helper.send_rpn(
+                        parameter=parameter, value=value, channel=channel
+                    )
                 else:
                     raise ValueError(f"Unsupported parameter type: {self.param_type}")
-

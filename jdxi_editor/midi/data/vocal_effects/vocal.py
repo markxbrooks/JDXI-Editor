@@ -3,6 +3,7 @@ from enum import Enum
 
 class VocalFxSwitch(Enum):
     """Vocal FX switch values"""
+
     OFF = 0
     ON = 1
 
@@ -19,6 +20,7 @@ class VocalFxSwitch(Enum):
 
 class VocalAutoNoteSwitch(Enum):
     """Auto Note switch values"""
+
     OFF = 0
     ON = 1
 
@@ -35,6 +37,7 @@ class VocalAutoNoteSwitch(Enum):
 
 class VocalAutoPitchType(Enum):
     """Auto Pitch preset_type values"""
+
     SOFT = 0
     HARD = 1
     ELECTRIC1 = 2
@@ -43,12 +46,7 @@ class VocalAutoPitchType(Enum):
     @property
     def display_name(self) -> str:
         """Get display name for pitch preset_type"""
-        names = {
-            0: "SOFT",
-            1: "HARD",
-            2: "ELECTRIC1",
-            3: "ELECTRIC2"
-        }
+        names = {0: "SOFT", 1: "HARD", 2: "ELECTRIC1", 3: "ELECTRIC2"}
         return names.get(self.value, "???")
 
     @property
@@ -59,6 +57,7 @@ class VocalAutoPitchType(Enum):
 
 class VocalOutputAssign(Enum):
     """Output assignment values"""
+
     EFX1 = 0
     EFX2 = 1
     DLY = 2
@@ -78,6 +77,7 @@ class VocalOutputAssign(Enum):
 
 class VocalAutoPitchKey(Enum):
     """Auto Pitch key values"""
+
     C = 0
     Db = 1
     D = 2
@@ -107,11 +107,30 @@ class VocalAutoPitchKey(Enum):
     def display_name(self) -> str:
         """Get display name for key"""
         names = {
-            0: "C", 1: "Db", 2: "D", 3: "Eb", 4: "E", 5: "F",
-            6: "F#", 7: "G", 8: "Ab", 9: "A", 10: "Bb", 11: "B",
-            12: "Cm", 13: "C#m", 14: "Dm", 15: "D#m", 16: "Em",
-            17: "Fm", 18: "F#m", 19: "Gm", 20: "G#m", 21: "Am",
-            22: "Bbm", 23: "Bm"
+            0: "C",
+            1: "Db",
+            2: "D",
+            3: "Eb",
+            4: "E",
+            5: "F",
+            6: "F#",
+            7: "G",
+            8: "Ab",
+            9: "A",
+            10: "Bb",
+            11: "B",
+            12: "Cm",
+            13: "C#m",
+            14: "Dm",
+            15: "D#m",
+            16: "Em",
+            17: "Fm",
+            18: "F#m",
+            19: "Gm",
+            20: "G#m",
+            21: "Am",
+            22: "Bbm",
+            23: "Bm",
         }
         return names.get(self.value, "???")
 
@@ -123,6 +142,7 @@ class VocalAutoPitchKey(Enum):
 
 class VocalOctaveRange(Enum):
     """Octave range values"""
+
     MINUS_ONE = 0
     ZERO = 1
     PLUS_ONE = 2
@@ -141,6 +161,7 @@ class VocalOctaveRange(Enum):
 
 class VocalAutoPitchNote(Enum):
     """Auto Pitch note values"""
+
     C = 0
     C_SHARP = 1
     D = 2
@@ -169,7 +190,7 @@ class VocalAutoPitchNote(Enum):
             8: "G#",
             9: "A",
             10: "A#",
-            11: "B"
+            11: "B",
         }
         return names.get(self.value, "???")
 
@@ -181,6 +202,7 @@ class VocalAutoPitchNote(Enum):
 
 class VocoderEnvelope(Enum):
     """Vocoder envelope types"""
+
     SHARP = 0
     SOFT = 1
     LONG = 2
@@ -198,6 +220,7 @@ class VocoderEnvelope(Enum):
 
 class VocoderHPF(Enum):
     """Vocoder HPF frequencies"""
+
     BYPASS = 0
     FREQ_1000 = 1
     FREQ_1250 = 2
@@ -230,7 +253,7 @@ class VocoderHPF(Enum):
             10: "8000 Hz",
             11: "10000 Hz",
             12: "12500 Hz",
-            13: "16000 Hz"
+            13: "16000 Hz",
         }
         return names.get(self.value, "???")
 

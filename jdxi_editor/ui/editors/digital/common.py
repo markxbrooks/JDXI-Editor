@@ -104,7 +104,6 @@ class DigitalCommonSection(QWidget):
         portamento_time_row.addWidget(self.portamento_time)
         layout.addLayout(portamento_time_row)
 
-
         # Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(
             DigitalCommonParameter.PORTAMENTO_MODE,

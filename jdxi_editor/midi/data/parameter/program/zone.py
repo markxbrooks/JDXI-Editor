@@ -41,9 +41,15 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 class ProgramZoneParameter(SynthParameter):
     """Program Common parameters"""
 
-    def __init__(self, address: int, min_val: Optional[int] = None, max_val: Optional[int] = None,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None,
-                 partial_number: Optional[int] = 0):
+    def __init__(
+        self,
+        address: int,
+        min_val: Optional[int] = None,
+        max_val: Optional[int] = None,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+        partial_number: Optional[int] = 0,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
@@ -54,14 +60,16 @@ class ProgramZoneParameter(SynthParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {0: 0x30, 1: 0x31, 2: 0x32, 3: 0x33}
-        group = group_map.get(partial_number, 0x30)  # Default to 0x30 if partial_name is not 1, 2, or 3
+        group = group_map.get(
+            partial_number, 0x30
+        )  # Default to 0x30 if partial_name is not 1, 2, or 3
         return group, self.address
 
     @property

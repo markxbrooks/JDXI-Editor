@@ -87,5 +87,4 @@ DRUM_GROUP_MAP = {
     35: 0x72,  # Drum Kit Partial (Key # 70)
     36: 0x74,  # Drum Kit Partial (Key # 71)
     37: 0x76,  # Drum Kit Partial (Key # 72)
-
 }

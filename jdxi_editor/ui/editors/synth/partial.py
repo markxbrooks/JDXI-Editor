@@ -27,8 +27,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, \
-    AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase
@@ -37,9 +39,13 @@ from jdxi_editor.ui.editors.synth.base import SynthBase
 class PartialEditor(SynthBase):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_number=1,
-                 part=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
-                 parent=None):
+    def __init__(
+        self,
+        midi_helper=None,
+        partial_number=1,
+        part=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+        parent=None,
+    ):
         super().__init__(midi_helper, parent)
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
@@ -82,6 +88,7 @@ class PartialEditor(SynthBase):
 
     def get_partial_address(self) -> int:
         """Get parameter area and address adjusted for partial number."""
-        address_lmb = self.partial_address_map.get(self.partial_number,
-                                                   self.partial_address_default)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        address_lmb = self.partial_address_map.get(
+            self.partial_number, self.partial_address_default
+        )  # Default to 0x20 if partial_name is not 1, 2, or 3
         return address_lmb

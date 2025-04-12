@@ -13,6 +13,7 @@ sysex_msg = JDxiSysExBuilder.build_dt1(drum_address, data)
 from enum import Enum
 from typing import Tuple, List
 
+
 class JDXiMemoryAddress(Enum):
     # Base Addresses (4-byte addresses)
     SETUP = (0x01, 0x00, 0x00, 0x00)
@@ -80,5 +81,5 @@ class JDxiSysExBuilder:
             0x12,  # DT1 command
             *address,
             *data,
-            0xF7
+            0xF7,
         ]

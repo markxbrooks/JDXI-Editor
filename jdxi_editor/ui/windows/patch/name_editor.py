@@ -22,11 +22,14 @@ Dependencies:
 
 
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QGroupBox
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QGroupBox,
 )
-from PySide6.QtCore import Qt
-import logging
 
 from jdxi_editor.ui.style import JDXIStyle
 
@@ -42,7 +45,7 @@ class PatchNameEditor(QDialog):
 
         # Set up layout
         layout = QVBoxLayout(group)
-        
+
         # Add name input
         name_layout = QHBoxLayout()
         name_label = QLabel("Name:")
@@ -51,7 +54,7 @@ class PatchNameEditor(QDialog):
         name_layout.addWidget(name_label)
         name_layout.addWidget(self.name_input)
         layout.addLayout(name_layout)
-        
+
         # Add buttons
         button_layout = QHBoxLayout()
         save_button = QPushButton("Save")
@@ -64,7 +67,7 @@ class PatchNameEditor(QDialog):
         group.setLayout(layout)
         main_layout.addWidget(group)
         self.setStyleSheet(JDXIStyle.EDITOR)
-        
+
     def get_name(self):
         """Get the edited patch name"""
-        return self.name_input.text().upper()  # JD-Xi uses uppercase names 
+        return self.name_input.text().upper()  # JD-Xi uses uppercase names

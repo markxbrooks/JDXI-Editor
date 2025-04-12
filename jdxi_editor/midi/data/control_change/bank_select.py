@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class BankSelectCC(Enum):
-
     # Bank Select MSB/LSB values
     BANK_MSB = 0x55  # 85 (0x55) for all JD-Xi banks
     BANK_LSB = {

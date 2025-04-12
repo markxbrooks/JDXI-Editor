@@ -25,11 +25,11 @@ Base: <ProgramAddress.COMMON: 0x18>, Offset: (0, 32, 0)
 
 from typing import Tuple, Optional, Type
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 def parse_sysex_address(
-    address_bytes: bytes,
-    enum_cls: Type[T]
+    address_bytes: bytes, enum_cls: Type[T]
 ) -> Optional[Tuple[T, Tuple[int, int, int]]]:
     """
     Parse a 4-byte SysEx address into a (base, offset) tuple.

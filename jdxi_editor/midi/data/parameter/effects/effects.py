@@ -82,8 +82,14 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 class EffectParameter(SynthParameter):
     """Effect parameters with address and value range"""
 
-    def __init__(self, address: int, min_val: int, max_val: int,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
@@ -188,23 +194,45 @@ class EffectParameter(SynthParameter):
         """Look up an effect parameter's category using address dictionary mapping"""
         param_mapping = {
             EffectCommonParameter.PROGRAM_EFFECT_1: {
-                "EFX1_TYPE", "EFX1_LEVEL", "EFX1_DELAY_SEND_LEVEL",
-                "EFX1_REVERB_SEND_LEVEL", "EFX1_OUTPUT_ASSIGN",
-                "EFX1_PARAM_1", "EFX1_PARAM_2", "EFX1_PARAM_32"
+                "EFX1_TYPE",
+                "EFX1_LEVEL",
+                "EFX1_DELAY_SEND_LEVEL",
+                "EFX1_REVERB_SEND_LEVEL",
+                "EFX1_OUTPUT_ASSIGN",
+                "EFX1_PARAM_1",
+                "EFX1_PARAM_2",
+                "EFX1_PARAM_32",
             },
             EffectCommonParameter.PROGRAM_EFFECT_2: {
-                "EFX2_TYPE", "EFX2_LEVEL", "EFX2_DELAY_SEND_LEVEL",
-                "EFX2_REVERB_SEND_LEVEL", "EFX2_PARAM_1", "EFX2_PARAM_2"
+                "EFX2_TYPE",
+                "EFX2_LEVEL",
+                "EFX2_DELAY_SEND_LEVEL",
+                "EFX2_REVERB_SEND_LEVEL",
+                "EFX2_PARAM_1",
+                "EFX2_PARAM_2",
             },
             EffectCommonParameter.PROGRAM_DELAY: {
-                "DELAY_TYPE", "DELAY_TIME", "DELAY_TAP_TIME",
-                "DELAY_FEEDBACK", "DELAY_HF_DAMP", "DELAY_LEVEL",
-                "DELAY_REVERB_SEND_LEVEL", "DELAY_PARAM_1", "DELAY_PARAM_2", "DELAY_PARAM_24"
+                "DELAY_TYPE",
+                "DELAY_TIME",
+                "DELAY_TAP_TIME",
+                "DELAY_FEEDBACK",
+                "DELAY_HF_DAMP",
+                "DELAY_LEVEL",
+                "DELAY_REVERB_SEND_LEVEL",
+                "DELAY_PARAM_1",
+                "DELAY_PARAM_2",
+                "DELAY_PARAM_24",
             },
             EffectCommonParameter.PROGRAM_REVERB: {
-                "REVERB_OFF_ON", "REVERB_TYPE", "REVERB_TIME", "REVERB_HF_DAMP",
-                "REVERB_LEVEL", "REVERB_PARAM_1", "REVERB_PARAM_2", "REVERB_PARAM_24"
-            }
+                "REVERB_OFF_ON",
+                "REVERB_TYPE",
+                "REVERB_TIME",
+                "REVERB_HF_DAMP",
+                "REVERB_LEVEL",
+                "REVERB_PARAM_1",
+                "REVERB_PARAM_2",
+                "REVERB_PARAM_24",
+            },
         }
 
         for category, parameters in param_mapping.items():
