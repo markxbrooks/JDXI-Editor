@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB, construct_address,
+    AddressOffsetProgramLMB, construct_address, Address,
 )
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -47,6 +47,7 @@ class PartialEditor(SynthBase):
         parent=None,
     ):
         super().__init__(midi_helper, parent)
+        self.partial_address_default = None
         self.partial_address_map = {}
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
@@ -74,7 +75,7 @@ class PartialEditor(SynthBase):
             base_address, full_address, offset = construct_address(param,
                                                                    self.address_msb,
                                                                    self.address_umb,
-                                                                   self.address_lmb
+                                                                   address_lmb
             )
 
             # Step 5: Extract individual bytes
@@ -102,4 +103,6 @@ class PartialEditor(SynthBase):
         address_lmb = self.partial_address_map.get(
             self.partial_number, self.partial_address_default
         )  # Default to 0x20 if partial_name is not 1, 2, or 3
+        logging.info(f"address_lmb found: {address_lmb}")
+        # address = Address(address_lmb)
         return address_lmb
