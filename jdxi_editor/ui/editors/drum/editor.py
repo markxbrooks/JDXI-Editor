@@ -103,7 +103,7 @@ class DrumCommonEditor(SynthEditor):
         # Presets
         self.preset_helper = preset_helper
         # midi parameters
-        self.partial_num = 1
+        self.partial_number = 1
         self._init_synth_data()
 
         self.current_data = None
@@ -216,7 +216,7 @@ class DrumCommonEditor(SynthEditor):
         self._setup_partial_editors()
 
         self.update_instrument_image()
-        self.partial_tab_widget.currentChanged.connect(self.update_partial_num)
+        self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Register the callback for incoming MIDI messages
         if self.midi_helper:
@@ -249,25 +249,25 @@ class DrumCommonEditor(SynthEditor):
         progress_dialog = ProgressDialog("Initializing Partials", "Loading partial editors...", total, self)
         progress_dialog.show()
 
-        for count, (partial_name, partial_index) in enumerate(self.partial_mapping.items(), 1):
+        for count, (partial_name, partial_number) in enumerate(self.partial_mapping.items(), 1):
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
-                partial_number=partial_index,
+                partial_number=partial_number,
                 partial_name=partial_name,
                 parent=self,
             )
-            self.partial_editors[partial_index] = editor
+            self.partial_editors[partial_number] = editor
             self.partial_tab_widget.addTab(editor, partial_name)
 
             progress_dialog.update_progress(count)
 
         progress_dialog.close()
 
-    def update_partial_num(self, index: int):
+    def update_partial_number(self, index: int):
         """Update the current partial number based on tab index"""
         try:
             partial_name = list(self.partial_editors.keys())[index]
-            self.partial_num = index
+            self.partial_number = index
             logging.info(f"Updated to partial {partial_name} (index {index})")
         except IndexError:
             logging.error(f"Invalid partial index: {index}")

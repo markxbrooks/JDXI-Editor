@@ -52,7 +52,7 @@ from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioMotif, ArpeggioOctaveRange, ArpeggioGrid, ArpeggioDuration
 )
 from jdxi_editor.midi.data.arpeggio.data import ARPEGGIO_GRID, ARP_DURATION, ARPEGGIO_STYLE, ArpeggioStyle
-from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioAddress
+from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioAddress, ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter

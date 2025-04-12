@@ -541,7 +541,7 @@ class DrumPartialParameter(SynthParameter):
         if partial_index < 0 or partial_index >= 72:
             raise ValueError(f"Invalid partial index: {partial_index}")
 
-        address_lmb = DRUM_GROUP_MAP.get(partial_index, 0x2E)  # Default to 0x2E if partial_name is not 1, 2, or 3
+        address_lmb = DRUM_GROUP_MAP.get(partial_index + 1, 0x2E)  # Default to 0x2E if partial_name is not 1, 2, or 3
         return address_lmb, 0x00
 
     @staticmethod

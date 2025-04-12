@@ -90,7 +90,7 @@ class SynthBase(QWidget):
             sysex_message = RolandSysEx(
                 address_msb=self.address_msb,
                 address_umb=self.address_umb,
-                address_lmb=address_lmb,
+                address_lmb=self.address_lmb,
                 address_lsb=param.address,
                 value=value,
                 size=size

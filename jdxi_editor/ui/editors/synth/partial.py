@@ -55,8 +55,9 @@ class PartialEditor(SynthBase):
     def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
+            address_lmb = self.get_partial_address()
             logging.info(
-                f"Sending partial number {self.partial_number} param={param}, partial={self.address_umb}, address_lmb={self.address_lmb}, value={value}"
+                f"Sending partial number {self.partial_number} param={param}, address_umb={self.address_umb}, address_lmb={address_lmb}, value={value}"
             )
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
@@ -66,7 +67,7 @@ class PartialEditor(SynthBase):
             sysex_message = RolandSysEx(
                 address_msb=self.address_msb,
                 address_umb=self.address_umb,
-                address_lmb=self.address_lmb,
+                address_lmb=address_lmb,
                 address_lsb=param.address,
                 value=value,
                 size=size,
@@ -77,3 +78,9 @@ class PartialEditor(SynthBase):
         except Exception as ex:
             logging.error(f"MIDI error setting {param.name}: {ex}")
             return False
+
+    def get_partial_address(self) -> int:
+        """Get parameter area and address adjusted for partial number."""
+        address_lmb = self.partial_address_map.get(self.partial_number,
+                                                   self.partial_address_default)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        return address_lmb

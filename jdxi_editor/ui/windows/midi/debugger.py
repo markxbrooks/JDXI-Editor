@@ -70,9 +70,9 @@ class MIDIDebugger(QMainWindow):
 
     SECTIONS = {
         DrumKitAddressOffset.COMMON: "COMMON",
-        DrumKitAddressOffset.PARTIAL_1: "PART_1",
-        DrumKitAddressOffset.PARTIAL_2: "PART_2",
-        DrumKitAddressOffset.PARTIAL_3: "PART_3",
+        DrumKitAddressOffset.DRUM_KIT_PART_1: "BD1",
+        DrumKitAddressOffset.DRUM_KIT_PART_2: "RIM",
+        DrumKitAddressOffset.DRUM_KIT_PART_3: "BD2",
      }
 
     GROUPS = {
