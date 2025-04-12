@@ -222,9 +222,6 @@ class ProgramAddressGroup(Address):
 class DrumKitAddressOffset(Address):
     """ Drum Kit """
     COMMON = 0x00
-    PARTIAL_1 = 0x20
-    PARTIAL_2 = 0x21
-    PARTIAL_3 = 0x22
     TONE_MODIFY = 0x50
 
 

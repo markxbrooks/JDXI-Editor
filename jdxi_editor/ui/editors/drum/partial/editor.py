@@ -35,8 +35,9 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_editor.midi.data.address.address import MemoryAreaAddress, TemporaryToneAddressOffset
+from jdxi_editor.midi.data.address.address import MemoryAreaAddress, TemporaryToneAddressOffset, DrumKitAddressOffset
 from jdxi_editor.midi.data.drum.data import rm_waves
+from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
@@ -50,6 +51,8 @@ class DrumPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
+        self.partial_address_default = DrumKitAddressOffset.DRUM_KIT_PART_1
+        self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
         self.address_msb = MemoryAreaAddress.TEMPORARY_TONE
         self.address_umb = TemporaryToneAddressOffset.DRUM_KIT_PART
@@ -104,6 +107,14 @@ class DrumPartialEditor(PartialEditor):
 
         # scroll_area.setLayout(scroll_layout)
         main_layout.addWidget(scroll_area)
+
+    def get_partial_address(self) -> int:
+        """Get the address for address drum partial by index"""
+        try:
+            address_lmb = DRUM_GROUP_MAP.get(self.partial_number + 1, 0x2E)  # Default to 0x2E if partial_name is not 1, 2, or 3
+            return address_lmb
+        except Exception as ex:
+            print(f"Error getting address for partial {self.partial_number}: {str(ex)}")
 
     def _create_tva_group(self):
         """Create the TVA area."""

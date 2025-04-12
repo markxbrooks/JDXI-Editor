@@ -46,6 +46,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
+from jdxi_editor.midi.data.address.address import DigitalPartialAddressOffset
 from jdxi_editor.midi.data.editor.data import DigitalSynthData
 from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
@@ -62,8 +63,15 @@ from jdxi_editor.ui.style import JDXIStyle
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, synth_number=1, partial_number=1, parent=None):
+    def __init__(self, midi_helper=None,
+                 synth_number=1,
+                 partial_number=1,
+                 parent=None):
         super().__init__(parent)
+        self.partial_address_default = DigitalPartialAddressOffset.PARTIAL_1
+        self.partial_address_map = {1: DigitalPartialAddressOffset.PARTIAL_1,
+                                    2: DigitalPartialAddressOffset.PARTIAL_2,
+                                    3: DigitalPartialAddressOffset.PARTIAL_3}
         self.bipolar_parameters = [
             DigitalPartialParameter.OSC_DETUNE,
             DigitalPartialParameter.OSC_PITCH,
@@ -72,7 +80,8 @@ class DigitalPartialEditor(PartialEditor):
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
-        self.synth_data = DigitalSynthData(synth_number=synth_number, partial_number=partial_number)
+        self.synth_data = DigitalSynthData(synth_number=synth_number,
+                                           partial_number=partial_number)
         data = self.synth_data
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
