@@ -41,7 +41,7 @@ class DrumPartialParameter(SynthParameter):
         max_val: int,
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
-    ):
+    ) :
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val

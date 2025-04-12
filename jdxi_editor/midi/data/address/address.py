@@ -20,7 +20,7 @@ print(sysex_address)  # b'\x18\x00\x20\x00'
 found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
 print(found)  # ProgramAddress.TEMPORARY_TONE
 """
-
+import logging
 from enum import IntEnum, unique
 from typing import Optional, Type, TypeVar, Union, Tuple, Dict, Any
 import inspect
@@ -286,6 +286,8 @@ if __name__ == "__main__":
     )
     """
 
+    """
+
     test_address = (0x19, 0x01, 0x20, 0x00)
     from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 
@@ -302,15 +304,19 @@ if __name__ == "__main__":
         ),
     )
 
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2))"""
 
 # from jdxi_editor.midi.data.address.address import MemoryAreaAddress, Address
-
+from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+# from jdxi_editor.midi.message.roland import RolandSysEx
 # Step 1: Define the base address (e.g., MSB)
-base_address = MemoryAreaAddress.PROGRAM  # Example: 0x18
+base_address = AddressMemoryAreaMSB.PROGRAM  # Example: 0x18
 
 # Step 2: Define the offset using the parameter's address
 # Assuming `param` is an instance of SynthParameter or similar
+
+param = DrumPartialParameter.TVF_CUTOFF_FREQUENCY
+
 offset = param.get_offset()  # E.g., (0x00, 0x01, 0x23)
 
 # Step 3: Compose the full address
@@ -321,8 +327,11 @@ sysex_address = base_address.to_sysex_address(offset)
 
 # Step 5: Extract individual bytes
 address_msb, address_umb, address_lmb, address_lsb = full_address
+print(base_address.to_sysex_address())
+print(offset)
+print(full_address)
 
-# Step 6: Pass into the SysEx message constructor
+"""# Step 6: Pass into the SysEx message constructor
 sysex_message = RolandSysEx(
     address_msb=address_msb,
     address_umb=address_umb,
@@ -330,4 +339,16 @@ sysex_message = RolandSysEx(
     address_lsb=address_lsb,
     value=value,  # Your parameter value
     size=size     # The size of the parameter (e.g., 1 byte, 4 bytes)
-)
+)"""
+
+
+def construct_address(param, address_msb, address_umb, address_lmb):
+    base_address = address_msb
+    base_address.add_offset((address_umb, address_lmb, ZERO_BYTE))
+    offset = param.get_offset()  # E.g., (0x00, 0x01, 0x23)
+    # Step 3: Compose the full address
+    full_address = base_address.add_offset(offset)
+    # Step 4: Convert to SysEx-ready address
+    sysex_address = base_address.to_sysex_address(offset)
+    logging.info(f"sysex_address: \t{sysex_address}")
+    return base_address, full_address, offset
