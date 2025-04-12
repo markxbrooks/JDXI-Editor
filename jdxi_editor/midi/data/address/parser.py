@@ -23,12 +23,9 @@ Base: <ProgramAddress.COMMON: 0x18>, Offset: (0, 32, 0)
 
 """
 
-from jdxi_editor.midi.data.address.address import Address
-from typing import Tuple, Optional, Type, TypeVar
+from typing import Tuple, Optional, Type
 
-
-T = TypeVar("T", bound="Address")
-
+T = TypeVar('T')
 
 def parse_sysex_address(
     address_bytes: bytes,
