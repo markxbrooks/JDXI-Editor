@@ -27,8 +27,6 @@ from typing import Tuple, Optional, Type, TypeVar
 from enum import IntEnum
 
 
-T = TypeVar("T", bound="Address")
-
 def parse_sysex_address(
     address_bytes: bytes,
     enum_cls: Type[T]
