@@ -23,6 +23,7 @@ import logging
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.midi.data.address.address import ZERO_BYTE, construct_address
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -37,6 +38,7 @@ class SynthBase(QWidget):
 
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
+        self.partial_number = None
         self.bipolar_parameters = []
         self.address_lmb = None
         self.address_msb = None
@@ -81,11 +83,21 @@ class SynthBase(QWidget):
                 size = param.get_nibbled_size()
             else:
                 size = 1
+            base_address, full_address, offset = construct_address(param,
+                                                                   self.address_msb,
+                                                                   self.address_umb,
+                                                                   self.address_lmb
+            )
+            address_msb, address_umb, address_lmb, address_lsb = full_address
+            logging.info(f"base address: \t{base_address.to_sysex_address()}")
+            logging.info(f"offset: \t{offset}")
+            logging.info(f"full address \t{full_address}")
+
             sysex_message = RolandSysEx(
-                address_msb=self.address_msb,
-                address_umb=self.address_umb,
-                address_lmb=self.address_lmb,
-                address_lsb=param.address,
+                address_msb=address_msb,
+                address_umb=address_umb,
+                address_lmb=address_lmb,
+                address_lsb=address_lsb,
                 value=value,
                 size=size,
             )
