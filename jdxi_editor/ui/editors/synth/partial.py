@@ -79,7 +79,7 @@ class PartialEditor(SynthBase):
 
             # Step 5: Extract individual bytes
             address_msb, address_umb, address_lmb, address_lsb = full_address
-            logging.info(f"base address: \{base_address.to_sysex_address()}")
+            logging.info(f"base address: t\{base_address.to_sysex_address()}")
             logging.info(f"offset: \t{offset}")
             logging.info(f"full address \t{full_address}")
             sysex_message = RolandSysEx(

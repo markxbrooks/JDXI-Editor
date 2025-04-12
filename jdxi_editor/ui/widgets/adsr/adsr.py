@@ -180,10 +180,10 @@ class ADSR(QWidget):
         self, param: SynthParameter, label: str, value: int = None
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
-        # if hasattr(param, "get_display_value"):
-        #    display_min, display_max = param.get_display_value()
-        # else:
-        #    display_min, display_max = param.min_val, param.max_val
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
 
         # Create vertical slider
         slider = Slider(

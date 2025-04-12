@@ -27,7 +27,7 @@ import inspect
 import json
 
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
-
+from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 # ==========================
 # Miscellaneous Constants
@@ -59,33 +59,33 @@ class Address(IntEnum):
 
     @classmethod
     def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
-        return next((param for param in cls if param.value == address), None)
+        return next((parameter for parameter in cls if parameter.value == address), None)
 
     def add_offset(
-        self, offset: Union[int, Tuple[int, int, int]]
-    ) -> Tuple[int, int, int, int]:
+        self, address_offset: Union[int, Tuple[int, int, int]]
+    ) -> tuple[int, Any]:
         """
         Returns the full 4-byte address by adding a 3-byte offset to the base address.
         The base address is assumed to be a single byte (e.g., 0x18).
         """
         base = self.value
-        if isinstance(offset, int):
-            offset_bytes = [(offset >> 16) & 0xFF, (offset >> 8) & 0xFF, offset & 0xFF]
-        elif isinstance(offset, tuple) and len(offset) == 3:
-            offset_bytes = list(offset)
+        if isinstance(address_offset, int):
+            offset_bytes = [(address_offset >> 16) & 0xFF, (address_offset >> 8) & 0xFF, address_offset & 0xFF]
+        elif isinstance(address_offset, tuple) and len(address_offset) == 3:
+            offset_bytes = list(address_offset)
         else:
             raise ValueError("Offset must be an int or a 3-byte tuple")
         if any(b > 0x7F for b in offset_bytes):
             raise ValueError("SysEx address bytes must be 7-bit (0x00 to 0x7F)")
-        return (base, *offset_bytes)
+        return base, *offset_bytes
 
     def to_sysex_address(
-        self, offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)
+        self, address_offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)
     ) -> bytes:
         """
         Returns the full 4-byte address as a `bytes` object, suitable for SysEx messages.
         """
-        return bytes(self.add_offset(offset))
+        return bytes(self.add_offset(address_offset))
 
     @classmethod
     def from_sysex_bytes(cls: Type[T], address: bytes) -> Optional[T]:
@@ -95,6 +95,22 @@ class Address(IntEnum):
 
     def __repr__(self):
         return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
+
+
+def construct_address(parameter: SynthParameter,
+                      area_address: Address,
+                      umb: Address,
+                      lmb: Address):
+    """
+
+    Build a full SysEx address by combining a base address and a parameter offset.
+    Returns: (base_address, full_address, offset) """
+    area_address.add_offset((umb, lmb, ZERO_BYTE))
+    # Get the parameter-specific offset
+    parameter_offset = parameter.get_offset()
+    # Compose the full address
+    complete_address = area_address.add_offset(parameter_offset)
+    return area_address, complete_address, parameter_offset
 
 
 # Short maps
@@ -306,49 +322,4 @@ if __name__ == "__main__":
 
     print(json.dumps(result, indent=2))"""
 
-# from jdxi_editor.midi.data.address.address import MemoryAreaAddress, Address
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
-# from jdxi_editor.midi.message.roland import RolandSysEx
-# Step 1: Define the base address (e.g., MSB)
-base_address = AddressMemoryAreaMSB.PROGRAM  # Example: 0x18
 
-# Step 2: Define the offset using the parameter's address
-# Assuming `param` is an instance of SynthParameter or similar
-
-param = DrumPartialParameter.TVF_CUTOFF_FREQUENCY
-
-offset = param.get_offset()  # E.g., (0x00, 0x01, 0x23)
-
-# Step 3: Compose the full address
-full_address = base_address.add_offset(offset)
-
-# Step 4: Convert to SysEx-ready address
-sysex_address = base_address.to_sysex_address(offset)
-
-# Step 5: Extract individual bytes
-address_msb, address_umb, address_lmb, address_lsb = full_address
-print(base_address.to_sysex_address())
-print(offset)
-print(full_address)
-
-"""# Step 6: Pass into the SysEx message constructor
-sysex_message = RolandSysEx(
-    address_msb=address_msb,
-    address_umb=address_umb,
-    address_lmb=address_lmb,
-    address_lsb=address_lsb,
-    value=value,  # Your parameter value
-    size=size     # The size of the parameter (e.g., 1 byte, 4 bytes)
-)"""
-
-
-def construct_address(param, address_msb, address_umb, address_lmb):
-    base_address = address_msb
-    base_address.add_offset((address_umb, address_lmb, ZERO_BYTE))
-    offset = param.get_offset()  # E.g., (0x00, 0x01, 0x23)
-    # Step 3: Compose the full address
-    full_address = base_address.add_offset(offset)
-    # Step 4: Convert to SysEx-ready address
-    sysex_address = base_address.to_sysex_address(offset)
-    logging.info(f"sysex_address: \t{sysex_address}")
-    return base_address, full_address, offset
