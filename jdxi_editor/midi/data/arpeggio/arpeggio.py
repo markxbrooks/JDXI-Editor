@@ -61,13 +61,6 @@ class ArpeggioPatch:
         if self.notes is None:
             self.notes = [60] * 4  # Middle C
 
-    def validate_param(self, param: str, value: int) -> bool:
-        """Validate parameter value is in range"""
-        if param in Arpeggio.RANGES:
-            min_val, max_val = Arpeggio.RANGES[param]
-            return min_val <= value <= max_val
-        return False
-
 
 class ArpeggioMotif(Enum):
     """Arpeggio motif values"""
