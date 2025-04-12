@@ -124,7 +124,7 @@ class SynthParameter(Enum):
         else:
             return 4  # I don't know of any other sizes
             
-    def create_offset(self) -> tuple:
+    def get_offset(self) -> tuple:
         """
         Converts a 2-byte value into a 3-byte offset tuple for use with Address.add_offset.
         """
