@@ -1,15 +1,11 @@
 from PySide6.QtWidgets import (
     QWidget,
-    QVBoxLayout,
     QHBoxLayout,
-    QLabel,
     QComboBox,
     QPushButton,
 )
 from PySide6.QtCore import Signal
-import logging
 
-from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.midi.preset.type import JDXISynth

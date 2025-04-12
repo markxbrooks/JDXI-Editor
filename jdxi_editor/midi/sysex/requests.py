@@ -37,8 +37,13 @@ Example usage:
     To retrieve a list of all program and tone name requests:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS
 """
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, START_OF_SYSEX, \
-    END_OF_SYSEX, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    START_OF_SYSEX,
+    END_OF_SYSEX,
+    JD_XI_HEADER_LIST,
+)
 from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
 
 # Define constants in the SYSEX_CONSTANTS dictionary
@@ -59,9 +64,15 @@ SYSEX_CONSTANTS = {
 
 # Construct headers
 RQ11_COMMAND_HEADER = f"{SYSEX_CONSTANTS['START']} {SYSEX_CONSTANTS['JDXI_HEADER']} {SYSEX_CONSTANTS['RQ1_COMMAND_11']}"
-TEMPORARY_PROGRAM_RQ11_HEADER = f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_PROGRAM_AREA']}"
-TEMPORARY_TONE_RQ11_HEADER = f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_TONE_AREA']}"
-PROGRAM_COMMON_RQ11_HEADER = f"{TEMPORARY_PROGRAM_RQ11_HEADER} {SYSEX_CONSTANTS['PROGRAM_COMMON_AREA']}"
+TEMPORARY_PROGRAM_RQ11_HEADER = (
+    f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_PROGRAM_AREA']}"
+)
+TEMPORARY_TONE_RQ11_HEADER = (
+    f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_TONE_AREA']}"
+)
+PROGRAM_COMMON_RQ11_HEADER = (
+    f"{TEMPORARY_PROGRAM_RQ11_HEADER} {SYSEX_CONSTANTS['PROGRAM_COMMON_AREA']}"
+)
 
 
 # Function to compute Roland checksum
@@ -78,77 +89,79 @@ def create_request(header, tone_area, param1):
     return f"{header} {data} {checksum} {SYSEX_CONSTANTS['END']}"
 
 
-PROGRAM_COMMON_REQUEST = create_request(TEMPORARY_PROGRAM_RQ11_HEADER,
-                                        SYSEX_CONSTANTS['PROGRAM_COMMON_AREA'],
-                                        "00 00 00 00 00 40")
+PROGRAM_COMMON_REQUEST = create_request(
+    TEMPORARY_PROGRAM_RQ11_HEADER,
+    SYSEX_CONSTANTS["PROGRAM_COMMON_AREA"],
+    "00 00 00 00 00 40",
+)
 
-DIGITAL1_COMMON_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                         SYSEX_CONSTANTS['DIGITAL1_COMMON'],
-                                         "00 00 00 00 00 40")
+DIGITAL1_COMMON_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL1_COMMON"], "00 00 00 00 00 40"
+)
 
-DIGITAL1_PARTIAL1_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                           SYSEX_CONSTANTS['DIGITAL1_COMMON'],
-                                           "20 00 00 00 00 40")
+DIGITAL1_PARTIAL1_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL1_COMMON"], "20 00 00 00 00 40"
+)
 
-DIGITAL1_PARTIAL2_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                           SYSEX_CONSTANTS['DIGITAL1_COMMON'],
-                                           "21 00 00 00 00 40")
+DIGITAL1_PARTIAL2_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL1_COMMON"], "21 00 00 00 00 40"
+)
 
-DIGITAL1_PARTIAL3_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                           SYSEX_CONSTANTS['DIGITAL1_COMMON'],
-                                           "22 00 00 00 00 40")
+DIGITAL1_PARTIAL3_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL1_COMMON"], "22 00 00 00 00 40"
+)
 
-DIGITAL1_MODIFY_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                         SYSEX_CONSTANTS['DIGITAL1_COMMON'],
-                                         "50 00 00 00 00 40")
+DIGITAL1_MODIFY_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL1_COMMON"], "50 00 00 00 00 40"
+)
 
-DIGITAL2_COMMON_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                         SYSEX_CONSTANTS['DIGITAL2_COMMON'],
-                                         "00 00 00 00 00 40")
+DIGITAL2_COMMON_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL2_COMMON"], "00 00 00 00 00 40"
+)
 
-DIGITAL2_PARTIAL1_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                           SYSEX_CONSTANTS['DIGITAL2_COMMON'],
-                                           "20 00 00 00 00 40")
+DIGITAL2_PARTIAL1_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL2_COMMON"], "20 00 00 00 00 40"
+)
 
-DIGITAL2_PARTIAL2_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                           SYSEX_CONSTANTS['DIGITAL2_COMMON'],
-                                           "21 00 00 00 00 40")
+DIGITAL2_PARTIAL2_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL2_COMMON"], "21 00 00 00 00 40"
+)
 
-DIGITAL2_PARTIAL3_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                           SYSEX_CONSTANTS['DIGITAL2_COMMON'],
-                                           "22 00 00 00 00 40")
+DIGITAL2_PARTIAL3_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL2_COMMON"], "22 00 00 00 00 40"
+)
 
-DIGITAL2_MODIFY_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                         SYSEX_CONSTANTS['DIGITAL2_COMMON'],
-                                         "50 00 00 00 00 40")
+DIGITAL2_MODIFY_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DIGITAL2_COMMON"], "50 00 00 00 00 40"
+)
 
-ANALOG_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                SYSEX_CONSTANTS['ANALOG'],
-                                "00 00 00 00 00 40")
+ANALOG_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["ANALOG"], "00 00 00 00 00 40"
+)
 
-DRUMS_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                               SYSEX_CONSTANTS['DRUMS'],
-                               "00 00 00 00 00 12")
+DRUMS_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "00 00 00 00 00 12"
+)
 
-DRUMS_BD1_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                   SYSEX_CONSTANTS['DRUMS'],
-                                   "2E 00 00 00 01 43")
+DRUMS_BD1_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "2E 00 00 00 01 43"
+)
 
-DRUMS_RIM_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                   SYSEX_CONSTANTS['DRUMS'],
-                                   "30 00 00 00 01 43")
+DRUMS_RIM_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "30 00 00 00 01 43"
+)
 
-DRUMS_BD2_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                   SYSEX_CONSTANTS['DRUMS'],
-                                   "32 00 00 00 01 43")
+DRUMS_BD2_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "32 00 00 00 01 43"
+)
 
-DRUMS_CLAP_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                   SYSEX_CONSTANTS['DRUMS'],
-                                   "34 00 00 00 01 43")
+DRUMS_CLAP_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "34 00 00 00 01 43"
+)
 
-DRUMS_BD3_REQUEST = create_request(TEMPORARY_TONE_RQ11_HEADER,
-                                   SYSEX_CONSTANTS['DRUMS'],
-                                   "36 00 00 00 01 43")
+DRUMS_BD3_REQUEST = create_request(
+    TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "36 00 00 00 01 43"
+)
 
 DRUMS_REQUESTS = [
     DRUMS_REQUEST,
@@ -156,7 +169,7 @@ DRUMS_REQUESTS = [
     DRUMS_RIM_REQUEST,
     DRUMS_BD2_REQUEST,
     DRUMS_CLAP_REQUEST,
-    DRUMS_BD3_REQUEST
+    DRUMS_BD3_REQUEST,
 ]
 
 DIGITAL1_REQUESTS = [
@@ -164,14 +177,14 @@ DIGITAL1_REQUESTS = [
     DIGITAL1_PARTIAL1_REQUEST,
     DIGITAL1_PARTIAL2_REQUEST,
     DIGITAL1_PARTIAL3_REQUEST,
-    DIGITAL1_MODIFY_REQUEST
+    DIGITAL1_MODIFY_REQUEST,
 ]
 DIGITAL2_REQUESTS = [
     DIGITAL2_COMMON_REQUEST,
     DIGITAL2_PARTIAL1_REQUEST,
     DIGITAL2_PARTIAL2_REQUEST,
     DIGITAL2_PARTIAL3_REQUEST,
-    DIGITAL2_MODIFY_REQUEST
+    DIGITAL2_MODIFY_REQUEST,
 ]
 
 # Define program and tone name requests
@@ -180,7 +193,7 @@ PROGRAM_TONE_NAME_PARTIAL_REQUESTS = [
     ANALOG_REQUEST,
     *DIGITAL1_REQUESTS,
     *DIGITAL2_REQUESTS,
-    DRUMS_REQUEST
+    DRUMS_REQUEST,
 ]
 
 # Define program and tone name requests
@@ -189,5 +202,5 @@ PROGRAM_TONE_NAME_REQUESTS = [
     ANALOG_REQUEST,
     DIGITAL1_COMMON_REQUEST,
     DIGITAL2_COMMON_REQUEST,
-    DRUMS_REQUEST
+    DRUMS_REQUEST,
 ]

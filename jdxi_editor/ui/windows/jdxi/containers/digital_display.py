@@ -16,7 +16,7 @@ def add_digital_display(central_widget, parent):
         JDXIDimensions.DISPLAY_X,
         JDXIDimensions.DISPLAY_Y,
         JDXIDimensions.DISPLAY_WIDTH,
-        JDXIDimensions.DISPLAY_HEIGHT
+        JDXIDimensions.DISPLAY_HEIGHT,
     )
     digital_display_layout = QHBoxLayout()
     digital_display_container.setLayout(digital_display_layout)

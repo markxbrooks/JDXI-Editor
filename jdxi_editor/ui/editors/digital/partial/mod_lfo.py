@@ -15,7 +15,7 @@ class DigitalModLFOSection(QWidget):
         create_parameter_slider,
         create_parameter_combo_box,
         on_parameter_changed,
-        controls
+        controls,
     ):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider

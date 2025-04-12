@@ -63,15 +63,14 @@ from jdxi_editor.ui.style import JDXIStyle
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None,
-                 synth_number=1,
-                 partial_number=1,
-                 parent=None):
+    def __init__(self, midi_helper=None, synth_number=1, partial_number=1, parent=None):
         super().__init__(parent)
         self.partial_address_default = AddressOffsetSuperNATURALLMB.PARTIAL_1
-        self.partial_address_map = {1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
-                                    2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
-                                    3: AddressOffsetSuperNATURALLMB.PARTIAL_3}
+        self.partial_address_map = {
+            1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+            2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+            3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+        }
         self.bipolar_parameters = [
             DigitalPartialParameter.OSC_DETUNE,
             DigitalPartialParameter.OSC_PITCH,
@@ -80,8 +79,9 @@ class DigitalPartialEditor(PartialEditor):
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
-        self.synth_data = DigitalSynthData(synth_number=synth_number,
-                                           partial_number=partial_number)
+        self.synth_data = DigitalSynthData(
+            synth_number=synth_number, partial_number=partial_number
+        )
         data = self.synth_data
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
@@ -143,15 +143,10 @@ class DigitalPartialEditor(PartialEditor):
             self.address_umb,
         )
         self.tab_widget.addTab(
-            self.amp_tab, qta.icon(
-                "mdi.amplifier",
-                color="#666666"),
-            "Amplifier"
+            self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amplifier"
         )
         self.lfo_tab = DigitalLFOSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self.controls
+            self._create_parameter_slider, self._create_parameter_switch, self.controls
         )
         self.tab_widget.addTab(
             self.lfo_tab, qta.icon("mdi.sine-wave", color="#666666"), "LFO"

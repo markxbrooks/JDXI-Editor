@@ -30,19 +30,22 @@ This module requires PySide6 and proper integration with the JD-Xi Manager's sig
 """
 
 import logging
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel
-from PySide6.QtCore import Qt, QSize
 
-from jdxi_editor.midi.data.piano.keyboard import KEYBOARD_BLACK_NOTES, KEYBOARD_WHITE_NOTES, DRUM_LABELS
-from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.ui.widgets.piano.key import PianoKey
-
-
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLabel, QGraphicsDropShadowEffect
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtWidgets import (
+    QWidget,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLabel,
+    QGraphicsDropShadowEffect,
+)
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
-from jdxi_editor.midi.data.piano.keyboard import KEYBOARD_BLACK_NOTES, KEYBOARD_WHITE_NOTES, DRUM_LABELS
+from jdxi_editor.midi.data.piano.keyboard import (
+    KEYBOARD_BLACK_NOTES,
+    KEYBOARD_WHITE_NOTES,
+    DRUM_LABELS,
+)
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
@@ -139,7 +142,7 @@ class PianoKeyboard(QWidget):
         black_positions = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 17, 18, 19]
 
         for pos, note in zip(
-                black_positions, [n for n in KEYBOARD_BLACK_NOTES if n is not None]
+            black_positions, [n for n in KEYBOARD_BLACK_NOTES if n is not None]
         ):
             black_key = PianoKey(
                 note,
@@ -151,7 +154,7 @@ class PianoKeyboard(QWidget):
             apply_shadow(black_key)
 
             x_pos = (pos * self.white_key_width) + (
-                    self.white_key_width - self.black_key_width // 2
+                self.white_key_width - self.black_key_width // 2
             )
             black_key.move(x_pos, 0)
             black_key.show()

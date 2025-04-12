@@ -14,14 +14,16 @@ def create_parts_container(
     on_open_drums,
     on_open_analog,
     on_open_arp,
-    on_select_synth
+    on_select_synth,
 ):
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
-    parts_container.setGeometry(JDXIDimensions.PARTS_X,
-                                JDXIDimensions.PARTS_Y,
-                                JDXIDimensions.PARTS_WIDTH,
-                                JDXIDimensions.PARTS_HEIGHT)
+    parts_container.setGeometry(
+        JDXIDimensions.PARTS_X,
+        JDXIDimensions.PARTS_Y,
+        JDXIDimensions.PARTS_WIDTH,
+        JDXIDimensions.PARTS_HEIGHT,
+    )
     parts_layout = QVBoxLayout(parts_container)
     parts_layout.setSpacing(3)
 

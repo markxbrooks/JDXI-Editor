@@ -11,7 +11,9 @@ def get_preset_values(preset_index, preset_list=DIGITAL_PRESET_LIST):
     pc = get_preset_parameter_value("pc", preset_index, preset_list)
 
     if None in [msb, lsb, pc]:
-        logging.error(f"Could not retrieve preset parameters for program {preset_index}")
+        logging.error(
+            f"Could not retrieve preset parameters for program {preset_index}"
+        )
         return None, None, None
 
     logging.info(f"Retrieved MSB, LSB, PC: {msb}, {lsb}, {pc}")

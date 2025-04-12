@@ -24,9 +24,18 @@ from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_editor.midi.data.address.address import CommandID, END_OF_SYSEX, RolandID, AddressMemoryAreaMSB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    END_OF_SYSEX,
+    RolandID,
+    AddressMemoryAreaMSB,
+)
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string, construct_address, increment_group
+from jdxi_editor.midi.io.utils import (
+    format_midi_message_to_hex_string,
+    construct_address,
+    increment_group,
+)
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.midi import MidiMessage
 from jdxi_editor.midi.message.program_change import ProgramChangeMessage
@@ -163,9 +172,7 @@ class MidiOutHandler(MidiIOController):
             logging.error(f"Error sending identity request: {ex}")
             return False
 
-    def send_midi_message(
-        self, sysex_message: MidiMessage
-    ) -> bool:
+    def send_midi_message(self, sysex_message: MidiMessage) -> bool:
         """
         Send address parameter change message using MidiMessage.
 
@@ -301,10 +308,12 @@ class MidiOutHandler(MidiIOController):
         value_lsb = value & 0x7F
 
         success = (
-                self.send_control_change(101, rpn_msb, channel) and  # RPN MSB
-                self.send_control_change(100, rpn_lsb, channel) and  # RPN LSB
-                self.send_control_change(6, value_msb, channel) and  # Data Entry MSB
-                self.send_control_change(38, value_lsb, channel)  # Data Entry LSB
+            self.send_control_change(101, rpn_msb, channel)
+            and self.send_control_change(100, rpn_lsb, channel)  # RPN MSB
+            and self.send_control_change(6, value_msb, channel)  # RPN LSB
+            and self.send_control_change(  # Data Entry MSB
+                38, value_lsb, channel
+            )  # Data Entry LSB
         )
 
         if success:
@@ -314,7 +323,9 @@ class MidiOutHandler(MidiIOController):
 
         return success
 
-    def send_nrpn(self, parameter: int, value: int, channel: int = 0, use_14bit: bool = False) -> bool:
+    def send_nrpn(
+        self, parameter: int, value: int, channel: int = 0, use_14bit: bool = False
+    ) -> bool:
         """
         Send an NRPN (Non-Registered Parameter Number) message using MIDI Control Change.
 
@@ -332,7 +343,9 @@ class MidiOutHandler(MidiIOController):
             logging.error(f"Invalid NRPN parameter: {parameter}. Must be 0–16383.")
             return False
         if not 0 <= value <= (16383 if use_14bit else 127):
-            logging.error(f"Invalid NRPN value: {value}. Must be 0–{16383 if use_14bit else 127}.")
+            logging.error(
+                f"Invalid NRPN value: {value}. Must be 0–{16383 if use_14bit else 127}."
+            )
             return False
 
         nrpn_msb = (parameter >> 7) & 0x7F
@@ -356,7 +369,9 @@ class MidiOutHandler(MidiIOController):
         ok &= self.send_control_change(98, 127, channel)  # NRPN LSB null
 
         if ok:
-            logging.info(f"Sent NRPN: Param {parameter}, Value {value}, Channel {channel}, 14-bit={use_14bit}")
+            logging.info(
+                f"Sent NRPN: Param {parameter}, Value {value}, Channel {channel}, 14-bit={use_14bit}"
+            )
         else:
             logging.error("Failed to send NRPN messages.")
 
@@ -377,27 +392,34 @@ class MidiOutHandler(MidiIOController):
             True if all messages are sent successfully, False otherwise.
         """
         try:
-            
-            logging.info(f"send_bank_select_and_program_change "
-                         f"channel: {channel} "
-                         f" bank_msb: {bank_msb} "
-                         f" bank_lsb: {bank_lsb} "
-                         f"program: {program} ")
-            logging.info(f"1) sending send_control_change "
-                     f"controller: 0 "
-                     f" bank_msb: {bank_msb} "
-                     f" channel: {channel} ")
+            logging.info(
+                f"send_bank_select_and_program_change "
+                f"channel: {channel} "
+                f" bank_msb: {bank_msb} "
+                f" bank_lsb: {bank_lsb} "
+                f"program: {program} "
+            )
+            logging.info(
+                f"1) sending send_control_change "
+                f"controller: 0 "
+                f" bank_msb: {bank_msb} "
+                f" channel: {channel} "
+            )
             self.send_control_change(0, bank_msb, channel)
 
-            logging.info(f"2) sending send_control_change "
-                     f"controller: 32"
-                     f" bank_lsb: {bank_lsb} "
-                     f" channel: {channel} ")
+            logging.info(
+                f"2) sending send_control_change "
+                f"controller: 32"
+                f" bank_lsb: {bank_lsb} "
+                f" channel: {channel} "
+            )
             self.send_control_change(32, bank_lsb, channel)
 
-            logging.info(f"3) sending send_program_change "
-                     f" program: {program} "
-                     f" channel: {channel} ")
+            logging.info(
+                f"3) sending send_program_change "
+                f" program: {program} "
+                f" channel: {channel} "
+            )
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
@@ -472,25 +494,25 @@ class MidiOutHandler(MidiIOController):
         """
         try:
             # Ensure file has .jdx extension
-            if not file_path.endswith('.jdx'):
-                file_path += '.jdx'
+            if not file_path.endswith(".jdx"):
+                file_path += ".jdx"
 
             # Collect patch data
             patch_data = {
-                'version': '1.0',
-                'name': 'Untitled Patch',  # TODO: Get actual patch name
-                'type': 'JD-Xi Patch',
-                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
-                'parameters': {
-                    'digital': self._get_digital_parameters(),
-                    'analog': self._get_analog_parameters(),
-                    'drums': self._get_drum_parameters(),
-                    'effects': self._get_effects_parameters()
-                }
+                "version": "1.0",
+                "name": "Untitled Patch",  # TODO: Get actual patch name
+                "type": "JD-Xi Patch",
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "parameters": {
+                    "digital": self._get_digital_parameters(),
+                    "analog": self._get_analog_parameters(),
+                    "drums": self._get_drum_parameters(),
+                    "effects": self._get_effects_parameters(),
+                },
             }
 
             # Save to file
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 json.dump(patch_data, f, indent=2)
 
             logging.info(f"Patch saved to {file_path}")
@@ -498,7 +520,7 @@ class MidiOutHandler(MidiIOController):
         except Exception as e:
             logging.error(f"Error saving patch: {str(e)}")
             return False
-        
+
     def _get_digital_parameters(self):
         """Get digital parameters"""
         parameters = {}
@@ -507,9 +529,11 @@ class MidiOutHandler(MidiIOController):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):
                         value = self.get_parameter(area, part, group, param)
-                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+                        parameters[
+                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
+                        ] = value
         return parameters
-    
+
     def _get_analog_parameters(self):
         """Get analog parameters"""
         parameters = {}
@@ -518,9 +542,11 @@ class MidiOutHandler(MidiIOController):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):
                         value = self.get_parameter(area, part, group, param)
-                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+                        parameters[
+                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
+                        ] = value
         return parameters
-    
+
     def _get_drum_parameters(self):
         """Get drum parameters"""
         parameters = {}
@@ -529,9 +555,11 @@ class MidiOutHandler(MidiIOController):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):
                         value = self.get_parameter(area, part, group, param)
-                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+                        parameters[
+                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
+                        ] = value
         return parameters
-    
+
     def _get_effects_parameters(self):
         """Get effects parameters"""
         parameters = {}
@@ -540,5 +568,7 @@ class MidiOutHandler(MidiIOController):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):
                         value = self.get_parameter(area, part, group, param)
-                        parameters[f"{area:02X}{part:02X}{group:02X}{param:02X}"] = value
+                        parameters[
+                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
+                        ] = value
         return parameters

@@ -33,7 +33,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         return cls._instance
 
     def __init__(self, parent=None):
-        if not hasattr(self, 'initialized'):  # To avoid reinitialization
+        if not hasattr(self, "initialized"):  # To avoid reinitialization
             super().__init__()
             self.midi_messages = []
             if parent:

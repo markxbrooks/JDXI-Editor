@@ -1,8 +1,20 @@
 from PySide6.QtGui import QPen, QColor
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QPushButton, QVBoxLayout, QWidget, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsLineItem
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QFileDialog,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+    QGraphicsView,
+    QGraphicsScene,
+    QGraphicsRectItem,
+    QGraphicsLineItem,
+)
 from PySide6.QtCore import Qt, QTimer
 import mido
 import rtmidi
+
 
 class MidiPlayer(QMainWindow):
     def __init__(self):
@@ -40,7 +52,9 @@ class MidiPlayer(QMainWindow):
         self.play_position = 0
 
     def load_midi(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open MIDI File", "", "MIDI Files (*.mid)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Open MIDI File", "", "MIDI Files (*.mid)"
+        )
         if file_path:
             self.midi_file = mido.MidiFile(file_path)
             self.visualize_midi()
@@ -50,24 +64,38 @@ class MidiPlayer(QMainWindow):
         if not self.midi_file:
             return
 
-        max_time = sum(msg.time for track in self.midi_file.tracks for msg in track if msg.type == 'note_on')
+        max_time = sum(
+            msg.time
+            for track in self.midi_file.tracks
+            for msg in track
+            if msg.type == "note_on"
+        )
         time_scale = 10  # pixels per tick
         track_height = 20
 
         for i, track in enumerate(self.midi_file.tracks):
             time_position = 0
             for msg in track:
-                if msg.type == 'note_on':
-                    rect = QGraphicsRectItem(time_position * time_scale, i * track_height, 10, track_height - 5)
+                if msg.type == "note_on":
+                    rect = QGraphicsRectItem(
+                        time_position * time_scale,
+                        i * track_height,
+                        10,
+                        track_height - 5,
+                    )
                     rect.setBrush(Qt.blue)
                     self.scene.addItem(rect)
                 time_position += msg.time
 
-        self.playhead = QGraphicsLineItem(0, 0, 0, len(self.midi_file.tracks) * track_height)
+        self.playhead = QGraphicsLineItem(
+            0, 0, 0, len(self.midi_file.tracks) * track_height
+        )
         self.playhead.setPen(QPen(QColor(Qt.red)))
         self.scene.addItem(self.playhead)
 
-        self.view.setSceneRect(0, 0, max_time * time_scale, len(self.midi_file.tracks) * track_height)
+        self.view.setSceneRect(
+            0, 0, max_time * time_scale, len(self.midi_file.tracks) * track_height
+        )
 
     def play_midi(self):
         if not self.midi_file:
@@ -76,7 +104,7 @@ class MidiPlayer(QMainWindow):
         self.timer.start(50)  # Update every 50ms
 
         for msg in self.midi_file.play():
-            if msg.type in ['note_on', 'note_off']:
+            if msg.type in ["note_on", "note_off"]:
                 self.midi_out.send_message(msg.bytes())
 
     def update_playhead(self):
@@ -84,6 +112,7 @@ class MidiPlayer(QMainWindow):
         self.playhead.setX(self.play_position)
         if self.play_position > self.view.sceneRect().width():
             self.timer.stop()
+
 
 if __name__ == "__main__":
     app = QApplication([])

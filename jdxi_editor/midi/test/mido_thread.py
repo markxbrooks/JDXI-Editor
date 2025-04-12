@@ -36,7 +36,9 @@ if __name__ == "__main__":
     print(f"Using port: {port_name}")
 
     # Start the listener in address separate thread
-    listener_thread = threading.Thread(target=listen_midi, args=(port_name, midi_callback), daemon=True)
+    listener_thread = threading.Thread(
+        target=listen_midi, args=(port_name, midi_callback), daemon=True
+    )
     listener_thread.start()
 
     print("Press Ctrl+C to exit.")

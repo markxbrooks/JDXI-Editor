@@ -7,8 +7,14 @@ from jdxi_editor.ui.style import JDXIStyle
 
 
 class AnalogLFOSection(QWidget):
-    def __init__(self, create_parameter_slider, create_parameter_switch, create_parameter_combo_box,
-                 on_lfo_shape_changed, lfo_shape_buttons):
+    def __init__(
+        self,
+        create_parameter_slider,
+        create_parameter_switch,
+        create_parameter_combo_box,
+        on_lfo_shape_changed,
+        lfo_shape_buttons,
+    ):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
@@ -52,34 +58,39 @@ class AnalogLFOSection(QWidget):
         layout.addLayout(shape_row)
 
         # Rate and Fade Time
-        self.lfo_rate = self._create_parameter_slider(AnalogParameter.LFO_RATE,
-                                                      "Rate")
-        self.lfo_fade = self._create_parameter_slider(AnalogParameter.LFO_FADE_TIME,
-                                                      "Fade Time")
+        self.lfo_rate = self._create_parameter_slider(AnalogParameter.LFO_RATE, "Rate")
+        self.lfo_fade = self._create_parameter_slider(
+            AnalogParameter.LFO_FADE_TIME, "Fade Time"
+        )
 
         # Tempo Sync controls
         sync_row = QHBoxLayout()
-        self.lfo_sync_switch = self._create_parameter_switch(AnalogParameter.LFO_TEMPO_SYNC_SWITCH,
-                                                             "Tempo Sync",
-                                                             ["OFF", "ON"])
+        self.lfo_sync_switch = self._create_parameter_switch(
+            AnalogParameter.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+        )
         sync_row.addWidget(self.lfo_sync_switch)
-        self.lfo_sync_note = self._create_parameter_combo_box(AnalogParameter.LFO_TEMPO_SYNC_NOTE,
-                                                              "Sync Note",
-                                                              options=["1/1", "1/2", "1/4", "1/8", "1/16"])
+        self.lfo_sync_note = self._create_parameter_combo_box(
+            AnalogParameter.LFO_TEMPO_SYNC_NOTE,
+            "Sync Note",
+            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+        )
         sync_row.addWidget(self.lfo_sync_note)
 
         # Depth controls
-        self.lfo_pitch = self._create_parameter_slider(AnalogParameter.LFO_PITCH_DEPTH,
-                                                       "Pitch Depth")
-        self.lfo_filter = self._create_parameter_slider(AnalogParameter.LFO_FILTER_DEPTH,
-                                                        "Filter Depth")
-        self.lfo_amp = self._create_parameter_slider(AnalogParameter.LFO_AMP_DEPTH,
-                                                     "Amp Depth")
+        self.lfo_pitch = self._create_parameter_slider(
+            AnalogParameter.LFO_PITCH_DEPTH, "Pitch Depth"
+        )
+        self.lfo_filter = self._create_parameter_slider(
+            AnalogParameter.LFO_FILTER_DEPTH, "Filter Depth"
+        )
+        self.lfo_amp = self._create_parameter_slider(
+            AnalogParameter.LFO_AMP_DEPTH, "Amp Depth"
+        )
 
         # Key Trigger switch
-        self.key_trigger_switch = self._create_parameter_switch(AnalogParameter.LFO_KEY_TRIGGER,
-                                                                "Key Trigger",
-                                                                ["OFF", "ON"])
+        self.key_trigger_switch = self._create_parameter_switch(
+            AnalogParameter.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+        )
 
         # Add all controls to layout
         layout.addWidget(self.lfo_rate)

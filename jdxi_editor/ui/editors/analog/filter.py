@@ -1,5 +1,3 @@
-
-
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
@@ -10,14 +8,17 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class AnalogFilterSection(QWidget):
-    def __init__(self, create_parameter_slider,
-                 create_parameter_switch,
-                 on_filter_mode_changed,
-                 send_control_change,
-                 midi_helper,
-                 area,
-                 part,
-                 group):
+    def __init__(
+        self,
+        create_parameter_slider,
+        create_parameter_switch,
+        on_filter_mode_changed,
+        send_control_change,
+        midi_helper,
+        area,
+        part,
+        group,
+    ):
         super().__init__()
         self.filter_resonance = None
         self.create_parameter_slider = create_parameter_slider
@@ -37,8 +38,12 @@ class AnalogFilterSection(QWidget):
         # ADSR Icon Row
         adsr_icon_row_layout = QHBoxLayout()
         for icon in [
-            "mdi.triangle-wave", "mdi.sine-wave", "fa5s.wave-square",
-            "mdi.cosine-wave", "mdi.triangle-wave", "mdi.waveform"
+            "mdi.triangle-wave",
+            "mdi.sine-wave",
+            "fa5s.wave-square",
+            "mdi.cosine-wave",
+            "mdi.triangle-wave",
+            "mdi.waveform",
         ]:
             adsr_icon_label = QLabel()
             icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
@@ -48,16 +53,21 @@ class AnalogFilterSection(QWidget):
         layout.addLayout(adsr_icon_row_layout)
 
         # Filter Controls
-        self.filter_mode_switch = self.create_parameter_switch(AnalogParameter.FILTER_MODE_SWITCH,
-                                                          "Filter",
-                                                               ["BYPASS", "LPF"])
-        self.filter_mode_switch.valueChanged.connect(lambda v: self._on_filter_mode_changed(v))
-        self.filter_cutoff = self.create_parameter_slider(AnalogParameter.FILTER_CUTOFF,
-                                                          "Cutoff")
-        self.filter_resonance = self.create_parameter_slider(AnalogParameter.FILTER_RESONANCE,
-                                                             "Resonance")
-        self.filter_cutoff_keyfollow = self.create_parameter_slider(AnalogParameter.FILTER_CUTOFF_KEYFOLLOW,
-                                                                    "Keyfollow")
+        self.filter_mode_switch = self.create_parameter_switch(
+            AnalogParameter.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
+        )
+        self.filter_mode_switch.valueChanged.connect(
+            lambda v: self._on_filter_mode_changed(v)
+        )
+        self.filter_cutoff = self.create_parameter_slider(
+            AnalogParameter.FILTER_CUTOFF, "Cutoff"
+        )
+        self.filter_resonance = self.create_parameter_slider(
+            AnalogParameter.FILTER_RESONANCE, "Resonance"
+        )
+        self.filter_cutoff_keyfollow = self.create_parameter_slider(
+            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
+        )
 
         layout.addWidget(self.filter_mode_switch)
         layout.addWidget(self.filter_cutoff)
@@ -72,9 +82,12 @@ class AnalogFilterSection(QWidget):
         )
 
         # Envelope Controls
-        self.filter_env_depth = self.create_parameter_slider(AnalogParameter.FILTER_ENV_DEPTH, "Depth")
-        self.filter_env_velocity_sens = self.create_parameter_slider(AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
-                                                                     "Env. Velocity Sens.")
+        self.filter_env_depth = self.create_parameter_slider(
+            AnalogParameter.FILTER_ENV_DEPTH, "Depth"
+        )
+        self.filter_env_velocity_sens = self.create_parameter_slider(
+            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Env. Velocity Sens."
+        )
 
         layout.addWidget(self.filter_env_depth)
         layout.addWidget(self.filter_env_velocity_sens)
@@ -89,7 +102,7 @@ class AnalogFilterSection(QWidget):
             midi_helper=self.midi_helper,
             address_msb=self.address_msb,
             address_umb=self.address_umb,
-            address_lmb=self.address_lmb
+            address_lmb=self.address_lmb,
         )
         self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")

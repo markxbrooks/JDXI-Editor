@@ -1,8 +1,8 @@
 """
 LFO Filter Depth Slider
 """
+
 from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
-from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 
 

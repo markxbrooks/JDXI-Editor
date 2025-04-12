@@ -4,7 +4,11 @@ from .effects import add_effects_container
 from .octave import add_octave_buttons
 from .parts import create_parts_container
 from .program import add_program_container, create_program_buttons_row
-from .sequencer import add_sequencer_container, create_favorite_button_row, create_sequencer_buttons_row
+from .sequencer import (
+    add_sequencer_container,
+    add_favorite_button_container,
+    create_sequencer_buttons_row,
+)
 from .sliders import add_slider_container
 from .title import add_title_container
 from .tone import add_tone_container, create_tone_buttons_row
@@ -19,7 +23,7 @@ __all__ = [
     "add_program_container",
     "create_program_buttons_row",
     "add_sequencer_container",
-    "create_favorite_button_row",
+    "add_favorite_button_container",
     "create_sequencer_buttons_row",
     "add_title_container",
     "add_tone_container",

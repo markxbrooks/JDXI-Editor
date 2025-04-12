@@ -1,19 +1,16 @@
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Signal
 from jdxi_editor.midi.wave.form import Waveform
-from PIL import Image, ImageDraw
-import base64
-from io import BytesIO
 
 
 class WaveformButton(QPushButton):
     """Button for selecting oscillator waveform"""
-    
+
     waveform_selected = Signal(Waveform)  # Emits selected waveform
-    
+
     def __init__(self, waveform: Waveform, style="digital", parent=None):
         """Initialize waveform button
-        
+
         Args:
             waveform: Waveform enum value
             parent: Parent widget
@@ -26,7 +23,7 @@ class WaveformButton(QPushButton):
 
         # Style
         self.setMinimumWidth(60)
-    
+
     def _on_clicked(self):
         """Handle button click"""
         if self.isChecked():

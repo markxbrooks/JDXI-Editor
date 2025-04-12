@@ -1,7 +1,4 @@
 from .level import AmpLevelSlider
 from .envelope import AmpEnvelopeSlider
 
-__all__ = [
-    AmpLevelSlider,
-    AmpEnvelopeSlider
-]
+__all__ = [AmpLevelSlider, AmpEnvelopeSlider]

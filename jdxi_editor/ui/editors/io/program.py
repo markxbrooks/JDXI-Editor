@@ -48,7 +48,8 @@ from PySide6.QtWidgets import (
     QPushButton,
     QWidget,
     QLabel,
-    QHBoxLayout, QGroupBox,
+    QHBoxLayout,
+    QGroupBox,
 )
 from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
@@ -63,7 +64,7 @@ from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
     calculate_midi_values,
-    log_midi_info
+    log_midi_info,
 )
 from jdxi_editor.ui.style import JDXIStyle
 
@@ -163,7 +164,9 @@ class ProgramEditor(SynthEditor):
         layout.addWidget(self.bank_combo_box)
 
         # Load button
-        self.load_button = QPushButton(qta.icon("ph.folder-notch-open-fill"), "Load Program")
+        self.load_button = QPushButton(
+            qta.icon("ph.folder-notch-open-fill"), "Load Program"
+        )
         self.load_button.clicked.connect(self.load_program)
         layout.addWidget(self.load_button)
         self.setLayout(layout)

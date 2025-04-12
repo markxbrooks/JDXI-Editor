@@ -14,7 +14,7 @@ print(f"Envelope (Partial 3): {envelope_partial_3}")
 envelope_map = DigitalControlChange.get_nrpn_map("Envelope")
 """
 
-        
+
 class DigitalControlChange:
     """Grouped version of Control Change (CC) values for easier access."""
 
@@ -44,11 +44,11 @@ class DigitalControlChange:
             2: 12,  # Partial 2
             3: 12,  # Partial 3
         },
-        "Delay" : {
+        "Delay": {
             1: 13,  # NRPN LSB for Partial 1
             2: 13,  # Partial 2
             3: 13,  # Partial 3
-        }
+        },
     }
 
     NRPN = {
@@ -81,7 +81,7 @@ class DigitalControlChange:
             1: 21,  # Partial 1
             2: 22,  # Partial 2
             3: 23,  # Partial 3
-        }
+        },
     }
 
     @staticmethod
@@ -112,4 +112,3 @@ class DigitalControlChange:
     def get_cc_map(group: str) -> dict:
         """Return dynamic CC values for each partial from the given group."""
         return DigitalControlChange.CC.get(group, {}).copy()
-

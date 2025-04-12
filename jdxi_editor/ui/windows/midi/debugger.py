@@ -37,12 +37,24 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 import logging
 from tabulate import tabulate
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSplitter,
-    QPushButton, QTextEdit, QLabel, QPlainTextEdit
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QSplitter,
+    QPushButton,
+    QTextEdit,
+    QLabel,
+    QPlainTextEdit,
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
@@ -59,12 +71,12 @@ class MIDIDebugger(QMainWindow):
         AddressOffsetTemporaryToneUMB.DIGITAL_PART_1: "DIGITAL_PART_1",
         AddressOffsetTemporaryToneUMB.DIGITAL_PART_2: "DIGITAL_PART_2",
         AddressOffsetTemporaryToneUMB.ANALOG_PART: "ANALOG_PART",
-        AddressOffsetTemporaryToneUMB.DRUM_KIT_PART: "DRUM_KIT_PART"
+        AddressOffsetTemporaryToneUMB.DRUM_KIT_PART: "DRUM_KIT_PART",
     }
 
     COMMANDS = {
         CommandID.RQ1: "RQ1 (Data Request)",
-        CommandID.DT1: "DT1 (Data Transfer)"
+        CommandID.DT1: "DT1 (Data Transfer)",
     }
 
     SECTIONS = {
@@ -72,7 +84,7 @@ class MIDIDebugger(QMainWindow):
         AddressOffsetProgramLMB.DRUM_KIT_PART_1: "BD1",
         AddressOffsetProgramLMB.DRUM_KIT_PART_2: "RIM",
         AddressOffsetProgramLMB.DRUM_KIT_PART_3: "BD2",
-     }
+    }
 
     GROUPS = {
         0x20: "OSC_1_GROUP",
@@ -206,7 +218,9 @@ class MIDIDebugger(QMainWindow):
 
             # Format the output using the decoded parameters
             table_data = [[key, value] for key, value in decoded_parameters.items()]
-            decoded = tabulate(table_data, headers=["Parameter", "Value"], tablefmt="grid")
+            decoded = tabulate(
+                table_data, headers=["Parameter", "Value"], tablefmt="grid"
+            )
             return decoded
 
         except Exception as e:
@@ -223,7 +237,9 @@ class MIDIDebugger(QMainWindow):
         try:
             # Get command
             command = message[7]
-            command_str = self.COMMANDS.get(command, f"Unknown Command ({hex(command)})")
+            command_str = self.COMMANDS.get(
+                command, f"Unknown Command ({hex(command)})"
+            )
 
             # Get area
             area = message[8]
@@ -240,7 +256,9 @@ class MIDIDebugger(QMainWindow):
             param_address = hex(param)
             # param_str = DigitalParameter.get_name_by_address(int(param))
             group_str = self.GROUPS.get(group, f"Common Group ({group_address})")
-            param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
+            param_str = self.PARAMETERS.get(
+                param, f"Unknown Parameter ({param_address})"
+            )
 
             # Get value
             value = message[12]
@@ -285,7 +303,9 @@ class MIDIDebugger(QMainWindow):
         try:
             # Get command preset_type
             command = message[7]
-            command_str = self.COMMANDS.get(command, f"Unknown Command ({hex(command)})")
+            command_str = self.COMMANDS.get(
+                command, f"Unknown Command ({hex(command)})"
+            )
 
             # Get area
             area = message[8]
@@ -297,7 +317,9 @@ class MIDIDebugger(QMainWindow):
 
             # Get section
             section = message[10]
-            section_str = self.SECTIONS.get(section, f"Unknown Section ({hex(section)})")
+            section_str = self.SECTIONS.get(
+                section, f"Unknown Section ({hex(section)})"
+            )
 
             # Get parameter
             param = message[11]
@@ -335,7 +357,7 @@ class MIDIDebugger(QMainWindow):
         text = self.command_input.toPlainText().strip()
         if not text:
             return
-        for line in text.split('\n'):
+        for line in text.split("\n"):
             try:
                 # Convert hex string to bytes
                 hex_values = text.split()
@@ -367,7 +389,7 @@ class MIDIDebugger(QMainWindow):
                 return
 
             # Process each line
-            for line in text.split('\n'):
+            for line in text.split("\n"):
                 try:
                     # Split the hex string and convert each value
                     hex_values = line.strip().split()
@@ -378,23 +400,27 @@ class MIDIDebugger(QMainWindow):
 
                     for hex_str in hex_values:
                         # Remove any '0x' prefix if present
-                        hex_str = hex_str.replace('0x', '').replace('0X', '')
+                        hex_str = hex_str.replace("0x", "").replace("0X", "")
                         value = int(hex_str, 16)
                         message.append(value)
 
                     # Debug print the converted message
-                    self.log_response(f"Converted to bytes: {[hex(b) for b in message]}")
+                    self.log_response(
+                        f"Converted to bytes: {[hex(b) for b in message]}"
+                    )
 
                     # Send message using MIDIHelper's send_message
                     self.midi_helper.send_raw_message(message)
 
                     # Log success
-                    hex_str = ' '.join([f"{b:02X}" for b in message])
+                    hex_str = " ".join([f"{b:02X}" for b in message])
                     self.log_response(f"Successfully sent: {hex_str}")
                     logging.debug(f"Debug window sent MIDI message: {hex_str}")
 
                 except ValueError as e:
-                    self.log_response(f"Error parsing hex value in line: {line}\n{str(e)}")
+                    self.log_response(
+                        f"Error parsing hex value in line: {line}\n{str(e)}"
+                    )
                 except Exception as e:
                     self.log_response(f"Error sending message: {line}\n{str(e)}")
 
@@ -409,7 +435,7 @@ class MIDIDebugger(QMainWindow):
         """Handle incoming MIDI message"""
         try:
             # Convert message to hex string
-            hex_str = ' '.join([f"{b:02X}" for b in message])
+            hex_str = " ".join([f"{b:02X}" for b in message])
             self.log_response(f"Received: {hex_str}")
 
         except Exception as e:

@@ -12,9 +12,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParame
 class DigitalLFOSection(QWidget):
     """LFO section for the digital partial editor."""
 
-    def __init__(
-        self, create_parameter_slider, create_parameter_switch, controls
-    ):
+    def __init__(self, create_parameter_slider, create_parameter_switch, controls):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch

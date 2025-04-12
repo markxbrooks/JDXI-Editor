@@ -17,7 +17,11 @@ msg = DelayMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 

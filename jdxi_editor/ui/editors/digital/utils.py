@@ -4,7 +4,10 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressMemoryAreaMSB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetTemporaryToneUMB,
+    AddressMemoryAreaMSB,
+)
 
 
 def _log_debug_info(data, successes, failures, enabled):
@@ -30,9 +33,11 @@ def _filter_sysex_keys(sysex_data: dict) -> dict:
 
 
 def _get_synth_number(synth_tone: str) -> int:
-    """ get synth number based on the synth tone """
-    synth_map = {AddressMemoryAreaMSB.TEMPORARY_TONE: 1,
-                 AddressMemoryAreaMSB.DIGITAL_2: 2}
+    """get synth number based on the synth tone"""
+    synth_map = {
+        AddressMemoryAreaMSB.TEMPORARY_TONE: 1,
+        AddressMemoryAreaMSB.DIGITAL_2: 2,
+    }
     synth_no = synth_map.get(synth_tone)
     if synth_no is None:
         logging.warning(f"Unknown synth tone: {synth_tone}")
@@ -89,7 +94,9 @@ def _sysex_area_matches(sysex_data: dict, area) -> bool:
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
-    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    logging.info(
+        f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}"
+    )
     return match
 
 
@@ -101,7 +108,9 @@ def _sysex_area2_matches(sysex_data: dict, area) -> bool:
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
-    logging.info(f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}")
+    logging.info(
+        f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}"
+    )
     return match
 
 
@@ -125,5 +134,7 @@ def _sysex_group_matches(sysex_data: dict, expected_group) -> bool:
     """Check if the SysEx data matches the expected area."""
     found_group = sysex_data.get("SYNTH_TONE")
     match = found_group == expected_group
-    logging.info(f"SysEx TEMP_AREA: {found_group}, expected: {expected_group}, match: {match}")
+    logging.info(
+        f"SysEx TEMP_AREA: {found_group}, expected: {expected_group}, match: {match}"
+    )
     return match

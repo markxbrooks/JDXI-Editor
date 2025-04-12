@@ -10,11 +10,9 @@ class ModWheel(WheelWidget):
     Modulation Wheel
     """
 
-    def __init__(self, label="Mod",
-                 bidirectional=True,
-                 parent=None,
-                 midi_helper=None,
-                 channel=0):
+    def __init__(
+        self, label="Mod", bidirectional=True, parent=None, midi_helper=None, channel=0
+    ):
         super().__init__(parent)
         self.label = label
         self.bidirectional = bidirectional

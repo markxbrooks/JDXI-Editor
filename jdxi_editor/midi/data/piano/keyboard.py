@@ -24,25 +24,25 @@ KEYBOARD_WHITE_NOTES = [
 ]
 
 KEYBOARD_BLACK_NOTES = [
-            37,
-            39,
-            None,
-            42,
-            44,
-            46,  # C#1 to B1
-            49,
-            51,
-            None,
-            54,
-            56,
-            58,  # C#2 to B2
-            61,
-            63,
-            None,
-            66,
-            68,
-            70,  # C#3 to B3
-        ]
+    37,
+    39,
+    None,
+    42,
+    44,
+    46,  # C#1 to B1
+    49,
+    51,
+    None,
+    54,
+    56,
+    58,  # C#2 to B2
+    61,
+    63,
+    None,
+    66,
+    68,
+    70,  # C#3 to B3
+]
 
 DRUM_LABELS = [
     "BD1",

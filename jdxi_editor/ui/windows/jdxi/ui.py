@@ -53,12 +53,24 @@ from jdxi_editor.ui.windows.jdxi.containers.effects import add_effects_container
 from jdxi_editor.ui.windows.jdxi.containers.octave import add_octave_buttons
 from jdxi_editor.ui.windows.jdxi.containers.digital_display import add_digital_display
 from jdxi_editor.ui.windows.jdxi.containers.parts import create_parts_container
-from jdxi_editor.ui.windows.jdxi.containers.program import add_program_container, create_program_buttons_row
-from jdxi_editor.ui.windows.jdxi.containers.sequencer import add_sequencer_container, create_favorite_button_row
+from jdxi_editor.ui.windows.jdxi.containers.program import (
+    add_program_container,
+    create_program_buttons_row,
+)
+from jdxi_editor.ui.windows.jdxi.containers.sequencer import (
+    add_sequencer_container,
+    add_favorite_button_container,
+)
 from jdxi_editor.ui.windows.jdxi.containers.sliders import add_slider_container
 from jdxi_editor.ui.windows.jdxi.containers.title import add_title_container
-from jdxi_editor.ui.windows.jdxi.containers.tone import add_tone_container, create_tone_buttons_row
-from jdxi_editor.ui.windows.jdxi.containers.wheels import build_wheel_label_row, build_wheel_row
+from jdxi_editor.ui.windows.jdxi.containers.tone import (
+    add_tone_container,
+    create_tone_buttons_row,
+)
+from jdxi_editor.ui.windows.jdxi.containers.wheels import (
+    build_wheel_label_row,
+    build_wheel_row,
+)
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -216,21 +228,20 @@ class JdxiUi(QMainWindow):
             container, self._open_vocal_fx, self._open_effects
         )
 
-        (self.program_down_button,
-         self.program_up_button) = add_program_container(container,
-                                                         create_program_buttons_row)
+        (self.program_down_button, self.program_up_button) = add_program_container(
+            container, create_program_buttons_row
+        )
 
-        self.tone_down_button, self.tone_up_button = add_tone_container(container,
-                                                                        create_tone_buttons_row,
-                                                                        self._previous_tone,
-                                                                        self._next_tone)
-        self.sequencer_buttons, self.favorite_button = add_sequencer_container(
+        self.tone_down_button, self.tone_up_button = add_tone_container(
+            container, create_tone_buttons_row, self._previous_tone, self._next_tone
+        )
+        self.sequencer_buttons = add_sequencer_container(
             container,
-            create_favorite_button_row,
             midi_helper=self.midi_helper,
             on_context_menu=self._show_favorite_context_menu,
             on_save_favorite=self._save_favorite,
         )
+        self.favorite_button = add_favorite_button_container(container)
         add_slider_container(container, self.midi_helper)
         layout.addWidget(container)
 

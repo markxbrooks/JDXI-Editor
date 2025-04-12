@@ -48,24 +48,32 @@ from PySide6.QtWidgets import (
     QPushButton,
     QWidget,
     QLabel,
-    QHBoxLayout, QLineEdit,
+    QHBoxLayout,
+    QLineEdit,
 )
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST, get_preset_parameters
+from jdxi_editor.midi.data.programs.presets import (
+    DIGITAL_PRESET_LIST,
+    get_preset_parameters,
+)
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS, PROGRAM_TONE_NAME_REQUESTS
+from jdxi_editor.midi.sysex.requests import (
+    PROGRAM_TONE_NAME_PARTIAL_REQUESTS,
+    PROGRAM_TONE_NAME_REQUESTS,
+)
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
     calculate_midi_values,
-    log_midi_info, get_preset_parameter_value
+    log_midi_info,
+    get_preset_parameter_value,
 )
 from jdxi_editor.ui.style import JDXIStyle
 
@@ -132,11 +140,15 @@ class PresetEditor(SynthEditor):
         )  # Center align the image
         title_layout.addWidget(self.image_label)
         self.update_instrument_image()
-        
+
         # Synth type selection combo box
         self.digital_preset_type_combo = QComboBox()
-        self.digital_preset_type_combo.addItems(["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"])
-        self.digital_preset_type_combo.currentIndexChanged.connect(self.on_preset_type_changed)
+        self.digital_preset_type_combo.addItems(
+            ["Digital Synth 1", "Digital Synth 2", "Drums", "Analog Synth"]
+        )
+        self.digital_preset_type_combo.currentIndexChanged.connect(
+            self.on_preset_type_changed
+        )
         layout.addWidget(self.digital_preset_type_combo)
 
         # Search Box
@@ -154,9 +166,7 @@ class PresetEditor(SynthEditor):
         # Program number selection combo box
         self.preset_combo_box = QComboBox()
         self.preset_combo_box.addItems([f"{i:02}" for i in range(1, 65)])
-        self.preset_combo_box.currentIndexChanged.connect(
-            self.on_preset_number_changed
-        )
+        self.preset_combo_box.currentIndexChanged.connect(self.on_preset_number_changed)
         layout.addWidget(self.preset_combo_box)
 
         self.genre_label = QLabel("Category")
@@ -171,7 +181,9 @@ class PresetEditor(SynthEditor):
         layout.addWidget(self.category_combo_box)
 
         # Load button
-        self.load_button = QPushButton(qta.icon("ph.folder-notch-open-fill"), "Load Preset")
+        self.load_button = QPushButton(
+            qta.icon("ph.folder-notch-open-fill"), "Load Preset"
+        )
         self.load_button.clicked.connect(self.load_preset_by_program_change)
         layout.addWidget(self.load_button)
         self.setLayout(layout)
@@ -279,11 +291,15 @@ class PresetEditor(SynthEditor):
             """
         )
         self._populate_presets()
-        self.midi_helper.update_digital1_tone_name.connect(self.update_digital1_tone_name)
-        self.midi_helper.update_digital2_tone_name.connect(self.update_digital2_tone_name)
+        self.midi_helper.update_digital1_tone_name.connect(
+            self.update_digital1_tone_name
+        )
+        self.midi_helper.update_digital2_tone_name.connect(
+            self.update_digital2_tone_name
+        )
         self.midi_helper.update_drums_tone_name.connect(self.update_drums_tone_name)
         self.midi_helper.update_analog_tone_name.connect(self.update_analog_tone_name)
-        
+
     def on_preset_type_changed(self, index):
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
@@ -317,26 +333,28 @@ class PresetEditor(SynthEditor):
         logging.info(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
         logging.info(f"combo box program_number : {program_number}")
-        
+
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number)
         lsb = get_preset_parameter_value("lsb", program_number)
         pc = get_preset_parameter_value("pc", program_number)
-        
+
         if None in [msb, lsb, pc]:
-            logging.error(f"Could not retrieve preset parameters for program {program_number}")
+            logging.error(
+                f"Could not retrieve preset parameters for program {program_number}"
+            )
             return
-        
+
         logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
         log_midi_info(msb, lsb, pc)
-        
+
         # Send bank select and program change
         # Note: PC is 0-based in MIDI, so subtract 1
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel,  # MIDI channel
             msb,  # MSB is already correct
             lsb,  # LSB is already correct
-            pc - 1  # Convert 1-based PC to 0-based
+            pc - 1,  # Convert 1-based PC to 0-based
         )
         self.data_request()
 
@@ -387,7 +405,6 @@ class PresetEditor(SynthEditor):
         filtered_list = [  # Filter programs based on bank and genre
             preset
             for preset in self.preset_list
-
             if (selected_category in ["No Category Selected", preset["category"]])
         ]
         filtered_presets = []
@@ -399,14 +416,14 @@ class PresetEditor(SynthEditor):
             preset_name = preset["name"]
             preset_id = preset["id"]
             index = len(self.presets)  # Use the current number of programs
-            self.preset_combo_box.addItem(
-                f"{preset_id} - {preset_name}", index
-            )
+            self.preset_combo_box.addItem(f"{preset_id} - {preset_name}", index)
             self.presets[preset_name] = index
         self.preset_combo_box.setCurrentIndex(
             0
         )  # Update the UI with the new program list
-        self.preset_combo_box.setCurrentIndex(0)  # Select "No Category Selected" as default
+        self.preset_combo_box.setCurrentIndex(
+            0
+        )  # Select "No Category Selected" as default
 
     def update_category_combo_box_categories(self):
         # Update the category combo box
@@ -415,11 +432,17 @@ class PresetEditor(SynthEditor):
 
         # Clear and update items
         self.category_combo_box.clear()
-        self.category_combo_box.addItem("No Category Selected")  # Add the default option
-        self.category_combo_box.addItems(sorted(categories))  # Add the sorted categories
+        self.category_combo_box.addItem(
+            "No Category Selected"
+        )  # Add the default option
+        self.category_combo_box.addItems(
+            sorted(categories)
+        )  # Add the sorted categories
 
         # Set the default selected index
-        self.category_combo_box.setCurrentIndex(0)  # Select "No Category Selected" as default
+        self.category_combo_box.setCurrentIndex(
+            0
+        )  # Select "No Category Selected" as default
 
         self.category_combo_box.blockSignals(False)  # Unblock signals after update
 
@@ -445,7 +468,9 @@ class PresetEditor(SynthEditor):
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
         logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
         log_midi_info(msb, lsb, pc)
-        self.midi_helper.send_bank_select_and_program_change(self.midi_channel, msb, lsb, pc)
+        self.midi_helper.send_bank_select_and_program_change(
+            self.midi_channel, msb, lsb, pc
+        )
         self.data_request()
 
     def update_current_synths(self, program_details: dict):

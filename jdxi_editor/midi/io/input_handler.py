@@ -61,7 +61,9 @@ def extract_command_info(message: Any) -> None:
 
         logging.debug(
             "Command: %s (0x%02X), Address Offset: %s",
-            command_name, command_type, address_offset
+            command_name,
+            command_type,
+            address_offset,
         )
     except Exception as ex:
         logging.warning(f"Unable to extract command or parameter address due to {ex}")
@@ -77,7 +79,7 @@ def rtmidi_to_mido(rtmidi_message):
 
 
 def convert_to_mido_message(message_content):
-    """ with nibbles"""
+    """with nibbles"""
     if not message_content:
         return None
 
@@ -88,7 +90,7 @@ def convert_to_mido_message(message_content):
         sys_ex_data = nibble_data(message_content[1:-1])
         # If data length exceeds 128 bytes, split into 4-byte nibbles
         if len(sys_ex_data) > 128:
-            nibbles = [sys_ex_data[i:i + 4] for i in range(0, len(sys_ex_data), 4)]
+            nibbles = [sys_ex_data[i : i + 4] for i in range(0, len(sys_ex_data), 4)]
             return [mido.Message("sysex", data=nibble) for nibble in nibbles]
 
         return mido.Message("sysex", data=sys_ex_data)
@@ -104,7 +106,9 @@ def convert_to_mido_message(message_content):
         channel = status_byte & 0x0F  # Extract channel (0-15)
         control = message_content[1]  # CC number (0-127)
         value = message_content[2]  # CC value (0-127)
-        return mido.Message("control_change", channel=channel, control=control, value=value)
+        return mido.Message(
+            "control_change", channel=channel, control=control, value=value
+        )
 
     # **Other Messages (Optional)**
     print(f"Unhandled MIDI message: {message_content}")
@@ -112,7 +116,7 @@ def convert_to_mido_message(message_content):
 
 
 def mido_message_data_to_byte_list(message):
-    """ mido message data to byte list"""
+    """mido message data to byte list"""
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
     logging.debug("converting (%d bytes)", len(message.data))
 
@@ -148,7 +152,7 @@ def handle_identity_request(message):
     return {
         "device_id": device_id,
         "manufacturer_id": manufacturer_id,
-        "firmware_version": version_str
+        "firmware_version": version_str,
     }
 
 
@@ -170,6 +174,7 @@ class MidiInHandler(MidiIOController):
     their preset_type, and emits corresponding signals. It handles SysEx, Control
     Change, Program Change, Note On/Off, and Clock messages.
     """
+
     update_program_name = Signal(str)
     update_digital1_tone_name = Signal(str)
     update_digital2_tone_name = Signal(str)
@@ -199,7 +204,7 @@ class MidiInHandler(MidiIOController):
         self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
 
     def midi_callback(self, message, data):
-        """ callback for rtmidi
+        """callback for rtmidi
         mido doesn't have callbacks, so we convert
         """
         try:
@@ -228,7 +233,9 @@ class MidiInHandler(MidiIOController):
         try:
             self.midi_in.set_callback(callback)
         except Exception as ex:
-            logging.info(f"Error {ex} occurred calling self.midi_in.set_callback(callback)")
+            logging.info(
+                f"Error {ex} occurred calling self.midi_in.set_callback(callback)"
+            )
 
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
@@ -270,13 +277,19 @@ class MidiInHandler(MidiIOController):
     def _emit_program_or_tone_name(self, parsed_data):
         """Emits the appropriate Qt signal for the extracted tone name."""
         valid_addresses = {
-            "12180000", "12190100", "12192100", "12194200", "12197000"  # Drums Common
+            "12180000",
+            "12190100",
+            "12192100",
+            "12194200",
+            "12197000",  # Drums Common
         }
 
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         area = parsed_data.get("TEMPORARY_AREA")
-        logging.info(f"ADDRESS: {address} TEMPORARY_AREA: {area} TONE_NAME: {tone_name}")
+        logging.info(
+            f"ADDRESS: {address} TEMPORARY_AREA: {area} TONE_NAME: {tone_name}"
+        )
 
         if address in valid_addresses and tone_name:
             self._emit_signal(area, tone_name)
@@ -306,7 +319,11 @@ class MidiInHandler(MidiIOController):
         """
         logging.debug(f"handling incoming midi message: {message}")
         try:
-            if message.type == 'sysex' and len(message.data) > 6 and message.data[3] == 0x02:  # Identity request
+            if (
+                message.type == "sysex"
+                and len(message.data) > 6
+                and message.data[3] == 0x02
+            ):  # Identity request
                 handle_identity_request(message)
             # Convert raw SysEx data to address hex string
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)

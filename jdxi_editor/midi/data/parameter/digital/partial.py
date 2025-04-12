@@ -49,8 +49,14 @@ def map_range(value, in_min=-100, in_max=100, out_min=54, out_max=74):
 class DigitalPartialParameter(SynthParameter):
     """Digital synth parameters with their addresses and value ranges"""
 
-    def __init__(self, address: int, min_val: int, max_val: int,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
@@ -213,7 +219,9 @@ class DigitalPartialParameter(SynthParameter):
         conversion = self.CONVERSION_OFFSETS.get(self.name)
 
         if conversion == "map_range":
-            value = map_range(value, -100, 100, 0, 127)  # Normalize -100 to 100 into 0 to 127
+            value = map_range(
+                value, -100, 100, 0, 127
+            )  # Normalize -100 to 100 into 0 to 127
         elif isinstance(conversion, int):
             value += conversion  # Apply offset (e.g., +64 or -64)
 
@@ -225,7 +233,9 @@ class DigitalPartialParameter(SynthParameter):
     def get_address_for_partial(self, partial_number: int) -> Tuple[int, int]:
         """Get parameter area and address adjusted for partial number."""
         group_map = {1: 0x20, 2: 0x21, 3: 0x22}
-        group = group_map.get(partial_number, 0x20)  # Default to 0x20 if partial_name is not 1, 2, or 3
+        group = group_map.get(
+            partial_number, 0x20
+        )  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
 
     @staticmethod
@@ -239,7 +249,11 @@ class DigitalPartialParameter(SynthParameter):
         conversion = self.CONVERSION_OFFSETS.get(self.name)
 
         if conversion == "map_range":
-            return map_range(value, 54, 74, -100, 100) if reverse else map_range(value, -100, 100, 54, 74)
+            return (
+                map_range(value, 54, 74, -100, 100)
+                if reverse
+                else map_range(value, -100, 100, 54, 74)
+            )
 
         if isinstance(conversion, int):
             return value - conversion if reverse else value + conversion
@@ -253,4 +267,3 @@ class DigitalPartialParameter(SynthParameter):
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""
         return self.convert_value(midi_value, reverse=True)
-

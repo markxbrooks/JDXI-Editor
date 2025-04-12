@@ -1,18 +1,21 @@
 import mido
 import time
 
+
 def callback(message, time_stamp):
     print(message, time_stamp)
 
+
 class MidiHelper:
     def __init__(self):
-        self.midiin = mido.open_input('JD-Xi')
+        self.midiin = mido.open_input("JD-Xi")
 
     def set_callback(self, callback):
         self.midiin._callback(callback)
 
     def get_ports(self):
         return self.midiin.get_ports()
+
 
 midi_helper = MidiHelper()
 midi_helper.set_callback(callback)

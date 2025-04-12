@@ -30,14 +30,16 @@ class ControlChangeSlider(Slider):
         min_value: int = 0,
         max_value: int = 127,
         vertical: bool = True,
-        channels: list = [0, 1, 2]
+        channels: list = [0, 1, 2],
     ):
-        super().__init__(label,
-                         min_val=min_value,
-                         max_val=max_value,
-                         vertical=vertical,
-                         show_value_label=False,
-                         draw_tick_marks=False)
+        super().__init__(
+            label,
+            min_val=min_value,
+            max_val=max_value,
+            vertical=vertical,
+            show_value_label=False,
+            draw_tick_marks=False,
+        )
         self.channels = channels
         self.label = label
         self.midi_helper = midi_helper

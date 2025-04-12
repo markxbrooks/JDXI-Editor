@@ -1,12 +1,13 @@
 """
 
-    WheelWidget
-    (c) 2025 JDXI Editor
+WheelWidget
+(c) 2025 JDXI Editor
 
 """
+
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QColor, QPen, QMouseEvent, QFont, QLinearGradient
-from PySide6.QtCore import QRectF, Qt, Signal, Property, QPropertyAnimation
+from PySide6.QtGui import QPainter, QColor, QPen, QMouseEvent, QLinearGradient
+from PySide6.QtCore import QRectF, Signal, Property, QPropertyAnimation
 
 
 class WheelWidget(QWidget):
@@ -62,7 +63,9 @@ class WheelWidget(QWidget):
         notch_height = 25
         usable_height = self.height() - 40
         center_y = self.height() / 2
-        offset = -self._value * (usable_height / 2 if self.bidirectional else usable_height)
+        offset = -self._value * (
+            usable_height / 2 if self.bidirectional else usable_height
+        )
         wheel_y = center_y + offset - notch_height / 2
         wheel_rect = QRectF(0, wheel_y, self.width(), int(notch_height))
         # Create a vertical gradient for the wheel

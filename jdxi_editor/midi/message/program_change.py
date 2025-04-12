@@ -30,6 +30,7 @@ from jdxi_editor.midi.message.channel import ChannelMessage
 @dataclass
 class ProgramChangeMessage(ChannelMessage):
     """MIDI Program Change message"""
+
     status: int = 0xC0  # Program Change status byte
     program: int = 0
 

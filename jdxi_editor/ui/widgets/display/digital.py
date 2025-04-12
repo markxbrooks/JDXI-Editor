@@ -29,8 +29,10 @@ Dependencies:
 - PySide6.QtGui (QPainter, QColor, QPen, QFont)
 
 """
+
 import logging
 
+from PySide6.QtCore import QRect
 from PySide6.QtWidgets import QWidget, QSizePolicy
 from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
 
@@ -38,17 +40,10 @@ from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.preset.type import JDXISynth
-from jdxi_editor.ui.editors.helpers.program import get_program_id_by_name, get_preset_list_number_by_name
-
-
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
-from PySide6.QtWidgets import QWidget, QSizePolicy
-
-from PySide6.QtWidgets import QWidget, QSizePolicy
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QFont, QPen
-from PySide6.QtCore import Qt
-
+from jdxi_editor.ui.editors.helpers.program import (
+    get_program_id_by_name,
+    get_preset_list_number_by_name,
+)
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -95,7 +90,9 @@ class DigitalDisplayBase(QWidget):
         for text in self.display_texts:
             painter.setPen(QPen(QColor("#FFAA33")))
             # rect = QRect(10, y_offset, self.width() - 20, 30)  # Proper text bounding area
-            rect = QRect(10, y_offset, self.width() - 20, 30)  # Proper text bounding area
+            rect = QRect(
+                10, y_offset, self.width() - 20, 30
+            )  # Proper text bounding area
             painter.drawText(rect, 1, str(text))
             y_offset += 30  # Space out text lines
 
@@ -108,15 +105,18 @@ class DigitalDisplayBase(QWidget):
 class DigitalTitle(DigitalDisplayBase):
     """Simplified display showing only the current tone name."""
 
-    def __init__(self, tone_name="Init Tone", digital_font_family="Consolas", parent=None):
+    def __init__(
+        self, tone_name="Init Tone", digital_font_family="Consolas", parent=None
+    ):
         super().__init__(digital_font_family, parent)
-        self.setMinimumSize(JDXIDimensions.DIGITAL_TITLE_WIDTH,
-                            JDXIDimensions.DIGITAL_TITLE_HEIGHT)
+        self.setMinimumSize(
+            JDXIDimensions.DIGITAL_TITLE_WIDTH, JDXIDimensions.DIGITAL_TITLE_HEIGHT
+        )
         self.set_tone_name(tone_name)
 
     def set_tone_name(self, tone_name):
         """Update the tone name display."""
-        self.update_display([f"Currently Editing:", tone_name])
+        self.update_display(["Currently Editing:", tone_name])
 
     @property
     def text(self):
@@ -131,16 +131,16 @@ class DigitalDisplay(DigitalDisplayBase):
     """Digital LCD-style display widget."""
 
     def __init__(
-            self,
-            current_octave: int = 0,
-            digital_font_family: str = "Consolas",
-            active_synth: str = "D1",
-            tone_name: str = "Init Tone",
-            tone_number: int = 1,
-            program_name: str = "Init Program",
-            program_bank_letter: str = "A",
-            program_number: int = 1,
-            parent=None,
+        self,
+        current_octave: int = 0,
+        digital_font_family: str = "Consolas",
+        active_synth: str = "D1",
+        tone_name: str = "Init Tone",
+        tone_number: int = 1,
+        program_name: str = "Init Program",
+        program_bank_letter: str = "A",
+        program_number: int = 1,
+        parent=None,
     ):
         super().__init__(parent)
         self.active_synth = active_synth
@@ -154,10 +154,10 @@ class DigitalDisplay(DigitalDisplayBase):
         self.program_id = self.program_bank_letter + str(self.program_number)
         self.margin = 10  # Default margin for display elements
 
-        self.setMinimumSize(JDXIDimensions.DISPLAY_WIDTH,
-                            JDXIDimensions.DISPLAY_HEIGHT)  # Set size matching display
-        self.setSizePolicy(QSizePolicy.Policy.Fixed,
-                           QSizePolicy.Policy.Fixed)
+        self.setMinimumSize(
+            JDXIDimensions.DISPLAY_WIDTH, JDXIDimensions.DISPLAY_HEIGHT
+        )  # Set size matching display
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
     def paintEvent(self, event):
         """Handles the rendering of the digital display."""
@@ -193,9 +193,13 @@ class DigitalDisplay(DigitalDisplayBase):
 
         # 3. Draw text with glowing effect
         tone_name_text = f" {self.active_synth}:{self.tone_name}"
-        tone_name_text = tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
+        tone_name_text = (
+            tone_name_text[:21] + "…" if len(tone_name_text) > 22 else tone_name_text
+        )
         program_text = f"{self.program_id}:{self.program_name}"
-        program_text = program_text[:21] + "…" if len(program_text) > 22 else program_text
+        program_text = (
+            program_text[:21] + "…" if len(program_text) > 22 else program_text
+        )
         oct_text = f"Oct {self.current_octave:+}" if self.current_octave else "Oct 0"
 
         # Glow effect simulation (by drawing text multiple times with slight offsets)
@@ -205,7 +209,9 @@ class DigitalDisplay(DigitalDisplayBase):
             painter.setPen(QPen(glow_color))
             painter.drawText(display_x + 7 + dx, display_y + 20 + dy, program_text)
             painter.drawText(display_x + 3 + dx, display_y + 50 + dy, tone_name_text)
-            painter.drawText(display_x + display_width - 20 + dx, display_y + 30 + dy, oct_text)
+            painter.drawText(
+                display_x + display_width - 20 + dx, display_y + 30 + dy, oct_text
+            )
 
         # Draw the main text on top
         painter.setPen(QPen(QColor("#FFAA33")))  # Bright orange text
@@ -239,12 +245,9 @@ class DigitalDisplay(DigitalDisplayBase):
         self.current_octave = octave
         self.update()
 
-    def repaint_display(self,
-                        current_octave,
-                        tone_number,
-                        tone_name,
-                        program_name,
-                        active_synth="D1"):
+    def repaint_display(
+        self, current_octave, tone_number, tone_name, program_name, active_synth="D1"
+    ):
         self.current_octave = current_octave
         self.tone_number = tone_number
         self.tone_name = tone_name
@@ -253,38 +256,36 @@ class DigitalDisplay(DigitalDisplayBase):
         self.active_synth = active_synth
         self.update()
 
-    def _update_display(self, synth_type,
-                        digital1_tone_name,
-                        digital2_tone_name,
-                        drums_tone_name,
-                        analog_tone_name,
-                        tone_number,
-                        tone_name,
-                        program_name,
-                        program_number,
-                        program_bank_letter="A"  # Default bank
-                        ):
+    def _update_display(
+        self,
+        synth_type,
+        digital1_tone_name,
+        digital2_tone_name,
+        drums_tone_name,
+        analog_tone_name,
+        tone_number,
+        tone_name,
+        program_name,
+        program_number,
+        program_bank_letter="A",  # Default bank
+    ):
         """Update the JD-Xi display image"""
         if synth_type == JDXISynth.DIGITAL_1:
             tone_name = digital1_tone_name
-            tone_number = get_preset_list_number_by_name(tone_name,
-                                                         DIGITAL_PRESET_LIST)
+            tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
             active_synth = "D1"
         elif synth_type == JDXISynth.DIGITAL_2:
             tone_name = digital2_tone_name
             active_synth = "D2"
-            tone_number = get_preset_list_number_by_name(tone_name,
-                                                         DIGITAL_PRESET_LIST)
+            tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
         elif synth_type == JDXISynth.DRUMS:
             tone_name = drums_tone_name
             active_synth = "DR"
-            tone_number = get_preset_list_number_by_name(tone_name,
-                                                         DRUM_KIT_LIST)
+            tone_number = get_preset_list_number_by_name(tone_name, DRUM_KIT_LIST)
         elif synth_type == JDXISynth.ANALOG:
             tone_name = analog_tone_name
             active_synth = "AN"
-            tone_number = get_preset_list_number_by_name(tone_name,
-                                                         ANALOG_PRESET_LIST)
+            tone_number = get_preset_list_number_by_name(tone_name, ANALOG_PRESET_LIST)
         else:
             active_synth = "D1"
         logging.info(f"current tone number: {tone_number}")

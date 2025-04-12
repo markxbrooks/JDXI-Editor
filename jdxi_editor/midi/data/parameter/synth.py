@@ -29,7 +29,6 @@ from typing import Optional, Tuple
 
 
 class SynthParameter(Enum):
-
     def __init__(self, address: int, min_val: int, max_val: int):
         self.address = address
         self.min_val = min_val
@@ -111,7 +110,7 @@ class SynthParameter(Enum):
         if self.is_switch:
             return "ON" if value else "OFF"
         return str(value)
-    
+
     def get_nibbled_size(self) -> int:
         """Get the nibbled size for the parameter"""
         if self.max_val <= 127:

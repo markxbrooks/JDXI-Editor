@@ -40,9 +40,13 @@ class JDXIDimensions:
     KEYBOARD_WIDTH = 800
 
     # Sequencer above keyboard
-    SEQUENCER_Y_WINDOWS = HEIGHT - WHITE_KEY_HEIGHT + 20  # Windows has a menu across the top
-    SEQUENCER_Y_NON_WINDOWS = HEIGHT - WHITE_KEY_HEIGHT - 20  # Keep same distance above keyboard
-    SEQUENCER_WIDTH = 424 # # Use roughly half keyboard width
+    SEQUENCER_Y_WINDOWS = (
+        HEIGHT - WHITE_KEY_HEIGHT + 20
+    )  # Windows has a menu across the top
+    SEQUENCER_Y_NON_WINDOWS = (
+        HEIGHT - WHITE_KEY_HEIGHT - 20
+    )  # Keep same distance above keyboard
+    SEQUENCER_WIDTH = 440  # # Use roughly half keyboard width
     SEQUENCER_X = WIDTH - MARGIN - SEQUENCER_WIDTH  # Align with right edge of keyboard
 
     # Sequencer grid
@@ -53,7 +57,7 @@ class JDXIDimensions:
     SEQUENCER_SQUARE_SIZE = 25
 
     # Sequencer container
-    SEQUENCER_CONTAINER_X = MARGIN + 480
+    SEQUENCER_CONTAINER_X = MARGIN + 520
     SEQUENCER_CONTAINER_Y = MARGIN + 155
     SEQUENCER_CONTAINER_WIDTH = 500
     SEQUENCER_CONTAINER_HEIGHT = 80

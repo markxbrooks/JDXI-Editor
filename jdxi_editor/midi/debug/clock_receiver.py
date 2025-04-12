@@ -9,7 +9,7 @@ import argparse
 import time
 from collections import deque
 
-from rtmidi.midiconstants import (TIMING_CLOCK, SONG_CONTINUE, SONG_START, SONG_STOP)
+from rtmidi.midiconstants import TIMING_CLOCK, SONG_CONTINUE, SONG_START, SONG_STOP
 from rtmidi.midiutil import open_midiinput
 
 
@@ -49,8 +49,8 @@ class MIDIClockReceiver:
 
 def main(args=None):
     ap = argparse.ArgumentParser(usage=__doc__.splitlines()[0])
-    ap.add_argument('-p', '--port', help="MIDI input port index / name.")
-    ap.add_argument('bpm', type=int, default=120, help="Starting BPM.")
+    ap.add_argument("-p", "--port", help="MIDI input port index / name.")
+    ap.add_argument("bpm", type=int, default=120, help="Starting BPM.")
     args = ap.parse_args(args)
 
     clock = MIDIClockReceiver(args.bpm)
@@ -82,7 +82,7 @@ def main(args=None):
         del m_in
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
-    sys.exit(main(sys.argv[1:]) or 0)
 
+    sys.exit(main(sys.argv[1:]) or 0)

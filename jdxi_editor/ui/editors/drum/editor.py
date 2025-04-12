@@ -94,7 +94,10 @@ class DrumCommonEditor(SynthEditor):
     """Editor for JD-Xi Drum Kit parameters"""
 
     def __init__(
-            self, midi_helper: Optional[MidiIOHelper] = None, preset_helper=None, parent=None
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper=None,
+        parent=None,
     ):
         super().__init__(midi_helper, parent)
 
@@ -124,7 +127,9 @@ class DrumCommonEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
+            self.midi_helper.update_drums_tone_name.connect(
+                self.set_instrument_title_label
+            )
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         self.data_request()
@@ -195,10 +200,12 @@ class DrumCommonEditor(SynthEditor):
         self.instrument_image_group.setMinimumWidth(350)
         upper_layout.addWidget(self.instrument_image_group)
 
-        common_group = DrumCommonSection(self.controls,
-                                         self._create_parameter_combo_box,
-                                         self._create_parameter_slider,
-                                         self.midi_helper)
+        common_group = DrumCommonSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
         upper_layout.addWidget(common_group)
 
         # Create scroll area for partials
@@ -246,10 +253,14 @@ class DrumCommonEditor(SynthEditor):
 
     def _setup_partial_editors(self):
         total = len(self.partial_mapping)
-        progress_dialog = ProgressDialog("Initializing Partials", "Loading partial editors...", total, self)
+        progress_dialog = ProgressDialog(
+            "Initializing Partials", "Loading partial editors...", total, self
+        )
         progress_dialog.show()
 
-        for count, (partial_name, partial_number) in enumerate(self.partial_mapping.items(), 1):
+        for count, (partial_name, partial_number) in enumerate(
+            self.partial_mapping.items(), 1
+        ):
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
@@ -325,7 +336,10 @@ class DrumCommonEditor(SynthEditor):
 
         def _is_valid_sysex_area(sysex_data):
             """Check if SysEx data belongs to address supported digital synth area."""
-            return sysex_data.get("TEMPORARY_AREA") == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
+            return (
+                sysex_data.get("TEMPORARY_AREA")
+                == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
+            )
 
         def _get_partial_number(synth_tone):
             """Retrieve partial number from synth tone mapping."""

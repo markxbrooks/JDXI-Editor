@@ -33,16 +33,15 @@ from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
 class SynthBase(QWidget):
-    """ base class for all synth editors """
+    """base class for all synth editors"""
+
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
         self.bipolar_parameters = []
         self.address_lmb = None
         self.address_msb = None
         self.address_umb = None
-        self.controls: Dict[
-            SynthParameter, QWidget
-        ] = {}
+        self.controls: Dict[SynthParameter, QWidget] = {}
         self.midi_helper = midi_helper
         self.midi_requests = []
 
@@ -88,7 +87,7 @@ class SynthBase(QWidget):
                 address_lmb=self.address_lmb,
                 address_lsb=param.address,
                 value=value,
-                size=size
+                size=size,
             )
             result = self.midi_helper.send_midi_message(sysex_message)
             return bool(result)

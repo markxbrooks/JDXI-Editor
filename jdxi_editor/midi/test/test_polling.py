@@ -39,6 +39,7 @@ class MidiMonitor(QWidget):
         self.midi_in.close_port()
         event.accept()
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MidiMonitor()

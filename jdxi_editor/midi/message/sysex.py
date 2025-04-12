@@ -35,8 +35,13 @@ from enum import Enum
 from typing import List, Optional
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST, \
-    CommandID, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    START_OF_SYSEX,
+    END_OF_SYSEX,
+    JD_XI_HEADER_LIST,
+    CommandID,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.message.midi import MidiMessage
 
 # MIDI Constants
@@ -79,6 +84,7 @@ class SysexParameter(Enum):
 @dataclass
 class SysExMessage(MidiMessage):
     """Base class for MIDI System Exclusive (SysEx) messages."""
+
     start_of_sysex: int = START_OF_SYSEX  # Start of SysEx
     manufacturer_id: int = 0x41  # Manufacturer ID (e.g., [0x41] for Roland)
     device_id: int = 0x10  # Default device ID
@@ -143,4 +149,3 @@ class SysExMessage(MidiMessage):
             address=address,
             data=message_data,
         )
-

@@ -39,7 +39,10 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressMemoryAreaMSB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -189,8 +192,7 @@ class EffectsCommonEditor(SynthEditor):
         layout.addRow(self.efx1_reverb_send_level)
 
         self.efx1_output_assign = self._create_parameter_combo_box(
-            EffectParameter.EFX1_OUTPUT_ASSIGN, "Output Assign",
-            ["DIR", "EFX2"], [0, 1]
+            EffectParameter.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"], [0, 1]
         )
         layout.addRow(self.efx1_output_assign)
 
@@ -334,11 +336,13 @@ class EffectsCommonEditor(SynthEditor):
                 return False
             try:
                 # Send MIDI message
-                sysex_message = RolandSysEx(address_msb=self.address_msb,
-                                            address_umb=self.address_umb,
-                                            address_lmb=common_param.test_address,
-                                            address_lsb=param.address,
-                                            value=midi_value)
+                sysex_message = RolandSysEx(
+                    address_msb=self.address_msb,
+                    address_umb=self.address_umb,
+                    address_lmb=common_param.test_address,
+                    address_lsb=param.address,
+                    value=midi_value,
+                )
                 return self.midi_helper.send_midi_message(sysex_message)
             except Exception as ex:
                 logging.error(f"MIDI error setting {param}: {str(ex)}")

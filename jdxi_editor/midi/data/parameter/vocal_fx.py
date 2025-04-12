@@ -47,6 +47,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 class VocalFXParameter(SynthParameter):
     """Vocal FX parameters"""
+
     LEVEL = (0x00, 0, 127, 0, 127)  # Level (0-127)
     PAN = (0x01, -64, 63, -64, 63)  # Pan (-64 to +63, centered at 64)
     DELAY_SEND_LEVEL = (0x02, 0, 127, 0, 127)  # Delay send level (0-127)
@@ -54,8 +55,14 @@ class VocalFXParameter(SynthParameter):
     OUTPUT_ASSIGN = (0x04, 0, 4, 0, 4)  # Output assignment (0-4)
     AUTO_PITCH_SWITCH = (0x05, 0, 1, 0, 1)  # Auto Note on/off (0-1)
     AUTO_PITCH_TYPE = (0x06, 0, 3, 0, 3)  # Auto Pitch preset_type (0-3)
-    AUTO_PITCH_SCALE = (0x07, 0, 1, 0, 1) # Scale CHROMATIC, Maj(Min)
-    AUTO_PITCH_KEY = (0x08, 0, 23, 0, 23)  # Auto Pitch key (0-23) C, Db, D, Eb, E, F, F#, G, Ab, A, Bb, B, Cm, C#m, Dm, D#m, Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm
+    AUTO_PITCH_SCALE = (0x07, 0, 1, 0, 1)  # Scale CHROMATIC, Maj(Min)
+    AUTO_PITCH_KEY = (
+        0x08,
+        0,
+        23,
+        0,
+        23,
+    )  # Auto Pitch key (0-23) C, Db, D, Eb, E, F, F#, G, Ab, A, Bb, B, Cm, C#m, Dm, D#m, Em, Fm, F#m, Gm, G#m, Am, Bbm, Bm
     AUTO_PITCH_NOTE = (0x09, 0, 11, 0, 11)  # Auto Pitch note (0-11)
     AUTO_PITCH_GENDER = (0x0A, -10, 10, -10, 10)  # Gender (-10 to +10, centered at 0)
     AUTO_PITCH_OCTAVE = (0x0B, -1, 1, -1, 1)  # Octave (-1 to +1: 0-2)
@@ -68,8 +75,14 @@ class VocalFXParameter(SynthParameter):
     VOCODER_MIC_MIX = (0x12, 0, 127, 0, 127)  # Vocoder mic mix level (0-127)
     VOCODER_MIC_HPF = (0x13, 0, 13, 0, 13)  # Vocoder mic HPF freq (0-13)
 
-    def __init__(self, address: int, min_val: int, max_val: int,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
@@ -86,8 +99,8 @@ class VocalFXParameter(SynthParameter):
             )
         return value
 
-    #@staticmethod
-    #def get_by_name(param_name):
+    # @staticmethod
+    # def get_by_name(param_name):
     #    """Get the VocalFXParameter by name."""
     #    # Return the parameter member by name, or None if not found
     #    return VocalFXParameter.__members__.get(param_name, None)
@@ -139,7 +152,7 @@ class VocalFXParameter(SynthParameter):
 
     def get_display_value(self) -> Tuple[int, int]:
         """Get the display value range (min, max) for the parameter"""
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
@@ -160,7 +173,10 @@ class VocalFXParameter(SynthParameter):
         """Convert address value to address display value within address range."""
         if min_val == max_val:
             return display_min
-        return int((value - min_val) * (display_max - display_min) / (max_val - min_val) + display_min)
+        return int(
+            (value - min_val) * (display_max - display_min) / (max_val - min_val)
+            + display_min
+        )
 
     def convert_to_midi(self, display_value: int) -> int:
         """Convert from display value to MIDI value"""
@@ -171,9 +187,13 @@ class VocalFXParameter(SynthParameter):
             return display_value + 10  # -63 to +63 -> 0 to 127
 
         # For parameters with simple linear scaling
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
-            return int(self.min_val + (display_value - self.display_min) *
-                       (self.max_val - self.min_val) / (self.display_max - self.display_min))
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
+            return int(
+                self.min_val
+                + (display_value - self.display_min)
+                * (self.max_val - self.min_val)
+                / (self.display_max - self.display_min)
+            )
         return display_value
 
     def convert_from_midi(self, midi_value: int) -> int:
@@ -185,9 +205,13 @@ class VocalFXParameter(SynthParameter):
             return midi_value - 10  # 0 to 127 -> -63 to +63
 
         # For parameters with simple linear scaling
-        if hasattr(self, 'display_min') and hasattr(self, 'display_max'):
-            return int(self.display_min + (midi_value - self.min_val) *
-                       (self.display_max - self.display_min) / (self.max_val - self.min_val))
+        if hasattr(self, "display_min") and hasattr(self, "display_max"):
+            return int(
+                self.display_min
+                + (midi_value - self.min_val)
+                * (self.display_max - self.display_min)
+                / (self.max_val - self.min_val)
+            )
         return midi_value
 
     @staticmethod

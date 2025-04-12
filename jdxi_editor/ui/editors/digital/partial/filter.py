@@ -16,6 +16,7 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 class DigitalFilterSection(QWidget):
     """Filter section for the digital partial editor."""
+
     def __init__(
         self,
         create_parameter_slider,
@@ -23,7 +24,7 @@ class DigitalFilterSection(QWidget):
         partial_number,
         midi_helper,
         controls,
-        part
+        part,
     ):
         super().__init__()
         self.partial_number = partial_number
@@ -100,9 +101,7 @@ class DigitalFilterSection(QWidget):
 
         # ADSR Icon
         icon_label = QLabel()
-        icon_pixmap = base64_to_pixmap(generate_waveform_icon("adsr",
-                                                              "#FFFFFF",
-                                                              2.0))
+        icon_pixmap = base64_to_pixmap(generate_waveform_icon("adsr", "#FFFFFF", 2.0))
         icon_label.setPixmap(icon_pixmap)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         env_layout.addWidget(icon_label)

@@ -44,7 +44,7 @@ DRUM_KIT_LIST = [
         "category": "Classic Roland Drum Machines",
         "msb": "86",
         "lsb": "64",
-        "pc": "1"
+        "pc": "1",
     },
     {
         "id": "002",
@@ -52,7 +52,7 @@ DRUM_KIT_LIST = [
         "category": "Classic Roland Drum Machines",
         "msb": "86",
         "lsb": "64",
-        "pc": "2"
+        "pc": "2",
     },
     {
         "id": "003",
@@ -60,7 +60,7 @@ DRUM_KIT_LIST = [
         "category": "Classic Roland Drum Machines",
         "msb": "86",
         "lsb": "64",
-        "pc": "3"
+        "pc": "3",
     },
     {
         "id": "004",
@@ -68,7 +68,7 @@ DRUM_KIT_LIST = [
         "category": "Classic Roland Drum Machines",
         "msb": "86",
         "lsb": "64",
-        "pc": "4"
+        "pc": "4",
     },
     {
         "id": "005",
@@ -76,7 +76,7 @@ DRUM_KIT_LIST = [
         "category": "Classic Roland Drum Machines",
         "msb": "86",
         "lsb": "64",
-        "pc": "5"
+        "pc": "5",
     },
     {
         "id": "006",
@@ -84,7 +84,7 @@ DRUM_KIT_LIST = [
         "category": "Classic Roland Drum Machines",
         "msb": "86",
         "lsb": "64",
-        "pc": "6"
+        "pc": "6",
     },
     {
         "id": "007",
@@ -92,7 +92,7 @@ DRUM_KIT_LIST = [
         "category": "Electronic Dance Music (EDM) Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "7"
+        "pc": "7",
     },
     {
         "id": "008",
@@ -100,7 +100,7 @@ DRUM_KIT_LIST = [
         "category": "Electronic Dance Music (EDM) Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "8"
+        "pc": "8",
     },
     {
         "id": "009",
@@ -108,7 +108,7 @@ DRUM_KIT_LIST = [
         "category": "Electronic Dance Music (EDM) Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "9"
+        "pc": "9",
     },
     {
         "id": "010",
@@ -116,7 +116,7 @@ DRUM_KIT_LIST = [
         "category": "Electronic Dance Music (EDM) Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "10"
+        "pc": "10",
     },
     {
         "id": "011",
@@ -124,7 +124,7 @@ DRUM_KIT_LIST = [
         "category": "Hip-Hop & R&B",
         "msb": "86",
         "lsb": "64",
-        "pc": "11"
+        "pc": "11",
     },
     {
         "id": "012",
@@ -132,7 +132,7 @@ DRUM_KIT_LIST = [
         "category": "Hip-Hop & R&B",
         "msb": "86",
         "lsb": "64",
-        "pc": "12"
+        "pc": "12",
     },
     {
         "id": "026",
@@ -140,7 +140,7 @@ DRUM_KIT_LIST = [
         "category": "Decade-Based Kits",
         "msb": "86",
         "lsb": "64",
-        "pc": "26"
+        "pc": "26",
     },
     {
         "id": "027",
@@ -148,7 +148,7 @@ DRUM_KIT_LIST = [
         "category": "Decade-Based Kits",
         "msb": "86",
         "lsb": "64",
-        "pc": "27"
+        "pc": "27",
     },
     {
         "id": "028",
@@ -156,7 +156,7 @@ DRUM_KIT_LIST = [
         "category": "Miscellaneous & Experimental",
         "msb": "86",
         "lsb": "64",
-        "pc": "28"
+        "pc": "28",
     },
     {
         "id": "029",
@@ -164,7 +164,7 @@ DRUM_KIT_LIST = [
         "category": "Miscellaneous & Experimental",
         "msb": "86",
         "lsb": "64",
-        "pc": "29"
+        "pc": "29",
     },
     {
         "id": "031",
@@ -172,7 +172,7 @@ DRUM_KIT_LIST = [
         "category": "Acoustic & Live Drum Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "31"
+        "pc": "31",
     },
     {
         "id": "032",
@@ -180,7 +180,7 @@ DRUM_KIT_LIST = [
         "category": "Acoustic & Live Drum Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "32"
+        "pc": "32",
     },
     {
         "id": "033",
@@ -188,7 +188,6 @@ DRUM_KIT_LIST = [
         "category": "Acoustic & Live Drum Styles",
         "msb": "86",
         "lsb": "64",
-        "pc": "33"
-    }
+        "pc": "33",
+    },
 ]
-

@@ -10,18 +10,21 @@ class PitchWheel(WheelWidget):
     Pitch Bend Wheel
     """
 
-    def __init__(self, label="Pitch",
-                 bidirectional=True,
-                 parent=None,
-                 midi_helper=None,
-                 channel=0):
+    def __init__(
+        self,
+        label="Pitch",
+        bidirectional=True,
+        parent=None,
+        midi_helper=None,
+        channel=0,
+    ):
         super().__init__(parent)
         self.bidirectional = bidirectional
         self.label = label
         self.parent = parent
         self.value = 0.0
         self.midi_helper = midi_helper  # RtMidiOut instance
-        self.channel = channel    # MIDI channel (0–15)
+        self.channel = channel  # MIDI channel (0–15)
 
     def set_value(self, value):
         """
@@ -38,4 +41,3 @@ class PitchWheel(WheelWidget):
 
             if self.midi_helper.midi_out:
                 self.midi_helper.midi_out.send_message([status, lsb, msb])
-

@@ -38,7 +38,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
@@ -50,7 +50,9 @@ from jdxi_editor.ui.editors.synth.partial import PartialEditor
 class DrumPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, partial_number=0, partial_name=None, parent=None):
+    def __init__(
+        self, midi_helper=None, partial_number=0, partial_name=None, parent=None
+    ):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.partial_number = partial_number  # This is now the numerical index
@@ -115,7 +117,9 @@ class DrumPartialEditor(PartialEditor):
     def get_partial_address(self) -> int:
         """Get the address for address drum partial by index"""
         try:
-            address_lmb = DRUM_GROUP_MAP.get(self.partial_number + 1, 0x2E)  # Default to 0x2E if partial_name is not 1, 2, or 3
+            address_lmb = DRUM_GROUP_MAP.get(
+                self.partial_number + 1, 0x2E
+            )  # Default to 0x2E if partial_name is not 1, 2, or 3
             return address_lmb
         except Exception as ex:
             print(f"Error getting address for partial {self.partial_number}: {str(ex)}")
@@ -144,12 +148,14 @@ class DrumPartialEditor(PartialEditor):
         tva_layout.addRow(tva_level_velocity_sens_slider)
 
         tva_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.TVA_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
+            DrumPartialParameter.TVA_ENV_TIME_1_VELOCITY_SENS,
+            "Env Time 1 Velocity Sens",
         )
         tva_layout.addRow(tva_env_time1_velocity_sens_slider)
 
         tva_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.TVA_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
+            DrumPartialParameter.TVA_ENV_TIME_4_VELOCITY_SENS,
+            "Env Time 4 Velocity Sens",
         )
 
         tva_layout.addRow(tva_env_time4_velocity_sens_slider)
@@ -232,7 +238,10 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt1_layout(self):
         wmt1_layout = QFormLayout()
         wmt1_wave_switch_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.WMT1_WAVE_SWITCH, "WMT1 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT1_WAVE_SWITCH,
+            "WMT1 Wave Switch",
+            ["OFF", "ON"],
+            [0, 1],
         )
 
         wmt1_layout.addRow(wmt1_wave_switch_combo)
@@ -356,7 +365,10 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt2_layout(self):
         wmt2_layout = QFormLayout()
         wmt2_wave_switch_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.WMT2_WAVE_SWITCH, "WMT2 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT2_WAVE_SWITCH,
+            "WMT2 Wave Switch",
+            ["OFF", "ON"],
+            [0, 1],
         )
 
         wmt2_layout.addRow(wmt2_wave_switch_combo)
@@ -480,7 +492,10 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt3_layout(self):
         wmt3_layout = QFormLayout()
         wmt3_wave_switch_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.WMT3_WAVE_SWITCH, "WMT3 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT3_WAVE_SWITCH,
+            "WMT3 Wave Switch",
+            ["OFF", "ON"],
+            [0, 1],
         )
 
         wmt3_layout.addRow(wmt3_wave_switch_combo)
@@ -608,7 +623,10 @@ class DrumPartialEditor(PartialEditor):
     def _create_wmt4_layout(self):
         wmt4_layout = QFormLayout()
         wmt4_wave_switch_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.WMT4_WAVE_SWITCH, "WMT4 Wave Switch", ["OFF", "ON"], [0, 1]
+            DrumPartialParameter.WMT4_WAVE_SWITCH,
+            "WMT4 Wave Switch",
+            ["OFF", "ON"],
+            [0, 1],
         )
 
         wmt4_layout.addRow(wmt4_wave_switch_combo)
@@ -758,7 +776,8 @@ class DrumPartialEditor(PartialEditor):
         pitch_layout.addRow(partial_fine_tune_slider)
 
         partial_random_pitch_depth_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_RANDOM_PITCH_DEPTH, "Partial Random Pitch Depth"
+            DrumPartialParameter.PARTIAL_RANDOM_PITCH_DEPTH,
+            "Partial Random Pitch Depth",
         )
         pitch_layout.addRow(partial_random_pitch_depth_slider)
 
@@ -773,7 +792,8 @@ class DrumPartialEditor(PartialEditor):
         pitch_layout.addRow(partial_random_pan_depth_slider)
 
         partial_alternate_pan_depth_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_ALTERNATE_PAN_DEPTH, "Partial Alternate Pan Depth"
+            DrumPartialParameter.PARTIAL_ALTERNATE_PAN_DEPTH,
+            "Partial Alternate Pan Depth",
         )
         pitch_layout.addRow(partial_alternate_pan_depth_slider)
 
@@ -867,12 +887,14 @@ class DrumPartialEditor(PartialEditor):
         tvf_layout.addRow(tvf_env_velocity_sens_slider)
 
         tvf_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.TVF_ENV_TIME_1_VELOCITY_SENS, "Env Time 1 Velocity Sens"
+            DrumPartialParameter.TVF_ENV_TIME_1_VELOCITY_SENS,
+            "Env Time 1 Velocity Sens",
         )
         tvf_layout.addRow(tvf_env_time1_velocity_sens_slider)
 
         tvf_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.TVF_ENV_TIME_4_VELOCITY_SENS, "Env Time 4 Velocity Sens"
+            DrumPartialParameter.TVF_ENV_TIME_4_VELOCITY_SENS,
+            "Env Time 4 Velocity Sens",
         )
         tvf_layout.addRow(tvf_env_time4_velocity_sens_slider)
 

@@ -8,8 +8,14 @@ from typing import Optional
 from mido import MidiFile, Message, open_output, tempo2bpm, bpm2tempo
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
-    QVBoxLayout, QPushButton, QComboBox,
-    QFileDialog, QLabel, QDoubleSpinBox, QSlider, QGroupBox
+    QVBoxLayout,
+    QPushButton,
+    QComboBox,
+    QFileDialog,
+    QLabel,
+    QDoubleSpinBox,
+    QSlider,
+    QGroupBox,
 )
 import qtawesome as qta
 
@@ -23,17 +29,23 @@ from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget, MidiTrackViewer
 
 
 class MidiPlayer(SynthEditor):
-    def __init__(self,
-                 midi_helper: Optional[MidiIOHelper] = None,
-                 parent=None,
-                 preset_helper=None):
+    def __init__(
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent=None,
+        preset_helper=None,
+    ):
         super().__init__()
         self.init_ui()
         self.midi_helper = midi_helper if midi_helper else MidiIOHelper()
-        self.preset_helper = preset_helper if preset_helper else PresetHelper(
-            self.midi_helper,
-            presets=DIGITAL_PRESET_LIST,
-            channel=MidiChannel.DIGITAL1
+        self.preset_helper = (
+            preset_helper
+            if preset_helper
+            else PresetHelper(
+                self.midi_helper,
+                presets=DIGITAL_PRESET_LIST,
+                channel=MidiChannel.DIGITAL1,
+            )
         )
 
         self.midi_file = None
@@ -88,7 +100,7 @@ class MidiPlayer(SynthEditor):
         self.play_button.clicked.connect(self.start_playback)
         transport_layout.addWidget(self.play_button)
 
-        self.stop_button = QPushButton(qta.icon("ri.stop-line"),"Stop")
+        self.stop_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
         self.stop_button.clicked.connect(self.stop_playback)
         transport_layout.addWidget(self.stop_button)
         layout.addWidget(transport_group)
@@ -137,7 +149,9 @@ class MidiPlayer(SynthEditor):
 
             self.position_slider.setEnabled(True)
             self.position_slider.setRange(0, int(self.duration_seconds))
-            self.position_label.setText(f"0:00 / {self.format_time(self.duration_seconds)}")
+            self.position_label.setText(
+                f"0:00 / {self.format_time(self.duration_seconds)}"
+            )
 
     def start_playback(self):
         if not self.midi_file or not self.midi_events:
@@ -170,7 +184,10 @@ class MidiPlayer(SynthEditor):
 
             if elapsed_time >= scheduled_time:
                 if not msg.is_meta:
-                    if hasattr(msg, 'channel') and (msg.channel + 1) in self.midi_track_widget.muted_channels:
+                    if (
+                        hasattr(msg, "channel")
+                        and (msg.channel + 1) in self.midi_track_widget.muted_channels
+                    ):
                         if msg.type == "note_on" and msg.velocity > 0:
                             pass  # Skip muted channel but allow note off
                     else:
@@ -195,6 +212,4 @@ class MidiPlayer(SynthEditor):
         if self.midi_port:
             self.midi_port.close()
         self.position_slider.setValue(0)
-        self.position_label.setText(
-            f"0:00 / {self.format_time(self.duration_seconds)}"
-        )
+        self.position_label.setText(f"0:00 / {self.format_time(self.duration_seconds)}")

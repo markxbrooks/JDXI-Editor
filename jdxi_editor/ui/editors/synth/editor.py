@@ -38,7 +38,10 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.ui.editors.helpers.program import log_midi_info, get_preset_parameter_value
+from jdxi_editor.ui.editors.helpers.program import (
+    log_midi_info,
+    get_preset_parameter_value,
+)
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.ui.style import JDXIStyle
 
@@ -56,8 +59,7 @@ def log_changes(previous_data, current_data):
     changes = [
         change
         for change in changes
-        if change[0]
-        not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
+        if change[0] not in ["JD_XI_HEADER", "ADDRESS", "TEMPORARY_AREA", "TONE_NAME"]
     ]
 
     if changes:
@@ -76,7 +78,9 @@ class SynthEditor(SynthBase):
     parameter_received = Signal(list, int)  # address, value
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, parent: Optional[QWidget] = None
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
         self.current_data = None
@@ -153,7 +157,9 @@ class SynthEditor(SynthBase):
         ]
 
         self.preset_helpers = {
-            synth_type: PresetHelper(self.midi_helper, presets, channel=channel, preset_type=synth_type)
+            synth_type: PresetHelper(
+                self.midi_helper, presets, channel=channel, preset_type=synth_type
+            )
             for synth_type, presets, channel in preset_configs
         }
 
@@ -161,7 +167,9 @@ class SynthEditor(SynthBase):
         """Return the appropriate preset handler based on the current synth preset_type."""
         handler = self.preset_helpers.get(self.preset_type)
         if handler is None:
-            logging.warning(f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1")
+            logging.warning(
+                f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
+            )
             return self.preset_helpers[JDXISynth.DIGITAL_1]  # Safe fallback
         return handler
 
@@ -273,7 +281,9 @@ class SynthEditor(SynthBase):
                 if isinstance(control_change, ControlChange)
                 else control_change
             )
-            self.midi_helper.send_control_change(control_change_number, value, self.midi_channel)
+            self.midi_helper.send_control_change(
+                control_change_number, value, self.midi_channel
+            )
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
@@ -288,7 +298,9 @@ class SynthEditor(SynthBase):
                 file_to_load = secondary_image_path
             else:
                 file_to_load = os.path.join(
-                    "resources", self.instrument_icon_folder, self.instrument_default_image
+                    "resources",
+                    self.instrument_icon_folder,
+                    self.instrument_default_image,
                 )
             pixmap = QPixmap(file_to_load)
             scaled_pixmap = pixmap.scaledToHeight(
@@ -296,13 +308,15 @@ class SynthEditor(SynthBase):
             )  # Resize to 250px height
             self.instrument_image_label.setPixmap(scaled_pixmap)
             self.instrument_image_label.setScaledContents(True)
-            self.instrument_image_label.setStyleSheet("""
+            self.instrument_image_label.setStyleSheet(
+                """
                 QLabel {
                         height: 150px;
                         background-color: transparent;
                         border: none;
                     }
-                """)
+                """
+            )
             return True
 
         default_image_path = os.path.join(
@@ -351,8 +365,10 @@ class SynthEditor(SynthBase):
             slider.setValue(slider_value)
             slider.blockSignals(False)
             logging.info(f"Updated {param.name} slider to {slider_value}")
-            
-    def send_analog_synth_parameter(self, parameter: str, value: int, channel: int = 0) -> bool:
+
+    def send_analog_synth_parameter(
+        self, parameter: str, value: int, channel: int = 0
+    ) -> bool:
         """
         Send a MIDI Control Change or NRPN message for an Analog Synth parameter.
 
@@ -381,7 +397,9 @@ class SynthEditor(SynthBase):
 
     def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
         """Process incoming NRPN messages and update UI controls."""
-        logging.info(f"Received NRPN {nrpn_address} with value {value} on channel {channel}")
+        logging.info(
+            f"Received NRPN {nrpn_address} with value {value} on channel {channel}"
+        )
 
         # Find matching parameter
         msb = nrpn_address >> 7
@@ -390,7 +408,9 @@ class SynthEditor(SynthBase):
 
         if param_name:
             # Update slider or control
-            param = SynthParameter.get_by_name(param_name)  # FIXME: make generic or subclass
+            param = SynthParameter.get_by_name(
+                param_name
+            )  # FIXME: make generic or subclass
             if param:
                 self._update_slider(param, value)
         else:
@@ -419,7 +439,9 @@ class SynthEditor(SynthBase):
                 self.nrpn_msb = value
             elif control == 98:  # NRPN LSB
                 self.nrpn_lsb = value
-            elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
+            elif (
+                control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None
+            ):
                 # We have both MSB and LSB; reconstruct NRPN address
                 nrpn_address = (self.nrpn_msb << 7) | self.nrpn_lsb
                 self._handle_nrpn_message(nrpn_address, value, channel)
@@ -433,6 +455,3 @@ class SynthEditor(SynthBase):
                 self.cc_lsb_value = value
         except Exception as ex:
             logging.info(f"Error {ex} occurred handling control change")
-
-
-

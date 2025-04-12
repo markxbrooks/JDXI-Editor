@@ -27,8 +27,15 @@ import logging
 from dataclasses import dataclass, field
 from typing import List
 
-from jdxi_editor.midi.data.address.address import ModelID, CommandID, START_OF_SYSEX, END_OF_SYSEX, \
-    ZERO_BYTE, RolandID, AddressMemoryAreaMSB
+from jdxi_editor.midi.data.address.address import (
+    ModelID,
+    CommandID,
+    START_OF_SYSEX,
+    END_OF_SYSEX,
+    ZERO_BYTE,
+    RolandID,
+    AddressMemoryAreaMSB,
+)
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
@@ -39,12 +46,14 @@ class RolandSysEx(SysExMessage):
 
     manufacturer_id: int = RolandID.ROLAND_ID
     device_id: int = RolandID.DEVICE_ID
-    model_id: list[int] = field(default_factory=lambda: [
-        ModelID.MODEL_ID_1,
-        ModelID.MODEL_ID_2,
-        ModelID.MODEL_ID_3,
-        ModelID.MODEL_ID_4
-    ])
+    model_id: list[int] = field(
+        default_factory=lambda: [
+            ModelID.MODEL_ID_1,
+            ModelID.MODEL_ID_2,
+            ModelID.MODEL_ID_3,
+            ModelID.MODEL_ID_4,
+        ]
+    )
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
     address_msb: int = 0x00
     address_umb: int = 0x00
@@ -62,7 +71,12 @@ class RolandSysEx(SysExMessage):
 
     def __post_init__(self):
         """Initialize address and data based on parameters."""
-        self.address = [self.address_msb, self.address_umb, self.address_lmb, self.address_lsb]
+        self.address = [
+            self.address_msb,
+            self.address_umb,
+            self.address_lmb,
+            self.address_lsb,
+        ]
         if isinstance(self.value, int) and self.size == 4:
             self.data = split_value_to_nibbles(self.value)
         else:
@@ -71,11 +85,11 @@ class RolandSysEx(SysExMessage):
     def to_message_list(self) -> List[int]:
         """Convert the SysEx message to a list of integers."""
         msg = (
-                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
-                + list(self.model_id)
-                + [self.command]
-                + self.address
-                + self.data  # Directly append value (no extra list around it)
+            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            + list(self.model_id)
+            + [self.command]
+            + self.address
+            + self.data  # Directly append value (no extra list around it)
         )
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
@@ -90,14 +104,18 @@ class RolandSysEx(SysExMessage):
         data_bytes = [int(d, 16) if isinstance(d, str) else d for d in data_bytes]
 
         if len(address) != 4:
-            raise ValueError("Address must be a list of 4 bytes (area, synth_type, part, group).")
+            raise ValueError(
+                "Address must be a list of 4 bytes (area, synth_type, part, group)."
+            )
 
         # Update instance variables
         self.address_msb, self.address_umb, self.address_lmb, self.address_lsb = address
 
         # Convert the value into nibbles (if it's 4 bytes long)
-        if isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF:  # Check for 4-byte integer
-            self.value = split_value_to_nibbles(self.value) # @@@@
+        if (
+            isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF
+        ):  # Check for 4-byte integer
+            self.value = split_value_to_nibbles(self.value)  # @@@@
 
         # Determine parameter and value split
         if len(data_bytes) == 1:
@@ -115,15 +133,25 @@ class RolandSysEx(SysExMessage):
         command = self.rq1_command if request else self.dt1_command
 
         # **Validation 1: Ensure self.parameter and self.value are lists of integers**
-        if not isinstance(self.parameter, list) or not all(isinstance(p, int) for p in self.parameter):
-            raise TypeError(f"Invalid parameter format: Expected list of integers, got {self.parameter}")
+        if not isinstance(self.parameter, list) or not all(
+            isinstance(p, int) for p in self.parameter
+        ):
+            raise TypeError(
+                f"Invalid parameter format: Expected list of integers, got {self.parameter}"
+            )
 
-        if not isinstance(self.value, list) or not all(isinstance(v, int) for v in self.value):
-            raise TypeError(f"Invalid value format: Expected list of integers, got {self.value}")
+        if not isinstance(self.value, list) or not all(
+            isinstance(v, int) for v in self.value
+        ):
+            raise TypeError(
+                f"Invalid value format: Expected list of integers, got {self.value}"
+            )
 
         # **Validation 2: Ensure self.parameter and self.value are not empty if required**
         if len(self.parameter) == 0 and len(self.value) == 0:
-            raise ValueError("Both parameter and value cannot be empty. At least one must contain data.")
+            raise ValueError(
+                "Both parameter and value cannot be empty. At least one must contain data."
+            )
 
         required_values = {
             "manufacturer_id": self.manufacturer_id,
@@ -132,7 +160,7 @@ class RolandSysEx(SysExMessage):
             "command": self.command,
             "address": address,
             "parameter": self.parameter,
-            "value": self.value
+            "value": self.value,
         }
 
         for key, value in required_values.items():
@@ -141,12 +169,12 @@ class RolandSysEx(SysExMessage):
 
         # Construct SysEx message
         sysex_msg = (
-                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
-                + list(self.model_id)
-                + [command]
-                + address
-                + [self.parameter]
-                + [self.value]
+            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            + list(self.model_id)
+            + [command]
+            + address
+            + [self.parameter]
+            + [self.value]
         )
 
         # Append checksum
@@ -162,10 +190,12 @@ class JDXiSysEx(RolandSysEx):
     """JD-Xi specific SysEx message"""
 
     model_id: List[int] = field(
-        default_factory=lambda: [ModelID.MODEL_ID_1,
-                                 ModelID.MODEL_ID_2,
-                                 ModelID.MODEL_ID_3,
-                                 ModelID.MODEL_ID_4]
+        default_factory=lambda: [
+            ModelID.MODEL_ID_1,
+            ModelID.MODEL_ID_2,
+            ModelID.MODEL_ID_3,
+            ModelID.MODEL_ID_4,
+        ]
     )  # JD-Xi model ID
     device_id: int = 0x10  # Default device ID
     command: int = CommandID.DT1  # Default to DT1 command

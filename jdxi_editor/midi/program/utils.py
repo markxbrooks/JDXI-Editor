@@ -1,5 +1,5 @@
 def get_previous_program_bank_and_number(program_number: int, bank_letter: str):
-    """ get previous program bank number """
+    """get previous program bank number"""
     if program_number > 1:
         program_number -= 1
     elif bank_letter == "A":

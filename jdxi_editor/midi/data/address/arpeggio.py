@@ -13,6 +13,7 @@ class ArpeggioAddress(Address):
     ARP_PART = 0x00
     ARP_GROUP = 0x40
 
+
 # ArpeggioParameter.TEMPORARY_PROGRAM
 # ArpeggioParameter.ARP_PART
 # ArpeggioParameter.ARP_GROUP

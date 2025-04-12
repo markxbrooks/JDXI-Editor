@@ -36,14 +36,19 @@ from jdxi_editor.midi.message.midi import MidiMessage
 @dataclass
 class ControlChangeMessage(MidiMessage):
     """MIDI Control Change message"""
+
     channel: int
     controller: int
     value: int
-    status: int = field(init=False, default=0xB0)  # Prevents status from being a required argument
+    status: int = field(
+        init=False, default=0xB0
+    )  # Prevents status from being a required argument
 
     def __post_init__(self):
         if not (0 <= self.controller <= 127):
-            raise ValueError(f"Controller number {self.controller} out of range (0-127).")
+            raise ValueError(
+                f"Controller number {self.controller} out of range (0-127)."
+            )
         if not (0 <= self.value <= 127):
             raise ValueError(f"Control value {self.value} out of range (0-127).")
 
@@ -52,8 +57,14 @@ class ControlChangeMessage(MidiMessage):
 
     def to_message_list(self) -> List[int]:
         """Convert Control Change message to a list of bytes for sending"""
-        status_byte = self.status | (self.channel & 0x0F)  # Ensures correct channel encoding
-        return [status_byte, self.data1 & 0x7F, self.data2 & 0x7F]  # Proper MIDI CC message
+        status_byte = self.status | (
+            self.channel & 0x0F
+        )  # Ensures correct channel encoding
+        return [
+            status_byte,
+            self.data1 & 0x7F,
+            self.data2 & 0x7F,
+        ]  # Proper MIDI CC message
 
 
 @dataclass

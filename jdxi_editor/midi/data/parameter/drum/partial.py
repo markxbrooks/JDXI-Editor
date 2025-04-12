@@ -24,15 +24,24 @@ Example usage:
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP, DRUM_ADDRESS_MAP
+from jdxi_editor.midi.data.parameter.drum.addresses import (
+    DRUM_GROUP_MAP,
+    DRUM_ADDRESS_MAP,
+)
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
 
 class DrumPartialParameter(SynthParameter):
     """Drum kit parameters with their addresses and value ranges"""
 
-    def __init__(self, address: int, min_val: int, max_val: int,
-                 display_min: Optional[int] = None, display_max: Optional[int] = None):
+    def __init__(
+        self,
+        address: int,
+        min_val: int,
+        max_val: int,
+        display_min: Optional[int] = None,
+        display_max: Optional[int] = None,
+    ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
@@ -536,18 +545,24 @@ class DrumPartialParameter(SynthParameter):
     def get_address_for_partial(self, partial_index: int) -> tuple:
         """Get the address for address drum partial by index"""
         if not isinstance(partial_index, int):
-            raise ValueError(f"Partial index must be an integer, got {type(partial_index)}")
+            raise ValueError(
+                f"Partial index must be an integer, got {type(partial_index)}"
+            )
 
         if partial_index < 0 or partial_index >= 72:
             raise ValueError(f"Invalid partial index: {partial_index}")
 
-        address_lmb = DRUM_GROUP_MAP.get(partial_index + 1, 0x2E)  # Default to 0x2E if partial_name is not 1, 2, or 3
+        address_lmb = DRUM_GROUP_MAP.get(
+            partial_index + 1, 0x2E
+        )  # Default to 0x2E if partial_name is not 1, 2, or 3
         return address_lmb, 0x00
 
     @staticmethod
     def get_address_for_partial_name(partial_name: str) -> int:
         """Get parameter area and address adjusted for partial number."""
-        address = DRUM_ADDRESS_MAP.get(partial_name, 0x00)  # Default to 0x00 for common area
+        address = DRUM_ADDRESS_MAP.get(
+            partial_name, 0x00
+        )  # Default to 0x00 for common area
         return address
 
     @staticmethod

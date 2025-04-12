@@ -1,17 +1,23 @@
-import logging
-
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QScrollArea, QSlider, QLabel, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QScrollArea,
+    QSlider,
+    QLabel,
+    QHBoxLayout,
+    QPushButton,
+)
 from PySide6.QtGui import QPainter, QColor, QPen
 from PySide6.QtCore import Qt, QRectF
 
 RAINBOW_COLORS = [
-    QColor(255, 0, 0, 150),     # Pure Red
-    QColor(0, 255, 0, 150),     # Pure Green
-    QColor(0, 0, 255, 150),     # Pure Blue
-    QColor(255, 255, 0, 150),   # Yellow
-    QColor(255, 0, 255, 150),   # Magenta
-    QColor(0, 255, 255, 150),   # Cyan
-    QColor(255, 255, 255, 150)  # White
+    QColor(255, 0, 0, 150),  # Pure Red
+    QColor(0, 255, 0, 150),  # Pure Green
+    QColor(0, 0, 255, 150),  # Pure Blue
+    QColor(255, 255, 0, 150),  # Yellow
+    QColor(255, 0, 255, 150),  # Magenta
+    QColor(0, 255, 255, 150),  # Cyan
+    QColor(255, 255, 255, 150),  # White
 ]
 
 # Create a channel-to-color mapping
@@ -40,7 +46,7 @@ def extract_notes_with_absolute_time(track, tempo, ticks_per_beat):
     current_time = 0
     for msg in track:
         current_time += msg.time
-        if msg.type == 'note_on':
+        if msg.type == "note_on":
             abs_time = mido.tick2second(current_time, ticks_per_beat, tempo)
             notes.append((abs_time, msg))
     return notes
@@ -110,14 +116,16 @@ class MidiTrackWidget(QWidget):
             program_changes = []
             for msg in track:
                 abs_time += msg.time
-                if hasattr(msg, 'channel'):
+                if hasattr(msg, "channel"):
                     channels.add(msg.channel)
-                if msg.type == 'note_on' and msg.velocity > 0:
+                if msg.type == "note_on" and msg.velocity > 0:
                     note_count += 1
                     norm_time = abs_time / total_length if total_length else 0
                     # Store both time and channel for each note
-                    rects.append((norm_time, msg.channel if hasattr(msg, 'channel') else 0))
-                if msg.type == 'program_change':
+                    rects.append(
+                        (norm_time, msg.channel if hasattr(msg, "channel") else 0)
+                    )
+                if msg.type == "program_change":
                     program_changes.append(msg.program)
 
             label = f"Track {i+1} | {track.name} | Notes: {note_count}"
@@ -126,27 +134,31 @@ class MidiTrackWidget(QWidget):
             if program_changes:
                 label += f" | Prog: {', '.join(map(str, program_changes))}"
 
-            self.track_data.append({
-                'rects': rects,
-                'label': label,
-                'channels': channels
-            })
+            self.track_data.append(
+                {"rects": rects, "label": label, "channels": channels}
+            )
 
         self.update()
-        import json
+
         json_safe_data = []
         for track in self.track_data:
-            json_safe_data.append({
-                'rects': track['rects'],
-                'label': track['label'],
-                'channels': list(track['channels'])  # sets aren't JSON serializable
-            })
+            json_safe_data.append(
+                {
+                    "rects": track["rects"],
+                    "label": track["label"],
+                    "channels": list(
+                        track["channels"]
+                    ),  # sets aren't JSON serializable
+                }
+            )
 
-        #with open("midi_track_data.json", "w") as f:
+        # with open("midi_track_data.json", "w") as f:
         #    json.dump(json_safe_data, f, indent=2)
 
     def toggle_channel_mute(self, channel, is_muted):
-        print(f"Track Widget Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}")
+        print(
+            f"Track Widget Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
+        )
         if is_muted:
             self.muted_channels.add(channel)
         else:
@@ -167,12 +179,14 @@ class MidiTrackWidget(QWidget):
             font.setPointSize(8)
             painter.setFont(font)
 
-            for i, data in enumerate(self.track_data[:1]):  # Show only the first track for debugging
+            for i, data in enumerate(
+                self.track_data[:1]
+            ):  # Show only the first track for debugging
                 spacing = int(track_height / 5)
                 y = i * (track_height + spacing)
-                rects = data['rects']
-                label = data['label']
-                channels = data['channels']
+                rects = data["rects"]
+                label = data["label"]
+                channels = data["channels"]
 
                 # Check if this track is muted
                 muted = any(channel in self.muted_channels for channel in channels)
@@ -184,14 +198,17 @@ class MidiTrackWidget(QWidget):
                     end_x = max(times) * widget_width
                     track_rect = QRectF(start_x, y, end_x - start_x, int(track_height))
                     painter.setBrush(
-                        QColor(50, 50, 50, 100) if muted else QColor(255, 255, 255, 50))  # Subtle background
+                        QColor(50, 50, 50, 100) if muted else QColor(255, 255, 255, 50)
+                    )  # Subtle background
                     painter.setPen(Qt.NoPen)
                     painter.drawRect(track_rect)
 
                 # Draw notes
                 painter.setPen(Qt.NoPen)
                 for norm_time, channel in rects:
-                    color = QColor(150, 150, 150) if muted else QColor(100, 100, 255, 150)  # Grey out muted tracks
+                    color = (
+                        QColor(150, 150, 150) if muted else QColor(100, 100, 255, 150)
+                    )  # Grey out muted tracks
                     painter.setBrush(color)
                     x = norm_time * widget_width
                     rect = QRectF(x, y, 4, int(track_height))
@@ -209,7 +226,6 @@ class MidiTrackWidget(QWidget):
         painter = QPainter(self)
         try:
             painter.setRenderHint(QPainter.Antialiasing)
-            spacing = 6
             number_of_tracks = len(self.track_data)
             track_height = self.height() / number_of_tracks
 
@@ -221,8 +237,8 @@ class MidiTrackWidget(QWidget):
 
             for i, data in enumerate(self.track_data):
                 y = i * track_height
-                rects = data['rects']
-                label = data['label']
+                rects = data["rects"]
+                label = data["label"]
 
                 # Draw notes
                 painter.setPen(Qt.NoPen)
@@ -285,7 +301,9 @@ class MidiTrackViewer(QWidget):
             btn = QPushButton(f"{ch}")
             btn.setCheckable(True)
             btn.setFixedWidth(30)
-            btn.toggled.connect(lambda checked, c=ch: self.toggle_channel_mute(c, checked))
+            btn.toggled.connect(
+                lambda checked, c=ch: self.toggle_channel_mute(c, checked)
+            )
             self.mute_buttons[ch] = btn
             mute_layout.addWidget(btn)
 
@@ -322,7 +340,9 @@ class MidiTrackViewer(QWidget):
 
     def toggle_channel_mute(self, channel, is_muted):
         """Add or remove the channel from muted set."""
-        print(f"Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}")
+        print(
+            f"Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
+        )
         if is_muted:
             self.muted_channels.add(channel)
             self.tracks.toggle_channel_mute(channel, True)
@@ -336,7 +356,7 @@ class MidiTrackViewer(QWidget):
 
         tick, msg = self.midi_events[self.event_index]
 
-        if hasattr(msg, 'channel') and (msg.channel + 1) in self.muted_channels:
+        if hasattr(msg, "channel") and (msg.channel + 1) in self.muted_channels:
             return  # Skip muted channel
         else:
             self.send_midi_message(msg)  # Your MIDI playback logic
