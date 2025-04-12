@@ -17,7 +17,7 @@ msg = DelayMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress, ProgramAddressOffset
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetProgramLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -26,8 +26,8 @@ class DelayMessage(RolandSysEx):
     """Program Delay parameter message"""
 
     command: int = CommandID.DT1
-    area: int = MemoryAreaAddress.PROGRAM  # 0x18: Program area
-    section: int = ProgramAddressOffset.DELAY  # 0x06: Delay section
+    area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
+    section: int = AddressOffsetProgramLMB.DELAY  # 0x06: Delay section
     group: int = 0x00  # Always 0x00
     address_lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value

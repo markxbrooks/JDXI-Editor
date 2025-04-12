@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from jdxi_editor.midi.data.address.address import ModelID, CommandID, START_OF_SYSEX, END_OF_SYSEX, \
-    PLACEHOLDER_BYTE, RolandID, MemoryAreaAddress
+    ZERO_BYTE, RolandID, AddressMemoryAreaMSB
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
@@ -434,7 +434,7 @@ class ZoneMessage(ParameterMessage):
 class ControllerMessage(ParameterMessage):
     """Program Controller parameter message"""
 
-    address_msb: int = MemoryAreaAddress.PROGRAM  # Program area
+    address_msb: int = AddressMemoryAreaMSB.PROGRAM  # Program area
     address_umb: int = 0x40  # Controller section
 
     def convert_value(self, value: int) -> List[int]:
@@ -463,8 +463,8 @@ class ControllerMessage(ParameterMessage):
 class DigitalToneCommonMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Common parameter message"""
 
-    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
-    address_umb: int = 0x00  # Common section
+    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    address_umb: int = ZERO_BYTE  # Common section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -492,8 +492,8 @@ class DigitalToneCommonMessage(ParameterMessage):
 class DigitalToneModifyMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Modify parameter message"""
 
-    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
-    address_umb: int = 0x50  # Modify section
+    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    address_umb: int = 0x50  # Modify section @@@ looks incorrect - should be lmb
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -511,7 +511,7 @@ class DigitalToneModifyMessage(ParameterMessage):
 class DigitalTonePartialMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Partial parameter message"""
 
-    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
+    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
 
     def convert_value(self, value: int) -> List[int]:
@@ -566,7 +566,7 @@ class AnalogToneMessage(ParameterMessage):
             self.address_lmb,
             self.address_lsb,
             self.value,
-            PLACEHOLDER_BYTE,  # Checksum placeholder
+            ZERO_BYTE,  # Checksum placeholder
             END_OF_SYSEX,  # End of SysEx
         ]
 
@@ -575,7 +575,7 @@ class AnalogToneMessage(ParameterMessage):
 class DrumKitCommonMessage(ParameterMessage):
     """Drum Kit Common parameter message"""
 
-    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
+    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x10  # Drum Kit section
     address_lmb: int = 0x00  # Common area
 
@@ -595,7 +595,7 @@ class DrumKitCommonMessage(ParameterMessage):
 class DrumKitPartialMessage(ParameterMessage):
     """Drum Kit Partial parameter message"""
 
-    address_msb: int = MemoryAreaAddress.TEMPORARY_TONE  # Temporary area
+    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
     address_umb: int = 0x10  # Drum Kit section
     address_lmb: int = 0x01  # Partial area
 
@@ -647,7 +647,7 @@ def create_patch_load_message(
         # Bank Select MSB
         JDXiSysEx(
             command=CommandID.DT1,
-            address_msb=MemoryAreaAddress.SYSTEM,  # Setup area 0x01
+            address_msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area 0x01
             address_umb=0x00,
             address_lmb=0x00,
             address_lsb=0x04,  # Bank MSB parameter
@@ -656,7 +656,7 @@ def create_patch_load_message(
         # Bank Select LSB
         JDXiSysEx(
             command=CommandID.DT1,
-            address_msb=MemoryAreaAddress.SYSTEM,  # Setup area
+            address_msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area
             address_umb=0x00,
             address_lmb=0x00,
             address_lsb=0x05,  # Bank LSB parameter
@@ -665,7 +665,7 @@ def create_patch_load_message(
         # Program Change
         JDXiSysEx(
             command=CommandID.DT1,
-            address_msb=MemoryAreaAddress.SYSTEM,  # Setup area
+            address_msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area
             address_umb=0x00,
             address_lmb=0x00,
             address_lsb=0x06,  # Program number parameter

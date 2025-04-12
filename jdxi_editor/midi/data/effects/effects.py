@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress, ProgramAddressGroup
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, \
+    AddressOffsetProgramLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -267,9 +268,9 @@ class Effect1Message(RolandSysEx):
     """Program Effect 1 parameter message"""
 
     command: int = CommandID.DT1
-    area: int = MemoryAreaAddress.PROGRAM  # 0x18: Program area
+    area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
     section: int = 0x02  # 0x02: Effect 1 section
-    group: int = ProgramAddressGroup.PROGRAM_COMMON  # Always 0x00
+    group: int = AddressOffsetProgramLMB.COMMON  # Always 0x00
     address_lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
@@ -337,7 +338,7 @@ class Effect2Message(RolandSysEx):
     """Program Effect 2 parameter message"""
 
     command: int = CommandID.DT1
-    area: int = MemoryAreaAddress.PROGRAM  # 0x18: Program area
+    area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
     section: int = 0x04  # 0x04: Effect 2 section
     group: int = 0x00  # Always 0x00
     address_lsb: int = 0x00  # Parameter number

@@ -19,7 +19,8 @@ from typing import Dict, Union
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
-from jdxi_editor.midi.data.address.address import MemoryAreaAddress, ProgramAddressGroup, TemporaryToneAddressOffset
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, \
+    AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
@@ -73,9 +74,9 @@ class ADSR(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.address_lmb = address_lmb if address_lmb else ProgramAddressGroup.PROGRAM_COMMON
-        self.address_msb = address_msb if address_msb else MemoryAreaAddress.TEMPORARY_TONE
-        self.address_umb = address_umb if address_umb else TemporaryToneAddressOffset.ANALOG_PART
+        self.address_msb = address_msb if address_msb else AddressMemoryAreaMSB.TEMPORARY_TONE
+        self.address_umb = address_umb if address_umb else AddressOffsetTemporaryToneUMB.ANALOG_PART
+        self.address_lmb = address_lmb if address_lmb else AddressOffsetProgramLMB.COMMON
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
 
@@ -250,7 +251,7 @@ class ADSR(QWidget):
             return False
 
         try:
-            param_address = param.address
+            param_address = param.test_address
             sysex_message = RolandSysEx(address_msb=self.address_msb,
                                         address_umb=self.address_umb,
                                         address_lmb=self.address_lmb,

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -9,7 +9,7 @@ class SetupMessage(RolandSysEx):
     """Setup parameter message"""
 
     command: int = CommandID.DT1
-    area: int = MemoryAreaAddress.SYSTEM  # 0x01: Setup area
+    area: int = AddressMemoryAreaMSB.SYSTEM  # 0x01: Setup area
     section: int = 0x00  # Always 0x00
     group: int = 0x00  # Always 0x00
     address_lsb: int = 0x00  # Parameter number

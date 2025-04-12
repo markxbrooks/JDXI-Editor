@@ -35,7 +35,11 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_editor.midi.data.address.address import MemoryAreaAddress, TemporaryToneAddressOffset, DrumKitAddressOffset
+from jdxi_editor.midi.data.address.address import (
+    AddressMemoryAreaMSB,
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetProgramLMB
+)
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
@@ -51,11 +55,11 @@ class DrumPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
-        self.partial_address_default = DrumKitAddressOffset.DRUM_KIT_PART_1
+        self.partial_address_default = AddressOffsetProgramLMB.DRUM_KIT_PART_1
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
-        self.address_msb = MemoryAreaAddress.TEMPORARY_TONE
-        self.address_umb = TemporaryToneAddressOffset.DRUM_KIT_PART
+        self.address_msb = AddressMemoryAreaMSB.TEMPORARY_TONE
+        self.address_umb = AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
         # Calculate the address for this partial
         try:
             self.address_lmb = get_address_for_partial_name(self.partial_name)

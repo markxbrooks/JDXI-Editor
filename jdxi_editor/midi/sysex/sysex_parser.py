@@ -13,18 +13,10 @@ logging.info(f"Parsed Data: {parsed_data}")
 """
 
 import logging
-from typing import Optional, List, Type, Dict
+from typing import List, Type, Dict
 
-from jdxi_editor.midi.data.address.address import ProgramAddressOffset, DrumKitParameter, UnknownToneAddress, \
-    TemporaryToneAddressOffset, Address, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST, MemoryAreaAddress
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
-
-
-import logging
-from typing import Optional, List, Type, Dict
-
-from jdxi_editor.midi.data.address.address import ProgramAddressOffset, DrumKitParameter, UnknownToneAddress, \
-    TemporaryToneAddressOffset, Address, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB,\
+    AddressOffsetTemporaryToneUMB, Address, END_OF_SYSEX, START_OF_SYSEX, JD_XI_HEADER_LIST, AddressMemoryAreaMSB
 from jdxi_editor.midi.data.parameter.analog import AnalogParameter
 
 
@@ -49,7 +41,7 @@ class SysExParser:
         address = data[len(JD_XI_HEADER_LIST)]
         print(f"Extracted address: {address}")  # Log address for debugging
         try:
-            parameter = MemoryAreaAddress.get_parameter_by_address(int(address))
+            parameter = AddressMemoryAreaMSB.get_parameter_by_address(int(address))
             print(parameter)
         except Exception as ex:
             print(f"Exception {ex} occurred")
@@ -72,21 +64,19 @@ class SysExParser:
 
     def _parse_parameter(self, parameter: Address, data: List[int]):
         """Parses the parameter data according to the parameter type."""
-        if isinstance(parameter, ProgramAddressOffset):
+        if isinstance(parameter, AddressOffsetProgramLMB):
             return self._parse_program_parameter(parameter, data)
-        elif isinstance(parameter, DrumKitParameter):
-            return self._parse_drum_kit_parameter(parameter, data)
-        elif isinstance(parameter, UnknownToneAddress):
-            return self._parse_tone_parameter(parameter, data)
-        elif isinstance(parameter, TemporaryToneAddressOffset):
+        # elif isinstance(parameter, UnknownToneAddress):
+        #    return self._parse_tone_parameter(parameter, data)
+        elif isinstance(parameter, AddressOffsetTemporaryToneUMB):
             return self._parse_temporary_parameter(parameter, data)
         # Add other parameter types parsing as needed
         return {}
 
-    def _parse_program_parameter(self, parameter: ProgramAddressOffset, data: List[int]):
+    def _parse_program_parameter(self, parameter: AddressOffsetProgramLMB, data: List[int]):
         """Parse data for Program parameters."""
         # Example: Extract and process data for PART_DIGITAL_SYNTH_1
-        if parameter == ProgramAddressOffset.PART_DIGITAL_SYNTH_1:
+        if parameter == AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1:
             return {"synth_1_data": data}
         # Add other program parameter parsing logic here
         return {}
@@ -99,33 +89,23 @@ class SysExParser:
         # Add other drum kit parameter parsing logic here
         return {}
 
-    def _parse_tone_parameter(self, parameter: UnknownToneAddress, data: List[int]):
-        """Parse data for Tone parameters."""
-        # Example: Extract and process data for Tone parameters
-        if parameter == UnknownToneAddress.TONE_1_LEVEL:
-            return {"tone_1_level": data[0]}  # Assuming data[0] holds the tone level for TONE_1_LEVEL
-        elif parameter == UnknownToneAddress.TONE_2_LEVEL:
-            return {"tone_2_level": data[0]}  # Assuming data[0] holds the tone level for TONE_2_LEVEL
-        # Add other tone parameter parsing logic here
-        return {}
-
-    def _parse_temporary_parameter(self, parameter: TemporaryToneAddressOffset, data: List[int]):
+    def _parse_temporary_parameter(self, parameter: AddressOffsetTemporaryToneUMB, data: List[int]):
         """Parse data for Temporary parameters."""
         # Example: Extract and process data for Temporary parameters
-        if parameter == TemporaryToneAddressOffset.DIGITAL_PART_1:
+        if parameter == AddressOffsetTemporaryToneUMB.DIGITAL_PART_1:
             return {"digital_part_1_data": data}
-        elif parameter == TemporaryToneAddressOffset.DIGITAL_PART_2:
+        elif parameter == AddressOffsetTemporaryToneUMB.DIGITAL_PART_2:
             return {"digital_part_2_data": data}
-        elif parameter == TemporaryToneAddressOffset.ANALOG_PART:
+        elif parameter == AddressOffsetTemporaryToneUMB.ANALOG_PART:
             return {"analog_part_data": data}
-        elif parameter == TemporaryToneAddressOffset.DRUM_KIT_PART:
+        elif parameter == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART:
             return {"drum_kit_part_data": data}
         # Add other temporary parameter parsing logic here
         return {}
 
     def parse_parameters(self, data: List[int], parameter_type: Type) -> Dict[str, int]:
         """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
-        return {param.name: self.safe_get(data, param.address) for param in parameter_type}
+        return {param.name: self.safe_get(data, param.test_address) for param in parameter_type}
 
     def parse_sysex(self, data: List[int]):
         """An example method to parse a full SysEx message."""

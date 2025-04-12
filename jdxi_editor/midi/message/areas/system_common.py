@@ -25,7 +25,8 @@ msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, MemoryAreaAddress, ProgramAddressGroup
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, \
+    AddressOffsetProgramLMB, ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -34,18 +35,18 @@ class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
 
     command: int = CommandID.DT1
-    area: int = MemoryAreaAddress.SYSTEM  # 0x02: System area
-    section: int = ProgramAddressGroup.PROGRAM_COMMON  # 0x00: Common section
-    group: int = 0x00  # Always 0x00
-    address_lsb: int = 0x00  # Parameter number
-    value: int = 0x00  # Parameter value
+    address_msb: int = AddressMemoryAreaMSB.SYSTEM  # 0x02: System area
+    address_umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
+    address_lmb: int = ZERO_BYTE  # Always 0x00
+    address_lsb: int = ZERO_BYTE  # Parameter number
+    value: int = ZERO_BYTE  # Parameter value
 
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
             self.address_msb,  # System area (0x02)
-            self.section,  # Common section (0x00)
-            self.group,  # Always 0x00
-            self.param,  # Parameter number
+            self.address_umb,  # Common section (0x00)
+            self.address_lmb,  # Always 0x00
+            self.address_lsb,  # Parameter number
         ]
         self.data = [self.value]
