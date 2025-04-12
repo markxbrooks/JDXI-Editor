@@ -51,4 +51,3 @@ def parse_sysex_address(
     except ValueError:
         # Not found in the given enum
         return None
-
