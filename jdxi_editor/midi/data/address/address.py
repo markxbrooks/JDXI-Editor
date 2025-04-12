@@ -303,3 +303,31 @@ if __name__ == "__main__":
     )
 
     print(json.dumps(result, indent=2))
+
+# from jdxi_editor.midi.data.address.address import MemoryAreaAddress, Address
+
+# Step 1: Define the base address (e.g., MSB)
+base_address = MemoryAreaAddress.PROGRAM  # Example: 0x18
+
+# Step 2: Define the offset using the parameter's address
+# Assuming `param` is an instance of SynthParameter or similar
+offset = param.get_offset()  # E.g., (0x00, 0x01, 0x23)
+
+# Step 3: Compose the full address
+full_address = base_address.add_offset(offset)
+
+# Step 4: Convert to SysEx-ready address
+sysex_address = base_address.to_sysex_address(offset)
+
+# Step 5: Extract individual bytes
+address_msb, address_umb, address_lmb, address_lsb = full_address
+
+# Step 6: Pass into the SysEx message constructor
+sysex_message = RolandSysEx(
+    address_msb=address_msb,
+    address_umb=address_umb,
+    address_lmb=address_lmb,
+    address_lsb=address_lsb,
+    value=value,  # Your parameter value
+    size=size     # The size of the parameter (e.g., 1 byte, 4 bytes)
+)
