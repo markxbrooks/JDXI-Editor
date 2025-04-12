@@ -16,7 +16,7 @@ import re
 import logging
 from typing import Dict, Union
 
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
 from jdxi_editor.midi.data.address.address import MemoryAreaAddress, ProgramAddressGroup, TemporaryToneAddressOffset

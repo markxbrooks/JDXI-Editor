@@ -93,8 +93,6 @@ class DigitalPartialEditor(PartialEditor):
                 f"Invalid partial_num: {partial_number}. Using default value."
             )
             self.part_name = "Unknown"  # Provide a fallback value
-
-
         # Store parameter controls for easy access
         self.controls: Dict[
             Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
