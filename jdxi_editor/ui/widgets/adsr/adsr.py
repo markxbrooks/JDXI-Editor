@@ -19,6 +19,7 @@ from typing import Dict, Union
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
+from jdxi_editor.globals import LOG_PADDING_WIDTH
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
@@ -203,14 +204,19 @@ class ADSR(QWidget):
         for param, slider in self.controls.items():
             if param == self.parameters[ADSRParameter.SUSTAIN_LEVEL]:
                 self.envelope["sustain_level"] = slider.value() / 127
-                logging.info(f"param: {param} slider value: {slider.value()}")
-                logging.info(f'sustain_level: {self.envelope["sustain_level"]}')
+                # logging.info(f"param: {param} slider value: {slider.value()}")
+                # logging.info(f'sustain_level: {self.envelope["sustain_level"]:.2f}')
+                logging.info(f"{'param:':<{LOG_PADDING_WIDTH}} {param}")
+                logging.info(f"{'slider value:':<{LOG_PADDING_WIDTH}} {slider.value()}")
             else:
                 if match := ENVELOPE_PATTERN.search(param.name):
                     key = f"{match.group().lower()}_time"
                     self.envelope[key] = midi_cc_to_ms(slider.value())
-                    logging.info(f"param: {param} slider value: {slider.value()}")
-                    logging.info(f"{key}: {self.envelope[key]}")
+                    # logging.info(f"param: {param} slider value: {slider.value()}")
+                    # logging.info(f"{key}: {self.envelope[key]:.2f}")
+                    logging.info(f"{'param:':<{LOG_PADDING_WIDTH}} {param}")
+                    logging.info(f"{'slider value:':<{LOG_PADDING_WIDTH}} {slider.value()}")
+                    logging.info(f"{key + ':':<{LOG_PADDING_WIDTH}} {self.envelope[key]:.2f}")
 
     def update_controls_from_envelope(self):
         """Update slider controls from envelope values."""
@@ -224,7 +230,6 @@ class ADSR(QWidget):
 
     def _on_parameter_changed(self, param: SynthParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""
-        # logging.info(f"_on_parameter_changed param: {param} value: {value}")
         # Update display range if available
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
@@ -278,12 +283,11 @@ class ADSR(QWidget):
             return False
 
         try:
-            param_address = param.test_address
             sysex_message = RolandSysEx(
                 address_msb=self.address_msb,
                 address_umb=self.address_umb,
                 address_lmb=self.address_lmb,
-                address_lsb=param_address,
+                address_lsb=param.address,
                 value=value,
             )
             return self.midi_helper.send_midi_message(sysex_message)

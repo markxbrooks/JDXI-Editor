@@ -142,6 +142,12 @@ class DrumSynthData(SynthData):
             self.partial_number, AddressOffsetProgramLMB.COMMON
         )
 
+    def get_partial_lmb(self, partial_number) -> int:
+        partial_lmb = self.group_map.get(
+            partial_number, AddressOffsetProgramLMB.COMMON
+        )
+        return partial_lmb
+
 
 class DigitalSynthData(SynthData):
     def __init__(self, synth_number: int, partial_number: int = 0):
