@@ -192,7 +192,7 @@ def generate_editor_style(
             color: {foreground};
             font-family: "{font_family}";
             font-size: {font_size};
-            padding: 2px;
+            padding: 1px;
         }}
 
         QGroupBox {{

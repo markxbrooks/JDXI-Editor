@@ -73,7 +73,7 @@ from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
-from jdxi_editor.ui.widgets.switch.partial import PartialsPanel
+from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 
 
 def get_area(data: list[int, int]) -> str:

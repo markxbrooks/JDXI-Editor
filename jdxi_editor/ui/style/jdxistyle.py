@@ -293,6 +293,8 @@ class JDXIStyle:
                 background-color: black;
             }}
             QWidget {{
+                margin: 0px;
+                padding: 0px;
                 background-color: black;
                 color: white;
             }}
@@ -612,7 +614,7 @@ class JDXIStyle:
             height: 10px;  
             margin: -8px;
             margin-bottom: 2px;
-            margin-top: 2px;
+            margin-top: 1px;
             border-radius: 5px;
         }}
         /* Handle (Knob) */
@@ -879,6 +881,7 @@ class JDXIStyle:
             font-family: "Consolas";
 
             QGroupBox {
+                height: 60;
                 border: 2px solid black;
                 border-radius: 5px;
                 padding: 1px;
@@ -895,13 +898,13 @@ class JDXIStyle:
 
     INSTRUMENT_IMAGE_LABEL = f"""        
         QGroupBox {{
-            height: 100px;
-            width: 120px;
+            height: 60;
+            width: 80px;
             background-color: #000000;
             border: 1px solid {BACKGROUND_PRESSED};
             border-radius: 5px;
-            padding: 5px;
-            margin: 5px;
+            padding: 1px;
+            margin: 1px;
             }}
         """
 
@@ -921,7 +924,8 @@ class JDXIStyle:
 
     DRUM_GROUP = """
                 QGroupBox {
-                width: 100px;
+                width: 80px;
+                height: 60;
             }
             """
 
@@ -947,7 +951,7 @@ class JDXIStyle:
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
-                padding: 2px 15px;
+                padding: 1px 1px;
                 font-family: "{FONT_FAMILY}";
             }}
             QPushButton:hover {{
@@ -989,22 +993,24 @@ class JDXIStyle:
             """
 
     PARTIALS_PANEL = f"""  
-            QGroupBox {{
-                color: {GREY};
-                font-size: 12px;
-                border: 0px solid #444444;
-                border-radius: 3px;
-                margin-top: 1px;
-                padding: 1px;
-            }}
-            QGroupBox::title {{
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 0 1px;
-                margin-top: 1px;
-                background-color: {BORDER_PRESSED};
-            }}
-        """  # this may be sub-classed
+        QGroupBox {{
+            color: {GREY};
+            height: 60;
+            font-size: 12px;
+            border: 0px;
+            border-top: 2px solid #444444;  /* Only top border */
+            border-radius: 3px;
+            margin-top: 1px;
+            padding: 1px;
+        }}
+        QGroupBox::title {{
+            subcontrol-origin: margin;
+            subcontrol-position: top center;
+            padding: 0 1px;
+            margin-top: 1px;
+            background-color: {BORDER_PRESSED};
+        }}
+    """
 
     DEBUGGER = f"""
             QMainWindow {{
@@ -1020,7 +1026,7 @@ class JDXIStyle:
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
-                padding: 2px;
+                padding: 1px;
                 font-family: 'Consolas';
             }}
             QTextEdit {{
@@ -1036,7 +1042,7 @@ class JDXIStyle:
                 color: #FFFFFF;
                 border: 1px solid #FF0000;
                 border-radius: 3px;
-                padding: 2px 15px;
+                padding: 1px 1px;
                 font-family: "{FONT_FAMILY}";
             }}
             QPushButton:hover {{
@@ -1063,5 +1069,5 @@ class JDXIStyle:
             color: #d51e35;
             font-weight: bold;
             background: transparent;
-            padding-bottom: 10px;
+            padding-bottom: 1px;
         """

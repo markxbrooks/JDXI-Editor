@@ -237,12 +237,6 @@ class AddressOffsetProgramLMB(Address):
     CONTROLLER = 0x40
     DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
-    
-       # Dynamically generate DRUM_KIT_PART_x constants (1 to 37)
-    for i in range(1, 38):
-        locals()[f"DRUM_KIT_PART_{i}"] = 0x2E + (i - 1) * 2
-    
-    """
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
     DRUM_KIT_PART_3 = 0x32
@@ -279,7 +273,13 @@ class AddressOffsetProgramLMB(Address):
     DRUM_KIT_PART_34 = 0x70
     DRUM_KIT_PART_35 = 0x72
     DRUM_KIT_PART_36 = 0x74
-    DRUM_KIT_PART_37 = 0x76"""
+    DRUM_KIT_PART_37 = 0x76
+
+    """
+    # Dynamically add DRUM_KIT_PART_x members to the enum
+    for i in range(1, 38):
+        setattr(AddressOffsetProgramLMB, f"DRUM_KIT_PART_{i}", 0x2E + (i - 1) * 2)
+    """
 
 
 def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:

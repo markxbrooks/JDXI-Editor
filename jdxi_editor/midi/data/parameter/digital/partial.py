@@ -9,7 +9,7 @@ value ranges.
 The parameters include:
 - Oscillator settings (waveform, pitch, detune, envelope, etc.)
 - Filter settings (cutoff, resonance, envelope, key follow, etc.)
-- Amplifier settings (level, velocity, envelope, pan, etc.)
+- Amplitude settings (level, velocity, envelope, pan, etc.)
 - LFO (Low-Frequency Oscillator) settings (waveform, rate, depth, sync, etc.)
 - Modulation LFO settings (waveform, rate, depth, sync, etc.)
 - Additional synthesis controls (aftertouch, wave gain, super saw detune, etc.)
@@ -69,7 +69,7 @@ class DigitalPartialParameter(SynthParameter):
             "FILTER_CUTOFF_KEYFOLLOW",
             "FILTER_ENV_VELOCITY_SENSITIVITY",
             "FILTER_ENV_DEPTH",
-            # Amplifier parameters
+            # Amplitude parameters
             "AMP_VELOCITY",
             "AMP_PAN",
             "AMP_LEVEL_KEYFOLLOW",
@@ -139,7 +139,7 @@ class DigitalPartialParameter(SynthParameter):
     FILTER_ENV_RELEASE_TIME = (0x13, 0, 127)  # Filter envelope release
     FILTER_ENV_DEPTH = (0x14, 1, 127, -63, 63)  # Filter envelope depth
 
-    # Amplifier parameters
+    # Amplitude parameters
     AMP_LEVEL = (0x15, 0, 127)  # Amplitude level
     AMP_VELOCITY = (0x16, -63, 63)  # Velocity sensitivity
     AMP_ENV_ATTACK_TIME = (0x17, 0, 127)  # Amplitude envelope attack

@@ -104,13 +104,13 @@ class DrumPartialParameter(SynthParameter):
     PARTIAL_RANDOM_PITCH_DEPTH = (0x11, 0, 30, 0, 30)
 
     # Partial Pan
-    PARTIAL_PAN = (0x12, 0, 127)  # L64 - 63R
+    PARTIAL_PAN = (0x12, 0, 127, -64, 63)  # L64 - 63R
 
     # Partial Random Pan Depth
     PARTIAL_RANDOM_PAN_DEPTH = (0x13, 0, 63, 0, 63)
 
     # Partial Alternate Pan Depth
-    PARTIAL_ALTERNATE_PAN_DEPTH = (0x14, 1, 127, 1, 127)  # L63 - 63R
+    PARTIAL_ALTERNATE_PAN_DEPTH = (0x14, 1, 127, -63, 63)  # L63 - 63R
 
     # Partial Env Mode
     PARTIAL_ENV_MODE = (0x15, 0, 1)  # NO-SUS, SUSTAIN
@@ -170,13 +170,13 @@ class DrumPartialParameter(SynthParameter):
     WMT1_WAVE_TEMPO_SYNC = (0x33, 0, 1, 0, 1)  # OFF, ON
 
     # WMT1 Wave Coarse Tune
-    WMT1_WAVE_COARSE_TUNE = (0x34, 16, 112, 16, 112)  # -48 - +48
+    WMT1_WAVE_COARSE_TUNE = (0x34, 16, 112, -48, 48)  # -48 - +48
 
     # WMT1 Wave Fine Tune
-    WMT1_WAVE_FINE_TUNE = (0x35, 14, 114, 14, 114)  # -50 - +50
+    WMT1_WAVE_FINE_TUNE = (0x35, 14, 114, -50, 50)  # -50 - +50
 
     # WMT1 Wave Pan
-    WMT1_WAVE_PAN = (0x36, 0, 127, 0, 127)  # L64 - 63R
+    WMT1_WAVE_PAN = (0x36, 0, 127, -64, 63)  # L64 - 63R
 
     # WMT1 Wave Random Pan Switch
     WMT1_WAVE_RANDOM_PAN_SWITCH = (0x37, 0, 1, 0, 1)  # OFF, ON
@@ -230,13 +230,13 @@ class DrumPartialParameter(SynthParameter):
     WMT2_WAVE_TEMPO_SYNC = (0x50, 0, 1, 0, 1)  # OFF, ON
 
     # WMT2 Wave Coarse Tune
-    WMT2_WAVE_COARSE_TUNE = (0x51, 16, 112, 16, 112)  # -48 - +48
+    WMT2_WAVE_COARSE_TUNE = (0x51, 16, 112, -48, 48)  # -48 - +48
 
     # WMT2 Wave Fine Tune
-    WMT2_WAVE_FINE_TUNE = (0x52, 14, 114, 14, 114)  # -50 - +50
+    WMT2_WAVE_FINE_TUNE = (0x52, 14, 114, -50, 50)  # -50 - +50
 
     # WMT2 Wave Pan
-    WMT2_WAVE_PAN = (0x53, 0, 127, 0, 127)  # L64 - 63R
+    WMT2_WAVE_PAN = (0x53, 0, 127, -64, 63)  # L64 - 63R
 
     # WMT2 Wave Random Pan Switch
     WMT2_WAVE_RANDOM_PAN_SWITCH = (0x54, 0, 1, 0, 1)  # OFF, ON
@@ -290,13 +290,13 @@ class DrumPartialParameter(SynthParameter):
     WMT3_WAVE_TEMPO_SYNC = (0x6D, 0, 1, 0, 1)  # OFF, ON
 
     # WMT3 Wave Coarse Tune
-    WMT3_WAVE_COARSE_TUNE = (0x6E, 16, 112, 16, 112)  # -48 - +48
+    WMT3_WAVE_COARSE_TUNE = (0x6E, 16, 112, -48, 48)  # -48 - +48
 
     # WMT3 Wave Fine Tune
-    WMT3_WAVE_FINE_TUNE = (0x6F, 14, 114, 14, 114)  # -50 - +50
+    WMT3_WAVE_FINE_TUNE = (0x6F, 14, 114, -50, 50)  # -50 - +50
 
     # WMT3 Wave Pan
-    WMT3_WAVE_PAN = (0x70, 0, 127, 0, 127)  # L64 - 63R
+    WMT3_WAVE_PAN = (0x70, 0, 127, -64, 64)  # L64 - 63R
 
     # WMT3 Wave Random Pan Switch
     WMT3_WAVE_RANDOM_PAN_SWITCH = (0x71, 0, 1, 0, 1)  # OFF, ON
@@ -350,13 +350,13 @@ class DrumPartialParameter(SynthParameter):
     WMT4_WAVE_TEMPO_SYNC = (0x10A, 0, 1, 0, 1)  # OFF, ON
 
     # WMT4 Wave Coarse Tune
-    WMT4_WAVE_COARSE_TUNE = (0x10B, 16, 112, 16, 112)  # -48 - +48
+    WMT4_WAVE_COARSE_TUNE = (0x10B, 16, 112, -48, 48)  # -48 - +48
 
     # WMT4 Wave Fine Tune
-    WMT4_WAVE_FINE_TUNE = (0x10C, 14, 114, 14, 114)  # -50 - +50
+    WMT4_WAVE_FINE_TUNE = (0x10C, 14, 114, -50, 50)  # -50 - +50
 
     # WMT4 Wave Pan
-    WMT4_WAVE_PAN = (0x10D, 0, 127, 0, 127)  # L64 - 63R
+    WMT4_WAVE_PAN = (0x10D, 0, 127, -64, 64)  # L64 - 63R
 
     # WMT4 Wave Random Pan Switch
     WMT4_WAVE_RANDOM_PAN_SWITCH = (0x10E, 0, 1, 0, 1)  # OFF, ON
@@ -380,16 +380,16 @@ class DrumPartialParameter(SynthParameter):
     WMT4_VELOCITY_FADE_WIDTH_UPPER = (0x114, 0, 127, 0, 127)
 
     # Pitch Env Depth
-    PITCH_ENV_DEPTH = (0x115, 52, 76, 52, 76)  # -12 - +12
+    PITCH_ENV_DEPTH = (0x115, 52, 76, -12, 12)  # -12 - +12
 
     # Pitch Env Velocity Sens
-    PITCH_ENV_VELOCITY_SENS = (0x116, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_VELOCITY_SENS = (0x116, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Time 1 Velocity Sens
-    PITCH_ENV_TIME_1_VELOCITY_SENS = (0x117, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_TIME_1_VELOCITY_SENS = (0x117, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Time 4 Velocity Sens
-    PITCH_ENV_TIME_4_VELOCITY_SENS = (0x118, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_TIME_4_VELOCITY_SENS = (0x118, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Time 1
     PITCH_ENV_TIME_1 = (0x119, 0, 127, 0, 127)
@@ -404,19 +404,19 @@ class DrumPartialParameter(SynthParameter):
     PITCH_ENV_TIME_4 = (0x11C, 0, 127, 0, 127)
 
     # Pitch Env Level 0
-    PITCH_ENV_LEVEL_0 = (0x11D, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_LEVEL_0 = (0x11D, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Level 1
-    PITCH_ENV_LEVEL_1 = (0x11E, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_LEVEL_1 = (0x11E, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Level 2
-    PITCH_ENV_LEVEL_2 = (0x11F, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_LEVEL_2 = (0x11F, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Level 3
-    PITCH_ENV_LEVEL_3 = (0x120, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_LEVEL_3 = (0x120, 1, 127, -63, 63)  # -63 - +63
 
     # Pitch Env Level 4
-    PITCH_ENV_LEVEL_4 = (0x121, 1, 127, 1, 127)  # -63 - +63
+    PITCH_ENV_LEVEL_4 = (0x121, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Filter Type
     TVF_FILTER_TYPE = (0x122, 0, 6, 0, 6)  # OFF, LPF, BPF, HPF, PKG, LPF2, LPF3
@@ -428,28 +428,28 @@ class DrumPartialParameter(SynthParameter):
     TVF_CUTOFF_VELOCITY_CURVE = (0x124, 0, 7, 0, 7)  # FIXED, 1 - 7
 
     # TVF Cutoff Velocity Sens
-    TVF_CUTOFF_VELOCITY_SENS = (0x125, 1, 127, 1, 127)  # -63 - +63
+    TVF_CUTOFF_VELOCITY_SENS = (0x125, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Resonance
     TVF_RESONANCE = (0x126, 0, 127, 0, 127)
 
     # TVF Resonance Velocity Sens
-    TVF_RESONANCE_VELOCITY_SENS = (0x127, 1, 127, 1, 127)  # -63 - +63
+    TVF_RESONANCE_VELOCITY_SENS = (0x127, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Env Depth
-    TVF_ENV_DEPTH = (0x128, 1, 127, 1, 127)  # -63 - +63
+    TVF_ENV_DEPTH = (0x128, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Env Velocity Curve Type
     TVF_ENV_VELOCITY_CURVE_TYPE = (0x129, 0, 7, 0, 7)  # FIXED, 1 - 7
 
     # TVF Env Velocity Sens
-    TVF_ENV_VELOCITY_SENS = (0x137, 1, 127, 1, 127)  # -63 - +63
+    TVF_ENV_VELOCITY_SENS = (0x137, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Env Time 1 Velocity Sens
-    TVF_ENV_TIME_1_VELOCITY_SENS = (0x12B, 1, 127, 1, 127)  # -63 - +63
+    TVF_ENV_TIME_1_VELOCITY_SENS = (0x12B, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Env Time 4 Velocity Sens
-    TVF_ENV_TIME_4_VELOCITY_SENS = (0x12C, 1, 127, 1, 127)  # -63 - +63
+    TVF_ENV_TIME_4_VELOCITY_SENS = (0x12C, 1, 127, -63, 63)  # -63 - +63
 
     # TVF Env Time 1
     TVF_ENV_TIME_1 = (0x12D, 0, 127, 0, 127)
@@ -482,13 +482,13 @@ class DrumPartialParameter(SynthParameter):
     TVA_LEVEL_VELOCITY_CURVE = (0x136, 0, 7, 0, 7)  # FIXED, 1 - 7
 
     # TVA Level Velocity Sens
-    TVA_LEVEL_VELOCITY_SENS = (0x137, 1, 127, 1, 127)  # -63 - +63
+    TVA_LEVEL_VELOCITY_SENS = (0x137, 1, 127, -63, 63)  # -63 - +63
 
     # TVA Env Time 1 Velocity Sens
-    TVA_ENV_TIME_1_VELOCITY_SENS = (0x138, 1, 127, 1, 127)  # -63 - +63
+    TVA_ENV_TIME_1_VELOCITY_SENS = (0x138, 1, 127, -63, 63)  # -63 - +63
 
     # TVA Env Time 4 Velocity Sens
-    TVA_ENV_TIME_4_VELOCITY_SENS = (0x139, 1, 127, 1, 127)  # -63 - +63
+    TVA_ENV_TIME_4_VELOCITY_SENS = (0x139, 1, 127, -63, 63)  # -63 - +63
 
     # TVA Env Time 1
     TVA_ENV_TIME_1 = (0x13A, 0, 127, 0, 127)
@@ -515,7 +515,7 @@ class DrumPartialParameter(SynthParameter):
     ONE_SHOT_MODE = (0x141, 0, 1, 0, 1)  # OFF, ON
 
     # Relative Level
-    RELATIVE_LEVEL = (0x142, 0, 127, 0, 127)  # -64 - +63
+    RELATIVE_LEVEL = (0x142, 0, 127, -64, 64)  # -64 - +63
 
     DRUM_PART = (0x70, 1, 5, 1, 5)  # Hack alert @@
 

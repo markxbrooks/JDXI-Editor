@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
@@ -23,8 +23,18 @@ class DrumCommonSection(QWidget):
 
     def setup_ui(self):
         """setup UI"""
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        layout = QVBoxLayout(self)
+
+        common_scroll_area = QScrollArea()
+        common_scroll_area.setWidgetResizable(True)  # Important for resizing behavior
+        layout.addWidget(common_scroll_area)
+
+        common_scrolled_widget = QWidget()
+        scrolled_layout = QVBoxLayout(common_scrolled_widget)
+
+        # Add widgets to scrolled_layout here if needed
+
+        common_scroll_area.setWidget(common_scrolled_widget)
 
         # Common controls
         common_group = QGroupBox("Common")
@@ -81,4 +91,4 @@ class DrumCommonSection(QWidget):
         )
         common_layout.addRow(one_shot_mode_combo)
         common_group.setLayout(common_layout)
-        layout.addWidget(common_group)
+        scrolled_layout.addWidget(common_group)

@@ -143,7 +143,7 @@ class DigitalPartialEditor(PartialEditor):
             self.address_umb,
         )
         self.tab_widget.addTab(
-            self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amplifier"
+            self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amplitude"
         )
         self.lfo_tab = DigitalLFOSection(
             self._create_parameter_slider, self._create_parameter_switch, self.controls

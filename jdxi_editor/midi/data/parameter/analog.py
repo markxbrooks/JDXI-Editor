@@ -9,7 +9,7 @@ value ranges.
 The parameters include:
 - Oscillator settings (waveform, pitch, detune, envelope, etc.)
 - Filter settings (cutoff, resonance, envelope, key follow, etc.)
-- Amplifier settings (level, velocity, envelope, pan, etc.)
+- Amplitude settings (level, velocity, envelope, pan, etc.)
 - LFO (Low-Frequency Oscillator) settings (waveform, rate, depth, sync, etc.)
 - Modulation LFO settings (waveform, rate, depth, sync, etc.)
 - Additional synthesis controls (aftertouch, wave gain, super saw detune, etc.)
@@ -96,7 +96,7 @@ class AnalogParameter(SynthParameter):
     FILTER_ENV_RELEASE_TIME = (0x28, 0, 127)
     FILTER_ENV_DEPTH = (0x29, 1, 127, -63, 63)  # -63 - +63
 
-    # Amplifier Parameters
+    # Amplitude Parameters
     AMP_LEVEL = (0x2A, 0, 127)
     AMP_LEVEL_KEYFOLLOW = (0x2B, 54, 74, -100, 100)  # -100 - +100
     AMP_LEVEL_VELOCITY_SENSITIVITY = (0x2C, 1, 127, -63, 63)  # -63 - +63
