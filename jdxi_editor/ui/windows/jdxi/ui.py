@@ -38,7 +38,7 @@ from PySide6.QtGui import (
 
 from jdxi_editor.midi.data.editor.data import (
     DigitalSynthData,
-    DrumsSynthData,
+    DrumSynthData,
     AnalogSynthData,
 )
 from jdxi_editor.midi.io import MidiIOHelper
@@ -82,12 +82,12 @@ class JdxiUi(QMainWindow):
         # Add preset & program tracking
         self.digital1_data = DigitalSynthData(synth_number=1)
         self.digital2_data = DigitalSynthData(synth_number=2)
-        self.drums_data = DrumsSynthData()
+        self.drums_data = DrumSynthData()
         self.analog_data = AnalogSynthData()
         self.synth_data_map = {
             JDXISynth.DIGITAL_1: DigitalSynthData(synth_number=1),
             JDXISynth.DIGITAL_2: DigitalSynthData(synth_number=2),
-            JDXISynth.DRUMS: DrumsSynthData(),
+            JDXISynth.DRUMS: DrumSynthData(),
             JDXISynth.ANALOG: AnalogSynthData(),
         }
 
