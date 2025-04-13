@@ -1,7 +1,7 @@
 """
 This module defines the `DrumPartialEditor` class for editing drum kit parameters within a graphical user interface (GUI).
 
-The `DrumPartialEditor` class allows users to modify various parameters related to drum sounds, including pitch, output, TVF (Time Variant Filter), pitch envelope, WMT (Wave Modulation Time), and TVA (Time Variant Amplifier) settings. The class provides a comprehensive layout with controls such as sliders, combo boxes, and spin boxes to adjust the parameters.
+The `DrumPartialEditor` class allows users to modify various parameters related to drum sounds, including pitch, output, TVF (Time Variant Filter), pitch envelope, WMT (Wave Modulation Time), and TVA (Time Variant Amplitude) settings. The class provides a comprehensive layout with controls such as sliders, combo boxes, and spin boxes to adjust the parameters.
 
 Key functionalities of the module include:
 - Displaying parameter controls for a specific drum partial.
@@ -21,7 +21,6 @@ The `DrumPartialEditor` is designed to work within a larger system for managing 
 
 """
 
-import logging
 from typing import Dict
 
 from PySide6.QtWidgets import (
@@ -44,7 +43,13 @@ from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.editor.data import DrumSynthData
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
-from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name
+from jdxi_editor.ui.editors.drum.common import DrumCommonSection
+from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
+from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
+from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
+from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
+from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
+from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
 
 
@@ -91,26 +96,73 @@ class DrumPartialEditor(PartialEditor):
         scroll_layout.addLayout(grid_layout)
 
         # Add parameter groups
-        pitch_group = self._create_pitch_group()
+        # pitch_group = self._create_pitch_group()
+        # grid_layout.addWidget(pitch_group, 0, 0)
+
+        pitch_group = DrumPitchSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
         grid_layout.addWidget(pitch_group, 0, 0)
 
-        output_group = self._create_output_group()
+        pitch_group = DrumPitchEnvSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
+        grid_layout.addWidget(pitch_group, 0, 1)
+
+        # pitch_env_group = self._create_pitch_env_group()
+        # grid_layout.addWidget(pitch_env_group, 0, 1)
+
+        # output_group = self._create_output_group()
+        # grid_layout.addWidget(output_group, 0, 2)
+
+        output_group = DrumOutputSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
         grid_layout.addWidget(output_group, 0, 2)
 
-        tvf_group = self._create_tvf_group()
+        tvf_group = DrumTVFSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
         grid_layout.addWidget(tvf_group, 1, 2)
 
-        pitch_env_group = self._create_pitch_env_group()
-        grid_layout.addWidget(pitch_env_group, 0, 1)
+        # wmt_group = self._create_wmt_group()
+        # grid_layout.addWidget(wmt_group, 1, 0)
 
-        wmt_group = self._create_wmt_group()
+        wmt_group = DrumWMTSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
         grid_layout.addWidget(wmt_group, 1, 0)
 
-        tva_group = self._create_tva_group()
+        tva_group = DrumTVASection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper,
+        )
         grid_layout.addWidget(tva_group, 1, 1)
 
         # scroll_area.setLayout(scroll_layout)
         main_layout.addWidget(scroll_area)
+        self.update_partial_address()
+
+    def update_partial_address(self):
+        """ update partial address from synth data """
+        self.address_lmb = self.synth_data.get_partial_lmb(self.partial_number)
 
     def _create_tva_group(self):
         """Create the TVA area."""
@@ -223,7 +275,61 @@ class DrumPartialEditor(PartialEditor):
         wmt4_tab.setLayout(wmt4_layout)
         return wmt_group
 
+    def _create_wmt_layout(self, wmt_index: int):
+        layout = QFormLayout()
+        prefix = f"WMT{wmt_index}_"
+
+        def p(name):  # helper to get DrumPartialParameter by name
+            return getattr(DrumPartialParameter, prefix + name)
+
+        # Combo boxes
+        layout.addRow(self._create_parameter_combo_box(p("WAVE_SWITCH"), f"{prefix}Wave Switch", ["OFF", "ON"], [0, 1]))
+        layout.addRow(self._create_parameter_combo_box(p("WAVE_NUMBER_L"), f"{prefix}Wave Number L/Mono", rm_waves,
+                                                       list(range(453))))
+        layout.addRow(
+            self._create_parameter_combo_box(p("WAVE_NUMBER_R"), f"{prefix}Wave Number R", rm_waves, list(range(453))))
+        layout.addRow(
+            self._create_parameter_combo_box(p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]))
+        layout.addRow(self._create_parameter_combo_box(p("WAVE_GAIN"), "Wave FXM Switch", ["OFF", "ON"],
+                                                       [0, 1]))  # If this is correct — maybe it’s a typo?
+
+        # Sliders
+        layout.addRow(self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color"))
+        layout.addRow(self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth"))
+        layout.addRow(self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync"))
+        layout.addRow(self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune"))
+        layout.addRow(self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune"))
+        layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
+
+        # More combo boxes
+        layout.addRow(
+            self._create_parameter_combo_box(p("WAVE_RANDOM_PAN_SWITCH"), "Wave Random Pan Switch", ["OFF", "ON"],
+                                             [0, 1]))
+        layout.addRow(self._create_parameter_combo_box(p("WAVE_ALTERNATE_PAN_SWITCH"), "Wave Alternate Pan Switch",
+                                                       ["OFF", "ON", "REVERSE"], [0, 1, 2]))
+
+        # More sliders
+        layout.addRow(self._create_parameter_slider(p("WAVE_LEVEL"), "Wave Level"))
+        layout.addRow(self._create_parameter_slider(p("VELOCITY_RANGE_LOWER"), "Velocity Range Lower"))
+        layout.addRow(self._create_parameter_slider(p("VELOCITY_RANGE_UPPER"), "Velocity Range Upper"))
+        layout.addRow(self._create_parameter_slider(p("VELOCITY_FADE_WIDTH_LOWER"), "Velocity Fade Width Lower"))
+        layout.addRow(self._create_parameter_slider(p("VELOCITY_FADE_WIDTH_UPPER"), "Velocity Fade Width Upper"))
+
+        return layout
+
     def _create_wmt1_layout(self):
+        return self._create_wmt_layout(1)
+
+    def _create_wmt2_layout(self):
+        return self._create_wmt_layout(2)
+
+    def _create_wmt3_layout(self):
+        return self._create_wmt_layout(3)
+
+    def _create_wmt4_layout(self):
+        return self._create_wmt_layout(4)
+
+    def _create_wmt1_layout_old(self):
         wmt1_layout = QFormLayout()
         wmt1_wave_switch_combo = self._create_parameter_combo_box(
             DrumPartialParameter.WMT1_WAVE_SWITCH,
@@ -350,7 +456,7 @@ class DrumPartialEditor(PartialEditor):
         wmt1_layout.addRow(wmt1_velocity_fade_width_upper_slider)
         return wmt1_layout
 
-    def _create_wmt2_layout(self):
+    def _create_wmt2_layout_old(self):
         wmt2_layout = QFormLayout()
         wmt2_wave_switch_combo = self._create_parameter_combo_box(
             DrumPartialParameter.WMT2_WAVE_SWITCH,
@@ -477,7 +583,7 @@ class DrumPartialEditor(PartialEditor):
         wmt2_layout.addRow(wmt2_velocity_fade_width_upper_slider)
         return wmt2_layout
 
-    def _create_wmt3_layout(self):
+    def _create_wmt3_layout_old(self):
         wmt3_layout = QFormLayout()
         wmt3_wave_switch_combo = self._create_parameter_combo_box(
             DrumPartialParameter.WMT3_WAVE_SWITCH,
@@ -608,7 +714,7 @@ class DrumPartialEditor(PartialEditor):
         wmt3_layout.addRow(wmt3_velocity_fade_width_upper_slider)
         return wmt3_layout
 
-    def _create_wmt4_layout(self):
+    def _create_wmt4_layout_old(self):
         wmt4_layout = QFormLayout()
         wmt4_wave_switch_combo = self._create_parameter_combo_box(
             DrumPartialParameter.WMT4_WAVE_SWITCH,

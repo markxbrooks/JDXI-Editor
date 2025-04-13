@@ -70,7 +70,7 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QWidget,
     QTabWidget,
-    QPushButton,
+    QPushButton, QSplitter,
 )
 from PySide6.QtCore import Qt
 
@@ -106,7 +106,7 @@ class DrumCommonEditor(SynthEditor):
         # Presets
         self.preset_helper = preset_helper
         # midi parameters
-        self.partial_number = 1
+        self.partial_number = 0
         self._init_synth_data()
 
         self.current_data = None
@@ -136,6 +136,122 @@ class DrumCommonEditor(SynthEditor):
         self.show()
 
     def setup_ui(self):
+        # Main layout
+        main_layout = QVBoxLayout(self)
+        self.setMinimumSize(1100, 500)
+
+        # Create splitter
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        main_layout.addWidget(splitter)
+
+        # === Top half: upper_layout container ===
+        upper_widget = QWidget()
+        upper_layout = QHBoxLayout(upper_widget)
+        upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
+
+        # Drum group
+        drum_group = QGroupBox("Drum Kit")
+        self.instrument_title_label = DigitalTitle()
+        drum_group.setStyleSheet(JDXIStyle.DRUM_GROUP)
+        self.instrument_title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
+        drum_group_layout = QVBoxLayout()
+        drum_group.setLayout(drum_group_layout)
+        drum_group_layout.addWidget(self.instrument_title_label)
+
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        drum_group_layout.addWidget(self.read_request_button)
+
+        self.selection_label = QLabel("Select address drum kit:")
+        drum_group_layout.addWidget(self.selection_label)
+
+        self.instrument_selection_combo = PresetComboBox(DRUM_KIT_LIST)
+        self.instrument_selection_combo.combo_box.setEditable(True)
+        self.instrument_selection_combo.combo_box.setCurrentIndex(
+            self.preset_helper.preset_number
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
+        self.main_window.drums_preset_helper.preset_changed.connect(
+            self.update_combo_box_index
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        drum_group_layout.addWidget(self.instrument_selection_combo)
+        upper_layout.addWidget(drum_group)
+
+        # Image group
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setMinimumWidth(350)
+        upper_layout.addWidget(self.instrument_image_group)
+
+        # Common section
+        common_group = DrumCommonSection(
+            self.controls,
+            self._create_parameter_combo_box,
+            self._create_parameter_slider,
+            self.midi_helper
+        )
+        upper_layout.addWidget(common_group)
+
+        # Add upper half to splitter
+        splitter.addWidget(upper_widget)
+
+        # === Bottom half: scrollable tab widget ===
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
+        scroll.setWidget(self.partial_tab_widget)
+        splitter.addWidget(scroll)
+
+        # Optionally set initial sizes
+        splitter.setSizes([300, 300])
+        splitter.setStyleSheet("""
+            QSplitter::handle {
+                background-color: #444;
+                border: 1px solid #666;
+            }
+            QSplitter::handle:vertical {
+                height: 6px;
+            }
+            QSplitter::handle:horizontal {
+                width: 6px;
+            }
+        """)
+        # Setup tab widget
+        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
+        # scroll.setWidget(self.partial_tab_widget)
+
+        # Initialize partial editors
+        self._setup_partial_editors()
+
+        self.update_instrument_image()
+        self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
+        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        # Register the callback for incoming MIDI messages
+        if self.midi_helper:
+            logging.info("MIDI helper initialized")
+        else:
+            logging.error("MIDI helper not initialized")
+        self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+        self.data_request()  # this is giving an error
+
+    def setup_ui_old(self):
         # Create layouts
         main_layout = QVBoxLayout(self)
         upper_layout = QHBoxLayout()
@@ -236,7 +352,7 @@ class DrumCommonEditor(SynthEditor):
 
     def _init_synth_data(self):
         """Initialize synth-specific data."""
-        self.synth_data = DrumSynthData(partial_number=1)
+        self.synth_data = DrumSynthData(partial_number=0)
         data = self.synth_data
         print(self.synth_data)
         self.address_msb = data.address_msb
