@@ -249,13 +249,11 @@ class PitchEnvelope(QWidget):
                 size = param.get_nibbled_size()
             else:
                 size = 1
-            group = self.address_lmb  # Common parameters area
-            param_address = param.test_address
             sysex_message = RolandSysEx(
                 address_msb=self.address_msb,
                 address_umb=self.address_umb,
-                address_lmb=group,
-                address_lsb=param_address,
+                address_lmb=self.address_lmb,
+                address_lsb=param.address,
                 value=value,
                 size=size,
             )

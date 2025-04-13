@@ -26,6 +26,7 @@ from typing import Optional, Type, TypeVar, Union, Tuple, Dict, Any
 import inspect
 import json
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 
@@ -99,10 +100,11 @@ class Address(IntEnum):
 
 def construct_address(base_address, address_umb, address_lmb, param):
     """Build a full SysEx address by combining a base address, static offsets, and a parameter offset."""
-    logging.info(f"base \t{base_address} type {type(base_address)} value {base_address.value}")
-    logging.info(f"umb \t{address_umb} type {type(address_umb)} value {address_umb.value}")
-    logging.info(f"lmb \t{address_lmb} type {type(address_lmb)} value {address_lmb.value}")
-    logging.info(f"parameter \t{param}")
+    from jdxi_editor.log.message import log_parameter
+    log_parameter("base address:", base_address)
+    log_parameter("address_umb:", address_umb)
+    log_parameter("address_lmb:", address_lmb)
+    log_parameter("parameter:", param)
 
     base_offset = (address_umb.value, address_lmb.value, 0x00)
     param_offset = param.get_offset()  # e.g., (0, 0, 3)
@@ -110,14 +112,14 @@ def construct_address(base_address, address_umb, address_lmb, param):
     final_offset = tuple(
         (bo + po) & 0x7F for bo, po in zip(base_offset, param_offset)
     )
-    logging.info(f"base offset:  \t{base_offset}")
-    logging.info(f"param offset: \t{param_offset}")
-    logging.info(f"final offset: \t{final_offset}")
+    log_parameter("base offset:", base_offset)
+    log_parameter("param offset:", param_offset)
+    log_parameter("final offset:", final_offset)
 
     full_address = base_address.add_offset(final_offset)
     sysex_address = base_address.to_sysex_address(final_offset)
-    logging.info(f"sysex_address: \t{sysex_address}")
-    logging.info(f"sysex_address: \t{' '.join(f'{b:02X}' for b in sysex_address)}")
+
+    log_parameter("sysex_address:", sysex_address)
     return base_address, full_address, final_offset
 
 

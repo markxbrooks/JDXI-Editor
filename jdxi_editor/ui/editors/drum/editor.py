@@ -280,12 +280,17 @@ class DrumCommonEditor(SynthEditor):
             partial_name = list(self.partial_editors.keys())[index]
             self.partial_number = index
             logging.info(f"Updated to partial {partial_name} (index {index})")
+            self.update_partial_address()
         except IndexError:
             logging.error(f"Invalid partial index: {index}")
 
     def _on_parameter_received(self, address, value):
         """Fixme: to implement"""
         pass
+
+    def update_partial_address(self):
+        """ update partial address from synth data """
+        self.address_lmb = self.synth_data.get_partial_lmb(self.partial_number)
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""

@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB, construct_address, Address,
@@ -65,11 +66,11 @@ class PartialEditor(SynthBase):
     def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
-            address_lmb = self.address_lmb
-            print(f"Type of address_lmb: {type(address_lmb)} {address_lmb}")
-            logging.info(
-                f"Sending partial number {self.partial_number} param={param}, address_umb={self.address_umb}, address_lmb={address_lmb}, value={value}"
-            )
+            log_parameter("self.partial_number:", self.partial_number)
+            log_parameter("address_umb:", self.address_umb)
+            log_parameter("address_lmb:", self.address_lmb)
+            log_parameter("parameter:", param)
+            log_parameter("value:", value)
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
             else:
@@ -80,11 +81,12 @@ class PartialEditor(SynthBase):
                                                                    param
             )
 
-            # Step 5: Extract individual bytes
+            # Extract individual bytes
             address_msb, address_umb, address_lmb, address_lsb = full_address
-            logging.info(f"base address: t\{base_address.to_sysex_address()}")
-            logging.info(f"offset: \t{offset}")
-            logging.info(f"full address \t{full_address}")
+            sysex_address = base_address.to_sysex_address()
+            log_parameter("base address:", sysex_address)
+            log_parameter("offset:", offset)
+            log_parameter("full address:", full_address)
             sysex_message = RolandSysEx(
                 address_msb=address_msb,
                 address_umb=address_umb,
@@ -94,7 +96,6 @@ class PartialEditor(SynthBase):
                 size=size,
             )
             result = self.midi_helper.send_midi_message(sysex_message)
-
             return bool(result)
         except Exception as ex:
             logging.error(f"MIDI error setting {param.name}: {ex}")

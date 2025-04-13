@@ -24,6 +24,8 @@ from typing import List, Optional, Union
 
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.globals import LOG_PADDING_WIDTH
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     END_OF_SYSEX,
@@ -64,34 +66,31 @@ class MidiOutHandler(MidiIOController):
         Returns:
             True if the message was sent successfully, False otherwise.
         """
-        logging.info(f"attempting to send message: {type(message)} {message}")
+        log_parameter("attempting to send message:", message)
         try:
             if not message:
                 logging.info("MIDI message is empty.")
                 raise ValueError
 
             if any(not (0 <= x <= 255) for x in message):
-                logging.info(f"Invalid MIDI value detected: {message}")
+                log_parameter("Invalid MIDI value detected:", message)
                 raise ValueError
         except Exception as ex:
             logging.info(f"Error {ex} occurred processing midi message")
 
         formatted_message = format_midi_message_to_hex_string(message)
-        logging.info(f"Sending MIDI message: {formatted_message}")
+        log_parameter("Sending MIDI message:", formatted_message)
 
         if not self.midi_out.is_port_open():
             logging.info("MIDI output port is not open.")
             return False
 
         try:
-            logging.info(
-                f"Validation passed, sending MIDI message: "
-                f"{type(formatted_message)} {formatted_message}"
-            )
+            log_parameter('QC passed, sending message:', formatted_message)
             self.midi_out.send_message(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            logging.info(f"Error sending MIDI message: {ex}")
+            logging.info(f"Error sending message: {ex}")
             return False
 
     def send_note_on(self, note: int = 60, velocity: int = 127, channel: int = 1):
