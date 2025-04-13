@@ -75,7 +75,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
-from jdxi_editor.midi.data.editor.data import DrumsSynthData
+from jdxi_editor.midi.data.editor.data import DrumSynthData
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
@@ -236,7 +236,7 @@ class DrumCommonEditor(SynthEditor):
 
     def _init_synth_data(self):
         """Initialize synth-specific data."""
-        self.synth_data = DrumsSynthData(partial_number=1)
+        self.synth_data = DrumSynthData(partial_number=1)
         data = self.synth_data
         print(self.synth_data)
         self.address_msb = data.address_msb

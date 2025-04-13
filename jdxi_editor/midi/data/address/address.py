@@ -97,20 +97,28 @@ class Address(IntEnum):
         return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
 
 
-def construct_address(area_address: Address,
-                      umb: Address,
-                      lmb: Address,
-                      parameter: SynthParameter):
-    """
+def construct_address(base_address, address_umb, address_lmb, param):
+    """Build a full SysEx address by combining a base address, static offsets, and a parameter offset."""
+    logging.info(f"base \t{base_address} type {type(base_address)} value {base_address.value}")
+    logging.info(f"umb \t{address_umb} type {type(address_umb)} value {address_umb.value}")
+    logging.info(f"lmb \t{address_lmb} type {type(address_lmb)} value {address_lmb.value}")
+    logging.info(f"parameter \t{param}")
 
-    Build a full SysEx address by combining a base address and a parameter offset.
-    Returns: (base_address, full_address, offset) """
-    area_address.add_offset((umb, lmb, ZERO_BYTE))
-    # Get the parameter-specific offset
-    parameter_offset = parameter.get_offset()
-    # Compose the full address
-    complete_address = area_address.add_offset(parameter_offset)
-    return area_address, complete_address, parameter_offset
+    base_offset = (address_umb.value, address_lmb.value, 0x00)
+    param_offset = param.get_offset()  # e.g., (0, 0, 3)
+
+    final_offset = tuple(
+        (bo + po) & 0x7F for bo, po in zip(base_offset, param_offset)
+    )
+    logging.info(f"base offset:  \t{base_offset}")
+    logging.info(f"param offset: \t{param_offset}")
+    logging.info(f"final offset: \t{final_offset}")
+
+    full_address = base_address.add_offset(final_offset)
+    sysex_address = base_address.to_sysex_address(final_offset)
+    logging.info(f"sysex_address: \t{sysex_address}")
+    logging.info(f"sysex_address: \t{' '.join(f'{b:02X}' for b in sysex_address)}")
+    return base_address, full_address, final_offset
 
 
 # Short maps
@@ -227,15 +235,43 @@ class AddressOffsetProgramLMB(Address):
     CONTROLLER = 0x40
     DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
-
-
-# Dynamically generate DRUM_KIT_PART_{1-72} = 0x2E to 0x76
-drum_kit_partials = {f"DRUM_KIT_PART_{i}": 0x2E + (i - 1) for i in range(1, 73)}
-
-# Merge generated drum kit parts into AddressOffsetProgramLMB
-
-for name, value in drum_kit_partials.items():
-    setattr(AddressOffsetProgramLMB, name, value)
+    DRUM_KIT_PART_1 = 0x2E
+    DRUM_KIT_PART_2 = 0x30
+    DRUM_KIT_PART_3 = 0x32
+    DRUM_KIT_PART_4 = 0x34
+    DRUM_KIT_PART_5 = 0x36
+    DRUM_KIT_PART_6 = 0x38
+    DRUM_KIT_PART_7 = 0x3A
+    DRUM_KIT_PART_8 = 0x3C
+    DRUM_KIT_PART_9 = 0x3E
+    DRUM_KIT_PART_10 = 0x40
+    DRUM_KIT_PART_11 = 0x42
+    DRUM_KIT_PART_12 = 0x44
+    DRUM_KIT_PART_13 = 0x46
+    DRUM_KIT_PART_14 = 0x48
+    DRUM_KIT_PART_15 = 0x4A
+    DRUM_KIT_PART_16 = 0x4C
+    DRUM_KIT_PART_17 = 0x4E
+    DRUM_KIT_PART_18 = 0x50
+    DRUM_KIT_PART_19 = 0x52
+    DRUM_KIT_PART_20 = 0x54
+    DRUM_KIT_PART_21 = 0x56
+    DRUM_KIT_PART_22 = 0x58
+    DRUM_KIT_PART_23 = 0x5A
+    DRUM_KIT_PART_24 = 0x5C
+    DRUM_KIT_PART_25 = 0x5E
+    DRUM_KIT_PART_26 = 0x60
+    DRUM_KIT_PART_27 = 0x62
+    DRUM_KIT_PART_28 = 0x64
+    DRUM_KIT_PART_29 = 0x66
+    DRUM_KIT_PART_30 = 0x68
+    DRUM_KIT_PART_31 = 0x6A
+    DRUM_KIT_PART_32 = 0x6C
+    DRUM_KIT_PART_33 = 0x6E
+    DRUM_KIT_PART_34 = 0x70
+    DRUM_KIT_PART_35 = 0x72
+    DRUM_KIT_PART_36 = 0x74
+    DRUM_KIT_PART_37 = 0x76
 
 
 def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:

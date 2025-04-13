@@ -47,6 +47,7 @@ class PartialEditor(SynthBase):
         parent=None,
     ):
         super().__init__(midi_helper, parent)
+        self.synth_data = None
         self.partial_address_default = None
         self.partial_address_map = {}
         self.bipolar_parameters = []
@@ -64,9 +65,8 @@ class PartialEditor(SynthBase):
     def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
-            address_lmb = self.get_partial_address()
-            print("Type of address_lmb:")
-            print(type(address_lmb))
+            address_lmb = self.address_lmb
+            print(f"Type of address_lmb: {type(address_lmb)} {address_lmb}")
             logging.info(
                 f"Sending partial number {self.partial_number} param={param}, address_umb={self.address_umb}, address_lmb={address_lmb}, value={value}"
             )
@@ -76,7 +76,7 @@ class PartialEditor(SynthBase):
                 size = 1
             base_address, full_address, offset = construct_address(self.address_msb,
                                                                    self.address_umb,
-                                                                   address_lmb,
+                                                                   self.address_lmb,
                                                                    param
             )
 
@@ -106,5 +106,4 @@ class PartialEditor(SynthBase):
             self.partial_number, self.partial_address_default
         )  # Default to 0x20 if partial_name is not 1, 2, or 3
         logging.info(f"address_lmb found: {address_lmb}")
-        address = AddressOffsetProgramLMB.get_parameter_by_address(address_lmb)
-        return address
+        return address_lmb

@@ -68,7 +68,7 @@ class SynthData:
     display_prefix: str
 
 
-class DrumsSynthData(SynthData):
+class DrumSynthData(SynthData):
     def __init__(self, partial_number: int = 1):
         super().__init__(
             address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
@@ -85,10 +85,66 @@ class DrumsSynthData(SynthData):
             display_prefix="DR",
         )
         self.partial_number = partial_number
+        self.group_map = {
+            0: AddressOffsetProgramLMB.COMMON,
+            1: AddressOffsetProgramLMB.DRUM_KIT_PART_1,
+            2: AddressOffsetProgramLMB.DRUM_KIT_PART_2,
+            3: AddressOffsetProgramLMB.DRUM_KIT_PART_3,
+            4: AddressOffsetProgramLMB.DRUM_KIT_PART_4,
+            5: AddressOffsetProgramLMB.DRUM_KIT_PART_5,
+            6: AddressOffsetProgramLMB.DRUM_KIT_PART_6,
+            7: AddressOffsetProgramLMB.DRUM_KIT_PART_7,
+            8: AddressOffsetProgramLMB.DRUM_KIT_PART_8,
+            9: AddressOffsetProgramLMB.DRUM_KIT_PART_9,
+            10: AddressOffsetProgramLMB.DRUM_KIT_PART_10,
+            11: AddressOffsetProgramLMB.DRUM_KIT_PART_11,
+            12: AddressOffsetProgramLMB.DRUM_KIT_PART_12,
+            13: AddressOffsetProgramLMB.DRUM_KIT_PART_13,
+            14: AddressOffsetProgramLMB.DRUM_KIT_PART_14,
+            15: AddressOffsetProgramLMB.DRUM_KIT_PART_15,
+            16: AddressOffsetProgramLMB.DRUM_KIT_PART_16,
+            17: AddressOffsetProgramLMB.DRUM_KIT_PART_17,
+            18: AddressOffsetProgramLMB.DRUM_KIT_PART_18,
+            19: AddressOffsetProgramLMB.DRUM_KIT_PART_19,
+            20: AddressOffsetProgramLMB.DRUM_KIT_PART_20,
+            21: AddressOffsetProgramLMB.DRUM_KIT_PART_21,
+            22: AddressOffsetProgramLMB.DRUM_KIT_PART_22,
+            23: AddressOffsetProgramLMB.DRUM_KIT_PART_23,
+            24: AddressOffsetProgramLMB.DRUM_KIT_PART_24,
+            25: AddressOffsetProgramLMB.DRUM_KIT_PART_25,
+            26: AddressOffsetProgramLMB.DRUM_KIT_PART_26,
+            27: AddressOffsetProgramLMB.DRUM_KIT_PART_27,
+            28: AddressOffsetProgramLMB.DRUM_KIT_PART_28,
+            29: AddressOffsetProgramLMB.DRUM_KIT_PART_29,
+            30: AddressOffsetProgramLMB.DRUM_KIT_PART_30,
+            31: AddressOffsetProgramLMB.DRUM_KIT_PART_31,
+            32: AddressOffsetProgramLMB.DRUM_KIT_PART_32,
+            33: AddressOffsetProgramLMB.DRUM_KIT_PART_33,
+            34: AddressOffsetProgramLMB.DRUM_KIT_PART_34,
+            35: AddressOffsetProgramLMB.DRUM_KIT_PART_35,
+            36: AddressOffsetProgramLMB.DRUM_KIT_PART_36,
+            37: AddressOffsetProgramLMB.DRUM_KIT_PART_37,
+        }
+
+        # Add all DRUM_KIT_PART_* values from the enum dynamically
+        for member in AddressOffsetProgramLMB:
+            if member.name.startswith("DRUM_KIT_PART_"):
+                # Extract the number at the end of the name
+                try:
+                    index = int(member.name.split("_")[-1])
+                    self.group_map[index] = member
+                except ValueError:
+                    continue  # skip anything that doesn’t have a numeric suffix
+
+    @property
+    def partial_lmb(self) -> int:
+        return self.group_map.get(
+            self.partial_number, AddressOffsetProgramLMB.COMMON
+        )
 
 
 class DigitalSynthData(SynthData):
-    def __init__(self, synth_number: int, partial_number: int = 1):
+    def __init__(self, synth_number: int, partial_number: int = 0):
         super().__init__(
             address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_2
@@ -111,15 +167,16 @@ class DigitalSynthData(SynthData):
         )
         self.partial_number = partial_number
         self.group_map = {
+            0: AddressOffsetProgramLMB.COMMON,
             1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
             2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
             3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
         }
 
     @property
-    def partial_group(self) -> int:
+    def partial_lmb(self) -> int:
         return self.group_map.get(
-            self.partial_number, AddressOffsetSuperNATURALLMB.PARTIAL_1
+            self.partial_number, AddressOffsetProgramLMB.COMMON
         )
 
 
@@ -143,7 +200,7 @@ class AnalogSynthData(SynthData):
 
 def create_synth_data(synth_type: JDXISynth, partial_number=1) -> SynthData:
     if synth_type == JDXISynth.DRUMS:
-        return DrumsSynthData(partial_number=partial_number)
+        return DrumSynthData(partial_number=partial_number)
     elif synth_type == JDXISynth.DIGITAL_1:
         return DigitalSynthData(synth_number=1, partial_number=partial_number)
     elif synth_type == JDXISynth.DIGITAL_2:

@@ -41,6 +41,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.drum.data import rm_waves
+from jdxi_editor.midi.data.editor.data import DrumSynthData
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.midi.data.parameter.drum.helper import get_address_for_partial_name
@@ -57,22 +58,19 @@ class DrumPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
-        self.partial_address_default = AddressOffsetProgramLMB.DRUM_KIT_PART_1
+        self.partial_address_default = AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
         self.address_msb = AddressMemoryAreaMSB.TEMPORARY_TONE
         self.address_umb = AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
-        # Calculate the address for this partial
-        try:
-            self.address_lmb = get_address_for_partial_name(self.partial_name)
-            logging.info(
-                f"Initialized partial {partial_number} with address: {hex(self.address_lmb)}"
-            )
-        except Exception as ex:
-            logging.error(
-                f"Error calculating address for partial {partial_number}: {str(ex)}"
-            )
-            self.address_lmb = 0x00
+
+        self.synth_data = DrumSynthData(partial_number=partial_number
+        )
+        data = self.synth_data
+        self.address_msb = data.address_msb
+        self.address_umb = data.address_umb
+        self.address_lmb = data.partial_lmb
+        print(self.address_lmb)
 
         # Store parameter controls for easy access
         self.controls: Dict[DrumPartialParameter, QWidget] = {}
@@ -113,16 +111,6 @@ class DrumPartialEditor(PartialEditor):
 
         # scroll_area.setLayout(scroll_layout)
         main_layout.addWidget(scroll_area)
-
-    def get_partial_address(self) -> int:
-        """Get the address for address drum partial by index"""
-        try:
-            address_lmb = DRUM_GROUP_MAP.get(
-                self.partial_number + 1, 0x2E
-            )  # Default to 0x2E if partial_name is not 1, 2, or 3
-            return address_lmb
-        except Exception as ex:
-            print(f"Error getting address for partial {self.partial_number}: {str(ex)}")
 
     def _create_tva_group(self):
         """Create the TVA area."""

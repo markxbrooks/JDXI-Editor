@@ -85,7 +85,7 @@ class DigitalPartialEditor(PartialEditor):
         data = self.synth_data
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
-        self.address_lmb = data.address_lmb
+        self.address_lmb = data.partial_lmb
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
         else:
