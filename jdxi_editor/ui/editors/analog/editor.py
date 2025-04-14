@@ -339,6 +339,8 @@ class AnalogSynthEditor(SynthEditor):
 
                 # Update the corresponding slider
                 if param in self.controls:
+                    self._update_slider(param, param_value, successes)
+                    """
                     slider_value = param.convert_from_midi(value)
                     logging.info(
                         f"midi value {value} converted to slider value {slider_value}"
@@ -347,6 +349,7 @@ class AnalogSynthEditor(SynthEditor):
                     slider.blockSignals(True)  # Prevent feedback loop
                     slider.setValue(slider_value)
                     slider.blockSignals(False)
+                    """
 
                 # Handle OSC_WAVE parameter to update waveform buttons
                 if param == AnalogParameter.OSC_WAVEFORM:
