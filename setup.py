@@ -1,7 +1,7 @@
 # setup.py
 from setuptools import setup, find_packages
 
-APP = ['jdxi-editor/main.py']  # Path to your main script
+APP = ['jdxi_editor/main.py']  # Path to your main script
 DATA_FILES = ['jdxi_editor.icns', "resources/jdxi_icon.png", "resources/fonts/JdLCD.ttf"]  # Include any additional files your app needs
 OPTIONS = {
     'argv_emulation': False,
