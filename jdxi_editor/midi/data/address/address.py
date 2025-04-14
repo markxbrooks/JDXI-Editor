@@ -96,6 +96,9 @@ class Address(IntEnum):
 
     def __repr__(self):
         return f"<{self.__class__.__name__}.{self.name}: 0x{self.value:02X}>"
+    
+    def __str__(self):
+        return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
 
 
 def construct_address(base_address, address_umb, address_lmb, param):

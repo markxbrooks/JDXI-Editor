@@ -82,7 +82,12 @@ def bytes_to_hex_string(byte_list, prefix="F0"):
     :param prefix: Optional prefix (default is "F0" for SysEx messages).
     :return: Formatted hex string.
     """
-    return f"{prefix} " + " ".join(f"{byte:02X}" for byte in byte_list)
+    try:
+        return f"{prefix} " + " ".join(f"{int(byte):02X}" for byte in byte_list)
+    except ValueError as ex:
+        logging.info(f"Error {ex} occurred formatting hex")
+    except Exception as ex:
+        logging.info(f"Error {ex} occurred formatting hex")
 
 
 def to_hex_string(value: int) -> str:
