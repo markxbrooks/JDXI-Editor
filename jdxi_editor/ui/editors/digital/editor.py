@@ -525,7 +525,7 @@ class DigitalSynthEditor(SynthEditor):
             return
 
         slider_value = param.convert_from_midi(value)
-        logging.info(f"Updating {param.name}: MIDI {value} -> Slider {slider_value}")
+        logging.info(f"Updating part {partial_no} {param.name}: MIDI {value} -> Slider {slider_value}")
         slider.blockSignals(True)
         slider.setValue(slider_value)
         slider.blockSignals(False)

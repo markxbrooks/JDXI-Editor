@@ -361,6 +361,7 @@ class SynthEditor(SynthBase):
         slider = self.controls.get(param)
         if slider:
             slider_value = param.convert_from_midi(value)
+            logging.info(f"Updating {param.name}: MIDI {value} -> Slider {slider_value}")
             slider.blockSignals(True)
             slider.setValue(slider_value)
             slider.blockSignals(False)
