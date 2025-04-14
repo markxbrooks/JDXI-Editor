@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 
@@ -20,6 +21,7 @@ class DrumCommonSection(QWidget):
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
         self.setup_ui()
+        self.address_lmb = AddressOffsetProgramLMB.COMMON
 
     def setup_ui(self):
         """setup UI"""

@@ -354,7 +354,7 @@ class DrumCommonEditor(SynthEditor):
         """Initialize synth-specific data."""
         self.synth_data = DrumSynthData(partial_number=0)
         data = self.synth_data
-        print(self.synth_data)
+        logging.info(self.synth_data)
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
         self.address_lmb = data.address_lmb

@@ -89,6 +89,6 @@ window.show()
 
 # Example: Get the selected wave number
 selected_wave_number = window.get_selected_wave_number()
-print(f"Selected Wave Number: {selected_wave_number}")
+logging.info(f"Selected Wave Number: {selected_wave_number}")
 
 app.exec()

@@ -156,7 +156,7 @@ class MidiTrackWidget(QWidget):
         #    json.dump(json_safe_data, f, indent=2)
 
     def toggle_channel_mute(self, channel, is_muted):
-        print(
+        logging.info(
             f"Track Widget Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
         )
         if is_muted:
@@ -340,7 +340,7 @@ class MidiTrackViewer(QWidget):
 
     def toggle_channel_mute(self, channel, is_muted):
         """Add or remove the channel from muted set."""
-        print(
+        logging.info(
             f"Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
         )
         if is_muted:

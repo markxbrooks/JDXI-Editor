@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox
 
 from jdxi_editor.midi.data.drum.data import rm_waves
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
 from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 

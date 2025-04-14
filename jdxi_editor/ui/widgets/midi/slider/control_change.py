@@ -75,7 +75,7 @@ class ControlChangeSlider(Slider):
         self.update_style(value)
 
         for partial in [1, 2, 3]:
-            print(self.nrpn_map)
+            logging.info(self.nrpn_map)
             cc_number = self.nrpn_map.get(partial)
             if cc_number is None:
                 raise ValueError("Invalid partial number")

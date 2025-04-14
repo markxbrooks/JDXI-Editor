@@ -596,7 +596,7 @@ class AnalogSynthEditor(SynthEditor):
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
         """Enable/disable PW controls based on waveform"""
         pw_enabled = waveform == AnalogOscWave.PULSE
-        print(self.controls)
+        logging.info(self.controls)
         self.controls[AnalogParameter.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
         self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
         # Update the visual state
