@@ -33,7 +33,8 @@ from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, QTimer
 
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
+    AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import JDXISynth
@@ -953,9 +954,9 @@ class JdxiInstrument(JdxiUi):
 
             # Update display
             self._update_display()
-            part_address = 0x01
-            group_address = 0x00
-            param_address = DigitalCommonParameter.OCTAVE_SHIFT.value[0]
+            address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
+            address_lmb = AddressOffsetProgramLMB.COMMON
+            address_lsb = DigitalCommonParameter.OCTAVE_SHIFT.value[0]
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
@@ -964,30 +965,30 @@ class JdxiInstrument(JdxiUi):
             )
             sysex_message = RolandSysEx(
                 address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                address_umb=part_address,
-                address_lmb=group_address,
-                address_lsb=param_address,
+                address_umb=address_umb,
+                address_lmb=address_lmb,
+                address_lsb=address_lsb,
                 value=octave_value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
 
     def send_midi_parameter(
-        self, group_address, param_address, value, part_address=None, area=None
+        self, address_lmb, param_address, value, address_umb=None, address_msb=None
     ) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
             return False
         try:
-            if not part_address:
-                part_address = ArpeggioAddress.ARP_PART
-            if not area:
-                area = AddressMemoryAreaMSB.PROGRAM
+            if not address_umb:
+                address_umb = ArpeggioAddress.ARP_PART
+            if not address_msb:
+                address_msb = AddressMemoryAreaMSB.PROGRAM
             # Ensure value is included in the MIDI message
             sysex_message = RolandSysEx(
-                area=area,
-                section=part_address,
-                group=group_address,
+                address_msb=address_msb,
+                address_umb=address_umb,
+                address_lmb=address_lmb,
                 address_lsb=param_address,
                 value=value,
             )
@@ -1017,7 +1018,7 @@ class JdxiInstrument(JdxiUi):
         try:
             if self.midi_helper:
                 param_address = (
-                    ArpeggioParameter.ARPEGGIO_SWITCH.value
+                    ArpeggioParameter.ARPEGGIO_SWITCH.value[0]
                 )  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
                 self.send_midi_parameter(

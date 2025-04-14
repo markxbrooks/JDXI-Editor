@@ -44,7 +44,7 @@ class JDXIDimensions:
         HEIGHT - WHITE_KEY_HEIGHT + 20
     )  # Windows has a menu across the top
     SEQUENCER_Y_NON_WINDOWS = (
-        HEIGHT - WHITE_KEY_HEIGHT - 20
+        HEIGHT - WHITE_KEY_HEIGHT + 20
     )  # Keep same distance above keyboard
     SEQUENCER_WIDTH = 440  # # Use roughly half keyboard width
     SEQUENCER_X = WIDTH - MARGIN - SEQUENCER_WIDTH  # Align with right edge of keyboard

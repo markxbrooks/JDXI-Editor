@@ -1,11 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_all, collect_dynamic_libs
 
 datas, binaries, hiddenimports = collect_all('PySide6')
 
 # Add this manually:
 hiddenimports += ['PySide6.QtDBus']
+dbus_binaries = collect_dynamic_libs('PySide6.QtDBus')
+binaries += dbus_binaries
 
 block_cipher = None
 
@@ -43,6 +45,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='jdxi_editor.icns'
 )
 coll = COLLECT(
     exe,
