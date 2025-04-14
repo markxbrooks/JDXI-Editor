@@ -146,7 +146,7 @@ class DigitalSynthEditor(SynthEditor):
     def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
         self.synth_data = DigitalSynthData(synth_number)
-        print(self.synth_data)
+        logging.info(self.synth_data)
         data = self.synth_data
 
         self.address_msb = data.address_msb

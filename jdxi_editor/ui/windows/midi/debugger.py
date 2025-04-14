@@ -214,7 +214,7 @@ class MIDIDebugger(QMainWindow):
         try:
             # Use the parse_sysex function to decode the message
             decoded_parameters = parse_sysex(message)
-            print(decoded_parameters)
+            logging.info(decoded_parameters)
 
             # Format the output using the decoded parameters
             table_data = [[key, value] for key, value in decoded_parameters.items()]

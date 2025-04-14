@@ -26,9 +26,9 @@ def parse_sysex_file(filename):
 
     patches = extract_patches(data)
     for i, (name, raw) in enumerate(patches, 1):
-        print(f"Patch {i}: {name}")
-        print(f"Raw Data: {raw[:200]}...")  # Show only the first 200 hex characters
-        print("-" * 40)
+        logging.info(f"Patch {i}: {name}")
+        logging.info(f"Raw Data: {raw[:200]}...")  # Show only the first 200 hex characters
+        logging.info("-" * 40)
 
 
 def parse_patch(file_path):

@@ -22,11 +22,11 @@ Dependencies:
 
 import json
 import logging
-
 import mido
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Union
 from PySide6.QtCore import Signal
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import ModelID, RolandID
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
@@ -78,8 +78,49 @@ def rtmidi_to_mido(rtmidi_message):
         return None
 
 
-def convert_to_mido_message(message_content):
-    """with nibbles"""
+def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.Message, List[mido.Message]]]:
+    """Convert raw MIDI message content to a mido.Message object or a list of them."""
+    if not message_content:
+        return None
+
+    status_byte = message_content[0]
+
+    try:
+        # SysEx
+        if status_byte == 0xF0 and message_content[-1] == 0xF7:
+            sys_ex_data = nibble_data(message_content[1:-1])
+            if len(sys_ex_data) > 128:
+                nibbles = [sys_ex_data[i:i + 4] for i in range(0, len(sys_ex_data), 4)]
+                return [mido.Message("sysex", data=nibble) for nibble in nibbles]
+            return mido.Message("sysex", data=sys_ex_data)
+    except Exception as ex:
+        logging.info(f"Error {ex} occurred")
+    try:
+        # Program Change
+        if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
+            channel = status_byte & 0x0F
+            program = message_content[1]
+            return mido.Message("program_change", channel=channel, program=program)
+    except Exception as ex:
+        logging.info(f"Error {ex} occurred")
+
+    try:
+        # Control Change
+        if 0xB0 <= status_byte <= 0xBF and len(message_content) >= 3:
+            channel = status_byte & 0x0F
+            control = message_content[1]
+            value = message_content[2]
+            return mido.Message("control_change", channel=channel, control=control, value=value)
+    except Exception as ex:
+        logging.info(f"Error {ex} occurred")
+
+    # Other (not yet implemented)
+    logging.info(f"Unhandled MIDI message: {message_content}")
+    return None
+
+
+def convert_to_mido_message_old(message_content: list):
+    """ convert_to_mido_message """
     if not message_content:
         return None
 
@@ -111,7 +152,7 @@ def convert_to_mido_message(message_content):
         )
 
     # **Other Messages (Optional)**
-    print(f"Unhandled MIDI message: {message_content}")
+    logging.info(f"Unhandled MIDI message: {message_content}")
     return None
 
 
@@ -209,11 +250,14 @@ class MidiInHandler(MidiIOController):
         """
         try:
             message_content, data = message
-            mido_message = convert_to_mido_message(message_content)
-            if mido_message:
-                self._handle_midi_message(mido_message)
+            log_parameter("message_content", message_content)
+            log_parameter("data", data)
+            p = mido.Parser()
+            p.feed(message_content)
+            for message in p:
+                self._handle_midi_message(message)
         except Exception as ex:
-            print(ex)
+            logging.info(ex)
 
     def register_callback(self, callback: Callable) -> None:
         """
@@ -239,20 +283,23 @@ class MidiInHandler(MidiIOController):
 
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
-        preset_data = Preset()
-        message_handlers = {
-            "sysex": self._handle_sysex_message,
-            "control_change": self._handle_control_change,
-            "program_change": self._handle_program_change,
-            "note_on": self._handle_note_change,
-            "note_off": self._handle_note_change,
-            "clock": self._handle_clock,
-        }
-        handler = message_handlers.get(message.type)
-        if handler:
-            handler(message, preset_data)
-        else:
-            logging.info("Unhandled MIDI message type: %s", message.type)
+        try:
+            preset_data = Preset()
+            message_handlers = {
+                "sysex": self._handle_sysex_message,
+                "control_change": self._handle_control_change,
+                "program_change": self._handle_program_change,
+                "note_on": self._handle_note_change,
+                "note_off": self._handle_note_change,
+                "clock": self._handle_clock,
+            }
+            handler = message_handlers.get(message.type)
+            if handler:
+                handler(message, preset_data)
+            else:
+                logging.info("Unhandled MIDI message type: %s", message.type)
+        except Exception as ex:
+            logging.info(f"Error {ex} occurred")
 
     def _handle_note_change(self, message: Any, preset_data) -> None:
         """
