@@ -963,9 +963,9 @@ class JdxiInstrument(JdxiUi):
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
             sysex_message = RolandSysEx(
-                area=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                section=part_address,
-                group=group_address,
+                address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                address_umb=part_address,
+                address_lmb=group_address,
                 address_lsb=param_address,
                 value=octave_value,
             )
