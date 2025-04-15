@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QApplication
 
+from jdxi_editor.ui.style import JDXIStyle
+
 
 class ProgressDialog(QDialog):
     def __init__(
@@ -11,6 +13,7 @@ class ProgressDialog(QDialog):
         layout = QVBoxLayout()
         self.label = QLabel(message)
         self.progress_bar = QProgressBar()
+        self.progress_bar.setStyleSheet(JDXIStyle.PROGRESS_BAR)
         self.progress_bar.setMaximum(maximum)
         layout.addWidget(self.label)
         layout.addWidget(self.progress_bar)

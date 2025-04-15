@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import Enum
 
 LFO_RANGES = {
     "shape": (0, 5),

@@ -103,7 +103,6 @@ class Address(IntEnum):
 
 def construct_address(base_address, address_umb, address_lmb, param):
     """Build a full SysEx address by combining a base address, static offsets, and a parameter offset."""
-    from jdxi_editor.log.message import log_parameter
     log_parameter("base address:", base_address)
     log_parameter("address_umb:", address_umb)
     log_parameter("address_lmb:", address_lmb)

@@ -272,6 +272,23 @@ class JDXIStyle:
         SLIDER_NEON_GRADIENT_STOP,
     )
 
+    SPLASH_SCREEN = generate_editor_style(
+        ACCENT,
+        ACCENT_HOVER,
+        BACKGROUND,
+        FOREGROUND,
+        "Segoe UI",
+        36,
+        PADDING,
+        BUTTON_PADDING,
+        SLIDER_HANDLE,
+        SLIDER_HANDLE_BORDER,
+        SLIDER_GROOVE,
+        SLIDER_NEON,
+        SLIDER_NEON_GRADIENT_STOP,
+        'bold'
+    )
+
     EDITOR_ANALOG = generate_editor_style(
         ACCENT_ANALOG,
         ACCENT_ANALOG_HOVER,
@@ -336,6 +353,21 @@ class JDXIStyle:
                 margin-bottom: 2px;
                 margin-top: 2px;
             }}
+        """
+
+    PROGRESS_BAR = """
+        QProgressBar {
+            background-color: #333;
+            color: white;
+            border: 2px solid #444;
+            border-radius: 10px;
+            text-align: center;
+        }
+        QProgressBar::chunk {
+            background-color: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
+                             stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 10px;
+        }
         """
 
     SLIDER = f"""

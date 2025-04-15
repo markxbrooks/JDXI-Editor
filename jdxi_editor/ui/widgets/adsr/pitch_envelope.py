@@ -155,6 +155,10 @@ class PitchEnvelope(QWidget):
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         # Create vertical slider
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
         slider = Slider(
             label, display_min, display_max, vertical=True, show_value_label=False
         )

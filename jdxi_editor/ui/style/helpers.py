@@ -185,6 +185,7 @@ def generate_editor_style(
     slider_groove,
     slider_neon,
     slider_neon_gradient_stop,
+    font_weight = "normal"
 ):
     return f"""
         QWidget {{
@@ -222,6 +223,7 @@ def generate_editor_style(
             subcontrol-position: top center;
             padding: 0 1px;
             color: {foreground};
+            font-weight: {font_weight};
         }}
 
         QPushButton {{

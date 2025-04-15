@@ -23,11 +23,16 @@ Functions:
 import os
 import sys
 import logging
+import time
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QIcon, QPixmap, QColor
 
+from PySide6.QtCore import QRect
+from PySide6.QtWidgets import QApplication, QSplashScreen, QProgressBar, QLabel, QWidget, QVBoxLayout, QHBoxLayout, \
+    QGroupBox
+from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
+
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
@@ -85,6 +90,9 @@ def setup_logging():
         print(f"Error setting up logging: {str(ex)}")
         raise
 
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
 
 def main():
     try:
@@ -137,6 +145,71 @@ def main():
             icon.addPixmap(pixmap)
             app.setWindowIcon(icon)
             logging.info("Using fallback icon")
+
+        splash = QWidget()
+        splash.setWindowFlags(Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        splash.setFixedSize(500, 400)
+        splash.setStyleSheet("background-color: black;")
+
+        layout = QVBoxLayout(splash)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(10)
+
+        # Title
+        group_box = QGroupBox("JDXI-Editor")
+        group_box.setAlignment(Qt.AlignHCenter)
+        group_box.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
+        preferred_fonts = ["Myriad Pro", "Segoe UI", "Arial"]
+        for font_name in preferred_fonts:
+            font = QFont(font_name, 20)
+            font.setBold(True)
+            if QFontInfo(font).family() == font_name:
+                group_box.setFont(font)
+                break
+        layout.addWidget(group_box)
+
+        group_layout = QVBoxLayout()
+        group_layout.setAlignment(Qt.AlignCenter)
+        group_box.setLayout(group_layout)
+
+        # Image
+        image_path = resource_path(os.path.join('resources', 'jdxi_cartoon_600.png'))
+        pixmap = QPixmap(image_path).scaled(250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        image_label = QLabel()
+        image_label.setPixmap(pixmap)
+        image_label.setAlignment(Qt.AlignCenter)
+        group_layout.addWidget(image_label)
+
+        # Progress bar
+        progress_bar = QProgressBar()
+        progress_bar.setRange(0, 100)
+        progress_bar.setValue(0)
+        progress_bar.setFixedHeight(30)
+        progress_bar.setFixedWidth(400)
+        progress_bar.setAlignment(Qt.AlignCenter)
+        progress_bar.setStyleSheet(JDXIStyle.PROGRESS_BAR)
+        group_box.setStyleSheet(JDXIStyle.SPLASH_SCREEN)
+        progress_container = QHBoxLayout()
+        progress_container.addStretch()
+        progress_container.addWidget(progress_bar)
+        progress_container.addStretch()
+        group_layout.addLayout(progress_container)
+        from jdxi_editor.ui.widgets.display.digital import DigitalTitle
+        sub_text_label = DigitalTitle("An editor for the of the JD-XI instrument",
+                                      show_upper_text=False)
+        sub_text_label.setMinimumHeight(80)
+        sub_text_label.setFixedSize(475, 80)
+        group_layout.addWidget(sub_text_label)
+
+        splash.show()
+        import time
+        for i in range(101):
+            progress_bar.setValue(i)
+            app.processEvents()
+            time.sleep(0.03)
+
+        splash.close()
 
         window = JdxiInstrument()
         window.show()

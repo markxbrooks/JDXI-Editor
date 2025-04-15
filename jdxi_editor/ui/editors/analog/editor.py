@@ -113,6 +113,12 @@ class AnalogSynthEditor(SynthEditor):
     ):
         super().__init__(midi_helper, parent)
 
+        self.amp_section = None
+        self.oscillator_section = None
+        self.read_request_button = None
+        self.tab_widget = None
+        self.lfo_section = None
+        self.instrument_selection_label = None
         self.preset_helper = preset_helper
         self.wave_buttons = {}
         self.lfo_shape_buttons = {}

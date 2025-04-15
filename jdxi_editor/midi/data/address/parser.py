@@ -23,7 +23,7 @@ Base: <ProgramAddress.COMMON: 0x18>, Offset: (0, 32, 0)
 
 """
 
-from typing import Tuple, Optional, Type
+from typing import Tuple, Optional, Type, TypeVar
 
 T = TypeVar("T")
 

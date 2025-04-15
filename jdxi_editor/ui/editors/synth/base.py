@@ -62,6 +62,7 @@ class SynthBase(QWidget):
         """Send data request SysEx messages to the JD-Xi"""
         # Define SysEx messages as byte arrays
         for request in self.midi_requests:
+            logging.info(f"data request: \t{request}")
             request = bytes.fromhex(request)
             self.send_message(request)
 
