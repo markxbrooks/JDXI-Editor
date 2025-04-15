@@ -203,6 +203,8 @@ def main():
         group_layout.addWidget(sub_text_label)
 
         splash.show()
+        splash.raise_()  # Ensure the splash screen is raised
+        splash.activateWindow()  # Activate the splash screen window
         import time
         for i in range(101):
             progress_bar.setValue(i)
