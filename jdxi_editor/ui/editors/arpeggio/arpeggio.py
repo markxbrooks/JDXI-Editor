@@ -67,15 +67,16 @@ from jdxi_editor.midi.data.parameter.program.zone import ProgramZoneParameter
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 
 
-class ArpeggioEditor(SynthEditor):
+class ArpeggioEditor(SimpleEditor):
     """Arpeggio Editor Window"""
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
-        super().__init__(parent)
+        super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.setFixedWidth(450)
@@ -200,26 +201,3 @@ class ArpeggioEditor(SynthEditor):
         )
         motif_row.addWidget(self.motif_combo)
         layout.addLayout(motif_row)
-
-    def load_and_set_image(self, image_path, secondary_image_path=None):
-        """Helper function to load and set the image on the label."""
-        if os.path.exists(image_path):
-            pixmap = QPixmap(image_path)
-            scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-        return False
-
-    def update_instrument_image(self):
-        image_loaded = False
-
-        # Define paths
-        default_image_path = os.path.join(
-            "resources", self.instrument_icon_folder, self.default_image
-        )
-
-        if not image_loaded:
-            if not self.load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing

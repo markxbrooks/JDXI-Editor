@@ -48,21 +48,24 @@ from jdxi_editor.midi.data.parameter.effects import EffectParameter
 from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-class EffectsCommonEditor(SynthEditor):
+class EffectsCommonEditor(SimpleEditor):
     """Effects Editor Window"""
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
-        super().__init__(midi_helper, parent)
+        super().__init__(midi_helper=midi_helper, parent=parent)
         self.efx2_additional_params = [
             EffectParameter.EFX2_PARAM_1,
             EffectParameter.EFX2_PARAM_2,
             EffectParameter.EFX2_PARAM_32,
         ]
+        self.default_image = "effects.png"
+        self.instrument_icon_folder = "effects"
         self.setWindowTitle("Effects")
         self.setFixedWidth(450)
         # Main layout
@@ -97,27 +100,6 @@ class EffectsCommonEditor(SynthEditor):
         self.tabs.addTab(self._create_effect2_section(), "Effect 2")
         self.tabs.addTab(self._create_delay_tab(), "Delay")
         self.tabs.addTab(self._create_reverb_section(), "Reverb")
-
-    def load_and_set_image(self, image_path, secondary_image_path=None):
-        """Helper function to load and set the image on the label."""
-        if os.path.exists(image_path):
-            pixmap = QPixmap(image_path)
-            scaled_pixmap = pixmap.scaledToHeight(
-                150, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-        return False
-
-    def update_instrument_image(self):
-        image_loaded = False
-
-        # Define paths
-        default_image_path = resource_path(os.path.join("resources", "effects", "effects.png"))
-
-        if not image_loaded:
-            if not self.load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect preset_type"""
