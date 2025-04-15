@@ -40,6 +40,7 @@ from jdxi_editor.midi.data.parameter.synth import SynthParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
+from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.data.address.vocal import VocalAddress
 from jdxi_editor.midi.data.vocal_effects.vocal import (
@@ -56,7 +57,7 @@ from jdxi_editor.midi.data.parameter.vocal_fx import VocalFXParameter
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-class VocalFXEditor(SynthEditor):
+class VocalFXEditor(SimpleEditor):
     """Vocal Effects Window Class"""
 
     def __init__(
@@ -64,7 +65,7 @@ class VocalFXEditor(SynthEditor):
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
     ):
-        super().__init__(midi_helper, parent)
+        super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Vocal FX")
         self.setMinimumHeight(750)
         self.setMinimumWidth(650)
@@ -101,6 +102,8 @@ class VocalFXEditor(SynthEditor):
         self.image_label.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )  # Center align the image
+        self.default_image = "vocal_fx.png"
+        self.instrument_icon_folder = "vocal_fx"
         container_layout.addWidget(self.image_label)
         self.update_instrument_image()
         title_layout.addWidget(self.image_label)
@@ -116,27 +119,6 @@ class VocalFXEditor(SynthEditor):
         # Add container to scroll area
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
-
-    def load_and_set_image(self, image_path, secondary_image_path=None):
-        """Helper function to load and set the image on the label."""
-        if os.path.exists(image_path):
-            pixmap = QPixmap(image_path)
-            scaled_pixmap = pixmap.scaledToHeight(
-                200, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-        return False
-
-    def update_instrument_image(self):
-        image_loaded = False
-
-        # Define paths
-        default_image_path = resource_path(os.path.join("resources", "vocal_fx", "vocal_fx.png"))
-
-        if not image_loaded:
-            if not self.load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def _create_common_section(self):
         common_section = QWidget()

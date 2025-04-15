@@ -67,10 +67,11 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     log_midi_info,
 )
+from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.ui.style import JDXIStyle
 
 
-class ProgramEditor(SynthEditor):
+class ProgramEditor(SimpleEditor):
     """Program Editor Window"""
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)
@@ -81,7 +82,7 @@ class ProgramEditor(SynthEditor):
         parent: Optional[QWidget] = None,
         preset_helper: PresetHelper = None,
     ):
-        super().__init__()
+        super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowFlag(Qt.Window)
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
@@ -89,6 +90,8 @@ class ProgramEditor(SynthEditor):
             MidiChannel.PROGRAM  # Default MIDI channel: 16 for programs, 0-based
         )
         self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+        self.default_image = "programs.png"
+        self.instrument_icon_folder = "programs"
         self.layout = None
         self.genre_label = None
         self.program_number_combo_box = None
@@ -294,28 +297,6 @@ class ProgramEditor(SynthEditor):
 
     def stop_playback(self):
         self.midi_helper.send_raw_message([SONG_STOP])
-
-    def load_and_set_image(self, image_path, secondary_image_path=None):
-        """Helper function to load and set the image on the label."""
-        if os.path.exists(image_path):
-            pixmap = QPixmap(image_path)
-            scaled_pixmap = pixmap.scaledToHeight(
-                200, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.image_label.setPixmap(scaled_pixmap)
-            return True
-        return False
-
-    def update_instrument_image(self):
-        """tart up the UI with a picture"""
-        image_loaded = False
-
-        # Define paths
-        default_image_path = resource_path(os.path.join("resources", "programs", "programs.png"))
-
-        if not image_loaded:
-            if not self.load_and_set_image(default_image_path):
-                self.image_label.clear()  # Clear label if default image is also missing
 
     def populate_programs(self):
         """Populate the program list with available presets."""
