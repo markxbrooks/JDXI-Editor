@@ -1,3 +1,5 @@
+import logging
+
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QComboBox
 
 

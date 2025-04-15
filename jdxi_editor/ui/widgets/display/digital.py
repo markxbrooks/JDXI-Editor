@@ -106,17 +106,21 @@ class DigitalTitle(DigitalDisplayBase):
     """Simplified display showing only the current tone name."""
 
     def __init__(
-        self, tone_name="Init Tone", digital_font_family="Consolas", parent=None
+        self, tone_name="Init Tone", digital_font_family="Consolas", show_upper_text=True, parent=None
     ):
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
             JDXIDimensions.DIGITAL_TITLE_WIDTH, JDXIDimensions.DIGITAL_TITLE_HEIGHT
         )
+        self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
 
     def set_tone_name(self, tone_name):
         """Update the tone name display."""
-        self.update_display(["Currently Editing:", tone_name])
+        if self.show_upper_text:
+            self.update_display(["Currently Editing:", tone_name])
+        else:
+            self.update_display([tone_name])
 
     @property
     def text(self):

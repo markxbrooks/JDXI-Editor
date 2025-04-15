@@ -55,8 +55,6 @@ class SysexParameter(Enum):
     RQ1_COMMAND_11 = ("Data Request 1", CommandID.RQ1)
 
     PROGRAM_COMMON = ("PROGRAM_COMMON", AddressOffsetProgramLMB.COMMON)
-    # TONE_1_LEVEL = ("TONE_1_LEVEL", UnknownToneAddress.TONE_1_LEVEL)
-    # TONE_2_LEVEL = ("TONE_2_LEVEL", UnknownToneAddress.TONE_2_LEVEL)
 
     def __new__(cls, *args):
         if len(args) == 1:

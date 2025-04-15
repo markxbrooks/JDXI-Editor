@@ -230,11 +230,6 @@ class ADSR(QWidget):
 
     def _on_parameter_changed(self, param: SynthParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""
-        # Update display range if available
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
         # Update envelope based on slider values
         self.update_envelope_from_controls()
         self.update_spin_box(param)
