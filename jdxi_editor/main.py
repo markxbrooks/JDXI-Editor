@@ -71,7 +71,7 @@ def setup_logging():
         # Configure console logging
         # console_handler = logging.StreamHandler(sys.stdout)
         console_handler = logging.StreamHandler(sys.__stdout__)  # Use sys.__stdout__ explicitly
-        console_handler.setLevel(logging.INFO)
+        console_handler.setLevel(logging.DEBUG)
         console_formatter = logging.Formatter(
             "%(filename)-20s| %(lineno)-5s| %(levelname)-8s| %(message)-24s"
         )
