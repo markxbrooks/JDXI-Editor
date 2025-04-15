@@ -63,8 +63,7 @@ def setup_logging():
         )
         file_handler.setLevel(logging.DEBUG)
         file_formatter = logging.Formatter(
-            "%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s|%(lineno)d] %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
+            "%(filename)-20s| %(lineno)-5s| %(levelname)-8s| %(message)-24s"
         )
         file_handler.setFormatter(file_formatter)
 
@@ -91,9 +90,9 @@ def setup_logging():
         print(f"Error setting up logging: {str(ex)}")
         raise
 
-def resource_path(relative_path):
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-    return os.path.join(base_path, relative_path)
+#def resource_path(relative_path):
+#    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+#    return os.path.join(base_path, relative_path)
 
 
 def resource_path(relative_path):
