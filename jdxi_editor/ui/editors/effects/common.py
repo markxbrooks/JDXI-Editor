@@ -39,6 +39,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB,
@@ -97,25 +98,25 @@ class EffectsCommonEditor(SynthEditor):
         self.tabs.addTab(self._create_delay_tab(), "Delay")
         self.tabs.addTab(self._create_reverb_section(), "Reverb")
 
+    def load_and_set_image(self, image_path, secondary_image_path=None):
+        """Helper function to load and set the image on the label."""
+        if os.path.exists(image_path):
+            pixmap = QPixmap(image_path)
+            scaled_pixmap = pixmap.scaledToHeight(
+                150, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 250px height
+            self.image_label.setPixmap(scaled_pixmap)
+            return True
+        return False
+
     def update_instrument_image(self):
         image_loaded = False
 
-        def load_and_set_image(image_path):
-            """Helper function to load and set the image on the label."""
-            if os.path.exists(image_path):
-                pixmap = QPixmap(image_path)
-                scaled_pixmap = pixmap.scaledToHeight(
-                    150, Qt.TransformationMode.SmoothTransformation
-                )  # Resize to 250px height
-                self.image_label.setPixmap(scaled_pixmap)
-                return True
-            return False
-
         # Define paths
-        default_image_path = os.path.join("resources", "effects", "effects.png")
+        default_image_path = resource_path(os.path.join("resources", "effects", "effects.png"))
 
         if not image_loaded:
-            if not load_and_set_image(default_image_path):
+            if not self.load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
     def _update_efx2_parameters(self, effect_type: int):

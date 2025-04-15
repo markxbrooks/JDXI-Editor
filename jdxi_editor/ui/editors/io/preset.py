@@ -68,6 +68,7 @@ from jdxi_editor.midi.sysex.requests import (
     PROGRAM_TONE_NAME_PARTIAL_REQUESTS,
     PROGRAM_TONE_NAME_REQUESTS,
 )
+from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
@@ -358,26 +359,26 @@ class PresetEditor(SynthEditor):
         )
         self.data_request()
 
+    def load_and_set_image(self, image_path, secondary_image_path=None):
+        """Helper function to load and set the image on the label."""
+        if os.path.exists(image_path):
+            pixmap = QPixmap(image_path)
+            scaled_pixmap = pixmap.scaledToHeight(
+                200, Qt.TransformationMode.SmoothTransformation
+            )  # Resize to 250px height
+            self.image_label.setPixmap(scaled_pixmap)
+            return True
+        return False
+
     def update_instrument_image(self):
         """tart up the UI with a picture"""
         image_loaded = False
 
-        def load_and_set_image(image_path):
-            """Helper function to load and set the image on the label."""
-            if os.path.exists(image_path):
-                pixmap = QPixmap(image_path)
-                scaled_pixmap = pixmap.scaledToHeight(
-                    200, Qt.TransformationMode.SmoothTransformation
-                )  # Resize to 250px height
-                self.image_label.setPixmap(scaled_pixmap)
-                return True
-            return False
-
         # Define paths
-        default_image_path = os.path.join("resources", "presets", "presets.png")
+        default_image_path = resource_path(os.path.join("resources", "presets", "presets.png"))
 
         if not image_loaded:
-            if not load_and_set_image(default_image_path):
+            if not self.load_and_set_image(default_image_path):
                 self.image_label.clear()  # Clear label if default image is also missing
 
     def _populate_presets(self, search_text: str = ""):

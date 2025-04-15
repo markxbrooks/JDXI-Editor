@@ -364,7 +364,7 @@ class JDXIStyle:
             text-align: center;
         }
         QProgressBar::chunk {
-            background-color: qlineargradient(x1:1, y1:0, x2:0, y2:0, 
+            background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
                              stop:0 #660000, stop:1 #ff1a1a);
             border-radius: 10px;
         }

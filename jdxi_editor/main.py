@@ -23,15 +23,14 @@ Functions:
 import os
 import sys
 import logging
-import time
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from PySide6.QtCore import QRect
-from PySide6.QtWidgets import QApplication, QSplashScreen, QProgressBar, QLabel, QWidget, QVBoxLayout, QHBoxLayout, \
+from PySide6.QtWidgets import QApplication, QProgressBar, QLabel, QWidget, QVBoxLayout, QHBoxLayout, \
     QGroupBox
 from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
+from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
 
@@ -90,17 +89,9 @@ def setup_logging():
         print(f"Error setting up logging: {str(ex)}")
         raise
 
-#def resource_path(relative_path):
+# def resource_path(relative_path):
 #    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
 #    return os.path.join(base_path, relative_path)
-
-
-def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
 
 
 def main():
