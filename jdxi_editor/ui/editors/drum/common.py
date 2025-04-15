@@ -20,8 +20,8 @@ class DrumCommonSection(QWidget):
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
-        self.setup_ui()
         self.address_lmb = AddressOffsetProgramLMB.COMMON
+        self.setup_ui()
 
     def setup_ui(self):
         """setup UI"""
