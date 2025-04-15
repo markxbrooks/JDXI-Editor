@@ -38,6 +38,7 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
     get_preset_parameter_value,
@@ -285,43 +286,43 @@ class SynthEditor(SynthBase):
                 control_change_number, value, self.midi_channel
             )
 
+    def load_and_set_image(self, image_path, secondary_image_path=None):
+        """Helper function to load and set the image on the label."""
+        file_to_load = ""
+        if os.path.exists(image_path):
+            file_to_load = image_path
+        elif os.path.exists(secondary_image_path):
+            file_to_load = secondary_image_path
+        else:
+            file_to_load = os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                self.instrument_default_image,
+            )
+        pixmap = QPixmap(file_to_load)
+        scaled_pixmap = pixmap.scaledToHeight(
+            160, Qt.TransformationMode.SmoothTransformation
+        )  # Resize to 250px height
+        self.instrument_image_label.setPixmap(scaled_pixmap)
+        self.instrument_image_label.setScaledContents(True)
+        self.instrument_image_label.setStyleSheet(
+            """
+            QLabel {
+                    height: 150px;
+                    background-color: transparent;
+                    border: none;
+                }
+            """
+        )
+        return True
+
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
         logging.info(f"loading instrument image")
 
-        def load_and_set_image(image_path, secondary_image_path=None):
-            """Helper function to load and set the image on the label."""
-            file_to_load = ""
-            if os.path.exists(image_path):
-                file_to_load = image_path
-            elif os.path.exists(secondary_image_path):
-                file_to_load = secondary_image_path
-            else:
-                file_to_load = os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    self.instrument_default_image,
-                )
-            pixmap = QPixmap(file_to_load)
-            scaled_pixmap = pixmap.scaledToHeight(
-                160, Qt.TransformationMode.SmoothTransformation
-            )  # Resize to 250px height
-            self.instrument_image_label.setPixmap(scaled_pixmap)
-            self.instrument_image_label.setScaledContents(True)
-            self.instrument_image_label.setStyleSheet(
-                """
-                QLabel {
-                        height: 150px;
-                        background-color: transparent;
-                        border: none;
-                    }
-                """
-            )
-            return True
-
-        default_image_path = os.path.join(
+        default_image_path = resource_path(os.path.join(
             "resources", self.instrument_icon_folder, self.instrument_default_image
-        )
+        ))
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
@@ -339,17 +340,17 @@ class SynthEditor(SynthBase):
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
             logging.info(f"selected_instrument_type: {selected_instrument_type}")
-            specific_image_path = os.path.join(
+            specific_image_path = resource_path(os.path.join(
                 "resources",
                 self.instrument_icon_folder,
                 f"{selected_instrument_name}.png",
-            )
-            generic_image_path = os.path.join(
+            ))
+            generic_image_path = resource_path(os.path.join(
                 "resources",
                 self.instrument_icon_folder,
                 f"{selected_instrument_type}.png",
-            )
-            image_loaded = load_and_set_image(specific_image_path, generic_image_path)
+            ))
+            image_loaded = self.load_and_set_image(specific_image_path, generic_image_path)
 
         # Fallback to default image if no specific image is found
         if not image_loaded:
