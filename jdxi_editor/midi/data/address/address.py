@@ -204,6 +204,11 @@ class AddressOffsetTemporaryToneUMB(Address):
     DRUM_KIT_PART = 0x70
 
 
+class AddressOffsetSystemUMB(Address):
+    COMMON = 0x00
+    CONTROLLER = 0x00
+
+
 @unique
 class AddressOffsetSystemLMB(Address):
     COMMON = 0x00
