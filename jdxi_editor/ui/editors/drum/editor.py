@@ -377,6 +377,7 @@ class DrumCommonEditor(SynthEditor):
         for count, (partial_name, partial_number) in enumerate(
             self.partial_mapping.items(), 1
         ):
+            progress_dialog.progress_bar.setFormat(f"Loading {partial_name} ({count} of {total})")
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
