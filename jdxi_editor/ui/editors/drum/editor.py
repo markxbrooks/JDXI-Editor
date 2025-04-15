@@ -370,7 +370,7 @@ class DrumCommonEditor(SynthEditor):
     def _setup_partial_editors(self):
         total = len(self.partial_mapping)
         progress_dialog = ProgressDialog(
-            "Initializing Partials", "Loading partial editors...", total, self
+            "Initializing Partials", "Loading drum kit:...", total, self
         )
         progress_dialog.show()
 
