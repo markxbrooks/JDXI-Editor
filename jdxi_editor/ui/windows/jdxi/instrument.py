@@ -1,4 +1,15 @@
 """
+
+# Create editor instances
+analog_editor = AnalogSynthEditor(midi_helper, preset_helper)
+digital_editor = DigitalSynthEditor(midi_helper, preset_helper)
+drum_editor = DrumSynthEditor(midi_helper, preset_helper)
+
+# Save all controls to a single JSON file
+save_all_controls_to_single_file(
+    editors=[analog_editor, digital_editor, drum_editor],
+    file_path="all_controls.json"
+)
 JD-Xi Instrument class for managing presets and MIDI settings.
 
 This module defines the `JdxiInstrument` class, which extends from the `JdxiUi` class to manage JD-Xi instrument presets, MIDI communication, and UI interactions. It allows for controlling and modifying different preset types (Digital 1, Digital 2, Analog, Drums) and provides MIDI connectivity for program changes and preset management.
