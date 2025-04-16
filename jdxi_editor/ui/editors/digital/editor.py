@@ -91,7 +91,11 @@ def get_area(data: list[int, int]) -> str:
 
 def to_hex(value: int, width: int = 2) -> str:
     """Format an integer as a lowercase hex string with 0x prefix."""
-    return f"0x{value:0{width}x}"
+    logging.info(f"to_hex: value: {value} width: {width}")
+    try:
+        return f"0x{value:0{width}x}"
+    except Exception as ex:
+        logging.error(f"Error {ex} occurred in to_hex")
 
 
 class DigitalSynthEditor(SynthEditor):
