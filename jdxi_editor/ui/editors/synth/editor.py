@@ -163,6 +163,32 @@ class SynthEditor(SynthBase):
             )
             for synth_type, presets, channel in preset_configs
         }
+        
+    def get_controls_as_dict(self):
+        """
+        Get the current values of self.controls as a dictionary.
+
+        Returns:
+            dict: A dictionary of control parameter names and their values.
+        """
+        try:
+            controls_data = {}
+
+            for param, widget in self.controls.items():
+                # Check the type of widget and get its value
+                if isinstance(widget, QSlider):
+                    controls_data[param.name] = widget.value()
+                elif isinstance(widget, QComboBox):
+                    controls_data[param.name] = widget.currentIndex()
+                elif isinstance(widget, QSpinBox):
+                    controls_data[param.name] = widget.value()
+                # Add other widget types as needed...
+
+            return controls_data
+
+        except Exception as e:
+            logging.error(f"Failed to get controls: {e}")
+            return {}
 
     def save_controls_to_file(self, file_path: str):
         """
