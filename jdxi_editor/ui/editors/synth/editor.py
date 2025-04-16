@@ -164,6 +164,36 @@ class SynthEditor(SynthBase):
             for synth_type, presets, channel in preset_configs
         }
 
+    def save_controls_to_file(self, file_path: str):
+        """
+        Save the current values of self.controls to a file.
+
+        Args:
+            file_path (str): The file path where the data should be saved.
+        """
+        try:
+            # Create a dictionary to store parameter values
+            controls_data = {}
+
+            for param, widget in self.controls.items():
+                # Check the type of widget and get its value
+                if isinstance(widget, QSlider):
+                    controls_data[param.name] = widget.value()
+                elif isinstance(widget, QComboBox):
+                    controls_data[param.name] = widget.currentIndex()
+                elif isinstance(widget, QSpinBox):
+                    controls_data[param.name] = widget.value()
+                # Add other widget types as needed...
+
+            # Save the dictionary to a JSON file
+            with open(file_path, 'w') as file:
+                json.dump(controls_data, file, indent=4)
+
+            logging.info(f"Controls saved successfully to {file_path}")
+
+        except Exception as e:
+            logging.error(f"Failed to save controls: {e}")
+
     def _get_preset_helper_for_current_synth(self):
         """Return the appropriate preset handler based on the current synth preset_type."""
         handler = self.preset_helpers.get(self.preset_type)
