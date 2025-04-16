@@ -255,6 +255,23 @@ class JdxiInstrument(JdxiUi):
             )
             for synth_type, presets, channel in preset_configs
         }
+        
+        self.editors = []
+
+    def add_editor(self, editor: SynthEditor):
+        self.editors.append(editor)
+
+    def save_all_controls(self, base_path: str):
+        """
+        Save controls for all editors to separate files.
+
+        Args:
+            base_path (str): The directory where the files will be saved.
+        """
+        for editor in self.editors:
+            editor_name = editor.__class__.__name__.lower()
+            file_path = f"{base_path}/{editor_name}_controls.json"
+            editor.save_controls_to_file(file_path)
 
     def _handle_program_change(self):
         """perform data request"""
