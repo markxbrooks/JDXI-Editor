@@ -132,6 +132,7 @@ class DrumCommonEditor(SynthEditor):
             )
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
+        self.midi_helper.midi_program_changed.connect(self.data_request)
         self.data_request()
         self.show()
 
@@ -333,7 +334,7 @@ class DrumCommonEditor(SynthEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if synth_tone == "TONE_COMMON":
-            logging.info("\nTone common")
+            logging.info("Tone common")
             self._update_common_sliders_from_sysex(json_sysex_data)
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
@@ -413,7 +414,7 @@ class DrumCommonEditor(SynthEditor):
 
         if not _is_valid_sysex_area(sysex_data):
             logging.warning(
-                "SysEx data does not belong to DRUM_KIT_AREA. \nSkipping update."
+                "SysEx data does not belong to DRUM_KIT_AREA, Skipping update."
             )
             return
 
