@@ -37,7 +37,7 @@ from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
     get_next_program_bank_and_number,
 )
-from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_bank_and_number,
@@ -69,7 +69,7 @@ class ProgramHelper(QObject):
             self.digital_2_preset = None
             self.drums_preset = None
             self.analog_preset = None
-            self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+            self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
             self._initialized = True
 
     def next_program(self):

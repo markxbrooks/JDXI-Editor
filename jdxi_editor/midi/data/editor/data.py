@@ -36,20 +36,9 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.preset.type import JDXISynth
-from jdxi_editor.midi.sysex.requests import (
-    DRUMS_REQUESTS,
-    DIGITAL1_REQUESTS,
-    DIGITAL2_REQUESTS,
-    PROGRAM_COMMON_REQUEST,
-    ANALOG_REQUEST,
-)
+from jdxi_editor.midi.sysex.requests import MidiRequests
 
 
 @dataclass
@@ -76,10 +65,10 @@ class DrumSynthData(SynthData):
             address_lmb=AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL,
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
-            midi_requests=DRUMS_REQUESTS,
+            midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
             midi_channel=MidiChannel.DRUM,
-            presets=DRUM_PRESETS_ENUMERATED,
-            preset_list=DRUM_KIT_LIST,
+            presets=JDXIPresets.DRUM_PRESETS_ENUMERATED,
+            preset_list=JDXIPresets.DRUM_KIT_LIST,
             preset_type=JDXISynth.DRUMS,
             window_title="Drums",
             display_prefix="DR",
@@ -159,12 +148,12 @@ class DigitalSynthData(SynthData):
             address_lmb=AddressOffsetProgramLMB.COMMON,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
-            midi_requests=DIGITAL2_REQUESTS if synth_number == 2 else DIGITAL1_REQUESTS,
+            midi_requests=MidiRequests.DIGITAL2 if synth_number == 2 else MidiRequests.DIGITAL1,
             midi_channel=MidiChannel.DIGITAL2
             if synth_number == 2
             else MidiChannel.DIGITAL1,
-            presets=DIGITAL_PRESETS_ENUMERATED,
-            preset_list=DIGITAL_PRESET_LIST,
+            presets=JDXIPresets.DIGITAL_ENUMERATED,
+            preset_list=JDXIPresets.DIGITAL_PRESET_LIST,
             preset_type=JDXISynth.DIGITAL_2
             if synth_number == 2
             else JDXISynth.DIGITAL_1,
@@ -194,10 +183,10 @@ class AnalogSynthData(SynthData):
             address_lmb=AddressOffsetProgramLMB.COMMON,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",
-            midi_requests=[PROGRAM_COMMON_REQUEST, ANALOG_REQUEST],
+            midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
             midi_channel=MidiChannel.ANALOG,
-            presets=ANALOG_PRESETS_ENUMERATED,
-            preset_list=ANALOG_PRESET_LIST,
+            presets=JDXIPresets.ANALOG_PRESETS_ENUMERATED,
+            preset_list=JDXIPresets.ANALOG_PRESET_LIST,
             preset_type=JDXISynth.ANALOG,
             window_title="Analog Synth",
             display_prefix="AN",

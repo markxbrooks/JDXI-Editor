@@ -37,11 +37,9 @@ Dependencies:
 
 """
 
-import os
 import logging
 from typing import Optional
 
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QComboBox,
@@ -59,9 +57,7 @@ from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
-from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
     calculate_midi_values,
@@ -89,7 +85,7 @@ class ProgramEditor(SimpleEditor):
         self.channel = (
             MidiChannel.PROGRAM  # Default MIDI channel: 16 for programs, 0-based
         )
-        self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
         self.default_image = "programs.png"
         self.instrument_icon_folder = "programs"
         self.layout = None
