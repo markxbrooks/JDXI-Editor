@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ProgramArea(Enum):
+class ProgramAreaLSB(Enum):
     """Program memory areas"""
 
     COMMON = 0x00  # 00 00 00: Program Common

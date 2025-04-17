@@ -990,28 +990,29 @@ class JdxiInstrument(JdxiUi):
             return self.midi_helper.send_midi_message(sysex_message)
 
     def send_midi_parameter(
-        self, address_lmb, param_address, value, address_umb=None, address_msb=None
+        self,
+            address_lmb,
+            address_lsb,
+            value,
+            address_msb=AddressMemoryAreaMSB.PROGRAM,
+            address_umb=ArpeggioAddress.ARP_PART,
     ) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
             return False
         try:
-            if not address_umb:
-                address_umb = ArpeggioAddress.ARP_PART
-            if not address_msb:
-                address_msb = AddressMemoryAreaMSB.PROGRAM
             # Ensure value is included in the MIDI message
             sysex_message = RolandSysEx(
                 address_msb=address_msb,
                 address_umb=address_umb,
                 address_lmb=address_lmb,
-                address_lsb=param_address,
+                address_lsb=address_lsb,
                 value=value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
-            logging.error(f"MIDI error setting {param_address}: {str(ex)}")
+            logging.error(f"MIDI error setting {address_lsb}: {str(ex)}")
             return False
 
     def _send_arp_key_hold(self, state):
@@ -1019,11 +1020,15 @@ class JdxiInstrument(JdxiUi):
         try:
             if self.midi_helper:
                 self.key_hold_latched = not self.key_hold_latched
-                param = 0x02  # Key Hold parameter, maybe!
+                param_address = 0x02  # Key Hold parameter, maybe!
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
                 self.send_midi_parameter(
-                    ArpeggioAddress.ARP_GROUP, param, value
+                    address_msb=AddressMemoryAreaMSB.PROGRAM,
+                    address_umb=ArpeggioAddress.ARP_PART,
+                    address_lmb=ArpeggioAddress.ARP_GROUP,
+                    address_lsb=param_address,
+                    value=value
                 )  # Send the parameter
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
 
@@ -1039,12 +1044,26 @@ class JdxiInstrument(JdxiUi):
                 )  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
                 self.send_midi_parameter(
-                    ArpeggioAddress.ARP_GROUP, param_address, value
+                    address_msb=AddressMemoryAreaMSB.PROGRAM,
+                    address_umb=ArpeggioAddress.ARP_PART,
+                    address_lmb=ArpeggioAddress.ARP_GROUP,
+                    address_lsb=param_address,
+                    value=value
                 )  # Send the parameter
                 logging.info(f"Sent arpeggiator on/off: {state}")
                 logging.info(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
-                request = bytes.fromhex("F0 41 10 00 00 00 0E 12 18 00 30 03 01 34 F7")
-                self.midi_helper.send_raw_message(request)
+                # send arp on to all 4 program zones
+                for zone in [AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1,
+                             AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,
+                             AddressOffsetProgramLMB.ZONE_ANALOG_SYNTH,
+                             AddressOffsetProgramLMB.ZONE_DRUM]:
+                    self.send_midi_parameter(
+                        address_msb=AddressMemoryAreaMSB.PROGRAM,
+                        address_umb=ArpeggioAddress.ARP_PART,
+                        address_lmb=zone,
+                        address_lsb=param_address,
+                        value=value
+                    )  # Send the parameter
         except Exception as ex:
             logging.error(f"Error sending arp on/off: {str(ex)}")
 
