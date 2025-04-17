@@ -36,15 +36,20 @@ import logging
 
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
 
 class PatchManager(QMainWindow):
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None, parent=None, save_mode=False
+        self, midi_helper: Optional[MidiIOHelper] = None,
+            parent=None,
+            save_mode=False,
+            editors=None
     ):
         super().__init__(parent)
         self.midi_helper = midi_helper
         self.save_mode = save_mode
+        self.editors = editors
 
         # Set window properties
         self.setWindowTitle("Save Patch" if save_mode else "Load Patch")
@@ -85,18 +90,18 @@ class PatchManager(QMainWindow):
         try:
             if self.save_mode:
                 file_path, _ = QFileDialog.getSaveFileName(
-                    self, "Save Patch File", "", "Patch Files (*.syx);;All Files (*.*)"
+                    self, "Save Patch File", "", "Patch Files (*.syx);(*.json);All Files (*.*)"
                 )
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
-                    self, "Load Patch File", "", "Patch Files (*.syx);;All Files (*.*)"
+                    self, "Load Patch File", "", "Patch Files (*.syx);(*.json);All Files (*.*)"
                 )
 
             if file_path:
                 self.path_input.setText(file_path)
 
-        except Exception as e:
-            logging.error(f"Error browsing for file: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error browsing for file: {str(ex)}")
 
     def _handle_action(self):
         """Handle save/load action"""
@@ -111,7 +116,7 @@ class PatchManager(QMainWindow):
                 return
 
             if self.save_mode:
-                self.midi_helper.save_patch(file_path)
+                save_all_controls_to_single_file(self.editors, file_path)
                 logging.info(f"Patch saved to {file_path}")
             else:
                 self.midi_helper.load_patch(file_path)
@@ -120,6 +125,6 @@ class PatchManager(QMainWindow):
             self.close()
 
         except Exception as e:
-            logging.error(
+            logging.info(
                 f"Error {'saving' if self.save_mode else 'loading'} patch: {str(e)}"
             )

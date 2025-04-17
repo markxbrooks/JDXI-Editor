@@ -7,7 +7,7 @@ drum_editor = DrumSynthEditor(midi_helper, preset_helper)
 
 # Save all controls to a single JSON file
 save_all_controls_to_single_file(
-    editors=[analog_editor, digital_editor, drum_editor],
+    editors=[self.analog_editor, self.digital_synth2_editor self.digital_synth1_editor, analog_editor],
     file_path="all_controls.json"
 )
 JD-Xi Instrument class for managing presets and MIDI settings.
@@ -34,7 +34,6 @@ Methods:
     - ...
 
 """
-
 import logging
 import platform
 from typing import Union
@@ -69,7 +68,7 @@ from jdxi_editor.ui.editors import (
     ArpeggioEditor,
     EffectsCommonEditor,
     VocalFXEditor,
-    ProgramEditor,
+    ProgramEditor, SynthEditor,
 )
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
@@ -268,30 +267,6 @@ class JdxiInstrument(JdxiUi):
         }
         
         self.editors = []
-        
-def save_all_controls_to_single_file(editors, file_path):
-    """
-    Save the controls from all editors to a single JSON file.
-
-    Args:
-        editors (list): A list of editor instances (e.g., AnalogSynthEditor, DigitalSynthEditor).
-        file_path (str): The file path where the combined JSON data will be saved.
-    """
-    try:
-        combined_data = {}
-
-        for editor in editors:
-            editor_name = editor.__class__.__name__  # Get the name of the editor class
-            combined_data[editor_name] = editor.get_controls_as_dict()
-
-        # Save the combined data to a single JSON file
-        with open(file_path, 'w') as file:
-            json.dump(combined_data, file, indent=4)
-
-        logging.info(f"All controls saved successfully to {file_path}")
-
-    except Exception as e:
-        logging.error(f"Failed to save all controls: {e}")
 
     def add_editor(self, editor: SynthEditor):
         self.editors.append(editor)
@@ -798,6 +773,7 @@ def save_all_controls_to_single_file(editors, file_path):
             # Set window title
             editor.setWindowTitle(title)
             logging.info(f"Showing {title} editor")
+            self.add_editor(editor)
             # Store reference and show
             if title == "Digital Synth 1":
                 self.digital_synth1_editor = editor
@@ -849,6 +825,7 @@ def save_all_controls_to_single_file(editors, file_path):
                 self.digital_synth1_editor = DigitalSynthEditor(
                     midi_helper=self.midi_helper, parent=self
                 )
+                self.add_editor(self.digital_synth1_editor)
             self.digital_synth1_editor.show()
             self.digital_synth1_editor.raise_()
         except Exception as ex:
@@ -932,7 +909,7 @@ def save_all_controls_to_single_file(editors, file_path):
         """Show load patch dialog"""
         try:
             patch_manager = PatchManager(
-                midi_helper=self.midi_helper, parent=self, save_mode=False
+                midi_helper=self.midi_helper, parent=self, save_mode=False, editors=self.editors,
             )
             patch_manager.show()
         except Exception as ex:
@@ -942,7 +919,10 @@ def save_all_controls_to_single_file(editors, file_path):
         """Show save patch dialog"""
         try:
             patch_manager = PatchManager(
-                midi_helper=self.midi_helper, parent=self, save_mode=True
+                midi_helper=self.midi_helper,
+                parent=self,
+                save_mode=True,
+                editors=self.editors
             )
             patch_manager.show()
         except Exception as ex:

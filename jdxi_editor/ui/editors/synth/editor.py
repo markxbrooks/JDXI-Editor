@@ -25,7 +25,7 @@ import os
 import logging
 from typing import Optional, Any
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QSlider, QComboBox, QSpinBox
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.midi.data.control_change.base import ControlChange
@@ -174,20 +174,13 @@ class SynthEditor(SynthBase):
         try:
             controls_data = {}
 
-            for param, widget in self.controls.items():
-                # Check the type of widget and get its value
-                if isinstance(widget, QSlider):
-                    controls_data[param.name] = widget.value()
-                elif isinstance(widget, QComboBox):
-                    controls_data[param.name] = widget.currentIndex()
-                elif isinstance(widget, QSpinBox):
-                    controls_data[param.name] = widget.value()
-                # Add other widget types as needed...
-
+            for param in self.controls:
+                controls_data[param.name] = param.value
+            logging.info(controls_data)
             return controls_data
 
-        except Exception as e:
-            logging.error(f"Failed to get controls: {e}")
+        except Exception as ex:
+            logging.info(f"Failed to get controls: {ex}")
             return {}
 
     def save_controls_to_file(self, file_path: str):
