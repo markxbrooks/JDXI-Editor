@@ -1248,8 +1248,43 @@ class JdxiInstrument(JdxiUi):
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
                 logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
-
+    
     def _load_last_preset(self):
+        """Load the last used preset from settings."""
+        try:
+            # Get last preset info from settings
+            synth_type = self.settings.value("last_preset/synth_type", JDXISynth.DIGITAL_1)
+            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
+            channel = self.settings.value("last_preset/channel", 0, type=int)
+    
+            # Define mappings for synth types
+            synth_mappings = {
+                JDXISynth.ANALOG: (AN_PRESETS, 0, 7),
+                JDXISynth.DIGITAL_1: (DIGITAL_PRESETS_ENUMERATED, 1, 16),
+                JDXISynth.DIGITAL_2: (DIGITAL_PRESETS_ENUMERATED, 2, 16),
+                JDXISynth.DRUMS: (DRUM_PRESETS_ENUMERATED, 3, 16),
+            }
+    
+            # Get preset list and MIDI parameters based on synth type
+            presets, bank_msb, lsb_divisor = synth_mappings.get(synth_type, ([], 0, 1))
+            bank_lsb = preset_num // lsb_divisor
+            program = preset_num % lsb_divisor
+    
+            # Send MIDI messages to load preset
+            if hasattr(self, "midi_helper") and self.midi_helper:
+                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
+                self.midi_helper.send_program_change(program, channel)
+    
+                # Update display and channel
+                preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
+                self._update_display_preset(preset_num, preset_name, channel)
+    
+                logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
+    
+        except Exception as ex:
+            logging.error(f"Error loading last preset: {str(ex)}")
+    
+    def _load_last_presetold(self):
         """Load the last used preset from settings"""
         try:
             # Get last preset info from settings
