@@ -150,8 +150,8 @@ class SynthEditor(SynthBase):
         preset_configs = [
             (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
             (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXISynth.ANALOG, JDXIPresets.ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, JDXIPresets.DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
+            (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+            (JDXISynth.DRUMS, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
 
         self.preset_helpers = {
