@@ -89,10 +89,6 @@ def setup_logging():
         print(f"Error setting up logging: {str(ex)}")
         raise
 
-# def resource_path(relative_path):
-#    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
-#    return os.path.join(base_path, relative_path)
-
 
 def main():
     try:

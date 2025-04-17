@@ -1041,7 +1041,8 @@ class JdxiInstrument(JdxiUi):
                 self.send_midi_parameter(
                     ArpeggioAddress.ARP_GROUP, param_address, value
                 )  # Send the parameter
-                logging.debug(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
+                logging.info(f"Sent arpeggiator on/off: {state}")
+                logging.info(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 request = bytes.fromhex("F0 41 10 00 00 00 0E 12 18 00 30 03 01 34 F7")
                 self.midi_helper.send_raw_message(request)
         except Exception as ex:
