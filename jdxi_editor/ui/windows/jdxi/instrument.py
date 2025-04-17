@@ -44,7 +44,7 @@ from PySide6.QtWidgets import QMenu, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings, QTimer
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
-    AddressOffsetTemporaryToneUMB
+    AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import JDXISynth
@@ -995,7 +995,7 @@ class JdxiInstrument(JdxiUi):
             address_lsb,
             value,
             address_msb=AddressMemoryAreaMSB.PROGRAM,
-            address_umb=ArpeggioAddress.ARP_PART,
+            address_umb=AddressOffsetSystemUMB.COMMON,
     ) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
@@ -1025,8 +1025,8 @@ class JdxiInstrument(JdxiUi):
                 value = 0x01 if state else 0x00
                 self.send_midi_parameter(
                     address_msb=AddressMemoryAreaMSB.PROGRAM,
-                    address_umb=ArpeggioAddress.ARP_PART,
-                    address_lmb=ArpeggioAddress.ARP_GROUP,
+                    address_umb=AddressOffsetSystemUMB.COMMON,
+                    address_lmb=AddressOffsetProgramLMB.CONTROLLER,
                     address_lsb=param_address,
                     value=value
                 )  # Send the parameter
@@ -1043,23 +1043,17 @@ class JdxiInstrument(JdxiUi):
                     ArpeggioParameter.ARPEGGIO_SWITCH.value[0]
                 )  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
-                self.send_midi_parameter(
-                    address_msb=AddressMemoryAreaMSB.PROGRAM,
-                    address_umb=ArpeggioAddress.ARP_PART,
-                    address_lmb=ArpeggioAddress.ARP_GROUP,
-                    address_lsb=param_address,
-                    value=value
-                )  # Send the parameter
                 logging.info(f"Sent arpeggiator on/off: {state}")
                 logging.info(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all 4 program zones
-                for zone in [AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1,
+                for zone in [AddressOffsetProgramLMB.CONTROLLER,
+                             AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1,
                              AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,
                              AddressOffsetProgramLMB.ZONE_ANALOG_SYNTH,
                              AddressOffsetProgramLMB.ZONE_DRUM]:
                     self.send_midi_parameter(
                         address_msb=AddressMemoryAreaMSB.PROGRAM,
-                        address_umb=ArpeggioAddress.ARP_PART,
+                        address_umb=AddressOffsetSystemUMB.COMMON,
                         address_lmb=zone,
                         address_lsb=param_address,
                         value=value

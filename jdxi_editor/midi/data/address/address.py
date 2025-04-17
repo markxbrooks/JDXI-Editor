@@ -206,7 +206,6 @@ class AddressOffsetTemporaryToneUMB(Address):
 
 class AddressOffsetSystemUMB(Address):
     COMMON = 0x00
-    CONTROLLER = 0x00
 
 
 @unique
