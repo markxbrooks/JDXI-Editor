@@ -25,18 +25,15 @@ import os
 import logging
 from typing import Optional, Any
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
-from PySide6.QtWidgets import QWidget, QSlider, QComboBox, QSpinBox
+from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.parameter.synth import SynthParameter
-from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
+from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import (
@@ -147,14 +144,14 @@ class SynthEditor(SynthBase):
             logging.info("MIDI helper initialized")
         else:
             logging.error("MIDI helper not initialized")
-        self.preset_loader = PresetHelper(self.midi_helper, DIGITAL_PRESETS_ENUMERATED)
+        self.preset_loader = PresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
-            (JDXISynth.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.DIGITAL1),
-            (JDXISynth.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXISynth.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
+            (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
+            (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
+            (JDXISynth.ANALOG, JDXIPresets.ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
+            (JDXISynth.DRUMS, JDXIPresets.DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
         ]
 
         self.preset_helpers = {
@@ -182,36 +179,6 @@ class SynthEditor(SynthBase):
         except Exception as ex:
             logging.info(f"Failed to get controls: {ex}")
             return {}
-
-    def save_controls_to_file(self, file_path: str):
-        """
-        Save the current values of self.controls to a file.
-
-        Args:
-            file_path (str): The file path where the data should be saved.
-        """
-        try:
-            # Create a dictionary to store parameter values
-            controls_data = {}
-
-            for param, widget in self.controls.items():
-                # Check the type of widget and get its value
-                if isinstance(widget, QSlider):
-                    controls_data[param.name] = widget.value()
-                elif isinstance(widget, QComboBox):
-                    controls_data[param.name] = widget.currentIndex()
-                elif isinstance(widget, QSpinBox):
-                    controls_data[param.name] = widget.value()
-                # Add other widget types as needed...
-
-            # Save the dictionary to a JSON file
-            with open(file_path, 'w') as file:
-                json.dump(controls_data, file, indent=4)
-
-            logging.info(f"Controls saved successfully to {file_path}")
-
-        except Exception as e:
-            logging.error(f"Failed to save controls: {e}")
 
     def _get_preset_helper_for_current_synth(self):
         """Return the appropriate preset handler based on the current synth preset_type."""

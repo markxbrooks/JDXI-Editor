@@ -48,9 +48,7 @@ from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressO
 from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioParameter
 from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
 from jdxi_editor.midi.preset.type import JDXISynth
-from jdxi_editor.midi.data.presets.drum import DRUM_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.digital import DIGITAL_PRESETS_ENUMERATED
-from jdxi_editor.midi.data.presets.analog import ANALOG_PRESETS_ENUMERATED, AN_PRESETS
+from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.io import MidiIOHelper
@@ -60,7 +58,7 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
-from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -84,7 +82,6 @@ from jdxi_editor.ui.windows.jdxi.helpers.port import _find_jdxi_port
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.message_debug import MIDIMessageDebug
-from jdxi_editor.ui.windows.patch.name_editor import PatchNameEditor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.ui.windows.jdxi.ui import JdxiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
@@ -129,7 +126,7 @@ class JdxiInstrument(JdxiUi):
         self.midi_debugger = None
         self.midi_message_debug = None
 
-        self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
 
         # Try to auto-connect to JD-Xi
         self._auto_connect_jdxi()
@@ -192,25 +189,25 @@ class JdxiInstrument(JdxiUi):
         # Initialize PresetHandler with the desired preset list
         self.digital_1_preset_helper = PresetHelper(
             self.midi_helper,
-            DIGITAL_PRESETS_ENUMERATED,
+            JDXIPresets.DIGITAL_ENUMERATED,
             channel=MidiChannel.DIGITAL1,
             preset_type=JDXISynth.DIGITAL_1,
         )
         self.digital_2_preset_helper = PresetHelper(
             self.midi_helper,
-            DIGITAL_PRESETS_ENUMERATED,
+            JDXIPresets.DIGITAL_ENUMERATED,
             channel=MidiChannel.DIGITAL2,
             preset_type=JDXISynth.DIGITAL_2,
         )
         self.analog_preset_helper = PresetHelper(
             self.midi_helper,
-            ANALOG_PRESETS_ENUMERATED,
+            JDXIPresets.ANALOG_PRESETS_ENUMERATED,
             channel=MidiChannel.ANALOG,
             preset_type=JDXISynth.ANALOG,
         )
         self.drums_preset_helper = PresetHelper(
             self.midi_helper,
-            DRUM_PRESETS_ENUMERATED,
+            JDXIPresets.DRUM_PRESETS_ENUMERATED,
             channel=MidiChannel.DRUM,
             preset_type=JDXISynth.DRUMS,
         )
@@ -253,10 +250,10 @@ class JdxiInstrument(JdxiUi):
 
         # Initialize preset handlers dynamically
         preset_configs = [
-            (JDXISynth.DIGITAL_1, DIGITAL_PRESETS_ENUMERATED, MidiChannel.DIGITAL1),
-            (JDXISynth.DIGITAL_2, DIGITAL_PRESETS_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXISynth.ANALOG, ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
+            (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
+            (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
+            (JDXISynth.ANALOG, JDXIPresets.ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
+            (JDXISynth.DRUMS, JDXIPresets.DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
         ]
 
         self.preset_helpers = {
@@ -270,18 +267,6 @@ class JdxiInstrument(JdxiUi):
 
     def add_editor(self, editor: SynthEditor):
         self.editors.append(editor)
-
-    def save_all_controls(self, base_path: str):
-        """
-        Save controls for all editors to separate files.
-
-        Args:
-            base_path (str): The directory where the files will be saved.
-        """
-        for editor in self.editors:
-            editor_name = editor.__class__.__name__.lower()
-            file_path = f"{base_path}/{editor_name}_controls.json"
-            editor.save_controls_to_file(file_path)
 
     def _handle_program_change(self):
         """perform data request"""
@@ -382,10 +367,10 @@ class JdxiInstrument(JdxiUi):
     def _get_presets_for_current_synth(self):
         """Return the appropriate preset list based on the current synth preset_type."""
         preset_map = {
-            JDXISynth.ANALOG: AN_PRESETS,
-            JDXISynth.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
-            JDXISynth.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
-            JDXISynth.DRUMS: DRUM_PRESETS_ENUMERATED,
+            JDXISynth.ANALOG: JDXIPresets.ANALOG,
+            JDXISynth.DIGITAL_1: JDXIPresets.DIGITAL_ENUMERATED,
+            JDXISynth.DIGITAL_2: JDXIPresets.DIGITAL_ENUMERATED,
+            JDXISynth.DRUMS: JDXIPresets.DRUM_PRESETS_ENUMERATED,
         }
 
         presets = preset_map.get(self.current_synth_type, None)
@@ -393,7 +378,7 @@ class JdxiInstrument(JdxiUi):
             logging.warning(
                 f"Unknown synth preset_type: {self.current_synth_type}, defaulting to DIGITAL_PRESETS"
             )
-            return DIGITAL_PRESETS_ENUMERATED  # Safe fallback
+            return JDXIPresets.DIGITAL_ENUMERATED  # Safe fallback
         return presets
 
     def _previous_program(self):
@@ -478,14 +463,14 @@ class JdxiInstrument(JdxiUi):
         )
 
         preset_channel_map = {
-            MidiChannel.ANALOG: ANALOG_PRESETS_ENUMERATED,
-            MidiChannel.DIGITAL1: DIGITAL_PRESETS_ENUMERATED,
-            MidiChannel.DIGITAL2: DIGITAL_PRESETS_ENUMERATED,
-            MidiChannel.DRUM: DRUM_PRESETS_ENUMERATED,
+            MidiChannel.ANALOG: JDXIPresets.ANALOG_PRESETS_ENUMERATED,
+            MidiChannel.DIGITAL1: JDXIPresets.DIGITAL_ENUMERATED,
+            MidiChannel.DIGITAL2: JDXIPresets.DIGITAL_ENUMERATED,
+            MidiChannel.DRUM: JDXIPresets.DRUM_PRESETS_ENUMERATED,
         }
 
         # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
-        presets = preset_channel_map.get(channel, DIGITAL_PRESETS_ENUMERATED)
+        presets = preset_channel_map.get(channel, JDXIPresets.DIGITAL_ENUMERATED)
 
         self._update_display_preset(
             preset_index,
@@ -643,13 +628,13 @@ class JdxiInstrument(JdxiUi):
             preset_type = self.current_synth_type
             preset_number = self.current_preset_index
             preset_map = {
-                JDXISynth.ANALOG: ANALOG_PRESETS_ENUMERATED,
-                JDXISynth.DIGITAL_1: DIGITAL_PRESETS_ENUMERATED,
-                JDXISynth.DIGITAL_2: DIGITAL_PRESETS_ENUMERATED,
-                JDXISynth.DRUMS: DRUM_PRESETS_ENUMERATED,
+                JDXISynth.ANALOG: JDXIPresets.ANALOG_PRESETS_ENUMERATED,
+                JDXISynth.DIGITAL_1: JDXIPresets.DIGITAL_ENUMERATED,
+                JDXISynth.DIGITAL_2: JDXIPresets.DIGITAL_ENUMERATED,
+                JDXISynth.DRUMS: JDXIPresets.DRUM_PRESETS_ENUMERATED,
             }
             # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
-            presets = preset_map.get(preset_type, DIGITAL_PRESETS_ENUMERATED)
+            presets = preset_map.get(preset_type, JDXIPresets.DIGITAL_ENUMERATED)
             preset_name = presets[preset_number]
             logging.info(f"preset_name: {preset_name}")
             return preset_name
@@ -664,13 +649,13 @@ class JdxiInstrument(JdxiUi):
 
             # Get preset name - adjust index to be 0-based
             if synth_type == JDXISynth.ANALOG:
-                return AN_PRESETS[preset_num - 1]  # Convert 1-based to 0-based
+                return JDXIPresets.ANALOG[preset_num - 1]  # Convert 1-based to 0-based
             if synth_type == JDXISynth.DIGITAL_1:
-                return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
+                return JDXIPresets.DIGITAL_ENUMERATED[preset_num - 1]
             if synth_type == JDXISynth.DIGITAL_2:
-                return DIGITAL_PRESETS_ENUMERATED[preset_num - 1]
+                return JDXIPresets.DIGITAL_ENUMERATED[preset_num - 1]
             else:
-                return DRUM_PRESETS_ENUMERATED[preset_num - 1]
+                return JDXIPresets.DRUM_PRESETS_ENUMERATED[preset_num - 1]
         except IndexError:
             return "INIT PATCH"
 
@@ -1129,33 +1114,6 @@ class JdxiInstrument(JdxiUi):
         self.midi_message_debug.show()
         self.midi_message_debug.raise_()
 
-    def _edit_patch_name(self):
-        """Edit current patch name"""
-        try:
-            dialog = PatchNameEditor(self.current_preset_name, self)
-            if dialog.exec_():
-                new_name = dialog.get_name()
-
-                # Update display
-                self.update_preset_display(self.current_preset_num, new_name)
-
-                # Send MIDI message to update patch name
-                if self.midi_out:
-                    msg = MidiIOHelper.create_patch_name_message(
-                        self.current_preset_num, new_name
-                    )
-                    self.midi_out.send_raw_message(msg)
-                    logging.debug(
-                        f"Updated patch {self.current_preset_num} name to: {new_name}"
-                    )
-
-                    # Blink indicator
-                    if hasattr(self, "midi_out_indicator"):
-                        self.midi_out_indicator.blink()
-
-        except Exception as ex:
-            logging.error(f"Error editing patch name: {str(ex)}")
-
     def _save_settings(self):
         """Save application settings"""
         try:
@@ -1198,7 +1156,7 @@ class JdxiInstrument(JdxiUi):
             self.midi_helper.open_input_port(selected_in_port)
             self.midi_helper.open_output_port(selected_out_port)
 
-            # Explicitly store the selected ports
+            # Explicitly store the selected ports # FIXME: this looks incorrect
             self.midi_helper.current_in_port = selected_in_port
             self.midi_helper.current_out_port = selected_out_port
 
@@ -1259,10 +1217,10 @@ class JdxiInstrument(JdxiUi):
     
             # Define mappings for synth types
             synth_mappings = {
-                JDXISynth.ANALOG: (AN_PRESETS, 0, 7),
-                JDXISynth.DIGITAL_1: (DIGITAL_PRESETS_ENUMERATED, 1, 16),
-                JDXISynth.DIGITAL_2: (DIGITAL_PRESETS_ENUMERATED, 2, 16),
-                JDXISynth.DRUMS: (DRUM_PRESETS_ENUMERATED, 3, 16),
+                JDXISynth.ANALOG: (JDXIPresets.ANALOG, 0, 7),
+                JDXISynth.DIGITAL_1: (JDXIPresets.DIGITAL_ENUMERATED, 1, 16),
+                JDXISynth.DIGITAL_2: (JDXIPresets.DIGITAL_ENUMERATED, 2, 16),
+                JDXISynth.DRUMS: (JDXIPresets.DRUM_PRESETS_ENUMERATED, 3, 16),
             }
     
             # Get preset list and MIDI parameters based on synth type
@@ -1296,22 +1254,22 @@ class JdxiInstrument(JdxiUi):
 
             # Get preset list based on synth preset_type
             if synth_type == JDXISynth.ANALOG:
-                presets = AN_PRESETS
+                presets = JDXIPresets.ANALOG
                 bank_msb = 0
                 bank_lsb = preset_num // 7
                 program = preset_num % 7
             elif synth_type == JDXISynth.DIGITAL_1:
-                presets = DIGITAL_PRESETS_ENUMERATED
+                presets = JDXIPresets.DIGITAL_ENUMERATED
                 bank_msb = 1
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
             elif synth_type == JDXISynth.DIGITAL_2:
-                presets = DIGITAL_PRESETS_ENUMERATED
+                presets = JDXIPresets.DIGITAL_ENUMERATED
                 bank_msb = 2
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
             else:  # Drums
-                presets = DRUM_PRESETS_ENUMERATED
+                presets = JDXIPresets.DRUM_PRESETS_ENUMERATED
                 bank_msb = 3
                 bank_lsb = preset_num // 16
                 program = preset_num % 16

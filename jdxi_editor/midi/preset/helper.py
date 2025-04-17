@@ -40,7 +40,7 @@ from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.preset.utils import get_preset_values
-from jdxi_editor.midi.sysex.requests import PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import log_midi_info
 
 
@@ -68,7 +68,7 @@ class PresetHelper(QObject):
         self.type = preset_type
         self.preset_number = 1
         self.current_preset_zero_indexed = 0
-        self.midi_requests = PROGRAM_TONE_NAME_PARTIAL_REQUESTS
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
         self.midi_helper = midi_helper
         self.sysex_message = RolandSysEx()
         self._initialized = True
