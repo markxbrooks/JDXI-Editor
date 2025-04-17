@@ -59,7 +59,7 @@ class PresetData:
             bank_lsb = preset_num // 16
             program = preset_num % 16
         else:  # Drums
-            presets = JDXIPresets.DRUM_PRESETS_ENUMERATED
+            presets = JDXIPresets.DRUM_ENUMERATED
             bank_msb = 3
             bank_lsb = preset_num // 16
             program = preset_num % 16

@@ -67,7 +67,7 @@ class DrumSynthData(SynthData):
             instrument_default_image="drums.png",
             midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
             midi_channel=MidiChannel.DRUM,
-            presets=JDXIPresets.DRUM_PRESETS_ENUMERATED,
+            presets=JDXIPresets.DRUM_ENUMERATED,
             preset_list=JDXIPresets.DRUM_KIT_LIST,
             preset_type=JDXISynth.DRUMS,
             window_title="Drums",
@@ -153,7 +153,7 @@ class DigitalSynthData(SynthData):
             if synth_number == 2
             else MidiChannel.DIGITAL1,
             presets=JDXIPresets.DIGITAL_ENUMERATED,
-            preset_list=JDXIPresets.DIGITAL_PRESET_LIST,
+            preset_list=JDXIPresets.DIGITAL_LIST,
             preset_type=JDXISynth.DIGITAL_2
             if synth_number == 2
             else JDXISynth.DIGITAL_1,
@@ -185,8 +185,8 @@ class AnalogSynthData(SynthData):
             instrument_default_image="analog.png",
             midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
             midi_channel=MidiChannel.ANALOG,
-            presets=JDXIPresets.ANALOG_PRESETS_ENUMERATED,
-            preset_list=JDXIPresets.ANALOG_PRESET_LIST,
+            presets=JDXIPresets.ANALOG_ENUMERATED,
+            preset_list=JDXIPresets.ANALOG_LIST,
             preset_type=JDXISynth.ANALOG,
             window_title="Analog Synth",
             display_prefix="AN",

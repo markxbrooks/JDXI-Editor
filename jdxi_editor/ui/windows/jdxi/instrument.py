@@ -201,13 +201,13 @@ class JdxiInstrument(JdxiUi):
         )
         self.analog_preset_helper = PresetHelper(
             self.midi_helper,
-            JDXIPresets.ANALOG_PRESETS_ENUMERATED,
+            JDXIPresets.ANALOG_ENUMERATED,
             channel=MidiChannel.ANALOG,
             preset_type=JDXISynth.ANALOG,
         )
         self.drums_preset_helper = PresetHelper(
             self.midi_helper,
-            JDXIPresets.DRUM_PRESETS_ENUMERATED,
+            JDXIPresets.DRUM_ENUMERATED,
             channel=MidiChannel.DRUM,
             preset_type=JDXISynth.DRUMS,
         )
@@ -252,8 +252,8 @@ class JdxiInstrument(JdxiUi):
         preset_configs = [
             (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
             (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXISynth.ANALOG, JDXIPresets.ANALOG_PRESETS_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, JDXIPresets.DRUM_PRESETS_ENUMERATED, MidiChannel.DRUM),
+            (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+            (JDXISynth.DRUMS, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
 
         self.preset_helpers = {
@@ -370,7 +370,7 @@ class JdxiInstrument(JdxiUi):
             JDXISynth.ANALOG: JDXIPresets.ANALOG,
             JDXISynth.DIGITAL_1: JDXIPresets.DIGITAL_ENUMERATED,
             JDXISynth.DIGITAL_2: JDXIPresets.DIGITAL_ENUMERATED,
-            JDXISynth.DRUMS: JDXIPresets.DRUM_PRESETS_ENUMERATED,
+            JDXISynth.DRUMS: JDXIPresets.DRUM_ENUMERATED,
         }
 
         presets = preset_map.get(self.current_synth_type, None)
@@ -463,10 +463,10 @@ class JdxiInstrument(JdxiUi):
         )
 
         preset_channel_map = {
-            MidiChannel.ANALOG: JDXIPresets.ANALOG_PRESETS_ENUMERATED,
+            MidiChannel.ANALOG: JDXIPresets.ANALOG_ENUMERATED,
             MidiChannel.DIGITAL1: JDXIPresets.DIGITAL_ENUMERATED,
             MidiChannel.DIGITAL2: JDXIPresets.DIGITAL_ENUMERATED,
-            MidiChannel.DRUM: JDXIPresets.DRUM_PRESETS_ENUMERATED,
+            MidiChannel.DRUM: JDXIPresets.DRUM_ENUMERATED,
         }
 
         # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
@@ -628,10 +628,10 @@ class JdxiInstrument(JdxiUi):
             preset_type = self.current_synth_type
             preset_number = self.current_preset_index
             preset_map = {
-                JDXISynth.ANALOG: JDXIPresets.ANALOG_PRESETS_ENUMERATED,
+                JDXISynth.ANALOG: JDXIPresets.ANALOG_ENUMERATED,
                 JDXISynth.DIGITAL_1: JDXIPresets.DIGITAL_ENUMERATED,
                 JDXISynth.DIGITAL_2: JDXIPresets.DIGITAL_ENUMERATED,
-                JDXISynth.DRUMS: JDXIPresets.DRUM_PRESETS_ENUMERATED,
+                JDXISynth.DRUMS: JDXIPresets.DRUM_ENUMERATED,
             }
             # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
             presets = preset_map.get(preset_type, JDXIPresets.DIGITAL_ENUMERATED)
@@ -655,7 +655,7 @@ class JdxiInstrument(JdxiUi):
             if synth_type == JDXISynth.DIGITAL_2:
                 return JDXIPresets.DIGITAL_ENUMERATED[preset_num - 1]
             else:
-                return JDXIPresets.DRUM_PRESETS_ENUMERATED[preset_num - 1]
+                return JDXIPresets.DRUM_ENUMERATED[preset_num - 1]
         except IndexError:
             return "INIT PATCH"
 
@@ -1220,7 +1220,7 @@ class JdxiInstrument(JdxiUi):
                 JDXISynth.ANALOG: (JDXIPresets.ANALOG, 0, 7),
                 JDXISynth.DIGITAL_1: (JDXIPresets.DIGITAL_ENUMERATED, 1, 16),
                 JDXISynth.DIGITAL_2: (JDXIPresets.DIGITAL_ENUMERATED, 2, 16),
-                JDXISynth.DRUMS: (JDXIPresets.DRUM_PRESETS_ENUMERATED, 3, 16),
+                JDXISynth.DRUMS: (JDXIPresets.DRUM_ENUMERATED, 3, 16),
             }
     
             # Get preset list and MIDI parameters based on synth type
@@ -1269,7 +1269,7 @@ class JdxiInstrument(JdxiUi):
                 bank_lsb = preset_num // 16
                 program = preset_num % 16
             else:  # Drums
-                presets = JDXIPresets.DRUM_PRESETS_ENUMERATED
+                presets = JDXIPresets.DRUM_ENUMERATED
                 bank_msb = 3
                 bank_lsb = preset_num // 16
                 program = preset_num % 16

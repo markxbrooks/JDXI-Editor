@@ -2,7 +2,7 @@ from typing import Tuple
 
 
 class JDXIPresets:
-    ANALOG_PRESETS_ENUMERATED = [
+    ANALOG_ENUMERATED = [
         "001: Toxic Bass 1",
         "002: Sub Bass 1",
         "003: Backwards 1",
@@ -67,7 +67,7 @@ class JDXIPresets:
         "062: Siren Hell 1",
         "063: SirenFX/Mod1",
     ]
-    ANALOG_PRESET_LIST = [
+    ANALOG_LIST = [
         {
             "id": "001",
             "name": "Toxic Bass 1",
@@ -1429,7 +1429,7 @@ class JDXIPresets:
         "Voc:VP-330",
         "Voc:Noise",
     ]
-    DIGITAL_PRESET_LIST = [
+    DIGITAL_LIST = [
         {
             "id": "001",
             "name": "JP8 Strings1",
@@ -3521,7 +3521,7 @@ class JDXIPresets:
             "pc": "33",
         },
     ]
-    DRUM_PRESETS_ENUMERATED = [
+    DRUM_ENUMERATED = [
         "001: TR-909 Kit 1",
         "002: TR-808 Kit 1",
         "003: 707&727 Kit1",
