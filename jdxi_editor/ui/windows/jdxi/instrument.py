@@ -975,9 +975,20 @@ class JdxiInstrument(JdxiUi):
                     address_lsb=0x46,
                     value=value,
                 )
+                # self.midi_helper.send_midi_message(sysex_message)
+                sysex_message = RolandSysEx(
+                    address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                    address_umb=0x01,
+                    address_lmb=0x00,
+                    address_lsb=0x14,
+                    value=value,
+                )
                 self.midi_helper.send_midi_message(sysex_message)
                 cc_value = 127 if state else 0
-                self.midi_helper.send_control_change(cc_value, value, MidiChannel.DIGITAL1)
+                # cc_list = [64, 65, 66, 67, 68, 69]
+                cc_list = [68]
+                for cc in cc_list:
+                    self.midi_helper.send_control_change(cc, cc_value, MidiChannel.DIGITAL1)
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
         except Exception as ex:
             logging.error(f"Error sending arp key hold: {str(ex)}")
