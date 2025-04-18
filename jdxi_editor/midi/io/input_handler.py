@@ -119,43 +119,6 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
     return None
 
 
-def convert_to_mido_message_old(message_content: list):
-    """ convert_to_mido_message """
-    if not message_content:
-        return None
-
-    status_byte = message_content[0]
-
-    # **SysEx Message Handling**
-    if status_byte == 0xF0 and message_content[-1] == 0xF7:
-        sys_ex_data = nibble_data(message_content[1:-1])
-        # If data length exceeds 128 bytes, split into 4-byte nibbles
-        if len(sys_ex_data) > 128:
-            nibbles = [sys_ex_data[i : i + 4] for i in range(0, len(sys_ex_data), 4)]
-            return [mido.Message("sysex", data=nibble) for nibble in nibbles]
-
-        return mido.Message("sysex", data=sys_ex_data)
-
-    # **Program Change (PC) Handling**
-    if 0xC0 <= status_byte <= 0xCF:  # Program Change (0xC0 - 0xCF)
-        channel = status_byte & 0x0F  # Extract channel (0-15)
-        program = message_content[1]  # Program number (0-127)
-        return mido.Message("program_change", channel=channel, program=program)
-
-    # **Control Change (CC) Handling**
-    if 0xB0 <= status_byte <= 0xBF:  # Control Change (0xB0 - 0xBF)
-        channel = status_byte & 0x0F  # Extract channel (0-15)
-        control = message_content[1]  # CC number (0-127)
-        value = message_content[2]  # CC value (0-127)
-        return mido.Message(
-            "control_change", channel=channel, control=control, value=value
-        )
-
-    # **Other Messages (Optional)**
-    logging.info(f"Unhandled MIDI message: {message_content}")
-    return None
-
-
 def mido_message_data_to_byte_list(message):
     """mido message data to byte list"""
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)

@@ -14,12 +14,12 @@ def save_all_controls_to_single_file(editors, file_path):
         combined_data = {}
 
         for editor in editors:
-            editor_name = editor.__class__.__name__  # Get the name of the editor class
-            combined_data[editor_name] = editor.get_controls_as_dict()
+            editor_part = editor.address_umb.name  # Get the part of the editor class
+            combined_data[editor_part] = editor.get_controls_as_dict()
 
         # Save the combined data to a single JSON file
-        with open(file_path, 'w') as file:
-            json.dump(combined_data, file, indent=4)
+        with open(file_path, 'w') as file_name:
+            json.dump(combined_data, file_name, indent=4)
 
         logging.info(f"All controls saved successfully to {file_path}")
 
