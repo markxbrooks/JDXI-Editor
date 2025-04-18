@@ -969,13 +969,15 @@ class JdxiInstrument(JdxiUi):
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
                 sysex_message = RolandSysEx(
-                    address_msb=AddressMemoryAreaMSB.PROGRAM,
-                    address_umb=AddressOffsetSystemUMB.COMMON,
-                    address_lmb=AddressOffsetProgramLMB.CONTROLLER,
-                    address_lsb=0x02,
+                    address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                    address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+                    address_lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    address_lsb=0x46,
                     value=value,
                 )
                 self.midi_helper.send_midi_message(sysex_message)
+                cc_value = 127 if state else 0
+                self.midi_helper.send_control_change(cc_value, value, MidiChannel.DIGITAL1)
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
         except Exception as ex:
             logging.error(f"Error sending arp key hold: {str(ex)}")
@@ -1090,6 +1092,207 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error saving settings: {str(ex)}")
 
+    def handle_piano_note_on(self, note_num):
+        """Handle piano key press"""
+        if self.midi_helper:
+            # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
+            msg = [0x90 + self.channel, note_num, 100]
+            self.midi_helper.send_raw_message(msg)
+            logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
+
+    def handle_piano_note_off(self, note_num):
+        """Handle piano key release"""
+        if self.midi_helper:
+            # Calculate the correct status byte for note_off:
+            # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
+            if not self.key_hold_latched:
+                status = 0x80 + self.channel
+                msg = [status, note_num, 0]
+                self.midi_helper.send_raw_message(msg)
+                logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
+    
+    def _load_last_preset(self):
+        """Load the last used preset from settings."""
+        try:
+            # Get last preset info from settings
+            synth_type = self.settings.value("last_preset/synth_type", JDXISynth.DIGITAL_1)
+            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
+            channel = self.settings.value("last_preset/channel", 0, type=int)
+    
+            # Define mappings for synth types
+            synth_mappings = {
+                JDXISynth.ANALOG: (JDXIPresets.ANALOG, 0, 7),
+                JDXISynth.DIGITAL_1: (JDXIPresets.DIGITAL_ENUMERATED, 1, 16),
+                JDXISynth.DIGITAL_2: (JDXIPresets.DIGITAL_ENUMERATED, 2, 16),
+                JDXISynth.DRUMS: (JDXIPresets.DRUM_ENUMERATED, 3, 16),
+            }
+    
+            # Get preset list and MIDI parameters based on synth type
+            presets, bank_msb, lsb_divisor = synth_mappings.get(synth_type, ([], 0, 1))
+            bank_lsb = preset_num // lsb_divisor
+            program = preset_num % lsb_divisor
+    
+            # Send MIDI messages to load preset
+            if hasattr(self, "midi_helper") and self.midi_helper:
+                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
+                self.midi_helper.send_program_change(program, channel)
+    
+                # Update display and channel
+                preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
+                self._update_display_preset(preset_num, preset_name, channel)
+    
+                logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
+    
+        except Exception as ex:
+            logging.error(f"Error loading last preset: {str(ex)}")
+
+    def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
+        """Save the last used preset to settings
+
+        Args:
+            synth_type: Type of synth ('Analog', 'Digital 1', 'Digital 2', 'Drums')
+            preset_num: Preset number (0-based index)
+            channel: MIDI channel
+        """
+        try:
+            self.settings.setValue("last_preset/synth_type", synth_type)
+            self.settings.setValue("last_preset/preset_num", preset_num)
+            self.settings.setValue("last_preset/channel", channel)
+            logging.debug(
+                f"Saved last preset: {synth_type} #{preset_num} on channel {channel}"
+            )
+
+        except Exception as ex:
+            logging.error(f"Error saving last preset: {str(ex)}")
+
+    def _load_favorite(self, button):
+        """Load preset from favorite button"""
+        if button.preset:
+            if self.midi_helper:
+                # Get preset info from button
+                self.preset_type = button.preset.type
+                self.current_preset_index = button.preset.tone_number
+                self.channel = button.preset.channel
+                # Update display - REMOVED the preset_num + 1
+                self._update_display_preset(
+                    self.current_preset_index + 1,  # Convert to 1-based index
+                    button.preset.tone_name,
+                    self.channel,
+                )
+                preset_data = Preset(
+                    type=self.preset_type,  # Ensure this is address valid preset_type
+                    number=self.current_preset_index,
+                    channel=self.channel,
+                )
+                # Send MIDI messages to load preset
+                self.load_preset(preset_data)
+
+    def _show_favorite_context_menu(self, pos, button: Union[FavoriteButton, SequencerSquare]):
+        """Show context menu for favorite button"""
+        menu = QMenu()
+
+        # Add save action if we have address current preset
+        if hasattr(self, "current_preset_num"):
+            save_action = menu.addAction("Save Current Preset")
+            save_action.triggered.connect(lambda: self._save_to_favorite(button))
+
+        # Add clear action if slot has address preset
+        if button.preset:
+            clear_action = menu.addAction("Clear Slot")
+            clear_action.triggered.connect(lambda: self._clear_favorite(button))
+
+        menu.exec_(button.mapToGlobal(pos))
+
+    def _save_to_favorite(self, button: Union[FavoriteButton, SequencerSquare]):
+        """Save current preset to favorite slot"""
+        if hasattr(self, "current_preset_num"):
+            # Get current preset info from settings
+            synth_type = self.settings.value("last_preset/synth_type", JDXISynth.ANALOG)
+            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
+            channel = self.settings.value("last_preset/channel", 0, type=int)
+            try:
+                # Get the current preset name
+                preset_name = self._get_current_preset_name()
+
+                # Save to button (which will also save to settings)
+                button.save_preset_as_favourite(synth_type, preset_num, preset_name, channel)
+
+                # Update display to show the saved preset
+                self._update_display_preset(preset_num, preset_name, channel)
+
+            except Exception as ex:
+                logging.error(f"Error saving to favorite: {str(ex)}")
+                QMessageBox.warning(self, "Error", f"Error saving preset: {str(ex)}")
+
+    def _clear_favorite(self, button: FavoriteButton):
+        """Clear favorite slot"""
+        button.clear_preset()
+
+    def _load_saved_favorites(self):
+        """Load saved favorites from settings"""
+        for button in self.sequencer_buttons:
+            synth_type = self.settings.value(
+                f"favorites/slot{button.slot_num}/synth_type", ""
+            )
+            if synth_type:
+                preset_num = self.settings.value(
+                    f"favorites/slot{button.slot_num}/preset_num", 0, type=int
+                )
+                preset_name = self.settings.value(
+                    f"favorites/slot{button.slot_num}/preset_name", ""
+                )
+                channel = self.settings.value(
+                    f"favorites/slot{button.slot_num}/channel", 0, type=int
+                )
+
+                button.save_preset_as_favourite(
+                    synth_type, preset_num, preset_name, channel
+                )
+
+    def load_preset(self, preset_data):
+        """Load preset data into synth"""
+        try:
+            if self.midi_helper:
+                self.digital_1_preset_helper = PresetHelper(self.midi_helper)
+                self.digital_1_preset_helper.load_preset(
+                    preset_data,
+                )
+                self.last_preset = preset_data
+        except Exception as ex:
+            logging.error(f"Error loading preset: {str(ex)}")
+
+    def _open_vocal_fx(self):
+        """Show the vocal FX editor window"""
+        try:
+            if not hasattr(self, "vocal_fx_editor"):
+                self.vocal_fx_editor = VocalFXEditor(
+                    midi_helper=self.midi_helper, parent=self
+                )
+            self.vocal_fx_editor.show()
+            self.vocal_fx_editor.raise_()
+
+        except Exception as ex:
+            logging.error(f"Error showing Vocal FX editor: {str(ex)}")
+
+    def _show_arpeggio_editor(self, event):
+        """Show the arpeggio editor window"""
+        try:
+            if not hasattr(self, "arpeggio_editor"):
+                logging.debug("Creating new arpeggio editor")
+                self.arpeggio_editor = ArpeggioEditor(midi_helper=self.midi_helper)
+            logging.debug("Showing arpeggio editor")
+            self.arpeggio_editor.show()
+        except Exception as ex:
+            logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
+
+    def _open_program_editor(self, event):
+        """Open the ProgramEditor when the digital display is clicked."""
+        if event.button() == Qt.MouseButton.LeftButton:
+            try:
+                self._show_editor("Program", ProgramEditor)
+            except Exception as ex:
+                logging.error(f"Error opening Program editor: {str(ex)}")
+
     def _auto_connect_jdxi(self):
         """Attempt to automatically connect to JD-Xi MIDI ports."""
         try:
@@ -1144,310 +1347,3 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error sending identity request: {str(ex)}")
 
-    def handle_piano_note_on(self, note_num):
-        """Handle piano key press"""
-        if self.midi_helper:
-            # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
-            msg = [0x90 + self.channel, note_num, 100]
-            self.midi_helper.send_raw_message(msg)
-            logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
-
-    def handle_piano_note_off(self, note_num):
-        """Handle piano key release"""
-        if self.midi_helper:
-            # Calculate the correct status byte for note_off:
-            # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
-            if not self.key_hold_latched:
-                status = 0x80 + self.channel
-                msg = [status, note_num, 0]
-                self.midi_helper.send_raw_message(msg)
-                logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
-    
-    def _load_last_preset(self):
-        """Load the last used preset from settings."""
-        try:
-            # Get last preset info from settings
-            synth_type = self.settings.value("last_preset/synth_type", JDXISynth.DIGITAL_1)
-            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
-            channel = self.settings.value("last_preset/channel", 0, type=int)
-    
-            # Define mappings for synth types
-            synth_mappings = {
-                JDXISynth.ANALOG: (JDXIPresets.ANALOG, 0, 7),
-                JDXISynth.DIGITAL_1: (JDXIPresets.DIGITAL_ENUMERATED, 1, 16),
-                JDXISynth.DIGITAL_2: (JDXIPresets.DIGITAL_ENUMERATED, 2, 16),
-                JDXISynth.DRUMS: (JDXIPresets.DRUM_ENUMERATED, 3, 16),
-            }
-    
-            # Get preset list and MIDI parameters based on synth type
-            presets, bank_msb, lsb_divisor = synth_mappings.get(synth_type, ([], 0, 1))
-            bank_lsb = preset_num // lsb_divisor
-            program = preset_num % lsb_divisor
-    
-            # Send MIDI messages to load preset
-            if hasattr(self, "midi_helper") and self.midi_helper:
-                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
-                self.midi_helper.send_program_change(program, channel)
-    
-                # Update display and channel
-                preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
-                self._update_display_preset(preset_num, preset_name, channel)
-    
-                logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
-    
-        except Exception as ex:
-            logging.error(f"Error loading last preset: {str(ex)}")
-    
-    def _load_last_presetold(self):
-        """Load the last used preset from settings"""
-        try:
-            # Get last preset info from settings
-            synth_type = self.settings.value(
-                "last_preset/synth_type", JDXISynth.DIGITAL_1
-            )
-            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
-            channel = self.settings.value("last_preset/channel", 0, type=int)
-
-            # Get preset list based on synth preset_type
-            if synth_type == JDXISynth.ANALOG:
-                presets = JDXIPresets.ANALOG
-                bank_msb = 0
-                bank_lsb = preset_num // 7
-                program = preset_num % 7
-            elif synth_type == JDXISynth.DIGITAL_1:
-                presets = JDXIPresets.DIGITAL_ENUMERATED
-                bank_msb = 1
-                bank_lsb = preset_num // 16
-                program = preset_num % 16
-            elif synth_type == JDXISynth.DIGITAL_2:
-                presets = JDXIPresets.DIGITAL_ENUMERATED
-                bank_msb = 2
-                bank_lsb = preset_num // 16
-                program = preset_num % 16
-            else:  # Drums
-                presets = JDXIPresets.DRUM_ENUMERATED
-                bank_msb = 3
-                bank_lsb = preset_num // 16
-                program = preset_num % 16
-
-            # Send MIDI messages to load preset
-            if hasattr(self, "midi_helper") and self.midi_helper:
-                self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
-                self.midi_helper.send_program_change(program, channel)
-
-                # Update display and channel
-                preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
-                self._update_display_preset(preset_num, preset_name, channel)
-
-                logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
-
-        except Exception as ex:
-            logging.error(f"Error loading last preset: {str(ex)}")
-
-    def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
-        """Save the last used preset to settings
-
-        Args:
-            synth_type: Type of synth ('Analog', 'Digital 1', 'Digital 2', 'Drums')
-            preset_num: Preset number (0-based index)
-            channel: MIDI channel
-        """
-        try:
-            self.settings.setValue("last_preset/synth_type", synth_type)
-            self.settings.setValue("last_preset/preset_num", preset_num)
-            self.settings.setValue("last_preset/channel", channel)
-            logging.debug(
-                f"Saved last preset: {synth_type} #{preset_num} on channel {channel}"
-            )
-
-        except Exception as ex:
-            logging.error(f"Error saving last preset: {str(ex)}")
-
-    def _load_favorite(self, button):
-        """Load preset from favorite button"""
-        if button.preset:
-            if self.midi_helper:
-                # Get preset info from button
-                self.preset_type = button.preset.type
-                self.current_preset_index = button.preset.tone_number
-                self.channel = button.preset.channel
-                # Update display - REMOVED the preset_num + 1
-                self._update_display_preset(
-                    self.current_preset_index + 1,  # Convert to 1-based index
-                    button.preset.tone_name,
-                    self.channel,
-                )
-                preset_data = Preset(
-                    type=self.preset_type,  # Ensure this is address valid preset_type
-                    number=self.current_preset_index,
-                    channel=self.channel,
-                )
-                # Send MIDI messages to load preset
-                self.load_preset(preset_data)
-
-    def _show_favorite_context_menu(
-        self, pos, button: Union[FavoriteButton, SequencerSquare]
-    ):
-        """Show context menu for favorite button"""
-        menu = QMenu()
-
-        # Add save action if we have address current preset
-        if hasattr(self, "current_preset_num"):
-            save_action = menu.addAction("Save Current Preset")
-            save_action.triggered.connect(lambda: self._save_to_favorite(button))
-
-        # Add clear action if slot has address preset
-        if button.preset:
-            clear_action = menu.addAction("Clear Slot")
-            clear_action.triggered.connect(lambda: self._clear_favorite(button))
-
-        menu.exec_(button.mapToGlobal(pos))
-
-    def _save_to_favorite(self, button: Union[FavoriteButton, SequencerSquare]):
-        """Save current preset to favorite slot"""
-        if hasattr(self, "current_preset_num"):
-            # Get current preset info from settings
-            synth_type = self.settings.value("last_preset/synth_type", JDXISynth.ANALOG)
-            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
-            channel = self.settings.value("last_preset/channel", 0, type=int)
-
-            try:
-                # Get the current preset name
-                preset_name = self._get_current_preset_name()
-
-                # Save to button (which will also save to settings)
-                button.save_preset_as_favourite(
-                    synth_type, preset_num, preset_name, channel
-                )
-
-                # Update display to show the saved preset
-                self._update_display_preset(preset_num, preset_name, channel)
-
-            except Exception as ex:
-                logging.error(f"Error saving to favorite: {str(ex)}")
-                QMessageBox.warning(self, "Error", f"Error saving preset: {str(ex)}")
-
-    def _clear_favorite(self, button: FavoriteButton):
-        """Clear favorite slot"""
-        button.clear_preset()
-
-    def _load_saved_favorites(self):
-        """Load saved favorites from settings"""
-        for button in self.sequencer_buttons:
-            # Check if slot has saved preset
-            synth_type = self.settings.value(
-                f"favorites/slot{button.slot_num}/synth_type", ""
-            )
-            if synth_type:
-                preset_num = self.settings.value(
-                    f"favorites/slot{button.slot_num}/preset_num", 0, type=int
-                )
-                preset_name = self.settings.value(
-                    f"favorites/slot{button.slot_num}/preset_name", ""
-                )
-                channel = self.settings.value(
-                    f"favorites/slot{button.slot_num}/channel", 0, type=int
-                )
-
-                button.save_preset_as_favourite(
-                    synth_type, preset_num, preset_name, channel
-                )
-
-    def load_preset(self, preset_data):
-        """Load preset data into synth"""
-        try:
-            # self.preset_type = PresetType.DIGITAL_1
-            if self.midi_helper:
-                # Use PresetLoader for consistent preset loading
-                self.digital_1_preset_helper = PresetHelper(self.midi_helper)
-                self.digital_1_preset_helper.load_preset(
-                    preset_data,
-                )
-                # Store as last loaded preset
-                self.last_preset = preset_data
-                # self.settings.setValue("last_preset", preset_data)
-
-        except Exception as ex:
-            logging.error(f"Error loading preset: {str(ex)}")
-
-    def set_midi_ports(self, in_port: str, out_port: str) -> bool:
-        """Set MIDI input and output ports
-
-        Args:
-            in_port: Input port name
-            out_port: Output port name
-
-        Returns:
-            True if successful, False otherwise
-        """
-        try:
-            # Open ports
-            if not self.midi_helper.open_input_port(in_port):
-                return False
-
-            if not self.midi_helper.open_output_port(out_port):
-                return False
-
-            # Update indicators
-            self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
-            self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-
-            return True
-
-        except Exception as ex:
-            logging.error(f"Error setting MIDI ports: {str(ex)}")
-            return False
-
-    def connect_jdxi_midi_ports(self):
-        """Connect to MIDI ports"""
-        try:
-            # Find JD-Xi ports
-            in_port, out_port = self.midi_helper.find_jdxi_ports()
-
-            if in_port and out_port:
-                # Open ports
-                if self.midi_helper.open_ports(in_port, out_port):
-                    logging.info(f"Connected to JD-Xi ({in_port}, {out_port})")
-                    self.statusBar().showMessage("Connected to JD-Xi")
-                    return True
-
-            logging.warning("JD-Xi not found")
-            self.statusBar().showMessage("JD-Xi not found")
-            return False
-
-        except Exception as ex:
-            logging.error(f"Error connecting to MIDI: {str(ex)}")
-            self.statusBar().showMessage("MIDI connection error")
-            return False
-
-    def _open_vocal_fx(self):
-        """Show the vocal FX editor window"""
-        try:
-            if not hasattr(self, "vocal_fx_editor"):
-                self.vocal_fx_editor = VocalFXEditor(
-                    midi_helper=self.midi_helper, parent=self
-                )
-            self.vocal_fx_editor.show()
-            self.vocal_fx_editor.raise_()
-
-        except Exception as ex:
-            logging.error(f"Error showing Vocal FX editor: {str(ex)}")
-
-    def _show_arpeggio_editor(self, event):
-        """Show the arpeggio editor window"""
-        try:
-            if not hasattr(self, "arpeggio_editor"):
-                logging.debug("Creating new arpeggio editor")
-                self.arpeggio_editor = ArpeggioEditor(midi_helper=self.midi_helper)
-            logging.debug("Showing arpeggio editor")
-            self.arpeggio_editor.show()
-        except Exception as ex:
-            logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
-
-    def _open_program_editor(self, event):
-        """Open the ProgramEditor when the digital display is clicked."""
-        if event.button() == Qt.MouseButton.LeftButton:
-            try:
-                self._show_editor("Program", ProgramEditor)
-            except Exception as ex:
-                logging.error(f"Error opening Program editor: {str(ex)}")
