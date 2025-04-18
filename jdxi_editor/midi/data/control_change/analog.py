@@ -18,6 +18,9 @@ class AnalogControlChange(ControlChange):
     NRPN_LFO_AMP = 21  # LFO Amp Depth (0-127)
     NRPN_PW = 37  # Pulse Width (0-127)
 
+    KEY_HOLD = 64
+
+
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
