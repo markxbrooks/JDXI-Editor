@@ -108,7 +108,7 @@ class MidiIOController(QObject):
 
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
-            logging.info(f"Opened MIDI input port: {ports[port_index]}")
+            logging.info(f"Opened MIDI input port: \t{ports[port_index]}")
             return True
 
         except Exception as ex:
@@ -144,6 +144,20 @@ class MidiIOController(QObject):
         except Exception as e:
             logging.error(f"Error opening MIDI output port: {str(e)}")
             return False
+
+    def close_ports_new(self):
+        """Close MIDI ports and reset state"""
+        if self.midi_in.is_port_open():
+            self.midi_in.close_port()
+        if self.midi_out.is_port_open():
+            self.midi_out.close_port()
+
+        self.input_port_number = None
+        self.output_port_number = None
+
+        # Recreate MIDI instances to ensure clean state
+        self.midi_in = rtmidi.MidiIn()
+        self.midi_out = rtmidi.MidiOut()
 
     def close_ports(self):
         """Close MIDI ports"""

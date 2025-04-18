@@ -50,7 +50,6 @@ from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParamete
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.connection import MIDIConnection
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -671,23 +670,29 @@ class JdxiInstrument(JdxiUi):
             input_ports = self.midi_helper.get_input_ports()  # Use instance method
             output_ports = self.midi_helper.get_output_ports()  # Use instance method
 
-            dialog = MIDIConfigDialog(
+
+            """       
+                dialog = MIDIConfigDialog(
                 input_ports,
                 output_ports,
                 self.midi_helper.current_in_port,
                 self.midi_helper.current_out_port,
                 parent=self,
             )
+            """
+            dialog = MIDIConfigDialog(
+                self.midi_helper,
+                parent=self)
 
-            if dialog.exec():
-                in_port = dialog.get_input_port()
-                out_port = dialog.get_output_port()
+            dialog.exec()
+            #    in_port = dialog.get_input_port()
+            #    out_port = dialog.get_output_port()
 
                 # Open selected ports using instance methods
-                if in_port:
-                    self.midi_helper.open_input_port(in_port)
-                if out_port:
-                    self.midi_helper.open_output_port(out_port)
+                #if in_port:
+                #    self.midi_helper.open_input_port(in_port)
+                #if out_port:
+                #    self.midi_helper.open_output_port(out_port)
 
         except Exception as e:
             logging.error(f"Error showing MIDI configuration: {str(e)}")
@@ -699,9 +704,9 @@ class JdxiInstrument(JdxiUi):
         self.midi_out = midi_out
 
         # Save settings
-        if midi_in and midi_out:
-            self.settings.setValue("midi/input_port", midi_in.port_name)
-            self.settings.setValue("midi/output_port", midi_out.port_name)
+        #if midi_in and midi_out:
+        #    self.settings.setValue("midi/input_port", midi_in.port_name)
+        #    self.settings.setValue("midi/output_port", midi_out.port_name)
 
     def _load_settings(self):
         """Load application settings"""
@@ -1456,7 +1461,7 @@ class JdxiInstrument(JdxiUi):
             logging.error(f"Error setting MIDI ports: {str(ex)}")
             return False
 
-    def _connect_midi(self):
+    def connect_jdxi_midi_ports(self):
         """Connect to MIDI ports"""
         try:
             # Find JD-Xi ports
