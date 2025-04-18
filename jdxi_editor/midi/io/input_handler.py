@@ -271,7 +271,7 @@ class MidiInHandler(MidiIOController):
         :param message: The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
-        logging.info("MIDI message preset_type: %s as %s", message.type, message)
+        logging.info("MIDI message note change: %s as %s", message.type, message)
 
     def _handle_clock(self, message: Any, preset_data) -> None:
         """
