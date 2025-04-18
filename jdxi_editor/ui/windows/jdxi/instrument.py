@@ -666,33 +666,10 @@ class JdxiInstrument(JdxiUi):
     def _show_midi_config(self):
         """Show MIDI configuration dialog"""
         try:
-            # Get available ports using instance method
-            input_ports = self.midi_helper.get_input_ports()  # Use instance method
-            output_ports = self.midi_helper.get_output_ports()  # Use instance method
-
-
-            """       
-                dialog = MIDIConfigDialog(
-                input_ports,
-                output_ports,
-                self.midi_helper.current_in_port,
-                self.midi_helper.current_out_port,
-                parent=self,
-            )
-            """
             dialog = MIDIConfigDialog(
                 self.midi_helper,
                 parent=self)
-
             dialog.exec()
-            #    in_port = dialog.get_input_port()
-            #    out_port = dialog.get_output_port()
-
-                # Open selected ports using instance methods
-                #if in_port:
-                #    self.midi_helper.open_input_port(in_port)
-                #if out_port:
-                #    self.midi_helper.open_output_port(out_port)
 
         except Exception as e:
             logging.error(f"Error showing MIDI configuration: {str(e)}")
