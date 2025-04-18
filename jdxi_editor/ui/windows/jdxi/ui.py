@@ -21,6 +21,7 @@ Methods:
 import os
 import logging
 import re
+from typing import Union
 
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -46,6 +47,8 @@ from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
+from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.indicator import LEDIndicator
 from jdxi_editor.ui.windows.jdxi.containers.arpeggiator import add_arpeggiator_buttons
@@ -567,10 +570,10 @@ class JdxiUi(QMainWindow):
     def _open_arpeggiator(self):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _select_synth(self):
+    def _select_synth(self, synth_type):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _show_favorite_context_menu(self):
+    def _show_favorite_context_menu(self, pos, button: Union[FavoriteButton, SequencerSquare]):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _open_midi_debugger(self):

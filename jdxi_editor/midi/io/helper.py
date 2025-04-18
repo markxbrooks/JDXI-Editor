@@ -22,6 +22,7 @@ import logging
 
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
+from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 
 
 class MidiIOHelper(MidiInHandler, MidiOutHandler):
@@ -82,3 +83,82 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return False
         except Exception as ex:
             logging.info(f"Error connecting to jdxi ports")
+
+    def set_midi_ports(self, in_port: str, out_port: str) -> bool:
+        """Set MIDI input and output ports
+
+        Args:
+            in_port: Input port name
+            out_port: Output port name
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Open ports
+            if not self.midi_helper.open_input_port(in_port):
+                return False
+
+            if not self.midi_helper.open_output_port(out_port):
+                return False
+
+            # Update indicators
+            self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+            self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+
+            return True
+
+        except Exception as ex:
+            logging.error(f"Error setting MIDI ports: {str(ex)}")
+            return False
+
+    def _auto_connect_jdxi(self):
+        """Attempt to automatically connect to JD-Xi MIDI ports."""
+        try:
+            # Get available ports
+            input_ports = self.midi_helper.get_input_ports()
+            output_ports = self.midi_helper.get_output_ports()
+
+            # Find JD-Xi ports
+            selected_in_port = _find_jdxi_port(input_ports, "input")
+            selected_out_port = _find_jdxi_port(output_ports, "output")
+
+            # Ensure both ports are found
+            if not selected_in_port or not selected_out_port:
+                logging.warning(
+                    f"JD-Xi MIDI auto-connect failed. Found input: {selected_in_port}, output: {selected_out_port}"
+                )
+                return False
+
+            # Open the found ports
+            self.midi_helper.open_input_port(selected_in_port)
+            self.midi_helper.open_output_port(selected_out_port)
+
+            # Explicitly store the selected ports # FIXME: this looks incorrect
+            self.midi_helper.current_in_port = selected_in_port
+            self.midi_helper.current_out_port = selected_out_port
+
+            # Verify connection
+            if self._verify_jdxi_connection():
+                logging.info(
+                    f"Successfully connected to JD-Xi MIDI: {selected_in_port} / {selected_out_port}"
+                )
+                return True
+            else:
+                logging.warning("JD-Xi identity verification failed.")
+                return False
+
+        except Exception as ex:
+            logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            return False
+
+    def _verify_jdxi_connection(self):
+        """Verify connected device is address JD-Xi by sending identity request"""
+        try:
+            # Create identity request message using dataclass
+            identity_request = IdentityRequestMessage()
+            self.send_raw_message(identity_request.to_message_list())
+            logging.debug("Sent JD-Xi identity request")
+
+        except Exception as ex:
+            logging.error(f"Error sending identity request: {str(ex)}")
