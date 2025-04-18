@@ -242,8 +242,7 @@ class JdxiInstrument(JdxiUi):
             self.set_current_drums_tone_name
         )
         self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
-        # sur ctrl-R for data request
-        # Add keyboard shortcuts
+        # ctrl-R for data request
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
@@ -388,7 +387,7 @@ class JdxiInstrument(JdxiUi):
             msg_box = QMessageBox()
             msg_box.setIcon(
                 QMessageBox.Critical
-            )  # Use QMessageBox.Warning, Information, or Question as needed
+            )  # QMessageBox.Warning, Information, or Question
             msg_box.setWindowTitle("First program")
             msg_box.setText("Already at the first program")
             msg_box.exec()
@@ -410,7 +409,7 @@ class JdxiInstrument(JdxiUi):
             msg_box = QMessageBox()
             msg_box.setIcon(
                 QMessageBox.Critical
-            )  # Use QMessageBox.Warning, Information, or Question as needed
+            ) 
             msg_box.setWindowTitle("First preset")
             msg_box.setText("Already at the first preset")
             msg_box.exec()
@@ -437,7 +436,7 @@ class JdxiInstrument(JdxiUi):
             msg_box = QMessageBox()
             msg_box.setIcon(
                 QMessageBox.Critical
-            )  # Use QMessageBox.Warning, Information, or Question as needed
+            ) 
             msg_box.setWindowTitle("Last preset")
             msg_box.setText("already at the last preset")
             msg_box.exec()
@@ -467,8 +466,6 @@ class JdxiInstrument(JdxiUi):
             MidiChannel.DIGITAL2: JDXIPresets.DIGITAL_ENUMERATED,
             MidiChannel.DRUM: JDXIPresets.DRUM_ENUMERATED,
         }
-
-        # Default to DIGITAL_PRESETS_ENUMERATED if the synth_type is not found in the map
         presets = preset_channel_map.get(channel, JDXIPresets.DIGITAL_ENUMERATED)
 
         self._update_display_preset(
