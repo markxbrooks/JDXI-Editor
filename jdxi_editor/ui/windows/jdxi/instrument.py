@@ -953,9 +953,6 @@ class JdxiInstrument(JdxiUi):
 
             # Update display
             self._update_display()
-            address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
-            address_lmb = AddressOffsetProgramLMB.COMMON
-            address_lsb = DigitalCommonParameter.OCTAVE_SHIFT.value[0]
             # Map octave value to correct SysEx value
             # -3 = 0x3D, -2 = 0x3E, -1 = 0x3F, 0 = 0x40, +1 = 0x41, +2 = 0x42, +3 = 0x43
             octave_value = 0x40 + self.current_octave  # 0x40 is center octave
@@ -964,9 +961,9 @@ class JdxiInstrument(JdxiUi):
             )
             sysex_message = RolandSysEx(
                 address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                address_umb=address_umb,
-                address_lmb=address_lmb,
-                address_lsb=address_lsb,
+                address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+                address_lmb=AddressOffsetProgramLMB.COMMON,
+                address_lsb=DigitalCommonParameter.OCTAVE_SHIFT.value[0],
                 value=octave_value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
@@ -1002,16 +999,17 @@ class JdxiInstrument(JdxiUi):
         try:
             if self.midi_helper:
                 self.key_hold_latched = not self.key_hold_latched
-                param_address = 0x02  # Key Hold parameter, maybe!
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-                self.send_midi_parameter(
+                            # Ensure value is included in the MIDI message
+                sysex_message = RolandSysEx(
                     address_msb=AddressMemoryAreaMSB.PROGRAM,
                     address_umb=AddressOffsetSystemUMB.COMMON,
                     address_lmb=AddressOffsetProgramLMB.CONTROLLER,
-                    address_lsb=param_address,
-                    value=value
-                )  # Send the parameter
+                    address_lsb=0x02,
+                    value=value,
+                )
+                self.midi_helper.send_midi_message(sysex_message)
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
 
         except Exception as ex:
@@ -1021,11 +1019,7 @@ class JdxiInstrument(JdxiUi):
         """Send arpeggiator on/off command"""
         try:
             if self.midi_helper:
-                param_address = (
-                    ArpeggioParameter.ARPEGGIO_SWITCH.value[0]
-                )  # On/Off parameter
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
-                logging.info(f"Sent arpeggiator on/off: {state}")
                 logging.info(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all 4 program zones
                 for zone in [AddressOffsetProgramLMB.CONTROLLER,
@@ -1033,13 +1027,14 @@ class JdxiInstrument(JdxiUi):
                              AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,
                              AddressOffsetProgramLMB.ZONE_ANALOG_SYNTH,
                              AddressOffsetProgramLMB.ZONE_DRUM]:
-                    self.send_midi_parameter(
+                    sysex_message = RolandSysEx(
                         address_msb=AddressMemoryAreaMSB.PROGRAM,
                         address_umb=AddressOffsetSystemUMB.COMMON,
                         address_lmb=zone,
-                        address_lsb=param_address,
-                        value=value
-                    )  # Send the parameter
+                        address_lsb=ArpeggioParameter.ARPEGGIO_SWITCH.value[0],
+                        value=value,
+                    )
+                    self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
             logging.error(f"Error sending arp on/off: {str(ex)}")
 
