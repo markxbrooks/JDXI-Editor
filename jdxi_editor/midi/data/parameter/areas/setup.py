@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class SetupParam(Enum):
+class AddressParameterSetup(Enum):
     """Setup parameters"""
 
     # Reserved space (0x00-0x03)

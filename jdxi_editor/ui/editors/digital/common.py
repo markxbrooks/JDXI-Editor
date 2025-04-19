@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 
 
 class DigitalCommonSection(QWidget):
@@ -40,7 +40,7 @@ class DigitalCommonSection(QWidget):
 
         # Mono Switch
         self.mono_switch = self._create_parameter_switch(
-            DigitalCommonParameter.MONO_SWITCH, "Mono", ["OFF", "ON"]
+            AddressParameterDigitalCommon.MONO_SWITCH, "Mono", ["OFF", "ON"]
         )
         mono_switch_row = QHBoxLayout()
         mono_switch_row.addWidget(self.mono_switch)
@@ -49,10 +49,10 @@ class DigitalCommonSection(QWidget):
         # Pitch Bend
         self.pitch_bend_row = QHBoxLayout()
         self.pitch_bend_up = self._create_parameter_slider(
-            DigitalCommonParameter.PITCH_BEND_UP, "Pitch Bend Up"
+            AddressParameterDigitalCommon.PITCH_BEND_UP, "Pitch Bend Up"
         )
         self.pitch_bend_down = self._create_parameter_slider(
-            DigitalCommonParameter.PITCH_BEND_DOWN, "Pitch Bend Down"
+            AddressParameterDigitalCommon.PITCH_BEND_DOWN, "Pitch Bend Down"
         )
         self.pitch_bend_row.addWidget(self.pitch_bend_up)
         self.pitch_bend_row.addWidget(self.pitch_bend_down)
@@ -61,14 +61,14 @@ class DigitalCommonSection(QWidget):
         # Tone Level
         self.tone_level_row = QHBoxLayout()
         self.tone_level = self._create_parameter_slider(
-            DigitalCommonParameter.TONE_LEVEL, "Tone Level"
+            AddressParameterDigitalCommon.TONE_LEVEL, "Tone Level"
         )
         self.tone_level_row.addWidget(self.tone_level)
         layout.addLayout(self.tone_level_row)
 
         # Ring Modulator
         self.ring_switch = self._create_parameter_switch(
-            DigitalCommonParameter.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
+            AddressParameterDigitalCommon.RING_SWITCH, "Ring", ["OFF", "---", "ON"]
         )
         ring_row = QHBoxLayout()
         ring_row.addWidget(self.ring_switch)
@@ -76,10 +76,10 @@ class DigitalCommonSection(QWidget):
 
         # Unison Switch and Size
         self.unison_switch = self._create_parameter_switch(
-            DigitalCommonParameter.UNISON_SWITCH, "Unison", ["OFF", "ON"]
+            AddressParameterDigitalCommon.UNISON_SWITCH, "Unison", ["OFF", "ON"]
         )
         self.unison_size = self._create_parameter_switch(
-            DigitalCommonParameter.UNISON_SIZE,
+            AddressParameterDigitalCommon.UNISON_SIZE,
             "Size",
             ["2 VOICE", "3 VOICE", "4 VOICE", "5 VOICE"],
         )
@@ -90,7 +90,7 @@ class DigitalCommonSection(QWidget):
 
         # Portamento Switch
         self.portamento_switch = self._create_parameter_switch(
-            DigitalCommonParameter.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
+            AddressParameterDigitalCommon.PORTAMENTO_SWITCH, "Portamento", ["OFF", "ON"]
         )
         portamento_row = QHBoxLayout()
         portamento_row.addWidget(self.portamento_switch)
@@ -98,7 +98,7 @@ class DigitalCommonSection(QWidget):
 
         # Portamento Time
         self.portamento_time = self._create_parameter_slider(
-            DigitalCommonParameter.PORTAMENTO_TIME, "Portamento Time"
+            AddressParameterDigitalCommon.PORTAMENTO_TIME, "Portamento Time"
         )
         portamento_time_row = QHBoxLayout()
         portamento_time_row.addWidget(self.portamento_time)
@@ -106,12 +106,12 @@ class DigitalCommonSection(QWidget):
 
         # Portamento Mode and Legato
         self.portamento_mode = self._create_parameter_switch(
-            DigitalCommonParameter.PORTAMENTO_MODE,
+            AddressParameterDigitalCommon.PORTAMENTO_MODE,
             "Portamento Mode",
             ["NORMAL", "LEGATO"],
         )
         self.legato_switch = self._create_parameter_switch(
-            DigitalCommonParameter.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
+            AddressParameterDigitalCommon.LEGATO_SWITCH, "Legato", ["OFF", "ON"]
         )
         legato_row = QHBoxLayout()
         legato_row.addWidget(self.legato_switch)
@@ -119,10 +119,10 @@ class DigitalCommonSection(QWidget):
 
         # Analog Feel and Wave Shape
         self.analog_feel = self._create_parameter_slider(
-            DigitalCommonParameter.ANALOG_FEEL, "Analog Feel"
+            AddressParameterDigitalCommon.ANALOG_FEEL, "Analog Feel"
         )
         self.wave_shape = self._create_parameter_slider(
-            DigitalCommonParameter.WAVE_SHAPE, "Wave Shape"
+            AddressParameterDigitalCommon.WAVE_SHAPE, "Wave Shape"
         )
         layout.addWidget(self.analog_feel)
         layout.addWidget(self.wave_shape)

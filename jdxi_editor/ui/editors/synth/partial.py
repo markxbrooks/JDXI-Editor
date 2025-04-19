@@ -34,7 +34,7 @@ from jdxi_editor.midi.data.address.address import (
     construct_address,
     Address,
 )
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase
 
@@ -63,9 +63,9 @@ class PartialEditor(SynthBase):
         self.preset_helper = None
 
         # Store parameter controls for easy access
-        self.controls: Dict[SynthParameter, QWidget] = {}
+        self.controls: Dict[AddressParameter, QWidget] = {}
 
-    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
+    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
             log_parameter("self.partial_number:", self.partial_number)

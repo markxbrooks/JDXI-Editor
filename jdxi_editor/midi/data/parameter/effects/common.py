@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class EffectCommonParameter(Enum):
+class AddressParameterEffectCommon(Enum):
     """Common parameters for Effects."""
 
     PROGRAM_EFFECT_1 = 0x02

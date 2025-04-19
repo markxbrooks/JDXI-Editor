@@ -1,4 +1,4 @@
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 
 
 def parse_digital_parameters(data: list) -> dict:
@@ -23,7 +23,7 @@ def parse_digital_parameters(data: list) -> dict:
     parameters = {}
 
     # Mapping DigitalParameter Enum members to their respective positions in SysEx data
-    for param in DigitalPartialParameter:
+    for param in AddressParameterDigitalPartial:
         # Use the parameter's address from the enum and fetch the value from the data
         parameters[param.name] = safe_get(param.address)
 

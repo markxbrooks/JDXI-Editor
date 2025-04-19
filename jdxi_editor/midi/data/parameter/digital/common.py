@@ -1,7 +1,7 @@
 """
-Module: DigitalCommonParameter
+Module: AddressParameterDigitalCommon
 
-This module defines the DigitalCommonParameter class, which represents common parameters
+This module defines the AddressParameterDigitalCommon class, which represents common parameters
 for Digital/SuperNATURAL synth tones. These parameters are shared across all partials and
 define various synthesizer settings, such as tone name, tone level, performance parameters,
 partial switches, and additional effects.
@@ -24,7 +24,7 @@ Parameters include:
 
 Usage example:
     # Initialize a parameter object
-    param = DigitalCommonParameter(address=0x00, min_val=0, max_val=127)
+    param = AddressParameterDigitalCommon(address=0x00, min_val=0, max_val=127)
 
     # Get the display name for the parameter
     print(param.display_name)
@@ -41,10 +41,10 @@ Usage example:
 from typing import Optional
 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class DigitalCommonParameter(SynthParameter):
+class AddressParameterDigitalCommon(AddressParameter):
     """Common parameters for Digital/SuperNATURAL synth tones.
     These parameters are shared across all partials.
     """
@@ -180,7 +180,7 @@ class DigitalCommonParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
-        return DigitalCommonParameter.__members__.get(param_name, None)
+        return AddressParameterDigitalCommon.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_number: int = 0):
         return AddressOffsetProgramLMB.COMMON, 0x00

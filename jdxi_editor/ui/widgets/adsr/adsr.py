@@ -25,7 +25,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
@@ -46,12 +46,12 @@ class ADSR(QWidget):
 
     def __init__(
         self,
-        attack_param: SynthParameter,
-        decay_param: SynthParameter,
-        sustain_param: SynthParameter,
-        release_param: SynthParameter,
-        initial_param: SynthParameter = None,
-        peak_param: SynthParameter = None,
+        attack_param: AddressParameter,
+        decay_param: AddressParameter,
+        sustain_param: AddressParameter,
+        release_param: AddressParameter,
+        initial_param: AddressParameter = None,
+        peak_param: AddressParameter = None,
         midi_helper=None,
         address_lmb=None,
         address_msb=None,
@@ -61,7 +61,7 @@ class ADSR(QWidget):
         super().__init__(parent)
 
         # Store parameter controls
-        self.controls: Dict[SynthParameter, Slider] = {}
+        self.controls: Dict[AddressParameter, Slider] = {}
 
         # Store ADSR parameters
         self.parameters = {
@@ -178,7 +178,7 @@ class ADSR(QWidget):
         self.plot.setEnabled(enabled)  # Disable the ADSR plot interaction if needed
 
     def _create_parameter_slider(
-        self, param: SynthParameter, label: str, value: int = None
+        self, param: AddressParameter, label: str, value: int = None
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
@@ -228,7 +228,7 @@ class ADSR(QWidget):
                     key = f"{match.group().lower()}_time"
                     slider.setValue(ms_to_midi_cc(self.envelope[key]))
 
-    def _on_parameter_changed(self, param: SynthParameter, value: int):
+    def _on_parameter_changed(self, param: AddressParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""
         # Update envelope based on slider values
         self.update_envelope_from_controls()

@@ -75,11 +75,11 @@ Usage Example
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class EffectParameter(SynthParameter):
+class AddressParameterEffect(AddressParameter):
     """Effect parameters with address and value range"""
 
     def __init__(
@@ -152,29 +152,29 @@ class EffectParameter(SynthParameter):
     def convert_to_midi(self, display_value: int) -> int:
         """Convert from display value to MIDI value"""
         # Handle special bipolar cases first
-        if self == EffectParameter.EFX1_PARAM_1:
+        if self == AddressParameterEffect.EFX1_PARAM_1:
             return display_value + 32768  #
-        elif self == EffectParameter.EFX1_PARAM_2:
+        elif self == AddressParameterEffect.EFX1_PARAM_2:
             return display_value + 32768  #
-        elif self == EffectParameter.EFX1_PARAM_32:
+        elif self == AddressParameterEffect.EFX1_PARAM_32:
             return display_value + 32768  #
-        elif self == EffectParameter.EFX2_PARAM_1:
+        elif self == AddressParameterEffect.EFX2_PARAM_1:
             return display_value + 32768  #
-        elif self == EffectParameter.EFX2_PARAM_2:
+        elif self == AddressParameterEffect.EFX2_PARAM_2:
             return display_value + 32768  #
-        elif self == EffectParameter.EFX2_PARAM_32:
+        elif self == AddressParameterEffect.EFX2_PARAM_32:
             return display_value + 32768  #
-        elif self == EffectParameter.DELAY_PARAM_1:
+        elif self == AddressParameterEffect.DELAY_PARAM_1:
             return display_value + 32768  #
-        elif self == EffectParameter.DELAY_PARAM_2:
+        elif self == AddressParameterEffect.DELAY_PARAM_2:
             return display_value + 32768  #
-        elif self == EffectParameter.DELAY_PARAM_24:
+        elif self == AddressParameterEffect.DELAY_PARAM_24:
             return display_value + 32768  #
-        elif self == EffectParameter.REVERB_PARAM_1:
+        elif self == AddressParameterEffect.REVERB_PARAM_1:
             return display_value + 32768  #
-        elif self == EffectParameter.REVERB_PARAM_2:
+        elif self == AddressParameterEffect.REVERB_PARAM_2:
             return display_value + 32768  #
-        elif self == EffectParameter.REVERB_PARAM_24:
+        elif self == AddressParameterEffect.REVERB_PARAM_24:
             return display_value + 32768  #
         else:
             return display_value
@@ -184,7 +184,7 @@ class EffectParameter(SynthParameter):
     @staticmethod
     def get_midi_value(param_name, value):
         """Get the MIDI value for address parameter by name and value."""
-        param = EffectParameter.get_by_name(param_name)
+        param = AddressParameterEffect.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
@@ -193,7 +193,7 @@ class EffectParameter(SynthParameter):
     def get_common_param_by_name(cls, name):
         """Look up an effect parameter's category using address dictionary mapping"""
         param_mapping = {
-            EffectCommonParameter.PROGRAM_EFFECT_1: {
+            AddressParameterEffectCommon.PROGRAM_EFFECT_1: {
                 "EFX1_TYPE",
                 "EFX1_LEVEL",
                 "EFX1_DELAY_SEND_LEVEL",
@@ -203,7 +203,7 @@ class EffectParameter(SynthParameter):
                 "EFX1_PARAM_2",
                 "EFX1_PARAM_32",
             },
-            EffectCommonParameter.PROGRAM_EFFECT_2: {
+            AddressParameterEffectCommon.PROGRAM_EFFECT_2: {
                 "EFX2_TYPE",
                 "EFX2_LEVEL",
                 "EFX2_DELAY_SEND_LEVEL",
@@ -211,7 +211,7 @@ class EffectParameter(SynthParameter):
                 "EFX2_PARAM_1",
                 "EFX2_PARAM_2",
             },
-            EffectCommonParameter.PROGRAM_DELAY: {
+            AddressParameterEffectCommon.PROGRAM_DELAY: {
                 "DELAY_TYPE",
                 "DELAY_TIME",
                 "DELAY_TAP_TIME",
@@ -223,7 +223,7 @@ class EffectParameter(SynthParameter):
                 "DELAY_PARAM_2",
                 "DELAY_PARAM_24",
             },
-            EffectCommonParameter.PROGRAM_REVERB: {
+            AddressParameterEffectCommon.PROGRAM_REVERB: {
                 "REVERB_OFF_ON",
                 "REVERB_TYPE",
                 "REVERB_TIME",

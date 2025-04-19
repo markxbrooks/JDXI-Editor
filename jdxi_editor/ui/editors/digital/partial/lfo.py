@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 
 
 class DigitalLFOSection(QWidget):
@@ -44,29 +44,29 @@ class DigitalLFOSection(QWidget):
         # Shape and sync controls
         top_row = QHBoxLayout()
         self.lfo_shape = self._create_parameter_switch(
-            DigitalPartialParameter.LFO_SHAPE,
+            AddressParameterDigitalPartial.LFO_SHAPE,
             "Shape",
             ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"],
         )
         top_row.addWidget(self.lfo_shape)
 
         self.lfo_tempo_sync_switch = self._create_parameter_switch(
-            DigitalPartialParameter.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+            AddressParameterDigitalPartial.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
         )
         top_row.addWidget(self.lfo_tempo_sync_switch)
         layout.addLayout(top_row)
 
         # Rate and fade controls
         layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_RATE, "Rate")
+            self._create_parameter_slider(AddressParameterDigitalPartial.LFO_RATE, "Rate")
         )
         layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_FADE_TIME, "Fade")
+            self._create_parameter_slider(AddressParameterDigitalPartial.LFO_FADE_TIME, "Fade")
         )
 
         # Key trigger switch
         self.lfo_trigger = self._create_parameter_switch(
-            DigitalPartialParameter.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+            AddressParameterDigitalPartial.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
         )
         layout.addWidget(self.lfo_trigger)
 
@@ -77,19 +77,19 @@ class DigitalLFOSection(QWidget):
 
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.LFO_PITCH_DEPTH, "Pitch"
+                AddressParameterDigitalPartial.LFO_PITCH_DEPTH, "Pitch"
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.LFO_FILTER_DEPTH, "Filter"
+                AddressParameterDigitalPartial.LFO_FILTER_DEPTH, "Filter"
             )
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_AMP_DEPTH, "Amp")
+            self._create_parameter_slider(AddressParameterDigitalPartial.LFO_AMP_DEPTH, "Amp")
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.LFO_PAN_DEPTH, "Pan")
+            self._create_parameter_slider(AddressParameterDigitalPartial.LFO_PAN_DEPTH, "Pan")
         )
         layout.addWidget(depths_group)
 

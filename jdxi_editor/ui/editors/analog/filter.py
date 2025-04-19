@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
@@ -54,19 +54,19 @@ class AnalogFilterSection(QWidget):
 
         # Filter Controls
         self.filter_mode_switch = self.create_parameter_switch(
-            AnalogParameter.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
+            AddressParameterAnalog.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
         )
         self.filter_mode_switch.valueChanged.connect(
             lambda v: self._on_filter_mode_changed(v)
         )
         self.filter_cutoff = self.create_parameter_slider(
-            AnalogParameter.FILTER_CUTOFF, "Cutoff"
+            AddressParameterAnalog.FILTER_CUTOFF, "Cutoff"
         )
         self.filter_resonance = self.create_parameter_slider(
-            AnalogParameter.FILTER_RESONANCE, "Resonance"
+            AddressParameterAnalog.FILTER_RESONANCE, "Resonance"
         )
         self.filter_cutoff_keyfollow = self.create_parameter_slider(
-            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
+            AddressParameterAnalog.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
         )
 
         layout.addWidget(self.filter_mode_switch)
@@ -77,16 +77,16 @@ class AnalogFilterSection(QWidget):
         # Connect filter controls
         self.filter_resonance.valueChanged.connect(
             lambda v: self.send_control_change(
-                AnalogParameter.FILTER_RESONANCE.value[0], v
+                AddressParameterAnalog.FILTER_RESONANCE.value[0], v
             )
         )
 
         # Envelope Controls
         self.filter_env_depth = self.create_parameter_slider(
-            AnalogParameter.FILTER_ENV_DEPTH, "Depth"
+            AddressParameterAnalog.FILTER_ENV_DEPTH, "Depth"
         )
         self.filter_env_velocity_sens = self.create_parameter_slider(
-            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Env. Velocity Sens."
+            AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY, "Env. Velocity Sens."
         )
 
         layout.addWidget(self.filter_env_depth)
@@ -95,10 +95,10 @@ class AnalogFilterSection(QWidget):
 
         # ADSR Widget
         self.filter_adsr_widget = ADSR(
-            attack_param=AnalogParameter.FILTER_ENV_ATTACK_TIME,
-            decay_param=AnalogParameter.FILTER_ENV_DECAY_TIME,
-            sustain_param=AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            release_param=AnalogParameter.FILTER_ENV_RELEASE_TIME,
+            attack_param=AddressParameterAnalog.FILTER_ENV_ATTACK_TIME,
+            decay_param=AddressParameterAnalog.FILTER_ENV_DECAY_TIME,
+            sustain_param=AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
+            release_param=AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             address_msb=self.address_msb,
             address_umb=self.address_umb,

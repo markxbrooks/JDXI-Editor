@@ -4,7 +4,7 @@ MOD LFO section of the digital partial editor.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 
 
 class DigitalModLFOSection(QWidget):
@@ -31,14 +31,14 @@ class DigitalModLFOSection(QWidget):
         # Shape and sync controls
         top_row = QHBoxLayout()
         self.mod_lfo_shape = self._create_parameter_combo_box(
-            DigitalPartialParameter.MOD_LFO_SHAPE,
+            AddressParameterDigitalPartial.MOD_LFO_SHAPE,
             "Shape",
             ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"],
         )
         top_row.addWidget(self.mod_lfo_shape)
 
         self.mod_lfo_sync = self._create_parameter_combo_box(
-            DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_SWITCH, "Sync", ["OFF", "ON"]
+            AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_SWITCH, "Sync", ["OFF", "ON"]
         )
         top_row.addWidget(self.mod_lfo_sync)
         mod_lfo_layout.addLayout(top_row)
@@ -46,10 +46,10 @@ class DigitalModLFOSection(QWidget):
         # Rate and note controls
         rate_row = QHBoxLayout()
         rate_row.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_RATE, "Rate")
+            self._create_parameter_slider(AddressParameterDigitalPartial.MOD_LFO_RATE, "Rate")
         )
         self.mod_lfo_note = self._create_parameter_combo_box(
-            DigitalPartialParameter.MOD_LFO_TEMPO_SYNC_NOTE,
+            AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_NOTE,
             "Note",
             ["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
@@ -63,27 +63,27 @@ class DigitalModLFOSection(QWidget):
 
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.MOD_LFO_PITCH_DEPTH, "Pitch"
+                AddressParameterDigitalPartial.MOD_LFO_PITCH_DEPTH, "Pitch"
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.MOD_LFO_FILTER_DEPTH, "Filter"
+                AddressParameterDigitalPartial.MOD_LFO_FILTER_DEPTH, "Filter"
             )
         )
         depths_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.MOD_LFO_AMP_DEPTH, "Amp"
+                AddressParameterDigitalPartial.MOD_LFO_AMP_DEPTH, "Amp"
             )
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.MOD_LFO_PAN, "Pan")
+            self._create_parameter_slider(AddressParameterDigitalPartial.MOD_LFO_PAN, "Pan")
         )
 
         mod_lfo_layout.addWidget(depths_group)
         mod_lfo_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.MOD_LFO_RATE_CTRL, "Rate Ctrl"
+                AddressParameterDigitalPartial.MOD_LFO_RATE_CTRL, "Rate Ctrl"
             )
         )
         mod_lfo_layout.addStretch()

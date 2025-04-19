@@ -42,10 +42,10 @@ Usage example:
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class VocalFXParameter(SynthParameter):
+class AddressParameterVocalFX(AddressParameter):
     """Vocal FX parameters"""
 
     LEVEL = (0x00, 0, 127, 0, 127)  # Level (0-127)
@@ -108,7 +108,7 @@ class VocalFXParameter(SynthParameter):
     @staticmethod
     def get_name_by_address(address: int):
         """Return the parameter name for address given address."""
-        for param in VocalFXParameter:
+        for param in AddressParameterVocalFX:
             if param.address == address:
                 return param.name
         return None  # Return None if the address is not found
@@ -129,7 +129,7 @@ class VocalFXParameter(SynthParameter):
     @staticmethod
     def get_address(param_name):
         """Get the address of address parameter by name."""
-        param = VocalFXParameter.get_by_name(param_name)
+        param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.value[0]
         return None
@@ -137,7 +137,7 @@ class VocalFXParameter(SynthParameter):
     @staticmethod
     def get_range(param_name):
         """Get the value range (min, max) of address parameter by name."""
-        param = VocalFXParameter.get_by_name(param_name)
+        param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.value[1], param.value[2]
         return None, None
@@ -145,7 +145,7 @@ class VocalFXParameter(SynthParameter):
     @staticmethod
     def get_display_range(param_name):
         """Get the display value range (min, max) of address parameter by name."""
-        param = VocalFXParameter.get_by_name(param_name)
+        param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.display_min, param.display_max
         return None, None
@@ -181,9 +181,9 @@ class VocalFXParameter(SynthParameter):
     def convert_to_midi(self, display_value: int) -> int:
         """Convert from display value to MIDI value"""
         # Handle special bipolar cases first
-        if self == VocalFXParameter.PAN:
+        if self == AddressParameterVocalFX.PAN:
             return display_value + 64  # -63 to +63 -> 0 to 127
-        elif self == VocalFXParameter.AUTO_PITCH_GENDER:
+        elif self == AddressParameterVocalFX.AUTO_PITCH_GENDER:
             return display_value + 10  # -63 to +63 -> 0 to 127
 
         # For parameters with simple linear scaling
@@ -199,9 +199,9 @@ class VocalFXParameter(SynthParameter):
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""
         # Handle special bipolar cases first
-        if self == VocalFXParameter.PAN:
+        if self == AddressParameterVocalFX.PAN:
             return midi_value - 64  # 0 to 127 -> -63 to +63
-        elif self == VocalFXParameter.AUTO_PITCH_GENDER:
+        elif self == AddressParameterVocalFX.AUTO_PITCH_GENDER:
             return midi_value - 10  # 0 to 127 -> -63 to +63
 
         # For parameters with simple linear scaling
@@ -217,7 +217,7 @@ class VocalFXParameter(SynthParameter):
     @staticmethod
     def get_display_value_by_name(param_name: str, value: int) -> int:
         """Get the display value for address parameter by name and value."""
-        param = VocalFXParameter.get_by_name(param_name)
+        param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.convert_from_midi(value)
         return value
@@ -225,14 +225,14 @@ class VocalFXParameter(SynthParameter):
     @staticmethod
     def get_midi_range(param_name):
         """Get the MIDI value range (min, max) of address parameter by name."""
-        param = VocalFXParameter.get_by_name(param_name)
+        param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.min_val, param.max_val
 
     @staticmethod
     def get_midi_value(param_name, value):
         """Get the MIDI value for address parameter by name and value."""
-        param = VocalFXParameter.get_by_name(param_name)
+        param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None

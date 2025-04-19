@@ -65,7 +65,7 @@ import qtawesome as qta
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
 from jdxi_editor.midi.data.editor.data import AnalogSynthData
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
@@ -122,7 +122,7 @@ class AnalogSynthEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.wave_buttons = {}
         self.lfo_shape_buttons = {}
-        self.controls: Dict[Union[AnalogParameter], QWidget] = {}
+        self.controls: Dict[Union[AddressParameterAnalog], QWidget] = {}
         self.updating_from_spinbox = False
         self.previous_json_data = None
         self.main_window = parent
@@ -313,11 +313,11 @@ class AnalogSynthEditor(SynthEditor):
         """Update filter controls enabled state based on mode"""
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
-            AnalogParameter.FILTER_CUTOFF,
-            AnalogParameter.FILTER_RESONANCE,
-            AnalogParameter.FILTER_CUTOFF_KEYFOLLOW,
-            AnalogParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
-            AnalogParameter.FILTER_ENV_DEPTH,
+            AddressParameterAnalog.FILTER_CUTOFF,
+            AddressParameterAnalog.FILTER_RESONANCE,
+            AddressParameterAnalog.FILTER_CUTOFF_KEYFOLLOW,
+            AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY,
+            AddressParameterAnalog.FILTER_ENV_DEPTH,
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)
@@ -340,8 +340,8 @@ class AnalogSynthEditor(SynthEditor):
             partial_no = address[1]
             if param:
                 logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
-            elif param == AnalogParameter.FILTER_MODE_SWITCH:
-                self.update_filter_state(value=AnalogParameter.FILTER_MODE_SWITCH.value)
+            elif param == AddressParameterAnalog.FILTER_MODE_SWITCH:
+                self.update_filter_state(value=AddressParameterAnalog.FILTER_MODE_SWITCH.value)
 
                 # Update the corresponding slider
                 if param in self.controls:
@@ -358,7 +358,7 @@ class AnalogSynthEditor(SynthEditor):
                     """
 
                 # Handle OSC_WAVE parameter to update waveform buttons
-                if param == AnalogParameter.OSC_WAVEFORM:
+                if param == AddressParameterAnalog.OSC_WAVEFORM:
                     self._update_waveform_buttons(value)
                     logging.debug(
                         "updating waveform buttons for param {param} with {value}"
@@ -375,7 +375,7 @@ class AnalogSynthEditor(SynthEditor):
                 address_msb=self.address_msb,
                 address_umb=self.address_umb,
                 address_lmb=self.address_lmb,
-                address_lsb=AnalogParameter.OSC_WAVEFORM.value[0],
+                address_lsb=AddressParameterAnalog.OSC_WAVEFORM.value[0],
                 value=waveform.midi_value,
             )
             self.midi_helper.send_midi_message(sysex_message)
@@ -398,7 +398,7 @@ class AnalogSynthEditor(SynthEditor):
                 address_msb=self.address_msb,
                 address_umb=self.address_umb,
                 address_lmb=self.address_lmb,
-                address_lsb=AnalogParameter.LFO_SHAPE.value[0],
+                address_lsb=AddressParameterAnalog.LFO_SHAPE.value[0],
                 value=value,
             )
             self.midi_helper.send_midi_message(sysex_message)
@@ -476,21 +476,21 @@ class AnalogSynthEditor(SynthEditor):
                 midi_cc_to_frac(value)
                 if param
                 in [
-                    AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-                    AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL,
+                    AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
+                    AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
                 ]
                 else midi_cc_to_ms(value)
             )
 
             adsr_mapping = {
-                AnalogParameter.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_sb,
-                AnalogParameter.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_sb,
-                AnalogParameter.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_sb,
-                AnalogParameter.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_sb,
-                AnalogParameter.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_sb,
-                AnalogParameter.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_sb,
-                AnalogParameter.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_sb,
-                AnalogParameter.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_sb,
+                AddressParameterAnalog.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_sb,
+                AddressParameterAnalog.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_sb,
+                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_sb,
+                AddressParameterAnalog.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_sb,
+                AddressParameterAnalog.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_sb,
+                AddressParameterAnalog.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_sb,
+                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_sb,
+                AddressParameterAnalog.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_sb,
             }
 
             if param in adsr_mapping:
@@ -498,7 +498,7 @@ class AnalogSynthEditor(SynthEditor):
                 spinbox.setValue(new_value)
 
         for param_name, param_value in current_sysex_data.items():
-            param = AnalogParameter.get_by_name(param_name)
+            param = AddressParameterAnalog.get_by_name(param_name)
 
             if param:
                 # FIXME: Deal with NRPN later
@@ -534,8 +534,8 @@ class AnalogSynthEditor(SynthEditor):
                 elif param_name == "OSC_WAVEFORM" and param_value in osc_waveform_map:
                     self._update_waveform_buttons(param_value)
                 elif (
-                    param == AnalogParameter.FILTER_MODE_SWITCH
-                    and param_value in filter_switch_map
+                        param == AddressParameterAnalog.FILTER_MODE_SWITCH
+                        and param_value in filter_switch_map
                 ):
                     self.filter_section.filter_mode_switch.blockSignals(True)
                     self.filter_section.filter_mode_switch.setValue(
@@ -606,12 +606,12 @@ class AnalogSynthEditor(SynthEditor):
         """Enable/disable PW controls based on waveform"""
         pw_enabled = waveform == AnalogOscWave.PULSE
         logging.info(self.controls)
-        self.controls[AnalogParameter.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
-        self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
+        self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
+        self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
         # Update the visual state
-        self.controls[AnalogParameter.OSC_PULSE_WIDTH].setStyleSheet(
+        self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )
-        self.controls[AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH].setStyleSheet(
+        self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"
         )

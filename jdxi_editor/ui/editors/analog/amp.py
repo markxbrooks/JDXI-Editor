@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
@@ -52,10 +52,10 @@ class AmpSection(QWidget):
 
         # Level controls
         self.amp_level = self._create_parameter_slider(
-            AnalogParameter.AMP_LEVEL, "Level"
+            AddressParameterAnalog.AMP_LEVEL, "Level"
         )
         self.amp_level_keyfollow = self._create_parameter_slider(
-            AnalogParameter.AMP_LEVEL_KEYFOLLOW, "Keyfollow"
+            AddressParameterAnalog.AMP_LEVEL_KEYFOLLOW, "Keyfollow"
         )
         layout.addWidget(self.amp_level)
         layout.addWidget(self.amp_level_keyfollow)
@@ -81,10 +81,10 @@ class AmpSection(QWidget):
 
         # ADSR Widget
         self.amp_env_adsr_widget = ADSR(
-            attack_param=AnalogParameter.AMP_ENV_ATTACK_TIME,
-            decay_param=AnalogParameter.AMP_ENV_DECAY_TIME,
-            sustain_param=AnalogParameter.AMP_ENV_SUSTAIN_LEVEL,
-            release_param=AnalogParameter.AMP_ENV_RELEASE_TIME,
+            attack_param=AddressParameterAnalog.AMP_ENV_ATTACK_TIME,
+            decay_param=AddressParameterAnalog.AMP_ENV_DECAY_TIME,
+            sustain_param=AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
+            release_param=AddressParameterAnalog.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             address_msb=self.address_msb,
             address_umb=self.address_umb,

@@ -24,7 +24,7 @@ from jdxi_editor.midi.data.address.address import (
     JD_XI_HEADER_LIST,
     AddressMemoryAreaMSB,
 )
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 
 
 class SysExParser:
@@ -127,7 +127,7 @@ class SysExParser:
         """An example method to parse a full SysEx message."""
         # Example of extracting parameters
         analog_params = self.parse_parameters(
-            data, AnalogParameter
+            data, AddressParameterAnalog
         )  # Use your own parameter class
         print(analog_params)  # Example output
         # Further parsing logic here...

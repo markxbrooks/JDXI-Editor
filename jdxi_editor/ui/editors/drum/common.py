@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 
 
 class DrumCommonSection(QWidget):
@@ -42,12 +42,12 @@ class DrumCommonSection(QWidget):
         common_group = QGroupBox("Common")
         common_layout = QFormLayout()
         assign_type_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
+            AddressParameterDrumPartial.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
         )
         common_layout.addRow(assign_type_combo)
         # Mute Group control
         mute_group_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.MUTE_GROUP,
+            AddressParameterDrumPartial.MUTE_GROUP,
             "Mute Group",
             ["OFF"] + [str(i) for i in range(1, 31)],
             list(range(0, 31)),
@@ -55,7 +55,7 @@ class DrumCommonSection(QWidget):
         common_layout.addRow(mute_group_combo)
         # Sustain control
         sustain_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_ENV_MODE,
+            AddressParameterDrumPartial.PARTIAL_ENV_MODE,
             "Partial ENV Mode",
             ["SUSTAIN", "NO-SUSTAIN"],
             [0, 1],
@@ -63,17 +63,17 @@ class DrumCommonSection(QWidget):
         common_layout.addRow(sustain_combo)
         # Kit Level control
         kit_level_slider = self._create_parameter_slider(
-            DrumCommonParameter.KIT_LEVEL, "Kit Level"
+            AddressParameterDrumCommon.KIT_LEVEL, "Kit Level"
         )
         common_layout.addRow(kit_level_slider)
         # Partial Pitch Bend Range
         pitch_bend_range_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
+            AddressParameterDrumPartial.PARTIAL_PITCH_BEND_RANGE, "Pitch Bend Range"
         )
         common_layout.addRow(pitch_bend_range_slider)
         # Partial Receive Expression
         receive_expression_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_RECEIVE_EXPRESSION,
+            AddressParameterDrumPartial.PARTIAL_RECEIVE_EXPRESSION,
             "Receive Expression",
             ["OFF", "ON"],
             [0, 1],
@@ -81,7 +81,7 @@ class DrumCommonSection(QWidget):
         common_layout.addRow(receive_expression_combo)
         # Partial Receive Hold-1
         receive_hold_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_RECEIVE_HOLD_1,
+            AddressParameterDrumPartial.PARTIAL_RECEIVE_HOLD_1,
             "Receive Hold-1",
             ["OFF", "ON"],
             [0, 1],
@@ -89,7 +89,7 @@ class DrumCommonSection(QWidget):
         common_layout.addRow(receive_hold_combo)
         # One Shot Mode
         one_shot_mode_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
+            AddressParameterDrumPartial.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
         )
         common_layout.addRow(one_shot_mode_combo)
         common_group.setLayout(common_layout)

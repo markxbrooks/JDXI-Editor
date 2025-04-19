@@ -39,14 +39,14 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 
 from typing import Tuple, Optional
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
 def map_range(value, in_min=-100, in_max=100, out_min=54, out_max=74):
     return int(out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min))
 
 
-class DigitalPartialParameter(SynthParameter):
+class AddressParameterDigitalPartial(AddressParameter):
     """Digital synth parameters with their addresses and value ranges"""
 
     def __init__(
@@ -242,7 +242,7 @@ class DigitalPartialParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the DigitalParameter by name."""
         # Return the parameter member by name, or None if not found
-        return DigitalPartialParameter.__members__.get(param_name, None)
+        return AddressParameterDigitalPartial.__members__.get(param_name, None)
 
     def convert_value(self, value: int, reverse: bool = False) -> int:
         """Converts value in both directions based on CONVERSION_OFFSETS"""

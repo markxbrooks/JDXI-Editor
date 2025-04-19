@@ -41,10 +41,10 @@ Usage example:
 from typing import Optional
 
 from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class ArpeggioParameter(SynthParameter):
+class AddressParameterArpeggio(AddressParameter):
     """Arpeggiator parameters with address and range"""
 
     # Common parameters

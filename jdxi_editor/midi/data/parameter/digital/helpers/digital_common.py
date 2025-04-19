@@ -1,4 +1,4 @@
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
+from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 
 
 def parse_digital_common_parameters(data: list) -> dict:
@@ -23,7 +23,7 @@ def parse_digital_common_parameters(data: list) -> dict:
     parameters = {}
 
     # Mapping DigitalParameter Enum members to their respective positions in SysEx data
-    for param in DigitalCommonParameter:
+    for param in AddressParameterDigitalCommon:
         # Use the parameter's address from the enum and fetch the value from the data
         parameters[param.name] = safe_get(param.address)
 

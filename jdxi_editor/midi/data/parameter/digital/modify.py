@@ -1,7 +1,7 @@
 """
-DigitalModifyParameter: JD-Xi Digital Synthesizer Parameter Mapping
+AddressParameterDigitalModify: JD-Xi Digital Synthesizer Parameter Mapping
 ====================================================================
-Defines the DigitalModifyParameter class for modifying parameters of
+Defines the AddressParameterDigitalModify class for modifying parameters of
 Digital/SuperNATURAL synth tones in the JD-Xi.
 
 This class provides attributes and methods to manage various modulation
@@ -11,8 +11,8 @@ values, parameter lookup by name, and value validation.
 
 Example usage:
 
-# Create a DigitalModifyParameter instance for Attack Time Interval Sensitivity
-attack_time_param = DigitalModifyParameter(*DigitalModifyParameter.ATTACK_TIME_INTERVAL_SENS)
+# Create a AddressParameterDigitalModify instance for Attack Time Interval Sensitivity
+attack_time_param = AddressParameterDigitalModify(*AddressParameterDigitalModify.ATTACK_TIME_INTERVAL_SENS)
 
 # Validate a value
 validated_value = attack_time_param.validate_value(100)
@@ -21,16 +21,16 @@ validated_value = attack_time_param.validate_value(100)
 text = attack_time_param.get_switch_text(1)  # For ENVELOPE_LOOP_MODE, returns "FREE-RUN"
 
 # Retrieve parameter by name
-param = DigitalModifyParameter.get_by_name("ENVELOPE_LOOP_MODE")
+param = AddressParameterDigitalModify.get_by_name("ENVELOPE_LOOP_MODE")
 if param:
     print(param.name, param.min_val, param.max_val)
 
 """
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class DigitalModifyParameter(SynthParameter):
+class AddressParameterDigitalModify(AddressParameter):
     """Modify parameters for Digital/SuperNATURAL synth tones.
     These parameters are shared across all partials.
     """
@@ -83,7 +83,7 @@ class DigitalModifyParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
-        return DigitalModifyParameter.__members__.get(param_name, None)
+        return AddressParameterDigitalModify.__members__.get(param_name, None)
 
     def validate_value(self, value: int) -> int:
         """Validate and convert parameter value"""

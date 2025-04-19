@@ -28,7 +28,7 @@ import json
 
 from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 # ==========================
 # Miscellaneous Constants

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox
 
 from jdxi_editor.midi.data.drum.data import rm_waves
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -80,7 +80,7 @@ class DrumWMTSection(QWidget):
         prefix = f"WMT{wmt_index}_"
 
         def p(name):  # helper to get DrumPartialParameter by name
-            return getattr(DrumPartialParameter, prefix + name)
+            return getattr(AddressParameterDrumPartial, prefix + name)
 
         # Combo boxes
         layout.addRow(self._create_parameter_combo_box(p("WAVE_SWITCH"), f"{prefix}Wave Switch", ["OFF", "ON"], [0, 1]))

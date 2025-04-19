@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXIStyle
@@ -61,16 +61,16 @@ class DigitalAmpSection(QWidget):
         controls_group.setLayout(controls_layout)
 
         controls_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.AMP_LEVEL, "Level")
+            self._create_parameter_slider(AddressParameterDigitalPartial.AMP_LEVEL, "Level")
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.AMP_VELOCITY, "Velocity"
+                AddressParameterDigitalPartial.AMP_VELOCITY, "Velocity"
             )
         )
         # Create and center the pan slider
         pan_slider = self._create_parameter_slider(
-            DigitalPartialParameter.AMP_PAN, "Pan"
+            AddressParameterDigitalPartial.AMP_PAN, "Pan"
         )
         pan_slider.setValue(0)
         controls_layout.addWidget(pan_slider)
@@ -98,14 +98,14 @@ class DigitalAmpSection(QWidget):
         (
             group_address,
             _,
-        ) = DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+        ) = AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME.get_address_for_partial(
             self.partial_number
         )
         self.amp_env_adsr_widget = ADSR(
-            attack_param=DigitalPartialParameter.AMP_ENV_ATTACK_TIME,
-            decay_param=DigitalPartialParameter.AMP_ENV_DECAY_TIME,
-            sustain_param=DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
-            release_param=DigitalPartialParameter.AMP_ENV_RELEASE_TIME,
+            attack_param=AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
+            decay_param=AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
+            sustain_param=AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+            release_param=AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             address_umb=self.address_umb,
@@ -122,11 +122,11 @@ class DigitalAmpSection(QWidget):
         # Keyfollow and aftertouch
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.AMP_LEVEL_KEYFOLLOW, "KeyFollow"
+                AddressParameterDigitalPartial.AMP_LEVEL_KEYFOLLOW, "KeyFollow"
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.LEVEL_AFTERTOUCH, "AT Sens"
+                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "AT Sens"
             )
         )
