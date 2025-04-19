@@ -185,31 +185,20 @@ class JdxiInstrument(JdxiUi):
         # Initialize current preset index
         self.current_preset_index = 0
 
-        # Initialize PresetHandler with the desired preset list
-        self.digital_1_preset_helper = PresetHelper(
-            self.midi_helper,
-            JDXIPresets.DIGITAL_ENUMERATED,
-            channel=MidiChannel.DIGITAL1,
-            preset_type=JDXISynth.DIGITAL_1,
-        )
-        self.digital_2_preset_helper = PresetHelper(
-            self.midi_helper,
-            JDXIPresets.DIGITAL_ENUMERATED,
-            channel=MidiChannel.DIGITAL2,
-            preset_type=JDXISynth.DIGITAL_2,
-        )
-        self.analog_preset_helper = PresetHelper(
-            self.midi_helper,
-            JDXIPresets.ANALOG_ENUMERATED,
-            channel=MidiChannel.ANALOG,
-            preset_type=JDXISynth.ANALOG,
-        )
-        self.drums_preset_helper = PresetHelper(
-            self.midi_helper,
-            JDXIPresets.DRUM_ENUMERATED,
-            channel=MidiChannel.DRUM,
-            preset_type=JDXISynth.DRUMS,
-        )
+        preset_configurations = [
+            {"preset_attr": "digital_1_preset_helper", "enumerated": JDXIPresets.DIGITAL_ENUMERATED, "channel": MidiChannel.DIGITAL1, "preset_type": JDXISynth.DIGITAL_1},
+            {"preset_attr": "digital_2_preset_helper", "enumerated": JDXIPresets.DIGITAL_ENUMERATED, "channel": MidiChannel.DIGITAL2, "preset_type": JDXISynth.DIGITAL_2},
+            {"preset_attr": "analog_preset_helper", "enumerated": JDXIPresets.ANALOG_ENUMERATED, "channel": MidiChannel.ANALOG, "preset_type": JDXISynth.ANALOG},
+            {"preset_attr": "drums_preset_helper", "enumerated": JDXIPresets.DRUM_ENUMERATED, "channel": MidiChannel.DRUM, "preset_type": JDXISynth.DRUMS},
+        ]
+        
+        for config in preset_configurations:
+            setattr(self, config["preset_attr"], PresetHelper(
+                self.midi_helper,
+                config["enumerated"],
+                channel=config["channel"],
+                preset_type=config["preset_type"],
+            ))
 
         self.digital_1_preset_helper.update_display.connect(
             self.update_display_callback
