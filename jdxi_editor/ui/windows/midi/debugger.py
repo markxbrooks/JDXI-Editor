@@ -210,6 +210,7 @@ class MIDIDebugger(QMainWindow):
             "DIGITAL_PART_2": AddressParameterDigitalPartial,
             "ANALOG_PART": AddressParameterAnalog,
             "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
+            "COMMON": AddressParameterDigitalCommon
         }
 
         try:
