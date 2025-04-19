@@ -369,7 +369,7 @@ class JdxiInstrument(JdxiUi):
         return presets
 
     def _previous_program(self):
-        """Decrement the tone index and update the display."""
+        """Decrement the program index and update the display."""
         if self.current_program_number == 1:
             logging.info("Already at the first program.")
             msg_box = QMessageBox()
