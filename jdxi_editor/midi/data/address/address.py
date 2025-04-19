@@ -176,7 +176,7 @@ class CommandID(SysExByte):
     @classmethod
     def message_position(cls):
         """Return the fixed message position for command bytes."""
-        return 7
+        return 11
 
 
 @unique
@@ -213,6 +213,7 @@ class AddressOffsetTemporaryToneUMB(Address):
     DIGITAL_PART_2 = 0x21
     ANALOG_PART = 0x42
     DRUM_KIT_PART = 0x70
+    COMMON = 0x00
 
     @classmethod
     def message_position(cls):

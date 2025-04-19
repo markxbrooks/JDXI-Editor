@@ -36,7 +36,7 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 
 import logging
 import re
-from typing import Type
+from typing import Type, Union, Tuple
 
 from tabulate import tabulate
 from PySide6.QtWidgets import (
@@ -52,22 +52,40 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.midi.data import AddressParameterAnalog
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB, Address,
 )
+from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
+from typing import Protocol, TypeVar, Optional
 
-def parse_sysex_byte(message: bytes, enum_cls: Type[Address]) -> tuple[str, int]:
+T = TypeVar("T", bound="EnumWithAddress")
+
+
+class EnumWithAddress(Protocol):
+    @classmethod
+    def message_position(cls) -> int: ...
+
+    @classmethod
+    def get_parameter_by_address(cls, address: int) -> Optional[T]: ...
+
+
+def parse_sysex_byte(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str, int]:
     """Extract and describe a byte from a SysEx message using a given enum class."""
-    byte_value = message[enum_cls.message_position()]
+    byte_value = int(message[enum_cls.message_position()])
     enum_member = enum_cls.get_parameter_by_address(byte_value)
-    return enum_member.name, byte_value if enum_member else f"Unknown ({hex(byte_value)})"
+    name = enum_member.name if enum_member else f"Unknown ({hex(byte_value)})"
+    return name, byte_value
 
 
 class MIDIDebugger(QMainWindow):
@@ -180,59 +198,37 @@ class MIDIDebugger(QMainWindow):
         # Add splitter to main layout
         layout.addWidget(splitter)
 
-    def _decode_sysex_new(self, message):
-        """Decode address SysEx message"""
-        if len(message) < 8:
-            return "Invalid SysEx message (too short)"
-
-        if message[0] != 0xF0 or message[1] != 0x41:
-            return "Not a Roland SysEx message"
-
-        try:
-            # Use the parse_sysex function to decode the message
-            decoded_parameters = parse_sysex(message)
-            logging.info(decoded_parameters)
-
-            # Format the output using the decoded parameters
-            table_data = [[key, value] for key, value in decoded_parameters.items()]
-            decoded = tabulate(
-                table_data, headers=["Parameter", "Value"], tablefmt="grid"
-            )
-            return decoded
-
-        except Exception as e:
-            return f"Error decoding message: {str(e)}"
-
     def _decode_sysex_15(self, message):
         """Decode address SysEx message"""
         if len(message) != 15:
             return "Invalid SysEx message (must be 15 bytes)"
-
         if message[0] != 0xF0 or message[1] != 0x41:
             return "Not a Roland address SysEx message"
-
         try:
-            # Get command
-            command_str, command = parse_sysex_byte(message, CommandID)
-            area_str, area = parse_sysex_byte(message, AddressMemoryAreaMSB)
-            synth_str, synth = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
-            group_str, group = parse_sysex_byte(message, AddressOffsetProgramLMB)
-            # if part_str in  ["DIGITAL_1", "DIGITAL_2"]:
-
-            # synth_str = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
-            # synth_str = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
-
-            # Get parameter address (bytes 10 and 11 separately)
-            # group = message[10]
+            # Parse top-level SysEx components
+            command_str, command_byte = parse_sysex_byte(message, CommandID)
+            area_str, area_byte = parse_sysex_byte(message, AddressMemoryAreaMSB)
+            synth_str, synth_byte = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
+            part_str, part_byte = parse_sysex_byte(message, AddressOffsetProgramLMB)
+            part_address = hex(part_byte)
             param = message[11]
-            group_address = hex(group)
             param_address = hex(param)
-            # param_str = DigitalParameter.get_name_by_address(int(param))
-            # group_str = part_str #  self.GROUPS.get(group, f"Common Group ({group_address})")
-            param_str = self.PARAMETERS.get(
-                param, f"Unknown Parameter ({param_address})"
-            )
-
+            if synth_str in ["DIGITAL_PART_1", "DIGITAL_PART_2"]:
+                if part_str in ["PART_DIGITAL_SYNTH_1", "PART_DIGITAL_SYNTH_2"]:
+                    param_str, param = parse_sysex_byte(message, AddressParameterDigitalPartial)
+                else:
+                    param_str = self.PARAMETERS.get(
+                        param, f"Unknown Parameter ({param_address})"
+                    )
+            elif synth_str == "ANALOG_PART":
+                param_str, param = parse_sysex_byte(message, AddressParameterAnalog)
+            elif synth_str == "DRUM_PART":
+                param_str, param = parse_sysex_byte(message, AddressParameterDrumPartial)
+            else:
+                param_str = self.PARAMETERS.get(
+                    param, f"Unknown Parameter ({param_address})"
+                )
+            param_address = hex(param)
             # Get value
             value = message[12]
 
@@ -249,10 +245,10 @@ class MIDIDebugger(QMainWindow):
                 f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
                 f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
                 f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
-                f"| {7:<5} | {'Command ID':<28} | {hex(command):<17} | {command_str:<30} |\n"
-                f"| {8:<5} | {'Area':<28} | {hex(area):<17} | {area_str:<30} |\n"
-                f"| {9:<5} | {'Synth':<28} | {hex(synth):<17} | {synth_str:<30} |\n"
-                f"| {10:<5} | {'Parameter Address High':<28} | {group_address:<17} | {group_str:<30} |\n"
+                f"| {7:<5} | {'Command ID':<28} | {hex(command_byte):<17} | {command_str:<30} |\n"
+                f"| {8:<5} | {'Area':<28} | {hex(area_byte):<17} | {area_str:<30} |\n"
+                f"| {9:<5} | {'Synth':<28} | {hex(synth_byte):<17} | {synth_str:<30} |\n"
+                f"| {10:<5} | {'Parameter Address High':<28} | {part_address:<17} | {part_str:<30} |\n"
                 f"| {11:<5} | {'Parameter Address Low':<28} | {param_address:<17} | {param_str:<30} |\n"
                 f"| {12:<5} | {'Parameter Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
                 f"| {13:<5} | {'Checksum':<28} | {hex(checksum):<17} | {'Valid' if checksum_valid else 'Invalid'} {'':<22} |\n"
