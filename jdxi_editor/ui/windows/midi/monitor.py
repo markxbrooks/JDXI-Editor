@@ -14,11 +14,13 @@ Methods:
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
 
+from jdxi_editor.midi.io import MidiIOHelper
 
-class MIDIMessageDebug(QMainWindow):
-    def __init__(self, parent=None):
+
+class MIDIMessageMonitor(QMainWindow):
+    def __init__(self, midi_helper: MidiIOHelper = None, parent = None):
         super().__init__(parent)
-        self.setWindowTitle("MIDI Message Debug")
+        self.setWindowTitle("MIDI Message Monitor")
         self.setMinimumSize(600, 400)
 
         # Create central widget
@@ -31,7 +33,7 @@ class MIDIMessageDebug(QMainWindow):
         self.log_view.setReadOnly(True)
         self.log_view.setLineWrapMode(QTextEdit.NoWrap)
         self.log_view.setStyleSheet(
-            """
+        """
             QTextEdit {
                 font-family: monospace;
                 background-color: #1E1E1E;
@@ -40,15 +42,27 @@ class MIDIMessageDebug(QMainWindow):
         """
         )
         layout.addWidget(self.log_view)
+        self.midi_helper = midi_helper
+        self.midi_helper.midi_message_incoming.connect(self.process_incoming_message)
+        self.midi_helper.midi_message_outgoing.connect(self.process_outgoing_message)
+
+    def process_incoming_message(self, message):
+        self.log_message(message, direction="←")
+
+    def process_outgoing_message(self, message):
+        self.log_message(message)
 
     def log_message(self, message, direction="→"):
-        """Log address MIDI message with timestamp"""
+        """Log address MIDI message with timestamp and hex formatting if possible."""
         from datetime import datetime
 
         timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
         if isinstance(message, (list, bytes)):
-            hex_str = " ".join([f"{b:02X}" for b in message])
+            try:
+                hex_str = " ".join([f"{int(b):02X}" for b in message])
+            except (ValueError, TypeError):
+                hex_str = str(message)
             self.log_view.append(f"{timestamp} {direction} {hex_str}")
         else:
             self.log_view.append(f"{timestamp} {direction} {message}")

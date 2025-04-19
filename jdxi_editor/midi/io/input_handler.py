@@ -261,6 +261,7 @@ class MidiInHandler(MidiIOController):
                 handler(message, preset_data)
             else:
                 logging.info("Unhandled MIDI message type: %s", message.type)
+            self.midi_message_incoming.emit(message)
         except Exception as ex:
             logging.info(f"Error {ex} occurred")
 
