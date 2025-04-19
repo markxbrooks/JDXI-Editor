@@ -294,13 +294,13 @@ class JdxiInstrument(JdxiUi):
         self._update_display()
 
     def set_current_program_number(self, channel: int, program_number: int):
-        """program name"""
+        """program number"""
         self.current_program_number = program_number + 1
         self.data_request()
         self._update_display()
 
     def set_current_digital1_tone_name(self, tone_name: str):
-        """program name"""
+        """ digital1 tone name"""
         self.current_digital1_tone_name = tone_name
         self._update_display()
 
@@ -313,17 +313,17 @@ class JdxiInstrument(JdxiUi):
             self.midi_helper.send_raw_message(request)
 
     def set_current_digital2_tone_name(self, tone_name: str):
-        """program name"""
+        """digital 2 tone name"""
         self.current_digital2_tone_name = tone_name
         self._update_display()
 
     def set_current_analog_tone_name(self, tone_name: str):
-        """program name"""
+        """analog tone name"""
         self.current_analog_tone_name = tone_name
         self._update_display()
 
     def set_current_drums_tone_name(self, tone_name: str):
-        """program name"""
+        """drums tone name"""
         self.current_drums_tone_name = tone_name
         self._update_display()
 
