@@ -199,11 +199,19 @@ class MIDIDebugger(QMainWindow):
         layout.addWidget(splitter)
 
     def _decode_sysex_15(self, message):
-        """Decode address SysEx message"""
+        """Decode address SysEx message."""
         if len(message) != 15:
             return "Invalid SysEx message (must be 15 bytes)"
         if message[0] != 0xF0 or message[1] != 0x41:
             return "Not a Roland address SysEx message"
+
+        PARAMETER_PART_MAP = {
+            "DIGITAL_PART_1": AddressParameterDigitalPartial,
+            "DIGITAL_PART_2": AddressParameterDigitalPartial,
+            "ANALOG_PART": AddressParameterAnalog,
+            "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
+        }
+
         try:
             # Parse top-level SysEx components
             command_str, command_byte = parse_sysex_byte(message, CommandID)
@@ -211,24 +219,81 @@ class MIDIDebugger(QMainWindow):
             synth_str, synth_byte = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
             part_str, part_byte = parse_sysex_byte(message, AddressOffsetProgramLMB)
             part_address = hex(part_byte)
-            param = message[11]
-            param_address = hex(param)
-            if synth_str in ["DIGITAL_PART_1", "DIGITAL_PART_2"]:
-                if part_str in ["PART_DIGITAL_SYNTH_1", "PART_DIGITAL_SYNTH_2"]:
-                    param_str, param = parse_sysex_byte(message, AddressParameterDigitalPartial)
+
+            try:
+                parameter_enum = PARAMETER_PART_MAP.get(synth_str)
+                if parameter_enum is not None:
+                    param_str, param = parse_sysex_byte(message, parameter_enum)
                 else:
-                    param_str = self.PARAMETERS.get(
-                        param, f"Unknown Parameter ({param_address})"
-                    )
-            elif synth_str == "ANALOG_PART":
-                param_str, param = parse_sysex_byte(message, AddressParameterAnalog)
-            elif synth_str == "DRUM_PART":
-                param_str, param = parse_sysex_byte(message, AddressParameterDrumPartial)
-            else:
-                param_str = self.PARAMETERS.get(
-                    param, f"Unknown Parameter ({param_address})"
-                )
-            param_address = hex(param)
+                    raise ValueError(f"No parameter enum defined for synth type: {synth_str}")
+                param_address = hex(param)
+            except Exception as ex:
+                logging.info(f"Error {ex} parsing sysex bytes")
+                param = message[11]
+                param_address = hex(param)
+                param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
+
+            # Get value
+            value = message[12]
+
+            # Get checksum
+            checksum = message[13]
+            checksum_valid = validate_checksum(message[7:13], checksum)
+
+            # Format the output
+            decoded = (
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+                f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+                f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
+                f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
+                f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
+                f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
+                f"| {7:<5} | {'Command ID':<28} | {hex(command_byte):<17} | {command_str:<30} |\n"
+                f"| {8:<5} | {'Area':<28} | {hex(area_byte):<17} | {area_str:<30} |\n"
+                f"| {9:<5} | {'Synth':<28} | {hex(synth_byte):<17} | {synth_str:<30} |\n"
+                f"| {10:<5} | {'Parameter Address High':<28} | {part_address:<17} | {part_str:<30} |\n"
+                f"| {11:<5} | {'Parameter Address Low':<28} | {param_address:<17} | {param_str:<30} |\n"
+                f"| {12:<5} | {'Parameter Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
+                f"| {13:<5} | {'Checksum':<28} | {hex(checksum):<17} | {'Valid' if checksum_valid else 'Invalid'} {'':<22} |\n"
+                f"| {14:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
+            )
+
+            return decoded
+
+        except Exception as e:
+            return f"Error decoding message: {str(e)}"
+
+    def _decode_sysex_15_old(self, message):
+        """Decode address SysEx message"""
+        if len(message) != 15:
+            return "Invalid SysEx message (must be 15 bytes)"
+        if message[0] != 0xF0 or message[1] != 0x41:
+            return "Not a Roland address SysEx message"
+        PARAMETER_PART_MAP = {
+            "DIGITAL_PART_1": AddressParameterDigitalPartial,
+            "DIGITAL_PART_2": AddressParameterDigitalPartial,
+            "ANALOG_PART": AddressParameterAnalog,
+            "DRUM_KIT_PART": AddressParameterDrumPartial,
+            "COMMON": AddressParameterDigitalCommon
+        }
+        try:
+            # Parse top-level SysEx components
+            command_str, command_byte = parse_sysex_byte(message, CommandID)
+            area_str, area_byte = parse_sysex_byte(message, AddressMemoryAreaMSB)
+            synth_str, synth_byte = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
+            part_str, part_byte = parse_sysex_byte(message, AddressOffsetProgramLMB)
+            part_address = hex(part_byte)
+            try:
+                parameter = PARAMETER_PART_MAP.get(synth_str)
+                param_str, param = parse_sysex_byte(message, parameter)
+                param_address = hex(param)
+            except Exception as ex:
+                logging.info(f"Error {ex} parsing sysex bytes")
+                param = message[11]
+                param_address = hex(param)
+                param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
             # Get value
             value = message[12]
 
