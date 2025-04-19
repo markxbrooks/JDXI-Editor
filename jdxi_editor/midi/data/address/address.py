@@ -176,7 +176,7 @@ class CommandID(SysExByte):
     @classmethod
     def message_position(cls):
         """Return the fixed message position for command bytes."""
-        return 11
+        return 7
 
 
 @unique
