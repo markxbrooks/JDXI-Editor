@@ -28,10 +28,10 @@ from jdxi_editor.midi.data.parameter.drum.addresses import (
     DRUM_GROUP_MAP,
     DRUM_ADDRESS_MAP,
 )
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class DrumPartialParameter(SynthParameter):
+class AddressParameterDrumPartial(AddressParameter):
     """Drum kit parameters with their addresses and value ranges"""
 
     def __init__(
@@ -569,7 +569,7 @@ class DrumPartialParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the AnalogParameter by name."""
         # Return the parameter member by name, or None if not found
-        return DrumPartialParameter.__members__.get(param_name, None)
+        return AddressParameterDrumPartial.__members__.get(param_name, None)
 
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""

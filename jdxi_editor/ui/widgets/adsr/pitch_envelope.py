@@ -24,7 +24,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot, ADSRParameter
 from jdxi_editor.ui.widgets.slider.slider import Slider
@@ -43,9 +43,9 @@ class PitchEnvelope(QWidget):
 
     def __init__(
         self,
-        attack_param: SynthParameter,
-        decay_param: SynthParameter,
-        depth_param: SynthParameter,
+        attack_param: AddressParameter,
+        decay_param: AddressParameter,
+        depth_param: AddressParameter,
         midi_helper=None,
         address_lmb=None,
         address_msb=None,
@@ -54,7 +54,7 @@ class PitchEnvelope(QWidget):
     ):
         super().__init__(parent)
 
-        self.controls: Dict[SynthParameter, Slider] = {}
+        self.controls: Dict[AddressParameter, Slider] = {}
         self.midi_helper = midi_helper
         self.address_msb = (
             address_msb if address_msb else AddressMemoryAreaMSB.TEMPORARY_TONE
@@ -151,7 +151,7 @@ class PitchEnvelope(QWidget):
         self.plot.set_values(self.envelope)
 
     def _create_parameter_slider(
-        self, param: SynthParameter, label: str, value: int = None
+        self, param: AddressParameter, label: str, value: int = None
     ) -> Slider:
         """Create address slider for address parameter with proper display conversion"""
         # Create vertical slider
@@ -204,7 +204,7 @@ class PitchEnvelope(QWidget):
             spin_box.setValue(self.envelope[envelope_key])
             spin_box.blockSignals(False)
 
-    def _on_parameter_changed(self, param: SynthParameter, value: int):
+    def _on_parameter_changed(self, param: AddressParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""
         # logging.info(f"_on_parameter_changed param: {param} value: {value}")
         # Update envelope based on slider values

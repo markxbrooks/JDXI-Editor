@@ -54,8 +54,8 @@ from jdxi_editor.midi.data.digital import (
     DigitalPartial,
     get_digital_parameter_by_address,
 )
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
@@ -120,10 +120,16 @@ class DigitalSynthEditor(SynthEditor):
             if self.preset_type == JDXISynth.DIGITAL_1
             else parent.digital_2_preset_helper
         )
+        """
+        self.preset_helper = parent.preset_helpers[self.preset_type] if parent else (
+            PresetHelper(self.midi_helper, JDXIPresets.DIGITAL_LIST,
+                         channel=MidiChannel.DIGITAL1,
+                         preset_type=JDXISynth.DIGITAL_1))
+        """
         self.main_window = parent
         self.synth_number = synth_number
         self.controls: Dict[
-            Union[DigitalPartialParameter, DigitalCommonParameter], QWidget
+            Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon], QWidget
         ] = {}
         self._init_synth_data(synth_number)
         self.setup_ui(synth_number)
@@ -369,11 +375,11 @@ class DigitalSynthEditor(SynthEditor):
         self._handle_special_params(partial_no, param, value)
 
     def _handle_special_params(self, partial_no, param, value):
-        if param == DigitalPartialParameter.OSC_WAVE:
+        if param == AddressParameterDigitalPartial.OSC_WAVE:
             self._update_waveform_buttons(partial_no, value)
             logging.debug(f"Updated waveform buttons for OSC_WAVE: value={value}")
 
-        elif param == DigitalPartialParameter.FILTER_MODE_SWITCH:
+        elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
             self.partial_editors[partial_no].filter_mode_switch.setValue(value)
             self._update_filter_state(partial_no, value)
             logging.debug(f"Updated filter state for FILTER_MODE_SWITCH: value={value}")
@@ -384,14 +390,14 @@ class DigitalSynthEditor(SynthEditor):
         successes, failures = [], []
 
         for param_name, param_value in sysex_data.items():
-            param = DigitalPartialParameter.get_by_name(param_name)
+            param = AddressParameterDigitalPartial.get_by_name(param_name)
             if not param:
                 failures.append(param_name)
                 continue
 
-            if param == DigitalPartialParameter.OSC_WAVE:
+            if param == AddressParameterDigitalPartial.OSC_WAVE:
                 self._update_waveform_buttons(partial_no, param_value)
-            elif param == DigitalPartialParameter.FILTER_MODE_SWITCH:
+            elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
             else:
                 self._update_partial_slider(partial_no, param, param_value, successes)
@@ -466,7 +472,7 @@ class DigitalSynthEditor(SynthEditor):
         """
         logging.info("\nTone common and modify")
         for param_name, param_value in sysex_data.items():
-            param = DigitalCommonParameter.get_by_name(param_name)
+            param = AddressParameterDigitalCommon.get_by_name(param_name)
             logging.info(f"Tone common/modify : param_name: {param} {param_value}")
             if not param:
                 failures.append(param_name)
@@ -537,34 +543,34 @@ class DigitalSynthEditor(SynthEditor):
 
     def _update_partial_adsr_widget(self, partial_no: int, param, value):
         use_frac = param in {
-            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL,
-            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
+            AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+            AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
         new_value = midi_cc_to_frac(value) if use_frac else midi_cc_to_ms(value)
 
         adsr_map = {
-            DigitalPartialParameter.AMP_ENV_ATTACK_TIME: self.partial_editors[
+            AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.attack_sb,
-            DigitalPartialParameter.AMP_ENV_DECAY_TIME: self.partial_editors[
+            AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.decay_sb,
-            DigitalPartialParameter.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
+            AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.sustain_sb,
-            DigitalPartialParameter.AMP_ENV_RELEASE_TIME: self.partial_editors[
+            AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.release_sb,
-            DigitalPartialParameter.FILTER_ENV_ATTACK_TIME: self.partial_editors[
+            AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.attack_sb,
-            DigitalPartialParameter.FILTER_ENV_DECAY_TIME: self.partial_editors[
+            AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.decay_sb,
-            DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
+            AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.sustain_sb,
-            DigitalPartialParameter.FILTER_ENV_RELEASE_TIME: self.partial_editors[
+            AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.release_sb,
         }

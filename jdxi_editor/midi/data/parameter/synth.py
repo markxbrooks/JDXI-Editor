@@ -34,7 +34,7 @@ from enum import Enum
 from typing import Optional, Tuple
 
 
-class SynthParameter(Enum):
+class AddressParameter(Enum):
     def __init__(self, address: int, min_val: int, max_val: int):
         self.address = address
         self.min_val = min_val
@@ -76,7 +76,7 @@ class SynthParameter(Enum):
     @staticmethod
     def get_name_by_address(address: int):
         """Return the parameter name for address given address."""
-        for param in SynthParameter:
+        for param in AddressParameter:
             if param.address == address:
                 return param.name
         return None  # Return None if the address is not found
@@ -85,7 +85,7 @@ class SynthParameter(Enum):
     def get_by_name(param_name):
         """Get the AnalogParameter by name."""
         # Return the parameter member by name, or None if not found
-        return SynthParameter.__members__.get(param_name, None)
+        return AddressParameter.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """

@@ -34,7 +34,7 @@ from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.editor.data import DrumSynthData
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
 from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
 from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
@@ -67,7 +67,7 @@ class DrumPartialEditor(PartialEditor):
         log_parameter("Initializing partial:", self.address_lmb)
 
         # Store parameter controls for easy access
-        self.controls: Dict[DrumPartialParameter, QWidget] = {}
+        self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
 
         # Main layout
         main_layout = QVBoxLayout()

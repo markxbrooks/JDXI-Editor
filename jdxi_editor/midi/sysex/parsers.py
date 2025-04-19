@@ -19,13 +19,13 @@ Functions:
 import logging
 from typing import List, Dict, Type
 
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
-from jdxi_editor.midi.data.parameter.digital.common import DigitalCommonParameter
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
-from jdxi_editor.midi.data.parameter.effects import EffectParameter
-from jdxi_editor.midi.data.parameter.program.common import ProgramCommonParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.parameter.effects import AddressParameterEffect
+from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
 from jdxi_editor.midi.utils.json import log_to_json
 
@@ -122,26 +122,26 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     parsed_data = initialize_parameters(data)
 
     if temporary_area == "TEMPORARY_PROGRAM_AREA":
-        parsed_data.update(parse_parameters(data, ProgramCommonParameter))
+        parsed_data.update(parse_parameters(data, AddressParameterProgramCommon))
 
     elif temporary_area in [
         "TEMPORARY_DIGITAL_SYNTH_1_AREA",
         "TEMPORARY_DIGITAL_SYNTH_2_AREA",
     ]:
         if synth_tone == "TONE_COMMON":
-            parsed_data.update(parse_parameters(data, DigitalCommonParameter))
+            parsed_data.update(parse_parameters(data, AddressParameterDigitalCommon))
         elif synth_tone == "TONE_MODIFY":
-            parsed_data.update(parse_parameters(data, EffectParameter))
+            parsed_data.update(parse_parameters(data, AddressParameterEffect))
         else:
-            parsed_data.update(parse_parameters(data, DigitalPartialParameter))
+            parsed_data.update(parse_parameters(data, AddressParameterDigitalPartial))
 
     elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
-        parsed_data.update(parse_parameters(data, AnalogParameter))
+        parsed_data.update(parse_parameters(data, AddressParameterAnalog))
 
     elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
         if synth_tone == "TONE_COMMON":
-            parsed_data.update(parse_parameters(data, DrumCommonParameter))
-        parsed_data.update(parse_parameters(data, DrumPartialParameter))
+            parsed_data.update(parse_parameters(data, AddressParameterDrumCommon))
+        parsed_data.update(parse_parameters(data, AddressParameterDrumPartial))
 
     logging.info(f"Address: {parsed_data['ADDRESS']}")
     logging.info(f"Temporary Area: {temporary_area}")

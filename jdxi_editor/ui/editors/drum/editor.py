@@ -77,8 +77,8 @@ from PySide6.QtCore import Qt
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.editor.data import DrumSynthData
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
@@ -121,7 +121,7 @@ class DrumCommonEditor(SynthEditor):
 
         self.instrument_image_label = None
         # Main layout
-        self.controls: Dict[DrumPartialParameter, QWidget] = {}
+        self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
         self.setup_ui()
         self.update_instrument_image()
         if self.midi_helper:
@@ -447,7 +447,7 @@ class DrumCommonEditor(SynthEditor):
         if synth_tone == "TONE_COMMON":
             logging.info("\nTone common")
             for param_name, param_value in sysex_data.items():
-                param = DrumCommonParameter.get_by_name(param_name)
+                param = AddressParameterDrumCommon.get_by_name(param_name)
                 logging.info(f"Tone common: param_name: {param} {param_value}")
                 try:
                     if param:
@@ -554,7 +554,7 @@ class DrumCommonEditor(SynthEditor):
                     logging.info(f"Updated: {param.name:50} {value}")
 
         for param_name, param_value in sysex_data.items():
-            param = DrumPartialParameter.get_by_name(param_name)
+            param = AddressParameterDrumPartial.get_by_name(param_name)
             if param:
                 _update_slider(param, param_value)
             else:

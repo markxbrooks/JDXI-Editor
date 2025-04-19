@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushBu
 from PySide6.QtCore import QSize
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.ui.style import JDXIStyle
 
 
@@ -58,19 +58,19 @@ class AnalogLFOSection(QWidget):
         layout.addLayout(shape_row)
 
         # Rate and Fade Time
-        self.lfo_rate = self._create_parameter_slider(AnalogParameter.LFO_RATE, "Rate")
+        self.lfo_rate = self._create_parameter_slider(AddressParameterAnalog.LFO_RATE, "Rate")
         self.lfo_fade = self._create_parameter_slider(
-            AnalogParameter.LFO_FADE_TIME, "Fade Time"
+            AddressParameterAnalog.LFO_FADE_TIME, "Fade Time"
         )
 
         # Tempo Sync controls
         sync_row = QHBoxLayout()
         self.lfo_sync_switch = self._create_parameter_switch(
-            AnalogParameter.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
+            AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH, "Tempo Sync", ["OFF", "ON"]
         )
         sync_row.addWidget(self.lfo_sync_switch)
         self.lfo_sync_note = self._create_parameter_combo_box(
-            AnalogParameter.LFO_TEMPO_SYNC_NOTE,
+            AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE,
             "Sync Note",
             options=["1/1", "1/2", "1/4", "1/8", "1/16"],
         )
@@ -78,18 +78,18 @@ class AnalogLFOSection(QWidget):
 
         # Depth controls
         self.lfo_pitch = self._create_parameter_slider(
-            AnalogParameter.LFO_PITCH_DEPTH, "Pitch Depth"
+            AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth"
         )
         self.lfo_filter = self._create_parameter_slider(
-            AnalogParameter.LFO_FILTER_DEPTH, "Filter Depth"
+            AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth"
         )
         self.lfo_amp = self._create_parameter_slider(
-            AnalogParameter.LFO_AMP_DEPTH, "Amp Depth"
+            AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth"
         )
 
         # Key Trigger switch
         self.key_trigger_switch = self._create_parameter_switch(
-            AnalogParameter.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
+            AddressParameterAnalog.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
         )
 
         # Add all controls to layout

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -45,22 +45,22 @@ class DrumOutputSection(QWidget):
 
         # Add output parameters
         partial_output_level_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_OUTPUT_LEVEL, "Output Level"
+            AddressParameterDrumPartial.PARTIAL_OUTPUT_LEVEL, "Output Level"
         )
         output_layout.addRow(partial_output_level_slider)
 
         partial_chorus_send_level_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_CHORUS_SEND_LEVEL, "Chorus Send Level"
+            AddressParameterDrumPartial.PARTIAL_CHORUS_SEND_LEVEL, "Chorus Send Level"
         )
         output_layout.addRow(partial_chorus_send_level_slider)
 
         partial_reverb_send_level_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_REVERB_SEND_LEVEL, "Reverb Send Level"
+            AddressParameterDrumPartial.PARTIAL_REVERB_SEND_LEVEL, "Reverb Send Level"
         )
         output_layout.addRow(partial_reverb_send_level_slider)
 
         partial_output_assign_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_OUTPUT_ASSIGN,
+            AddressParameterDrumPartial.PARTIAL_OUTPUT_ASSIGN,
             "Output Assign",
             ["EFX1", "EFX2", "DLY", "REV", "DIR"],
             [0, 1, 2, 3, 4],

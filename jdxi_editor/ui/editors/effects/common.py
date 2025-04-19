@@ -44,8 +44,8 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.parameter.effects import EffectParameter
-from jdxi_editor.midi.data.parameter.effects.common import EffectCommonParameter
+from jdxi_editor.midi.data.parameter.effects import AddressParameterEffect
+from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
@@ -60,9 +60,9 @@ class EffectsCommonEditor(SimpleEditor):
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.efx2_additional_params = [
-            EffectParameter.EFX2_PARAM_1,
-            EffectParameter.EFX2_PARAM_2,
-            EffectParameter.EFX2_PARAM_32,
+            AddressParameterEffect.EFX2_PARAM_1,
+            AddressParameterEffect.EFX2_PARAM_2,
+            AddressParameterEffect.EFX2_PARAM_32,
         ]
         self.default_image = "effects.png"
         self.instrument_icon_folder = "effects"
@@ -88,7 +88,7 @@ class EffectsCommonEditor(SimpleEditor):
         self.update_instrument_image()
 
         self.setLayout(main_layout)
-        self.controls: Dict[Union[EffectParameter, EffectCommonParameter], QWidget] = {}
+        self.controls: Dict[Union[AddressParameterEffect, AddressParameterEffectCommon], QWidget] = {}
 
         # Create address tab widget
         self.tabs = QTabWidget()
@@ -151,7 +151,7 @@ class EffectsCommonEditor(SimpleEditor):
 
         # Create address combo box for EFX1 preset_type
         self.efx1_type = self._create_parameter_combo_box(
-            EffectParameter.EFX1_TYPE,
+            AddressParameterEffect.EFX1_TYPE,
             "Effect 1 Type",
             ["Thru", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER"],
             [0, 1, 2, 3, 4],
@@ -160,37 +160,37 @@ class EffectsCommonEditor(SimpleEditor):
 
         # Create sliders for EFX1 parameters
         self.efx1_level = self._create_parameter_slider(
-            EffectParameter.EFX1_LEVEL, "EFX1 Level (0-127)"
+            AddressParameterEffect.EFX1_LEVEL, "EFX1 Level (0-127)"
         )
         layout.addRow(self.efx1_level)
 
         self.efx1_delay_send_level = self._create_parameter_slider(
-            EffectParameter.EFX1_DELAY_SEND_LEVEL, "EFX1 Delay Send Level (0-127)"
+            AddressParameterEffect.EFX1_DELAY_SEND_LEVEL, "EFX1 Delay Send Level (0-127)"
         )
         layout.addRow(self.efx1_delay_send_level)
 
         self.efx1_reverb_send_level = self._create_parameter_slider(
-            EffectParameter.EFX1_REVERB_SEND_LEVEL, "EFX1 Reverb Send Level (0-127)"
+            AddressParameterEffect.EFX1_REVERB_SEND_LEVEL, "EFX1 Reverb Send Level (0-127)"
         )
         layout.addRow(self.efx1_reverb_send_level)
 
         self.efx1_output_assign = self._create_parameter_combo_box(
-            EffectParameter.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"], [0, 1]
+            AddressParameterEffect.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"], [0, 1]
         )
         layout.addRow(self.efx1_output_assign)
 
         self.efx1_parameter1_slider = self._create_parameter_slider(
-            EffectParameter.EFX1_PARAM_1, "Parameter 1"
+            AddressParameterEffect.EFX1_PARAM_1, "Parameter 1"
         )
         layout.addRow(self.efx1_parameter1_slider)
 
         self.efx1_parameter2_slider = self._create_parameter_slider(
-            EffectParameter.EFX1_PARAM_2, "Parameter 2"
+            AddressParameterEffect.EFX1_PARAM_2, "Parameter 2"
         )
         layout.addRow(self.efx1_parameter2_slider)
 
         self.efx1_parameter32_slider = self._create_parameter_slider(
-            EffectParameter.EFX1_PARAM_32, "Parameter 32"
+            AddressParameterEffect.EFX1_PARAM_32, "Parameter 32"
         )
         layout.addRow(self.efx1_parameter32_slider)
 
@@ -204,7 +204,7 @@ class EffectsCommonEditor(SimpleEditor):
 
         # Create address combo box for EFX2 preset_type
         self.efx2_type = self._create_parameter_combo_box(
-            EffectParameter.EFX2_TYPE,
+            AddressParameterEffect.EFX2_TYPE,
             "Effect Type",
             ["OFF", "FLANGER", "PHASER", "RING MOD", "SLICER"],
             [0, 5, 6, 7, 8],
@@ -213,32 +213,32 @@ class EffectsCommonEditor(SimpleEditor):
 
         # Create sliders for EFX2 parameters
         self.efx2_level = self._create_parameter_slider(
-            EffectParameter.EFX2_LEVEL, "EFX2 Level (0-127)"
+            AddressParameterEffect.EFX2_LEVEL, "EFX2 Level (0-127)"
         )
         layout.addRow(self.efx2_level)
 
         self.efx2_delay_send_level = self._create_parameter_slider(
-            EffectParameter.EFX2_DELAY_SEND_LEVEL, "EFX2 Delay Send Level (0-127)"
+            AddressParameterEffect.EFX2_DELAY_SEND_LEVEL, "EFX2 Delay Send Level (0-127)"
         )
         layout.addRow(self.efx2_delay_send_level)
 
         self.efx2_reverb_send_level = self._create_parameter_slider(
-            EffectParameter.EFX2_REVERB_SEND_LEVEL, "EFX2 Reverb Send Level (0-127)"
+            AddressParameterEffect.EFX2_REVERB_SEND_LEVEL, "EFX2 Reverb Send Level (0-127)"
         )
         layout.addRow(self.efx2_reverb_send_level)
 
         self.efx2_parameter1_slider = self._create_parameter_slider(
-            EffectParameter.EFX2_PARAM_1, "Parameter 1"
+            AddressParameterEffect.EFX2_PARAM_1, "Parameter 1"
         )
         layout.addRow(self.efx1_parameter2_slider)
 
         self.efx2_parameter2_slider = self._create_parameter_slider(
-            EffectParameter.EFX2_PARAM_2, "Parameter 2"
+            AddressParameterEffect.EFX2_PARAM_2, "Parameter 2"
         )
         layout.addRow(self.efx2_parameter2_slider)
 
         self.efx2_parameter32_slider = self._create_parameter_slider(
-            EffectParameter.EFX2_PARAM_32, "Parameter 32"
+            AddressParameterEffect.EFX2_PARAM_32, "Parameter 32"
         )
         layout.addRow(self.efx2_parameter32_slider)
 
@@ -252,27 +252,27 @@ class EffectsCommonEditor(SimpleEditor):
 
         # Create address combo box for Delay Type
         delay_level_slider = self._create_parameter_slider(
-            EffectParameter.DELAY_LEVEL, "Delay Level"
+            AddressParameterEffect.DELAY_LEVEL, "Delay Level"
         )
         layout.addRow(delay_level_slider)
 
         delay_reverb_send_level_slider = self._create_parameter_slider(
-            EffectParameter.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
+            AddressParameterEffect.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
         )
         layout.addRow(delay_reverb_send_level_slider)
 
         delay_parameter1_slider = self._create_parameter_slider(
-            EffectParameter.DELAY_PARAM_1, "Delay Time (ms)"
+            AddressParameterEffect.DELAY_PARAM_1, "Delay Time (ms)"
         )
         layout.addRow(delay_parameter1_slider)
 
         delay_parameter2_slider = self._create_parameter_slider(
-            EffectParameter.DELAY_PARAM_2, "Delay Tap Time (ms)"
+            AddressParameterEffect.DELAY_PARAM_2, "Delay Tap Time (ms)"
         )
         layout.addRow(delay_parameter2_slider)
 
         delay_parameter24_slider = self._create_parameter_slider(
-            EffectParameter.DELAY_PARAM_24, "Feedback (%)"
+            AddressParameterEffect.DELAY_PARAM_24, "Feedback (%)"
         )
         layout.addRow(delay_parameter24_slider)
         return widget
@@ -283,24 +283,24 @@ class EffectsCommonEditor(SimpleEditor):
         layout = QFormLayout()
         widget.setLayout(layout)
         reverb_level_slider = self._create_parameter_slider(
-            EffectParameter.REVERB_LEVEL, "Level (0-127)"
+            AddressParameterEffect.REVERB_LEVEL, "Level (0-127)"
         )
         layout.addRow(reverb_level_slider)
         reverb_parameter1_slider = self._create_parameter_slider(
-            EffectParameter.REVERB_PARAM_1, "Parameter 1"
+            AddressParameterEffect.REVERB_PARAM_1, "Parameter 1"
         )
         layout.addRow(reverb_parameter1_slider)
         reverb_parameter2_slider = self._create_parameter_slider(
-            EffectParameter.REVERB_PARAM_2, "Parameter 2"
+            AddressParameterEffect.REVERB_PARAM_2, "Parameter 2"
         )
         layout.addRow(reverb_parameter2_slider)
         reverb_parameter24_slider = self._create_parameter_slider(
-            EffectParameter.REVERB_PARAM_24, "Parameter 24"
+            AddressParameterEffect.REVERB_PARAM_24, "Parameter 24"
         )
         layout.addRow(reverb_parameter24_slider)
         return widget
 
-    def _on_parameter_changed(self, param: EffectParameter, display_value: int):
+    def _on_parameter_changed(self, param: AddressParameterEffect, display_value: int):
         """Handle parameter value changes from UI controls"""
         try:
             # Convert display value to MIDI value if needed
@@ -312,7 +312,7 @@ class EffectsCommonEditor(SimpleEditor):
                 f"parameter: {param} display {display_value} midi value {midi_value}"
             )
             # Ensure we get address valid common parameter
-            common_param = EffectParameter.get_common_param_by_name(param.name)
+            common_param = AddressParameterEffect.get_common_param_by_name(param.name)
             midi_value = param.convert_to_midi(display_value)
             if common_param is None:
                 logging.error(f"Unknown common parameter preset_type for: {param.name}")

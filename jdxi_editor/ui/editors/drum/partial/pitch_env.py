@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -45,69 +45,69 @@ class DrumPitchEnvSection(QWidget):
 
         # Add pitch env parameters
         pitch_env_depth_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_DEPTH, "Depth"
+            AddressParameterDrumPartial.PITCH_ENV_DEPTH, "Depth"
         )
         pitch_env_layout.addRow(pitch_env_depth_slider)
 
         pitch_env_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_VELOCITY_SENS, "Velocity Sens"
+            AddressParameterDrumPartial.PITCH_ENV_VELOCITY_SENS, "Velocity Sens"
         )
         pitch_env_layout.addRow(pitch_env_velocity_sens_slider)
 
         pitch_env_time1_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_TIME_1_VELOCITY_SENS,
+            AddressParameterDrumPartial.PITCH_ENV_TIME_1_VELOCITY_SENS,
             "Time 1 Velocity Sens",
         )
         pitch_env_layout.addRow(pitch_env_time1_velocity_sens_slider)
 
         pitch_env_time4_velocity_sens_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_TIME_4_VELOCITY_SENS,
+            AddressParameterDrumPartial.PITCH_ENV_TIME_4_VELOCITY_SENS,
             "Time 4 Velocity Sens",
         )
         pitch_env_layout.addRow(pitch_env_time4_velocity_sens_slider)
 
         pitch_env_time1_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_TIME_1, "Time 1"
+            AddressParameterDrumPartial.PITCH_ENV_TIME_1, "Time 1"
         )
         pitch_env_layout.addRow(pitch_env_time1_slider)
 
         pitch_env_time2_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_TIME_2, "Time 2"
+            AddressParameterDrumPartial.PITCH_ENV_TIME_2, "Time 2"
         )
         pitch_env_layout.addRow(pitch_env_time2_slider)
 
         pitch_env_time3_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_TIME_3, "Time 3"
+            AddressParameterDrumPartial.PITCH_ENV_TIME_3, "Time 3"
         )
         pitch_env_layout.addRow(pitch_env_time3_slider)
 
         pitch_env_time4_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_TIME_4, "Time 4"
+            AddressParameterDrumPartial.PITCH_ENV_TIME_4, "Time 4"
         )
         pitch_env_layout.addRow(pitch_env_time4_slider)
 
         pitch_env_level0_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_LEVEL_0, "Level 0"
+            AddressParameterDrumPartial.PITCH_ENV_LEVEL_0, "Level 0"
         )
         pitch_env_layout.addRow(pitch_env_level0_slider)
 
         pitch_env_level1_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_LEVEL_1, "Level 1"
+            AddressParameterDrumPartial.PITCH_ENV_LEVEL_1, "Level 1"
         )
         pitch_env_layout.addRow(pitch_env_level1_slider)
 
         pitch_env_level2_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_LEVEL_2, "Level 2"
+            AddressParameterDrumPartial.PITCH_ENV_LEVEL_2, "Level 2"
         )
         pitch_env_layout.addRow(pitch_env_level2_slider)
 
         pitch_env_level3_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_LEVEL_3, "Level 3"
+            AddressParameterDrumPartial.PITCH_ENV_LEVEL_3, "Level 3"
         )
         pitch_env_layout.addRow(pitch_env_level3_slider)
 
         pitch_env_level4_slider = self._create_parameter_slider(
-            DrumPartialParameter.PITCH_ENV_LEVEL_4, "Level 4"
+            AddressParameterDrumPartial.PITCH_ENV_LEVEL_4, "Level 4"
         )
         pitch_env_layout.addRow(pitch_env_level4_slider)
 

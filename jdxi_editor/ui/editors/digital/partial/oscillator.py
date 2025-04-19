@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.data.digital import DigitalOscWave
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.presets.pcm_waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -81,7 +81,7 @@ class DigitalOscillatorSection(QWidget):
 
         top_row.addLayout(wave_layout)
         self.wave_variation_switch = self._create_parameter_switch(
-            DigitalPartialParameter.OSC_WAVE_VARIATION, "Variation", ["A", "B", "C"]
+            AddressParameterDigitalPartial.OSC_WAVE_VARIATION, "Variation", ["A", "B", "C"]
         )
         top_row.addWidget(self.wave_variation_switch)
         layout.addLayout(top_row)
@@ -91,10 +91,10 @@ class DigitalOscillatorSection(QWidget):
         tuning_layout = QVBoxLayout()
         tuning_group.setLayout(tuning_layout)
         tuning_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.OSC_PITCH, "Pitch")
+            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_PITCH, "Pitch")
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(DigitalPartialParameter.OSC_DETUNE, "Detune")
+            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_DETUNE, "Detune")
         )
         layout.addWidget(tuning_group)
 
@@ -103,10 +103,10 @@ class DigitalOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
         self.pw_slider = self._create_parameter_slider(
-            DigitalPartialParameter.OSC_PULSE_WIDTH, "Width"
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width"
         )
         self.pwm_slider = self._create_parameter_slider(
-            DigitalPartialParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
         )
         pw_layout.addWidget(self.pw_slider)
         pw_layout.addWidget(self.pwm_slider)
@@ -117,10 +117,10 @@ class DigitalOscillatorSection(QWidget):
         pcm_layout = QGridLayout()
         pcm_group.setLayout(pcm_layout)
         self.pcm_wave_gain = self._create_parameter_combo_box(
-            DigitalPartialParameter.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
+            AddressParameterDigitalPartial.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
         )
         self.pcm_wave_number = self._create_parameter_combo_box(
-            DigitalPartialParameter.PCM_WAVE_NUMBER,
+            AddressParameterDigitalPartial.PCM_WAVE_NUMBER,
             "Number",
             [f"{w['Wave Number']}: {w['Wave Name']}" for w in PCM_WAVES_CATEGORIZED],
         )
@@ -142,24 +142,24 @@ class DigitalOscillatorSection(QWidget):
         pitch_env_group.setLayout(pitch_env_layout)
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
             )
         )
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.OSC_PITCH_ENV_DECAY_TIME, "Decay"
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME, "Decay"
             )
         )
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.OSC_PITCH_ENV_DEPTH, "Depth"
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH, "Depth"
             )
         )
         layout.addWidget(pitch_env_group)
 
         # Super Saw detune
         self.super_saw_detune = self._create_parameter_slider(
-            DigitalPartialParameter.SUPER_SAW_DETUNE, "S-Saw Detune"
+            AddressParameterDigitalPartial.SUPER_SAW_DETUNE, "S-Saw Detune"
         )
         layout.addWidget(self.super_saw_detune)
 
@@ -182,7 +182,7 @@ class DigitalOscillatorSection(QWidget):
 
         # Send MIDI message
         if not self.send_midi_parameter(
-            DigitalPartialParameter.OSC_WAVE, waveform.value
+            AddressParameterDigitalPartial.OSC_WAVE, waveform.value
         ):
             logging.warning(f"Failed to set waveform to {waveform.name}")
 

@@ -2,7 +2,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
-from jdxi_editor.midi.data.parameter.analog import AnalogParameter
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXIStyle
@@ -78,10 +78,10 @@ class AnalogOscillatorSection(QWidget):
         tuning_group.setLayout(tuning_layout)
 
         tuning_layout.addWidget(
-            self._create_parameter_slider(AnalogParameter.OSC_PITCH_COARSE, "Coarse")
+            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse")
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(AnalogParameter.OSC_PITCH_FINE, "Fine")
+            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_FINE, "Fine")
         )
 
         return tuning_group
@@ -92,10 +92,10 @@ class AnalogOscillatorSection(QWidget):
         pw_group.setLayout(pw_layout)
 
         pw_slider = self._create_parameter_slider(
-            AnalogParameter.OSC_PULSE_WIDTH, "Width"
+            AddressParameterAnalog.OSC_PULSE_WIDTH, "Width"
         )
         pwm_slider = self._create_parameter_slider(
-            AnalogParameter.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth"
+            AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth"
         )
 
         pw_layout.addWidget(pw_slider)
@@ -110,19 +110,19 @@ class AnalogOscillatorSection(QWidget):
 
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParameter.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
+                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
             )
         )
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                AnalogParameter.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
+                AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
             )
         )
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(AnalogParameter.OSC_PITCH_ENV_DECAY, "Decay")
+            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_ENV_DECAY, "Decay")
         )
         pitch_env_layout.addWidget(
-            self._create_parameter_slider(AnalogParameter.OSC_PITCH_ENV_DEPTH, "Depth")
+            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_ENV_DEPTH, "Depth")
         )
 
         return pitch_env_group
@@ -132,7 +132,7 @@ class AnalogOscillatorSection(QWidget):
         sub_layout = QVBoxLayout()
         sub_group.setLayout(sub_layout)
         self.sub_oscillator_type_switch = self._create_parameter_switch(
-            AnalogParameter.SUB_OSCILLATOR_TYPE,
+            AddressParameterAnalog.SUB_OSCILLATOR_TYPE,
             "Type",
             [
                 AnalogSubOscType.OFF.display_name,

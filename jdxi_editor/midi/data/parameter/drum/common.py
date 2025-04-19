@@ -15,10 +15,10 @@ Classes:
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class DrumCommonParameter(SynthParameter):
+class AddressParameterDrumCommon(AddressParameter):
     """Common parameters for Digital/SuperNATURAL synth tones.
     These parameters are shared across all partials.
     """

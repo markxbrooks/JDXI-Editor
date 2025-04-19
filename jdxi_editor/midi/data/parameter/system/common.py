@@ -1,7 +1,7 @@
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class SystemCommon(SynthParameter):
+class AddressParameterSystemCommon(AddressParameter):
     """System Common parameters"""
 
     MASTER_TUNE = (0x00, -100.0, 100.0)  # Master Tune (24-2024: -100.0 to +100.0 cents)
@@ -20,17 +20,17 @@ class SystemCommon(SynthParameter):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == SystemCommon.MASTER_TUNE:  # Master Tune
+        if param == AddressParameterSystemCommon.MASTER_TUNE:  # Master Tune
             cents = (value - 1024) / 10  # Convert 24-2024 to -100.0/+100.0
             return f"{cents:+.1f} cents"
-        elif param == SystemCommon.MASTER_KEY_SHIFT:  # Master Key Shift
+        elif param == AddressParameterSystemCommon.MASTER_KEY_SHIFT:  # Master Key Shift
             semitones = value - 64  # Convert 40-88 to -24/+24
             return f"{semitones:+d} st"
-        elif param == SystemCommon.PROGRAM_CTRL_CH:  # Program Control Channel
+        elif param == AddressParameterSystemCommon.PROGRAM_CTRL_CH:  # Program Control Channel
             return "OFF" if value == 0 else str(value)
         elif param in (
-            SystemCommon.RX_PROGRAM_CHANGE,
-            SystemCommon.RX_BANK_SELECT,
+                AddressParameterSystemCommon.RX_PROGRAM_CHANGE,
+                AddressParameterSystemCommon.RX_BANK_SELECT,
         ):  # Switches
             return "ON" if value else "OFF"
         return str(value)

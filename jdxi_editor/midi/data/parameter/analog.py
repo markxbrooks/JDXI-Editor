@@ -39,10 +39,10 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 from typing import Optional, Tuple
 
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class AnalogParameter(SynthParameter):
+class AddressParameterAnalog(AddressParameter):
     """Analog synth parameters with area, address, and value range."""
 
     TONE_NAME_1 = (0x00, 32, 127)
@@ -179,12 +179,12 @@ class AnalogParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the AnalogParameter by name."""
         # Return the parameter member by name, or None if not found
-        return AnalogParameter.__members__.get(param_name, None)
+        return AddressParameterAnalog.__members__.get(param_name, None)
 
     @staticmethod
     def get_name_by_address(address: int):
         """Return the parameter name for address given address."""
-        for param in AnalogParameter:
+        for param in AddressParameterAnalog:
             if param.address == address:
                 return param.name
         return None  # Return None if the address is not found
@@ -197,7 +197,7 @@ class AnalogParameter(SynthParameter):
     @staticmethod
     def get_address(param_name):
         """Get the address of address parameter by name."""
-        param = AnalogParameter.get_by_name(param_name)
+        param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.value[0]
         return None
@@ -205,7 +205,7 @@ class AnalogParameter(SynthParameter):
     @staticmethod
     def get_range(param_name):
         """Get the value range (min, max) of address parameter by name."""
-        param = AnalogParameter.get_by_name(param_name)
+        param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.value[1], param.value[2]
         return None, None
@@ -213,7 +213,7 @@ class AnalogParameter(SynthParameter):
     @staticmethod
     def get_display_range(param_name):
         """Get the display value range (min, max) of address parameter by name."""
-        param = AnalogParameter.get_by_name(param_name)
+        param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.display_min, param.display_max
         return None, None
@@ -227,9 +227,9 @@ class AnalogParameter(SynthParameter):
     def convert_to_midi(self, display_value: int) -> int:
         """Convert from display value to MIDI value"""
         # Handle special bipolar cases first
-        if self == AnalogParameter.OSC_PITCH_FINE:
+        if self == AddressParameterAnalog.OSC_PITCH_FINE:
             return display_value + 64  # -63 to +63 -> 0 to 127
-        elif self == AnalogParameter.OSC_PITCH_COARSE:
+        elif self == AddressParameterAnalog.OSC_PITCH_COARSE:
             return display_value + 64  # -63 to +63 -> 0 to 127
 
         # For parameters with simple linear scaling
@@ -245,9 +245,9 @@ class AnalogParameter(SynthParameter):
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""
         # Handle special bipolar cases first
-        if self == AnalogParameter.OSC_PITCH_FINE:
+        if self == AddressParameterAnalog.OSC_PITCH_FINE:
             return midi_value - 64  # 0 to 127 -> -63 to +63
-        elif self == AnalogParameter.OSC_PITCH_COARSE:
+        elif self == AddressParameterAnalog.OSC_PITCH_COARSE:
             return midi_value - 64  # 0 to 127 -> -63 to +63
 
         # For parameters with simple linear scaling
@@ -263,7 +263,7 @@ class AnalogParameter(SynthParameter):
     @staticmethod
     def get_display_value_by_name(param_name: str, value: int) -> int:
         """Get the display value for address parameter by name and value."""
-        param = AnalogParameter.get_by_name(param_name)
+        param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.convert_from_midi(value)
         return value
@@ -271,14 +271,14 @@ class AnalogParameter(SynthParameter):
     @staticmethod
     def get_midi_range(param_name):
         """Get the MIDI value range (min, max) of address parameter by name."""
-        param = AnalogParameter.get_by_name(param_name)
+        param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.min_val, param.max_val
 
     @staticmethod
     def get_midi_value(param_name, value):
         """Get the MIDI value for address parameter by name and value."""
-        param = AnalogParameter.get_by_name(param_name)
+        param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None

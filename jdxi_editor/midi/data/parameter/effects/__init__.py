@@ -1,2 +1,2 @@
-from .common import EffectCommonParameter
-from .effects import EffectParameter
+from .common import AddressParameterEffectCommon
+from .effects import AddressParameterEffect

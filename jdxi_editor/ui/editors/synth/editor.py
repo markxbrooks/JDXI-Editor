@@ -29,7 +29,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.midi.data.control_change.base import ControlChange
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -426,7 +426,7 @@ class SynthEditor(SynthBase):
 
         if param_name:
             # Update slider or control
-            param = SynthParameter.get_by_name(
+            param = AddressParameter.get_by_name(
                 param_name
             )  # FIXME: make generic or subclass
             if param:

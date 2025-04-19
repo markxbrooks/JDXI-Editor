@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
-from jdxi_editor.midi.data.parameter.drum.common import DrumCommonParameter
-from jdxi_editor.midi.data.parameter.drum.partial import DrumPartialParameter
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
+from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -46,44 +46,44 @@ class DrumPitchSection(QWidget):
 
         # Add pitch parameters
         partial_level_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_LEVEL, "Partial Level"
+            AddressParameterDrumPartial.PARTIAL_LEVEL, "Partial Level"
         )
         pitch_layout.addRow(partial_level_slider)
 
         partial_coarse_tune_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
+            AddressParameterDrumPartial.PARTIAL_COARSE_TUNE, "Partial Coarse Tune"
         )
         pitch_layout.addRow(partial_coarse_tune_slider)
 
         partial_fine_tune_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_FINE_TUNE, "Partial Fine Tune"
+            AddressParameterDrumPartial.PARTIAL_FINE_TUNE, "Partial Fine Tune"
         )
         pitch_layout.addRow(partial_fine_tune_slider)
 
         partial_random_pitch_depth_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_RANDOM_PITCH_DEPTH,
+            AddressParameterDrumPartial.PARTIAL_RANDOM_PITCH_DEPTH,
             "Partial Random Pitch Depth",
         )
         pitch_layout.addRow(partial_random_pitch_depth_slider)
 
         partial_pan_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_PAN, "Partial Pan"
+            AddressParameterDrumPartial.PARTIAL_PAN, "Partial Pan"
         )
         pitch_layout.addRow(partial_pan_slider)
 
         partial_random_pan_depth_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
+            AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
         )
         pitch_layout.addRow(partial_random_pan_depth_slider)
 
         partial_alternate_pan_depth_slider = self._create_parameter_slider(
-            DrumPartialParameter.PARTIAL_ALTERNATE_PAN_DEPTH,
+            AddressParameterDrumPartial.PARTIAL_ALTERNATE_PAN_DEPTH,
             "Partial Alternate Pan Depth",
         )
         pitch_layout.addRow(partial_alternate_pan_depth_slider)
 
         partial_env_mode_combo = self._create_parameter_combo_box(
-            DrumPartialParameter.PARTIAL_ENV_MODE,
+            AddressParameterDrumPartial.PARTIAL_ENV_MODE,
             "Partial Env Mode",
             ["NO-SUS", "SUSTAIN"],
             [0, 1],

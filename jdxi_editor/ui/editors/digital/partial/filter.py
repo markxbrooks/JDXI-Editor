@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
-from jdxi_editor.midi.data.parameter.digital.partial import DigitalPartialParameter
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXIStyle
@@ -54,7 +54,7 @@ class DigitalFilterSection(QWidget):
         # Filter mode and slope
         type_row = QHBoxLayout()
         self.filter_mode_switch = self._create_parameter_switch(
-            DigitalPartialParameter.FILTER_MODE_SWITCH,
+            AddressParameterDigitalPartial.FILTER_MODE_SWITCH,
             "Mode",
             ["BYPASS", "LPF", "HPF", "BPF", "PKG", "LPF2", "LPF3", "LPF4"],
         )
@@ -62,7 +62,7 @@ class DigitalFilterSection(QWidget):
         type_row.addWidget(self.filter_mode_switch)
 
         self.filter_slope_switch = self._create_parameter_switch(
-            DigitalPartialParameter.FILTER_SLOPE, "Slope", ["-12dB", "-24dB"]
+            AddressParameterDigitalPartial.FILTER_SLOPE, "Slope", ["-12dB", "-24dB"]
         )
         type_row.addWidget(self.filter_slope_switch)
         layout.addLayout(type_row)
@@ -73,22 +73,22 @@ class DigitalFilterSection(QWidget):
         controls_group.setLayout(controls_layout)
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.FILTER_CUTOFF, "Cutoff"
+                AddressParameterDigitalPartial.FILTER_CUTOFF, "Cutoff"
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.FILTER_RESONANCE, "Resonance"
+                AddressParameterDigitalPartial.FILTER_RESONANCE, "Resonance"
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"
+                AddressParameterDigitalPartial.FILTER_CUTOFF_KEYFOLLOW, "KeyFollow"
             )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"
+                AddressParameterDigitalPartial.FILTER_ENV_VELOCITY_SENSITIVITY, "Velocity"
             )
         )
         layout.addWidget(controls_group)
@@ -110,14 +110,14 @@ class DigitalFilterSection(QWidget):
         (
             group_address,
             _,
-        ) = DigitalPartialParameter.AMP_ENV_ATTACK_TIME.get_address_for_partial(
+        ) = AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME.get_address_for_partial(
             self.partial_number
         )
         self.filter_adsr_widget = ADSR(
-            attack_param=DigitalPartialParameter.FILTER_ENV_ATTACK_TIME,
-            decay_param=DigitalPartialParameter.FILTER_ENV_DECAY_TIME,
-            sustain_param=DigitalPartialParameter.FILTER_ENV_SUSTAIN_LEVEL,
-            release_param=DigitalPartialParameter.FILTER_ENV_RELEASE_TIME,
+            attack_param=AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
+            decay_param=AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
+            sustain_param=AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+            release_param=AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             address_umb=self.address_umb,
@@ -129,7 +129,7 @@ class DigitalFilterSection(QWidget):
         # Envelope Depth
         env_layout.addWidget(
             self._create_parameter_slider(
-                DigitalPartialParameter.FILTER_ENV_DEPTH, "Depth"
+                AddressParameterDigitalPartial.FILTER_ENV_DEPTH, "Depth"
             )
         )
         layout.addWidget(env_group)
@@ -142,12 +142,12 @@ class DigitalFilterSection(QWidget):
         """Update filter controls enabled state based on mode"""
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
-            DigitalPartialParameter.FILTER_CUTOFF,
-            DigitalPartialParameter.FILTER_RESONANCE,
-            DigitalPartialParameter.FILTER_CUTOFF_KEYFOLLOW,
-            DigitalPartialParameter.FILTER_ENV_VELOCITY_SENSITIVITY,
-            DigitalPartialParameter.FILTER_ENV_DEPTH,
-            DigitalPartialParameter.FILTER_SLOPE,
+            AddressParameterDigitalPartial.FILTER_CUTOFF,
+            AddressParameterDigitalPartial.FILTER_RESONANCE,
+            AddressParameterDigitalPartial.FILTER_CUTOFF_KEYFOLLOW,
+            AddressParameterDigitalPartial.FILTER_ENV_VELOCITY_SENSITIVITY,
+            AddressParameterDigitalPartial.FILTER_ENV_DEPTH,
+            AddressParameterDigitalPartial.FILTER_SLOPE,
         ]:
             if param in self.controls:
                 self.controls[param].setEnabled(enabled)

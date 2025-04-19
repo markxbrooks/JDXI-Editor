@@ -24,7 +24,7 @@ from typing import Dict
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.midi.data.address.address import construct_address
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
@@ -43,7 +43,7 @@ class SynthBase(QWidget):
         self.address_lmb = None
         self.address_msb = None
         self.address_umb = None
-        self.controls: Dict[SynthParameter, QWidget] = {}
+        self.controls: Dict[AddressParameter, QWidget] = {}
         self.midi_helper = midi_helper
         self.midi_requests = []
 
@@ -74,7 +74,7 @@ class SynthBase(QWidget):
             self.data_request()
             self.blockSignals(False)
 
-    def send_midi_parameter(self, param: SynthParameter, value: int) -> bool:
+    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
             logging.info(
@@ -108,7 +108,7 @@ class SynthBase(QWidget):
             logging.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
-    def _on_parameter_changed(self, param: SynthParameter, display_value: int):
+    def _on_parameter_changed(self, param: AddressParameter, display_value: int):
         """Handle parameter value changes from UI controls."""
         try:
             # Convert display value to MIDI value
@@ -128,7 +128,7 @@ class SynthBase(QWidget):
 
     def _create_parameter_slider(
         self,
-        param: SynthParameter,
+        param: AddressParameter,
         label: str,
         vertical=False,
         show_value_label=True,
@@ -160,7 +160,7 @@ class SynthBase(QWidget):
 
     def _create_parameter_combo_box(
         self,
-        param: SynthParameter,
+        param: AddressParameter,
         label: str = None,
         options: list = None,
         values: list = None,
@@ -173,7 +173,7 @@ class SynthBase(QWidget):
         return combo_box
 
     def _create_parameter_spin_box(
-        self, param: SynthParameter, label: str = None
+        self, param: AddressParameter, label: str = None
     ) -> SpinBox:
         """Create address spin box for address parameter with proper display conversion"""
         if hasattr(param, "get_display_value"):
@@ -192,7 +192,7 @@ class SynthBase(QWidget):
 
     def _create_parameter_switch(
         self,
-        param: SynthParameter,
+        param: AddressParameter,
         label: str,
         values: list[str],
     ) -> Switch:

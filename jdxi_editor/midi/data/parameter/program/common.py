@@ -34,10 +34,10 @@ switch_text = program_level.get_switch_text(1)  # "ON" or "---"
 
 from typing import Tuple, Optional
 
-from jdxi_editor.midi.data.parameter.synth import SynthParameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-class ProgramCommonParameter(SynthParameter):
+class AddressParameterProgramCommon(AddressParameter):
     """Program Common parameters"""
 
     def __init__(
@@ -156,4 +156,4 @@ class ProgramCommonParameter(SynthParameter):
     def get_by_name(param_name):
         """Get the Parameter by name."""
         # Return the parameter member by name, or None if not found
-        return ProgramCommonParameter.__members__.get(param_name, None)
+        return AddressParameterProgramCommon.__members__.get(param_name, None)
