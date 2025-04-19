@@ -31,11 +31,14 @@ print(offset)  # Output: (0x00, 0x01, 0x23)
 """
 
 from enum import Enum
-from typing import Optional, Tuple
+from typing import Optional, Tuple, T, Type
 
 
 class AddressParameter(Enum):
-    def __init__(self, address: int, min_val: int, max_val: int):
+    def __init__(self,
+                 address: int,
+                 min_val: int,
+                 max_val: int):
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
@@ -44,6 +47,15 @@ class AddressParameter(Enum):
 
     def __str__(self) -> str:
         return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
+
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 11
+
+    @classmethod
+    def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
+        return next((parameter for parameter in cls if parameter.address == address), None)
 
     @property
     def is_switch(self) -> bool:
@@ -133,4 +145,3 @@ class AddressParameter(Enum):
         lmb = (value >> 8) & 0xFF  # Extract LMB
         lsb = value & 0xFF         # Extract LSB
         return (umb, lmb, lsb)
-
