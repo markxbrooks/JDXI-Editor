@@ -45,6 +45,7 @@ from PySide6.QtCore import Qt, QSettings, QTimer
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
     AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB
+from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.preset.type import JDXISynth
@@ -80,7 +81,7 @@ from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.jdxi.helpers.port import _find_jdxi_port
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
-from jdxi_editor.ui.windows.midi.message_debug import MIDIMessageDebug
+from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.ui.windows.jdxi.ui import JdxiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
@@ -957,12 +958,12 @@ class JdxiInstrument(JdxiUi):
                 )
                 self.midi_helper.send_midi_message(sysex_message)
                 cc_value = 127 if state else 0
-                cc_list = [64,  # Hold-1 Damper (Sustain) – CC64
-                           65,  # Portamento (on/off)
-                           66,  # Sostenuto – CC66
-                           67,  # Soft Pedal (Una Corda) – CC67
-                           68,  # Legato footswitch
-                           69]  # Hold-2
+                cc_list = [ControlChangeSustain.HOLD1,  # Hold-1 Damper (Sustain) – CC64
+                           ControlChangeSustain.PORTAMENTO,  # Portamento (on/off)
+                           ControlChangeSustain.SOSTENUTO,  # Sostenuto – CC66
+                           ControlChangeSustain.SOFT_PEDAL,  # Soft Pedal (Una Corda) – CC67
+                           ControlChangeSustain.LEGATO,  # Legato footswitch
+                           ControlChangeSustain.HOLD2]  # Hold-2
                 # cc_list = [68]
                 for cc in cc_list:
                     self.midi_helper.send_control_change(cc, cc_value, MidiChannel.DIGITAL1)
@@ -1054,7 +1055,7 @@ class JdxiInstrument(JdxiUi):
     def _open_midi_message_debug(self):
         """Open MIDI message debug window"""
         if not self.midi_message_debug:
-            self.midi_message_debug = MIDIMessageDebug()
+            self.midi_message_debug = MIDIMessageMonitor(midi_helper=self.midi_helper, parent=self)
             self.midi_message_debug.setAttribute(Qt.WA_DeleteOnClose)
             self.midi_message_debug.destroyed.connect(self._midi_message_debug_closed)
         self.midi_message_debug.show()

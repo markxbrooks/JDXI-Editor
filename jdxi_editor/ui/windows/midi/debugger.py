@@ -35,6 +35,9 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 """
 
 import logging
+import re
+from typing import Type
+
 from tabulate import tabulate
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -53,48 +56,22 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB,
+    AddressOffsetProgramLMB, Address,
 )
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 
+def parse_sysex_byte(message: bytes, enum_cls: Type[Address]) -> tuple[str, int]:
+    """Extract and describe a byte from a SysEx message using a given enum class."""
+    byte_value = message[enum_cls.message_position()]
+    enum_member = enum_cls.get_parameter_by_address(byte_value)
+    return enum_member.name, byte_value if enum_member else f"Unknown ({hex(byte_value)})"
+
+
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
-    SYSEX_AREAS = {
-        AddressMemoryAreaMSB.TEMPORARY_TONE: "Temporary Tone",
-        AddressMemoryAreaMSB.EFFECTS_AREA: "System Area",
-    }
-
-    SYNTHS = {
-        AddressOffsetTemporaryToneUMB.DIGITAL_PART_1: "DIGITAL_PART_1",
-        AddressOffsetTemporaryToneUMB.DIGITAL_PART_2: "DIGITAL_PART_2",
-        AddressOffsetTemporaryToneUMB.ANALOG_PART: "ANALOG_PART",
-        AddressOffsetTemporaryToneUMB.DRUM_KIT_PART: "DRUM_KIT_PART",
-    }
-
-    COMMANDS = {
-        CommandID.RQ1: "RQ1 (Data Request)",
-        CommandID.DT1: "DT1 (Data Transfer)",
-    }
-
-    SECTIONS = {
-        AddressOffsetProgramLMB.COMMON: "COMMON",
-        AddressOffsetProgramLMB.DRUM_KIT_PART_1: "BD1",
-        AddressOffsetProgramLMB.DRUM_KIT_PART_2: "RIM",
-        AddressOffsetProgramLMB.DRUM_KIT_PART_3: "BD2",
-    }
-
-    GROUPS = {
-        0x20: "OSC_1_GROUP",
-        0x21: "OSC_2_GROUP",
-        0x22: "FILTER_GROUP",
-        0x23: "AMP_GROUP",
-        0x24: "LFO_1_GROUP",
-        0x25: "LFO_2_GROUP",
-        0x26: "EFFECTS_GROUP",
-    }
 
     PARAMETERS = {
         0x00: "OSC_WAVE",
@@ -236,26 +213,22 @@ class MIDIDebugger(QMainWindow):
 
         try:
             # Get command
-            command = message[7]
-            command_str = self.COMMANDS.get(
-                command, f"Unknown Command ({hex(command)})"
-            )
+            command_str, command = parse_sysex_byte(message, CommandID)
+            area_str, area = parse_sysex_byte(message, AddressMemoryAreaMSB)
+            synth_str, synth = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
+            group_str, group = parse_sysex_byte(message, AddressOffsetProgramLMB)
+            # if part_str in  ["DIGITAL_1", "DIGITAL_2"]:
 
-            # Get area
-            area = message[8]
-            area_str = self.SYSEX_AREAS.get(area, f"Unknown Area ({hex(area)})")
-
-            # Get synth number
-            synth = message[9]
-            synth_str = self.SYNTHS.get(synth, f"Unknown Synth ({hex(synth)})")
+            # synth_str = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
+            # synth_str = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
 
             # Get parameter address (bytes 10 and 11 separately)
-            group = message[10]
+            # group = message[10]
             param = message[11]
             group_address = hex(group)
             param_address = hex(param)
             # param_str = DigitalParameter.get_name_by_address(int(param))
-            group_str = self.GROUPS.get(group, f"Common Group ({group_address})")
+            # group_str = part_str #  self.GROUPS.get(group, f"Common Group ({group_address})")
             param_str = self.PARAMETERS.get(
                 param, f"Unknown Parameter ({param_address})"
             )
@@ -292,66 +265,6 @@ class MIDIDebugger(QMainWindow):
         except Exception as e:
             return f"Error decoding message: {str(e)}"
 
-    def _decode_sysex(self, message):
-        """Decode address SysEx message"""
-        if len(message) < 8:
-            return "Invalid SysEx message (too short)"
-
-        if message[0] != 0xF0 or message[1] != 0x41:
-            return "Not address Roland SysEx message"
-
-        try:
-            # Get command preset_type
-            command = message[7]
-            command_str = self.COMMANDS.get(
-                command, f"Unknown Command ({hex(command)})"
-            )
-
-            # Get area
-            area = message[8]
-            area_str = self.SYSEX_AREAS.get(area, f"Unknown Area ({hex(area)})")
-
-            # Get synth number
-            synth = message[9]
-            synth_str = self.SYNTHS.get(area, f"Unknown Synth ({hex(synth)})")
-
-            # Get section
-            section = message[10]
-            section_str = self.SECTIONS.get(
-                section, f"Unknown Section ({hex(section)})"
-            )
-
-            # Get parameter
-            param = message[11]
-            param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({hex(param)})")
-
-            # Get value
-            value = message[12]
-
-            # Format the output
-            decoded = (
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-                f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-                f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
-                f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
-                f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
-                f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
-                f"| {7:<5} | {'Command ID':<28} | {hex(command):<17} | {command_str:<30} |\n"
-                f"| {8:<5} | {'Area':<28} | {hex(area):<17} | {area_str:<30} |\n"
-                f"| {9:<5} | {'Synth':<28} | {hex(synth):<17} | {synth_str:<30} |\n"
-                f"| {'10-13':<5} | {'Section':<28} | {' '.join(hex(x) for x in message[10:14]):<17} | {section_str:<30} |\n"
-                f"| {'14-15':<5} | {'Parameter':<28} | {' '.join(hex(x) for x in message[14:16]):<17} | {param_str:<30} |\n"
-                f"| {16:<5} | {'Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
-                f"| {17:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-            )
-
-            return decoded
-
-        except Exception as e:
-            return f"Error decoding message: {str(e)}"
-
     def _decode_current(self):
         """Decode the currently entered message"""
         text = self.command_input.toPlainText().strip()
@@ -373,7 +286,7 @@ class MIDIDebugger(QMainWindow):
                 self.decoded_text.setText(f"Error decoding message: {str(e)}")
 
     def _send_commands(self):
-        """Send entered MIDI commands"""
+        """Send all valid SysEx MIDI messages from user-entered text input."""
         if not self.midi_helper:
             self.log_response("Error: MIDI helper not initialized")
             return
@@ -383,49 +296,51 @@ class MIDIDebugger(QMainWindow):
             return
 
         try:
-            # Get commands from input
+            # Get all input text
             text = self.command_input.toPlainText().strip()
             if not text:
                 return
 
-            # Process each line
-            for line in text.split("\n"):
-                try:
-                    # Split the hex string and convert each value
-                    hex_values = line.strip().split()
-                    message = []
+            # Normalize line breaks and whitespace
+            normalized = re.sub(r'\s+', ' ', text)
 
-                    # Debug print
-                    self.log_response(f"Converting hex values: {hex_values}")
+            # Regex pattern to match all SysEx messages (F0 ... F7)
+            sysex_pattern = r'F0(?:\s[0-9A-Fa-f]{2})+?\sF7'
+            matches = re.findall(sysex_pattern, normalized)
 
-                    for hex_str in hex_values:
-                        # Remove any '0x' prefix if present
-                        hex_str = hex_str.replace("0x", "").replace("0X", "")
-                        value = int(hex_str, 16)
-                        message.append(value)
+            if not matches:
+                self.log_response("No valid SysEx messages found.")
+                return
 
-                    # Debug print the converted message
-                    self.log_response(
-                        f"Converted to bytes: {[hex(b) for b in message]}"
-                    )
-
-                    # Send message using MIDIHelper's send_message
-                    self.midi_helper.send_raw_message(message)
-
-                    # Log success
-                    hex_str = " ".join([f"{b:02X}" for b in message])
-                    self.log_response(f"Successfully sent: {hex_str}")
-                    logging.debug(f"Debug window sent MIDI message: {hex_str}")
-
-                except ValueError as e:
-                    self.log_response(
-                        f"Error parsing hex value in line: {line}\n{str(e)}"
-                    )
-                except Exception as e:
-                    self.log_response(f"Error sending message: {line}\n{str(e)}")
+            for match in matches:
+                self.send_message(match)
 
         except Exception as e:
-            self.log_response(f"Error sending commands: {str(e)}")
+            self.log_response(f"Unhandled error in _send_commands: {str(e)}")
+
+    def send_message(self, match):
+        try:
+            # Convert hex string to list of ints
+            hex_values = match.strip().split()
+            self.log_response(f"Converting hex values: {hex_values}")
+
+            message = [int(h, 16) for h in hex_values]
+
+            # Send the message
+            success = self.midi_helper.send_raw_message(message)
+
+            hex_str = " ".join([f"{b:02X}" for b in message])
+            if success:
+                self.log_response(f"Successfully sent: {hex_str}")
+            else:
+                self.log_response(f"Failed to send: {hex_str}")
+
+            logging.debug(f"Sent SysEx: {hex_str}")
+
+        except ValueError as e:
+            self.log_response(f"Error parsing message: {match}\n{str(e)}")
+        except Exception as e:
+            self.log_response(f"Unexpected error: {match}\n{str(e)}")
 
     def log_response(self, text):
         """Add text to response log"""

@@ -22,6 +22,7 @@ import time
 import json
 from typing import List, Optional, Union
 
+from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH
@@ -48,8 +49,33 @@ from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
 
+def validate_midi_message(message: Union[bytes, List[int]]) -> bool:
+    """
+    Validate a raw MIDI message.
+
+    This function checks that the message is non-empty and all values are
+    within the valid MIDI byte range (0–255).
+
+    :param message: A MIDI message represented as a list of integers or a bytes object.
+    :type message: Union[bytes, List[int]]
+    :return: True if the message is valid, False otherwise.
+    :rtype: bool
+    """
+    if not message:
+        logging.info("MIDI message is empty.")
+        return False
+
+    if any(not (0 <= x <= 255) for x in message):
+        log_parameter("Invalid MIDI value detected:", message)
+        return False
+
+    return True
+
+
 class MidiOutHandler(MidiIOController):
     """Helper class for MIDI communication with the JD-Xi."""
+
+    midi_message_outgoing = Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -58,25 +84,21 @@ class MidiOutHandler(MidiIOController):
 
     def send_raw_message(self, message: Union[bytes, List[int]]) -> bool:
         """
-        Send a raw MIDI message with validation.
+        Send a validated raw MIDI message through the output port.
 
-        Args:
-            message: List of integer values representing the MIDI message.
+        This method logs the message, checks the validity using `validate_midi_message`,
+        and attempts to send it via the MIDI output port.
 
-        Returns:
-            True if the message was sent successfully, False otherwise.
+        :param message: A MIDI message represented as a list of integers or a bytes object.
+        :type message: Union[bytes, List[int]]
+        :return: True if the message was successfully sent, False otherwise.
+        :rtype: bool
         """
-        log_parameter("attempting to send message:", message)
-        try:
-            if not message:
-                logging.info("MIDI message is empty.")
-                raise ValueError
+        log_parameter("Attempting to send message:", message)
 
-            if any(not (0 <= x <= 255) for x in message):
-                log_parameter("Invalid MIDI value detected:", message)
-                raise ValueError
-        except Exception as ex:
-            logging.info(f"Error {ex} occurred processing midi message")
+        if not validate_midi_message(message):
+            logging.info("MIDI message validation failed.")
+            return False
 
         formatted_message = format_midi_message_to_hex_string(message)
         log_parameter("Sending MIDI message:", formatted_message)
@@ -86,8 +108,9 @@ class MidiOutHandler(MidiIOController):
             return False
 
         try:
-            log_parameter('QC passed, sending message:', formatted_message)
+            log_parameter("QC passed, sending message:", formatted_message)
             self.midi_out.send_message(message)
+            self.midi_message_outgoing.emit(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
             logging.info(f"Error sending message: {ex}")

@@ -19,16 +19,21 @@ print(sysex_address)  # b'\x18\x00\x20\x00'
 # Lookup
 found = AddressMemoryAreaMSB.get_parameter_by_address(0x19)
 print(found)  # ProgramAddress.TEMPORARY_TONE
+
+SysExByte
+
+# Example usage:
+command = CommandID.DT1
+print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
 """
-import logging
+
 from enum import IntEnum, unique
 from typing import Optional, Type, TypeVar, Union, Tuple, Dict, Any
 import inspect
-import json
 
 from jdxi_editor.log.message import log_parameter
+from jdxi_editor.midi.data.address.sysexbyte import SysExByte
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 # ==========================
 # Miscellaneous Constants
@@ -52,15 +57,11 @@ ZERO_BYTE = 0x00
 T = TypeVar("T", bound="Address")
 
 
-class Address(IntEnum):
+class Address(SysExByte):
     """
     Base class for Roland-style hierarchical memory address enums (e.g., 0x18, 0x19, etc.)
     Includes lookup, offset arithmetic, and SysEx-ready address formatting.
     """
-
-    @classmethod
-    def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
-        return next((parameter for parameter in cls if parameter.value == address), None)
 
     def add_offset(
         self, address_offset: Union[int, Tuple[int, int, int]]
@@ -166,11 +167,16 @@ JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
 
 @unique
-class CommandID(IntEnum):
+class CommandID(SysExByte):
     """Roland Commands"""
 
     DT1 = 0x12  # Data Set 1
     RQ1 = 0x11  # Data Request 1
+
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 7
 
 
 @unique
@@ -195,6 +201,11 @@ class AddressMemoryAreaMSB(Address):
     DRUM = 0x72
     EFFECTS_AREA = 0x16
 
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 8
+
 
 @unique
 class AddressOffsetTemporaryToneUMB(Address):
@@ -203,15 +214,30 @@ class AddressOffsetTemporaryToneUMB(Address):
     ANALOG_PART = 0x42
     DRUM_KIT_PART = 0x70
 
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 9
+
 
 class AddressOffsetSystemUMB(Address):
     COMMON = 0x00
+
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 9
 
 
 @unique
 class AddressOffsetSystemLMB(Address):
     COMMON = 0x00
     CONTROLLER = 0x03
+
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 10
 
 
 @unique
@@ -221,6 +247,11 @@ class AddressOffsetSuperNATURALLMB(Address):
     PARTIAL_2 = 0x21
     PARTIAL_3 = 0x22
     TONE_MODIFY = 0x50
+
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 10
 
 
 class AddressOffsetProgramLMB(Address):
@@ -281,11 +312,10 @@ class AddressOffsetProgramLMB(Address):
     DRUM_KIT_PART_36 = 0x74
     DRUM_KIT_PART_37 = 0x76
 
-    """
-    # Dynamically add DRUM_KIT_PART_x members to the enum
-    for i in range(1, 38):
-        setattr(AddressOffsetProgramLMB, f"DRUM_KIT_PART_{i}", 0x2E + (i - 1) * 2)
-    """
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 10
 
 
 def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
