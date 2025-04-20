@@ -828,31 +828,6 @@ class JdxiInstrument(JdxiUi):
     def _set_midi_ports(self, in_port, out_port):
         """Set MIDI input and output ports."""
         try:
-            """ 
-            # Close existing ports safely
-            if self.midi_helper.midi_in:
-                self.midi_helper.midi_in.close_port()
-                self.midi_helper.midi_in = None
-            if self.midi_helper.midi_out:
-                self.midi_helper.midi_out.close_port()
-                self.midi_helper.midi_out = None
-
-            # Check available ports before opening new ones
-            available_in_ports = MidiIOHelper.get_input_ports()
-            available_out_ports = MidiIOHelper.get_output_ports()
-
-            if in_port not in available_in_ports:
-                logging.warning(
-                    f"Input port '{in_port}' not found. Available: {available_in_ports}"
-                )
-                return
-
-            if out_port not in available_out_ports:
-                logging.warning(
-                    f"Output port '{out_port}' not found. Available: {available_out_ports}"
-                )
-                return
-            """
             self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
             self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
             self.midi_in_port_name = in_port
