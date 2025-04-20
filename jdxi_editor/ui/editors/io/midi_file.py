@@ -223,11 +223,13 @@ class MidiFileEditor(SynthEditor):
 
         self.start_button = QPushButton(qta.icon("ri.play-line"), "Play")
         self.stop_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
+        self.pause_button = QPushButton(qta.icon("ri.pause-line"), "Pause")
         # self.start_button.clicked.connect(self.play_pattern)
         # self.stop_button.clicked.connect(self.stop_pattern)
 
         transport_layout.addWidget(self.start_button)
         transport_layout.addWidget(self.stop_button)
+        transport_layout.addWidget(self.pause_button)
         transport_group.setLayout(transport_layout)
         control_panel.addWidget(transport_group)
 

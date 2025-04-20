@@ -78,7 +78,7 @@ from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.style.helpers import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
-from jdxi_editor.ui.windows.jdxi.helpers.port import _find_jdxi_port
+from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
@@ -107,16 +107,9 @@ class JdxiInstrument(JdxiUi):
         self.current_synth_type = JDXISynth.DIGITAL_1
         self.current_preset_num = 1  # Initialize preset number
         self.current_preset_name = "JD Xi"  # Initialize preset name
-        self.midi_in = None
-        self.midi_out = None
         self.midi_in_port_name = ""  # Store input port name
         self.midi_out_port_name = ""  # Store output port name
         self.key_hold_latched = False
-        # Initialize MIDI helper
-        if self.midi_in:
-            self.midi_in.delete()  # Use delete() instead of close()
-        if self.midi_out:
-            self.midi_out.delete()  # Use delete() instead of close()
         if self.midi_helper:
             self.midi_helper.close_ports()
         self.midi_helper = MidiIOHelper()
@@ -129,9 +122,10 @@ class JdxiInstrument(JdxiUi):
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
 
         # Try to auto-connect to JD-Xi
-        self._auto_connect_jdxi()
+        self.midi_helper.auto_connect_jdxi()
         self.midi_helper.send_identity_request()
-        self.program_helper = ProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
+        self.program_helper = ProgramHelper(self.midi_helper,
+                                            MidiChannel.PROGRAM)
         # Load custom font
         self._load_digital_font()
 
@@ -159,8 +153,8 @@ class JdxiInstrument(JdxiUi):
         ):
             self._show_midi_config()
         # Initialize MIDI indicators
-        self.midi_in_indicator.set_state(bool(self.midi_in))
-        self.midi_out_indicator.set_state(bool(self.midi_out))
+        self.midi_in_indicator.set_state(bool(self.midi_helper.midi_in))
+        self.midi_out_indicator.set_state(bool(self.midi_helper.midi_out))
         self.key_hold_button.clicked.connect(self._send_arp_key_hold)
         self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
 
@@ -196,6 +190,8 @@ class JdxiInstrument(JdxiUi):
         self.program_down_button.clicked.connect(self._previous_program)
         self.program_up_button.clicked.connect(self._next_program)
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
+        self.midi_helper.midi_message_incoming.connect(self._handle_midi_input)
+        self.midi_helper.midi_message_outgoing.connect(self._blink_midi_output)
         self.midi_helper.update_digital1_tone_name.connect(
             self.set_current_digital1_tone_name
         )
@@ -645,16 +641,6 @@ class JdxiInstrument(JdxiUi):
             logging.error(f"Error showing MIDI configuration: {str(e)}")
             self.show_error("MIDI Configuration Error", str(e))
 
-    def _update_midi_ports(self, midi_in, midi_out):
-        """Update MIDI port connections"""
-        self.midi_in = midi_in
-        self.midi_out = midi_out
-
-        # Save settings
-        #if midi_in and midi_out:
-        #    self.settings.setValue("midi/input_port", midi_in.port_name)
-        #    self.settings.setValue("midi/output_port", midi_out.port_name)
-
     def _load_settings(self):
         """Load application settings"""
         try:
@@ -743,9 +729,13 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error showing {title} editor: {str(ex)}")
 
-    def _handle_midi_input(self, message, timestamp):
+    def _handle_midi_input(self, message):
         """Handle incoming MIDI messages and flash indicator"""
-        self.midi_in_indicator.flash()
+        self.midi_in_indicator.blink()
+
+    def _blink_midi_output(self, message):
+        """ handle outgoing message blink """
+        self.midi_out_indicator.blink()
 
     def _open_analog_synth(self):
         self._show_editor("Analog Synth", AnalogSynthEditor)
@@ -864,11 +854,6 @@ class JdxiInstrument(JdxiUi):
             patch_manager.show()
         except Exception as ex:
             logging.error(f"Error saving patch: {str(ex)}")
-
-    def _apply_patch(self, patch_data):
-        """Apply loaded patch data"""
-        # TODO: Implement patch loading
-        pass
 
     def closeEvent(self, event):
         """Handle window close event"""
@@ -998,12 +983,12 @@ class JdxiInstrument(JdxiUi):
         """Set MIDI input and output ports."""
         try:
             # Close existing ports safely
-            if self.midi_in:
-                self.midi_in.close_port()
-                self.midi_in = None
-            if self.midi_out:
-                self.midi_out.close_port()
-                self.midi_out = None
+            if self.midi_helper.midi_in:
+                self.midi_helper.midi_in.close_port()
+                self.midi_helper.midi_in = None
+            if self.midi_helper.midi_out:
+                self.midi_helper.midi_out.close_port()
+                self.midi_helper.midi_out = None
 
             # Check available ports before opening new ones
             available_in_ports = MidiIOHelper.get_input_ports()
@@ -1022,32 +1007,32 @@ class JdxiInstrument(JdxiUi):
                 return
 
             # Open new ports
-            self.midi_in = MidiIOHelper.open_input(in_port, self)
-            self.midi_out = MidiIOHelper.open_output(out_port, self)
+            self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
+            self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
 
             # Store port names
             self.midi_in_port_name = in_port
             self.midi_out_port_name = out_port
 
             # Initialize singleton connection
-            MIDIConnection().initialize(self.midi_in, self.midi_out, self)
+            MIDIConnection().initialize(self.midi_helper.midi_in, self.midi_helper.midi_out, self)
             MIDIConnection().identify_device()
 
             # Update MIDI helper references
-            self.midi_helper.midi_in = self.midi_in
-            self.midi_helper.midi_out = self.midi_out
+            #self.midi_helper.midi_in = self.midi_in
+            #self.midi_helper.midi_out = self.midi_out
 
             # Update indicators
-            self.midi_in_indicator.set_active(self.midi_in is not None)
-            self.midi_out_indicator.set_active(self.midi_out is not None)
-
-            # Save settings
+            self.midi_in_indicator.set_active(self.midi_helper.midi_in is not None)
+            self.midi_out_indicator.set_active(self.midi_helper.midi_out is not None)
+            """
             if self.midi_in and self.midi_out:
                 self.settings.setValue("midi_in", in_port)
                 self.settings.setValue("midi_out", out_port)
                 logging.info(f"MIDI ports configured - In: {in_port}, Out: {out_port}")
             else:
                 logging.warning("Failed to configure MIDI ports")
+            """
 
         except Exception as ex:
             logging.error(f"Error setting MIDI ports: {str(ex)}")
@@ -1247,58 +1232,3 @@ class JdxiInstrument(JdxiUi):
                 self._show_editor("Program", ProgramEditor)
             except Exception as ex:
                 logging.error(f"Error opening Program editor: {str(ex)}")
-
-    def _auto_connect_jdxi(self):
-        """Attempt to automatically connect to JD-Xi MIDI ports."""
-        try:
-            # Get available ports
-            input_ports = self.midi_helper.get_input_ports()
-            output_ports = self.midi_helper.get_output_ports()
-
-            # Find JD-Xi ports
-            selected_in_port = _find_jdxi_port(input_ports, "input")
-            selected_out_port = _find_jdxi_port(output_ports, "output")
-
-            # Ensure both ports are found
-            if not selected_in_port or not selected_out_port:
-                logging.warning(
-                    f"JD-Xi MIDI auto-connect failed. Found input: {selected_in_port}, output: {selected_out_port}"
-                )
-                return False
-
-            # Open the found ports
-            self.midi_helper.open_input_port(selected_in_port)
-            self.midi_helper.open_output_port(selected_out_port)
-
-            # Explicitly store the selected ports # FIXME: this looks incorrect
-            self.midi_helper.current_in_port = selected_in_port
-            self.midi_helper.current_out_port = selected_out_port
-
-            # Verify connection
-            if self._verify_jdxi_connection():
-                logging.info(
-                    f"Successfully connected to JD-Xi MIDI: {selected_in_port} / {selected_out_port}"
-                )
-                return True
-            else:
-                logging.warning("JD-Xi identity verification failed.")
-                return False
-
-        except Exception as ex:
-            logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
-            return False
-
-    def _verify_jdxi_connection(self):
-        """Verify connected device is address JD-Xi by sending identity request"""
-        try:
-            # Create identity request message using dataclass
-            identity_request = IdentityRequestMessage()
-
-            # Send request
-            if self.midi_helper:
-                self.midi_helper.send_raw_message(identity_request.to_message_list())
-                logging.debug("Sent JD-Xi identity request")
-
-        except Exception as ex:
-            logging.error(f"Error sending identity request: {str(ex)}")
-
