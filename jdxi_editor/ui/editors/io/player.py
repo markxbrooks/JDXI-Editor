@@ -101,8 +101,11 @@ class MidiPlayer(SynthEditor):
         transport_layout.addWidget(self.play_button)
 
         self.stop_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
+        self.pause_button = QPushButton(qta.icon("ri.pause-line"), "Pause")
         self.stop_button.clicked.connect(self.stop_playback)
+        self.pause_button.clicked.connect(self.toggle_pause_playback)
         transport_layout.addWidget(self.stop_button)
+        transport_layout.addWidget(self.pause_button)
         layout.addWidget(transport_group)
         self.setLayout(layout)
 
@@ -206,6 +209,21 @@ class MidiPlayer(SynthEditor):
             if tick >= new_tick:
                 self.event_index = i
                 break
+
+    def toggle_pause_playback(self):
+        if not self.midi_file or not self.midi_events:
+            return
+        port_name = self.port_select.currentText()
+        if not port_name:
+            return
+        if not self.timer.isActive():
+            self.midi_port = open_output(port_name)
+            self.start_time = time.time()
+            self.timer.start(10)  # check every 10ms
+            self.paused = True
+        else:
+            self.timer.stop()
+            self.paused = False
 
     def stop_playback(self):
         self.timer.stop()

@@ -222,6 +222,32 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             logging.info(ex)
 
+    def reopen_input_port_name(self, in_port) -> bool:
+        """Reopen the current MIDI input port and reattach the callback."""
+        try:
+            if self.input_port_number is None:
+                logging.warning("No MIDI input port to reopen.")
+                return False
+
+            # Close current input port if it's open
+            if self.midi_in.is_port_open():
+                self.midi_in.close_port()
+
+            # Reopen input port
+            self.open_input_port(in_port)
+
+            # Reset callback
+            if hasattr(self, "midi_callback"):
+                self.midi_in.set_callback(self.midi_callback)
+                logging.info(f"Callback reattached to MIDI input port {in_port}")
+            else:
+                logging.warning("No handle_midi_input() method found for callback.")
+            return True
+
+        except Exception as ex:
+            logging.error(f"Failed to reopen MIDI input port: {ex}")
+            return False
+
     def register_callback(self, callback: Callable) -> None:
         """
         Register address callback function for MIDI messages.

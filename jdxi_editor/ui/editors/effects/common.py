@@ -174,8 +174,8 @@ class EffectsCommonEditor(SimpleEditor):
         )
         layout.addRow(self.efx1_reverb_send_level)
 
-        self.efx1_output_assign = self._create_parameter_combo_box(
-            AddressParameterEffect.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"], [0, 1]
+        self.efx1_output_assign = self._create_parameter_switch(
+            AddressParameterEffect.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"]
         )
         layout.addRow(self.efx1_output_assign)
 
@@ -322,7 +322,7 @@ class EffectsCommonEditor(SimpleEditor):
                 sysex_message = RolandSysEx(
                     address_msb=self.address_msb,
                     address_umb=self.address_umb,
-                    address_lmb=common_param.test_address,
+                    address_lmb=common_param.address,
                     address_lsb=param.address,
                     value=midi_value,
                 )

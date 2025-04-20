@@ -140,8 +140,7 @@ class MIDIConfigDialog(QDialog):
         input_port_text = self.get_input_port()
         output_port_text = self.get_output_port()
         logging.debug(f"Reconnecting to: IN='{input_port_text}', OUT='{output_port_text}'")
-
-        success = self.midi_helper.open_ports(input_port_text, output_port_text)
+        success = self.midi_helper.reconnect_port_names(input_port_text, output_port_text)
         if not success:
             logging.warning("Failed to reopen MIDI ports")
 

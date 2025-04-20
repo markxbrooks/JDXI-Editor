@@ -24,10 +24,12 @@ Example Usage:
 """
 
 import logging
+import time
 from typing import Optional, List, Tuple
 
 import rtmidi
 from PySide6.QtCore import QObject
+from rtmidi import MidiOut
 
 
 class MidiIOController(QObject):
@@ -116,6 +118,39 @@ class MidiIOController(QObject):
             return False
 
     def open_output_port(self, port_name_or_index) -> bool:
+        try:
+            ports = self.get_output_ports()
+
+            port_index = None
+            if isinstance(port_name_or_index, str):
+                for i, name in enumerate(ports):
+                    if port_name_or_index.lower() in name.lower():
+                        port_index = i
+                        break
+            elif isinstance(port_name_or_index, int):
+                if 0 <= port_name_or_index < len(ports):
+                    port_index = port_name_or_index
+
+            if port_index is None:
+                logging.error(f"Invalid or missing MIDI output port: {port_name_or_index}")
+                return False
+
+            # Safely close if already open
+            if self.midi_out.is_port_open():
+                self.midi_out.close_port()
+                time.sleep(0.1)  # Give time for the port to be released
+
+            self.midi_out = rtmidi.MidiOut()  # <- reinitialize
+            self.midi_out.open_port(port_index)
+            self.output_port_number = port_index
+            logging.info(f"Opened MIDI output port: {ports[port_index]}")
+            return True
+
+        except Exception as e:
+            logging.error(f"Error opening MIDI output port: {str(e)}")
+            return False
+
+    def open_output_port_old(self, port_name_or_index) -> bool:
         """Open MIDI output port by name or index"""
         try:
             ports = self.get_output_ports()
@@ -135,22 +170,23 @@ class MidiIOController(QObject):
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
                 logging.error(f"Invalid MIDI output port index: {port_index}")
                 return False
-
+            self.midi_out = rtmidi.MidiOut()
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
             logging.info(f"Opened MIDI output port: {ports[port_index]}")
             return True
-
-        except Exception as e:
-            logging.error(f"Error opening MIDI output port: {str(e)}")
+        except Exception as ex:
+            logging.error(f"Error opening MIDI output port: {str(ex)}")
             return False
 
     def close_ports(self):
         """Close MIDI ports"""
         if self.midi_in.is_port_open():
             self.midi_in.close_port()
+            time.sleep(0.1)
         if self.midi_out.is_port_open():
             self.midi_out.close_port()
+            time.sleep(0.1)
         self.input_port_number = None
         self.output_port_number = None
 
