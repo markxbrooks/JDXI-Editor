@@ -949,7 +949,7 @@ class JdxiInstrument(JdxiUi):
                            ControlChangeSustain.SOFT_PEDAL,  # Soft Pedal (Una Corda) – CC67
                            ControlChangeSustain.LEGATO,  # Legato footswitch
                            ControlChangeSustain.HOLD2]  # Hold-2
-                # cc_list = [68]
+                
                 for cc in cc_list:
                     self.midi_helper.send_control_change(cc, cc_value, MidiChannel.DIGITAL1)
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
@@ -1017,10 +1017,6 @@ class JdxiInstrument(JdxiUi):
             # Initialize singleton connection
             MIDIConnection().initialize(self.midi_helper.midi_in, self.midi_helper.midi_out, self)
             MIDIConnection().identify_device()
-
-            # Update MIDI helper references
-            #self.midi_helper.midi_in = self.midi_in
-            #self.midi_helper.midi_out = self.midi_out
 
             # Update indicators
             self.midi_in_indicator.set_active(self.midi_helper.midi_in is not None)
