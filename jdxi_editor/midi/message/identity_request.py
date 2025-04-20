@@ -27,14 +27,7 @@ Usage Example:
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.midi.data.address.address import (
-    START_OF_SYSEX,
-    END_OF_SYSEX,
-    ID_NUMBER,
-    DEVICE_ID,
-    SUB_ID_1,
-    SUB_ID_2,
-)
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ID_NUMBER, DEVICE_ID, SUB_ID_1, SUB_ID_2
 from jdxi_editor.midi.message.midi import MidiMessage
 
 

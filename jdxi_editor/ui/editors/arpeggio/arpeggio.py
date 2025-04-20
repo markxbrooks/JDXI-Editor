@@ -75,10 +75,11 @@ from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 class ArpeggioEditor(SimpleEditor):
     """Arpeggio Editor Window"""
 
-    def __init__(self, midi_helper: MidiIOHelper, parent=None):
+    def __init__(self, midi_helper: MidiIOHelper, preset_helper=None, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
+        self.preset_helper = preset_helper
         self.setFixedWidth(450)
         self.address_msb = ArpeggioAddress.TEMPORARY_PROGRAM
         self.address_umb = ArpeggioAddress.ARP_PART

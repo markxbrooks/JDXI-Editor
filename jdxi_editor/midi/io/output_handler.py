@@ -29,10 +29,9 @@ from jdxi_editor.globals import LOG_PADDING_WIDTH
 from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    END_OF_SYSEX,
-    RolandID,
     AddressMemoryAreaMSB,
 )
+from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import (
     format_midi_message_to_hex_string,
@@ -448,6 +447,23 @@ class MidiOutHandler(MidiIOController):
             logging.info(f"Error {ex} occurred sending bank and program change message")
             return False
 
+    def identify_device(self) -> bool:
+        """Send Identity Request and verify response"""
+        request = IdentityRequestMessage()
+        self.send_message(request)
+        logging.info(f"sending identity request message: {request}")
+
+    def send_message(self, message: MidiMessage):
+        """unpack the message list and send it"""
+        try:
+            raw_message = message.to_message_list()
+            self.send_raw_message(raw_message)
+            logging.debug(
+                f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in raw_message])}"
+            )
+        except Exception as ex:
+            logging.error(f"Error sending identity request: {str(ex)}")
+
     def get_parameter(
         self, area: int, part: int, group: int, param: int
     ) -> Optional[int]:
@@ -482,7 +498,7 @@ class MidiOutHandler(MidiIOController):
                 data=[],  # No payload for request
             )
 
-            self.midi_out.send_raw_message(request.to_bytes())
+            self.midi_out.send_message(request.to_bytes())
 
             # Wait for response with a timeout of 100ms.
             start_time = time.time()

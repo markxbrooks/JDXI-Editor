@@ -21,6 +21,7 @@ class JDXISynth:
     DIGITAL_1 = "Digital 1"  # Main digital synth
     DIGITAL_2 = "Digital 2"  # Second digital synth
     DRUMS = "Drums"
+    VOCAL_FX = "Vocal Effects"
 
     @staticmethod
     def get_area_code(synth_type: str) -> int:
@@ -30,5 +31,6 @@ class JDXISynth:
             JDXISynth.DIGITAL_1: AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
             JDXISynth.DIGITAL_2: AddressOffsetTemporaryToneUMB.DIGITAL_PART_2,
             JDXISynth.DRUMS: AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
+            JDXISynth.VOCAL_FX: AddressOffsetTemporaryToneUMB.COMMON,
         }
         return area_codes.get(synth_type)

@@ -27,7 +27,8 @@ from typing import Any, Callable, List, Optional, Union
 from PySide6.QtCore import Signal
 
 from jdxi_editor.log.message import log_parameter
-from jdxi_editor.midi.data.address.address import ModelID, RolandID
+from jdxi_editor.midi.data.address.address import ModelID
+from jdxi_editor.midi.data.address.sysex import RolandID
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.sysex import SysexParameter

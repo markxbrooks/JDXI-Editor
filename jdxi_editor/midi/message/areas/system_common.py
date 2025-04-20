@@ -29,8 +29,8 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB,
-    ZERO_BYTE,
 )
+from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 

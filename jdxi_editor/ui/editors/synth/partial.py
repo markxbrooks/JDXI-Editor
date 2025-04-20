@@ -31,9 +31,9 @@ from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB,
-    construct_address,
     Address,
 )
+from jdxi_editor.midi.data.address.helpers import construct_address
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase

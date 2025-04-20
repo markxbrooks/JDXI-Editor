@@ -19,11 +19,9 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetTemporaryToneUMB,
     Address,
-    END_OF_SYSEX,
-    START_OF_SYSEX,
-    JD_XI_HEADER_LIST,
     AddressMemoryAreaMSB,
 )
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 
 

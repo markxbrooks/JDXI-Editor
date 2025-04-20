@@ -14,7 +14,7 @@ from enum import Enum
 from typing import Tuple, List
 
 
-class JDXiMemoryAddress(Enum):
+class JDXiAddress(Enum):
     # Base Addresses (4-byte addresses)
     SETUP = (0x01, 0x00, 0x00, 0x00)
     SYSTEM = (0x02, 0x00, 0x00, 0x00)

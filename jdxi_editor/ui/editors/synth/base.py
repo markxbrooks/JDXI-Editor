@@ -23,7 +23,7 @@ import logging
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.data.address.address import construct_address
+from jdxi_editor.midi.data.address.helpers import construct_address
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -51,7 +51,7 @@ class SynthBase(QWidget):
         """Set MIDI helper instance"""
         self.midi_helper = midi_helper
 
-    def send_message(self, message):
+    def send_raw_message(self, message):
         """Send address SysEx message using the MIDI helper"""
         if self.midi_helper:
             self.midi_helper.send_raw_message(message)
@@ -64,7 +64,7 @@ class SynthBase(QWidget):
         for request in self.midi_requests:
             logging.info(f"data request: \t{request}")
             request = bytes.fromhex(request)
-            self.send_message(request)
+            self.send_raw_message(request)
 
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""

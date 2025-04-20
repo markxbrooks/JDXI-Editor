@@ -52,8 +52,6 @@ from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.io.connection import MIDIConnection
-from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
@@ -93,6 +91,7 @@ CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 class JdxiInstrument(JdxiUi):
     def __init__(self):
         super().__init__()
+        self.editor_registry = None
         self.digital_1_preset_helper = None
         self.current_program_id = "A01"
         self.current_program_number = int(self.current_program_id[1:])
@@ -126,69 +125,41 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.send_identity_request()
         self.program_helper = ProgramHelper(self.midi_helper,
                                             MidiChannel.PROGRAM)
-        # Load custom font
         self._load_digital_font()
-
-        # Load settings
         self.settings = QSettings("jdxi_manager2", "settings")
         self._load_settings()
-
-        # Show window
         self.show()
-
-        # Add preset tracking
         self.current_preset_num = 1
         self.current_preset_name = "INIT PATCH"
-
-        # Create display label
         self.display_label = QLabel()
-        # self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
         self._toggle_illuminate_sequencer_lightshow(True)
         if platform.system() == "Windows":
             self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
-        # Show MIDI config if auto-connect failed
         if (
-            not self.midi_helper.current_in_port
-            or not self.midi_helper.current_out_port
+                not self.midi_helper.current_in_port
+                or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
-        # Initialize MIDI indicators
-        self.midi_in_indicator.set_state(bool(self.midi_helper.midi_in))
-        self.midi_out_indicator.set_state(bool(self.midi_helper.midi_out))
-        self.key_hold_button.clicked.connect(self._send_arp_key_hold)
-        self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
-
+        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
+        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         # Add display to layout
         if hasattr(self, "main_layout"):
             self.main_layout.addWidget(self.display_label)
 
         # Load last used preset settings
         # FIXME: self._load_last_preset()
-
-        # Initialize synth preset_type
         self.current_synth_type = JDXISynth.DIGITAL_1
-
-        # Load saved favorites
         self._load_saved_favorites()
-
-        # Set default styles
         self._update_synth_button_styles()
-
-        # Initialize current preset index
         self.current_preset_index = 0
-
-        # Initialize current preset index
         self.current_preset_index = 0
-
         self.old_pos = None
-
-        # Set initial indicator states
-        self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
-        self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        # set up event handling - maybe move to a function
+        self.key_hold_button.clicked.connect(self._send_arp_key_hold)
+        self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
         self.digital_display.mousePressEvent = self._open_program_editor
-        # Connect buttons to functions
-        self.program_down_button.clicked.connect(self._previous_program)
-        self.program_up_button.clicked.connect(self._next_program)
+        self.program_down_button.clicked.connect(self._program_previous)
+        self.program_up_button.clicked.connect(self._program_next)
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.midi_helper.midi_message_incoming.connect(self._handle_midi_input)
         self.midi_helper.midi_message_outgoing.connect(self._blink_midi_output)
@@ -349,7 +320,7 @@ class JdxiInstrument(JdxiUi):
             return JDXIPresets.DIGITAL_ENUMERATED  # Safe fallback
         return presets
 
-    def _previous_program(self):
+    def _program_previous(self):
         """Decrement the program index and update the display."""
         if self.current_program_number == 1:
             logging.info("Already at the first program.")
@@ -365,20 +336,20 @@ class JdxiInstrument(JdxiUi):
         self.program_helper.previous_program()
         self._update_display()
 
-    def _next_program(self):
+    def _program_next(self):
         """Increment the program index and update the display."""
         self.current_program_number += 1
         self.program_helper.next_program()
         self._update_display()
 
-    def _previous_tone(self):
+    def _tone_previous(self):
         """Decrement the tone index and update the display."""
         if self.current_preset_index <= 0:
             logging.info("Already at the first preset.")
             msg_box = QMessageBox()
             msg_box.setIcon(
                 QMessageBox.Critical
-            ) 
+            )
             msg_box.setWindowTitle("First preset")
             msg_box.setText("Already at the first preset")
             msg_box.exec()
@@ -397,7 +368,7 @@ class JdxiInstrument(JdxiUi):
             self.current_preset_index, self.current_synth_type
         )
 
-    def _next_tone(self):
+    def _tone_next(self):
         """Increment the tone index and update the display."""
         max_index = len(self._get_presets_for_current_synth()) - 1
         if self.current_preset_index >= max_index:
@@ -405,7 +376,7 @@ class JdxiInstrument(JdxiUi):
             msg_box = QMessageBox()
             msg_box.setIcon(
                 QMessageBox.Critical
-            ) 
+            )
             msg_box.setWindowTitle("Last preset")
             msg_box.setText("already at the last preset")
             msg_box.exec()
@@ -476,90 +447,152 @@ class JdxiInstrument(JdxiUi):
         self.lightshow_timer.start(500)  # Every 500 ms
 
     def show_editor(self, editor_type: str):
-        """Show the specified editor window"""
-        editor_map = {
-            "vocal_fx": self._show_vocal_fx,
-            "digital1": self._show_digital_synth_editor,
-            "digital2": self._show_digital_synth_editor,
-            "analog": self._show_analog_synth_editor,
-            "drums": self._show_drums_editor,
-            "arpeggio": self._show_arpeggio_editor,
-            "effects": self._open_effects,
-            "pattern": self._open_pattern,
-            "preset": self._open_preset,
-            "program": self._open_program,
-            "midi_file": self._open_midi_file,
+        self.editor_registry = {
+            "vocal_fx": ("Vocal Effects", VocalFXEditor, JDXISynth.VOCAL_FX, MidiChannel.VOCAL),
+            "digital1": (
+                "Digital Synth 1", DigitalSynthEditor, JDXISynth.DIGITAL_1, MidiChannel.DIGITAL1, {"synth_number": 1}),
+            "digital2": (
+                "Digital Synth 2", DigitalSynthEditor, JDXISynth.DIGITAL_2, MidiChannel.DIGITAL2, {"synth_number": 2}),
+            "analog": ("Analog Synth", AnalogSynthEditor, JDXISynth.ANALOG, MidiChannel.ANALOG),
+            "drums": ("Drums", DrumCommonEditor, JDXISynth.DRUMS, MidiChannel.DRUM),
+            "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
+            "effects": ("Effects", EffectsCommonEditor, None, None),
+            "pattern": ("Pattern", PatternSequencer, None, None),
+            "preset": ("Preset", PresetEditor, None, None),
+            "program": ("Program", ProgramEditor, None, None),
+            "midi_file": ("MIDI File", MidiPlayer, None, None),
         }
-        self._select_synth(self.preset_type)
-        if editor_type in editor_map:
-            editor_map[editor_type](editor_type)
-        else:
-            logging.info(f"Unknown editor preset_type: {editor_type}")
 
-    def _show_vocal_fx(self, editor_type: str):
-        if not hasattr(self, "vocal_fx_editor"):
-            self.vocal_fx_editor = VocalFXEditor(self.midi_helper, self)
-            self.vocal_fx_editor.show()
-            self.vocal_fx_editor.raise_()
+        config = self.editor_registry.get(editor_type)
+        if not config:
+            logging.warning(f"Unknown editor type: {editor_type}")
+            return
 
-    def _show_digital_synth_editor(self, editor_type: str):
-        synth_number = 1 if editor_type == "digital1" else 2
-        self._show_editor(
-            f"Digital Synth {synth_number}", DigitalSynthEditor, synth_num=synth_number
-        )
-        self.preset_type = (
-            JDXISynth.DIGITAL_1 if synth_number == 1 else JDXISynth.DIGITAL_2
-        )
+        title, editor_class, synth_type, midi_channel, kwargs = (*config, {}) if len(config) == 4 else config
 
-    def _show_analog_synth_editor(self, editor_type: str):
-        self._show_editor("Analog Synth", AnalogSynthEditor)
-        self.channel = MidiChannel.ANALOG
-        self.preset_type = JDXISynth.ANALOG
+        if synth_type:
+            self.preset_type = synth_type
+        if midi_channel:
+            self.channel = midi_channel
 
-    def _show_drums_editor(self, editor_type: str):
-        self._show_editor("Drums", DrumCommonEditor)
-        self.channel = MidiChannel.DRUM
-        self.preset_type = JDXISynth.DRUMS
+        self._show_editor(title, editor_class, **kwargs)
 
-    def _open_vocal_effects(self, title, editor_type: str):
-        self._show_editor("Vocal Effects", VocalFXEditor)
-
-    def _open_pattern(self, editor_type: str):
-        self._show_editor("Pattern", PatternSequencer)
-
-    def _open_preset(self, editor_type: str):
+    def _show_editor(self, title, editor_class, **kwargs):
         try:
-            self._show_editor("Preset", PresetEditor)
-        except Exception as ex:
-            logging.error(f"Error showing Preset editor: {str(ex)}")
+            instance_attr = f"{editor_class.__name__.lower()}_instance"
+            existing_editor = getattr(self, instance_attr, None)
+            if existing_editor:
+                existing_editor.show()
+                existing_editor.raise_()
+                return
 
-    def _open_program(self, editor_type: str):
+            preset_helper = self._get_preset_helper_for_current_synth() \
+                if editor_class in [ArpeggioEditor,
+                                    DigitalSynthEditor,
+                                    AnalogSynthEditor,
+                                    DrumCommonEditor,
+                                    PatternSequencer,
+                                    ProgramEditor, PresetEditor,
+                                    MidiPlayer,
+                                    VocalFXEditor,
+                                    EffectsCommonEditor
+                                    ] else None
+
+            editor = editor_class(
+                midi_helper=self.midi_helper,
+                parent=self,
+                preset_helper=preset_helper,
+                **kwargs,
+            ) if preset_helper else editor_class(
+                midi_out=self.midi_helper.midi_out,
+                parent=self,
+                **kwargs,
+            )
+
+            editor.setWindowTitle(title)
+            editor.show()
+            editor.raise_()
+
+            setattr(self, instance_attr, editor)
+
+            if hasattr(editor, "preset_helper"):
+                editor.preset_helper.update_display.connect(self.update_display_callback)
+
+        except Exception as ex:
+            logging.error(f"Error showing {title} editor: {str(ex)}")
+
+    def _show_midi_config(self):
+        """Show MIDI configuration dialog"""
         try:
-            self._show_editor("Program", ProgramEditor)
+            dialog = MIDIConfigDialog(
+                self.midi_helper,
+                parent=self)
+            dialog.exec()
+
+        except Exception as e:
+            logging.error(f"Error showing MIDI configuration: {str(e)}")
+            self.show_error("MIDI Configuration Error", str(e))
+
+    def _show_log_viewer(self):
+        """Show log viewer window"""
+        if not self.log_viewer:
+            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
+        self.log_viewer.show()
+        self.log_viewer.raise_()
+        logging.debug("Showing LogViewer window")
+
+    def _open_midi_debugger(self):
+        """Open MIDI debugger window"""
+        if not self.midi_helper:
+            logging.error("MIDI helper not initialized")
+            return
+        if not self.midi_debugger:
+            self.midi_debugger = MIDIDebugger(self.midi_helper)
+            # Clean up reference when window is closed
+            self.midi_debugger.setAttribute(Qt.WA_DeleteOnClose)
+            self.midi_debugger.destroyed.connect(self._midi_debugger_closed)
+            logging.debug("Created new MIDI debugger window")
+        self.midi_debugger.show()
+        self.midi_debugger.raise_()
+
+    def _open_program_editor(self, event):
+        """Open the ProgramEditor when the digital display is clicked."""
+        self.show_editor("program")
+
+    def _open_midi_message_debug(self):
+        """Open MIDI message debug window"""
+        if not self.midi_message_debug:
+            self.midi_message_debug = MIDIMessageMonitor(midi_helper=self.midi_helper, parent=self)
+            self.midi_message_debug.setAttribute(Qt.WA_DeleteOnClose)
+        self.midi_message_debug.show()
+        self.midi_message_debug.raise_()
+
+    def _load_patch(self):
+        """Show load patch dialog"""
+        try:
+            patch_manager = PatchManager(
+                midi_helper=self.midi_helper, parent=self, save_mode=False, editors=self.editors,
+            )
+            patch_manager.show()
         except Exception as ex:
-            logging.error(f"Error showing Program editor: {str(ex)}")
+            logging.error(f"Error loading patch: {str(ex)}")
 
-    def _open_midi_file(self, editor_type: str):
-        self._show_editor("MIDI File", MidiPlayer)
+    def _save_patch(self):
+        """Show save patch dialog"""
+        try:
+            patch_manager = PatchManager(
+                midi_helper=self.midi_helper,
+                parent=self,
+                save_mode=True,
+                editors=self.editors
+            )
+            patch_manager.show()
+        except Exception as ex:
+            logging.error(f"Error saving patch: {str(ex)}")
 
-    def _save_favorite(self, button, index):
-        """Save the current preset as an address favorite and prevent toggling off."""
-        self.settings = QSettings("mabsoft", "jdxi_editor")
-        preset_name = f"favorite_{index + 1:02d}"
-
-        if button.isChecked():
-            current_preset = self._get_current_tone()
-            if current_preset:
-                button.preset = current_preset  # Store preset in button
-                button.setToolTip(
-                    f"Tone {current_preset.number} {current_preset.name}, {current_preset.type}"
-                )
-                button.setChecked(True)  # Keep it checked
-                button.setCheckable(False)  # Prevent unchecking directly
-                self.settings.setValue(preset_name, current_preset)  # Save preset
-                logging.info(f"Saved {current_preset} as {preset_name}")
-        else:
-            self.load_button_preset(button)  # Load stored preset if checked
+    def _midi_message_debug_closed(self):
+        """Handle MIDI message debug window closure"""
+        self.midi_message_debug = None
 
     def load_button_preset(self, button):
         """load preset dat stored on the button"""
@@ -629,18 +662,6 @@ class JdxiInstrument(JdxiUi):
         return self.preset_type
         # return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
 
-    def _show_midi_config(self):
-        """Show MIDI configuration dialog"""
-        try:
-            dialog = MIDIConfigDialog(
-                self.midi_helper,
-                parent=self)
-            dialog.exec()
-
-        except Exception as e:
-            logging.error(f"Error showing MIDI configuration: {str(e)}")
-            self.show_error("MIDI Configuration Error", str(e))
-
     def _load_settings(self):
         """Load application settings"""
         try:
@@ -669,66 +690,6 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error loading settings: {str(ex)}")
 
-    def _show_editor(self, title, editor_class, **kwargs):
-        """Show editor window"""
-        try:
-            # Create editor with proper initialization
-            if editor_class in [
-                DigitalSynthEditor,
-                DrumCommonEditor,
-                AnalogSynthEditor,
-                PatternSequencer,
-                ProgramEditor,
-                PresetEditor,
-                MidiPlayer,
-            ]:
-                preset_helper = self._get_preset_helper_for_current_synth()
-                editor = editor_class(
-                    midi_helper=self.midi_helper,
-                    parent=self,
-                    preset_helper=preset_helper,
-                    **kwargs,
-                )
-            else:
-                # For other editors, use existing initialization
-                editor = editor_class(midi_out=self.midi_out, **kwargs)
-
-            # Set window title
-            editor.setWindowTitle(title)
-            logging.info(f"Showing {title} editor")
-            self.add_editor(editor)
-            # Store reference and show
-            if title == "Digital Synth 1":
-                self.digital_synth1_editor = editor
-                self.channel = MidiChannel.DIGITAL1
-            elif title == "Digital Synth 2":
-                self.digital_synth2_editor = editor
-                self.channel = MidiChannel.DIGITAL2
-            elif title == "Analog Synth":
-                self.analog_synth_editor = editor
-                self.channel = MidiChannel.ANALOG
-            elif title == "Drums":
-                self.drum_kit_editor = editor
-                self.channel = MidiChannel.DRUM
-            elif title == "Effects":
-                self.effects_editor = editor
-            elif title == "Pattern":
-                self.pattern_editor = editor
-            elif title == "Preset":
-                self.preset_editor = editor
-            elif title == "Program":
-                self.program_editor = editor
-            elif title == "MIDI File":
-                self.midi_file_editor = editor
-            logging.info(f"midi channel: {self.channel}")
-            # Show editor
-            editor.show()
-            editor.raise_()
-            editor.preset_helper.update_display.connect(self.update_display_callback)
-
-        except Exception as ex:
-            logging.error(f"Error showing {title} editor: {str(ex)}")
-
     def _handle_midi_input(self, message):
         """Handle incoming MIDI messages and flash indicator"""
         self.midi_in_indicator.blink()
@@ -737,139 +698,32 @@ class JdxiInstrument(JdxiUi):
         """ handle outgoing message blink """
         self.midi_out_indicator.blink()
 
-    def _open_analog_synth(self):
-        self._show_editor("Analog Synth", AnalogSynthEditor)
-        self.preset_type = JDXISynth.ANALOG
-        self.current_synth_type = JDXISynth.ANALOG
-        self.channel = MidiChannel.ANALOG
-
-    def _open_digital_synth1(self):
-        """Open the Digital Synth 1 editor and send SysEx message."""
-        self.current_synth_type = JDXISynth.DIGITAL_1
-        self.channel = MidiChannel.DIGITAL1
+    def _save_settings(self):
+        """Save application settings"""
         try:
-            if not hasattr(self, "digital_synth1_editor"):
-                self.digital_synth1_editor = DigitalSynthEditor(
-                    midi_helper=self.midi_helper, parent=self
-                )
-                self.add_editor(self.digital_synth1_editor)
-            self.digital_synth1_editor.show()
-            self.digital_synth1_editor.raise_()
-        except Exception as ex:
-            logging.error(f"Error opening Digital Synth 1 editor: {str(ex)}")
+            # Save MIDI port settings
+            if hasattr(self, "settings"):
+                self.settings.setValue("midi_in", self.midi_in_port_name)
+                self.settings.setValue("midi_out", self.midi_out_port_name)
 
-    def _open_digital_synth2(self):
-        self._show_editor("Digital Synth 2", DigitalSynthEditor, synth_number=2)
-        self.channel = MidiChannel.DIGITAL2
-        self.preset_type = JDXISynth.DIGITAL_2
-        self.current_synth_type = JDXISynth.DIGITAL_2
+                # Save window geometry
+                self.settings.setValue("geometry", self.saveGeometry())
 
-    def _open_drums(self):
-        self.channel = MidiChannel.DRUM
-        self._show_editor("Drums", DrumCommonEditor)
-        self.preset_type = JDXISynth.DRUMS
-        self.current_synth_type = JDXISynth.DRUMS
+                # Save current preset info
+                self.settings.setValue("preset_num", self.current_preset_num)
+                self.settings.setValue("preset_name", self.current_preset_name)
 
-    def _open_arpeggiator(self):
-        """Show the arpeggiator editor window"""
-        try:
-            if not hasattr(self, "arpeggiator"):
-                self.arpeggiator = ArpeggioEditor(
-                    midi_helper=self.midi_helper,  # Pass midi_helper instance
-                    parent=self,
-                )
-            self.arpeggiator.show()
-            self.arpeggiator.raise_()
+                logging.debug("Settings saved successfully")
 
         except Exception as ex:
-            logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
-
-    def _open_effects(self):
-        """Show the effects editor window"""
-        try:
-            if not hasattr(self, "effects_editor"):
-                self.effects_editor = EffectsCommonEditor(
-                    midi_helper=self.midi_helper,  # Pass midi_helper instead of midi_out
-                    parent=self,
-                )
-            self.effects_editor.show()
-            self.effects_editor.raise_()
-
-        except Exception as ex:
-            logging.error(f"Error showing Effects editor: {str(ex)}")
-
-    def _open_midi_debugger(self):
-        """Open MIDI debugger window"""
-        if not self.midi_helper:
-            logging.error("MIDI helper not initialized")
-            return
-        if not self.midi_debugger:
-            self.midi_debugger = MIDIDebugger(self.midi_helper)
-            # Clean up reference when window is closed
-            self.midi_debugger.setAttribute(Qt.WA_DeleteOnClose)
-            self.midi_debugger.destroyed.connect(self._midi_debugger_closed)
-            logging.debug("Created new MIDI debugger window")
-        self.midi_debugger.show()
-        self.midi_debugger.raise_()
-
-    def _midi_debugger_closed(self):
-        """Handle MIDI debugger window closure"""
-        self.midi_debugger = None
-
-    def _midi_message_debug_closed(self):
-        """Handle MIDI message debug window closure"""
-        self.midi_message_debug = None
-
-    def _open_log_viewer(self):
-        """Show log viewer window"""
-        if not self.log_viewer:
-            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
-        self.log_viewer.show()
-        self.log_viewer.raise_()
-        logging.debug("Showing LogViewer window")
-
-    def _log_viewer_closed(self):
-        """Handle log viewer window closure"""
-        self.log_viewer = None
-
-    def _load_patch(self):
-        """Show load patch dialog"""
-        try:
-            patch_manager = PatchManager(
-                midi_helper=self.midi_helper, parent=self, save_mode=False, editors=self.editors,
-            )
-            patch_manager.show()
-        except Exception as ex:
-            logging.error(f"Error loading patch: {str(ex)}")
-
-    def _save_patch(self):
-        """Show save patch dialog"""
-        try:
-            patch_manager = PatchManager(
-                midi_helper=self.midi_helper,
-                parent=self,
-                save_mode=True,
-                editors=self.editors
-            )
-            patch_manager.show()
-        except Exception as ex:
-            logging.error(f"Error saving patch: {str(ex)}")
+            logging.error(f"Error saving settings: {str(ex)}")
 
     def closeEvent(self, event):
         """Handle window close event"""
         try:
-            # Properly delete MIDI ports
-            if self.midi_in:
-                self.midi_in.delete()  # Use delete() instead of close()
-            if self.midi_out:
-                self.midi_out.delete()  # Use delete() instead of close()
-
-            # Save settings
+            self.midi_helper.close_ports()
             self._save_settings()
-
-            # Accept the event
             event.accept()
-
         except Exception as ex:
             logging.error(f"Error during close event: {str(ex)}")
             event.ignore()
@@ -879,14 +733,6 @@ class JdxiInstrument(JdxiUi):
         :param log_file: str
         """
         self.log_file = log_file
-
-    def _show_log_viewer(self):
-        """Show log viewer window"""
-        if not self.log_viewer:
-            self.log_viewer = LogViewer(midi_helper=self.midi_helper, parent=self)
-        self.log_viewer.show()
-        self.log_viewer.raise_()
-        logging.debug("Showing LogViewer window")
 
     def _update_octave_ui(self):
         """Update octave-related UI elements"""
@@ -949,7 +795,7 @@ class JdxiInstrument(JdxiUi):
                            ControlChangeSustain.SOFT_PEDAL,  # Soft Pedal (Una Corda) – CC67
                            ControlChangeSustain.LEGATO,  # Legato footswitch
                            ControlChangeSustain.HOLD2]  # Hold-2
-                
+                # cc_list = [68]
                 for cc in cc_list:
                     self.midi_helper.send_control_change(cc, cc_value, MidiChannel.DIGITAL1)
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
@@ -982,6 +828,7 @@ class JdxiInstrument(JdxiUi):
     def _set_midi_ports(self, in_port, out_port):
         """Set MIDI input and output ports."""
         try:
+            """ 
             # Close existing ports safely
             if self.midi_helper.midi_in:
                 self.midi_helper.midi_in.close_port()
@@ -1005,62 +852,17 @@ class JdxiInstrument(JdxiUi):
                     f"Output port '{out_port}' not found. Available: {available_out_ports}"
                 )
                 return
-
-            # Open new ports
+            """
             self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
             self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
-
-            # Store port names
             self.midi_in_port_name = in_port
             self.midi_out_port_name = out_port
-
-            # Initialize singleton connection
-            MIDIConnection().initialize(self.midi_helper.midi_in, self.midi_helper.midi_out, self)
-            MIDIConnection().identify_device()
-
-            # Update indicators
+            self.midi_helper.identify_device()
             self.midi_in_indicator.set_active(self.midi_helper.midi_in is not None)
             self.midi_out_indicator.set_active(self.midi_helper.midi_out is not None)
-            """
-            if self.midi_in and self.midi_out:
-                self.settings.setValue("midi_in", in_port)
-                self.settings.setValue("midi_out", out_port)
-                logging.info(f"MIDI ports configured - In: {in_port}, Out: {out_port}")
-            else:
-                logging.warning("Failed to configure MIDI ports")
-            """
-
+            self._save_settings()
         except Exception as ex:
             logging.error(f"Error setting MIDI ports: {str(ex)}")
-
-    def _open_midi_message_debug(self):
-        """Open MIDI message debug window"""
-        if not self.midi_message_debug:
-            self.midi_message_debug = MIDIMessageMonitor(midi_helper=self.midi_helper, parent=self)
-            self.midi_message_debug.setAttribute(Qt.WA_DeleteOnClose)
-            self.midi_message_debug.destroyed.connect(self._midi_message_debug_closed)
-        self.midi_message_debug.show()
-        self.midi_message_debug.raise_()
-
-    def _save_settings(self):
-        """Save application settings"""
-        try:
-            # Save MIDI port settings
-            if hasattr(self, "settings"):
-                self.settings.setValue("midi_in", self.midi_in_port_name)
-                self.settings.setValue("midi_out", self.midi_out_port_name)
-
-                # Save window geometry
-                self.settings.setValue("geometry", self.saveGeometry())
-
-                # Save current preset info
-                self.settings.setValue("preset_num", self.current_preset_num)
-                self.settings.setValue("preset_name", self.current_preset_name)
-
-                logging.debug("Settings saved successfully")
-
-        except Exception as ex:
-            logging.error(f"Error saving settings: {str(ex)}")
 
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
@@ -1080,7 +882,7 @@ class JdxiInstrument(JdxiUi):
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
                 logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
-    
+
     def _load_last_preset(self):
         """Load the last used preset from settings."""
         try:
@@ -1088,7 +890,7 @@ class JdxiInstrument(JdxiUi):
             synth_type = self.settings.value("last_preset/synth_type", JDXISynth.DIGITAL_1)
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
             channel = self.settings.value("last_preset/channel", 0, type=int)
-    
+
             # Define mappings for synth types
             synth_mappings = {
                 JDXISynth.ANALOG: (JDXIPresets.ANALOG, 0, 7),
@@ -1096,23 +898,23 @@ class JdxiInstrument(JdxiUi):
                 JDXISynth.DIGITAL_2: (JDXIPresets.DIGITAL_ENUMERATED, 2, 16),
                 JDXISynth.DRUMS: (JDXIPresets.DRUM_ENUMERATED, 3, 16),
             }
-    
+
             # Get preset list and MIDI parameters based on synth type
             presets, bank_msb, lsb_divisor = synth_mappings.get(synth_type, ([], 0, 1))
             bank_lsb = preset_num // lsb_divisor
             program = preset_num % lsb_divisor
-    
+
             # Send MIDI messages to load preset
             if hasattr(self, "midi_helper") and self.midi_helper:
                 self.midi_helper.send_bank_select(bank_msb, bank_lsb, channel)
                 self.midi_helper.send_program_change(program, channel)
-    
+
                 # Update display and channel
                 preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
                 self._update_display_preset(preset_num, preset_name, channel)
-    
+
                 logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
-    
+
         except Exception as ex:
             logging.error(f"Error loading last preset: {str(ex)}")
 
@@ -1197,34 +999,21 @@ class JdxiInstrument(JdxiUi):
                     synth_type, preset_num, preset_name, channel
                 )
 
-    def _open_vocal_fx(self):
-        """Show the vocal FX editor window"""
-        try:
-            if not hasattr(self, "vocal_fx_editor"):
-                self.vocal_fx_editor = VocalFXEditor(
-                    midi_helper=self.midi_helper, parent=self
+    def _save_favorite(self, button, index):
+        """Save the current preset as an address favorite and prevent toggling off."""
+        self.settings = QSettings("mabsoft", "jdxi_editor")
+        preset_name = f"favorite_{index + 1:02d}"
+
+        if button.isChecked():
+            current_preset = self._get_current_tone()
+            if current_preset:
+                button.preset = current_preset  # Store preset in button
+                button.setToolTip(
+                    f"Tone {current_preset.number} {current_preset.name}, {current_preset.type}"
                 )
-            self.vocal_fx_editor.show()
-            self.vocal_fx_editor.raise_()
-
-        except Exception as ex:
-            logging.error(f"Error showing Vocal FX editor: {str(ex)}")
-
-    def _show_arpeggio_editor(self, event):
-        """Show the arpeggio editor window"""
-        try:
-            if not hasattr(self, "arpeggio_editor"):
-                logging.debug("Creating new arpeggio editor")
-                self.arpeggio_editor = ArpeggioEditor(midi_helper=self.midi_helper)
-            logging.debug("Showing arpeggio editor")
-            self.arpeggio_editor.show()
-        except Exception as ex:
-            logging.error(f"Error showing Arpeggiator editor: {str(ex)}")
-
-    def _open_program_editor(self, event):
-        """Open the ProgramEditor when the digital display is clicked."""
-        if event.button() == Qt.MouseButton.LeftButton:
-            try:
-                self._show_editor("Program", ProgramEditor)
-            except Exception as ex:
-                logging.error(f"Error opening Program editor: {str(ex)}")
+                button.setChecked(True)  # Keep it checked
+                button.setCheckable(False)  # Prevent unchecking directly
+                self.settings.setValue(preset_name, current_preset)  # Save preset
+                logging.info(f"Saved {current_preset} as {preset_name}")
+        else:
+            self.load_button_preset(button)  # Load stored preset if checked
