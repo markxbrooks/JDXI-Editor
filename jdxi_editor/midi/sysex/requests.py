@@ -40,10 +40,8 @@ Example usage:
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
-    START_OF_SYSEX,
-    END_OF_SYSEX,
-    JD_XI_HEADER_LIST,
 )
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
 
 # Define constants in the SYSEX_CONSTANTS dictionary

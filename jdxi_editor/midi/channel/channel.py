@@ -31,6 +31,7 @@ class MidiChannel(IntEnum):
     ANALOG = 2  # Corresponds to channel 3
     DRUM = 9  # Corresponds to channel 10
     PROGRAM = 15  # Program list
+    VOCAL = 2  # Is this correct?!
 
     def __str__(self):
         return {
@@ -39,6 +40,7 @@ class MidiChannel(IntEnum):
             self.ANALOG: "Analog (Ch.3)",
             self.DRUM: "Drums (Ch.10)",
             self.PROGRAM: "Programs (Ch.16)",
+            self.VOCAL: "Programs (Ch.3)",
         }.get(self, f"Unknown (Ch.{self.value + 1})")
 
     @property

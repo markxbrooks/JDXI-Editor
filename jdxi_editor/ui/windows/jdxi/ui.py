@@ -44,6 +44,7 @@ from jdxi_editor.midi.data.editor.data import (
 )
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.ui.editors import ArpeggioEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
@@ -207,11 +208,11 @@ class JdxiUi(QMainWindow):
         add_title_container(container)
         self.parts_container, self.part_buttons = create_parts_container(
             parent_widget=self,
-            on_open_d1=self._open_digital_synth1,
-            on_open_d2=self._open_digital_synth2,
-            on_open_drums=self._open_drums,
-            on_open_analog=self._open_analog_synth,
-            on_open_arp=self._open_arpeggiator,
+            on_open_d1=lambda: self.show_editor("digital1"),
+            on_open_d2=lambda: self.show_editor("digital2"),
+            on_open_drums=lambda: self.show_editor("drums"),
+            on_open_analog=lambda: self.show_editor("analog"),
+            on_open_arp=lambda: self.show_editor("arpeggio"),
             on_select_synth=self._select_synth,
         )
 
@@ -228,7 +229,9 @@ class JdxiUi(QMainWindow):
             container
         )
         self.vocal_effects_button, self.effects_button = add_effects_container(
-            container, self._open_vocal_fx, self._open_effects
+            container,
+            lambda: self.show_editor("vocal_fx"),
+            lambda: self.show_editor("effects"),
         )
 
         (self.program_down_button, self.program_up_button) = add_program_container(
@@ -236,7 +239,7 @@ class JdxiUi(QMainWindow):
         )
 
         self.tone_down_button, self.tone_up_button = add_tone_container(
-            container, create_tone_buttons_row, self._previous_tone, self._next_tone
+            container, create_tone_buttons_row, self._tone_previous, self._tone_next
         )
         self.sequencer_buttons = add_sequencer_container(
             container,
@@ -256,11 +259,6 @@ class JdxiUi(QMainWindow):
 
         # File menu
         file_menu = menubar.addMenu("File")
-
-        # Add MIDI file action
-        midi_file_action = QAction("MIDI File", self)
-        midi_file_action.triggered.connect(lambda: self.show_editor("midi_file"))
-        file_menu.addAction(midi_file_action)
 
         load_program_action = QAction("Load Program...", self)
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
@@ -296,19 +294,19 @@ class JdxiUi(QMainWindow):
         self.parts_menu = self.menuBar().addMenu("Parts")
 
         digital1_action = QAction("Digital Synth 1", self)
-        digital1_action.triggered.connect(self._open_digital_synth1)
+        digital1_action.triggered.connect(lambda: self.show_editor("digital1"))
         self.parts_menu.addAction(digital1_action)
 
         digital2_action = QAction("Digital Synth 2", self)
-        digital2_action.triggered.connect(self._open_digital_synth2)
+        digital2_action.triggered.connect(lambda: self.show_editor("digital2"))
         self.parts_menu.addAction(digital2_action)
 
         drums_action = QAction("Drums", self)
-        drums_action.triggered.connect(self._open_drums)
+        drums_action.triggered.connect(lambda: self.show_editor("drums"))
         self.parts_menu.addAction(drums_action)
 
         analog_action = QAction("Analog Synth", self)
-        analog_action.triggered.connect(self._open_analog_synth)
+        analog_action.triggered.connect(lambda: self.show_editor("analog"))
 
         self.parts_menu.addAction(analog_action)
 
@@ -317,21 +315,26 @@ class JdxiUi(QMainWindow):
         self.effects_menu = self.menuBar().addMenu("Effects")
 
         effects_action = QAction("Effects", self)
-        effects_action.triggered.connect(self._open_effects)
+        effects_action.triggered.connect(lambda: self.show_editor("effects"))
         self.effects_menu.addAction(effects_action)
 
         vocal_effects_action = QAction("Vocal FX", self)
-        vocal_effects_action.triggered.connect(self._open_vocal_fx)
+        vocal_effects_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
         self.effects_menu.addAction(vocal_effects_action)
 
     def _create_other_menu(self):
         # Create editors menu
-        editors_menu = self.menuBar().addMenu("Other")
+        playback_menu = self.menuBar().addMenu("Playback")
 
-        arpeggiator_action = editors_menu.addAction("Arpeggiator")
+        # Add MIDI file action
+        midi_file_action = QAction("MIDI File", self)
+        midi_file_action.triggered.connect(lambda: self.show_editor("midi_file"))
+        playback_menu.addAction(midi_file_action)
+
+        arpeggiator_action = playback_menu.addAction("Arpeggiator")
         arpeggiator_action.triggered.connect(lambda: self.show_editor("arpeggio"))
 
-        sequencer_action = editors_menu.addAction("Pattern Sequencer")
+        sequencer_action = playback_menu.addAction("Pattern Sequencer")
         sequencer_action.triggered.connect(lambda: self.show_editor("pattern"))
 
     def _create_debug_menu(self):
@@ -537,37 +540,16 @@ class JdxiUi(QMainWindow):
     def show_editor(self, param):
         raise NotImplementedError("to be implemented in subclass")
 
-    def _open_vocal_fx(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_effects(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
     def _send_octave(self, _):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _previous_tone(self):
+    def _tone_previous(self):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _next_tone(self):
+    def _tone_next(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _load_saved_favorites(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_digital_synth1(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_digital_synth2(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_analog_synth(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_drums(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_arpeggiator(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _select_synth(self, synth_type):

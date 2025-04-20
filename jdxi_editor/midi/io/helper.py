@@ -23,6 +23,8 @@ import logging
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
+from jdxi_editor.midi.message.midi import MidiMessage
+from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 
 
@@ -98,7 +100,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.set_midi_ports(in_port, out_port)
 
             # Verify connection
-            if self._verify_jdxi_connection():
+            if self.identify_device():
                 logging.info(
                     f"Successfully connected to JD-Xi MIDI: {in_port} / {out_port}"
                 )
@@ -128,17 +130,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             jdxi_in_port = find_jdxi_port(self.get_input_ports())
             jdxi_out_port = find_jdxi_port(self.get_output_ports())
             self.connect_port_names(jdxi_in_port, jdxi_out_port)
+            self.identify_device()
         except Exception as ex:
             logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
             return False
-
-    def _verify_jdxi_connection(self):
-        """Verify connected device is address JD-Xi by sending identity request"""
-        try:
-            # Create identity request message using dataclass
-            identity_request = IdentityRequestMessage()
-            self.send_raw_message(identity_request.to_message_list())
-            logging.debug("Sent JD-Xi identity request")
-
-        except Exception as ex:
-            logging.error(f"Error sending identity request: {str(ex)}")

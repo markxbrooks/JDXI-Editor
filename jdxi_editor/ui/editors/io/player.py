@@ -36,6 +36,7 @@ class MidiPlayer(SynthEditor):
         preset_helper=None,
     ):
         super().__init__()
+
         self.init_ui()
         self.midi_helper = midi_helper if midi_helper else MidiIOHelper()
         self.preset_helper = (
@@ -47,7 +48,7 @@ class MidiPlayer(SynthEditor):
                 channel=MidiChannel.DIGITAL1,
             )
         )
-
+        self.paused_time = None
         self.midi_file = None
         self.midi_port = None
         self.timer = QTimer(self)
@@ -200,6 +201,7 @@ class MidiPlayer(SynthEditor):
                 break
 
     def scrub_position(self):
+        """scrub to a new position in the file"""
         new_seconds = self.position_slider.value()
         self.start_time = time.time() - new_seconds
 
@@ -211,23 +213,37 @@ class MidiPlayer(SynthEditor):
                 break
 
     def toggle_pause_playback(self):
+        """ pause/restart file playback """
         if not self.midi_file or not self.midi_events:
             return
+
         port_name = self.port_select.currentText()
         if not port_name:
             return
+
         if not self.timer.isActive():
             self.midi_port = open_output(port_name)
-            self.start_time = time.time()
-            self.timer.start(10)  # check every 10ms
-            self.paused = True
+            if self.paused_time:
+                # Adjust start_time to resume correctly
+                paused_duration = time.time() - self.paused_time
+                self.start_time += paused_duration
+                self.paused_time = None
+            else:
+                self.start_time = time.time()
+            self.timer.start(10)
+            self.paused = False
         else:
             self.timer.stop()
-            self.paused = False
+            self.paused_time = time.time()
+            self.paused = True
 
     def stop_playback(self):
+        """ stop playback of the MIDI file"""
         self.timer.stop()
         if self.midi_port:
             self.midi_port.close()
         self.position_slider.setValue(0)
         self.position_label.setText(f"0:00 / {self.format_time(self.duration_seconds)}")
+        self.event_index = 0
+        self.paused_time = None
+        self.paused = False

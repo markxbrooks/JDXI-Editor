@@ -36,12 +36,10 @@ from typing import List, Optional
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
-    START_OF_SYSEX,
-    END_OF_SYSEX,
-    JD_XI_HEADER_LIST,
     CommandID,
     AddressOffsetProgramLMB,
 )
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST
 from jdxi_editor.midi.message.midi import MidiMessage
 
 # MIDI Constants

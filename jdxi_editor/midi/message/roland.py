@@ -30,12 +30,9 @@ from typing import List
 from jdxi_editor.midi.data.address.address import (
     ModelID,
     CommandID,
-    START_OF_SYSEX,
-    END_OF_SYSEX,
-    ZERO_BYTE,
-    RolandID,
     AddressMemoryAreaMSB,
 )
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, RolandID
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
 
