@@ -82,10 +82,20 @@ class DrumWMTSection(QWidget):
         def p(name):  # helper to get DrumPartialParameter by name
             return getattr(AddressParameterDrumPartial, prefix + name)
 
+        layout.addRow(QLabel("Search waves:"))
+        self.l_wave_search_box = QLineEdit()
+        self.l_wave_search_box.setPlaceholderText("Search L wave...")
+        self.l_wave_search_box.textChanged.connect(self._populate_l_waves)
+
         # Combo boxes
         layout.addRow(self._create_parameter_combo_box(p("WAVE_SWITCH"), f"{prefix}Wave Switch", ["OFF", "ON"], [0, 1]))
         layout.addRow(self._create_parameter_combo_box(p("WAVE_NUMBER_L"), f"{prefix}Wave Number L/Mono", rm_waves,
                                                        list(range(453))))
+        layout.addRow(QLabel("Search waves:"))
+        self.r_wave_search_box = QLineEdit()
+        self.r_wave_search_box.setPlaceholderText("Search R wave...")
+        self.r_wave_search_box.textChanged.connect(self._populate_r_waves)
+
         layout.addRow(
             self._create_parameter_combo_box(p("WAVE_NUMBER_R"), f"{prefix}Wave Number R", rm_waves, list(range(453))))
         layout.addRow(
@@ -116,6 +126,12 @@ class DrumWMTSection(QWidget):
         layout.addRow(self._create_parameter_slider(p("VELOCITY_FADE_WIDTH_UPPER"), "Velocity Fade Width Upper"))
 
         return layout
+
+    def _populate_l_waves(self):
+        pass
+
+    def _populate_r_waves(self):
+        pass
 
     def _create_wmt1_layout(self):
         return self._create_wmt_layout(1)
