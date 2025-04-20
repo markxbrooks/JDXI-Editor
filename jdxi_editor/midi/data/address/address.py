@@ -27,12 +27,36 @@ command = CommandID.DT1
 print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
 """
 
-from enum import unique
-from typing import Optional, Type, Union, Tuple, Any
-
-from jdxi_editor.midi.data.address.sysex import ZERO_BYTE, T, DIGITAL_PARTIAL_MAP
+from enum import unique, IntEnum
+from typing import Optional, Type, Union, Tuple, Any, TypeVar
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
+
+
+START_OF_SYSEX = 0xF0
+END_OF_SYSEX = 0xF7
+ID_NUMBER = 0x7E
+DEVICE_ID = 0x7F
+SUB_ID_1 = 0x06
+SUB_ID_2 = 0x01
+ZERO_BYTE = 0x00
+T = TypeVar("T", bound="Address")
+DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
+
+
+
+@unique
+class RolandID(IntEnum):
+    ROLAND_ID = 0x41
+    DEVICE_ID = 0x10
+
+
+@unique
+class ResponseID(IntEnum):
+    """midi responses"""
+
+    ACK = 0x4F  # Acknowledge
+    ERR = 0x4E  # Error
 
 
 class Address(SysExByte):
@@ -79,11 +103,9 @@ class Address(SysExByte):
     def __str__(self):
         return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
 
-
 # ==========================
 # JD-Xi SysEx Header
 # ==========================
-
 
 class ModelID(Address):
     ROLAND_ID = 0x41
@@ -94,6 +116,14 @@ class ModelID(Address):
     MODEL_ID_3 = ZERO_BYTE  # Device family code LSB
     MODEL_ID_4 = 0x0E  # JD-XI Product code
 
+JD_XI_MODEL_ID = [
+    ModelID.MODEL_ID_1,
+    ModelID.MODEL_ID_2,
+    ModelID.MODEL_ID_3,
+    ModelID.MODEL_ID_4,
+]
+
+JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
 @unique
 class CommandID(SysExByte):
