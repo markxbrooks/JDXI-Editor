@@ -222,6 +222,25 @@ DRUM_CATEGORIES: Dict[str, list] = {
         "033: Latin Kit",
     ],
 }
+
+rm_waves_categorised = [
+        {
+            "id": "000",
+            "name": "OFF",
+            "category": "None",
+        },
+        {
+            "id": "001",
+            "name": "78 Kick P",
+            "category": "Kick",
+        },
+    {
+        "id": "002",
+        "name": "78 Kick P",
+        "category": "Kick",
+    },
+    ]
+
 rm_waves = [
     "000: OFF ",
     "001: 78 Kick P",
