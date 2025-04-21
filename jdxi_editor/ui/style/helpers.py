@@ -327,7 +327,7 @@ def generate_editor_style(
         }}
         /* QLabels */
         QLabel {{
-            color: {accent};
+            color: #FFFFFF;
         }}
         QSlider::horizontal {{
             margin-left: 5px;
