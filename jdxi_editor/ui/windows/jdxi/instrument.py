@@ -57,6 +57,7 @@ from jdxi_editor.midi.preset.data import Preset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
 from jdxi_editor.midi.sysex.requests import MidiRequests
+from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
     DigitalSynthEditor,
@@ -87,6 +88,16 @@ from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
+
+
+def show_message_box(title, text, icon=QMessageBox.Critical):
+    """Helper method to display a QMessageBox."""
+    logging.info(text)
+    msg_box = QMessageBox()
+    msg_box.setIcon(icon)
+    msg_box.setWindowTitle(title)
+    msg_box.setText(text)
+    msg_box.exec()
 
 
 class JdxiInstrument(JdxiUi):
@@ -158,7 +169,7 @@ class JdxiInstrument(JdxiUi):
         # set up event handling - maybe move to a function
         self.key_hold_button.clicked.connect(self._send_arp_key_hold)
         self.arpeggiator_button.clicked.connect(self._send_arp_on_off)
-        self.digital_display.mousePressEvent = self._open_program_editor
+        self.digital_display.mousePressEvent = self._show_program_editor
         self.program_down_button.clicked.connect(self._program_previous)
         self.program_up_button.clicked.connect(self._program_next)
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
@@ -321,94 +332,11 @@ class JdxiInstrument(JdxiUi):
             return JDXIPresets.DIGITAL_ENUMERATED  # Safe fallback
         return presets
 
-    def _program_previous_old(self):
-        """Decrement the program index and update the display."""
-        if self.current_program_number == 1:
-            logging.info("Already at the first program.")
-            msg_box = QMessageBox()
-            msg_box.setIcon(
-                QMessageBox.Critical
-            )  # QMessageBox.Warning, Information, or Question
-            msg_box.setWindowTitle("First program")
-            msg_box.setText("Already at the first program")
-            msg_box.exec()
-            return
-        self.current_program_number -= 1
-        self.program_helper.previous_program()
-        self._update_display()
-
-    def _program_next_old(self):
-        """Increment the program index and update the display."""
-        self.current_program_number += 1
-        self.program_helper.next_program()
-        self._update_display()
-
-    def _tone_previous_old(self):
-        """Decrement the tone index and update the display."""
-        if self.current_preset_index <= 0:
-            logging.info("Already at the first preset.")
-            msg_box = QMessageBox()
-            msg_box.setIcon(
-                QMessageBox.Critical
-            )
-            msg_box.setWindowTitle("First preset")
-            msg_box.setText("Already at the first preset")
-            msg_box.exec()
-            return
-
-        self.current_preset_index -= 1
-        presets = self._get_presets_for_current_synth()
-        preset_helper = self._get_preset_helper_for_current_synth()
-
-        self._update_display_preset(
-            self.current_preset_index,
-            presets[self.current_preset_index],
-            self.channel,
-        )
-        preset_helper.load_preset_by_program_change(
-            self.current_preset_index, self.current_synth_type
-        )
-
-    def _tone_next_old(self):
-        """Increment the tone index and update the display."""
-        max_index = len(self._get_presets_for_current_synth()) - 1
-        if self.current_preset_index >= max_index:
-            logging.info("Already at the last preset.")
-            msg_box = QMessageBox()
-            msg_box.setIcon(
-                QMessageBox.Critical
-            )
-            msg_box.setWindowTitle("Last preset")
-            msg_box.setText("already at the last preset")
-            msg_box.exec()
-            return
-
-        self.current_preset_index += 1
-        presets = self._get_presets_for_current_synth()
-        preset_helper = self._get_preset_helper_for_current_synth()
-        self._update_display_preset(
-            self.current_preset_index,
-            presets[self.current_preset_index],
-            self.channel,
-        )
-        preset_helper.load_preset_by_program_change(
-            self.current_preset_index, self.current_synth_type
-        )
-        
-    def _show_message_box(self, title, text, icon=QMessageBox.Critical):
-        """Helper method to display a QMessageBox."""
-        logging.info(text)
-        msg_box = QMessageBox()
-        msg_box.setIcon(icon)
-        msg_box.setWindowTitle(title)
-        msg_box.setText(text)
-        msg_box.exec()
-    
     def _update_program(self, index_change):
         """Update the program by incrementing or decrementing its index."""
         new_program_number = self.current_program_number + index_change
         if new_program_number < 1:
-            _show_message_box("First program", "Already at the first program.")
+            show_message_box("First program", "Already at the first program.")
             return
         self.current_program_number = new_program_number
         if index_change > 0:
@@ -416,8 +344,7 @@ class JdxiInstrument(JdxiUi):
         else:
             self.program_helper.previous_program()
         self._update_display()
-    
-    
+
     def _update_tone(self, index_change):
         """Update the tone by incrementing or decrementing its index."""
         presets = self._get_presets_for_current_synth()
@@ -425,10 +352,10 @@ class JdxiInstrument(JdxiUi):
         new_preset_index = self.current_preset_index + index_change
     
         if new_preset_index < 0:
-            _show_message_box("First preset", "Already at the first preset.")
+            show_message_box("First preset", "Already at the first preset.")
             return
         if new_preset_index > max_index:
-            _show_message_box("Last preset", "Already at the last preset.")
+            show_message_box("Last preset", "Already at the last preset.")
             return
     
         self.current_preset_index = new_preset_index
@@ -442,22 +369,18 @@ class JdxiInstrument(JdxiUi):
             self.current_preset_index, self.current_synth_type
         )
 
-
     def _program_previous(self):
         """Decrement the program index and update the display."""
         self._update_program(-1)
-    
-    
+
     def _program_next(self):
         """Increment the program index and update the display."""
         self._update_program(1)
-    
-    
+
     def _tone_previous(self):
         """Decrement the tone index and update the display."""
         self._update_tone(-1)
-    
-    
+
     def _tone_next(self):
         """Increment the tone index and update the display."""
         self._update_tone(1)
@@ -497,9 +420,9 @@ class JdxiInstrument(JdxiUi):
 
         def step():
             # Turn off previous
-            for i, btn in enumerate(self.sequencer_buttons):
-                btn.setChecked(False)
-                btn.setStyleSheet(
+            for i, button in enumerate(self.sequencer_buttons):
+                button.setChecked(False)
+                button.setStyleSheet(
                     generate_sequencer_button_style(i == self._lightshow_index)
                 )
 
@@ -610,7 +533,7 @@ class JdxiInstrument(JdxiUi):
         self.log_viewer.raise_()
         logging.debug("Showing LogViewer window")
 
-    def _open_midi_debugger(self):
+    def _show_midi_debugger(self):
         """Open MIDI debugger window"""
         if not self.midi_helper:
             logging.error("MIDI helper not initialized")
@@ -624,17 +547,27 @@ class JdxiInstrument(JdxiUi):
         self.midi_debugger.show()
         self.midi_debugger.raise_()
 
-    def _open_program_editor(self, event):
+    def _show_program_editor(self, event):
         """Open the ProgramEditor when the digital display is clicked."""
         self.show_editor("program")
 
-    def _open_midi_message_debug(self):
+    def _show_midi_message_debug(self):
         """Open MIDI message debug window"""
         if not self.midi_message_debug:
             self.midi_message_debug = MIDIMessageMonitor(midi_helper=self.midi_helper, parent=self)
             self.midi_message_debug.setAttribute(Qt.WA_DeleteOnClose)
         self.midi_message_debug.show()
         self.midi_message_debug.raise_()
+
+    def _show_about_help(self):
+        """
+        _show_about_help
+        :return:
+        """
+        about_dialog = UiAboutDialog(self)
+        about_dialog.setup_ui(about_dialog)
+        about_dialog.setAttribute(Qt.WA_DeleteOnClose)
+        about_dialog.exec()
 
     def _load_patch(self):
         """Show load patch dialog"""
