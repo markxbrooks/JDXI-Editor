@@ -68,7 +68,7 @@ class MIDIConfigDialog(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color=JDXIStyle.FOREGROUND)
             pixmap = icon.pixmap(
                 JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE
             )  # Set the desired size
@@ -92,7 +92,7 @@ class MIDIConfigDialog(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color=JDXIStyle.FOREGROUND)
             pixmap = icon.pixmap(
                 JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE
             )  # Set the desired size
@@ -201,7 +201,7 @@ class MIDIConfigDialogOld(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color=JDXIStyle.FOREGROUND)
             pixmap = icon.pixmap(
                 JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE
             )  # Set the desired size
@@ -225,7 +225,7 @@ class MIDIConfigDialogOld(QDialog):
         icons_hlayout = QHBoxLayout()
         for icon in ["mdi6.midi-port"]:
             icon_label = QLabel()
-            icon = qta.icon(icon)
+            icon = qta.icon(icon, color=JDXIStyle.FOREGROUND)
             pixmap = icon.pixmap(
                 JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE
             )  # Set the desired size

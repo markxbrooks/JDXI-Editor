@@ -11,7 +11,6 @@ from jdxi_editor.ui.editors.arpeggio.arpeggio import ArpeggioEditor
 from jdxi_editor.ui.editors.effects.common import EffectsCommonEditor
 from jdxi_editor.ui.editors.effects.vocal import VocalFXEditor
 from jdxi_editor.ui.editors.io.program import ProgramEditor
-from jdxi_editor.ui.editors.io.sequencer import SequencerEditor
 
 __all__ = [
     "SynthEditor",
@@ -22,5 +21,4 @@ __all__ = [
     "EffectsCommonEditor",
     "VocalFXEditor",
     "ProgramEditor",
-    "SequencerEditor",
 ]

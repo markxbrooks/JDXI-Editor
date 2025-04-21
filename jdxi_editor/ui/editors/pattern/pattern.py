@@ -78,6 +78,7 @@ class PatternSequencer(SynthEditor):
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self._setup_ui()
         self._init_midi_file()
+        self.setStyleSheet(JDXIStyle.EDITOR)
 
     def _setup_ui(self):
         self.layout = QVBoxLayout()
@@ -165,12 +166,12 @@ class PatternSequencer(SynthEditor):
         file_group = QGroupBox("Pattern")
         file_layout = QHBoxLayout()
 
-        self.load_button = QPushButton(qta.icon("mdi.file-music-outline"), "Load")
+        self.load_button = QPushButton(qta.icon("mdi.file-music-outline", color=JDXIStyle.FOREGROUND), "Load")
         self.load_button.clicked.connect(self._load_pattern_dialog)
-        self.save_button = QPushButton(qta.icon("fa.save"), "Save")
+        self.save_button = QPushButton(qta.icon("fa.save", color=JDXIStyle.FOREGROUND), "Save")
         self.save_button.clicked.connect(self._save_pattern_dialog)
         # Add the Clear Learned Pattern button
-        self.clear_learn_button = QPushButton(qta.icon("ei.broom"), "Clear")
+        self.clear_learn_button = QPushButton(qta.icon("ei.broom", color=JDXIStyle.FOREGROUND), "Clear")
         self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
         self.drum_selector = QComboBox()
         self.drum_selector.addItems(self.drum_options)
@@ -186,9 +187,9 @@ class PatternSequencer(SynthEditor):
         learn_layout = QHBoxLayout()
 
         # Add the Clear Learned Pattern button
-        self.learn_button = QPushButton(qta.icon("ri.play-line"), "Start")
+        self.learn_button = QPushButton(qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Start")
         self.learn_button.clicked.connect(self.on_learn_pattern_button_clicked)
-        self.stop_learn_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
+        self.stop_learn_button = QPushButton(qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop")
         self.stop_learn_button.clicked.connect(
             self.on_stop_learn_pattern_button_clicked
         )
@@ -207,7 +208,7 @@ class PatternSequencer(SynthEditor):
         self.tempo_spinbox.setValue(120)
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
 
-        self.tap_tempo_button = QPushButton(qta.icon("fa5s.drum"), "Tap")
+        self.tap_tempo_button = QPushButton(qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND), "Tap")
         self.tap_tempo_button.clicked.connect(self._on_tap_tempo)
 
         tempo_layout.addWidget(self.tempo_label)
@@ -220,8 +221,8 @@ class PatternSequencer(SynthEditor):
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
 
-        self.start_button = QPushButton(qta.icon("ri.play-line"), "Play")
-        self.stop_button = QPushButton(qta.icon("ri.stop-line"), "Stop")
+        self.start_button = QPushButton(qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play")
+        self.stop_button = QPushButton(qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop")
         self.start_button.clicked.connect(self.play_pattern)
         self.stop_button.clicked.connect(self.stop_pattern)
 
@@ -243,7 +244,8 @@ class PatternSequencer(SynthEditor):
                 icon_name = "msc.piano"
             # Create and add label
             icon_label = QLabel()
-            icon_label.setPixmap(qta.icon(icon_name).pixmap(40, 40))
+            icon_label.setPixmap(qta.icon(icon_name, color=JDXIStyle.FOREGROUND).pixmap(40, 40))
+
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             header_layout.addWidget(icon_label)
             label = QLabel(label_text)
@@ -251,6 +253,7 @@ class PatternSequencer(SynthEditor):
                 color = JDXIStyle.ACCENT_ANALOG
             else:
                 color = JDXIStyle.ACCENT
+            icon_label.setStyleSheet(f"color: {color}")
             label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}")
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             header_layout.addWidget(label)

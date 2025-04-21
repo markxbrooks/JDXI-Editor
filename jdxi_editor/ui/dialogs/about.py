@@ -3,7 +3,7 @@ btk_dialog for about JD-XI Editor
 """
 import os
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox, QHBoxLayout
 from PySide6.QtCore import QSettings, QRect
 
 from jdxi_editor.project import __version__, __program__
@@ -11,6 +11,13 @@ from jdxi_editor.project import __version__, __program__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.style import JDXIStyle
 
+CREDITS_LABEL_STYLE = """
+        /* QLabels */
+            QLabel {{
+                color: 'black';
+                background: #FFFFFF;
+        }}
+        """
 
 class UiAboutDialog(QDialog):
 
@@ -27,7 +34,7 @@ class UiAboutDialog(QDialog):
         """
         self.resize(508, 300)
         self.setWindowTitle(f"about {__program__}")
-        self.setStyleSheet(JDXIStyle.SPLASH_SCREEN)
+        self.setStyleSheet(JDXIStyle.SPLASH_SCREEN + CREDITS_LABEL_STYLE)
         main_layout = QVBoxLayout(self)
         group_box_layout = QVBoxLayout(self)
         group_box = QGroupBox("JDXI Editor")
@@ -60,18 +67,24 @@ class UiAboutDialog(QDialog):
         credits_label.setText(
             "<br><b>Credits:</b><br>"
             "This application uses the following libraries:<br>"
-            "&bull; <a href='https://mido.readthedocs.io/'>Mido</a> – MIDI message parsing and sending<br>"
-            "&bull; <a href='https://www.music.mcgill.ca/~gary/rtmidi/'>RtMidi</a> – Low-level MIDI communication<br>"
-            "&bull; <a href='https://www.qt.io/'>Qt</a> – Cross-platform application framework<br>"
-            "Source code available on <a href='https://github.com/markxbrooks/jdxi-editor'>GitHub</a><br>"
-            "Licensed under the <a href='https://opensource.org/licenses/MIT'>MIT License</a>"
+            "&bull; <a style='color: blue' href='https://mido.readthedocs.io/'>Mido</a> – MIDI message parsing and sending<br>"
+            "&bull; <a style='color: blue' href='https://www.music.mcgill.ca/~gary/rtmidi/'>RtMidi</a> – Low-level MIDI communication<br>"
+            "&bull; <a style='color: blue' href='https://www.qt.io/'>Qt</a> – Cross-platform application framework<br>"
+            "Source code available on <a style='color: blue' href='https://github.com/markxbrooks/jdxi-editor'>GitHub</a><br>"
+            "Licensed under the <a style='color: blue' href='https://opensource.org/licenses/MIT'>MIT License</a>"
         )
+        credits_label.setStyleSheet("""
+                /* QLabels */
+                    QLabel {{
+                        color: 'black';
+                        background: #FFFFFF;
+                }}
+                """)
         credits_label.setOpenExternalLinks(True)
         credits_label.setAlignment(Qt.AlignCenter)
         divider = QLabel("<hr>")
         group_box_layout.addWidget(divider)
         group_box_layout.addWidget(credits_label)
-
         main_layout.addLayout(group_box_layout)
         group_box_layout.addWidget(button_box)
 
@@ -79,9 +92,26 @@ class UiAboutDialog(QDialog):
         self.show()
 
 
-"""
+        """
+        def add_credit_row(layout, icon_filename, html_text):
+            row_layout = QHBoxLayout()
+            icon_label = QLabel()
+            icon_pixmap = QPixmap(resource_path(os.path.join('resources', icon_filename)))
+            icon_label.setPixmap(icon_pixmap.scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            icon_label.setFixedSize(24, 24)
+            row_layout.addWidget(icon_label)
+        
+            text_label = QLabel()
+            text_label.setTextFormat(Qt.RichText)
+            text_label.setText(html_text)
+            text_label.setOpenExternalLinks(True)
+            row_layout.addWidget(text_label)
+            layout.addLayout(row_layout)
+        
+        group_box_layout.addLayout(credits_layout)
         credits_layout = QVBoxLayout()
-
+        divider = QLabel("<hr>")
+        group_box_layout.addWidget(divider)
         add_credit_row(credits_layout, 'mido.png',
                        "<a href='https://mido.readthedocs.io/'>Mido</a> – MIDI message parsing and sending")
         add_credit_row(credits_layout, 'rtmidi.png',

@@ -177,7 +177,7 @@ class PresetEditor(SimpleEditor):
 
         # Load button
         self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill"), "Load Preset"
+            qta.icon("ph.folder-notch-open-fill", color=JDXIStyle.FOREGROUND), "Load Preset"
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)
         layout.addWidget(self.load_button)
@@ -187,7 +187,7 @@ class PresetEditor(SimpleEditor):
         layout.addLayout(self.digital_synth_1_hlayout)
 
         self.digital_synth_1_icon = QLabel()
-        self.digital_synth_1_icon.setPixmap(qta.icon("msc.piano").pixmap(40, 40))
+        self.digital_synth_1_icon.setPixmap(qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
         self.digital_synth_1_title = QLabel("Digital Synth 1")
@@ -212,7 +212,7 @@ class PresetEditor(SimpleEditor):
         layout.addLayout(self.digital_synth_2_hlayout)
 
         self.digital_synth_2_icon = QLabel()
-        self.digital_synth_2_icon.setPixmap(qta.icon("msc.piano").pixmap(40, 40))
+        self.digital_synth_2_icon.setPixmap(qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
         self.digital_synth_2_title = QLabel("Digital Synth 2")
@@ -237,7 +237,7 @@ class PresetEditor(SimpleEditor):
         layout.addLayout(self.drum_kit_hlayout)
 
         self.drum_kit_icon = QLabel()
-        self.drum_kit_icon.setPixmap(qta.icon("fa5s.drum").pixmap(40, 40))
+        self.drum_kit_icon.setPixmap(qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
 
         self.drum_kit_title = QLabel("Drums")
@@ -261,7 +261,7 @@ class PresetEditor(SimpleEditor):
         self.analog_synth_hlayout = QHBoxLayout()
 
         self.analog_synth_icon = QLabel()
-        self.analog_synth_icon.setPixmap(qta.icon("msc.piano").pixmap(40, 40))
+        self.analog_synth_icon.setPixmap(qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
         layout.addLayout(self.analog_synth_hlayout)
