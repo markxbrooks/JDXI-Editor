@@ -192,7 +192,7 @@ def main():
         progress_container.addStretch()
         group_layout.addLayout(progress_container)
         from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-        sub_text_label = DigitalTitle("An editor for the of the JD-XI instrument",
+        sub_text_label = DigitalTitle("An editor & toolkit for the Roland JD-XI instrument",
                                       show_upper_text=False)
         sub_text_label.setMinimumHeight(80)
         sub_text_label.setFixedSize(475, 80)

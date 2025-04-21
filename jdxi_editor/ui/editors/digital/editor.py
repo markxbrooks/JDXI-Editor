@@ -704,3 +704,21 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
         else:
             logging.warning(f"Waveform button not found for {selected_waveform}")
+
+
+class DigitalSynth2Editor(DigitalSynthEditor):
+    """class for Digital Synth Editor containing 3 partials"""
+
+    preset_changed = Signal(int, str, int)
+
+    def __init__(
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        synth_number=2,
+        parent=None,
+        preset_helper=None,
+    ):
+        super().__init__(midi_helper=midi_helper,
+                         synth_number=synth_number,
+                         preset_helper=preset_helper,
+                         parent=parent)

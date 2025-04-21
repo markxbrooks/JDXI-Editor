@@ -66,6 +66,7 @@ from jdxi_editor.ui.editors import (
     VocalFXEditor,
     ProgramEditor, SynthEditor,
 )
+from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
     get_program_name_by_id,
@@ -452,7 +453,7 @@ class JdxiInstrument(JdxiUi):
             "digital1": (
                 "Digital Synth 1", DigitalSynthEditor, JDXISynth.DIGITAL_1, MidiChannel.DIGITAL1, {"synth_number": 1}),
             "digital2": (
-                "Digital Synth 2", DigitalSynthEditor, JDXISynth.DIGITAL_2, MidiChannel.DIGITAL2, {"synth_number": 2}),
+                "Digital Synth 2", DigitalSynth2Editor, JDXISynth.DIGITAL_2, MidiChannel.DIGITAL2, {"synth_number": 2}),
             "analog": ("Analog Synth", AnalogSynthEditor, JDXISynth.ANALOG, MidiChannel.ANALOG),
             "drums": ("Drums", DrumCommonEditor, JDXISynth.DRUMS, MidiChannel.DRUM),
             "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
@@ -489,6 +490,7 @@ class JdxiInstrument(JdxiUi):
             preset_helper = self._get_preset_helper_for_current_synth() \
                 if editor_class in [ArpeggioEditor,
                                     DigitalSynthEditor,
+                                    DigitalSynth2Editor,
                                     AnalogSynthEditor,
                                     DrumCommonEditor,
                                     PatternSequencer,

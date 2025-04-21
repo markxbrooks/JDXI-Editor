@@ -1,5 +1,8 @@
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox
+import re
 
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox, QLabel, \
+    QLineEdit, QHBoxLayout
+import logging
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
@@ -9,13 +12,19 @@ class DrumWMTSection(QWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        midi_helper,
+            self,
+            controls,
+            create_parameter_combo_box,
+            create_parameter_slider,
+            midi_helper,
     ):
         super().__init__()
+        self.l_wave_combos = {}
+        self.l_wave_search_boxes = {}
+        self.l_wave_selectors = {}
+        self.r_wave_combos = {}
+        self.r_wave_search_boxes = {}
+        self.r_wave_selectors = {}
         self.wmt_tab_widget = None
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
@@ -74,7 +83,7 @@ class DrumWMTSection(QWidget):
         wmt4_layout = self._create_wmt4_layout()
         wmt4_tab.setLayout(wmt4_layout)
         scrolled_layout.addWidget(wmt_group)
-        
+
     def _create_wmt_layout(self, wmt_index: int):
         layout = QFormLayout()
         prefix = f"WMT{wmt_index}_"
@@ -82,22 +91,142 @@ class DrumWMTSection(QWidget):
         def p(name):  # helper to get DrumPartialParameter by name
             return getattr(AddressParameterDrumPartial, prefix + name)
 
-        layout.addRow(QLabel("Search waves:"))
-        self.l_wave_search_box = QLineEdit()
-        self.l_wave_search_box.setPlaceholderText("Search L wave...")
-        self.l_wave_search_box.textChanged.connect(self._populate_l_waves)
+        self.wave_switch = self._create_parameter_combo_box(p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"], [0, 1])
+        layout.addRow(self.wave_switch)
 
-        # Combo boxes
-        layout.addRow(self._create_parameter_combo_box(p("WAVE_SWITCH"), f"{prefix}Wave Switch", ["OFF", "ON"], [0, 1]))
-        layout.addRow(self._create_parameter_combo_box(p("WAVE_NUMBER_L"), f"{prefix}Wave Number L/Mono", rm_waves,
-                                                       list(range(453))))
-        layout.addRow(QLabel("Search waves:"))
-        self.r_wave_search_box = QLineEdit()
-        self.r_wave_search_box.setPlaceholderText("Search R wave...")
-        self.r_wave_search_box.textChanged.connect(self._populate_r_waves)
+        rm_wave_groups = [
+                        "909",
+                        "808",
+                        "707",
+                        "626",
+                        "78",
+                        "Lo-bit",
+                        "Jungle",
+                        "Hip-Hop",
+                        "Analog",
 
-        layout.addRow(
-            self._create_parameter_combo_box(p("WAVE_NUMBER_R"), f"{prefix}Wave Number R", rm_waves, list(range(453))))
+                        "Kick",
+                        "Snare",
+                        "Tom",
+                        "Clap",
+                        "Rimshot",
+                        "Stick",
+                        "Cowbell",
+                        "Bongo",
+                        "Conga",
+                        "Brush",
+
+                        "Cymbal",
+                        "Crash",
+
+                        "CHH",
+                        "OHH",
+                        "PHH",
+
+                        "Synth",
+                        "MG",
+                        "Jazz"
+                    ]
+
+        rm_wave_groups = [
+
+            # === Drum Machine Sources ===
+            "Drum Machines", "    606", "    626", "    707", "    808", "    909", "    78", "    106", "    TM-2",
+
+            # === Musical Genres & Styles ===
+            "Genres/Styles", "    Ballad", "    Break", "    Dance", "    DanceHall", "    Hip-Hop", "    HipHop", "    Jazz",
+            "    Jungle", "    Ragga", "    Reggae", "    Rock",
+
+            # === Sound Character & Texture ===
+            "Character", "    Analog", "    Bright", "    Dry", "    Hard", "    Lite", "    Lo-Bit", "    Lo-Fi", "    Old",
+            "    Plastic", "    Power", "    Tight", "    Turbo", "    Vint", "    Warm", "    Wet", "    Wide", "    Wild",
+
+            # === Instrument Types ===
+            "Instruments" "    Kick", "    Snare", "    Tom", "    Clap", "    Cymbal", "    Crash",
+
+            # === Percussion Types ===
+            "Percussion", "    Bongo", "    Brush", "    Brsh", "    Conga", "    Cowbell", "    Piccolo", "    Rim", "    Rimshot",
+            "    Stick", "    Cstick", "    Swish", "    Swish&Trn",
+
+            # === Hi-Hats ===
+            "Hi-Hats", "    CHH", "    OHH", "    PHH", "    C&OHH", "    Tip",
+
+            # === Layer/Expression/Technique Tags ===
+            "Layer Tags", "    Jazz Rim", "    Jazz Snare", "    Jz", "    HphpJazz",
+
+            # === Synthesis & Processing ===
+            "Synthesis",  "    Dst", "    Hush", "    Hash", "    LD", "    MG", "    Mix", "    PurePhat", "    SF", "    Sim", "    SimV",
+            "    Synth", "    TY", "    WD"
+        ]
+
+        # --- Combo and Search Controls for L Wave ---
+        layout.addRow(QLabel("Search L waves:"))
+
+        # Search box
+        l_wave_search_box = QLineEdit()
+        l_wave_search_box.setPlaceholderText("Search L waves...")
+        self.l_wave_search_boxes[wmt_index] = l_wave_search_box
+
+        # Group selector
+        l_wave_selector = QComboBox()
+        l_wave_selector.addItems(rm_wave_groups)
+        self.l_wave_selectors[wmt_index] = l_wave_selector
+
+        # Combo box (wave list)
+        l_wave_combo = self._create_parameter_combo_box(p("WAVE_NUMBER_L"), "Wave Number L/Mono",
+                                                        rm_waves,
+                                                        list(range(453)))
+        self.l_wave_combos[wmt_index] = l_wave_combo
+
+        # Connect both search & selector to populate method
+        l_wave_search_box.textChanged.connect(lambda _, i=wmt_index: self._populate_l_waves(i))
+        l_wave_selector.currentTextChanged.connect(lambda _, i=wmt_index: self._populate_l_waves(i))
+
+        # Add widgets to layout
+        search_row = QHBoxLayout()
+        search_row.addWidget(QLabel("Group:"))
+        search_row.addWidget(l_wave_selector)
+        search_row.addWidget(QLabel("Search:"))
+        search_row.addWidget(l_wave_search_box)
+        layout.addRow(search_row)
+        layout.addRow(l_wave_combo)
+
+        self.l_wave_combos[wmt_index] = l_wave_combo
+        self.l_wave_search_boxes[wmt_index] = l_wave_search_box
+        self.l_wave_selectors[wmt_index] = l_wave_selector
+
+        # --- Combo and Search Controls for R Wave ---
+        layout.addRow(QLabel("Search R waves:"))
+
+        # Search box
+        r_wave_search_box = QLineEdit()
+        r_wave_search_box.setPlaceholderText("Search R waves...")
+        self.r_wave_search_boxes[wmt_index] = r_wave_search_box
+
+        # Group selector
+        r_wave_selector = QComboBox()
+        r_wave_selector.addItems(rm_wave_groups)
+        self.r_wave_selectors[wmt_index] = r_wave_selector
+
+        # Combo box (wave list)
+        r_wave_combo = self._create_parameter_combo_box(p("WAVE_NUMBER_R"), "Wave Number R",
+                                                        rm_waves,
+                                                        list(range(453)))
+        self.r_wave_combos[wmt_index] = r_wave_combo
+
+        # Connect both search & selector to populate method
+        r_wave_search_box.textChanged.connect(lambda _, i=wmt_index: self._populate_r_waves(i))
+        r_wave_selector.currentTextChanged.connect(lambda _, i=wmt_index: self._populate_r_waves(i))
+
+        # Add widgets to layout
+        r_search_row = QHBoxLayout()
+        r_search_row.addWidget(QLabel("Group:"))
+        r_search_row.addWidget(r_wave_selector)
+        r_search_row.addWidget(QLabel("Search:"))
+        r_search_row.addWidget(r_wave_search_box)
+        layout.addRow(r_search_row)
+        layout.addRow(r_wave_combo)
+
         layout.addRow(
             self._create_parameter_combo_box(p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]))
         layout.addRow(self._create_parameter_combo_box(p("WAVE_GAIN"), "Wave FXM Switch", ["OFF", "ON"],
@@ -127,11 +256,49 @@ class DrumWMTSection(QWidget):
 
         return layout
 
-    def _populate_l_waves(self):
-        pass
+    def _populate_l_waves(self, wmt_index):
+        try:
+            search_box = self.l_wave_search_boxes[wmt_index]
+            selector = self.l_wave_selectors[wmt_index]
+            combo = self.l_wave_combos[wmt_index]
 
-    def _populate_r_waves(self):
-        pass
+            search_text = search_box.text().strip()
+            group_filter = selector.currentText().strip()
+
+            filtered = rm_waves
+            if search_text:
+                filtered = [w for w in filtered if re.search(search_text, w, re.I)]
+            if group_filter:
+                filtered = [w for w in filtered if group_filter.lower() in w.lower()]
+
+            combo.combo_box.clear()
+            combo.combo_box.addItems(filtered)
+            logging.info(
+                f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'")
+        except Exception as ex:
+            logging.warning(f"WMT{wmt_index}: Error filtering L waves: {ex}")
+
+    def _populate_r_waves(self, wmt_index):
+        try:
+            search_box = self.r_wave_search_boxes[wmt_index]
+            selector = self.r_wave_selectors[wmt_index]
+            combo = self.r_wave_combos[wmt_index]
+
+            search_text = search_box.text().strip()
+            group_filter = selector.currentText().strip()
+
+            filtered = rm_waves
+            if search_text:
+                filtered = [w for w in filtered if re.search(search_text, w, re.I)]
+            if group_filter:
+                filtered = [w for w in filtered if group_filter.lower() in w.lower()]
+
+            combo.combo_box.clear()
+            combo.combo_box.addItems(filtered)
+            logging.info(
+                f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'")
+        except Exception as ex:
+            logging.warning(f"WMT{wmt_index}: Error filtering R waves: {ex}")
 
     def _create_wmt1_layout(self):
         return self._create_wmt_layout(1)
