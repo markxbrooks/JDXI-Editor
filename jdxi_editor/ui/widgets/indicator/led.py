@@ -1,8 +1,8 @@
 import time
 
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QSize, QTimer
-from PySide6.QtGui import QPainter, QColor, QBrush, QPen
+from PySide6.QtCore import Qt, QSize, QTimer, QPointF
+from PySide6.QtGui import QPainter, QColor, QBrush, QPen, QLinearGradient
 
 
 class LEDIndicator(QWidget):
@@ -80,9 +80,15 @@ class LEDIndicator(QWidget):
         else:
             color = self._off_color
 
+        gradient = QLinearGradient(QPointF(0, 1), QPointF(0, 0))  # From bottom to top
+        gradient.setCoordinateMode(QLinearGradient.ObjectBoundingMode)
+        gradient.setColorAt(0.0, QColor(0, 255, 0, 0))  # Green at the bottom
+        gradient.setColorAt(0.5, color)  # Transparent at the top
+        gradient.setColorAt(1.0, QColor(0, 255, 0, 0))  # Transparent at the top
+
         # Draw LED circle
         painter.setPen(QPen(Qt.black, 1))
-        painter.setBrush(QBrush(color))
+        painter.setBrush(gradient)
         painter.drawEllipse(2, 2, 12, 12)
 
         # Add highlight

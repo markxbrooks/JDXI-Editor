@@ -1,4 +1,5 @@
 """
+SequencerEditor
 
 Module: Pattern Sequencer with MIDI Integration
 
@@ -49,7 +50,7 @@ from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
 
-class MidiFileEditor(SynthEditor):
+class SequencerEditor(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
     def __init__(
