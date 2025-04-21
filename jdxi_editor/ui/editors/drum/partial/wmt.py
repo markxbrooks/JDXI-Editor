@@ -95,40 +95,6 @@ class DrumWMTSection(QWidget):
         layout.addRow(self.wave_switch)
 
         rm_wave_groups = [
-                        "909",
-                        "808",
-                        "707",
-                        "626",
-                        "78",
-                        "Lo-bit",
-                        "Jungle",
-                        "Hip-Hop",
-                        "Analog",
-
-                        "Kick",
-                        "Snare",
-                        "Tom",
-                        "Clap",
-                        "Rimshot",
-                        "Stick",
-                        "Cowbell",
-                        "Bongo",
-                        "Conga",
-                        "Brush",
-
-                        "Cymbal",
-                        "Crash",
-
-                        "CHH",
-                        "OHH",
-                        "PHH",
-
-                        "Synth",
-                        "MG",
-                        "Jazz"
-                    ]
-
-        rm_wave_groups = [
 
             # === Drum Machine Sources ===
             "Drum Machines", "    606", "    626", "    707", "    808", "    909", "    78", "    106", "    TM-2",
