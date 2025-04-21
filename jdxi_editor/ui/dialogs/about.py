@@ -1,5 +1,5 @@
 """
-btk_dialog for about biotoolkit
+btk_dialog for about JD-XI Editor
 """
 import os
 from PySide6.QtGui import QPixmap, Qt
@@ -55,11 +55,45 @@ class UiAboutDialog(QDialog):
         button_box.setStandardButtons(QDialogButtonBox.Ok)
         button_box.setObjectName("buttonBox")
         button_box.accepted.connect(self.close)
+        credits_label = QLabel()
+        credits_label.setTextFormat(Qt.RichText)
+        credits_label.setText(
+            "<br><b>Credits:</b><br>"
+            "This application uses the following libraries:<br>"
+            "&bull; <a href='https://mido.readthedocs.io/'>Mido</a> – MIDI message parsing and sending<br>"
+            "&bull; <a href='https://www.music.mcgill.ca/~gary/rtmidi/'>RtMidi</a> – Low-level MIDI communication<br>"
+            "&bull; <a href='https://www.qt.io/'>Qt</a> – Cross-platform application framework<br>"
+            "Source code available on <a href='https://github.com/markxbrooks/jdxi-editor'>GitHub</a><br>"
+            "Licensed under the <a href='https://opensource.org/licenses/MIT'>MIT License</a>"
+        )
+        credits_label.setOpenExternalLinks(True)
+        credits_label.setAlignment(Qt.AlignCenter)
+        divider = QLabel("<hr>")
+        group_box_layout.addWidget(divider)
+        group_box_layout.addWidget(credits_label)
 
         main_layout.addLayout(group_box_layout)
         group_box_layout.addWidget(button_box)
 
         # show all the widgets
         self.show()
+
+
+"""
+        credits_layout = QVBoxLayout()
+
+        add_credit_row(credits_layout, 'mido.png',
+                       "<a href='https://mido.readthedocs.io/'>Mido</a> – MIDI message parsing and sending")
+        add_credit_row(credits_layout, 'rtmidi.png',
+                       "<a href='https://www.music.mcgill.ca/~gary/rtmidi/'>RtMidi</a> – Low-level MIDI communication")
+        add_credit_row(credits_layout, 'qt.png',
+                       "<a href='https://www.qt.io/'>Qt</a> – Cross-platform application framework")
+        add_credit_row(credits_layout, 'github.png',
+                       "Source code on <a href='https://github.com/yourusername/jdxi-editor'>GitHub</a>")
+        add_credit_row(credits_layout, 'license.png',
+                       "Licensed under the <a href='https://opensource.org/licenses/MIT'>MIT License</a>")
+
+        image_layout.addLayout(credits_layout)
+"""
 
 
