@@ -321,7 +321,7 @@ class JdxiInstrument(JdxiUi):
             return JDXIPresets.DIGITAL_ENUMERATED  # Safe fallback
         return presets
 
-    def _program_previous(self):
+    def _program_previous_old(self):
         """Decrement the program index and update the display."""
         if self.current_program_number == 1:
             logging.info("Already at the first program.")
@@ -337,13 +337,13 @@ class JdxiInstrument(JdxiUi):
         self.program_helper.previous_program()
         self._update_display()
 
-    def _program_next(self):
+    def _program_next_old(self):
         """Increment the program index and update the display."""
         self.current_program_number += 1
         self.program_helper.next_program()
         self._update_display()
 
-    def _tone_previous(self):
+    def _tone_previous_old(self):
         """Decrement the tone index and update the display."""
         if self.current_preset_index <= 0:
             logging.info("Already at the first preset.")
@@ -369,7 +369,7 @@ class JdxiInstrument(JdxiUi):
             self.current_preset_index, self.current_synth_type
         )
 
-    def _tone_next(self):
+    def _tone_next_old(self):
         """Increment the tone index and update the display."""
         max_index = len(self._get_presets_for_current_synth()) - 1
         if self.current_preset_index >= max_index:
@@ -394,6 +394,73 @@ class JdxiInstrument(JdxiUi):
         preset_helper.load_preset_by_program_change(
             self.current_preset_index, self.current_synth_type
         )
+        
+    def _show_message_box(self, title, text, icon=QMessageBox.Critical):
+        """Helper method to display a QMessageBox."""
+        logging.info(text)
+        msg_box = QMessageBox()
+        msg_box.setIcon(icon)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(text)
+        msg_box.exec()
+    
+    def _update_program(self, index_change):
+        """Update the program by incrementing or decrementing its index."""
+        new_program_number = self.current_program_number + index_change
+        if new_program_number < 1:
+            _show_message_box("First program", "Already at the first program.")
+            return
+        self.current_program_number = new_program_number
+        if index_change > 0:
+            self.program_helper.next_program()
+        else:
+            self.program_helper.previous_program()
+        self._update_display()
+    
+    
+    def _update_tone(self, index_change):
+        """Update the tone by incrementing or decrementing its index."""
+        presets = self._get_presets_for_current_synth()
+        max_index = len(presets) - 1
+        new_preset_index = self.current_preset_index + index_change
+    
+        if new_preset_index < 0:
+            _show_message_box("First preset", "Already at the first preset.")
+            return
+        if new_preset_index > max_index:
+            _show_message_box("Last preset", "Already at the last preset.")
+            return
+    
+        self.current_preset_index = new_preset_index
+        preset_helper = self._get_preset_helper_for_current_synth()
+        self._update_display_preset(
+            self.current_preset_index,
+            presets[self.current_preset_index],
+            self.channel,
+        )
+        preset_helper.load_preset_by_program_change(
+            self.current_preset_index, self.current_synth_type
+        )
+
+
+    def _program_previous(self):
+        """Decrement the program index and update the display."""
+        self._update_program(-1)
+    
+    
+    def _program_next(self):
+        """Increment the program index and update the display."""
+        self._update_program(1)
+    
+    
+    def _tone_previous(self):
+        """Decrement the tone index and update the display."""
+        self._update_tone(-1)
+    
+    
+    def _tone_next(self):
+        """Increment the tone index and update the display."""
+        self._update_tone(1)
 
     def update_display_callback(self, synth_type, preset_index, channel):
         """Update the display for the given synth preset_type and preset index."""
