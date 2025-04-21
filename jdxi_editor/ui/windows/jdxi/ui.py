@@ -44,7 +44,6 @@ from jdxi_editor.midi.data.editor.data import (
 )
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.type import JDXISynth
-from jdxi_editor.ui.editors import ArpeggioEditor
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
@@ -52,28 +51,22 @@ from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
 from jdxi_editor.ui.widgets.indicator import LEDIndicator
-from jdxi_editor.ui.windows.jdxi.containers.arpeggiator import add_arpeggiator_buttons
-from jdxi_editor.ui.windows.jdxi.containers.effects import add_effects_container
-from jdxi_editor.ui.windows.jdxi.containers.octave import add_octave_buttons
-from jdxi_editor.ui.windows.jdxi.containers.digital_display import add_digital_display
-from jdxi_editor.ui.windows.jdxi.containers.parts import create_parts_container
-from jdxi_editor.ui.windows.jdxi.containers.program import (
+from jdxi_editor.ui.windows.jdxi.containers import (
+    add_arpeggiator_buttons,
+    add_slider_container,
+    add_digital_display,
+    add_effects_container,
+    add_octave_buttons,
     add_program_container,
-    create_program_buttons_row,
-)
-from jdxi_editor.ui.windows.jdxi.containers.sequencer import (
     add_sequencer_container,
     add_favorite_button_container,
-)
-from jdxi_editor.ui.windows.jdxi.containers.sliders import add_slider_container
-from jdxi_editor.ui.windows.jdxi.containers.title import add_title_container
-from jdxi_editor.ui.windows.jdxi.containers.tone import (
+    add_title_container,
     add_tone_container,
-    create_tone_buttons_row,
-)
-from jdxi_editor.ui.windows.jdxi.containers.wheels import (
-    build_wheel_label_row,
     build_wheel_row,
+    build_wheel_label_row,
+    create_tone_buttons_row,
+    create_program_buttons_row,
+    create_parts_container,
 )
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
@@ -343,18 +336,23 @@ class JdxiUi(QMainWindow):
 
         # Add MIDI debugger action (SysEx decoder)
         midi_debugger_action = QAction("MIDI SysEx Debugger", self)
-        midi_debugger_action.triggered.connect(self._open_midi_debugger)
+        midi_debugger_action.triggered.connect(self._show_midi_debugger)
         self.debug_menu.addAction(midi_debugger_action)
 
         # Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._open_midi_message_debug)
+        midi_monitor_action.triggered.connect(self._show_midi_message_debug)
         self.debug_menu.addAction(midi_monitor_action)
 
         # Add log viewer action
         log_viewer_action = QAction("Log Viewer", self)
         log_viewer_action.triggered.connect(self._show_log_viewer)
         self.debug_menu.addAction(log_viewer_action)
+
+        # Add About window action
+        about_help_action = QAction("About", self)
+        about_help_action.triggered.connect(self._show_about_help)
+        self.debug_menu.addAction(about_help_action)
 
     def _create_help_menu(self):
         menubar = self.menuBar()
@@ -367,13 +365,18 @@ class JdxiUi(QMainWindow):
 
         # Add MIDI debugger action (SysEx decoder)
         midi_debugger_action = QAction("MIDI SysEx Debugger", self)
-        midi_debugger_action.triggered.connect(self._open_midi_debugger)
+        midi_debugger_action.triggered.connect(self._show_midi_debugger)
         self.help_menu.addAction(midi_debugger_action)
 
         # Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._open_midi_message_debug)
+        midi_monitor_action.triggered.connect(self._show_midi_message_debug)
         self.help_menu.addAction(midi_monitor_action)
+
+        # Add About window action
+        about_help_action = QAction("About", self)
+        about_help_action.triggered.connect(self._show_about_help)
+        self.help_menu.addAction(about_help_action)
 
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
@@ -531,14 +534,26 @@ class JdxiUi(QMainWindow):
         """
         QMessageBox.information(self, title, message)
 
-    def _save_favorite(self, button, idx):
-        raise NotImplementedError("to be implemented in subclass")
-
     def _load_settings(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def show_editor(self, param):
         raise NotImplementedError("to be implemented in subclass")
+
+    def _show_midi_debugger(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_about_help(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_midi_message_debug(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_log_viewer(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_midi_config(self):
+        raise NotImplementedError("Should be implemented in subclass")
 
     def _send_octave(self, _):
         raise NotImplementedError("Should be implemented in subclass")
@@ -558,14 +573,5 @@ class JdxiUi(QMainWindow):
     def _show_favorite_context_menu(self, pos, button: Union[FavoriteButton, SequencerSquare]):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _open_midi_debugger(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _open_midi_message_debug(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _show_log_viewer(self):
-        raise NotImplementedError("Should be implemented in subclass")
-
-    def _show_midi_config(self):
-        raise NotImplementedError("Should be implemented in subclass")
+    def _save_favorite(self, button, idx):
+        raise NotImplementedError("to be implemented in subclass")
