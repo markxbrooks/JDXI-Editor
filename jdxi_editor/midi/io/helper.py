@@ -17,7 +17,7 @@ Dependencies:
     - jdxi_manager.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
 
 """
-
+import json
 import logging
 
 from jdxi_editor.midi.io.input_handler import MidiInHandler
@@ -49,6 +49,19 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.initialized = True
 
     def load_patch(self, file_path):
+        """
+        :param file_path: str
+        :return: none
+        load path
+        """
+        try:
+            with open(file_path, "rb") as file:
+                json_data = json.load(file_path)
+                self.midi_sysex_json.emit(json_data)
+        except Exception as ex:
+            logging.info(f"Error {ex} sending sysex list")
+            
+    def load_sysx_patch(self, file_path):
         try:
             with open(file_path, "rb") as file:
                 sysex_data = file.read()
