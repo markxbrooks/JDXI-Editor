@@ -22,6 +22,8 @@ Dependencies:
 
 import json
 import logging
+from pathlib import Path
+
 import mido
 from typing import Any, Callable, List, Optional, Union
 from PySide6.QtCore import Signal
@@ -377,6 +379,16 @@ class MidiInHandler(MidiIOController):
                 try:
                     parsed_data_dict = parse_sysex(sysex_message_bytes)
                     self._emit_program_or_tone_name(parsed_data_dict)
+                    # save to home directory with time stamp
+                    # log_to_json(parsed_data_dict)
+                    # Save the parsed data as a JSON string
+                    json_string = json.dumps(parsed_data_dict)
+                    json_log_folder = Path.home() / ".jdxi_editor" / "logs"
+                    json_log_folder.mkdir(parents=True, exist_ok=True)
+                    json_log_file = json_log_folder / f"jdxi_tone_data_{parsed_data_dict['ADDRESS']}.json"
+                    with open(json_log_file, "w") as f:
+                        f.write(json_string)
+                    # Emit the parsed data as a JSON string
                     self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
                     log_to_json(parsed_data_dict)
                 except Exception as parse_ex:
