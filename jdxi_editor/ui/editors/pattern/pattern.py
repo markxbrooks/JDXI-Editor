@@ -323,16 +323,17 @@ class PatternSequencer(SynthEditor):
 
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
-        logging.info(f"message note: {message.note} channel: {message.channel}")
-        if message.type == "note_on":
-            if message.channel == MidiChannel.DIGITAL1:
-                self.digital1_selector.setCurrentIndex(message.note - 36)
-            elif message.channel == MidiChannel.DIGITAL2:
-                self.digital2_selector.setCurrentIndex(message.note - 36)
-            elif message.channel == MidiChannel.ANALOG:
-                self.analog_selector.setCurrentIndex(message.note - 36)
-            elif message.channel == MidiChannel.DRUM:
-                self.drum_selector.setCurrentIndex(message.note - 36)
+        if message.type == "note_on" and message.velocity > 0:
+            logging.info(f"message note: {message.note} channel: {message.channel}")
+            if message.type == "note_on":
+                if message.channel == MidiChannel.DIGITAL1:
+                    self.digital1_selector.setCurrentIndex(message.note - 36)
+                elif message.channel == MidiChannel.DIGITAL2:
+                    self.digital2_selector.setCurrentIndex(message.note - 36)
+                elif message.channel == MidiChannel.ANALOG:
+                    self.analog_selector.setCurrentIndex(message.note - 36)
+                elif message.channel == MidiChannel.DRUM:
+                    self.drum_selector.setCurrentIndex(message.note - 36)
 
     def _midi_note_to_combo_index(self, row, midi_note):
         """Convert a MIDI note number to the corresponding combo box index."""
