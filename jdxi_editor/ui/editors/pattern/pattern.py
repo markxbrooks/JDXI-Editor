@@ -30,7 +30,6 @@ from PySide6.QtWidgets import (
     QComboBox,
     QGroupBox,
     QSpinBox,
-    QWidget,
     QMessageBox,
 )
 
@@ -42,6 +41,7 @@ from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.style import JDXIStyle
@@ -87,77 +87,12 @@ class PatternSequencer(SynthEditor):
         self.mute_buttons = []  # List to store mute buttons
 
         # Define synth options
-        self.digital_options = [
-            "C4",
-            "C#4",
-            "D4",
-            "D#4",
-            "E4",
-            "F4",
-            "F#4",
-            "G4",
-            "G#4",
-            "A4",
-            "A#4",
-            "B4",
-            "C5",
-            "C#5",
-            "D5",
-            "D#5",
-            "E5",
-            "F5",
-            "F#5",
-            "G5",
-            "G#5",
-            "A5",
-            "A#5",
-            "B5",
-            "C6",
-            "C#6",
-            "D6",
-            "D#6",
-            "E6",
-            "F6",
-            "F#6",
-            "G6",
-            "G#6",
-            "A6",
-            "A#6",
-            "B6",
-            "C7",
-        ]
+        self.digital_options = DIGITAL_OPTIONS
 
         self.analog_options = self.digital_options
 
         # Define drum kit options
-        self.drum_options = [
-            "BD1",
-            "RIM",
-            "BD2",
-            "CLAP",
-            "BD3",
-            "SD1",
-            "CHH",
-            "SD2",
-            "PHH",
-            "SD3",
-            "OHH",
-            "SD4",
-            "TOM1",
-            "PRC1",
-            "TOM2",
-            "PRC2",
-            "TOM3",
-            "PRC3",
-            "CYM1",
-            "PRC4",
-            "CYM2",
-            "PRC5",
-            "CYM3",
-            "HIT",
-            "OTH1",
-            "OTH2",
-        ]
+        self.drum_options = DRUM_OPTIONS
 
         # Add transport and file controls at the top
         control_panel = QHBoxLayout()
