@@ -24,6 +24,7 @@ from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.ui.editors import SynthEditor
+from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget, MidiTrackViewer
 
@@ -67,6 +68,9 @@ class MidiPlayer(SynthEditor):
         layout.addWidget(self.file_label)
 
         self.load_button = QPushButton("Load MIDI File")
+        self.load_button = QPushButton(qta.icon("mdi.midi-port",
+                                                color=JDXIStyle.FOREGROUND),
+                                       "Load MIDI File")
         self.load_button.clicked.connect(self.load_midi)
         layout.addWidget(self.load_button)
 
@@ -97,12 +101,20 @@ class MidiPlayer(SynthEditor):
         transport_layout = QVBoxLayout()
         transport_group.setLayout(transport_layout)
         # self.play_button = QPushButton("Play")
-        self.play_button = QPushButton(qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play")
+        self.play_button = QPushButton(qta.icon("ri.play-line",
+                                                color=JDXIStyle.FOREGROUND),
+                                       "Play")
         self.play_button.clicked.connect(self.start_playback)
         transport_layout.addWidget(self.play_button)
 
-        self.stop_button = QPushButton(qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop")
-        self.pause_button = QPushButton(qta.icon("ri.pause-line", color=JDXIStyle.FOREGROUND), "Pause")
+        self.stop_button = QPushButton(qta.icon(
+            "ri.stop-line",
+            color=JDXIStyle.FOREGROUND),
+            "Stop")
+        self.pause_button = QPushButton(qta.icon(
+            "ri.pause-line",
+            color=JDXIStyle.FOREGROUND),
+            "Pause")
         self.stop_button.clicked.connect(self.stop_playback)
         self.pause_button.clicked.connect(self.toggle_pause_playback)
         transport_layout.addWidget(self.stop_button)
@@ -117,7 +129,10 @@ class MidiPlayer(SynthEditor):
 
     def load_midi(self):
         file_path, _ = QFileDialog.getOpenFileName(
-            self, "Open MIDI File", "", "MIDI Files (*.mid)"
+            self,
+            "Open MIDI File",
+            "",
+            "MIDI Files (*.mid)"
         )
         if file_path:
             self.midi_file = MidiFile(file_path)

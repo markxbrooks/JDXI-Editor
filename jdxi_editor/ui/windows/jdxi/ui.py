@@ -44,6 +44,7 @@ from jdxi_editor.midi.data.editor.data import (
 )
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
@@ -449,9 +450,8 @@ class JdxiUi(QMainWindow):
         """Load the digital LCD font for the display"""
 
         font_name = "JdLCD.ttf"
-        font_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "resources", "fonts", font_name
-        )
+        font_path = resource_path(os.path.join("resources", "fonts", font_name
+                                               ))
         if os.path.exists(font_path):
             logging.debug(f"Found file, Loading {font_name}font from {font_path}")
             try:
@@ -480,7 +480,7 @@ class JdxiUi(QMainWindow):
         self._update_display()
 
     def _update_display_preset(
-        self, preset_number: int, preset_name: str, channel: int
+            self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information"""
         logging.info(
