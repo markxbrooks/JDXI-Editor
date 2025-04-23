@@ -50,17 +50,18 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
     def load_patch(self, file_path):
         """
+        Load the JSON patch as a string and emit it.
+
         :param file_path: str
-        :return: none
-        load path
+        :return: None
         """
         try:
-            with open(file_path, "rb") as file:
-                json_data = json.load(file_path)
-                self.midi_sysex_json.emit(json_data)
+            with open(file_path, "r", encoding="utf-8") as file_handle:
+                json_string = file_handle.read()
+                self.midi_sysex_json.emit(json_string)
         except Exception as ex:
-            logging.info(f"Error {ex} sending sysex list")
-            
+            logging.error(f"Error reading or emitting sysex JSON: {ex}")
+
     def load_sysx_patch(self, file_path):
         try:
             with open(file_path, "rb") as file:

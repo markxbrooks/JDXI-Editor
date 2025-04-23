@@ -1,0 +1,99 @@
+{
+    "DIGITAL_PART_1": {
+        "MONO_SWITCH": [
+            20,
+            0,
+            1
+        ],
+        "PITCH_BEND_UP": [
+            22,
+            0,
+            24
+        ],
+        "PITCH_BEND_DOWN": [
+            23,
+            0,
+            24
+        ],
+        "TONE_LEVEL": [
+            12,
+            0,
+            127
+        ],
+        "RING_SWITCH": [
+            31,
+            0,
+            2
+        ],
+        "UNISON_SWITCH": [
+            46,
+            0,
+            1
+        ],
+        "UNISON_SIZE": [
+            60,
+            0,
+            3
+        ],
+        "PORTAMENTO_SWITCH": [
+            18,
+            0,
+            1
+        ],
+        "PORTAMENTO_TIME": [
+            19,
+            0,
+            127
+        ],
+        "PORTAMENTO_MODE": [
+            49,
+            0,
+            1
+        ],
+        "LEGATO_SWITCH": [
+            50,
+            0,
+            1
+        ],
+        "ANALOG_FEEL": [
+            52,
+            0,
+            127
+        ],
+        "WAVE_SHAPE": [
+            53,
+            0,
+            127
+        ],
+        "ATTACK_TIME_INTERVAL_SENS": [
+            0,
+            0,
+            127
+        ],
+        "RELEASE_TIME_INTERVAL_SENS": [
+            1,
+            0,
+            127
+        ],
+        "PORTAMENTO_TIME_INTERVAL_SENS": [
+            2,
+            0,
+            127
+        ],
+        "ENVELOPE_LOOP_MODE": [
+            3,
+            0,
+            2
+        ],
+        "ENVELOPE_LOOP_SYNC_NOTE": [
+            5,
+            0,
+            19
+        ],
+        "CHROMATIC_PORTAMENTO": [
+            6,
+            0,
+            1
+        ]
+    }
+}
