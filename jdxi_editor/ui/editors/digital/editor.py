@@ -89,13 +89,14 @@ def get_area(data: list[int, int]) -> str:
     return area_mapping.get(tuple(data), "Unknown")
 
 
-def to_hex(value: int, width: int = 2) -> str:
-    """Format an integer as a lowercase hex string with 0x prefix."""
-    logging.info(f"to_hex: value: {value} width: {width}")
+def to_hex(value, width=2):
     try:
-        return f"0x{value:0{width}x}"
+        int_value = int(value, 0) if isinstance(value, str) else value
+        logging.info(f"to_hex: value: {value}: 0x{int_value:x} width: {width}")
+        return f"{int_value:0{width}X}"
     except Exception as ex:
         logging.error(f"Error {ex} occurred in to_hex")
+        return "??"
 
 
 class DigitalSynthEditor(SynthEditor):

@@ -506,7 +506,7 @@ class JdxiInstrument(JdxiUi):
             editor.raise_()
 
             setattr(self, instance_attr, editor)
-
+            self.add_editor(editor)
             if hasattr(editor, "preset_helper"):
                 editor.preset_helper.update_display.connect(self.update_display_callback)
 
@@ -573,7 +573,10 @@ class JdxiInstrument(JdxiUi):
         """Show load patch dialog"""
         try:
             patch_manager = PatchManager(
-                midi_helper=self.midi_helper, parent=self, save_mode=False, editors=self.editors,
+                midi_helper=self.midi_helper,
+                parent=self,
+                save_mode=False,
+                editors=self.editors,
             )
             patch_manager.show()
         except Exception as ex:
