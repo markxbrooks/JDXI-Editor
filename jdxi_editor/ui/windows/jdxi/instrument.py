@@ -542,7 +542,6 @@ class JdxiInstrument(JdxiUi):
             self.midi_debugger = MIDIDebugger(self.midi_helper)
             # Clean up reference when window is closed
             self.midi_debugger.setAttribute(Qt.WA_DeleteOnClose)
-            self.midi_debugger.destroyed.connect(self._midi_debugger_closed)
             logging.debug("Created new MIDI debugger window")
         self.midi_debugger.show()
         self.midi_debugger.raise_()
