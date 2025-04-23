@@ -247,6 +247,14 @@ class JdxiInstrument(JdxiUi):
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = None
 
+    def data_request(self):
+        """Send data request SysEx messages to the JD-Xi"""
+        # Define SysEx messages as byte arrays
+        for request in self.midi_requests:
+            request = bytes.fromhex(request)
+            # Send each SysEx message
+            self.midi_helper.send_raw_message(request)
+
     def set_current_program_name(self, program_name: str):
         """program name"""
         self.current_program_name = program_name
@@ -265,30 +273,26 @@ class JdxiInstrument(JdxiUi):
 
     def set_current_digital1_tone_name(self, tone_name: str):
         """ digital1 tone name"""
+        self.tone_manager.set_tone_name_by_type(JDXISynth.DIGITAL_1, tone_name)
         self.current_digital1_tone_name = tone_name
         self._update_display()
-
-    def data_request(self):
-        """Send data request SysEx messages to the JD-Xi"""
-        # Define SysEx messages as byte arrays
-        for request in self.midi_requests:
-            request = bytes.fromhex(request)
-            # Send each SysEx message
-            self.midi_helper.send_raw_message(request)
 
     def set_current_digital2_tone_name(self, tone_name: str):
         """digital 2 tone name"""
         self.current_digital2_tone_name = tone_name
+        self.tone_manager.set_tone_name_by_type(JDXISynth.DIGITAL_2, tone_name)
         self._update_display()
 
     def set_current_analog_tone_name(self, tone_name: str):
         """analog tone name"""
         self.current_analog_tone_name = tone_name
+        self.tone_manager.set_tone_name_by_type(JDXISynth.ANALOG, tone_name)
         self._update_display()
 
     def set_current_drums_tone_name(self, tone_name: str):
         """drums tone name"""
         self.current_drums_tone_name = tone_name
+        self.tone_manager.set_tone_name_by_type(JDXISynth.DRUMS, tone_name)
         self._update_display()
 
     def _select_synth(self, synth_type):

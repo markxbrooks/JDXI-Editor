@@ -72,6 +72,49 @@ from jdxi_editor.ui.windows.jdxi.containers import (
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
+class ToneManager:
+    def __init__(self):
+        # Initialize tone-related attributes
+        self.current_tone_number = 1
+        self.current_tone_name = "Init Tone"
+        self.current_tone_names = {
+            JDXISynth.DIGITAL_1: "Init Tone",
+            JDXISynth.DIGITAL_2: "Init Tone",
+            JDXISynth.ANALOG: "Init Tone",
+            JDXISynth.DRUMS: "Init Tone"
+        }
+
+    def set_current_tone_name(self, tone_name: str):
+        """Set the current global tone name."""
+        self.current_tone_name = tone_name
+        self._update_display()
+
+    def set_tone_name_by_type(self, tone_type: str, tone_name: str):
+        """Set the tone name for a specific tone type."""
+        if tone_type in self.current_tone_names:
+            self.current_tone_names[tone_type] = tone_name
+            self._update_display()
+        else:
+            raise ValueError(f"Invalid tone type: {tone_type}")
+
+    def get_tone_name_by_type(self, tone_type: str) -> str:
+        """Get the tone name for a specific tone type."""
+        return self.current_tone_names.get(tone_type, "Unknown Tone")
+
+    def reset_all_tones(self):
+        """Reset all tone names to 'Init Tone'."""
+        self.current_tone_number = 1
+        self.current_tone_name = "Init Tone"
+        for tone_type in self.current_tone_names:
+            self.current_tone_names[tone_type] = "Init Tone"
+        self._update_display()
+
+    def _update_display(self):
+        """Update the display."""
+        # Implementation for updating the display
+        pass
+
+
 class JdxiUi(QMainWindow):
     """JDXI UI setup, with little or no actual functionality, which is super-classed"""
 
@@ -92,14 +135,15 @@ class JdxiUi(QMainWindow):
         self.sequencer_buttons = []
         self.current_program_bank_letter = "A"
         self.program_helper = None
-        self.current_tone_number = 1
-        self.current_tone_name = "Init Tone"
         self.current_program_number = 1
         self.current_program_name = "Init Program"
-        self.current_digital1_tone_name = "Init Tone"
-        self.current_digital2_tone_name = "Init Tone"
-        self.current_analog_tone_name = "Init Tone"
-        self.current_drums_tone_name = "Init Tone"
+        self.tone_manager = ToneManager()
+        self.current_tone_number = self.tone_manager.current_tone_number
+        self.current_tone_name = self.tone_manager.current_tone_name
+        self.current_digital1_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.DIGITAL_1)
+        self.current_digital2_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.DIGITAL_2)
+        self.current_analog_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.ANALOG)
+        self.current_drums_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.DRUMS)
         # Initialize synth preset_type
         self.current_synth_type = JDXISynth.DIGITAL_1
         # Initialize octave
