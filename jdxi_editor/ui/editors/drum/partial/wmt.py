@@ -96,6 +96,8 @@ class DrumWMTSection(QWidget):
 
         rm_wave_groups = [
 
+            "",  # Empty string for the first item
+
             # === Drum Machine Sources ===
             "Drum Machines", "    606", "    626", "    707", "    808", "    909", "    78", "    106", "    TM-2",
 
@@ -238,7 +240,10 @@ class DrumWMTSection(QWidget):
                 filtered = [w for w in filtered if group_filter.lower() in w.lower()]
 
             combo.combo_box.clear()
-            combo.combo_box.addItems(filtered)
+            for wave in filtered:
+                index_in_rm_waves = rm_waves.index(wave)
+                combo.combo_box.addItem(wave, index_in_rm_waves)
+
             logging.info(
                 f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'")
         except Exception as ex:
@@ -260,7 +265,9 @@ class DrumWMTSection(QWidget):
                 filtered = [w for w in filtered if group_filter.lower() in w.lower()]
 
             combo.combo_box.clear()
-            combo.combo_box.addItems(filtered)
+            for wave in filtered:
+                index_in_rm_waves = rm_waves.index(wave)
+                combo.combo_box.addItem(wave, index_in_rm_waves)
             logging.info(
                 f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'")
         except Exception as ex:
