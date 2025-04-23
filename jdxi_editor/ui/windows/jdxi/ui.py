@@ -97,7 +97,7 @@ class ToneManager:
         else:
             raise ValueError(f"Invalid tone type: {tone_type}")
 
-    def get_tone_name_by_type(self, tone_type: str) -> str:
+    def get_tone_name_by_type(self, tone_type: JDXISynth) -> str:
         """Get the tone name for a specific tone type."""
         return self.current_tone_names.get(tone_type, "Unknown Tone")
 
@@ -464,6 +464,8 @@ class JdxiUi(QMainWindow):
             logging.warning("Unknown synth type. Defaulting to DIGITAL_1.")
             synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
 
+        self.current_tone_name = self.tone_manager.get_tone_name_by_type(self.current_synth_type)
+        """ 
         # Get the current tone name based on synth type
         if synth_data.preset_type == JDXISynth.DIGITAL_1:
             self.current_tone_name = self.current_digital1_tone_name
@@ -473,6 +475,7 @@ class JdxiUi(QMainWindow):
             self.current_tone_name = self.current_drums_tone_name
         elif synth_data.preset_type == JDXISynth.ANALOG:
             self.current_tone_name = self.current_analog_tone_name
+        """
 
         # Update tone number
         self.current_tone_number = get_preset_list_number_by_name(
