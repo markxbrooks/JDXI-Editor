@@ -93,67 +93,72 @@ CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 class JdxiInstrument(JdxiUi):
     def __init__(self):
         super().__init__()
+        self.preset_helpers = None
         self.editor_registry = None
-        self.digital_1_preset_helper = None
+        self.editors = []
+        self.current_synth_type = JDXISynth.DIGITAL_1
+        # Set up programs
         self.current_program_id = "A01"
         self.current_program_number = int(self.current_program_id[1:])
         self.current_program_name = get_program_name_by_id(self.current_program_id)
-        self.slot_num = None
-        self.channel = MidiChannel.DIGITAL1
-        self.last_preset = None
-        self.log_file = None
-        self.preset_type = JDXISynth.DIGITAL_1  # Default preset
-        # Initialize state variables
-        self.current_synth_type = JDXISynth.DIGITAL_1
-        self.current_preset_num = 1  # Initialize preset number
+        self.slot_number = None
+        # Set up presets
+        self.current_preset_number = 1  # Initialize preset number
+        self.current_preset_index = self.current_preset_number - 1 #  Convert to 0-based index
         self.current_preset_name = "JD Xi"  # Initialize preset name
-        self.midi_in_port_name = ""  # Store input port name
-        self.midi_out_port_name = ""  # Store output port name
-        self.key_hold_latched = False
+        #  Initialize MIDI connectivity
         if self.midi_helper:
             self.midi_helper.close_ports()
+        self.channel = MidiChannel.DIGITAL1
         self.midi_helper = MidiIOHelper()
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-        # Initialize windows to None
-        self.log_viewer = None
-        self.midi_debugger = None
-        self.midi_message_debug = None
-
+        self.midi_key_hold_latched = False
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
-
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
-        self.midi_helper.send_identity_request()
-        self.program_helper = ProgramHelper(self.midi_helper,
-                                            MidiChannel.PROGRAM)
-        self._load_digital_font()
-        self.settings = QSettings("jdxi_manager2", "settings")
-        self._load_settings()
-        self.show()
-        self.current_preset_num = 1
-        self.current_preset_name = "INIT PATCH"
-        self.display_label = QLabel()
-        self._toggle_illuminate_sequencer_lightshow(True)
-        if platform.system() == "Windows":
-            self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
         if (
                 not self.midi_helper.current_in_port
                 or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
+        # Initialize windows to None
+        self.log_viewer = None
+        self.midi_debugger = None
+        self.midi_message_monitor = None
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        # Add display to layout
-        if hasattr(self, "main_layout"):
-            self.main_layout.addWidget(self.display_label)
-
-        # Load last used preset settings
-        # FIXME: self._load_last_preset()
-        self.current_synth_type = JDXISynth.DIGITAL_1
+        self.program_helper = ProgramHelper(self.midi_helper,
+                                            MidiChannel.PROGRAM)
+        self._load_digital_font()
+        self.settings = QSettings("jdxi_manager2", "settings")
+        self._load_settings()
+        self._toggle_illuminate_sequencer_lightshow(True)
         self._load_saved_favorites()
         self._update_synth_button_styles()
-        self.current_preset_index = 0
+        self._set_callbacks()
+        self._init_preset_handlers()
         self.old_pos = None
+        self.show()
+
+    def _init_preset_handlers(self):
+        """Initialize preset handlers dynamically"""
+        preset_configs = [
+            (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
+            (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
+            (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+            (JDXISynth.DRUMS, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
+        ]
+        self.preset_helpers = {
+            synth_type: PresetHelper(
+                self.midi_helper, presets, channel=channel, preset_type=synth_type
+            )
+            for synth_type, presets, channel in preset_configs
+        }
+        for helper in self.preset_helpers.values():
+            helper.update_display.connect(self.update_display_callback)
+
+    def _set_callbacks(self):
+        """Set up signal-slot connections for various UI elements."""
         # set up event handling - maybe move to a function
         self.key_hold_button.clicked.connect(self._midi_send_arp_key_hold)
         self.arpeggiator_button.clicked.connect(self._midi_send_arp_on_off)
@@ -170,30 +175,6 @@ class JdxiInstrument(JdxiUi):
         # ctrl-R for data request
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
-
-        # Initialize preset handlers dynamically
-        preset_configs = [
-            (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
-            (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
-        ]
-
-        self.preset_helpers = {
-            synth_type: PresetHelper(
-                self.midi_helper, presets, channel=channel, preset_type=synth_type
-            )
-            for synth_type, presets, channel in preset_configs
-        }
-        for helper in self.preset_helpers.values():
-            helper.update_display.connect(self.update_display_callback)
-        # for back compatibility
-        self.digital_1_preset_helper = self.preset_helpers[JDXISynth.DIGITAL_1]
-        self.digital_2_preset_helper = self.preset_helpers[JDXISynth.DIGITAL_2]
-        self.drums_preset_helper = self.preset_helpers[JDXISynth.DRUMS]
-        self.analog_preset_helper = self.preset_helpers[JDXISynth.ANALOG]
-
-        self.editors = []
 
     def closeEvent(self, event):
         """Handle window close event"""
@@ -411,7 +392,7 @@ class JdxiInstrument(JdxiUi):
         title, editor_class, synth_type, midi_channel, kwargs = (*config, {}) if len(config) == 4 else config
 
         if synth_type:
-            self.preset_type = synth_type
+            self.current_synth_type = synth_type
         if midi_channel:
             self.channel = midi_channel
 
@@ -497,11 +478,11 @@ class JdxiInstrument(JdxiUi):
 
     def _show_midi_message_monitor(self):
         """Open MIDI message monitor window"""
-        if not self.midi_message_debug:
-            self.midi_message_debug = MIDIMessageMonitor(midi_helper=self.midi_helper, parent=self)
-            self.midi_message_debug.setAttribute(Qt.WA_DeleteOnClose)
-        self.midi_message_debug.show()
-        self.midi_message_debug.raise_()
+        if not self.midi_message_monitor:
+            self.midi_message_monitor = MIDIMessageMonitor(midi_helper=self.midi_helper, parent=self)
+            self.midi_message_monitor.setAttribute(Qt.WA_DeleteOnClose)
+        self.midi_message_monitor.show()
+        self.midi_message_monitor.raise_()
 
     def _show_program_editor(self, event):
         """Open the ProgramEditor when the digital display is clicked."""
@@ -587,7 +568,7 @@ class JdxiInstrument(JdxiUi):
 
     def _get_current_preset_type(self):
         """Get the preset_type of the currently selected preset"""
-        return self.preset_type
+        return self.current_synth_type
         # return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
 
     def _ui_update_octave(self):
@@ -604,8 +585,8 @@ class JdxiInstrument(JdxiUi):
         try:
             self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
             self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
-            self.midi_in_port_name = in_port
-            self.midi_out_port_name = out_port
+            self.midi_helper.in_port_name = in_port
+            self.midi_helper.out_port_name = out_port
             self.midi_helper.identify_device()
             self.midi_in_indicator.set_active(self.midi_helper.midi_in is not None)
             self.midi_out_indicator.set_active(self.midi_helper.midi_out is not None)
@@ -647,7 +628,7 @@ class JdxiInstrument(JdxiUi):
         """Send arpeggiator key hold (latch) command"""
         try:
             if self.midi_helper:
-                self.key_hold_latched = not self.key_hold_latched
+                self.midi_key_hold_latched = not self.midi_key_hold_latched
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
                 sysex_message = RolandSysEx(
@@ -716,7 +697,7 @@ class JdxiInstrument(JdxiUi):
         if self.midi_helper:
             # Calculate the correct status byte for note_off:
             # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
-            if not self.key_hold_latched:
+            if not self.midi_key_hold_latched:
                 status = 0x80 + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
@@ -781,7 +762,7 @@ class JdxiInstrument(JdxiUi):
         menu = QMenu()
 
         # Add save action if we have address current preset
-        if hasattr(self, "current_preset_num"):
+        if hasattr(self, "current_preset_number"):
             save_action = menu.addAction("Save Current Preset")
             save_action.triggered.connect(lambda: self._save_to_favorite(button))
 
@@ -794,7 +775,7 @@ class JdxiInstrument(JdxiUi):
 
     def _save_to_favorite(self, button: Union[FavoriteButton, SequencerSquare]):
         """Save current preset to favorite slot"""
-        if hasattr(self, "current_preset_num"):
+        if hasattr(self, "current_preset_number"):
             # Get current preset info from settings
             synth_type = self.settings.value("last_preset/synth_type", JDXISynth.ANALOG)
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
@@ -822,17 +803,17 @@ class JdxiInstrument(JdxiUi):
         """Load saved favorites from settings"""
         for button in self.sequencer_buttons:
             synth_type = self.settings.value(
-                f"favorites/slot{button.slot_num}/synth_type", ""
+                f"favorites/slot{button.slot_number}/synth_type", ""
             )
             if synth_type:
                 preset_num = self.settings.value(
-                    f"favorites/slot{button.slot_num}/preset_num", 0, type=int
+                    f"favorites/slot{button.slot_number}/preset_num", 0, type=int
                 )
                 preset_name = self.settings.value(
-                    f"favorites/slot{button.slot_num}/preset_name", ""
+                    f"favorites/slot{button.slot_number}/preset_name", ""
                 )
                 channel = self.settings.value(
-                    f"favorites/slot{button.slot_num}/channel", 0, type=int
+                    f"favorites/slot{button.slot_number}/channel", 0, type=int
                 )
 
                 button.save_preset_as_favourite(
@@ -872,7 +853,7 @@ class JdxiInstrument(JdxiUi):
                     self.restoreGeometry(geometry)
 
                 # Load preset info
-                self.current_preset_num = int(self.settings.value("preset_num", 1))
+                self.current_preset_number = int(self.settings.value("preset_num", 1))
                 self.current_preset_name = self.settings.value(
                     "preset_name", "INIT PATCH"
                 )
@@ -891,14 +872,14 @@ class JdxiInstrument(JdxiUi):
         try:
             # Save MIDI port settings
             if hasattr(self, "settings"):
-                self.settings.setValue("midi_in", self.midi_in_port_name)
-                self.settings.setValue("midi_out", self.midi_out_port_name)
+                self.settings.setValue("midi_in", self.midi_helper.in_port_name)
+                self.settings.setValue("midi_out", self.midi_helper.out_port_name)
 
                 # Save window geometry
                 self.settings.setValue("geometry", self.saveGeometry())
 
                 # Save current preset info
-                self.settings.setValue("preset_num", self.current_preset_num)
+                self.settings.setValue("preset_num", self.current_preset_number)
                 self.settings.setValue("preset_name", self.current_preset_name)
 
                 logging.debug("Settings saved successfully")

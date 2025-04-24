@@ -244,11 +244,11 @@ class JdxiUi(QMainWindow):
         file_menu.addAction(load_preset_action)
 
         load_action = QAction("Load Patch...", self)
-        load_action.triggered.connect(self._load_patch)
+        load_action.triggered.connect(self._patch_load)
         file_menu.addAction(load_action)
 
         save_action = QAction("Save Patch...", self)
-        save_action.triggered.connect(self._save_patch)
+        save_action.triggered.connect(self._patch_save)
         file_menu.addAction(save_action)
 
         file_menu.addSeparator()
@@ -546,4 +546,10 @@ class JdxiUi(QMainWindow):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _save_favorite(self, button, idx):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _patch_load(self, button, idx):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _patch_save(self, button, idx):
         raise NotImplementedError("to be implemented in subclass")
