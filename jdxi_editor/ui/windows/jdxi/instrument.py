@@ -100,7 +100,6 @@ class JdxiInstrument(JdxiUi):
         self.current_program_name = get_program_name_by_id(self.current_program_id)
         self.slot_num = None
         self.channel = MidiChannel.DIGITAL1
-        self.analog_editor = None
         self.last_preset = None
         self.log_file = None
         self.preset_type = JDXISynth.DIGITAL_1  # Default preset
@@ -153,7 +152,6 @@ class JdxiInstrument(JdxiUi):
         self.current_synth_type = JDXISynth.DIGITAL_1
         self._load_saved_favorites()
         self._update_synth_button_styles()
-        self.current_preset_index = 0
         self.current_preset_index = 0
         self.old_pos = None
         # set up event handling - maybe move to a function
