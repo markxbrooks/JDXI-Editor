@@ -1,3 +1,5 @@
+import logging
+
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.preset.type import JDXISynth
@@ -27,16 +29,26 @@ class PresetManager:
             MidiChannel.DIGITAL2: JDXIPresets.DIGITAL_ENUMERATED,
             MidiChannel.DRUM: JDXIPresets.DRUM_ENUMERATED,
         }
-        self.preset_list_map = {
-            JDXISynth.ANALOG: JDXIPresets.ANALOG,
+        self.preset_synth_map = {
+            JDXISynth.ANALOG: JDXIPresets.ANALOG_ENUMERATED,
             JDXISynth.DIGITAL_1: JDXIPresets.DIGITAL_ENUMERATED,
             JDXISynth.DIGITAL_2: JDXIPresets.DIGITAL_ENUMERATED,
             JDXISynth.DRUMS: JDXIPresets.DRUM_ENUMERATED,
         }
 
+    def get_preset_name_by_type_and_index(self, synth_type: JDXISynth, preset_index: int) -> str:
+        """Get the name of the currently selected preset"""
+        try:
+            presets = self.preset_synth_map.get(synth_type, JDXIPresets.DIGITAL_ENUMERATED)
+            preset_name = presets[preset_index]
+            logging.info(f"preset_name: {preset_name}")
+            return preset_name
+        except IndexError:
+            return "Index Error for current preset"
+
     def get_presets_for_synth(self, synth: JDXISynth) -> JDXIPresets:
         """Get the available presets for the given synth type."""
-        presets = self.preset_list_map.get(synth, JDXIPresets.DIGITAL_ENUMERATED)
+        presets = self.preset_synth_map.get(synth, JDXIPresets.DIGITAL_ENUMERATED)
         return presets
 
     def get_presets_for_channel(self, channel: MidiChannel) -> JDXIPresets:

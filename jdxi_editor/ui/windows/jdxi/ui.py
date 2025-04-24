@@ -214,7 +214,7 @@ class JdxiUi(QMainWindow):
         )
 
         self.tone_down_button, self.tone_up_button = add_tone_container(
-            container, create_tone_buttons_row, self._tone_previous, self._tone_next
+            container, create_tone_buttons_row, self._preset_previous, self._preset_next
         )
         self.sequencer_buttons = add_sequencer_container(
             container,
@@ -530,10 +530,10 @@ class JdxiUi(QMainWindow):
     def _midi_send_octave(self, _):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _tone_previous(self):
+    def _preset_previous(self):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _tone_next(self):
+    def _preset_next(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _load_saved_favorites(self):
