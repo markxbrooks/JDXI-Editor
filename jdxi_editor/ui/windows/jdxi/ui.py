@@ -79,17 +79,12 @@ class JdxiUi(QMainWindow):
     def __init__(self):
         super().__init__()
         # Add preset & program tracking
-        self.digital1_data = DigitalSynthData(synth_number=1)
-        self.digital2_data = DigitalSynthData(synth_number=2)
-        self.drums_data = DrumSynthData()
-        self.analog_data = AnalogSynthData()
         self.synth_data_map = {
             JDXISynth.DIGITAL_1: DigitalSynthData(synth_number=1),
             JDXISynth.DIGITAL_2: DigitalSynthData(synth_number=2),
             JDXISynth.DRUMS: DrumSynthData(),
             JDXISynth.ANALOG: AnalogSynthData(),
         }
-
         self.sequencer_buttons = []
         self.current_program_bank_letter = "A"
         self.program_helper = None
@@ -102,20 +97,11 @@ class JdxiUi(QMainWindow):
         self.current_synth_type = JDXISynth.DIGITAL_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
-
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.log_file = None
         self.setWindowTitle("JD-Xi Editor")
         self.setMinimumSize(JDXIDimensions.WIDTH, JDXIDimensions.HEIGHT)
         # Store window dimensions
-        self.width = JDXIDimensions.WIDTH
-        self.height = JDXIDimensions.HEIGHT
-        self.margin = JDXIDimensions.MARGIN
-        # Store display coordinates as class variables
-        self.display_x = JDXIDimensions.DISPLAY_X
-        self.display_y = JDXIDimensions.DISPLAY_Y
-        self.display_width = JDXIDimensions.DISPLAY_WIDTH
-        self.display_height = JDXIDimensions.DISPLAY_HEIGHT
         self.digital_font_family = None
 
         # Initialize MIDI helper
@@ -212,7 +198,7 @@ class JdxiUi(QMainWindow):
         self.arp_button = self.part_buttons["arp"]
 
         self.octave_down, self.octave_up = add_octave_buttons(
-            container, self._send_octave
+            container, self._midi_send_octave
         )
         self.arpeggiator_button, self.key_hold_button = add_arpeggiator_buttons(
             container
@@ -337,7 +323,7 @@ class JdxiUi(QMainWindow):
 
         # Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._show_midi_message_debug)
+        midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
         self.debug_menu.addAction(midi_monitor_action)
 
         # Add log viewer action
@@ -366,7 +352,7 @@ class JdxiUi(QMainWindow):
 
         # Add MIDI message monitor action
         midi_monitor_action = QAction("MIDI Monitor", self)
-        midi_monitor_action.triggered.connect(self._show_midi_message_debug)
+        midi_monitor_action.triggered.connect(self._show_midi_message_monitor)
         self.help_menu.addAction(midi_monitor_action)
 
         # Add About window action
@@ -532,7 +518,7 @@ class JdxiUi(QMainWindow):
     def _show_about_help(self):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _show_midi_message_debug(self):
+    def _show_midi_message_monitor(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_log_viewer(self):
@@ -541,7 +527,7 @@ class JdxiUi(QMainWindow):
     def _show_midi_config(self):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _send_octave(self, _):
+    def _midi_send_octave(self, _):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _tone_previous(self):
