@@ -138,3 +138,27 @@ def _sysex_group_matches(sysex_data: dict, expected_group) -> bool:
         f"SysEx TEMP_AREA: {found_group}, expected: {expected_group}, match: {match}"
     )
     return match
+
+
+def get_area(data: list[int, int]) -> str:
+    """Map address bytes to corresponding temporary area."""
+    logging.info(f"data for temporary area: {data}")
+    area_mapping = {
+        (0x18, 0x00): "PROGRAM",
+        (0x19, 0x42): "ANALOG",
+        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
+        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
+        (0x19, 0x70): "DRUM",
+    }
+    return area_mapping.get(tuple(data), "Unknown")
+
+
+def to_hex(value, width=2):
+    try:
+        int_value = int(value, 0) if isinstance(value, str) else value
+        hex_str = f"{int_value:0{width}X}"
+        logging.info(f"to_hex: value: {value} -> 0x{int_value:02X} (width={width})")
+        return hex_str
+    except Exception as ex:
+        logging.error(f"Error {ex} occurred in to_hex with value: {value}")
+        return "??"

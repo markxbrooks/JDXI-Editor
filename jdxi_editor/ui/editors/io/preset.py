@@ -276,7 +276,6 @@ class PresetEditor(SimpleEditor):
             """
         )
         self.analog_synth_current_synth = QLabel("Current Tone:")
-        self.analog_synth_current_synth = QLabel("Current Tone:")
         self.analog_synth_hlayout.addWidget(self.analog_synth_current_synth)
         self.analog_synth_current_synth.setStyleSheet(
             f"""
@@ -286,21 +285,16 @@ class PresetEditor(SimpleEditor):
             """
         )
         self._populate_presets()
-        self.midi_helper.update_digital1_tone_name.connect(
-            self.update_digital1_tone_name
+        self.midi_helper.update_tone_name.connect(
+            lambda tone_name, synth_type: self.update_tone_name(tone_name, synth_type)
         )
-        self.midi_helper.update_digital2_tone_name.connect(
-            self.update_digital2_tone_name
-        )
-        self.midi_helper.update_drums_tone_name.connect(self.update_drums_tone_name)
-        self.midi_helper.update_analog_tone_name.connect(self.update_analog_tone_name)
 
     def on_preset_type_changed(self, index):
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
         logging.info(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
-            self.midi_channel = MidiChannel.MidiChannel.DIGITAL1
+            self.midi_channel = MidiChannel.DIGITAL1
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL2
         elif preset_type == "Drums":
@@ -310,17 +304,19 @@ class PresetEditor(SimpleEditor):
         self._populate_presets()
         self.update_category_combo_box_categories()
 
-    def update_digital1_tone_name(self, tone_name):
-        self.digital_synth_1_current_synth.setText(tone_name)
+    def update_tone_name(self, tone_name: str, synth_type: str):
+        synth_label_map = {
+            "Digital Synth 1": self.digital_synth_1_current_synth,
+            "Digital Synth 2": self.digital_synth_2_current_synth,
+            "Drums": self.drum_kit_current_synth,
+            "Analog Synth": self.analog_synth_current_synth,
+        }
 
-    def update_digital2_tone_name(self, tone_name):
-        self.digital_synth_2_current_synth.setText(tone_name)
-
-    def update_drums_tone_name(self, tone_name):
-        self.drum_kit_current_synth.setText(tone_name)
-
-    def update_analog_tone_name(self, tone_name):
-        self.analog_synth_current_synth.setText(tone_name)
+        label = synth_label_map.get(synth_type)
+        if label:
+            label.setText(tone_name)
+        else:
+            logging.warning(f"Unknown synth type: {synth_type}. Cannot update tone name.")
 
     def load_preset_by_program_change(self, preset_index):
         """Load a preset by program change."""

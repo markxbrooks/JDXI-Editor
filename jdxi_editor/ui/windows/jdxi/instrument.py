@@ -175,17 +175,8 @@ class JdxiInstrument(JdxiUi):
         self.midi_helper.update_program_name.connect(self.set_current_program_name)
         self.midi_helper.midi_message_incoming.connect(self._handle_midi_input)
         self.midi_helper.midi_message_outgoing.connect(self._blink_midi_output)
-        self.midi_helper.update_digital1_tone_name.connect(
-            self.set_current_digital1_tone_name
-        )
-        self.midi_helper.update_digital2_tone_name.connect(
-            self.set_current_digital2_tone_name
-        )
-        self.midi_helper.update_analog_tone_name.connect(
-            self.set_current_analog_tone_name
-        )
-        self.midi_helper.update_drums_tone_name.connect(
-            self.set_current_drums_tone_name
+        self.midi_helper.update_tone_name.connect(
+            lambda tone_name, synth_type: self.set_display_item_name(tone_name, synth_type),
         )
         self.midi_helper.midi_program_changed.connect(self.set_current_program_number)
         # ctrl-R for data request
@@ -215,6 +206,14 @@ class JdxiInstrument(JdxiUi):
         self.analog_preset_helper = self.preset_helpers[JDXISynth.ANALOG]
 
         self.editors = []
+
+    def set_display_item_name(self, tone_name: str, synth_type: str):
+        """ set display item name"""
+        if synth_type == JDXISynth.PROGRAM:
+            pass
+        self.preset_manager.set_tone_name_by_type(synth_type, tone_name)
+        self._update_display()
+
 
     def add_editor(self, editor: SynthEditor):
         self.editors.append(editor)
@@ -273,26 +272,22 @@ class JdxiInstrument(JdxiUi):
 
     def set_current_digital1_tone_name(self, tone_name: str):
         """ digital1 tone name"""
-        self.tone_manager.set_tone_name_by_type(JDXISynth.DIGITAL_1, tone_name)
-        self.current_digital1_tone_name = tone_name
+        self.preset_manager.set_tone_name_by_type(JDXISynth.DIGITAL_1, tone_name)
         self._update_display()
 
     def set_current_digital2_tone_name(self, tone_name: str):
         """digital 2 tone name"""
-        self.current_digital2_tone_name = tone_name
-        self.tone_manager.set_tone_name_by_type(JDXISynth.DIGITAL_2, tone_name)
+        self.preset_manager.set_tone_name_by_type(JDXISynth.DIGITAL_2, tone_name)
         self._update_display()
 
     def set_current_analog_tone_name(self, tone_name: str):
         """analog tone name"""
-        self.current_analog_tone_name = tone_name
-        self.tone_manager.set_tone_name_by_type(JDXISynth.ANALOG, tone_name)
+        self.preset_manager.set_tone_name_by_type(JDXISynth.ANALOG, tone_name)
         self._update_display()
 
     def set_current_drums_tone_name(self, tone_name: str):
         """drums tone name"""
-        self.current_drums_tone_name = tone_name
-        self.tone_manager.set_tone_name_by_type(JDXISynth.DRUMS, tone_name)
+        self.preset_manager.set_tone_name_by_type(JDXISynth.DRUMS, tone_name)
         self._update_display()
 
     def _select_synth(self, synth_type):
@@ -617,8 +612,8 @@ class JdxiInstrument(JdxiUi):
         """Retrieve the current preset"""
         try:
             # Update the current preset index or details here
-            tone_number = self.current_tone_number
-            tone_name = self.current_tone_name
+            tone_number = self.current_preset_number
+            tone_name = self.current_preset_name
             synth_type = self.current_synth_type
             current_tone = Preset(number=tone_number, name=tone_name, type=synth_type)
             logging.debug(f"Current preset retrieved: {current_tone}")
