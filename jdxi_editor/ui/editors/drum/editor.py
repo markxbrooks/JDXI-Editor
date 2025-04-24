@@ -194,7 +194,7 @@ class DrumCommonEditor(SynthEditor):
         self.instrument_selection_combo.load_button.clicked.connect(
             self.update_instrument_preset
         )
-        self.main_window.drums_preset_helper.preset_changed.connect(
+        self.preset_helper.preset_changed.connect(
             self.update_combo_box_index
         )
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
