@@ -18,7 +18,7 @@ class SequencerSquare(QPushButton):
         self.preset_loader = None  # we will be using this later
         self.midi_helper = midi_helper
         self.settings = QSettings("mabsoft", "jdxi_editor")
-        self.slot_num = slot_num
+        self.slot_number = slot_num
         self.preset = None
         self.last_preset = None
         self.illuminated = False
@@ -66,7 +66,7 @@ class SequencerSquare(QPushButton):
         """Save current preset to this favorite slot"""
         self.preset = ButtonPreset(number=preset_num, name=preset_name, type=synth_type)
         # self._save_to_settings()
-        logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
+        logging.debug(f"Saved preset to favorite {self.slot_number}: {preset_name}")
 
     def clear_preset(self):
         """Clear the saved preset"""

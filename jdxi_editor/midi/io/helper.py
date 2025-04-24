@@ -39,6 +39,8 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
     def __init__(self, parent=None):
         self._current_out_port = None
         self._current_in_port = None
+        self.in_port_name = ""  # Store input port name
+        self.out_port_name = ""  # Store output port name
         if not hasattr(self, "initialized"):  # To avoid reinitialization
             super().__init__()
             self.midi_messages = []
