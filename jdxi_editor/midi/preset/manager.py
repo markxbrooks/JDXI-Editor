@@ -1,0 +1,51 @@
+from jdxi_editor.midi.preset.type import JDXISynth
+
+
+class PresetManager:
+    _instance = None
+    """Singleton class to manage presets."""
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(PresetManager, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        # Initialize tone-related attributes
+        self.current_preset_number = 1
+        self.current_preset_name = "Init Tone"
+        self.current_preset_names = {
+            JDXISynth.DIGITAL_1: "Init Tone",
+            JDXISynth.DIGITAL_2: "Init Tone",
+            JDXISynth.ANALOG: "Init Tone",
+            JDXISynth.DRUMS: "Init Tone"
+        }
+
+    def set_current_preset_name(self, preset_name: str):
+        """Set the current global tone name."""
+        self.current_preset_name = preset_name
+        self._update_display()
+
+    def set_preset_name_by_type(self, preset_type: str, preset_name: str):
+        """Set the tone name for a specific tone type."""
+        if preset_type in self.current_preset_names:
+            self.current_preset_names[preset_type] = preset_name
+            self._update_display()
+        else:
+            raise ValueError(f"Invalid tone type: {preset_type}")
+
+    def get_preset_name_by_type(self, tone_type: JDXISynth) -> str:
+        """Get the tone name for a specific tone type."""
+        return self.current_preset_names.get(tone_type, "Unknown Tone")
+
+    def reset_all_presets(self):
+        """Reset all tone names to 'Init Tone'."""
+        self.current_preset_number = 1
+        self.current_preset_name = "Init Tone"
+        for tone_type in self.current_preset_names:
+            self.current_preset_names[tone_type] = "Init Tone"
+        self._update_display()
+
+    def _update_display(self):
+        """Update the display."""
+        # Implementation for updating the display
+        pass
