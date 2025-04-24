@@ -17,6 +17,7 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 class JDXISynth:
     """Synth types and their MIDI area codes"""
 
+    PROGRAM = "Program"
     ANALOG = "Analog"
     DIGITAL_1 = "Digital 1"  # Main digital synth
     DIGITAL_2 = "Digital 2"  # Second digital synth
@@ -32,5 +33,6 @@ class JDXISynth:
             JDXISynth.DIGITAL_2: AddressOffsetTemporaryToneUMB.DIGITAL_PART_2,
             JDXISynth.DRUMS: AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
             JDXISynth.VOCAL_FX: AddressOffsetTemporaryToneUMB.COMMON,
+            JDXISynth.PROGRAM: AddressOffsetTemporaryToneUMB.COMMON,
         }
         return area_codes.get(synth_type)

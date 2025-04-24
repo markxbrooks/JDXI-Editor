@@ -103,7 +103,9 @@ class SynthEditor(SynthBase):
         self.preset_helper = None
         self.instrument_selection_combo = None
         self.preset_type = None
-
+        self.midi_helper.update_tone_name.connect(
+            lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
+        self.midi_helper.midi_program_changed.connect(self.data_request)
         logging.debug(
             f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
         )
@@ -207,8 +209,9 @@ class SynthEditor(SynthBase):
             logging.error(f"Invalid JSON format: {ex}")
             return None
 
-    def set_instrument_title_label(self, name: str):
-        self.instrument_title_label.setText(name)
+    def set_instrument_title_label(self, name: str, synth_type: str):
+        if self.preset_type == synth_type:
+            self.instrument_title_label.setText(name)
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
@@ -270,7 +273,7 @@ class SynthEditor(SynthBase):
         logging.info(
             f"Program change {program} detected on channel {channel}, requesting data update"
         )
-        self.data_request()
+        self.data_request(channel, program)
 
     def _handle_dt1_message(self, data):
         """Handle Data Set 1 (DT1) messages

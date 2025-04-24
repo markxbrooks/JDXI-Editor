@@ -30,7 +30,7 @@ Dependencies:
 """
 
 import logging
-from typing import Dict, Optional, Union, List
+from typing import Dict, Optional, Union
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -66,7 +66,7 @@ from jdxi_editor.ui.editors.digital.utils import (
     _is_valid_sysex_area,
     _log_synth_area_info,
     _is_digital_synth_area,
-    _sysex_area_matches,
+    get_area, to_hex,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
@@ -74,29 +74,6 @@ from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
-
-
-def get_area(data: list[int, int]) -> str:
-    """Map address bytes to corresponding temporary area."""
-    logging.info(f"data for temporary area: {data}")
-    area_mapping = {
-        (0x18, 0x00): "PROGRAM",
-        (0x19, 0x42): "ANALOG",
-        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-        (0x19, 0x70): "DRUM",
-    }
-    return area_mapping.get(tuple(data), "Unknown")
-
-
-def to_hex(value, width=2):
-    try:
-        int_value = int(value, 0) if isinstance(value, str) else value
-        logging.info(f"to_hex: value: {value}: 0x{int_value:x} width: {width}")
-        return f"{int_value:0{width}X}"
-    except Exception as ex:
-        logging.error(f"Error {ex} occurred in to_hex")
-        return "??"
 
 
 class DigitalSynthEditor(SynthEditor):
@@ -121,12 +98,6 @@ class DigitalSynthEditor(SynthEditor):
             if self.preset_type == JDXISynth.DIGITAL_1
             else parent.digital_2_preset_helper
         )
-        """
-        self.preset_helper = parent.preset_helpers[self.preset_type] if parent else (
-            PresetHelper(self.midi_helper, JDXIPresets.DIGITAL_LIST,
-                         channel=MidiChannel.DIGITAL1,
-                         preset_type=JDXISynth.DIGITAL_1))
-        """
         self.main_window = parent
         self.synth_number = synth_number
         self.controls: Dict[
@@ -140,15 +111,7 @@ class DigitalSynthEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            if synth_number == 2:
-                self.midi_helper.update_digital2_tone_name.connect(
-                    self.set_instrument_title_label
-                )
 
-            else:
-                self.midi_helper.update_digital1_tone_name.connect(
-                    self.set_instrument_title_label
-                )
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         self.data_request()

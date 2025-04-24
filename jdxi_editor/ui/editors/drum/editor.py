@@ -74,7 +74,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, ZERO_BYTE
 from jdxi_editor.midi.data.editor.data import DrumSynthData
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
@@ -105,6 +105,8 @@ class DrumCommonEditor(SynthEditor):
 
         # Presets
         self.preset_helper = preset_helper
+        self.midi_helper = midi_helper
+        self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         # midi parameters
         self.partial_number = 0
         self._init_synth_data()
@@ -125,16 +127,31 @@ class DrumCommonEditor(SynthEditor):
         self.setup_ui()
         self.update_instrument_image()
         if self.midi_helper:
-            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            self.midi_helper.update_drums_tone_name.connect(
-                self.set_instrument_title_label
-            )
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
-        self.midi_helper.midi_program_changed.connect(self.data_request)
+        self._init_synth_data()
         self.data_request()
         self.show()
+
+    def _init_synth_data(self):
+        """Initialize synth-specific data."""
+        self.synth_data = DrumSynthData(partial_number=0)
+        logging.info(self.synth_data)
+        data = self.synth_data
+
+        self.address_msb = data.address_msb
+        self.address_umb = data.address_umb
+        self.address_lmb = data.address_lmb
+        self.setWindowTitle(data.window_title)
+
+        self.preset_type = data.preset_type
+        self.instrument_default_image = data.instrument_default_image
+        self.instrument_icon_folder = data.instrument_icon_folder
+        self.presets = data.presets
+        self.preset_list = data.preset_list
+        self.midi_requests = data.midi_requests
+        self.midi_channel = data.midi_channel
 
     def setup_ui(self):
         # Main layout
@@ -244,30 +261,14 @@ class DrumCommonEditor(SynthEditor):
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Register the callback for incoming MIDI messages
-        if self.midi_helper:
-            logging.info("MIDI helper initialized")
-        else:
-            logging.error("MIDI helper not initialized")
-        self.midi_helper.update_drums_tone_name.connect(self.set_instrument_title_label)
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
         self.data_request()  # this is giving an error
 
-    def _init_synth_data(self):
-        """Initialize synth-specific data."""
-        self.synth_data = DrumSynthData(partial_number=0)
-        data = self.synth_data
-        logging.info(self.synth_data)
-        self.address_msb = data.address_msb
-        self.address_umb = data.address_umb
-        self.address_lmb = data.address_lmb
-        self.setWindowTitle(data.window_title)
-        self.preset_type = data.preset_type
-        self.instrument_default_image = data.instrument_default_image
-        self.instrument_icon_folder = data.instrument_icon_folder
-        self.presets = data.presets
-        self.preset_list = data.preset_list
-        self.midi_requests = data.midi_requests
-        self.midi_channel = data.midi_channel
+    def _handle_program_change(self, channel: int, program: int):
+        """Handle program change messages by requesting updated data"""
+        logging.info(
+            f"Program change {program} detected on channel {channel}, requesting data update"
+        )
+        self.data_request(channel, program)
 
     def _setup_partial_editors(self):
         total = len(self.partial_mapping)

@@ -133,9 +133,6 @@ class AnalogSynthEditor(SynthEditor):
 
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            self.midi_helper.update_analog_tone_name.connect(
-                self.set_instrument_title_label
-            )
             self.midi_helper.midi_sysex_json.connect(self._update_sliders_from_sysex)
             self.midi_helper.midi_parameter_received.connect(
                 self._on_parameter_received

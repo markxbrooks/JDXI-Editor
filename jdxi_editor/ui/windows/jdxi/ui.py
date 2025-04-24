@@ -72,11 +72,11 @@ from jdxi_editor.ui.windows.jdxi.containers import (
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
-class ToneManager:
+class PresetManager:
     def __init__(self):
         # Initialize tone-related attributes
-        self.current_tone_number = 1
-        self.current_tone_name = "Init Tone"
+        self.current_preset_number = 1
+        self.current_preset_name = "Init Tone"
         self.current_tone_names = {
             JDXISynth.DIGITAL_1: "Init Tone",
             JDXISynth.DIGITAL_2: "Init Tone",
@@ -86,7 +86,7 @@ class ToneManager:
 
     def set_current_tone_name(self, tone_name: str):
         """Set the current global tone name."""
-        self.current_tone_name = tone_name
+        self.current_preset_name = tone_name
         self._update_display()
 
     def set_tone_name_by_type(self, tone_type: str, tone_name: str):
@@ -97,14 +97,14 @@ class ToneManager:
         else:
             raise ValueError(f"Invalid tone type: {tone_type}")
 
-    def get_tone_name_by_type(self, tone_type: JDXISynth) -> str:
+    def get_preset_name_by_type(self, tone_type: JDXISynth) -> str:
         """Get the tone name for a specific tone type."""
         return self.current_tone_names.get(tone_type, "Unknown Tone")
 
     def reset_all_tones(self):
         """Reset all tone names to 'Init Tone'."""
-        self.current_tone_number = 1
-        self.current_tone_name = "Init Tone"
+        self.current_preset_number = 1
+        self.current_preset_name = "Init Tone"
         for tone_type in self.current_tone_names:
             self.current_tone_names[tone_type] = "Init Tone"
         self._update_display()
@@ -137,13 +137,9 @@ class JdxiUi(QMainWindow):
         self.program_helper = None
         self.current_program_number = 1
         self.current_program_name = "Init Program"
-        self.tone_manager = ToneManager()
-        self.current_tone_number = self.tone_manager.current_tone_number
-        self.current_tone_name = self.tone_manager.current_tone_name
-        self.current_digital1_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.DIGITAL_1)
-        self.current_digital2_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.DIGITAL_2)
-        self.current_analog_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.ANALOG)
-        self.current_drums_tone_name = self.tone_manager.get_tone_name_by_type(JDXISynth.DRUMS)
+        self.preset_manager = PresetManager()
+        self.current_preset_number = self.preset_manager.current_preset_number
+        self.current_preset_name = self.preset_manager.current_preset_name
         # Initialize synth preset_type
         self.current_synth_type = JDXISynth.DIGITAL_1
         # Initialize octave
@@ -459,36 +455,22 @@ class JdxiUi(QMainWindow):
         return row
 
     def _update_display(self):
+        """Update the display with the current preset information"""
         synth_data = self.synth_data_map.get(self.current_synth_type)
         if not synth_data:
             logging.warning("Unknown synth type. Defaulting to DIGITAL_1.")
             synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
 
-        self.current_tone_name = self.tone_manager.get_tone_name_by_type(self.current_synth_type)
-        """ 
-        # Get the current tone name based on synth type
-        if synth_data.preset_type == JDXISynth.DIGITAL_1:
-            self.current_tone_name = self.current_digital1_tone_name
-        elif synth_data.preset_type == JDXISynth.DIGITAL_2:
-            self.current_tone_name = self.current_digital2_tone_name
-        elif synth_data.preset_type == JDXISynth.DRUMS:
-            self.current_tone_name = self.current_drums_tone_name
-        elif synth_data.preset_type == JDXISynth.ANALOG:
-            self.current_tone_name = self.current_analog_tone_name
-        """
-
-        # Update tone number
-        self.current_tone_number = get_preset_list_number_by_name(
-            self.current_tone_name, synth_data.preset_list
+        self.current_preset_name = self.preset_manager.get_preset_name_by_type(self.current_synth_type)
+        # Update preset number
+        self.preset_manager.current_preset_number = get_preset_list_number_by_name(
+            self.current_preset_name, synth_data.preset_list
         )
-
-        logging.info(f"current tone number: {self.current_tone_number}")
-        logging.info(f"current tone name: {self.current_tone_name}")
 
         self.digital_display.repaint_display(
             current_octave=self.current_octave,
-            tone_number=self.current_tone_number,
-            tone_name=self.current_tone_name,
+            tone_number=self.preset_manager.current_preset_number,
+            tone_name=self.preset_manager.get_preset_name_by_type(self.current_synth_type),
             program_name=self.current_program_name,
             active_synth=synth_data.display_prefix,
         )
@@ -522,8 +504,8 @@ class JdxiUi(QMainWindow):
 
     def update_preset_display(self, preset_number, preset_name):
         """Update the current preset display"""
-        self.current_tone_number = preset_number
-        self.current_tone_name = preset_name
+        self.current_preset_number = preset_number
+        self.current_preset_name = preset_name
         self._update_display()
 
     def _update_display_preset(
