@@ -169,9 +169,6 @@ class JdxiUi(QMainWindow):
 
         # Initialize current preset index
         self.current_preset_index = 0
-
-        # Initialize current preset index
-        self.current_preset_index = 0
         self.old_pos = None
 
     def _create_main_layout(self):
@@ -466,24 +463,26 @@ class JdxiUi(QMainWindow):
         self.current_preset_name = preset_name
         self._update_display()
 
-    def _update_display_preset(
-            self, preset_number: int, preset_name: str, channel: int
-    ):
-        """Update the display with the new preset information"""
+    def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
+        """Update the display with the new preset information."""
         logging.info(
             f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
         )
         self.current_preset_index = preset_number
-        self.preset_name = preset_name
         self.channel = channel
-        if re.search(r"^\d{3}:", preset_name):
-            preset_number = int(preset_name[:3])
-            preset_name = preset_name[4:]
-        try:
-            # Update display
-            self.update_preset_display(preset_number, preset_name)
 
-            # Update piano keyboard channel if it exists
+        try:
+            # Extract actual number and name if the preset_name is like '123:Some Name'
+            match = re.match(r"^(\d{3}):(.*)", preset_name)
+            if match:
+                preset_number = int(match.group(1))
+                preset_name = match.group(2).strip()
+
+            self.current_preset_number = preset_number
+            self.current_preset_name = preset_name
+            self._update_display()
+
+            # Update piano keyboard MIDI channel if available
             if hasattr(self, "piano_keyboard"):
                 self.piano_keyboard.set_midi_channel(channel)
 
@@ -492,7 +491,7 @@ class JdxiUi(QMainWindow):
             )
 
         except Exception as ex:
-            logging.error(f"Error updating display: {str(ex)}")
+            logging.error(f"Error updating display: {ex}")
 
     def show_error(self, title: str, message: str):
         """Show error message dialog
