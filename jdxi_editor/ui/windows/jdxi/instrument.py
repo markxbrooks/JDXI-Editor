@@ -93,6 +93,8 @@ CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 class JdxiInstrument(JdxiUi):
     def __init__(self):
         super().__init__()
+        if platform.system() == "Windows":
+            self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
         self.preset_helpers = None
         self.editor_registry = None
         self.editors = []
@@ -684,7 +686,7 @@ class JdxiInstrument(JdxiUi):
         except Exception as ex:
             logging.error(f"Error sending arp on/off: {str(ex)}")
 
-    def _midi_handle_piano_note_on(self, note_num):
+    def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
@@ -692,7 +694,7 @@ class JdxiInstrument(JdxiUi):
             self.midi_helper.send_raw_message(msg)
             logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
-    def _midi_handle_piano_note_off(self, note_num):
+    def handle_piano_note_off(self, note_num):
         """Handle piano key release"""
         if self.midi_helper:
             # Calculate the correct status byte for note_off:
@@ -853,7 +855,7 @@ class JdxiInstrument(JdxiUi):
                     self.restoreGeometry(geometry)
 
                 # Load preset info
-                self.current_preset_number = int(self.settings.value("preset_num", 1))
+                self.current_preset_number = int(self.settings.value("preset_number", 1))
                 self.current_preset_name = self.settings.value(
                     "preset_name", "INIT PATCH"
                 )
@@ -879,7 +881,7 @@ class JdxiInstrument(JdxiUi):
                 self.settings.setValue("geometry", self.saveGeometry())
 
                 # Save current preset info
-                self.settings.setValue("preset_num", self.current_preset_number)
+                self.settings.setValue("preset_number", self.current_preset_number)
                 self.settings.setValue("preset_name", self.current_preset_name)
 
                 logging.debug("Settings saved successfully")
