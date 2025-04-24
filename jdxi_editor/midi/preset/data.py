@@ -21,7 +21,7 @@ from jdxi_editor.midi.preset.type import JDXISynth
 
 
 @dataclass
-class Preset:
+class ButtonPreset:
     type: str = JDXISynth.DIGITAL_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0

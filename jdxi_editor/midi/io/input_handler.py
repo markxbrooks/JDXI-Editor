@@ -35,7 +35,7 @@ from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.utils.json import log_to_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
-from jdxi_editor.midi.preset.data import Preset
+from jdxi_editor.midi.preset.data import ButtonPreset
 
 
 class MidiInHandler(MidiIOController):
@@ -138,7 +138,7 @@ class MidiInHandler(MidiIOController):
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
         try:
-            preset_data = Preset()
+            preset_data = ButtonPreset()
             message_handlers = {
                 "sysex": self._handle_sysex_message,
                 "control_change": self._handle_control_change,
