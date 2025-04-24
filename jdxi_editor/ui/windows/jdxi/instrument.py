@@ -211,7 +211,7 @@ class JdxiInstrument(JdxiUi):
         """ set display item name"""
         if synth_type == JDXISynth.PROGRAM:
             pass
-        self.preset_manager.set_tone_name_by_type(synth_type, tone_name)
+        self.preset_manager.set_preset_name_by_type(synth_type, tone_name)
         self._update_display()
 
 
@@ -272,22 +272,22 @@ class JdxiInstrument(JdxiUi):
 
     def set_current_digital1_tone_name(self, tone_name: str):
         """ digital1 tone name"""
-        self.preset_manager.set_tone_name_by_type(JDXISynth.DIGITAL_1, tone_name)
+        self.preset_manager.set_preset_name_by_type(JDXISynth.DIGITAL_1, tone_name)
         self._update_display()
 
     def set_current_digital2_tone_name(self, tone_name: str):
         """digital 2 tone name"""
-        self.preset_manager.set_tone_name_by_type(JDXISynth.DIGITAL_2, tone_name)
+        self.preset_manager.set_preset_name_by_type(JDXISynth.DIGITAL_2, tone_name)
         self._update_display()
 
     def set_current_analog_tone_name(self, tone_name: str):
         """analog tone name"""
-        self.preset_manager.set_tone_name_by_type(JDXISynth.ANALOG, tone_name)
+        self.preset_manager.set_preset_name_by_type(JDXISynth.ANALOG, tone_name)
         self._update_display()
 
     def set_current_drums_tone_name(self, tone_name: str):
         """drums tone name"""
-        self.preset_manager.set_tone_name_by_type(JDXISynth.DRUMS, tone_name)
+        self.preset_manager.set_preset_name_by_type(JDXISynth.DRUMS, tone_name)
         self._update_display()
 
     def _select_synth(self, synth_type):

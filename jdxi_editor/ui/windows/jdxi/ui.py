@@ -43,6 +43,7 @@ from jdxi_editor.midi.data.editor.data import (
     AnalogSynthData,
 )
 from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.preset.manager import PresetManager
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
@@ -70,49 +71,6 @@ from jdxi_editor.ui.windows.jdxi.containers import (
     create_parts_container,
 )
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
-
-
-class PresetManager:
-    def __init__(self):
-        # Initialize tone-related attributes
-        self.current_preset_number = 1
-        self.current_preset_name = "Init Tone"
-        self.current_tone_names = {
-            JDXISynth.DIGITAL_1: "Init Tone",
-            JDXISynth.DIGITAL_2: "Init Tone",
-            JDXISynth.ANALOG: "Init Tone",
-            JDXISynth.DRUMS: "Init Tone"
-        }
-
-    def set_current_tone_name(self, tone_name: str):
-        """Set the current global tone name."""
-        self.current_preset_name = tone_name
-        self._update_display()
-
-    def set_tone_name_by_type(self, tone_type: str, tone_name: str):
-        """Set the tone name for a specific tone type."""
-        if tone_type in self.current_tone_names:
-            self.current_tone_names[tone_type] = tone_name
-            self._update_display()
-        else:
-            raise ValueError(f"Invalid tone type: {tone_type}")
-
-    def get_preset_name_by_type(self, tone_type: JDXISynth) -> str:
-        """Get the tone name for a specific tone type."""
-        return self.current_tone_names.get(tone_type, "Unknown Tone")
-
-    def reset_all_tones(self):
-        """Reset all tone names to 'Init Tone'."""
-        self.current_preset_number = 1
-        self.current_preset_name = "Init Tone"
-        for tone_type in self.current_tone_names:
-            self.current_tone_names[tone_type] = "Init Tone"
-        self._update_display()
-
-    def _update_display(self):
-        """Update the display."""
-        # Implementation for updating the display
-        pass
 
 
 class JdxiUi(QMainWindow):
