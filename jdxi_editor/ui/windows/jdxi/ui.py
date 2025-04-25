@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QMessageBox,
-    QLabel,
+    QLabel, QLayout,
 )
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import (
@@ -131,7 +131,7 @@ class JdxiUi(QMainWindow):
         self._create_main_layout()
         self._create_parts_menu()
         self._create_effects_menu()
-        self._create_other_menu()
+        self._create_playback_menu()
         self._create_help_menu()
 
         # Load settings
@@ -141,16 +141,10 @@ class JdxiUi(QMainWindow):
         self.piano_keyboard = PianoKeyboard(parent=self)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
-        # Add to status bar before piano keyboard
-        self.statusBar().addPermanentWidget(self.piano_keyboard)
-
-        # Add to status bar
-        self.statusBar().addPermanentWidget(self.piano_keyboard)
-
         # Load saved favorites
         self._load_saved_favorites()
 
-    def _create_main_layout(self):
+    def _create_main_layout(self) -> None:
         """Create the main dashboard"""
         central = QWidget()
         self.setCentralWidget(central)
@@ -183,13 +177,13 @@ class JdxiUi(QMainWindow):
             on_open_arp=lambda: self.show_editor("arpeggio"),
             on_select_synth=self._select_synth,
         )
-
-        self.digital1_button = self.part_buttons["digital1"]
-        self.digital2_button = self.part_buttons["digital2"]
-        self.analog_button = self.part_buttons["analog"]
-        self.drums_button = self.part_buttons["drums"]
+        self.synth_buttons = {
+            JDXISynth.DIGITAL_1: self.part_buttons["digital1"],
+            JDXISynth.DIGITAL_2: self.part_buttons["digital2"],
+            JDXISynth.ANALOG: self.part_buttons["analog"],
+            JDXISynth.DRUMS: self.part_buttons["drums"],
+        }
         self.arp_button = self.part_buttons["arp"]
-
         self.octave_down, self.octave_up = add_octave_buttons(
             container, self._midi_send_octave
         )
@@ -222,7 +216,7 @@ class JdxiUi(QMainWindow):
         # Initialize current preset index
         self.current_preset_index = 0
 
-    def _create_menu_bar(self):
+    def _create_menu_bar(self) -> None:
         menubar = self.menuBar()
 
         # File menu
@@ -257,7 +251,7 @@ class JdxiUi(QMainWindow):
         midi_config_action.triggered.connect(self._show_midi_config)
         edit_menu.addAction(midi_config_action)
 
-    def _create_parts_menu(self):
+    def _create_parts_menu(self) -> None:
         """Create editors menu"""
         self.parts_menu = self.menuBar().addMenu("Parts")
 
@@ -278,7 +272,7 @@ class JdxiUi(QMainWindow):
 
         self.parts_menu.addAction(analog_action)
 
-    def _create_effects_menu(self):
+    def _create_effects_menu(self) -> None:
         """Create editors menu"""
         self.effects_menu = self.menuBar().addMenu("Effects")
 
@@ -290,7 +284,7 @@ class JdxiUi(QMainWindow):
         vocal_effects_action.triggered.connect(lambda: self.show_editor("vocal_fx"))
         self.effects_menu.addAction(vocal_effects_action)
 
-    def _create_other_menu(self):
+    def _create_playback_menu(self) -> None:
         # Create editors menu
         playback_menu = self.menuBar().addMenu("Playback")
 
@@ -305,7 +299,7 @@ class JdxiUi(QMainWindow):
         sequencer_action = playback_menu.addAction("Pattern Sequencer")
         sequencer_action.triggered.connect(lambda: self.show_editor("pattern"))
 
-    def _create_debug_menu(self):
+    def _create_debug_menu(self) -> None:
         # Add debug menu
         self.debug_menu = self.menuBar().addMenu("Debug")
 
@@ -329,7 +323,7 @@ class JdxiUi(QMainWindow):
         about_help_action.triggered.connect(self._show_about_help)
         self.debug_menu.addAction(about_help_action)
 
-    def _create_help_menu(self):
+    def _create_help_menu(self) -> None:
         menubar = self.menuBar()
 
         # Help menu
@@ -367,7 +361,7 @@ class JdxiUi(QMainWindow):
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         status_bar.setStyleSheet('background: "black";')
 
-    def _build_status_layout(self):
+    def _build_status_layout(self) -> None:
         layout = QVBoxLayout()
         layout.addStretch()
         layout.addLayout(build_wheel_label_row())
@@ -377,7 +371,7 @@ class JdxiUi(QMainWindow):
         layout.addLayout(self._build_midi_indicator_row())
         return layout
 
-    def _build_midi_indicator_row(self):
+    def _build_midi_indicator_row(self) -> QLayout:
         self.midi_in_indicator = LEDIndicator()
         self.midi_out_indicator = LEDIndicator()
 
@@ -409,7 +403,7 @@ class JdxiUi(QMainWindow):
             active_synth=synth_data.display_prefix,
         )
 
-    def _load_digital_font(self):
+    def _load_digital_font(self) -> None:
         """Load the digital LCD font for the display"""
 
         font_name = "JdLCD.ttf"
@@ -436,7 +430,7 @@ class JdxiUi(QMainWindow):
         else:
             logging.debug(f"File not found: {font_path}")
 
-    def update_preset_display(self, preset_number, preset_name):
+    def update_preset_display(self, preset_number: int, preset_name: str):
         """Update the current preset display"""
         self.preset_manager.current_preset_number = preset_number
         self.preset_manager.current_preset_name = preset_name
@@ -502,7 +496,7 @@ class JdxiUi(QMainWindow):
     def _load_settings(self):
         raise NotImplementedError("to be implemented in subclass")
 
-    def show_editor(self, param):
+    def show_editor(self, param: str):
         raise NotImplementedError("to be implemented in subclass")
 
     def _show_midi_debugger(self):
@@ -541,10 +535,10 @@ class JdxiUi(QMainWindow):
     def _save_favorite(self, button, idx):
         raise NotImplementedError("to be implemented in subclass")
 
-    def _patch_load(self, button, idx):
+    def _patch_load(self):
         raise NotImplementedError("to be implemented in subclass")
 
-    def _patch_save(self, button, idx):
+    def _patch_save(self):
         raise NotImplementedError("to be implemented in subclass")
 
     def _handle_program_change(self, bank_letter: str, program_number: int):
