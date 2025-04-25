@@ -40,7 +40,7 @@ import threading
 import time
 from typing import Union
 
-from PySide6.QtGui import QShortcut, QKeySequence
+from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 
 from PySide6.QtWidgets import QMenu, QMessageBox, QLabel, QWidget
 from PySide6.QtCore import Qt, QSettings, QTimer
@@ -112,11 +112,11 @@ class JdxiInstrument(JdxiUi):
         self._load_saved_favorites()
         self._update_synth_button_styles()
         self._set_callbacks()
-        self._init_preset_handlers()
+        self._init_preset_helpers()
         self.show()
 
-    def _init_preset_handlers(self):
-        """Initialize preset handlers dynamically"""
+    def _init_preset_helpers(self):
+        """Initialize preset helpers dynamically"""
         preset_configs = [
             (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
             (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
@@ -151,7 +151,7 @@ class JdxiInstrument(JdxiUi):
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """Handle window close event"""
         try:
             self.midi_helper.close_ports()
@@ -161,17 +161,17 @@ class JdxiInstrument(JdxiUi):
             logging.error(f"Error during close event: {str(ex)}")
             event.ignore()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = event.globalPos()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent):
         if self.old_pos is not None:
             delta = event.globalPos() - self.old_pos
             self.move(self.x() + delta.x(), self.y() + delta.y())
             self.old_pos = event.globalPos()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = None
 
@@ -199,15 +199,15 @@ class JdxiInstrument(JdxiUi):
         self.preset_manager.set_preset_name_by_type(synth_type, tone_name)
         self._update_display()
 
-    def _get_preset_helper_for_current_synth(self):
-        """Return the appropriate preset handler based on the current synth preset_type."""
-        handler = self.preset_helpers.get(self.current_synth_type)
-        if handler is None:
+    def _get_preset_helper_for_current_synth(self) -> PresetHelper:
+        """Return the appropriate preset helper based on the current synth preset_type."""
+        helper = self.preset_helpers.get(self.current_synth_type)
+        if helper is None:
             logging.warning(
                 f"Unknown synth preset_type: {self.current_synth_type}, defaulting to digital_1"
             )
             return self.preset_helpers[JDXISynth.DIGITAL_1]  # Safe fallback
-        return handler
+        return helper
 
     def set_current_program_name(self, program_name: str):
         """program name"""
