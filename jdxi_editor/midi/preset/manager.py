@@ -16,6 +16,7 @@ class PresetManager:
     def __init__(self):
         # Initialize tone-related attributes
         self.current_preset_number = 1
+        self.current_preset_index = self.current_preset_number - 1
         self.current_preset_name = "Init Tone"
         self.current_preset_names = {
             JDXISynth.DIGITAL_1: "Init Tone",
