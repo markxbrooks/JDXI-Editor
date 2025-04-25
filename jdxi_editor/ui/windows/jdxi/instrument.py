@@ -36,6 +36,8 @@ Methods:
 """
 import logging
 import platform
+import threading
+import time
 from typing import Union
 
 from PySide6.QtGui import QShortcut, QKeySequence
@@ -174,11 +176,14 @@ class JdxiInstrument(JdxiUi):
             self.old_pos = None
 
     def data_request(self):
-        """Send data request SysEx messages to the JD-Xi"""
-        for request in self.midi_requests:
-            request = bytes.fromhex(request)
-            # Send each SysEx message
-            self.midi_helper.send_raw_message(request)
+        def send_with_delay(midi_requests):
+            for midi_request in midi_requests:
+                byte_list_message = bytes.fromhex(midi_request)
+                self.midi_helper.send_raw_message(byte_list_message)
+                time.sleep(0.075)  # Blocking delay in a separate thread
+
+        # Run the function in a separate thread
+        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
 
     def _handle_program_change(self, bank_letter: str, program_number: int):
         """perform data request"""
