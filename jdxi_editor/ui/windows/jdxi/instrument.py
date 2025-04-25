@@ -56,7 +56,6 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.preset.data import ButtonPreset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
-from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
@@ -70,7 +69,6 @@ from jdxi_editor.ui.editors import (
 from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
-    get_program_name_by_id,
 )
 from jdxi_editor.ui.editors.io.player import MidiPlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
