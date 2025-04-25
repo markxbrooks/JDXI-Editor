@@ -95,27 +95,6 @@ class JdxiInstrument(JdxiUi):
         super().__init__()
         if platform.system() == "Windows":
             self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
-        self.preset_helpers = None
-        self.editor_registry = None
-        self.editors = []
-        self.current_synth_type = JDXISynth.DIGITAL_1
-        # Set up programs
-        self.current_program_id = "A01"
-        self.current_program_number = int(self.current_program_id[1:])
-        self.current_program_name = get_program_name_by_id(self.current_program_id)
-        self.slot_number = None
-        # Set up presets
-        self.current_preset_number = 1  # Initialize preset number
-        self.current_preset_index = self.current_preset_number - 1 #  Convert to 0-based index
-        self.current_preset_name = "JD Xi"  # Initialize preset name
-        #  Initialize MIDI connectivity
-        if self.midi_helper:
-            self.midi_helper.close_ports()
-        self.channel = MidiChannel.DIGITAL1
-        self.midi_helper = MidiIOHelper()
-        self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-        self.midi_key_hold_latched = False
-        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
@@ -123,15 +102,10 @@ class JdxiInstrument(JdxiUi):
                 or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
-        # Initialize windows to None
-        self.log_viewer = None
-        self.midi_debugger = None
-        self.midi_message_monitor = None
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         self.program_helper = ProgramHelper(self.midi_helper,
                                             MidiChannel.PROGRAM)
-        self._load_digital_font()
         self.settings = QSettings("jdxi_manager2", "settings")
         self._load_settings()
         self._toggle_illuminate_sequencer_lightshow(True)
@@ -139,7 +113,6 @@ class JdxiInstrument(JdxiUi):
         self._update_synth_button_styles()
         self._set_callbacks()
         self._init_preset_handlers()
-        self.old_pos = None
         self.show()
 
     def _init_preset_handlers(self):
@@ -209,7 +182,7 @@ class JdxiInstrument(JdxiUi):
             # Send each SysEx message
             self.midi_helper.send_raw_message(request)
 
-    def _handle_program_change(self):
+    def _handle_program_change(self, bank_letter: str, program_number: int):
         """perform data request"""
         self.data_request()
 
@@ -432,7 +405,6 @@ class JdxiInstrument(JdxiUi):
                 parent=self,
                 **kwargs,
             )
-
             editor.setWindowTitle(title)
             editor.show()
             editor.raise_()

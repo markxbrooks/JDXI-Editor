@@ -37,6 +37,7 @@ from PySide6.QtGui import (
     QFontDatabase,
 )
 
+from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.editor.data import (
     DigitalSynthData,
     DrumSynthData,
@@ -45,8 +46,9 @@ from jdxi_editor.midi.data.editor.data import (
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.manager import PresetManager
 from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name
+from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name, get_program_name_by_id
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.ui.style.jdxistyle import JDXIStyle
 from jdxi_editor.ui.widgets.button import SequencerSquare
@@ -78,6 +80,15 @@ class JdxiUi(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.digital_font_family = None
+        self.editor_registry = None
+        self.editors = []
+        self.log_viewer = None
+        self.midi_debugger = None
+        self.midi_message_monitor = None
+        self.old_pos = None
+        self.preset_helpers = None
+        self.slot_number = None
         # Add preset & program tracking
         self.synth_data_map = {
             JDXISynth.DIGITAL_1: DigitalSynthData(synth_number=1),
@@ -87,25 +98,29 @@ class JdxiUi(QMainWindow):
         }
         self.sequencer_buttons = []
         self.current_program_bank_letter = "A"
-        self.program_helper = None
-        self.current_program_number = 1
-        self.current_program_name = "Init Program"
+        # Set up programs
+        self.current_program_id = "A01"
+        self.current_program_number = int(self.current_program_id[1:])
+        self.current_program_name = get_program_name_by_id(self.current_program_id)
+        # Set up presets
         self.preset_manager = PresetManager()
-        self.current_preset_number = self.preset_manager.current_preset_number
-        self.current_preset_name = self.preset_manager.current_preset_name
         # Initialize synth preset_type
         self.current_synth_type = JDXISynth.DIGITAL_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
-        self.log_file = None
         self.setWindowTitle("JD-Xi Editor")
         self.setMinimumSize(JDXIDimensions.WIDTH, JDXIDimensions.HEIGHT)
-        # Store window dimensions
-        self.digital_font_family = None
 
         # Initialize MIDI helper
         self.midi_helper = MidiIOHelper()
+        #  Initialize MIDI connectivity
+        if self.midi_helper:
+            self.midi_helper.close_ports()
+        self.channel = MidiChannel.DIGITAL1
+        self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+        self.midi_key_hold_latched = False
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
 
         # Load custom font
         self._load_digital_font()
@@ -121,41 +136,19 @@ class JdxiUi(QMainWindow):
 
         # Load settings
         self.settings = QSettings("mabsoft", "jdxi_editor")
-        self._load_settings()
-
-        # Show window
-        self.show()
 
         # Add piano keyboard at bottom
         self.piano_keyboard = PianoKeyboard(parent=self)
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
-        # Create display label
-        self.display_label = QLabel()
-        self.display_label.setMinimumSize(220, 100)  # Adjust size as needed
-
-        # Add display to layout
-        if hasattr(self, "main_layout"):
-            self.main_layout.addWidget(self.display_label)
-
         # Add to status bar before piano keyboard
         self.statusBar().addPermanentWidget(self.piano_keyboard)
-
-        # Create favorite buttons container
-        self.favorites_widget = QWidget()
-        favorites_layout = QVBoxLayout(self.favorites_widget)
-        favorites_layout.setSpacing(4)
-        favorites_layout.setContentsMargins(0, 0, 0, 0)
 
         # Add to status bar
         self.statusBar().addPermanentWidget(self.piano_keyboard)
 
         # Load saved favorites
         self._load_saved_favorites()
-
-        # Initialize current preset index
-        self.current_preset_index = 0
-        self.old_pos = None
 
     def _create_main_layout(self):
         """Create the main dashboard"""
@@ -402,10 +395,10 @@ class JdxiUi(QMainWindow):
             logging.warning("Unknown synth type. Defaulting to DIGITAL_1.")
             synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
 
-        self.current_preset_name = self.preset_manager.get_preset_name_by_type(self.current_synth_type)
+        self.preset_manager.current_preset_name = self.preset_manager.get_preset_name_by_type(self.current_synth_type)
         # Update preset number
         self.preset_manager.current_preset_number = get_preset_list_number_by_name(
-            self.current_preset_name, synth_data.preset_list
+            self.preset_manager.current_preset_name, synth_data.preset_list
         )
 
         self.digital_display.repaint_display(
@@ -445,8 +438,8 @@ class JdxiUi(QMainWindow):
 
     def update_preset_display(self, preset_number, preset_name):
         """Update the current preset display"""
-        self.current_preset_number = preset_number
-        self.current_preset_name = preset_name
+        self.preset_manager.current_preset_number = preset_number
+        self.preset_manager.current_preset_name = preset_name
         self._update_display()
 
     def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
@@ -464,8 +457,8 @@ class JdxiUi(QMainWindow):
                 preset_number = int(match.group(1))
                 preset_name = match.group(2).strip()
 
-            self.current_preset_number = preset_number
-            self.current_preset_name = preset_name
+            self.preset_manager.current_preset_number = preset_number
+            self.preset_manager.current_preset_name = preset_name
             self._update_display()
 
             # Update piano keyboard MIDI channel if available
@@ -552,4 +545,7 @@ class JdxiUi(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def _patch_save(self, button, idx):
+        raise NotImplementedError("to be implemented in subclass")
+
+    def _handle_program_change(self, bank_letter: str, program_number: int):
         raise NotImplementedError("to be implemented in subclass")
