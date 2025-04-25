@@ -42,7 +42,7 @@ from typing import Union
 
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 
-from PySide6.QtWidgets import QMenu, QMessageBox, QLabel, QWidget
+from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
