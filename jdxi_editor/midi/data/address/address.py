@@ -27,6 +27,7 @@ command = CommandID.DT1
 print(f"Command: {command}, Value: {command.value}, Message Position: {command.message_position}")
 """
 
+from __future__ import annotations
 from enum import unique, IntEnum
 from typing import Optional, Type, Union, Tuple, Any, TypeVar
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
@@ -103,9 +104,70 @@ class Address(SysExByte):
     def __str__(self):
         return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
 
+
+class SysExAddress:
+    """
+    Represents a full 4-byte SysEx address (MSB, UMB, LMB, LSB), with support for
+    address arithmetic, formatting, and conversion to/from SysEx message bytes.
+    """
+
+    def __init__(self, msb: int, umb: int, lmb: int, lsb: int):
+        for byte in (msb, umb, lmb, lsb):
+            if not (0x00 <= byte <= 0x7F):
+                raise ValueError("SysEx address bytes must be 7-bit values (0x00–0x7F)")
+        self.msb = msb
+        self.umb = umb
+        self.lmb = lmb
+        self.lsb = lsb
+
+    @classmethod
+    def from_bytes(cls, b: bytes) -> Optional[SysExAddress]:
+        if len(b) != 4:
+            return None
+        return cls(*b)
+
+    def to_bytes(self) -> bytes:
+        return bytes([self.msb, self.umb, self.lmb, self.lsb])
+
+    def add_offset(self, offset: Union[int, tuple[int, int, int]]) -> SysExAddress:
+        """
+        Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).
+        MSB remains unchanged.
+        """
+        if isinstance(offset, int):
+            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & 0x7F, offset & 0x7F]
+        elif isinstance(offset, tuple) and len(offset) == 3:
+            offset_bytes = list(offset)
+        else:
+            raise ValueError("Offset must be an int or a 3-byte tuple")
+
+        new_umb = (self.umb + offset_bytes[0]) & 0x7F
+        new_lmb = (self.lmb + offset_bytes[1]) & 0x7F
+        new_lsb = (self.lsb + offset_bytes[2]) & 0x7F
+        return SysExAddress(self.msb, new_umb, new_lmb, new_lsb)
+
+    def __repr__(self):
+        return (
+            f"<SysExAddress(msb=0x{self.msb:02X}, umb=0x{self.umb:02X}, "
+            f"lmb=0x{self.lmb:02X}, lsb=0x{self.lsb:02X})>"
+        )
+
+    def __str__(self):
+        return f"0x{self.msb:02X} 0x{self.umb:02X} 0x{self.lmb:02X} 0x{self.lsb:02X}"
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SysExAddress):
+            return NotImplemented
+        return self.to_bytes() == other.to_bytes()
+
+    def __hash__(self):
+        return hash(self.to_bytes())
+
+
 # ==========================
 # JD-Xi SysEx Header
 # ==========================
+
 
 class ModelID(Address):
     ROLAND_ID = 0x41
@@ -125,6 +187,7 @@ JD_XI_MODEL_ID = [
 
 JD_XI_HEADER_LIST = [RolandID.ROLAND_ID, RolandID.DEVICE_ID, *JD_XI_MODEL_ID]
 
+
 @unique
 class CommandID(SysExByte):
     """Roland Commands"""
@@ -140,6 +203,7 @@ class CommandID(SysExByte):
 # ==========================
 # Memory and Program Areas
 # ==========================
+
 
 @unique
 class AddressMemoryAreaMSB(Address):

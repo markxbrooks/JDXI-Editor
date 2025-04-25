@@ -191,16 +191,16 @@ class MidiRequests:
     PROGRAM_TONE_NAME_PARTIAL = [
         PROGRAM_COMMON,
         ANALOG,
+        DRUMS,
         *DIGITAL1,
         *DIGITAL2,
-        DRUMS,
     ]
 
     # Define program and tone name requests
     PROGRAM_TONE_NAME = [
         PROGRAM_COMMON,
         ANALOG,
+        DRUMS,
         DIGITAL1_COMMON,
         DIGITAL2_COMMON,
-        DRUMS,
     ]
