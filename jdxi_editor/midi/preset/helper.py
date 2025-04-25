@@ -28,7 +28,8 @@ This class is typically used within a larger MIDI control application to handle
 preset changes and communicate them to the UI and MIDI engine.
 
 """
-
+import time
+import threading
 import logging
 
 from PySide6.QtCore import Signal, QObject
@@ -129,10 +130,14 @@ class PresetHelper(QObject):
         self.send_program_change(channel, msb, lsb, pc)
 
     def data_request(self):
-        for midi_request in self.midi_requests:
-            byte_list_message = bytes.fromhex(midi_request)
-            # time.sleep(0.075)  # 75ms delay
-            self.midi_helper.send_raw_message(byte_list_message)
+        def send_with_delay(midi_requests):
+            for midi_request in midi_requests:
+                byte_list_message = bytes.fromhex(midi_request)
+                self.midi_helper.send_raw_message(byte_list_message)
+                time.sleep(0.075)  # Blocking delay in a separate thread
+
+        # Run the function in a separate thread
+        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
 
     def send_program_change(self, channel, msb, lsb, pc):
         """Send a Bank Select and Program Change message."""
