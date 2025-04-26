@@ -151,7 +151,7 @@ class RolandSysExAddress:
 
     def __repr__(self):
         return (
-            f"<RolandSysExAddress(msb=0x{int(self.msb):02X}, umb=0x{int(self.umb):02X}, "
+            f"<{self.__class__.__name__}(msb=0x{int(self.msb):02X}, umb=0x{int(self.umb):02X}, "
             f"lmb=0x{int(self.lmb):02X}, lsb=0x{int(self.lsb):02X})>"
         )
 
