@@ -37,13 +37,13 @@ class SystemControllerMessage(RolandSysEx):
     area: int = ProgramAreaParameter.SETUP  # 0x02: Setup area
     section: int = AddressOffsetSystemLMB.SYSTEM_CONTROLLER  # 0x03: Controller section
     group: int = 0x00  # Always 0x00
-    address_lsb: int = 0x00  # Parameter number
+    lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.address_msb,  # System area (0x02)
+            self.msb,  # System area (0x02)
             self.section,  # Controller section (0x03)
             self.group,  # Always 0x00
             self.param,  # Parameter number

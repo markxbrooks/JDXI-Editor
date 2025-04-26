@@ -32,13 +32,13 @@ class DrumKitMessage(RolandSysEx):
     area: int = ProgramAreaParameter.TEMPORARY_TONE  # Temporary area
     tone_type: int = TemporaryParameter.DRUM_KIT_PART  # Drum Kit
     section: int = 0x00  # Section (Common or Pad offset)
-    address_lsb: int = 0x00  # Parameter number
+    lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.address_msb,  # Temporary area (0x19)
+            self.msb,  # Temporary area (0x19)
             self.tone_type,  # Drum Kit (0x10)
             self.section,  # Section (Common/Pad offset)
             self.param,  # Parameter number

@@ -29,7 +29,7 @@ print(f"Command: {command}, Value: {command.value}, Message Position: {command.m
 
 from __future__ import annotations
 from enum import unique, IntEnum
-from typing import Optional, Type, Union, Tuple, Any, TypeVar
+from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 
@@ -125,6 +125,9 @@ class SysExAddress:
         if len(b) != 4:
             return None
         return cls(*b)
+
+    def to_list(self) -> List[int]:
+        return [self.msb, self.umb, self.lmb, self.lsb]
 
     def to_bytes(self) -> bytes:
         return bytes([self.msb, self.umb, self.lmb, self.lsb])
@@ -288,24 +291,56 @@ class AddressOffsetProgramLMB(Address):
     CONTROLLER = 0x40
     DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
-    # Automatically generate the remaining parts dynamically
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
     DRUM_KIT_PART_3 = 0x32
-    @classmethod
-    def generate(cls):
-        for i in range(37):
-            setattr(cls, f"DRUM_KIT_PART_{i + 1}", 0x2E + (i * 2))
+    DRUM_KIT_PART_4 = 0x34
+    DRUM_KIT_PART_5 = 0x36
+    DRUM_KIT_PART_6 = 0x38
+    DRUM_KIT_PART_7 = 0x3A
+    DRUM_KIT_PART_8 = 0x3C
+    DRUM_KIT_PART_9 = 0x3E
+    DRUM_KIT_PART_10 = 0x40
+    DRUM_KIT_PART_11 = 0x42
+    DRUM_KIT_PART_12 = 0x44
+    DRUM_KIT_PART_13 = 0x46
+    DRUM_KIT_PART_14 = 0x48
+    DRUM_KIT_PART_15 = 0x4A
+    DRUM_KIT_PART_16 = 0x4C
+    DRUM_KIT_PART_17 = 0x4E
+    DRUM_KIT_PART_18 = 0x50
+    DRUM_KIT_PART_19 = 0x52
+    DRUM_KIT_PART_20 = 0x54
+    DRUM_KIT_PART_21 = 0x56
+    DRUM_KIT_PART_22 = 0x58
+    DRUM_KIT_PART_23 = 0x5A
+    DRUM_KIT_PART_24 = 0x5C
+    DRUM_KIT_PART_25 = 0x5E
+    DRUM_KIT_PART_26 = 0x60
+    DRUM_KIT_PART_27 = 0x62
+    DRUM_KIT_PART_28 = 0x64
+    DRUM_KIT_PART_29 = 0x66
+    DRUM_KIT_PART_30 = 0x68
+    DRUM_KIT_PART_31 = 0x6A
+    DRUM_KIT_PART_32 = 0x6C
+    DRUM_KIT_PART_33 = 0x6E
+    DRUM_KIT_PART_34 = 0x70
+    DRUM_KIT_PART_35 = 0x72
+    DRUM_KIT_PART_36 = 0x74
+    DRUM_KIT_PART_37 = 0x76
 
     @classmethod
     def message_position(cls):
         """Return the fixed message position for command bytes."""
         return 10
-        
-# Dynamically generate parts
-DrumKitParts.generate()
+
     
-    """
+"""
+    @classmethod
+    def generate(cls):
+        for i in range(37):
+            setattr(cls, f"DRUM_KIT_PART_{i + 1}", 0x2E + (i * 2))
+            
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
     DRUM_KIT_PART_3 = 0x32
