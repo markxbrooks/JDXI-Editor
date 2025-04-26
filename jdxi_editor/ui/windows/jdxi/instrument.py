@@ -612,6 +612,22 @@ class JdxiInstrument(JdxiUi):
                 self.midi_key_hold_latched = not self.midi_key_hold_latched
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
+                address = SysExAddress(
+                    msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                    umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+                    lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    lsb=0x46
+                )
+                
+                # Assuming RolandSysEx accepts an address in bytes
+                sysex_message = RolandSysEx(
+                    address_msb=address.msb,
+                    address_umb=address.umb,
+                    address_lmb=address.lmb,
+                    address_lsb=address.lsb,
+                    value=value,
+                )
+                """
                 sysex_message = RolandSysEx(
                     address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
@@ -619,6 +635,7 @@ class JdxiInstrument(JdxiUi):
                     address_lsb=0x46,
                     value=value,
                 )
+                """
                 self.midi_helper.send_midi_message(sysex_message)
                 sysex_message = RolandSysEx(
                     address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
