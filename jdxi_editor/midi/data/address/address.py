@@ -288,6 +288,24 @@ class AddressOffsetProgramLMB(Address):
     CONTROLLER = 0x40
     DRUM_DEFAULT_PARTIAL = DRUM_ADDRESS_MAP["BD1"]
     DIGITAL_DEFAULT_PARTIAL = DIGITAL_PARTIAL_MAP[1]
+    # Automatically generate the remaining parts dynamically
+    DRUM_KIT_PART_1 = 0x2E
+    DRUM_KIT_PART_2 = 0x30
+    DRUM_KIT_PART_3 = 0x32
+    @classmethod
+    def generate(cls):
+        for i in range(37):
+            setattr(cls, f"DRUM_KIT_PART_{i + 1}", 0x2E + (i * 2))
+
+    @classmethod
+    def message_position(cls):
+        """Return the fixed message position for command bytes."""
+        return 10
+        
+# Dynamically generate parts
+DrumKitParts.generate()
+    
+    """
     DRUM_KIT_PART_1 = 0x2E
     DRUM_KIT_PART_2 = 0x30
     DRUM_KIT_PART_3 = 0x32
@@ -324,9 +342,4 @@ class AddressOffsetProgramLMB(Address):
     DRUM_KIT_PART_34 = 0x70
     DRUM_KIT_PART_35 = 0x72
     DRUM_KIT_PART_36 = 0x74
-    DRUM_KIT_PART_37 = 0x76
-
-    @classmethod
-    def message_position(cls):
-        """Return the fixed message position for command bytes."""
-        return 10
+    DRUM_KIT_PART_37 = 0x76"""
