@@ -105,7 +105,7 @@ class Address(SysExByte):
         return f"{self.__class__.__name__}.{self.name}: 0x{self.value:02X}"
 
 
-class SysExAddress:
+class RolandSysExAddress:
     """
     Represents a full 4-byte SysEx address (MSB, UMB, LMB, LSB), with support for
     address arithmetic, formatting, and conversion to/from SysEx message bytes.
@@ -121,7 +121,7 @@ class SysExAddress:
         self.lsb = lsb
 
     @classmethod
-    def from_bytes(cls, b: bytes) -> Optional[SysExAddress]:
+    def from_bytes(cls, b: bytes) -> Optional[RolandSysExAddress]:
         if len(b) != 4:
             return None
         return cls(*b)
@@ -132,7 +132,7 @@ class SysExAddress:
     def to_bytes(self) -> bytes:
         return bytes([self.msb, self.umb, self.lmb, self.lsb])
 
-    def add_offset(self, offset: Union[int, tuple[int, int, int]]) -> SysExAddress:
+    def add_offset(self, offset: Union[int, tuple[int, int, int]]) -> RolandSysExAddress:
         """
         Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).
         MSB remains unchanged.
@@ -147,7 +147,7 @@ class SysExAddress:
         new_umb = (self.umb + offset_bytes[0]) & 0x7F
         new_lmb = (self.lmb + offset_bytes[1]) & 0x7F
         new_lsb = (self.lsb + offset_bytes[2]) & 0x7F
-        return SysExAddress(self.msb, new_umb, new_lmb, new_lsb)
+        return RolandSysExAddress(self.msb, new_umb, new_lmb, new_lsb)
 
     def __repr__(self):
         return (
@@ -159,7 +159,7 @@ class SysExAddress:
         return f"0x{self.msb:02X} 0x{self.umb:02X} 0x{self.lmb:02X} 0x{self.lsb:02X}"
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, SysExAddress):
+        if not isinstance(other, RolandSysExAddress):
             return NotImplemented
         return self.to_bytes() == other.to_bytes()
 
