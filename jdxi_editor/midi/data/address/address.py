@@ -270,6 +270,12 @@ class AddressOffsetSuperNATURALLMB(Address):
         """Return the fixed message position for command bytes."""
         return 10
 
+    @classmethod
+    def digital_partial_offset(cls, partial_number: int) -> int:
+        """Return the LMB offset for the given drum partial (0–37)."""
+        base_address = DIGITAL_PARTIAL_MAP.get(partial_number, 0x00)
+        return base_address
+
 
 class AddressOffsetProgramLMB(Address):
     """Program"""

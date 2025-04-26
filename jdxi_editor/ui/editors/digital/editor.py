@@ -120,9 +120,9 @@ class DigitalSynthEditor(SynthEditor):
     def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
         if synth_number == 1:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1)
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=0)
         elif synth_number == 2:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2)
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=0)
         logging.info(self.synth_data)
         data = self.synth_data
 

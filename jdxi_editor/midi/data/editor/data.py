@@ -164,18 +164,26 @@ class DigitalSynthData(SynthData):
     def __post_init__(self):
         super().__post_init__()
 
-    @property
-    def group_map(self) -> Dict[int, AddressOffsetProgramLMB]:
-        if not hasattr(self, '_cached_group_map'):
-            digital_map = {0: AddressOffsetProgramLMB.COMMON}
-            for i in range(1, 4):  # 1, 2, 3
-                digital_map[i] = getattr(AddressOffsetProgramLMB, f"DIGITAL_PARTIAL_{i}")
-            self._cached_group_map = digital_map
-        return self._cached_group_map
+        # Set _group_map (private)
+        self._group_map = {
+            0: AddressOffsetProgramLMB.COMMON,
+            1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+            2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+            3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+        }
 
     @property
-    def partial_lmb(self) -> AddressOffsetProgramLMB:
-        return self.get_partial_lmb(self.partial_number)
+    def group_map(self):
+        return self._group_map
+
+    @group_map.setter
+    def group_map(self, value):
+        self._group_map = value
+
+    @property
+    def partial_lmb(self) -> int:
+        # Use group_map lookup
+        return self.group_map.get(self.partial_number, AddressOffsetProgramLMB.COMMON)
 
 
 @dataclass
@@ -207,6 +215,7 @@ def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
             partial_number=partial_number
         )
     elif synth_type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
+        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(partial_number)
         if synth_type == JDXISynth.DIGITAL_1:
             digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
             synth_number = 1
@@ -228,7 +237,7 @@ def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
             display_prefix=f"D{synth_number}",
             address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             address_umb=digital_partial_address_umb,
-            address_lmb=AddressOffsetProgramLMB.COMMON,
+            address_lmb=address_lmb,
             synth_number=synth_number,
             partial_number=partial_number
         )
