@@ -144,4 +144,4 @@ class AddressParameter(Enum):
         umb = 0x00  # Default Upper Middle Byte
         lmb = (value >> 8) & 0xFF  # Extract LMB
         lsb = value & 0xFF         # Extract LSB
-        return (umb, lmb, lsb)
+        return umb, lmb, lsb

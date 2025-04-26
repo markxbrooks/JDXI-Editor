@@ -157,7 +157,7 @@ def to_hex(value, width=2):
     try:
         int_value = int(value, 0) if isinstance(value, str) else value
         hex_str = f"{int_value:0{width}X}"
-        logging.info(f"to_hex: value: {value} -> 0x{int_value:02X} (width={width})")
+        logging.info(f"to_hex: value: {value} -> 0x{int(int_value):02X} (width={width})")
         return hex_str
     except Exception as ex:
         logging.error(f"Error {ex} occurred in to_hex with value: {value}")

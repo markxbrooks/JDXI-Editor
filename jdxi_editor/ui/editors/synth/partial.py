@@ -33,7 +33,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     Address,
 )
-from jdxi_editor.midi.data.address.helpers import construct_address
+from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase
@@ -61,7 +61,6 @@ class PartialEditor(SynthBase):
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_helper = None
-
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameter, QWidget] = {}
 
@@ -69,29 +68,22 @@ class PartialEditor(SynthBase):
         """Send MIDI parameter with error handling."""
         try:
             log_parameter("self.partial_number:", self.partial_number)
-            log_parameter("address_umb:", self.address_umb)
-            log_parameter("address_lmb:", self.address_lmb)
+            log_parameter("address:", self.synth_data.address)
             log_parameter("parameter:", param)
             log_parameter("value:", value)
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
             else:
                 size = 1
-            base_address, full_address, offset = construct_address(
-                self.address_msb, self.address_umb, self.address_lmb, param
+            address = apply_address_offset(
+                self.synth_data.address, param
             )
-
-            # Extract individual bytes
-            address_msb, address_umb, address_lmb, address_lsb = full_address
-            sysex_address = base_address.to_sysex_address()
-            log_parameter("base address:", sysex_address)
-            log_parameter("offset:", offset)
-            log_parameter("full address:", full_address)
+            logging.info("full address: \t%s", address)
             sysex_message = RolandSysEx(
-                msb=address_msb,
-                umb=address_umb,
-                lmb=address_lmb,
-                lsb=address_lsb,
+                msb=address.msb,
+                umb=address.umb,
+                lmb=address.lmb,
+                lsb=address.lsb,
                 value=value,
                 size=size,
             )
