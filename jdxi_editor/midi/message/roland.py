@@ -30,7 +30,7 @@ from typing import List, Union, Optional
 from jdxi_editor.midi.data.address.address import (
     ModelID,
     CommandID,
-    AddressMemoryAreaMSB, SysExAddress,
+    AddressMemoryAreaMSB, RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, RolandID
 from jdxi_editor.midi.message.sysex import SysExMessage
@@ -51,7 +51,7 @@ class RolandSysExMessage(SysExMessage):
     ])
     command: int = CommandID.DT1
 
-    address: SysExAddress = field(default_factory=SysExAddress)
+    address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
     value: Union[int, List[int]] = 0x00
     size: int = 1
 
@@ -102,7 +102,7 @@ class RolandSysEx(SysExMessage):
         ]
     )
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
-    sysex_address: Optional[SysExAddress] = None
+    sysex_address: Optional[RolandSysExAddress] = None
     msb: int = 0x00
     umb: int = 0x00
     lmb: int = 0x00
@@ -145,7 +145,7 @@ class RolandSysEx(SysExMessage):
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
-    def from_sysex_address(self, sysex_address: SysExAddress):
+    def from_sysex_address(self, sysex_address: RolandSysExAddress):
         """ from_sysex_address """
         self.msb = sysex_address.msb
         self.umb = sysex_address.umb

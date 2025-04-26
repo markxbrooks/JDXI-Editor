@@ -46,7 +46,7 @@ from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
-    AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB, SysExAddress
+    AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB, RolandSysExAddress
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
@@ -596,7 +596,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            address = SysExAddress(
+            address = RolandSysExAddress(
                 msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                 umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
                 lmb=AddressOffsetProgramLMB.COMMON,
@@ -615,13 +615,13 @@ class JdxiInstrument(JdxiUi):
                 self.midi_key_hold_latched = not self.midi_key_hold_latched
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-                address1 = SysExAddress(
+                address1 = RolandSysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
                     lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46
                 )
-                address2 = SysExAddress(
+                address2 = RolandSysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     umb=0x01,
                     lmb=0x00,
@@ -661,7 +661,7 @@ class JdxiInstrument(JdxiUi):
                              AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,
                              AddressOffsetProgramLMB.ZONE_ANALOG_SYNTH,
                              AddressOffsetProgramLMB.ZONE_DRUM]:
-                    address = SysExAddress(
+                    address = RolandSysExAddress(
                         msb=AddressMemoryAreaMSB.PROGRAM,
                         umb=AddressOffsetSystemUMB.COMMON,
                         lmb=zone,
