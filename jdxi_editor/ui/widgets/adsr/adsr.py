@@ -56,6 +56,7 @@ class ADSR(QWidget):
         address_lmb=None,
         address_msb=None,
         address_umb=None,
+        address=None,
         parent=None,
     ):
         super().__init__(parent)
@@ -278,6 +279,7 @@ class ADSR(QWidget):
             return False
 
         try:
+
             sysex_message = RolandSysEx(
                 msb=self.address_msb,
                 umb=self.address_umb,

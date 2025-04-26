@@ -24,7 +24,7 @@ from typing import List, Optional, Union
 
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
-
+from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
 from jdxi_editor.globals import LOG_PADDING_WIDTH
 from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
@@ -235,7 +235,7 @@ class MidiOutHandler(MidiIOController):
         )
         try:
             group = increment_group(group, param)
-            address = construct_address(area, group, param, part)
+            address = apply_address_offset(area, group, param, part)
             if size == 1:
                 data_bytes = [value & 0x7F]  # Single byte format (0-127)
             elif size in [4, 5]:

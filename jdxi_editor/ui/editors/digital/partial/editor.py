@@ -45,9 +45,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QTabWidget,
 )
-
+from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.editor.data import DigitalSynthData, create_synth_data
+from jdxi_editor.midi.data.editor.data import create_synth_data
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
@@ -88,8 +88,10 @@ class DigitalPartialEditor(PartialEditor):
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
         self.address_lmb = data.partial_lmb # generated dynamically so may give IDE error
+        logging.info(f"Initializing partial: {self.synth_data.address}")
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
+            logging.info(f"Partial name: {self.part_name}")
         else:
             logging.error(
                 f"Invalid partial_num: {partial_number}. Using default value."

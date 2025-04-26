@@ -3,6 +3,15 @@ from enum import IntEnum
 from typing import Tuple, Type, Any, Dict, Union
 
 from jdxi_editor.log.message import log_parameter
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
+
+
+def apply_address_offset(base_address, param: AddressParameter):
+    """Build a full SysEx address by combining a base address, static offsets, and a parameter offset."""
+    log_parameter("base address:", base_address)
+    log_parameter("parameter:", param)
+    final_address = base_address.add_offset(param.get_offset())
+    return final_address
 
 
 def construct_address(base_address, address_umb, address_lmb, param):
