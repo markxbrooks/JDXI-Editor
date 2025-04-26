@@ -27,7 +27,7 @@ Example usage:
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List
 
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
@@ -86,21 +86,50 @@ class SynthData(MidiSynthConfig, InstrumentDisplayConfig):
         """Resolve the address for a given partial number."""
         return self.group_map.get(partial_number, AddressOffsetProgramLMB.COMMON)
 
-# --- Specialized SynthData ---
-
 
 @dataclass
-class DrumSynthData(SynthData):
-    partial_number: int = 0
-    _group_map: Dict[int, AddressOffsetProgramLMB] = field(default_factory=dict, init=False, repr=False)
+class SynthDataOld:
+    address_msb: int
+    address_umb: int
+    address_lmb: int
+    instrument_icon_folder: str
+    instrument_default_image: str
+    midi_requests: List[str]
+    midi_channel: int
+    presets: List[str]
+    preset_list: List[str]
+    preset_type: JDXISynth
+    window_title: str
+    display_prefix: str
+    address: RolandSysExAddress = field(init=False)
 
     def __post_init__(self):
-        super().__post_init__()
-        self._build_group_map()
+        self.address = RolandSysExAddress(
+            msb=self.address_msb,
+            umb=self.address_umb,
+            lmb=self.address_lmb,
+            lsb=ZERO_BYTE  # 0x00 To be offset by the parameter
+        )
 
-    def _build_group_map(self):
-        """Build the map once after initialization."""
-        self._group_map = {
+
+class DrumSynthData(SynthData):
+    def __init__(self, partial_number: int = 1):
+        super().__init__(
+            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            address_umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
+            address_lmb=AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL,
+            instrument_icon_folder="drum_kits",
+            instrument_default_image="drums.png",
+            midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
+            midi_channel=MidiChannel.DRUM,
+            presets=JDXIPresets.DRUM_ENUMERATED,
+            preset_list=JDXIPresets.DRUM_KIT_LIST,
+            preset_type=JDXISynth.DRUM,
+            window_title="Drums",
+            display_prefix="DR",
+        )
+        self.partial_number = partial_number
+        self.group_map = {
             0: AddressOffsetProgramLMB.COMMON,
             1: AddressOffsetProgramLMB.DRUM_KIT_PART_1,
             2: AddressOffsetProgramLMB.DRUM_KIT_PART_2,
@@ -141,110 +170,98 @@ class DrumSynthData(SynthData):
             37: AddressOffsetProgramLMB.DRUM_KIT_PART_37,
         }
 
-    @property
-    def group_map(self) -> Dict[int, AddressOffsetProgramLMB]:
-        """Return the drum group map."""
-        return self._group_map
+        # Add all DRUM_KIT_PART_* values from the enum dynamically
+        for member in AddressOffsetProgramLMB:
+            if member.name.startswith("DRUM_KIT_PART_"):
+                # Extract the number at the end of the name
+                try:
+                    index = int(member.name.split("_")[-1])
+                    self.group_map[index] = member
+                except ValueError:
+                    continue  # skip anything that doesn’t have a numeric suffix
 
     @property
-    def partial_lmb(self) -> AddressOffsetProgramLMB:
-        """Return the LMB for the current partial number."""
-        return self.get_partial_lmb(self.partial_number)
-
-    def get_partial_lmb(self, partial_number: int) -> AddressOffsetProgramLMB:
-        """Return the LMB for a given partial number."""
-        return self._group_map.get(partial_number, AddressOffsetProgramLMB.COMMON)
-
-
-@dataclass
-class DigitalSynthData(SynthData):
-    synth_number: int = 1
-    partial_number: int = 0
-
-    def __post_init__(self):
-        super().__post_init__()
-
-    @property
-    def group_map(self) -> Dict[int, AddressOffsetProgramLMB]:
-        if not hasattr(self, '_cached_group_map'):
-            digital_map = {0: AddressOffsetProgramLMB.COMMON}
-            for i in range(1, 4):  # 1, 2, 3
-                digital_map[i] = getattr(AddressOffsetProgramLMB, f"DIGITAL_PARTIAL_{i}")
-            self._cached_group_map = digital_map
-        return self._cached_group_map
-
-    @property
-    def partial_lmb(self) -> AddressOffsetProgramLMB:
-        return self.get_partial_lmb(self.partial_number)
-
-
-@dataclass
-class AnalogSynthData(SynthData):
-    def __post_init__(self):
-        super().__post_init__()
-    @property
-    def group_map(self) -> Dict[int, AddressOffsetProgramLMB]:
-        return {0: AddressOffsetProgramLMB.COMMON}
-
-
-def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
-    """Factory to create the right SynthData based on kind."""
-    if synth_type == JDXISynth.DRUM:
-        address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)
-        return DrumSynthData(
-            midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
-            midi_channel=MidiChannel.DRUM,
-            presets=JDXIPresets.DRUM_ENUMERATED,
-            preset_list=JDXIPresets.DRUM_KIT_LIST,
-            preset_type=synth_type,
-            instrument_icon_folder="drum_kits",
-            instrument_default_image="drums.png",
-            window_title="Drum Kit",
-            display_prefix="DR",
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
-            address_lmb=address_lmb,
-            partial_number=partial_number
+    def partial_lmb(self) -> int:
+        return self.group_map.get(
+            self.partial_number, AddressOffsetProgramLMB.COMMON
         )
-    elif synth_type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
-        if synth_type == JDXISynth.DIGITAL_1:
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
-            synth_number = 1
-        elif synth_type == JDXISynth.DIGITAL_2: # JDXISynth.DIGITAL_2
-            synth_number = 2
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_2
-        else:  # Default case
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
-            synth_number = 1
-        return DigitalSynthData(
-            midi_requests=MidiRequests.DIGITAL2 if synth_number == 2 else MidiRequests.DIGITAL1,
-            midi_channel=synth_number,
-            presets=JDXIPresets.DIGITAL_ENUMERATED,
-            preset_list=JDXIPresets.DIGITAL_LIST,
-            preset_type=synth_type,
+
+    def get_partial_lmb(self, partial_number) -> int:
+        partial_lmb = self.group_map.get(
+            partial_number, AddressOffsetProgramLMB.COMMON
+        )
+        return partial_lmb
+
+
+class DigitalSynthData(SynthData):
+    def __init__(self, synth_number: int, partial_number: int = 0):
+        super().__init__(
+            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_2
+            if synth_number == 2
+            else AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+            address_lmb=AddressOffsetProgramLMB.COMMON,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
+            midi_requests=MidiRequests.DIGITAL2 if synth_number == 2 else MidiRequests.DIGITAL1,
+            midi_channel=MidiChannel.DIGITAL2
+            if synth_number == 2
+            else MidiChannel.DIGITAL1,
+            presets=JDXIPresets.DIGITAL_ENUMERATED,
+            preset_list=JDXIPresets.DIGITAL_LIST,
+            preset_type=JDXISynth.DIGITAL_2
+            if synth_number == 2
+            else JDXISynth.DIGITAL_1,
             window_title=f"Digital Synth {synth_number}",
             display_prefix=f"D{synth_number}",
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=digital_partial_address_umb,
-            address_lmb=AddressOffsetProgramLMB.COMMON,
-            synth_number=synth_number,
-            partial_number=partial_number
         )
-    elif synth_type == JDXISynth.ANALOG:
-        return AnalogSynthData(
+        self.partial_number = partial_number
+        self.group_map = {
+            0: AddressOffsetProgramLMB.COMMON,
+            1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
+            2: AddressOffsetSuperNATURALLMB.PARTIAL_2,
+            3: AddressOffsetSuperNATURALLMB.PARTIAL_3,
+        }
+
+    @property
+    def partial_lmb(self) -> int:
+        return self.group_map.get(
+            self.partial_number, AddressOffsetProgramLMB.COMMON
+        )
+
+
+class AnalogSynthData(SynthData):
+    def __init__(self):
+        super().__init__(
+            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            address_umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
+            address_lmb=AddressOffsetProgramLMB.COMMON,
+            instrument_icon_folder="analog_synths",
+            instrument_default_image="analog.png",
             midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
             midi_channel=MidiChannel.ANALOG,
             presets=JDXIPresets.ANALOG_ENUMERATED,
             preset_list=JDXIPresets.ANALOG_LIST,
-            preset_type=synth_type,
-            instrument_icon_folder="analog_synths",
-            instrument_default_image="analog.png",
+            preset_type=JDXISynth.ANALOG,
             window_title="Analog Synth",
             display_prefix="AN",
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            address_lmb=AddressOffsetProgramLMB.COMMON
         )
-    raise ValueError(f"Unknown synth type: {synth_type}")
+
+
+def create_synth_data(synth_type: JDXISynth, partial_number=1) -> SynthData:
+    """
+    Factory function to create synth data based on the type of synth.
+    :param synth_type:
+    :param partial_number:
+    :return: SynthData instance
+    """
+    if synth_type == JDXISynth.DRUM:
+        return DrumSynthData(partial_number=partial_number)
+    elif synth_type == JDXISynth.DIGITAL_1:
+        return DigitalSynthData(synth_number=1, partial_number=partial_number)
+    elif synth_type == JDXISynth.DIGITAL_2:
+        return DigitalSynthData(synth_number=2, partial_number=partial_number)
+    elif synth_type == JDXISynth.ANALOG:
+        return AnalogSynthData()
+    else:
+        return DigitalSynthData(synth_number=1, partial_number=1)

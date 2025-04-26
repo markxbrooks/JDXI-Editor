@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
-from jdxi_editor.midi.data.editor.data import DigitalSynthData
+from jdxi_editor.midi.data.editor.data import DigitalSynthData, create_synth_data
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
@@ -119,7 +119,10 @@ class DigitalSynthEditor(SynthEditor):
 
     def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
-        self.synth_data = DigitalSynthData(synth_number)
+        if synth_number == 1:
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1)
+        elif synth_number == 2:
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2)
         logging.info(self.synth_data)
         data = self.synth_data
 

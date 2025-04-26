@@ -42,7 +42,7 @@ def create_parts_container(
     analog_button.clicked.connect(lambda: on_select_synth(JDXISynth.ANALOG))
     digital1_button.clicked.connect(lambda: on_select_synth(JDXISynth.DIGITAL_1))
     digital2_button.clicked.connect(lambda: on_select_synth(JDXISynth.DIGITAL_2))
-    drums_button.clicked.connect(lambda: on_select_synth(JDXISynth.DRUMS))
+    drums_button.clicked.connect(lambda: on_select_synth(JDXISynth.DRUM))
 
     # Button group ensures one active selection
     button_group = QButtonGroup()

@@ -153,7 +153,7 @@ class SynthEditor(SynthBase):
             (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
             (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
             (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
+            (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
 
         self.preset_helpers = {
@@ -373,7 +373,7 @@ class SynthEditor(SynthBase):
 
         # Fallback to default image if no specific image is found
         if not image_loaded:
-            if not load_and_set_image(default_image_path):
+            if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
     def _update_slider(self, param, value, successes=None, failures=None, debug=None):

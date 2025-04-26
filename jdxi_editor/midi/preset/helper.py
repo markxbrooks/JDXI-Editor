@@ -95,13 +95,13 @@ class PresetHelper(QObject):
             JDXISynth.DIGITAL_1: DIGITAL_PRESET_LIST,
             JDXISynth.DIGITAL_2: DIGITAL_PRESET_LIST,
             JDXISynth.ANALOG: ANALOG_PRESET_LIST,
-            JDXISynth.DRUMS: DRUM_KIT_LIST,
+            JDXISynth.DRUM: DRUM_KIT_LIST,
         }
         channel_map = {
             JDXISynth.DIGITAL_1: MidiChannel.DIGITAL1,
             JDXISynth.DIGITAL_2: MidiChannel.DIGITAL2,
             JDXISynth.ANALOG: MidiChannel.ANALOG,
-            JDXISynth.DRUMS: MidiChannel.DRUM,
+            JDXISynth.DRUM: MidiChannel.DRUM,
         }
         preset_list = preset_list_map.get(synth_type, DIGITAL_PRESET_LIST)
         channel = channel_map.get(synth_type, MidiChannel.DIGITAL1)

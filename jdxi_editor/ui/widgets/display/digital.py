@@ -282,7 +282,7 @@ class DigitalDisplay(DigitalDisplayBase):
             tone_name = digital2_tone_name
             active_synth = "D2"
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
-        elif synth_type == JDXISynth.DRUMS:
+        elif synth_type == JDXISynth.DRUM:
             tone_name = drums_tone_name
             active_synth = "DR"
             tone_number = get_preset_list_number_by_name(tone_name, DRUM_KIT_LIST)

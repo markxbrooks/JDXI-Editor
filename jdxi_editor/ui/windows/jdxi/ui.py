@@ -41,7 +41,7 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.editor.data import (
     DigitalSynthData,
     DrumSynthData,
-    AnalogSynthData,
+    AnalogSynthData, create_synth_data,
 )
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.preset.manager import PresetManager
@@ -89,13 +89,6 @@ class JdxiUi(QMainWindow):
         self.old_pos = None
         self.preset_helpers = None
         self.slot_number = None
-        # Add preset & program tracking
-        self.synth_data_map = {
-            JDXISynth.DIGITAL_1: DigitalSynthData(synth_number=1),
-            JDXISynth.DIGITAL_2: DigitalSynthData(synth_number=2),
-            JDXISynth.DRUMS: DrumSynthData(),
-            JDXISynth.ANALOG: AnalogSynthData(),
-        }
         self.sequencer_buttons = []
         self.current_program_bank_letter = "A"
         # Set up programs
@@ -181,7 +174,7 @@ class JdxiUi(QMainWindow):
             JDXISynth.DIGITAL_1: self.part_buttons["digital1"],
             JDXISynth.DIGITAL_2: self.part_buttons["digital2"],
             JDXISynth.ANALOG: self.part_buttons["analog"],
-            JDXISynth.DRUMS: self.part_buttons["drums"],
+            JDXISynth.DRUM: self.part_buttons["drums"],
         }
         self.arp_button = self.part_buttons["arp"]
         self.octave_down, self.octave_up = add_octave_buttons(
@@ -384,7 +377,8 @@ class JdxiUi(QMainWindow):
 
     def _update_display(self):
         """Update the display with the current preset information"""
-        synth_data = self.synth_data_map.get(self.current_synth_type)
+        # synth_data = self.synth_data_map.get(self.current_synth_type)
+        synth_data = create_synth_data(self.current_synth_type)
         if not synth_data:
             logging.warning("Unknown synth type. Defaulting to DIGITAL_1.")
             synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]

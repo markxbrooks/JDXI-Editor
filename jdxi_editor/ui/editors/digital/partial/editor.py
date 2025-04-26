@@ -47,10 +47,11 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.editor.data import DigitalSynthData
+from jdxi_editor.midi.data.editor.data import DigitalSynthData, create_synth_data
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
@@ -79,13 +80,14 @@ class DigitalPartialEditor(PartialEditor):
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
-        self.synth_data = DigitalSynthData(
-            synth_number=synth_number, partial_number=partial_number
-        )
+        if synth_number == 1:
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1)
+        elif synth_number == 2:
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2)
         data = self.synth_data
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
-        self.address_lmb = data.partial_lmb
+        self.address_lmb = data.address_lmb
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
         else:

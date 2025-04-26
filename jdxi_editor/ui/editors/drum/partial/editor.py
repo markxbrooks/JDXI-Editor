@@ -32,9 +32,10 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
-from jdxi_editor.midi.data.editor.data import DrumSynthData
+from jdxi_editor.midi.data.editor.data import DrumSynthData, create_synth_data
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
 from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
 from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
@@ -58,8 +59,7 @@ class DrumPartialEditor(PartialEditor):
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
 
-        self.synth_data = DrumSynthData(partial_number=partial_number
-        )
+        self.synth_data = create_synth_data(JDXISynth.DRUM, partial_number)
         data = self.synth_data
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb

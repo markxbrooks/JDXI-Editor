@@ -78,10 +78,10 @@ class AnalogOscillatorSection(QWidget):
         tuning_group.setLayout(tuning_layout)
 
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse")
+            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse (1/2 tones)")
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_FINE, "Fine")
+            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_FINE, "Fine (cents)")
         )
 
         return tuning_group
@@ -92,7 +92,7 @@ class AnalogOscillatorSection(QWidget):
         pw_group.setLayout(pw_layout)
 
         pw_slider = self._create_parameter_slider(
-            AddressParameterAnalog.OSC_PULSE_WIDTH, "Width"
+            AddressParameterAnalog.OSC_PULSE_WIDTH, "Width (% of cycle)"
         )
         pwm_slider = self._create_parameter_slider(
             AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth"

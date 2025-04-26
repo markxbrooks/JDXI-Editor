@@ -121,7 +121,7 @@ class JdxiInstrument(JdxiUi):
             (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
             (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
             (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUMS, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
+            (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
         self.preset_helpers = {
             synth_type: PresetHelper(
@@ -347,7 +347,7 @@ class JdxiInstrument(JdxiUi):
             "digital2": (
                 "Digital Synth 2", DigitalSynth2Editor, JDXISynth.DIGITAL_2, MidiChannel.DIGITAL2, {"synth_number": 2}),
             "analog": ("Analog Synth", AnalogSynthEditor, JDXISynth.ANALOG, MidiChannel.ANALOG),
-            "drums": ("Drums", DrumCommonEditor, JDXISynth.DRUMS, MidiChannel.DRUM),
+            "drums": ("Drums", DrumCommonEditor, JDXISynth.DRUM, MidiChannel.DRUM),
             "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
             "effects": ("Effects", EffectsCommonEditor, None, None),
             "pattern": ("Pattern", PatternSequencer, None, None),
@@ -707,7 +707,7 @@ class JdxiInstrument(JdxiUi):
                 JDXISynth.ANALOG: (JDXIPresets.ANALOG, 0, 7),
                 JDXISynth.DIGITAL_1: (JDXIPresets.DIGITAL_ENUMERATED, 1, 16),
                 JDXISynth.DIGITAL_2: (JDXIPresets.DIGITAL_ENUMERATED, 2, 16),
-                JDXISynth.DRUMS: (JDXIPresets.DRUM_ENUMERATED, 3, 16),
+                JDXISynth.DRUM: (JDXIPresets.DRUM_ENUMERATED, 3, 16),
             }
 
             # Get preset list and MIDI parameters based on synth type
