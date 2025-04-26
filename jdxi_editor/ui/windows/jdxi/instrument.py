@@ -596,11 +596,14 @@ class JdxiInstrument(JdxiUi):
             logging.debug(
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
-            sysex_message = RolandSysEx(
+            address = SysExAddress(
                 msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                 umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
                 lmb=AddressOffsetProgramLMB.COMMON,
                 lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.value[0],
+            )
+            sysex_message = RolandSysEx(
+                sysex_address=address,
                 value=octave_value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
@@ -628,10 +631,7 @@ class JdxiInstrument(JdxiUi):
                 for address in [address1, address2]:
                     # Send the SysEx message
                     sysex_message = RolandSysEx(
-                        msb=address.msb,
-                        umb=address.umb,
-                        lmb=address.lmb,
-                        lsb=address.lsb,
+                        sysex_address=address,
                         value=value,
                     )
                     self.midi_helper.send_midi_message(sysex_message)
@@ -668,10 +668,7 @@ class JdxiInstrument(JdxiUi):
                         lsb=AddressParameterArpeggio.ARPEGGIO_SWITCH.value[0]
                     )
                     sysex_message = RolandSysEx(
-                        msb=address.msb,
-                        umb=address.umb,
-                        lmb=address.lmb,
-                        lsb=address.lsb,
+                        sysex_address=address,
                         value=value,
                     )
                     self.midi_helper.send_midi_message(sysex_message)

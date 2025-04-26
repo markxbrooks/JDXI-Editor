@@ -202,6 +202,9 @@ class MidiOutHandler(MidiIOController):
         Returns:
             True if successful, False otherwise.
         """
+        #logging.info(
+        #    f"send_midi_message: \t{type(sysex_message)} {sysex_message}"
+        #)
         try:
             message = sysex_message.to_message_list()
             return self.send_raw_message(message)

@@ -25,7 +25,7 @@ print("Parsed Value:", parsed_message.value)
 
 import logging
 from dataclasses import dataclass, field
-from typing import List, Union
+from typing import List, Union, Optional
 
 from jdxi_editor.midi.data.address.address import (
     ModelID,
@@ -76,7 +76,10 @@ class RolandSysExMessage(SysExMessage):
             [START_OF_SYSEX, self.manufacturer_id, self.device_id]
             + list(self.model_id)
             + [self.command]
-            + self.address_bytes
+            + [self.address.msb]
+            + [self.address.umb]
+            + [self.address.lmb]
+            + [self.address.lsb]
             + self.data
         )
         msg.append(self.calculate_checksum())
@@ -99,11 +102,12 @@ class RolandSysEx(SysExMessage):
         ]
     )
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
+    sysex_address: Optional[SysExAddress] = None
     msb: int = 0x00
     umb: int = 0x00
     lmb: int = 0x00
     lsb: int = 0x00
-    value: int = 0x00
+    value: Union[int, list[int]] = 0x00
     size: int = 1
 
     # These attributes should not be set in `__init__`
@@ -114,6 +118,21 @@ class RolandSysEx(SysExMessage):
     rq1_command: int = CommandID.RQ1  # Read command
 
     def __post_init__(self):
+        """Initialize address and data."""
+        if self.sysex_address:
+            self.msb = self.sysex_address.msb
+            self.umb = self.sysex_address.umb
+            self.lmb = self.sysex_address.lmb
+            self.lsb = self.sysex_address.lsb
+
+        self.address = [self.msb, self.umb, self.lmb, self.lsb]
+
+        if isinstance(self.value, int) and self.size == 4:
+            self.data = split_value_to_nibbles(self.value)
+        else:
+            self.data = [self.value] if isinstance(self.value, int) else self.value
+
+    def __post_init_old__(self):
         """Initialize address and data based on parameters."""
         self.address = [
             self.msb,
@@ -125,6 +144,14 @@ class RolandSysEx(SysExMessage):
             self.data = split_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
+
+    def from_sysex_address(self, sysex_address: SysExAddress):
+        """ from_sysex_address """
+        self.msb = sysex_address.msb
+        self.umb = sysex_address.umb
+        self.lmb = sysex_address.lmb
+        self.lsb = sysex_address.lsb
+        self.address = [self.msb, self.umb, self.lmb, self.lsb]
 
     def to_message_list(self) -> List[int]:
         """Convert the SysEx message to a list of integers."""
