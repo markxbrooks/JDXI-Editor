@@ -81,13 +81,13 @@ class DigitalPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number
         if synth_number == 1:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1)
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=partial_number)
         elif synth_number == 2:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2)
+            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=partial_number)
         data = self.synth_data
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
-        self.address_lmb = data.address_lmb
+        self.address_lmb = data.partial_lmb # generated dynamically so may give IDE error
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
         else:
