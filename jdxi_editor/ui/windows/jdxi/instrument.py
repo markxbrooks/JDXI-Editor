@@ -46,7 +46,7 @@ from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
-    AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB
+    AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB, SysExAddress
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
@@ -54,7 +54,7 @@ from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper, MidiIOController
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import RolandSysEx, RolandSysExMessage
 from jdxi_editor.midi.preset.data import ButtonPreset
 from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.midi.program.helper import ProgramHelper
@@ -597,10 +597,10 @@ class JdxiInstrument(JdxiUi):
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
             sysex_message = RolandSysEx(
-                address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
-                address_lmb=AddressOffsetProgramLMB.COMMON,
-                address_lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.value[0],
+                msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+                lmb=AddressOffsetProgramLMB.COMMON,
+                lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.value[0],
                 value=octave_value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
@@ -612,39 +612,29 @@ class JdxiInstrument(JdxiUi):
                 self.midi_key_hold_latched = not self.midi_key_hold_latched
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
-                address = SysExAddress(
+                address1 = SysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
                     lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46
                 )
-                
+                address2 = SysExAddress(
+                    msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                    umb=0x01,
+                    lmb=0x00,
+                    lsb=0x14
+                )
                 # Assuming RolandSysEx accepts an address in bytes
-                sysex_message = RolandSysEx(
-                    address_msb=address.msb,
-                    address_umb=address.umb,
-                    address_lmb=address.lmb,
-                    address_lsb=address.lsb,
-                    value=value,
-                )
-                """
-                sysex_message = RolandSysEx(
-                    address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                    address_umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
-                    address_lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
-                    address_lsb=0x46,
-                    value=value,
-                )
-                """
-                self.midi_helper.send_midi_message(sysex_message)
-                sysex_message = RolandSysEx(
-                    address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                    address_umb=0x01,
-                    address_lmb=0x00,
-                    address_lsb=0x14,
-                    value=value,
-                )
-                self.midi_helper.send_midi_message(sysex_message)
+                for address in [address1, address2]:
+                    # Send the SysEx message
+                    sysex_message = RolandSysEx(
+                        msb=address.msb,
+                        umb=address.umb,
+                        lmb=address.lmb,
+                        lsb=address.lsb,
+                        value=value,
+                    )
+                    self.midi_helper.send_midi_message(sysex_message)
                 cc_value = 127 if state else 0
                 cc_list = [ControlChangeSustain.HOLD1,  # Hold-1 Damper (Sustain) – CC64
                            ControlChangeSustain.PORTAMENTO,  # Portamento (on/off)
@@ -671,11 +661,17 @@ class JdxiInstrument(JdxiUi):
                              AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,
                              AddressOffsetProgramLMB.ZONE_ANALOG_SYNTH,
                              AddressOffsetProgramLMB.ZONE_DRUM]:
+                    address = SysExAddress(
+                        msb=AddressMemoryAreaMSB.PROGRAM,
+                        umb=AddressOffsetSystemUMB.COMMON,
+                        lmb=zone,
+                        lsb=AddressParameterArpeggio.ARPEGGIO_SWITCH.value[0]
+                    )
                     sysex_message = RolandSysEx(
-                        address_msb=AddressMemoryAreaMSB.PROGRAM,
-                        address_umb=AddressOffsetSystemUMB.COMMON,
-                        address_lmb=zone,
-                        address_lsb=AddressParameterArpeggio.ARPEGGIO_SWITCH.value[0],
+                        msb=address.msb,
+                        umb=address.umb,
+                        lmb=address.lmb,
+                        lsb=address.lsb,
                         value=value,
                     )
                     self.midi_helper.send_midi_message(sysex_message)

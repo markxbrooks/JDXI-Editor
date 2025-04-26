@@ -369,10 +369,10 @@ class AnalogSynthEditor(SynthEditor):
         """Handle waveform button selection"""
         if self.midi_helper:
             sysex_message = RolandSysEx(
-                address_msb=self.address_msb,
-                address_umb=self.address_umb,
-                address_lmb=self.address_lmb,
-                address_lsb=AddressParameterAnalog.OSC_WAVEFORM.value[0],
+                msb=self.address_msb,
+                umb=self.address_umb,
+                lmb=self.address_lmb,
+                lsb=AddressParameterAnalog.OSC_WAVEFORM.value[0],
                 value=waveform.midi_value,
             )
             self.midi_helper.send_midi_message(sysex_message)
@@ -392,10 +392,10 @@ class AnalogSynthEditor(SynthEditor):
         """Handle LFO shape change"""
         if self.midi_helper:
             sysex_message = RolandSysEx(
-                address_msb=self.address_msb,
-                address_umb=self.address_umb,
-                address_lmb=self.address_lmb,
-                address_lsb=AddressParameterAnalog.LFO_SHAPE.value[0],
+                msb=self.address_msb,
+                umb=self.address_umb,
+                lmb=self.address_lmb,
+                lsb=AddressParameterAnalog.LFO_SHAPE.value[0],
                 value=value,
             )
             self.midi_helper.send_midi_message(sysex_message)

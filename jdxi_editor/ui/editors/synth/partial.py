@@ -88,10 +88,10 @@ class PartialEditor(SynthBase):
             log_parameter("offset:", offset)
             log_parameter("full address:", full_address)
             sysex_message = RolandSysEx(
-                address_msb=address_msb,
-                address_umb=address_umb,
-                address_lmb=address_lmb,
-                address_lsb=address_lsb,
+                msb=address_msb,
+                umb=address_umb,
+                lmb=address_lmb,
+                lsb=address_lsb,
                 value=value,
                 size=size,
             )

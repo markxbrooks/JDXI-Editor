@@ -11,10 +11,10 @@ class ProgramCommonParameterMessage(RolandSysEx):
     """Program Common parameter message"""
 
     command: int = CommandID.DT1
-    address_msb: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
-    address_umb: int = AddressOffsetSystemUMB.COMMON  # 0x00: Common section
-    address_lmb: int = AddressOffsetSystemLMB.COMMON  # Always 0x00
-    address_lsb: int = ZERO_BYTE  # Parameter number
+    msb: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
+    umb: int = AddressOffsetSystemUMB.COMMON  # 0x00: Common section
+    lmb: int = AddressOffsetSystemLMB.COMMON  # Always 0x00
+    lsb: int = ZERO_BYTE  # Parameter number
     value: int = ZERO_BYTE  # Parameter value
 
     def __post_init__(self):

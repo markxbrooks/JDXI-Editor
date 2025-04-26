@@ -39,10 +39,10 @@ class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
 
     command: int = CommandID.DT1
-    address_msb: int = AddressMemoryAreaMSB.SYSTEM  # 0x02: System area
-    address_umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
-    address_lmb: int = ZERO_BYTE  # Always 0x00
-    address_lsb: int = ZERO_BYTE  # Parameter number
+    msb: int = AddressMemoryAreaMSB.SYSTEM  # 0x02: System area
+    umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
+    lmb: int = ZERO_BYTE  # Always 0x00
+    lsb: int = ZERO_BYTE  # Parameter number
     value: int = ZERO_BYTE  # Parameter value
 
     def __post_init__(self):

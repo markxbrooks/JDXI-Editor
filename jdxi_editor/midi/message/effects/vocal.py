@@ -32,13 +32,13 @@ class VocalEffectMessage(RolandSysEx):
     area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
     section: int = 0x01  # 0x01: Vocal Effect section
     group: int = 0x00  # Always 0x00
-    address_lsb: int = 0x00  # Parameter number
+    lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.address_msb,  # Program area (0x18)
+            self.msb,  # Program area (0x18)
             self.section,  # Vocal Effect section (0x01)
             self.group,  # Always 0x00
             self.param,  # Parameter number

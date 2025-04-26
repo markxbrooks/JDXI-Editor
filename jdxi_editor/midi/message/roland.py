@@ -25,16 +25,63 @@ print("Parsed Value:", parsed_message.value)
 
 import logging
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Union
 
 from jdxi_editor.midi.data.address.address import (
     ModelID,
     CommandID,
-    AddressMemoryAreaMSB,
+    AddressMemoryAreaMSB, SysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, RolandID
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_value_to_nibbles
+
+
+@dataclass
+class RolandSysExMessage(SysExMessage):
+    """Specialized class for Roland JD-Xi SysEx messages."""
+
+    manufacturer_id: int = RolandID.ROLAND_ID
+    device_id: int = RolandID.DEVICE_ID
+    model_id: list[int] = field(default_factory=lambda: [
+        ModelID.MODEL_ID_1,
+        ModelID.MODEL_ID_2,
+        ModelID.MODEL_ID_3,
+        ModelID.MODEL_ID_4,
+    ])
+    command: int = CommandID.DT1
+
+    address: SysExAddress = field(default_factory=SysExAddress)
+    value: Union[int, List[int]] = 0x00
+    size: int = 1
+
+    # These attributes should not be set in `__init__`
+    synth_type: int = field(init=False, default=None)
+    part: int = field(init=False, default=None)
+
+    dt1_command: int = CommandID.DT1
+    rq1_command: int = CommandID.RQ1
+
+    def __post_init__(self):
+        """Initialize data and resolve address bytes."""
+        self.address_bytes = self.address.to_list()  # Assuming this method returns [msb, umb, lmb, lsb]
+
+        if isinstance(self.value, int) and self.size == 4:
+            self.data = split_value_to_nibbles(self.value)
+        else:
+            self.data = [self.value] if isinstance(self.value, int) else self.value
+
+    def to_message_list(self) -> List[int]:
+        msg = (
+            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+            + list(self.model_id)
+            + [self.command]
+            + self.address_bytes
+            + self.data
+        )
+        msg.append(self.calculate_checksum())
+        msg.append(self.end_of_sysex)
+        return msg
 
 
 @dataclass
@@ -52,10 +99,10 @@ class RolandSysEx(SysExMessage):
         ]
     )
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
-    address_msb: int = 0x00
-    address_umb: int = 0x00
-    address_lmb: int = 0x00
-    address_lsb: int = 0x00
+    msb: int = 0x00
+    umb: int = 0x00
+    lmb: int = 0x00
+    lsb: int = 0x00
     value: int = 0x00
     size: int = 1
 
@@ -69,10 +116,10 @@ class RolandSysEx(SysExMessage):
     def __post_init__(self):
         """Initialize address and data based on parameters."""
         self.address = [
-            self.address_msb,
-            self.address_umb,
-            self.address_lmb,
-            self.address_lsb,
+            self.msb,
+            self.umb,
+            self.lmb,
+            self.lsb,
         ]
         if isinstance(self.value, int) and self.size == 4:
             self.data = split_value_to_nibbles(self.value)
@@ -106,7 +153,7 @@ class RolandSysEx(SysExMessage):
             )
 
         # Update instance variables
-        self.address_msb, self.address_umb, self.address_lmb, self.address_lsb = address
+        self.msb, self.umb, self.lmb, self.lsb = address
 
         # Convert the value into nibbles (if it's 4 bytes long)
         if (
@@ -312,14 +359,14 @@ class ParameterMessage(JDXiSysEx):
 class SystemMessage(ParameterMessage):
     """System parameter message"""
 
-    address_msb: int = 0x02  # System area
+    msb: int = 0x02  # System area
 
 
 @dataclass
 class ProgramMessage(ParameterMessage):
     """Program parameter message"""
 
-    address_msb: int = 0x18  # Program area
+    msb: int = 0x18  # Program area
 
 
 # Update other message classes to inherit from ParameterMessage
@@ -327,69 +374,69 @@ class ProgramMessage(ParameterMessage):
 class Effect1Message(ParameterMessage):
     """Effect 1 parameter message"""
 
-    address_msb: int = 0x18  # Program area
-    address_umb: int = 0x02  # Effect 1 section
+    msb: int = 0x18  # Program area
+    umb: int = 0x02  # Effect 1 section
 
 
 @dataclass
 class Effect2Message(ParameterMessage):
     """Effect 2 parameter message"""
 
-    address_msb: int = 0x18  # Program area
-    address_umb: int = 0x04  # Effect 2 section
+    msb: int = 0x18  # Program area
+    umb: int = 0x04  # Effect 2 section
 
 
 @dataclass
 class DelayMessage(ParameterMessage):
     """Delay parameter message"""
 
-    address_msb: int = 0x18  # Program area
-    address_umb: int = 0x06  # Delay section
+    msb: int = 0x18  # Program area
+    umb: int = 0x06  # Delay section
 
 
 @dataclass
 class ReverbMessage(ParameterMessage):
     """Reverb parameter message"""
 
-    address_msb: int = 0x18  # Program area
-    address_umb: int = 0x08  # Reverb section
+    msb: int = 0x18  # Program area
+    umb: int = 0x08  # Reverb section
 
 
 @dataclass
 class PartMessage(ParameterMessage):
     """Program Part parameter message"""
 
-    address_msb: int = 0x18  # Program area
-    address_umb: int = 0x00  # Part section
+    msb: int = 0x18  # Program area
+    umb: int = 0x00  # Part section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.address_lsb == 0x0B:  # Part Coarse Tune
+        if self.lsb == 0x0B:  # Part Coarse Tune
             return [value + 64]  # Convert -48/+48 to 16-112
-        elif self.address_lsb == 0x0C:  # Part Fine Tune
+        elif self.lsb == 0x0C:  # Part Fine Tune
             return [value + 64]  # Convert -50/+50 to 14-114
-        elif self.address_lsb == 0x13:  # Part Cutoff Offset
+        elif self.lsb == 0x13:  # Part Cutoff Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x14:  # Part Resonance Offset
+        elif self.lsb == 0x14:  # Part Resonance Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x15:  # Part Attack Time Offset
+        elif self.lsb == 0x15:  # Part Attack Time Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x16:  # Part Decay Time Offset
+        elif self.lsb == 0x16:  # Part Decay Time Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x17:  # Part Release Time Offset
+        elif self.lsb == 0x17:  # Part Release Time Offset
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x18:  # Part Vibrato Rate
+        elif self.lsb == 0x18:  # Part Vibrato Rate
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x19:  # Part Vibrato Depth
+        elif self.lsb == 0x19:  # Part Vibrato Depth
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x1A:  # Part Vibrato Delay
+        elif self.lsb == 0x1A:  # Part Vibrato Delay
             return [value + 64]  # Convert -64/+63 to 0-127
-        elif self.address_lsb == 0x1B:  # Part Octave Shift
+        elif self.lsb == 0x1B:  # Part Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
-        elif self.address_lsb == 0x1C:  # Part Velocity Sens Offset
+        elif self.lsb == 0x1C:  # Part Velocity Sens Offset
             return [value + 64]  # Convert -63/+63 to 1-127
-        elif self.address_lsb == 0x11:  # Part Portamento Time (2 bytes)
+        elif self.lsb == 0x11:  # Part Portamento Time (2 bytes)
             if value == 128:  # TONE setting
                 return [0x00, 0x80]
             else:
@@ -401,7 +448,7 @@ class PartMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.address_lsb if hasattr(cls, "param") else 0
+        param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x0B:  # Part Coarse Tune
@@ -428,15 +475,15 @@ class PartMessage(ParameterMessage):
 class ZoneMessage(ParameterMessage):
     """Program Zone parameter message"""
 
-    address_msb: int = 0x18  # Program area
-    address_umb: int = 0x01  # Zone section
+    msb: int = 0x18  # Program area
+    umb: int = 0x01  # Zone section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.address_lsb == 0x19:  # Zone Octave Shift
+        if self.lsb == 0x19:  # Zone Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
-        elif self.address_lsb == 0x03:  # Arpeggio Switch
+        elif self.lsb == 0x03:  # Arpeggio Switch
             return [value & 0x01]  # Ensure boolean value
 
         # Default handling for other parameters
@@ -445,7 +492,7 @@ class ZoneMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.address_lsb if hasattr(cls, "param") else 0
+        param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x19:  # Zone Octave Shift
@@ -461,13 +508,13 @@ class ZoneMessage(ParameterMessage):
 class ControllerMessage(ParameterMessage):
     """Program Controller parameter message"""
 
-    address_msb: int = AddressMemoryAreaMSB.PROGRAM  # Program area
-    address_umb: int = 0x40  # Controller section
+    msb: int = AddressMemoryAreaMSB.PROGRAM  # Program area
+    umb: int = 0x40  # Controller section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.address_lsb == 0x07:  # Arpeggio Octave Range
+        if self.lsb == 0x07:  # Arpeggio Octave Range
             return [value + 64]  # Convert -3/+3 to 61-67
 
         # Default handling for other parameters
@@ -476,7 +523,7 @@ class ControllerMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.address_lsb if hasattr(cls, "param") else 0
+        param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x07:  # Arpeggio Octave Range
@@ -490,13 +537,13 @@ class ControllerMessage(ParameterMessage):
 class DigitalToneCommonMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Common parameter message"""
 
-    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
-    address_umb: int = ZERO_BYTE  # Common section
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = ZERO_BYTE  # Common section
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.address_lsb == 0x15:  # Octave Shift
+        if self.lsb == 0x15:  # Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
 
         # Default handling for other parameters
@@ -505,7 +552,7 @@ class DigitalToneCommonMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.address_lsb if hasattr(cls, "param") else 0
+        param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x15:  # Octave Shift
@@ -519,8 +566,8 @@ class DigitalToneCommonMessage(ParameterMessage):
 class DigitalToneModifyMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Modify parameter message"""
 
-    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
-    address_umb: int = 0x50  # Modify section @@@ looks incorrect - should be lmb
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = 0x50  # Modify section @@@ looks incorrect - should be lmb
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -538,15 +585,15 @@ class DigitalToneModifyMessage(ParameterMessage):
 class DigitalTonePartialMessage(ParameterMessage):
     """SuperNATURAL Synth Tone Partial parameter message"""
 
-    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
-    address_umb: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.address_lsb == 0x00:  # OSC Wave
+        if self.lsb == 0x00:  # OSC Wave
             return [value & 0x07]  # Ensure 3-bit value (0-7)
-        elif self.address_lsb == 0x01:  # OSC Wave Variation
+        elif self.lsb == 0x01:  # OSC Wave Variation
             return [value & 0x03]  # Ensure 2-bit value (0-2)
 
         # Default handling for other parameters
@@ -555,7 +602,7 @@ class DigitalTonePartialMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.address_lsb if hasattr(cls, "param") else 0
+        param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x00:  # OSC Wave
@@ -571,10 +618,10 @@ class DigitalTonePartialMessage(ParameterMessage):
 class AnalogToneMessage(ParameterMessage):
     """Message for analog tone parameters"""
 
-    address_msb: int
-    address_umb: int
-    address_lmb: int
-    address_lsb: int
+    msb: int
+    umb: int
+    lmb: int
+    lsb: int
     value: int
 
     def to_message_list(self) -> List[int]:
@@ -602,9 +649,9 @@ class AnalogToneMessage(ParameterMessage):
 class DrumKitCommonMessage(ParameterMessage):
     """Drum Kit Common parameter message"""
 
-    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
-    address_umb: int = 0x10  # Drum Kit section
-    address_lmb: int = 0x00  # Common area
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = 0x10  # Drum Kit section
+    lmb: int = 0x00  # Common area
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
@@ -622,16 +669,16 @@ class DrumKitCommonMessage(ParameterMessage):
 class DrumKitPartialMessage(ParameterMessage):
     """Drum Kit Partial parameter message"""
 
-    address_msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
-    address_umb: int = 0x10  # Drum Kit section
-    address_lmb: int = 0x01  # Partial area
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = 0x10  # Drum Kit section
+    lmb: int = 0x01  # Partial area
 
     def convert_value(self, value: int) -> List[int]:
         """Convert parameter value based on parameter preset_type"""
         # Parameters that need special conversion
-        if self.address_lsb == 0x10:  # Fine Tune
+        if self.lsb == 0x10:  # Fine Tune
             return [value + 64]  # Convert -50/+50 to 14-114
-        elif self.address_lsb == 0x14:  # Alternate Pan
+        elif self.lsb == 0x14:  # Alternate Pan
             return [value + 64]  # Convert L63-63R to 1-127
 
         # Default handling for other parameters
@@ -640,7 +687,7 @@ class DrumKitPartialMessage(ParameterMessage):
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
         """Convert data bytes back to parameter value"""
-        param = cls.address_lsb if hasattr(cls, "param") else 0
+        param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
         if param == 0x10:  # Fine Tune
@@ -658,10 +705,10 @@ def create_sysex_message(
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
         command=CommandID.DT1,
-        address_msb=address_msb,
-        address_umb=address_umb,
-        address_lmb=address_lmb,
-        address_lsb=address_lsb,
+        msb=address_msb,
+        umb=address_umb,
+        lmb=address_lmb,
+        lsb=address_lsb,
         value=value,
     )
 
@@ -674,28 +721,28 @@ def create_patch_load_message(
         # Bank Select MSB
         JDXiSysEx(
             command=CommandID.DT1,
-            address_msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area 0x01
-            address_umb=0x00,
-            address_lmb=0x00,
-            address_lsb=0x04,  # Bank MSB parameter
+            msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area 0x01
+            umb=0x00,
+            lmb=0x00,
+            lsb=0x04,  # Bank MSB parameter
             value=bank_msb,
         ),
         # Bank Select LSB
         JDXiSysEx(
             command=CommandID.DT1,
-            address_msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area
-            address_umb=0x00,
-            address_lmb=0x00,
-            address_lsb=0x05,  # Bank LSB parameter
+            msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area
+            umb=0x00,
+            lmb=0x00,
+            lsb=0x05,  # Bank LSB parameter
             value=bank_lsb,
         ),
         # Program Change
         JDXiSysEx(
             command=CommandID.DT1,
-            address_msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area
-            address_umb=0x00,
-            address_lmb=0x00,
-            address_lsb=0x06,  # Program number parameter
+            msb=AddressMemoryAreaMSB.SYSTEM,  # Setup area
+            umb=0x00,
+            lmb=0x00,
+            lsb=0x06,  # Program number parameter
             value=program,
         ),
     ]
@@ -707,9 +754,9 @@ def create_patch_request_message(
     """Create address message to request patch data"""
     return JDXiSysEx(
         command=CommandID.RQ1,  # Data request command
-        address_msb=address_msb,
-        address_umb=address_umb,
-        address_lmb=0x00,
-        address_lsb=0x00,
+        msb=address_msb,
+        umb=address_umb,
+        lmb=0x00,
+        lsb=0x00,
         data=[size] if size else [],  # Some requests need address size parameter
     )

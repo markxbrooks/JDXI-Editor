@@ -271,13 +271,13 @@ class Effect1Message(RolandSysEx):
     area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
     section: int = 0x02  # 0x02: Effect 1 section
     group: int = AddressOffsetProgramLMB.COMMON  # Always 0x00
-    address_lsb: int = 0x00  # Parameter number
+    lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.address_msb,  # Program area (0x18)
+            self.msb,  # Program area (0x18)
             self.section,  # Effect 1 section (0x02)
             self.group,  # Always 0x00
             self.param,  # Parameter number
@@ -341,13 +341,13 @@ class Effect2Message(RolandSysEx):
     area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
     section: int = 0x04  # 0x04: Effect 2 section
     group: int = 0x00  # Always 0x00
-    address_lsb: int = 0x00  # Parameter number
+    lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
         """Set up address and data"""
         self.address = [
-            self.address_msb,  # Program area (0x18)
+            self.msb,  # Program area (0x18)
             self.section,  # Effect 2 section (0x04)
             self.group,  # Always 0x00
             self.param,  # Parameter number

@@ -279,10 +279,10 @@ class ADSR(QWidget):
 
         try:
             sysex_message = RolandSysEx(
-                address_msb=self.address_msb,
-                address_umb=self.address_umb,
-                address_lmb=self.address_lmb,
-                address_lsb=param.address,
+                msb=self.address_msb,
+                umb=self.address_umb,
+                lmb=self.address_lmb,
+                lsb=param.address,
                 value=value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
