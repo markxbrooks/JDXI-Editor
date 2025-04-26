@@ -75,12 +75,13 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, ZERO_BYTE
-from jdxi_editor.midi.data.editor.data import DrumSynthData
+from jdxi_editor.midi.data.editor.data import DrumSynthData, create_synth_data
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.style import JDXIStyle
@@ -136,13 +137,16 @@ class DrumCommonEditor(SynthEditor):
 
     def _init_synth_data(self):
         """Initialize synth-specific data."""
-        self.synth_data = DrumSynthData(partial_number=0)
-        logging.info(self.synth_data)
+        self.synth_data = create_synth_data(JDXISynth.DRUM)
+        try:
+            logging.info(repr(self.synth_data))
+        except Exception as ex:
+            logging.error(f"Error repr(self.synth_data): {ex}")
         data = self.synth_data
 
         self.address_msb = data.address_msb
         self.address_umb = data.address_umb
-        self.address_lmb = data.address_lmb
+        self.address_lmb = data.partial_lmb
         self.setWindowTitle(data.window_title)
 
         self.preset_type = data.preset_type

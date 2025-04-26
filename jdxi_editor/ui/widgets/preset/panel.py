@@ -41,7 +41,7 @@ class PresetPanel(QWidget):
         self.analog_editor = PresetEditor(midi_helper, self, JDXISynth.ANALOG)
         self.digital_1_editor = PresetEditor(midi_helper, self, JDXISynth.DIGITAL_1)
         self.digital_2_editor = PresetEditor(midi_helper, self, JDXISynth.DIGITAL_2)
-        self.drums_editor = PresetEditor(midi_helper, self, JDXISynth.DRUMS)
+        self.drums_editor = PresetEditor(midi_helper, self, JDXISynth.DRUM)
 
     def _on_load(self):
         """Handle load button click"""

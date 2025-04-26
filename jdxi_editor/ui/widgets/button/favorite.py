@@ -120,7 +120,7 @@ class FavoriteButton(QPushButton):
                 color = "#00A3F0"  # Analog blue
             elif self.preset.type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
                 color = "#FF0000"  # Red for both digital synths
-            elif self.preset.type == JDXISynth.DRUMS:
+            elif self.preset.type == JDXISynth.DRUM:
                 color = "#00FF00"  # Green for drums
             else:
                 color = "#666666"  # Gray for unknown types

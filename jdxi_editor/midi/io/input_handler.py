@@ -210,7 +210,7 @@ class MidiInHandler(MidiIOController):
             "TEMPORARY_DIGITAL_SYNTH_1_AREA": JDXISynth.DIGITAL_1,
             "TEMPORARY_DIGITAL_SYNTH_2_AREA": JDXISynth.DIGITAL_2,
             "TEMPORARY_ANALOG_SYNTH_AREA": JDXISynth.ANALOG,
-            "TEMPORARY_DRUM_KIT_AREA": JDXISynth.DRUMS,
+            "TEMPORARY_DRUM_KIT_AREA": JDXISynth.DRUM,
         }
 
         synth_type = synth_type_map.get(area)

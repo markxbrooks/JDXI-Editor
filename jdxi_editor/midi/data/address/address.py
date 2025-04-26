@@ -112,9 +112,9 @@ class RolandSysExAddress:
     """
 
     def __init__(self, msb: int, umb: int, lmb: int, lsb: int):
-        for byte in (msb, umb, lmb, lsb):
-            if not (0x00 <= byte <= 0x7F):
-                raise ValueError("SysEx address bytes must be 7-bit values (0x00–0x7F)")
+        # for byte in (msb, umb, lmb, lsb):
+        #    if not (0x00 <= byte <= 0x7F):
+        #        raise ValueError("SysEx address bytes must be 7-bit values (0x00–0x7F)")
         self.msb = msb
         self.umb = umb
         self.lmb = lmb
@@ -151,8 +151,8 @@ class RolandSysExAddress:
 
     def __repr__(self):
         return (
-            f"<SysExAddress(msb=0x{self.msb:02X}, umb=0x{self.umb:02X}, "
-            f"lmb=0x{self.lmb:02X}, lsb=0x{self.lsb:02X})>"
+            f"<RolandSysExAddress(msb=0x{int(self.msb):02X}, umb=0x{int(self.umb):02X}, "
+            f"lmb=0x{int(self.lmb):02X}, lsb=0x{int(self.lsb):02X})>"
         )
 
     def __str__(self):
@@ -333,6 +333,13 @@ class AddressOffsetProgramLMB(Address):
     def message_position(cls):
         """Return the fixed message position for command bytes."""
         return 10
+
+    @classmethod
+    def drum_partial_offset(cls, partial_number: int) -> int:
+        """Return the LMB offset for the given drum partial (0–37)."""
+        base_address = 0x00
+        step = 0x2E
+        return base_address + (step * partial_number)
 
     
 """

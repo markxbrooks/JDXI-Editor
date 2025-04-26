@@ -73,7 +73,7 @@ class DigitalFilterSection(QWidget):
         controls_group.setLayout(controls_layout)
         controls_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.FILTER_CUTOFF, "Cutoff"
+                AddressParameterDigitalPartial.FILTER_CUTOFF, "Cutoff (Hz /10)"
             )
         )
         controls_layout.addWidget(

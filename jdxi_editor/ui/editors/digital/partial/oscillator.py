@@ -91,10 +91,10 @@ class DigitalOscillatorSection(QWidget):
         tuning_layout = QVBoxLayout()
         tuning_group.setLayout(tuning_layout)
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_PITCH, "Pitch")
+            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_PITCH, "Pitch (1/2 tones)")
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_DETUNE, "Detune")
+            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_DETUNE, "Detune (cents)")
         )
         layout.addWidget(tuning_group)
 
@@ -103,13 +103,17 @@ class DigitalOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
         self.pw_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width"
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
         )
-        self.pwm_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod"
+        self.pw_mod_slider = self._create_parameter_slider(
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth (of LFO applied)"
+        )
+        self.pw_shift_slider = self._create_parameter_slider(
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT, "Shift (range of change)"
         )
         pw_layout.addWidget(self.pw_slider)
-        pw_layout.addWidget(self.pwm_slider)
+        pw_layout.addWidget(self.pw_mod_slider)
+        pw_layout.addWidget(self.pw_shift_slider)
         layout.addWidget(pw_group)
 
         # PCM Wave controls
@@ -136,6 +140,16 @@ class DigitalOscillatorSection(QWidget):
         pcm_layout.addWidget(self.pcm_wave_number, 0, 3)
         layout.addWidget(pcm_group)
 
+        # Super Saw controls
+        super_saw_group = QGroupBox("Super Saw")
+        super_saw_layout = QVBoxLayout()
+        super_saw_group.setLayout(super_saw_layout)
+        self.super_saw_detune = self._create_parameter_slider(
+            AddressParameterDigitalPartial.SUPER_SAW_DETUNE, "S-Saw Detune"
+        )
+        super_saw_layout.addWidget(self.super_saw_detune)
+        layout.addWidget(super_saw_group)
+
         # Pitch Envelope
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
@@ -157,15 +171,10 @@ class DigitalOscillatorSection(QWidget):
         )
         layout.addWidget(pitch_env_group)
 
-        # Super Saw detune
-        self.super_saw_detune = self._create_parameter_slider(
-            AddressParameterDigitalPartial.SUPER_SAW_DETUNE, "S-Saw Detune"
-        )
-        layout.addWidget(self.super_saw_detune)
-
         # Initialize states
-        self._update_pw_controls_state(DigitalOscWave.SAW)
-        self._update_pcm_controls_state(DigitalOscWave.PCM)
+        self._update_pw_controls_enabled_state(DigitalOscWave.SAW)
+        self._update_pcm_controls_enabled_state(DigitalOscWave.PCM)
+        self._update_supersaw_controls_enabled_state(DigitalOscWave.PCM)
 
     def _on_waveform_selected(self, waveform: DigitalOscWave):
         """Handle waveform button clicks"""
@@ -186,9 +195,19 @@ class DigitalOscillatorSection(QWidget):
         ):
             logging.warning(f"Failed to set waveform to {waveform.name}")
 
-        # Update control visibility
-        self._update_pw_controls_state(waveform)
-        self._update_pcm_controls_state(waveform)
+        self._update_waveform_controls_enabled_states(waveform)
+
+    def _update_waveform_controls_enabled_states(self, waveform: DigitalOscWave):
+        """
+        _update_waveform_controls_states
+        :param waveform: DigitalOscWave
+        :return: None
+
+        Update control visibility and enabled state based on the selected waveform.
+        """
+        self._update_pw_controls_enabled_state(waveform)
+        self._update_pcm_controls_enabled_state(waveform)
+        self._update_supersaw_controls_enabled_state(waveform)
 
     def update_waves(self):
         """Update PCM waves based on selected category"""
@@ -209,15 +228,21 @@ class DigitalOscillatorSection(QWidget):
         )
         self.pcm_wave_number.values = [w["Wave Number"] for w in filtered_waves]
 
-    def _update_pw_controls_state(self, waveform: DigitalOscWave):
+    def _update_pw_controls_enabled_state(self, waveform: DigitalOscWave):
         """Update pulse width controls enabled state based on waveform"""
         pw_enabled = waveform == DigitalOscWave.PW_SQUARE
         self.pw_slider.setEnabled(pw_enabled)
-        self.pwm_slider.setEnabled(pw_enabled)
+        self.pw_mod_slider.setEnabled(pw_enabled)
+        self.pw_shift_slider.setEnabled(pw_enabled)
 
-    def _update_pcm_controls_state(self, waveform: DigitalOscWave):
+    def _update_pcm_controls_enabled_state(self, waveform: DigitalOscWave):
         """Update PCM wave controls visibility based on waveform"""
         pcm_enabled = waveform == DigitalOscWave.PCM
         self.pcm_wave_gain.setEnabled(pcm_enabled)
         self.pcm_category_combo.setEnabled(pcm_enabled)
         self.pcm_wave_number.setEnabled(pcm_enabled)
+
+    def _update_supersaw_controls_enabled_state(self, waveform: DigitalOscWave):
+        """Update supersaw controls visibility based on waveform"""
+        supersaw_enabled = waveform == DigitalOscWave.SUPER_SAW
+        self.super_saw_detune.setEnabled(supersaw_enabled)

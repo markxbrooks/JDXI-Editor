@@ -21,7 +21,7 @@ class JDXISynth:
     ANALOG = "Analog"
     DIGITAL_1 = "Digital 1"  # Main digital synth
     DIGITAL_2 = "Digital 2"  # Second digital synth
-    DRUMS = "Drums"
+    DRUM = "Drums"
     VOCAL_FX = "Vocal Effects"
 
     @staticmethod
@@ -31,7 +31,7 @@ class JDXISynth:
             JDXISynth.ANALOG: AddressOffsetTemporaryToneUMB.ANALOG_PART,
             JDXISynth.DIGITAL_1: AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
             JDXISynth.DIGITAL_2: AddressOffsetTemporaryToneUMB.DIGITAL_PART_2,
-            JDXISynth.DRUMS: AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
+            JDXISynth.DRUM: AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
             JDXISynth.VOCAL_FX: AddressOffsetTemporaryToneUMB.COMMON,
             JDXISynth.PROGRAM: AddressOffsetTemporaryToneUMB.COMMON,
         }

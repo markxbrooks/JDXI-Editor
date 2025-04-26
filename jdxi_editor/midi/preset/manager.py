@@ -22,7 +22,7 @@ class PresetManager:
             JDXISynth.DIGITAL_1: "Init Tone",
             JDXISynth.DIGITAL_2: "Init Tone",
             JDXISynth.ANALOG: "Init Tone",
-            JDXISynth.DRUMS: "Init Tone"
+            JDXISynth.DRUM: "Init Tone"
         }
         self.preset_channel_map = {
             MidiChannel.ANALOG: JDXIPresets.ANALOG_ENUMERATED,
@@ -34,7 +34,7 @@ class PresetManager:
             JDXISynth.ANALOG: JDXIPresets.ANALOG_ENUMERATED,
             JDXISynth.DIGITAL_1: JDXIPresets.DIGITAL_ENUMERATED,
             JDXISynth.DIGITAL_2: JDXIPresets.DIGITAL_ENUMERATED,
-            JDXISynth.DRUMS: JDXIPresets.DRUM_ENUMERATED,
+            JDXISynth.DRUM: JDXIPresets.DRUM_ENUMERATED,
         }
 
     def get_preset_name_by_type_and_index(self, synth_type: JDXISynth, preset_index: int) -> str:

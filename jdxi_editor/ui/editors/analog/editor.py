@@ -63,11 +63,12 @@ from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
-from jdxi_editor.midi.data.editor.data import AnalogSynthData
+from jdxi_editor.midi.data.editor.data import AnalogSynthData, create_synth_data
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
@@ -290,7 +291,7 @@ class AnalogSynthEditor(SynthEditor):
 
     def _init_synth_data(self):
         """Initialize synth-specific data."""
-        self.synth_data = AnalogSynthData()
+        self.synth_data = create_synth_data(JDXISynth.ANALOG)
         data = self.synth_data
 
         self.address_msb = data.address_msb
