@@ -134,23 +134,25 @@ class DrumCommonEditor(SynthEditor):
         self._init_synth_data()
         self.data_request()
         self.show()
-
-    def _init_synth_data(self):
+        
+    def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
         self.synth_data = create_synth_data(JDXISynth.DRUM)
-        try:
-            logging.info(repr(self.synth_data))
-        except Exception as ex:
-            logging.error(f"Error repr(self.synth_data): {ex}")
-        data = self.synth_data
         self.sysex_address = self.synth_data.address
-        self.preset_type = data.preset_type
-        self.instrument_default_image = data.instrument_default_image
-        self.instrument_icon_folder = data.instrument_icon_folder
-        self.presets = data.presets
-        self.preset_list = data.preset_list
-        self.midi_requests = data.midi_requests
-        self.midi_channel = data.midi_channel
+    
+        # Dynamically assign attributes
+        for attr in [
+            "preset_type",
+            "instrument_default_image",
+            "instrument_icon_folder",
+            "presets",
+            "preset_list",
+            "midi_requests",
+            "midi_channel",
+        ]:
+            setattr(self, attr, getattr(self.synth_data, attr))
+    
+        logging.info(self.synth_data)
 
     def setup_ui(self):
         # Main layout
