@@ -119,21 +119,29 @@ class DigitalSynthEditor(SynthEditor):
 
     def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
-        if synth_number == 1:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=0)
-        elif synth_number == 2:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=0)
-        self.sysex_address = self.synth_data.address  # Shortcut for convenience
-        logging.info(self.synth_data)
-        data = self.synth_data
+        synth_map = {
+            1: JDXISynth.DIGITAL_1,
+            2: JDXISynth.DIGITAL_2
+        }
+        if synth_number not in synth_map:
+            raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
+    
+        self.synth_data = create_synth_data(synth_map[synth_number], partial_number=0)
         self.sysex_address = self.synth_data.address
-        self.preset_type = data.preset_type
-        self.instrument_default_image = data.instrument_default_image
-        self.instrument_icon_folder = data.instrument_icon_folder
-        self.presets = data.presets
-        self.preset_list = data.preset_list
-        self.midi_requests = data.midi_requests
-        self.midi_channel = data.midi_channel
+    
+        # Dynamically assign attributes
+        for attr in [
+            "preset_type",
+            "instrument_default_image",
+            "instrument_icon_folder",
+            "presets",
+            "preset_list",
+            "midi_requests",
+            "midi_channel",
+        ]:
+            setattr(self, attr, getattr(self.synth_data, attr))
+    
+        logging.info(self.synth_data)
 
     def setup_ui(self, synth_num):
         self.setMinimumSize(800, 300)
