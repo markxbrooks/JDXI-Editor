@@ -284,19 +284,26 @@ class AnalogSynthEditor(SynthEditor):
 
         # Reverse lookup map
         self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
-
-    def _init_synth_data(self):
+        
+    def _init_synth_data(self, synth_number):
         """Initialize synth-specific data."""
         self.synth_data = create_synth_data(JDXISynth.ANALOG)
-        self.sysex_address = self.synth_data.address  # Shortcut for convenience
-        data = self.synth_data
-        self.preset_type = data.preset_type
-        self.instrument_default_image = data.instrument_default_image
-        self.instrument_icon_folder = data.instrument_icon_folder
-        self.presets = data.presets
-        self.preset_list = data.preset_list
-        self.midi_requests = data.midi_requests
-        self.midi_channel = data.midi_channel
+        self.sysex_address = self.synth_data.address
+    
+        # Dynamically assign attributes
+        for attr in [
+            "address",
+            "preset_type",
+            "instrument_default_image",
+            "instrument_icon_folder",
+            "presets",
+            "preset_list",
+            "midi_requests",
+            "midi_channel",
+        ]:
+            setattr(self, attr, getattr(self.synth_data, attr))
+    
+        logging.info(self.synth_data)
 
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
