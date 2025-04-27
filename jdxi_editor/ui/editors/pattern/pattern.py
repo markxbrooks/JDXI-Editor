@@ -905,6 +905,7 @@ class PatternSequencer(SynthEditor):
         """Update displayed buttons based on the selected drum option."""
         selected_option = self.drum_selector.currentText()
 
+        """ 
         for option, layout in self.drum_row_layouts.items():
             is_visible = option == selected_option
 
@@ -913,6 +914,7 @@ class PatternSequencer(SynthEditor):
                 button = layout.itemAt(i).widget()
                 if button:
                     button.setVisible(is_visible)
+        """
 
         # Ensure UI updates properly
         self.update()
