@@ -131,6 +131,7 @@ class DigitalSynthEditor(SynthEditor):
     
         # Dynamically assign attributes
         for attr in [
+            "address",
             "preset_type",
             "instrument_default_image",
             "instrument_icon_folder",
