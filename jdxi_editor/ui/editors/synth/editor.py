@@ -28,14 +28,15 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.control_change.base import ControlChange
-from jdxi_editor.midi.data.editor.data import create_synth_data
+
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.preset.lists import JDXIPresets
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
@@ -107,9 +108,8 @@ class SynthEditor(SynthBase):
         self.midi_helper.update_tone_name.connect(
             lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
         self.midi_helper.midi_program_changed.connect(self.data_request)
-        logging.debug(
-            f"Initialized {self.__class__.__name__} with MIDI helper: {midi_helper}"
-        )
+        log_parameter("Initialized:", self.__class__.__name__)
+        log_parameter("---> Using MIDI helper:", midi_helper)
         # midi message bytes
         # To be over-ridden by subclasses
         self.address_msb = None
@@ -147,7 +147,7 @@ class SynthEditor(SynthBase):
             logging.info("MIDI helper initialized")
         else:
             logging.error("MIDI helper not initialized")
-        self.preset_loader = PresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
+        self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
@@ -158,7 +158,7 @@ class SynthEditor(SynthBase):
         ]
 
         self.preset_helpers = {
-            synth_type: PresetHelper(
+            synth_type: JDXIPresetHelper(
                 self.midi_helper, presets, channel=channel, preset_type=synth_type
             )
             for synth_type, presets, channel in preset_configs
@@ -167,6 +167,7 @@ class SynthEditor(SynthBase):
     def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
                          partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
+        from jdxi_editor.jdxi.synth.factory import create_synth_data
         self.synth_data = create_synth_data(synth_type,
                                             partial_number=partial_number)
 
@@ -357,15 +358,13 @@ class SynthEditor(SynthBase):
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
-        logging.info(f"loading instrument image")
-
         default_image_path = resource_path(os.path.join(
             "resources", self.instrument_icon_folder, self.instrument_default_image
         ))
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
-        logging.info(f"selected instrument text: {selected_instrument_text}")
+        log_parameter("Selected instrument text:", selected_instrument_text)
         # Try to extract synth name from the selected text
         image_loaded = False
         if instrument_matches := re.search(
@@ -374,11 +373,11 @@ class SynthEditor(SynthBase):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
-            logging.info(f"selected instrument text: {selected_instrument_name}")
+            log_parameter(f"selected instrument text:", selected_instrument_name)
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            logging.info(f"selected_instrument_type: {selected_instrument_type}")
+            log_parameter("Selected instrument type:", selected_instrument_type)
             specific_image_path = resource_path(os.path.join(
                 "resources",
                 self.instrument_icon_folder,

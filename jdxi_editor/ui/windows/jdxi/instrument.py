@@ -45,19 +45,20 @@ from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
     AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB, RolandSysExAddress
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.preset.type import JDXISynth
-from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper, MidiIOController
-from jdxi_editor.midi.message.roland import RolandSysEx, RolandSysExMessage
-from jdxi_editor.midi.preset.data import ButtonPreset
-from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.program.helper import ProgramHelper
+from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.jdxi.preset.button import JDXIPresetButton
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.preset.lists import JDXIPresets
+from jdxi_editor.midi.program.helper import JDXIProgramHelper
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
@@ -104,8 +105,8 @@ class JdxiInstrument(JdxiUi):
             self._show_midi_config()
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
-        self.program_helper = ProgramHelper(self.midi_helper,
-                                            MidiChannel.PROGRAM)
+        self.program_helper = JDXIProgramHelper(self.midi_helper,
+                                                MidiChannel.PROGRAM)
         self.settings = QSettings("jdxi_manager2", "settings")
         self._load_settings()
         self._toggle_illuminate_sequencer_lightshow(True)
@@ -124,7 +125,7 @@ class JdxiInstrument(JdxiUi):
             (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
         self.preset_helpers = {
-            synth_type: PresetHelper(
+            synth_type: JDXIPresetHelper(
                 self.midi_helper, presets, channel=channel, preset_type=synth_type
             )
             for synth_type, presets, channel in preset_configs
@@ -199,7 +200,7 @@ class JdxiInstrument(JdxiUi):
         self.preset_manager.set_preset_name_by_type(synth_type, tone_name)
         self._update_display()
 
-    def _get_preset_helper_for_current_synth(self) -> PresetHelper:
+    def _get_preset_helper_for_current_synth(self) -> JDXIPresetHelper:
         """Return the appropriate preset helper based on the current synth preset_type."""
         helper = self.preset_helpers.get(self.current_synth_type)
         if helper is None:
@@ -227,7 +228,7 @@ class JdxiInstrument(JdxiUi):
 
     def _select_synth(self, synth_type):
         """Select address synth and update button styles."""
-        logging.info(f"Selected synth: {synth_type}")
+        log_parameter(f"Selected synth:", synth_type)
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
         self.preset_helper = self._get_preset_helper_for_current_synth()
@@ -498,7 +499,7 @@ class JdxiInstrument(JdxiUi):
     def load_button_preset(self, button: SequencerSquare) -> None:
         """load preset dat stored on the button"""
         preset = button.preset
-        preset_data = ButtonPreset(
+        preset_data = JDXIPresetButton(
             type=preset.type,  # Ensure this is address valid preset_type
             number=preset.number,  # Convert to 1-based index
         )
@@ -506,7 +507,7 @@ class JdxiInstrument(JdxiUi):
         preset_helper = self._get_preset_helper_for_current_synth()
         preset_helper.load_preset(preset_data)
 
-    def _generate_button_preset(self) -> ButtonPreset:
+    def _generate_button_preset(self) -> JDXIPresetButton:
         """
         :return: ButtonPreset
 
@@ -515,9 +516,9 @@ class JdxiInstrument(JdxiUi):
 
         try:
             # Update the current preset index or details here
-            button_preset = ButtonPreset(number=self.preset_manager.current_preset_number,
-                                         name=self.preset_manager.current_preset_name,
-                                         type=self.current_synth_type)
+            button_preset = JDXIPresetButton(number=self.preset_manager.current_preset_number,
+                                             name=self.preset_manager.current_preset_name,
+                                             type=self.current_synth_type)
             logging.debug(f"Current preset retrieved: {button_preset}")
             return button_preset
         except Exception as ex:

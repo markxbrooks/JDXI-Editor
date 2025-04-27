@@ -44,8 +44,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
+
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.digital import (
     DigitalOscWave,
@@ -550,14 +552,11 @@ class DigitalSynthEditor(SynthEditor):
         :return: True if successful, False otherwise
         """
         try:
-            logging.info(
-                f"Setting partial {partial.switch_param} state: enabled={enabled}, selected={selected}"
-            )
+            log_parameter("Setting partial:", partial.switch_param)
+            log_parameter("Partial state enabled (Yes/No):", enabled)
+            log_parameter("Partial selected (Yes/No):", selected)
             self.send_midi_parameter(
                 param=partial.switch_param, value=1 if enabled else 0
-            )
-            logging.info(
-                f"Setting partial {partial.select_param} state: enabled={enabled}, selected={selected}"
             )
             self.send_midi_parameter(
                 param=partial.select_param, value=1 if selected else 0

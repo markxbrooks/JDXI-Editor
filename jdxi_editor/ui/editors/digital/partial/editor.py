@@ -45,13 +45,15 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QTabWidget,
 )
+
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.editor.data import create_synth_data
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
@@ -85,10 +87,10 @@ class DigitalPartialEditor(PartialEditor):
         elif synth_number == 2:
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=partial_number)
         self.sysex_address = self.synth_data.sysex_address  # Shortcut for convenience
-        logging.info(f"Initializing partial: {self.synth_data.sysex_address}")
+        log_parameter("Initializing partial:", self.synth_data.sysex_address)
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
-            logging.info(f"Partial name: {self.part_name}")
+            log_parameter("Partial name:", self.part_name)
         else:
             logging.error(
                 f"Invalid partial_num: {partial_number}. Using default value."

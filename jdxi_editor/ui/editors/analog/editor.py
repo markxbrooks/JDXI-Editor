@@ -63,12 +63,13 @@ from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
-from jdxi_editor.midi.data.editor.data import AnalogSynthData, create_synth_data
+from jdxi_editor.jdxi.synth.analog import AnalogSynthData
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     midi_cc_to_frac,
@@ -220,6 +221,7 @@ class AnalogSynthEditor(SynthEditor):
         self.show()
 
     def _create_sections(self):
+        """Create the sections for the Analog Synth Editor."""
         self.oscillator_section = AnalogOscillatorSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
@@ -264,6 +266,7 @@ class AnalogSynthEditor(SynthEditor):
         )
 
     def _create_instrument_preset_group(self):
+        """Create the instrument preset group"""
         instrument_preset_group = QGroupBox("Analog Synth")
         instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
         self.instrument_title_label = DigitalTitle()

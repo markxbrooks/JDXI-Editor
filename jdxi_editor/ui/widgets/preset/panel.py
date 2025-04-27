@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal
 
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.io.preset import PresetEditor
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 
 
 class PresetPanel(QWidget):

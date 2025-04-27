@@ -38,14 +38,10 @@ from PySide6.QtGui import (
 )
 
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.editor.data import (
-    DigitalSynthData,
-    DrumSynthData,
-    AnalogSynthData, create_synth_data,
-)
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.manager import PresetManager
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.preset.manager import JDXIPresetManager
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name, get_program_name_by_id
@@ -96,7 +92,7 @@ class JdxiUi(QMainWindow):
         self.current_program_number = int(self.current_program_id[1:])
         self.current_program_name = get_program_name_by_id(self.current_program_id)
         # Set up presets
-        self.preset_manager = PresetManager()
+        self.preset_manager = JDXIPresetManager()
         # Initialize synth preset_type
         self.current_synth_type = JDXISynth.DIGITAL_1
         # Initialize octave

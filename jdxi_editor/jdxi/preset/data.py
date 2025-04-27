@@ -12,24 +12,11 @@ Constants:
     - PresetType.DIGITAL_1: Default preset type for Digital 1.
 """
 
-from dataclasses import dataclass
-from typing import Optional
-
-from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.preset.lists import JDXIPresets
+from jdxi_editor.jdxi.synth.type import JDXISynth
 
 
-@dataclass
-class ButtonPreset:
-    type: str = JDXISynth.DIGITAL_1  # Adjust the type as needed
-    number: int = 1
-    modified: int = 0
-    channel: int = MidiChannel.DIGITAL1
-    name: Optional[str] = None
-
-
-class PresetData:
+class JDXIPresetData:
     """
     A class to handle synth data, including preset selection based on synth type.
     """
