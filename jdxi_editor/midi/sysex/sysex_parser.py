@@ -117,7 +117,7 @@ class SysExParser:
     def parse_parameters(self, data: List[int], parameter_type: Type) -> Dict[str, int]:
         """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
         return {
-            param.name: self.safe_get(data, param.address)
+            param.name: self.safe_get(data, param.sysex_address)
             for param in parameter_type
         }
 

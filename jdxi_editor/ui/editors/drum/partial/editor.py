@@ -60,7 +60,7 @@ class DrumPartialEditor(PartialEditor):
         self.preset_helper = None
 
         self.synth_data = create_synth_data(JDXISynth.DRUM, partial_number)
-        self.sysex_address = self.synth_data.address  # Shortcut for convenience
+        self.sysex_address = self.synth_data.sysex_address  # Shortcut for convenience
 
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}

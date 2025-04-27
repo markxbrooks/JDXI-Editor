@@ -29,6 +29,7 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.midi.data.control_change.base import ControlChange
+from jdxi_editor.midi.data.editor.data import create_synth_data
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
 from jdxi_editor.midi.preset.type import JDXISynth
@@ -81,7 +82,7 @@ class SynthEditor(SynthBase):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
-        self.current_data = None
+        self.sysex_current_data = None
         self.preset_list = None
         self.presets = None
         # self.midi_helper = midi_helper
@@ -162,6 +163,25 @@ class SynthEditor(SynthBase):
             )
             for synth_type, presets, channel in preset_configs
         }
+
+    def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
+                         partial_number: Optional[int] = 0):
+        """Initialize synth-specific data."""
+        self.synth_data = create_synth_data(synth_type,
+                                            partial_number=partial_number)
+
+        # Dynamically assign attributes
+        for attr in [
+            "sysex_address",
+            "preset_type",
+            "instrument_default_image",
+            "instrument_icon_folder",
+            "presets",
+            "preset_list",
+            "midi_requests",
+            "midi_channel",
+        ]:
+            setattr(self, attr, getattr(self.synth_data, attr))
         
     def get_controls_as_dict(self):
         """
@@ -201,9 +221,9 @@ class SynthEditor(SynthBase):
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
         try:
             data = json.loads(json_sysex_data)
-            self.previous_data = self.current_data
-            self.current_data = data
-            log_changes(self.previous_data, data)
+            self.sysex_previous_data = self.sysex_current_data
+            self.sysex_current_data = data
+            log_changes(self.sysex_previous_data, data)
             return data
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")

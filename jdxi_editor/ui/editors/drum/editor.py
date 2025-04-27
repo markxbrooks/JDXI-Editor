@@ -101,59 +101,31 @@ class DrumCommonEditor(SynthEditor):
         parent=None,
     ):
         super().__init__(midi_helper, parent)
-
-        # Initialize class attributes
-
-        # Presets
+        # Helpers
         self.preset_helper = preset_helper
         self.midi_helper = midi_helper
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-        # midi parameters
         self.partial_number = 0
-        self._init_synth_data()
-
-        self.current_data = None
-        self.previous_data = None
-
+        self._init_synth_data(synth_type=JDXISynth.DRUM)
+        self.sysex_current_data = None
+        self.sysex_previous_data = None
         self.partial_mapping = DRUM_PARTIAL_MAPPING
-
-        # UI parameters
+        # UI Elements
         self.main_window = parent
         self.partial_editors = {}
         self.partial_tab_widget = QTabWidget()
-
         self.instrument_image_label = None
-        # Main layout
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
         self.setup_ui()
         self.update_instrument_image()
+        # Setup signal handlers
         if self.midi_helper:
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
-        self._init_synth_data()
+        # Request initial state data & show the editor
         self.data_request()
         self.show()
-        
-    def _init_synth_data(self, synth_number):
-        """Initialize synth-specific data."""
-        self.synth_data = create_synth_data(JDXISynth.DRUM)
-        self.sysex_address = self.synth_data.address
-    
-        # Dynamically assign attributes
-        for attr in [
-            "address",
-            "preset_type",
-            "instrument_default_image",
-            "instrument_icon_folder",
-            "presets",
-            "preset_list",
-            "midi_requests",
-            "midi_channel",
-        ]:
-            setattr(self, attr, getattr(self.synth_data, attr))
-    
-        logging.info(self.synth_data)
 
     def setup_ui(self):
         # Main layout
@@ -348,9 +320,9 @@ class DrumCommonEditor(SynthEditor):
             """Parse JSON safely and log changes."""
             try:
                 sysex_data = json.loads(json_data)
-                self.previous_data = self.current_data
-                self.current_data = sysex_data
-                log_changes(self.previous_data, sysex_data)
+                self.sysex_previous_data = self.sysex_current_data
+                self.sysex_current_data = sysex_data
+                log_changes(self.sysex_previous_data, sysex_data)
                 return sysex_data
             except json.JSONDecodeError as ex:
                 logging.error(f"Invalid JSON format: {ex}")
@@ -501,9 +473,9 @@ class DrumCommonEditor(SynthEditor):
 
         try:
             sysex_data = json.loads(json_sysex_data)
-            self.previous_data = self.current_data
-            self.current_data = sysex_data
-            log_changes(self.previous_data, sysex_data)
+            self.sysex_previous_data = self.sysex_current_data
+            self.sysex_current_data = sysex_data
+            log_changes(self.sysex_previous_data, sysex_data)
         except json.JSONDecodeError as ex:
             logging.error(f"Invalid JSON format: {ex}")
             return

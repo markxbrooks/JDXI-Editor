@@ -93,26 +93,26 @@ class MidiOutHandler(MidiIOController):
         :return: True if the message was successfully sent, False otherwise.
         :rtype: bool
         """
-        log_parameter("Attempting to send message:", message)
+        log_parameter("Attempting to send message: ", message, level=logging.INFO)
 
         if not validate_midi_message(message):
             logging.info("MIDI message validation failed.")
             return False
 
         formatted_message = format_midi_message_to_hex_string(message)
-        log_parameter("Sending MIDI message:", formatted_message)
+        log_parameter("Sending MIDI message: ", formatted_message, level=logging.INFO)
 
         if not self.midi_out.is_port_open():
             logging.info("MIDI output port is not open.")
             return False
 
         try:
-            log_parameter("QC passed, sending message:", formatted_message)
+            log_parameter("QC passed, sending message: ", formatted_message, level=logging.INFO)
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            logging.info(f"Error sending message: {ex}")
+            logging.error(f"Error sending message: {ex}")
             return False
 
     def send_note_on(self, note: int = 60, velocity: int = 127, channel: int = 1):

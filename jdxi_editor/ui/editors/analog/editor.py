@@ -56,7 +56,7 @@ from PySide6.QtWidgets import (
     QSlider,
     QTabWidget,
     QComboBox,
-    QSpinBox,
+    QSpinBox, QSplitter,
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
@@ -129,7 +129,7 @@ class AnalogSynthEditor(SynthEditor):
         self.main_window = parent
 
         self._init_parameter_mappings()
-        self._init_synth_data()
+        self._init_synth_data(JDXISynth.ANALOG)
         self.setup_ui()
 
         if self.midi_helper:
@@ -156,6 +156,13 @@ class AnalogSynthEditor(SynthEditor):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
+        # Splitter
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        main_layout.addWidget(splitter)
+
+        # === Top half ===
+        upper_widget = QWidget()
+
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -167,41 +174,13 @@ class AnalogSynthEditor(SynthEditor):
         container = QWidget()
         container_layout = QVBoxLayout(container)
         scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        main_layout.addWidget(splitter)
 
         # Top layout with title and image
         upper_layout = QHBoxLayout()
-        container_layout.addLayout(upper_layout)
+        upper_widget.setLayout(upper_layout)
 
-        instrument_preset_group = QGroupBox("Analog Synth")
-        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
-
-        self.instrument_title_label = DigitalTitle()
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
-
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        instrument_title_group_layout.addWidget(self.read_request_button)
-
-        self.instrument_selection_label = QLabel("Select an Analog synth:")
-        instrument_title_group_layout.addWidget(self.instrument_selection_label)
-
-        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
-        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
-        self.instrument_selection_combo.combo_box.setEditable(True)
-
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-
-        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+        instrument_preset_group = self._create_instrument_preset_group()
 
         upper_layout.addWidget(instrument_preset_group)
         upper_layout.addWidget(self.instrument_image_label)
@@ -212,6 +191,35 @@ class AnalogSynthEditor(SynthEditor):
         self.tab_widget = QTabWidget()
         container_layout.addWidget(self.tab_widget)
 
+        self._create_sections()
+
+        # Configure sliders
+        for param, slider in self.controls.items():
+            if isinstance(slider, QSlider):
+                slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
+                slider.setTickInterval(10)
+
+        scroll.setWidget(container)
+
+        splitter.addWidget(upper_widget)
+        splitter.addWidget(scroll)
+        splitter.setSizes([300, 300])  # give more room to bottom
+        # Splitter handle style
+        splitter.setStyleSheet("""
+             QSplitter::handle {
+                 background-color: #444;
+                 border: 1px solid #666;
+             }
+             QSplitter::handle:vertical {
+                 height: 6px;
+             }
+             QSplitter::handle:horizontal {
+                 width: 6px;
+             }
+         """)
+        self.show()
+
+    def _create_sections(self):
         self.oscillator_section = AnalogOscillatorSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
@@ -223,22 +231,20 @@ class AnalogSynthEditor(SynthEditor):
             qta.icon("mdi.triangle-wave", color="#666666"),
             "Oscillator",
         )
-
         self.filter_section = AnalogFilterSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
             self._on_filter_mode_changed,
             self.send_control_change,
             self.midi_helper,
-            self.synth_data.address
+            self.synth_data.sysex_address
         )
         self.tab_widget.addTab(
             self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
         )
-
         self.amp_section = AmpSection(
             self.midi_helper,
-            self.synth_data.address,
+            self.synth_data.sysex_address,
             self._create_parameter_slider,
             generate_waveform_icon,
             base64_to_pixmap,
@@ -246,7 +252,6 @@ class AnalogSynthEditor(SynthEditor):
         self.tab_widget.addTab(
             self.amp_section, qta.icon("mdi.amplifier", color="#666666"), "Amp"
         )
-
         self.lfo_section = AnalogLFOSection(
             self._create_parameter_slider,
             self._create_parameter_switch,
@@ -258,11 +263,31 @@ class AnalogSynthEditor(SynthEditor):
             self.lfo_section, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
         )
 
-        # Configure sliders
-        for param, slider in self.controls.items():
-            if isinstance(slider, QSlider):
-                slider.setTickPosition(QSlider.TickPosition.TicksBothSides)
-                slider.setTickInterval(10)
+    def _create_instrument_preset_group(self):
+        instrument_preset_group = QGroupBox("Analog Synth")
+        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
+        self.instrument_title_label = DigitalTitle()
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+        self.instrument_selection_label = QLabel("Select an Analog synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
+        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
+        self.instrument_selection_combo.combo_box.setEditable(True)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+        return instrument_preset_group
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
@@ -284,26 +309,6 @@ class AnalogSynthEditor(SynthEditor):
 
         # Reverse lookup map
         self.nrpn_map = {v: k for k, v in self.nrpn_parameters.items()}
-        
-    def _init_synth_data(self, synth_number):
-        """Initialize synth-specific data."""
-        self.synth_data = create_synth_data(JDXISynth.ANALOG)
-        self.sysex_address = self.synth_data.address
-    
-        # Dynamically assign attributes
-        for attr in [
-            "address",
-            "preset_type",
-            "instrument_default_image",
-            "instrument_icon_folder",
-            "presets",
-            "preset_list",
-            "midi_requests",
-            "midi_channel",
-        ]:
-            setattr(self, attr, getattr(self.synth_data, attr))
-    
-        logging.info(self.synth_data)
 
     def update_filter_controls_state(self, mode: int):
         """Update filter controls enabled state based on mode"""
@@ -324,8 +329,13 @@ class AnalogSynthEditor(SynthEditor):
         # Update control states
         self.update_filter_controls_state(mode)
 
-    def _on_parameter_received(self, address, value):
-        """Handle parameter updates from MIDI messages."""
+    def _on_parameter_received(self, address: list[int], value: int):
+        """
+        Handle incoming MIDI parameter messages.
+        :param address: list of address bytes
+        :param value: int value
+        :return:
+        """
         area_code = address[0]
         if address[0] == AddressMemoryAreaMSB.ANALOG:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
@@ -333,7 +343,6 @@ class AnalogSynthEditor(SynthEditor):
 
             # Retrieve the corresponding DigitalParameter
             param = get_analog_parameter_by_address(parameter_address)
-            partial_no = address[1]
             if param:
                 logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
             elif param == AddressParameterAnalog.FILTER_MODE_SWITCH:
@@ -341,17 +350,7 @@ class AnalogSynthEditor(SynthEditor):
 
                 # Update the corresponding slider
                 if param in self.controls:
-                    self._update_slider(param, param_value, successes)
-                    """
-                    slider_value = param.convert_from_midi(value)
-                    logging.info(
-                        f"midi value {value} converted to slider value {slider_value}"
-                    )
-                    slider = self.controls[param]
-                    slider.blockSignals(True)  # Prevent feedback loop
-                    slider.setValue(slider_value)
-                    slider.blockSignals(False)
-                    """
+                    self._update_slider(param, param.value)
 
                 # Handle OSC_WAVE parameter to update waveform buttons
                 if param == AddressParameterAnalog.OSC_WAVEFORM:

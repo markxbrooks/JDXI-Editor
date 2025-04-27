@@ -327,8 +327,8 @@ class EffectsCommonEditor(SimpleEditor):
             try:
                 # Send MIDI message
                 sysex_message = RolandSysEx(
-                    msb=self.address.msb,
-                    umb=self.address.umb,
+                    msb=self.sysex_address.msb,
+                    umb=self.sysex_address.umb,
                     lmb=common_param.address,
                     lsb=param.address,
                     value=midi_value,
