@@ -251,7 +251,7 @@ class MidiInHandler(MidiIOController):
             if len(message.data) > 20:
                 try:
                     parsed_data_dict = parse_sysex(sysex_message_bytes)
-                    print(f"Parsed data: {parsed_data_dict}")
+                    logging.info(f"Parsed data: {parsed_data_dict}")
                     self._emit_program_or_tone_name(parsed_data_dict)
                     json_log_folder = Path.home() / ".jdxi_editor" / "logs"
                     json_log_folder.mkdir(parents=True, exist_ok=True)

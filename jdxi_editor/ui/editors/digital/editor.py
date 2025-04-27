@@ -40,7 +40,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QScrollArea,
     QLabel,
-    QPushButton,
+    QPushButton, QSplitter,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
@@ -183,11 +183,22 @@ class DigitalSynthEditor(SynthEditor):
         # Title and instrument selection selection
         self._create_instrument_group(container_layout, upper_layout)
 
+        # Create splitter
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        main_layout.addWidget(splitter)
+
+        # === Top half: upper_layout container ===
+        upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
+
+        container_layout.addWidget(splitter)
+        splitter_layout = QVBoxLayout()
+        splitter.setLayout(splitter_layout)
+        splitter_layout.addLayout(instrument_group_layout)
         # Add partials panel at the top
         self.partials_panel = PartialsPanel()
-        container_layout.addWidget(self.partials_panel)
+        splitter_layout.addWidget(self.partials_panel)
+        # container_layout.addWidget(self.partials_panel)
         self.partials_panel.setStyleSheet(JDXIStyle.TABS)
-
         self._create_partial_tab_widget(container_layout, self.midi_helper)
 
         # Add container to scroll area
