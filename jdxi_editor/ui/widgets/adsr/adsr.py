@@ -53,9 +53,6 @@ class ADSR(QWidget):
         initial_param: AddressParameter = None,
         peak_param: AddressParameter = None,
         midi_helper=None,
-        address_lmb=None,
-        address_msb=None,
-        address_umb=None,
         address=None,
         parent=None,
     ):
@@ -81,15 +78,7 @@ class ADSR(QWidget):
             "peak_level": 1,
             "sustain_level": 0.8,
         }
-        self.address_msb = (
-            address_msb if address_msb else AddressMemoryAreaMSB.TEMPORARY_TONE
-        )
-        self.address_umb = (
-            address_umb if address_umb else AddressOffsetTemporaryToneUMB.ANALOG_PART
-        )
-        self.address_lmb = (
-            address_lmb if address_lmb else AddressOffsetProgramLMB.COMMON
-        )
+        self.address = address
         self.midi_helper = midi_helper
         self.updating_from_spinbox = False
 
@@ -279,11 +268,10 @@ class ADSR(QWidget):
             return False
 
         try:
-
             sysex_message = RolandSysEx(
-                msb=self.address_msb,
-                umb=self.address_umb,
-                lmb=self.address_lmb,
+                msb=self.address.msb,
+                umb=self.address.umb,
+                lmb=self.address.lmb,
                 lsb=param.address,
                 value=value,
             )

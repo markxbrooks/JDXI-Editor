@@ -35,6 +35,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
@@ -72,9 +73,10 @@ class VocalFXEditor(SimpleEditor):
         self.preset_helper = preset_helper
         self.setMinimumHeight(750)
         self.setMinimumWidth(650)
-        self.address_msb = VocalAddress.FX_AREA
-        self.address_umb = VocalAddress.FX_PART
-        self.address_lmb = VocalAddress.FX_GROUP
+        self.sysex_address = RolandSysExAddress(VocalAddress.FX_AREA,
+                                          VocalAddress.FX_PART,
+                                          VocalAddress.FX_GROUP,
+                                          ZERO_BYTE)
         self.setStyleSheet(JDXIStyle.EDITOR + JDXIStyle.TABS)
 
         # Main layout

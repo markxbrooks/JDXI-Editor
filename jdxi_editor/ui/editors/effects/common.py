@@ -43,7 +43,7 @@ from jdxi_editor.midi.preset.helper import PresetHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
-    AddressOffsetProgramLMB,
+    AddressOffsetProgramLMB, RolandSysExAddress, ZERO_BYTE, AddressOffsetSystemUMB,
 )
 from jdxi_editor.midi.data.parameter.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
@@ -80,8 +80,10 @@ class EffectsCommonEditor(SimpleEditor):
         # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.address_msb = AddressMemoryAreaMSB.PROGRAM
-        self.address_umb = AddressOffsetProgramLMB.COMMON
+        self.sysex_address = RolandSysExAddress(AddressMemoryAreaMSB.PROGRAM,
+                                          AddressOffsetSystemUMB.COMMON,
+                                          AddressOffsetProgramLMB.COMMON,
+                                          ZERO_BYTE)
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 
@@ -325,8 +327,8 @@ class EffectsCommonEditor(SimpleEditor):
             try:
                 # Send MIDI message
                 sysex_message = RolandSysEx(
-                    msb=self.address_msb,
-                    umb=self.address_umb,
+                    msb=self.address.msb,
+                    umb=self.address.umb,
                     lmb=common_param.address,
                     lsb=param.address,
                     value=midi_value,

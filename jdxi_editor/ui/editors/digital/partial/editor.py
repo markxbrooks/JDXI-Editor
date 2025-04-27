@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QTabWidget,
 )
-from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
+from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.editor.data import create_synth_data
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
@@ -84,10 +84,7 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=partial_number)
         elif synth_number == 2:
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=partial_number)
-        data = self.synth_data
-        self.address_msb = data.address_msb
-        self.address_umb = data.address_umb
-        self.address_lmb = data.partial_lmb # generated dynamically so may give IDE error
+        self.sysex_address = self.synth_data.address  # Shortcut for convenience
         logging.info(f"Initializing partial: {self.synth_data.address}")
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
@@ -121,7 +118,6 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.address_umb,
         )
         self.tab_widget.addTab(
             self.oscillator_tab,
@@ -134,7 +130,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.address_umb,
+            self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
@@ -144,7 +140,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.address_umb,
+            self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amplitude"

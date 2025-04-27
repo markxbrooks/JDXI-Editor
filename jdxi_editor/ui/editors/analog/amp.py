@@ -11,18 +11,14 @@ class AmpSection(QWidget):
     def __init__(
         self,
         midi_helper,
-        area,
-        part,
-        group,
+        address,
         create_parameter_slider,
         generate_waveform_icon,
         base64_to_pixmap,
     ):
         super().__init__()
         self.midi_helper = midi_helper
-        self.address_msb = area
-        self.address_umb = part
-        self.address_lmb = group
+        self.address = address
         self._create_parameter_slider = create_parameter_slider
         self.generate_waveform_icon = generate_waveform_icon
         self.base64_to_pixmap = base64_to_pixmap
@@ -86,9 +82,7 @@ class AmpSection(QWidget):
             sustain_param=AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            address_msb=self.address_msb,
-            address_umb=self.address_umb,
-            address_lmb=self.address_lmb,
+            address=self.address,
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
