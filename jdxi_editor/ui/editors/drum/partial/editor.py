@@ -60,11 +60,7 @@ class DrumPartialEditor(PartialEditor):
         self.preset_helper = None
 
         self.synth_data = create_synth_data(JDXISynth.DRUM, partial_number)
-        data = self.synth_data
-        self.address_msb = data.address_msb
-        self.address_umb = data.address_umb
-        self.address_lmb = data.partial_lmb  # generated dynamically so may give IDE error
-        log_parameter("Initializing partial:", self.address_lmb)
+        self.sysex_address = self.synth_data.address  # Shortcut for convenience
 
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
@@ -133,8 +129,3 @@ class DrumPartialEditor(PartialEditor):
         grid_layout.addWidget(tva_group, 1, 1)
 
         main_layout.addWidget(scroll_area)
-        self.update_partial_address()
-
-    def update_partial_address(self):
-        """ update partial address from synth data """
-        self.address_lmb = self.synth_data.get_partial_lmb(self.partial_number)

@@ -47,24 +47,14 @@ class PitchEnvelope(QWidget):
         decay_param: AddressParameter,
         depth_param: AddressParameter,
         midi_helper=None,
-        address_lmb=None,
-        address_msb=None,
-        address_umb=None,
+        address=None,
         parent=None,
     ):
         super().__init__(parent)
 
         self.controls: Dict[AddressParameter, Slider] = {}
         self.midi_helper = midi_helper
-        self.address_msb = (
-            address_msb if address_msb else AddressMemoryAreaMSB.TEMPORARY_TONE
-        )
-        self.address_umb = (
-            address_umb if address_umb else AddressOffsetTemporaryToneUMB.ANALOG_PART
-        )
-        self.address_lmb = (
-            address_lmb if address_lmb else AddressOffsetProgramLMB.COMMON
-        )
+        self.address = address
         self.updating_from_spinbox = False
         self.plot = ADSRPlot(width=300, height=250)
 
@@ -254,9 +244,9 @@ class PitchEnvelope(QWidget):
             else:
                 size = 1
             sysex_message = RolandSysEx(
-                msb=self.address_msb,
-                umb=self.address_umb,
-                lmb=self.address_lmb,
+                msb=self.address.msb,
+                umb=self.address.umb,
+                lmb=self.address.lmb,
                 lsb=param.address,
                 value=value,
                 size=size,

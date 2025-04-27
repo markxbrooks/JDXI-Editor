@@ -230,9 +230,7 @@ class AnalogSynthEditor(SynthEditor):
             self._on_filter_mode_changed,
             self.send_control_change,
             self.midi_helper,
-            self.address_msb,
-            self.address_umb,
-            self.address_lmb,
+            self.synth_data.address
         )
         self.tab_widget.addTab(
             self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
@@ -240,9 +238,7 @@ class AnalogSynthEditor(SynthEditor):
 
         self.amp_section = AmpSection(
             self.midi_helper,
-            self.address_msb,
-            self.address_umb,
-            self.address_lmb,
+            self.synth_data.address,
             self._create_parameter_slider,
             generate_waveform_icon,
             base64_to_pixmap,
@@ -292,13 +288,8 @@ class AnalogSynthEditor(SynthEditor):
     def _init_synth_data(self):
         """Initialize synth-specific data."""
         self.synth_data = create_synth_data(JDXISynth.ANALOG)
+        self.sysex_address = self.synth_data.address  # Shortcut for convenience
         data = self.synth_data
-
-        self.address_msb = data.address_msb
-        self.address_lmb = data.address_lmb
-        self.address_umb = data.address_umb
-        self.setWindowTitle(data.window_title)
-
         self.preset_type = data.preset_type
         self.instrument_default_image = data.instrument_default_image
         self.instrument_icon_folder = data.instrument_icon_folder

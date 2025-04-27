@@ -25,7 +25,7 @@ import time
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
+from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -80,92 +80,29 @@ class SynthBase(QWidget):
             self.data_request()
             self.blockSignals(False)
 
-    def send_midi_parameter_new(self, param: AddressParameter, value: int) -> bool:
-        """Send MIDI parameter with error handling."""
-        try:
-            logging.info(self._format_logging_message(param, value))
-            size = self._get_parameter_size(param)
-            full_address = self._construct_full_address(param)
-            sysex_message = self._create_sysex_message(full_address, value, size)
-            result = self.midi_helper.send_midi_message(sysex_message)
-            return bool(result)
-        except Exception as ex:
-            logging.error(f"MIDI error setting {param.name}: {ex}")
-            return False
-
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """Send MIDI parameter with error handling."""
         try:
-            logging.info(self._format_logging_message(param, value))
-            size = self._get_parameter_size(param)
-            base_address, full_address, offset = self._construct_full_address(param)
-            sysex_message = self._create_sysex_message(full_address, value, size)
-            result = self.midi_helper.send_midi_message(sysex_message)
-            return bool(result)
-        except Exception as ex:
-            logging.error(f"MIDI error setting {param.name}: {ex}")
-            return False
-
-    def _format_logging_message(self, param: AddressParameter, value: int) -> str:
-        return (
-            f"Sending {self.partial_number} param={param.name}, "
-            f"partial={self.address_umb}, group={self.address_lmb}, value={value}"
-        )
-
-    def _get_parameter_size(self, param: AddressParameter) -> int:
-        return param.get_nibbled_size() if hasattr(param, "get_nibbled_size") else 1
-
-    def _construct_full_address_new(self, param: AddressParameter):
-        return apply_address_offset(self.sysex_data.address, param)
-
-    def _create_sysex_message_new(self, full_address, value: int, size: int) -> RolandSysEx:
-        sysex_message = RolandSysEx(
-            address=full_address,
-            value=value,
-            size=size,
-        )
-        return sysex_message
-
-    def _construct_full_address(self, param: AddressParameter):
-        return construct_address(self.address_msb, self.address_umb, self.address_lmb, param)
-
-    def _create_sysex_message(self, full_address, value: int, size: int) -> RolandSysEx:
-        address_msb, address_umb, address_lmb, address_lsb = full_address
-        sysex_message = RolandSysEx(
-            msb=address_msb,
-            umb=address_umb,
-            lmb=address_lmb,
-            lsb=address_lsb,
-            value=value,
-            size=size,
-        )
-        return sysex_message
-
-    def send_midi_parameter_new(self, param: AddressParameter, value: int) -> bool:
-        """Send MIDI parameter with error handling."""
-        try:
-            logging.info(
-                f"Sending {self.partial_number} param={param.name}, partial={self.address_umb}, group={self.address_lmb}, value={value}"
-            )
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
             else:
                 size = 1
-            base_address, full_address, offset = apply_address_offset(self.address_msb,
-                                                                      self.address_umb,
-                                                                      self.address_lmb,
-                                                                      param
-                                                                      )
-            address_msb, address_umb, address_lmb, address_lsb = full_address
-            logging.info(f"base address: \t{base_address.to_sysex_address()}")
-            logging.info(f"offset: \t{offset}")
-            logging.info(f"full address \t{full_address}")
-
+            address = apply_address_offset(
+                self.sysex_address, param
+            )
+            logging.info(
+                "ParamUpdate | PartialNumber=%s | BaseAddress=%s | Parameter=%s | Value=%s | FullAddress=%s",
+                self.partial_number,
+                self.sysex_address,
+                param,
+                value,
+                address,
+            )
             sysex_message = RolandSysEx(
-                msb=address_msb,
-                umb=address_umb,
-                lmb=address_lmb,
-                lsb=address_lsb,
+                msb=address.msb,
+                umb=address.umb,
+                lmb=address.lmb,
+                lsb=address.lsb,
                 value=value,
                 size=size,
             )

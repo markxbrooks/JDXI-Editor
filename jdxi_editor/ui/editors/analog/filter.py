@@ -15,9 +15,7 @@ class AnalogFilterSection(QWidget):
         on_filter_mode_changed,
         send_control_change,
         midi_helper,
-        area,
-        part,
-        group,
+        address
     ):
         super().__init__()
         self.filter_resonance = None
@@ -26,9 +24,7 @@ class AnalogFilterSection(QWidget):
         self._on_filter_mode_changed = on_filter_mode_changed
         self.send_control_change = send_control_change
         self.midi_helper = midi_helper
-        self.address_msb = area
-        self.address_umb = part
-        self.address_lmb = group
+        self.address = address
         self.init_ui()
 
     def init_ui(self):
@@ -100,9 +96,7 @@ class AnalogFilterSection(QWidget):
             sustain_param=AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            address_msb=self.address_msb,
-            address_umb=self.address_umb,
-            address_lmb=self.address_lmb,
+            address=self.address
         )
         self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")

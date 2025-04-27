@@ -23,12 +23,12 @@ class DigitalAmpSection(QWidget):
         partial_number,
         midi_helper,
         controls,
-        part,
+        address,
     ):
         super().__init__()
         self.partial_number = partial_number
         self.midi_helper = midi_helper
-        self.address_umb = part
+        self.address = address
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
         self.setup_ui()
@@ -107,9 +107,7 @@ class DigitalAmpSection(QWidget):
             sustain_param=AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=self.address_umb,
-            address_lmb=group_address,
+            address=self.address
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
         env_layout.addLayout(amp_env_adsr_vlayout)

@@ -33,7 +33,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     Address,
 )
-from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
+from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase
@@ -55,48 +55,8 @@ class PartialEditor(SynthBase):
         self.partial_address_map = {}
         self.bipolar_parameters = []
         self.midi_helper = midi_helper
-        self.address_msb = None
-        self.address_umb = part
-        self.address_lmb = AddressOffsetProgramLMB.COMMON
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = None  # More for Drums eg. 'BD1'
         self.preset_helper = None
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameter, QWidget] = {}
-
-    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
-        """Send MIDI parameter with error handling."""
-        try:
-            log_parameter("self.partial_number:", self.partial_number)
-            log_parameter("address:", self.synth_data.address)
-            log_parameter("parameter:", param)
-            log_parameter("value:", value)
-            if hasattr(param, "get_nibbled_size"):
-                size = param.get_nibbled_size()
-            else:
-                size = 1
-            address = apply_address_offset(
-                self.synth_data.address, param
-            )
-            logging.info("full address: \t%s", address)
-            sysex_message = RolandSysEx(
-                msb=address.msb,
-                umb=address.umb,
-                lmb=address.lmb,
-                lsb=address.lsb,
-                value=value,
-                size=size,
-            )
-            result = self.midi_helper.send_midi_message(sysex_message)
-            return bool(result)
-        except Exception as ex:
-            logging.error(f"MIDI error setting {param.name}: {ex}")
-            return False
-
-    def get_partial_address(self) -> int:
-        """Get parameter area and address adjusted for partial number."""
-        address_lmb = self.partial_address_map.get(
-            self.partial_number, self.partial_address_default
-        )  # Default to 0x20 if partial_name is not 1, 2, or 3
-        logging.info(f"address_lmb found: {address_lmb}")
-        return address_lmb

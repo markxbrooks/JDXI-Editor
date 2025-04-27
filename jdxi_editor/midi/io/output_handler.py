@@ -24,7 +24,7 @@ from typing import List, Optional, Union
 
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
-from jdxi_editor.midi.data.address.helpers import apply_address_offset, construct_address
+from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.globals import LOG_PADDING_WIDTH
 from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (

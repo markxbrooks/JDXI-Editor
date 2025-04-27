@@ -36,13 +36,11 @@ class DigitalOscillatorSection(QWidget):
         partial_number,
         midi_helper,
         controls,
-        part,
     ):
         super().__init__()
         self.partial_number = partial_number
         self.midi_helper = midi_helper
         self.controls = controls
-        self.address_umb = part
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box

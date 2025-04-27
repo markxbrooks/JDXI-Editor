@@ -123,14 +123,10 @@ class DigitalSynthEditor(SynthEditor):
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=0)
         elif synth_number == 2:
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=0)
+        self.sysex_address = self.synth_data.address  # Shortcut for convenience
         logging.info(self.synth_data)
         data = self.synth_data
-
-        self.address_msb = data.address_msb
-        self.address_umb = data.address_umb
-        self.address_lmb = data.address_lmb
-        self.setWindowTitle(data.window_title)
-
+        self.sysex_address = self.synth_data.address
         self.preset_type = data.preset_type
         self.instrument_default_image = data.instrument_default_image
         self.instrument_icon_folder = data.instrument_icon_folder
@@ -408,10 +404,7 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        logging.info(
-            f"self.address_msb: {to_hex(self.address_msb)} self.address_umb {to_hex(self.address_umb)}"
-        )
-        current_synth = get_area([self.address_msb, self.address_umb])
+        current_synth = get_area([self.sysex_address.msb, self.sysex_address.umb])
         logging.info(f"current_synth: {current_synth}")
         temp_area = sysex_data.get("TEMPORARY_AREA")
         logging.info(f"temp_area: {temp_area}")
