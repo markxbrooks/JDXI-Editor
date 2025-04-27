@@ -84,8 +84,8 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=partial_number)
         elif synth_number == 2:
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=partial_number)
-        self.sysex_address = self.synth_data.address  # Shortcut for convenience
-        logging.info(f"Initializing partial: {self.synth_data.address}")
+        self.sysex_address = self.synth_data.sysex_address  # Shortcut for convenience
+        logging.info(f"Initializing partial: {self.synth_data.sysex_address}")
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
             logging.info(f"Partial name: {self.part_name}")
@@ -130,7 +130,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.synth_data.address,
+            self.synth_data.sysex_address,
         )
         self.tab_widget.addTab(
             self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
@@ -140,7 +140,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.synth_data.address,
+            self.synth_data.sysex_address,
         )
         self.tab_widget.addTab(
             self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amplitude"

@@ -194,19 +194,21 @@ class ADSR(QWidget):
         for param, slider in self.controls.items():
             if param == self.parameters[ADSRParameter.SUSTAIN_LEVEL]:
                 self.envelope["sustain_level"] = slider.value() / 127
-                # logging.info(f"param: {param} slider value: {slider.value()}")
-                # logging.info(f'sustain_level: {self.envelope["sustain_level"]:.2f}')
-                logging.info(f"{'param:':<{LOG_PADDING_WIDTH}} {param}")
-                logging.info(f"{'slider value:':<{LOG_PADDING_WIDTH}} {slider.value()}")
             else:
                 if match := ENVELOPE_PATTERN.search(param.name):
                     key = f"{match.group().lower()}_time"
                     self.envelope[key] = midi_cc_to_ms(slider.value())
-                    # logging.info(f"param: {param} slider value: {slider.value()}")
-                    # logging.info(f"{key}: {self.envelope[key]:.2f}")
-                    logging.info(f"{'param:':<{LOG_PADDING_WIDTH}} {param}")
-                    logging.info(f"{'slider value:':<{LOG_PADDING_WIDTH}} {slider.value()}")
-                    logging.info(f"{key + ':':<{LOG_PADDING_WIDTH}} {self.envelope[key]:.2f}")
+
+                    area = f"{int(self.address.umb):02X}"
+                    part = f"{int(self.address.lmb):02X}"
+
+                    message = (
+                        f"Updating area {area:<2} "
+                        f"part {part:<2} "
+                        f"{param.name:<30} "
+                        f"MIDI {param.value[0]:<4} -> Slider {slider.value()}"
+                    )
+                    logging.info(message)
 
     def update_controls_from_envelope(self):
         """Update slider controls from envelope values."""
@@ -216,7 +218,7 @@ class ADSR(QWidget):
             else:
                 if match := ENVELOPE_PATTERN.search(param.name):
                     key = f"{match.group().lower()}_time"
-                    slider.setValue(ms_to_midi_cc(self.envelope[key]))
+                    slider.setValue(int(ms_to_midi_cc(self.envelope[key])))
 
     def _on_parameter_changed(self, param: AddressParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""

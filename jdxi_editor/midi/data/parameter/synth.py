@@ -55,7 +55,7 @@ class AddressParameter(Enum):
 
     @classmethod
     def get_parameter_by_address(cls: Type[T], address: int) -> Optional[T]:
-        return next((parameter for parameter in cls if parameter.address == address), None)
+        return next((parameter for parameter in cls if parameter.sysex_address == address), None)
 
     @property
     def is_switch(self) -> bool:

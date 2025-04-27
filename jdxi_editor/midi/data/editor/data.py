@@ -67,10 +67,10 @@ class SynthData(MidiSynthConfig, InstrumentDisplayConfig):
     address_msb: int
     address_umb: int
     address_lmb: int
-    address: RolandSysExAddress = field(init=False)
+    sysex_address: RolandSysExAddress = field(init=False)
 
     def __post_init__(self):
-        self.address = RolandSysExAddress(
+        self.sysex_address = RolandSysExAddress(
             msb=self.address_msb,
             umb=self.address_umb,
             lmb=self.address_lmb,

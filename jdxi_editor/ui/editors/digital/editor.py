@@ -44,8 +44,6 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
-
-from jdxi_editor.midi.data.editor.data import DigitalSynthData, create_synth_data
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.midi.preset.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
@@ -99,52 +97,211 @@ class DigitalSynthEditor(SynthEditor):
             else parent.digital_2_preset_helper
         )
         self.main_window = parent
-        self.synth_number = synth_number
         self.controls: Dict[
             Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon], QWidget
         ] = {}
-        self._init_synth_data(synth_number)
-        self.setup_ui(synth_number)
-        self.update_instrument_image()
-        self._initialize_partial_states()
-
-        if self.midi_helper:
-            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-
-        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
-        self.refresh_shortcut.activated.connect(self.data_request)
-        self.data_request()
-        self.show()
-
-    def _init_synth_data(self, synth_number):
-        """Initialize synth-specific data."""
         synth_map = {
             1: JDXISynth.DIGITAL_1,
             2: JDXISynth.DIGITAL_2
         }
         if synth_number not in synth_map:
             raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
-    
-        self.synth_data = create_synth_data(synth_map[synth_number], partial_number=0)
-        self.sysex_address = self.synth_data.address
-    
-        # Dynamically assign attributes
-        for attr in [
-            "address",
-            "preset_type",
-            "instrument_default_image",
-            "instrument_icon_folder",
-            "presets",
-            "preset_list",
-            "midi_requests",
-            "midi_channel",
-        ]:
-            setattr(self, attr, getattr(self.synth_data, attr))
-    
-        logging.info(self.synth_data)
+        self.synth_number = synth_number
+        self._init_synth_data(synth_map[synth_number])
+        self.setup_ui()
+        self.update_instrument_image()
+        self._initialize_partial_states()
+        # Connect signals
+        if self.midi_helper:
+            self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
+        self.refresh_shortcut.activated.connect(self.data_request)
+        # Request data from the synth for initialization of state and show the editor
+        self.data_request()
+        self.show()
 
-    def setup_ui(self, synth_num):
+    def setup_ui(self):
+        self.setMinimumSize(800, 300)
+        self.resize(930, 600)
+        self.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
+
+        # Main layout
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
+
+        # Splitter
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        main_layout.addWidget(splitter)
+
+        # === Top half ===
+        top_widget = QWidget()
+        top_layout = QVBoxLayout()
+        top_widget.setLayout(top_layout)
+
+        # Partials panel only!
+        self.partials_panel = PartialsPanel()
+        self.partials_panel.setStyleSheet(JDXIStyle.TABS)
+
+        for switch in self.partials_panel.switches.values():
+            switch.stateChanged.connect(self._on_partial_state_changed)
+
+        # === Bottom half (scroll area) ===
+        # inside setup_ui()
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+
+        # 1. Add the instrument image group
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
+        self.instrument_image_label = QLabel()
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.instrument_image_group.setMinimumWidth(450)
+
+        # 2. Add instrument image first (optional: you can move if needed later)
+        container_layout.addWidget(self.instrument_image_group)
+
+        # 3. Create upper_layout
+        upper_layout = QHBoxLayout()
+        top_layout.addLayout(upper_layout)
+        top_layout.addWidget(self.partials_panel)
+
+        # 4. Setup instrument preset group and put it into upper_layout
+        self._create_instrument_group(container_layout, upper_layout)
+
+        # 5. Create partial tabs below
+        self._create_partial_tab_widget(container_layout, self.midi_helper)
+
+        scroll.setWidget(container)
+
+        splitter.addWidget(top_widget)
+        splitter.addWidget(scroll)
+
+        splitter.setSizes([100, 600])  # give more room to bottom
+
+        # Splitter handle style
+        splitter.setStyleSheet("""
+            QSplitter::handle {
+                background-color: #444;
+                border: 1px solid #666;
+            }
+            QSplitter::handle:vertical {
+                height: 6px;
+            }
+            QSplitter::handle:horizontal {
+                width: 6px;
+            }
+        """)
+
+        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
+
+        self.show()
+
+    def setup_ui_test(self):
+        """
+        :return: None
+        Main Window
+         └── Vertical Layout
+              └── QSplitter
+                   ├── Top Widget (VBox)
+                   │     ├── Instrument Image
+                   │     └── Partials Panel
+                   └── Scroll Area
+                         └── Container (VBox)
+                               ├── Upper Layout (HBox)
+                               ├── Instrument Group
+                               └── Partial Tabs
+        """
+        self.setMinimumSize(800, 300)
+        self.resize(930, 600)
+        self.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
+
+        # === Main layout ===
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
+
+        # === Create splitter ===
+        splitter = QSplitter(Qt.Orientation.Vertical)
+        main_layout.addWidget(splitter)
+
+        # === Top half ===
+        top_widget = QWidget()
+        top_layout = QVBoxLayout()
+        top_widget.setLayout(top_layout)
+
+        # Instrument image
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
+        self.instrument_image_label = QLabel()
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.instrument_image_group.setMinimumWidth(450)
+
+        top_layout.addWidget(self.instrument_image_group)
+
+        # Partials panel (optional)
+        self.partials_panel = PartialsPanel()
+        self.partials_panel.setStyleSheet(JDXIStyle.TABS)
+        top_layout.addWidget(self.partials_panel)
+
+        # Connect partial switches
+        for switch in self.partials_panel.switches.values():
+            switch.stateChanged.connect(self._on_partial_state_changed)
+
+        # === Bottom half (scroll area) ===
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        container = QWidget()
+        container_layout = QVBoxLayout()
+        container.setLayout(container_layout)
+
+        # Upper layout inside the scroll area
+        upper_layout = QHBoxLayout()
+        container_layout.addLayout(upper_layout)
+
+        # Create instrument group inside container
+        self._create_instrument_group(container_layout, upper_layout)
+        self._create_partial_tab_widget(container_layout, self.midi_helper)
+
+        scroll.setWidget(container)
+
+        # === Add widgets to splitter ===
+        splitter.addWidget(top_widget)
+        splitter.addWidget(scroll)
+
+        # === Set initial splitter sizes ===
+        splitter.setSizes([300, 300])
+        splitter.setStyleSheet("""
+            QSplitter::handle {
+                background-color: #444;
+                border: 1px solid #666;
+            }
+            QSplitter::handle:vertical {
+                height: 6px;
+            }
+            QSplitter::handle:horizontal {
+                width: 6px;
+            }
+        """)
+
+        # Connect other stuff
+        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
+
+        self.show()
+
+    def setup_ui_old(self):
         self.setMinimumSize(800, 300)
         self.resize(930, 600)
         # Image display
@@ -176,7 +333,7 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.addLayout(upper_layout)
 
         scroll.setWidget(container)
-        main_layout.addWidget(scroll)
+        # main_layout.addWidget(scroll)
 
         # Title and instrument selection
         instrument_preset_group = QGroupBox("Digital Synth")
@@ -186,8 +343,8 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_selection_label = QLabel("Select address digital synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         # Synth selection
-        upper_layout = QHBoxLayout()
-        container_layout.addLayout(upper_layout)
+        # upper_layout = QHBoxLayout()
+        # container_layout.addLayout(upper_layout)
 
         # Title and instrument selection selection
         self._create_instrument_group(container_layout, upper_layout)
@@ -195,6 +352,23 @@ class DigitalSynthEditor(SynthEditor):
         # Create splitter
         splitter = QSplitter(Qt.Orientation.Vertical)
         main_layout.addWidget(splitter)
+        splitter.addWidget(self.instrument_image_group)
+        splitter.addWidget(scroll)
+
+        # Optionally set initial sizes
+        splitter.setSizes([300, 300])
+        splitter.setStyleSheet("""
+            QSplitter::handle {
+                background-color: #444;
+                border: 1px solid #666;
+            }
+            QSplitter::handle:vertical {
+                height: 6px;
+            }
+            QSplitter::handle:horizontal {
+                width: 6px;
+            }
+        """)
 
         # === Top half: upper_layout container ===
         upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
@@ -220,8 +394,65 @@ class DigitalSynthEditor(SynthEditor):
         self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
         self.show()
 
-    def _create_instrument_group(self, container_layout, upper_layout):
-        """create instrument group to show the synth"""
+    def _create_instrument_group_new(self, upper_layout: QHBoxLayout) -> None:
+        """
+        Create the instrument group for the digital synth editor.
+        :param upper_layout: Upper layout for the instrument group
+        :return: None
+        """
+        instrument_preset_group = QGroupBox("Digital Synth")
+        instrument_title_group_layout = QVBoxLayout()
+        instrument_preset_group.setLayout(instrument_title_group_layout)
+
+        # Current preset title
+        self.instrument_title_label = DigitalTitle()
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+
+        # "Send Read Request" button
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+
+        # Preset selector label
+        self.instrument_selection_label = QLabel("Select preset for Digital synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+
+        # Synth preset selection combo box
+        self.instrument_selection_combo = PresetComboBox(self.synth_data.preset_list)
+        self.instrument_selection_combo.combo_box.setEditable(True)
+        self.instrument_selection_combo.combo_box.setCurrentIndex(
+            self.preset_helper.current_preset_zero_indexed
+        )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.preset_helper.preset_changed.connect(self.update_combo_box_index)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
+        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+
+        # --- Add widgets to upper_layout ---
+        upper_layout.addWidget(instrument_preset_group)
+        upper_layout.addStretch(1)
+        upper_layout.addWidget(self.instrument_image_group)
+
+        # (DO NOT add upper_layout to container_layout here!!!)
+        self.update_instrument_image()
+
+    def _create_instrument_group(self,
+                                 container_layout: QVBoxLayout,
+                                 upper_layout:  QHBoxLayout) -> None:
+        """
+        Create the instrument group for the digital synth editor.
+        :param container_layout: Layout for the main container
+        :param upper_layout: Upper layout for the instrument group
+        :return: None
+        """
         instrument_preset_group = QGroupBox("Digital Synth")
         self.instrument_title_label = QLabel(self.presets[0] if self.presets else "")
         self.instrument_title_label = DigitalTitle()
@@ -259,7 +490,9 @@ class DigitalSynthEditor(SynthEditor):
         container_layout.addLayout(upper_layout)
         self.update_instrument_image()
 
-    def _create_partial_tab_widget(self, container_layout, midi_helper):
+    def _create_partial_tab_widget(self,
+                                   container_layout: QVBoxLayout,
+                                   midi_helper: MidiIOHelper):
         # Create tab widget for partials
         self.partial_tab_widget = QTabWidget()
         self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
@@ -284,10 +517,17 @@ class DigitalSynthEditor(SynthEditor):
         self.partial_tab_widget.addTab(self.tone_modify_section, "Tone Modify")
         container_layout.addWidget(self.partial_tab_widget)
 
-    def _on_partial_state_changed(
-        self, partial: DigitalPartial, enabled: bool, selected: bool
-    ):
-        """Handle partial state changes"""
+    def _on_partial_state_changed(self,
+                                  partial: DigitalPartial,
+                                  enabled: bool,
+                                  selected: bool) -> None:
+        """
+        Handle the state change of a partial (enabled/disabled and selected/unselected).
+        :param partial: The partial to modify
+        :param enabled: Whether the partial is enabled (ON/OFF)
+        :param selected: Whether the partial is selected
+        :return: None
+        """
         self.set_partial_state(partial, enabled, selected)
 
         # Enable/disable corresponding tab
@@ -298,18 +538,16 @@ class DigitalSynthEditor(SynthEditor):
         if selected:
             self.partial_tab_widget.setCurrentIndex(partial_num - 1)
 
-    def set_partial_state(
-        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
-    ) -> bool:
-        """Set the state of address partial
-
-        Args:
-            partial: The partial to modify
-            enabled: Whether the partial is enabled (ON/OFF)
-            selected: Whether the partial is selected
-
-        Returns:
-            True if successful
+    def set_partial_state(self,
+                          partial: DigitalPartial,
+                          enabled: bool = True,
+                          selected: bool = True) -> Optional[bool]:
+        """
+        Set the state of a partial (enabled/disabled and selected/unselected).
+        :param partial: The partial to modify
+        :param enabled: Whether the partial is enabled (ON/OFF)
+        :param selected: Whether the partial is selected
+        :return: True if successful, False otherwise
         """
         try:
             logging.info(
@@ -324,6 +562,7 @@ class DigitalSynthEditor(SynthEditor):
             self.send_midi_parameter(
                 param=partial.select_param, value=1 if selected else 0
             )
+            return True
         except Exception as ex:
             logging.error(f"Error setting partial {partial.name} state: {str(ex)}")
             return False
@@ -429,8 +668,9 @@ class DigitalSynthEditor(SynthEditor):
         temp_area = sysex_data.get("TEMPORARY_AREA")
         logging.info(f"temp_area: {temp_area}")
         if not current_synth == temp_area:
+            logging.info(f"temp_area: {temp_area} is not current_synth: {current_synth}, Skipping update")
             return
-
+        logging.info(f"temp_area: {temp_area} is current_synth: {current_synth}, updating...")
         partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
         if partial_no is None:
             return
@@ -515,7 +755,17 @@ class DigitalSynthEditor(SynthEditor):
             return
 
         slider_value = param.convert_from_midi(value)
-        logging.info(f"Updating part {partial_no} {param.name}: MIDI {value} -> Slider {slider_value}")
+        area = f"{int(self.sysex_address.umb):02X}"
+        part = f"{int(self.sysex_address.lmb):02X}"
+
+        message = (
+            f"Updating area {area:<2} "
+            f"part {part:<2} "
+            f"{param.name:<30} "
+            f"MIDI {value:<4} -> Slider {slider_value}"
+        )
+
+        logging.info(message)
         slider.blockSignals(True)
         slider.setValue(slider_value)
         slider.blockSignals(False)
