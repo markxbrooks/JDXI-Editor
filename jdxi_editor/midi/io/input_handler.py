@@ -28,14 +28,13 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import extract_command_info, handle_identity_request
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.utils.json import log_to_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
-from jdxi_editor.midi.preset.data import ButtonPreset
+from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 
 
 class MidiInHandler(MidiIOController):
@@ -138,7 +137,7 @@ class MidiInHandler(MidiIOController):
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
         try:
-            preset_data = ButtonPreset()
+            preset_data = JDXIPresetButton()
             message_handlers = {
                 "sysex": self._handle_sysex_message,
                 "control_change": self._handle_control_change,

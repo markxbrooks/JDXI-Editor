@@ -39,7 +39,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
@@ -60,7 +60,7 @@ class EffectsCommonEditor(SimpleEditor):
 
     def __init__(self,
                  midi_helper: MidiIOHelper,
-                 preset_helper: PresetHelper = None,
+                 preset_helper: JDXIPresetHelper = None,
                  parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.efx2_additional_params = [
@@ -72,7 +72,6 @@ class EffectsCommonEditor(SimpleEditor):
         self.default_image = "effects.png"
         self.instrument_icon_folder = "effects"
         self.setWindowTitle("Effects")
-        self.setFixedWidth(450)
         # Main layout
         main_layout = QVBoxLayout()
         upper_layout = QHBoxLayout()

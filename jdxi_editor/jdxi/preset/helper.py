@@ -39,13 +39,13 @@ from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.preset.type import JDXISynth
-from jdxi_editor.midi.preset.utils import get_preset_values
+from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.preset.utils import get_preset_values
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import log_midi_info
 
 
-class PresetHelper(QObject):
+class JDXIPresetHelper(QObject):
     """Preset Loading Class"""
 
     # This can't be a singleton since there is 1 for each synth

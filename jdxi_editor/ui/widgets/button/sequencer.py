@@ -6,8 +6,8 @@ from PySide6.QtCore import QSettings
 from PySide6.QtGui import QPainter, QPen, QColor
 
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.helper import PresetHelper
-from jdxi_editor.midi.preset.data import ButtonPreset
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 
 
 class SequencerSquare(QPushButton):
@@ -64,7 +64,7 @@ class SequencerSquare(QPushButton):
         self, synth_type: str, preset_num: int, preset_name: str, channel: int
     ):
         """Save current preset to this favorite slot"""
-        self.preset = ButtonPreset(number=preset_num, name=preset_name, type=synth_type)
+        self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
         # self._save_to_settings()
         logging.debug(f"Saved preset to favorite {self.slot_number}: {preset_name}")
 
@@ -78,7 +78,7 @@ class SequencerSquare(QPushButton):
         try:
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_loader = PresetHelper(self.midi_helper)
+                self.preset_loader = JDXIPresetHelper(self.midi_helper)
                 self.preset_loader.load_preset(
                     preset_data,
                 )

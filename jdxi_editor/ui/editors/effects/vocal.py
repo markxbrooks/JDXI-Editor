@@ -39,7 +39,7 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
@@ -65,14 +65,12 @@ class VocalFXEditor(SimpleEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: PresetHelper = None,
+        preset_helper: JDXIPresetHelper = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Vocal FX")
         self.preset_helper = preset_helper
-        self.setMinimumHeight(750)
-        self.setMinimumWidth(650)
         self.sysex_address = RolandSysExAddress(VocalAddress.FX_AREA,
                                           VocalAddress.FX_PART,
                                           VocalAddress.FX_GROUP,

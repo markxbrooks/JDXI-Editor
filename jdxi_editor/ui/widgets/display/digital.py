@@ -39,7 +39,7 @@ from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
     get_preset_list_number_by_name,

@@ -37,11 +37,9 @@ Dependencies:
 
 """
 
-import os
 import logging
 from typing import Optional
 
-from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QComboBox,
@@ -59,7 +57,7 @@ from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.helper import PresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
@@ -80,7 +78,7 @@ class PresetEditor(SimpleEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_helper: PresetHelper = None,
+        preset_helper: JDXIPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.digital_preset_type_combo = None

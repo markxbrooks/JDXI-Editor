@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.ui.style import JDXIStyle
 
 
@@ -120,7 +121,7 @@ class PresetComboBox(QWidget):
         """Populate the program list with available presets."""
 
         selected_category = self.category_combo_box.currentText()
-        logging.info(f"Selected Category: {selected_category}")
+        log_parameter("Selected Category:", selected_category)
 
         self.combo_box.clear()
         self.presets.clear()

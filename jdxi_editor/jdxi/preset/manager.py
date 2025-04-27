@@ -1,16 +1,16 @@
 import logging
 
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.presets.jdxi import JDXIPresets
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.preset.lists import JDXIPresets
+from jdxi_editor.jdxi.synth.type import JDXISynth
 
 
-class PresetManager:
+class JDXIPresetManager:
     _instance = None
     """Singleton class to manage presets."""
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super(PresetManager, cls).__new__(cls)
+            cls._instance = super(JDXIPresetManager, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):

@@ -93,14 +93,14 @@ class MidiOutHandler(MidiIOController):
         :return: True if the message was successfully sent, False otherwise.
         :rtype: bool
         """
-        log_parameter("Attempting to send message: ", message, level=logging.INFO)
+        # log_parameter("Attempting to send message: ", message, level=logging.INFO)
 
         if not validate_midi_message(message):
             logging.info("MIDI message validation failed.")
             return False
 
         formatted_message = format_midi_message_to_hex_string(message)
-        log_parameter("Sending MIDI message: ", formatted_message, level=logging.INFO)
+        # log_parameter("Sending MIDI message: ", formatted_message, level=logging.INFO)
 
         if not self.midi_out.is_port_open():
             logging.info("MIDI output port is not open.")
@@ -454,16 +454,15 @@ class MidiOutHandler(MidiIOController):
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
-        logging.info(f"sending identity request message: {request}")
+        log_parameter("sending identity request message:", request)
 
     def send_message(self, message: MidiMessage):
         """unpack the message list and send it"""
         try:
             raw_message = message.to_message_list()
             self.send_raw_message(raw_message)
-            logging.debug(
-                f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in raw_message])}"
-            )
+            log_parameter("Sent MIDI message:", raw_message)
+
         except Exception as ex:
             logging.error(f"Error sending identity request: {str(ex)}")
 

@@ -80,10 +80,11 @@ def setup_logging():
         logging.root.addHandler(file_handler)
         logging.root.addHandler(console_handler)
 
-        logging.info("Logging setup complete")
-        logging.info("JDXi Editor starting up...")
-        logging.debug(f"Log file: {log_file}")
-        return log_file
+        logger = logging.getLogger("jdxi_editor")
+        logger.info("Logging setup complete")
+        logger.info("JDXi Editor starting up...")
+        logger.debug(f"Log file: {log_file}")
+        return logger
 
     except Exception as ex:
         print(f"Error setting up logging: {str(ex)}")
@@ -93,7 +94,7 @@ def setup_logging():
 def main():
     try:
         # Set up logging first
-        log_file = setup_logging()
+        logger = setup_logging()
 
         # Create application
         app = QApplication(sys.argv)
@@ -112,7 +113,7 @@ def main():
         """
         )
 
-        logging.debug("Application initialized")
+        logger.debug("Application initialized")
 
         # Set application icon
         icon_locations = [

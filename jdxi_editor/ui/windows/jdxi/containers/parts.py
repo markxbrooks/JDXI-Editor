@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QButtonGroup
 
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row

@@ -25,6 +25,7 @@ import time
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
@@ -90,14 +91,10 @@ class SynthBase(QWidget):
             address = apply_address_offset(
                 self.sysex_address, param
             )
-            logging.info(
-                "ParamUpdate | PartialNumber=%s | BaseAddress=%s | Parameter=%s | Value=%s | FullAddress=%s",
-                self.partial_number,
-                self.sysex_address,
-                param,
-                value,
-                address,
-            )
+            log_parameter("sysex_address", self.sysex_address)
+            log_parameter("parameter", param)
+            log_parameter("parameter value", value)
+            log_parameter("final address", address)
             sysex_message = RolandSysEx(
                 msb=address.msb,
                 umb=address.umb,

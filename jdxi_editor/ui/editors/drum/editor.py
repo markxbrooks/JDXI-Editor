@@ -75,13 +75,14 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, ZERO_BYTE
-from jdxi_editor.midi.data.editor.data import DrumSynthData, create_synth_data
+from jdxi_editor.jdxi.synth.drum import DrumSynthData
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.preset.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
 from jdxi_editor.ui.style import JDXIStyle

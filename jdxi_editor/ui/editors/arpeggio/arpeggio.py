@@ -81,7 +81,6 @@ class ArpeggioEditor(SimpleEditor):
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
-        self.setFixedWidth(450)
         self.sysex_address = RolandSysExAddress(
             msb=ArpeggioAddress.TEMPORARY_PROGRAM,
             umb=ArpeggioAddress.ARP_PART,
