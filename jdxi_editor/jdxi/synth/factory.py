@@ -62,7 +62,7 @@ synth_data_map = {
     },
 }
 
-def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
+def create_synth_data_new(synth_type: JDXISynth, partial_number=0) -> SynthData:
     """Factory to create the right SynthData based on kind."""
     config = synth_data_map.get(synth_type)
     if config is None:
@@ -85,7 +85,7 @@ def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
         **config
     )
 
-def create_synth_data_old(synth_type: JDXISynth, partial_number=0) -> SynthData:
+def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
     """Factory to create the right SynthData based on kind."""
     if synth_type == JDXISynth.DRUM:
         address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)
