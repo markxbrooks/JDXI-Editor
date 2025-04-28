@@ -28,6 +28,7 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import extract_command_info, handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
@@ -188,13 +189,16 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         area = parsed_data.get("TEMPORARY_AREA")
-        logging.info(
-            f"ADDRESS: {address} TEMPORARY_AREA: {area} TONE_NAME: {tone_name}"
-        )
+        logging.info("======================================================================================================")
+        log_parameter("ADDRESS", address)
+        log_parameter("TEMPORARY_AREA", area)
+        log_parameter("TONE_NAME", tone_name)
+        log_parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"))
 
         if address in valid_addresses and tone_name:
             self._emit_program_name_signal(area, tone_name)
             self._emit_tone_name_signal(area, tone_name)
+        logging.info("======================================================================================================")
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
@@ -229,7 +233,6 @@ class MidiInHandler(MidiIOController):
         :param message: The MIDI SysEx message.
         :param preset_data: Dictionary for preset data modifications.
         """
-        logging.debug(f"handling incoming midi message: {message}")
         try:
             if (
                 message.type == "sysex"
@@ -239,7 +242,7 @@ class MidiInHandler(MidiIOController):
                 handle_identity_request(message)
             # Convert raw SysEx data to address hex string
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            logging.debug("SysEx message received (%d bytes)", len(message.data))
+            log_parameter(f"SysEx message of length {len(message.data)} received:", hex_string)
 
             # Reconstruct SysEx message bytes
             sysex_message_bytes = bytes(
@@ -250,7 +253,7 @@ class MidiInHandler(MidiIOController):
             if len(message.data) > 20:
                 try:
                     parsed_data_dict = parse_sysex(sysex_message_bytes)
-                    logging.info(f"Parsed data: {parsed_data_dict}")
+                    log_parameter("Parsed data", parsed_data_dict)
                     self._emit_program_or_tone_name(parsed_data_dict)
                     json_log_folder = Path.home() / ".jdxi_editor" / "logs"
                     json_log_folder.mkdir(parents=True, exist_ok=True)
@@ -261,11 +264,11 @@ class MidiInHandler(MidiIOController):
                     self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
                     log_to_json(parsed_data_dict)
                 except Exception as parse_ex:
-                    logging.info("Failed to parse JD-Xi tone data: %s", parse_ex)
+                    logging.error("Failed to parse JD-Xi tone data: %s", parse_ex)
             extract_command_info(message)
 
         except Exception as ex:
-            logging.info(f"Unexpected error {ex} while handling SysEx message")
+            logging.error(f"Unexpected error {ex} while handling SysEx message")
 
     def _handle_control_change(self, message: Any, preset_data) -> None:  # @@
         """

@@ -45,7 +45,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.message import log_parameter, log_slider_parameters
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
@@ -629,7 +629,7 @@ class DigitalSynthEditor(SynthEditor):
             logging.info(f"Successes: {successes}")
             logging.info(f"Failures: {failures}")
             logging.info(f"Success Rate: {success_rate:.1f}%")
-            logging.info("--------------------------------")
+            logging.info("======================================================================================================")
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
@@ -663,19 +663,19 @@ class DigitalSynthEditor(SynthEditor):
         if not sysex_data:
             return
         current_synth = get_area([self.sysex_address.msb, self.sysex_address.umb])
-        logging.info(f"current_synth: {current_synth}")
+        log_parameter("current_synth", current_synth)
         temp_area = sysex_data.get("TEMPORARY_AREA")
-        logging.info(f"temp_area: {temp_area}")
+        log_parameter("temp_area", temp_area)
         if not current_synth == temp_area:
             logging.info(f"temp_area: {temp_area} is not current_synth: {current_synth}, Skipping update")
             return
         logging.info(f"temp_area: {temp_area} is current_synth: {current_synth}, updating...")
-        partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        if partial_no is None:
+        incoming_data_partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
+        log_parameter("incoming_data_partial_no", incoming_data_partial_no)
+        if incoming_data_partial_no is None:
             return
-
         filtered_data = _filter_sysex_keys(sysex_data)
-        self._apply_partial_ui_updates(partial_no, filtered_data)
+        self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
     def _update_tone_common_modify_ui(
         self, sysex_data: Dict, successes: list, failures: list, debug: bool
@@ -754,17 +754,7 @@ class DigitalSynthEditor(SynthEditor):
             return
 
         slider_value = param.convert_from_midi(value)
-        area = f"{int(self.sysex_address.umb):02X}"
-        part = f"{int(self.sysex_address.lmb):02X}"
-
-        message = (
-            f"Updating area {area:<2} "
-            f"part {part:<2} "
-            f"{param.name:<30} "
-            f"MIDI {value:<4} -> Slider {slider_value}"
-        )
-
-        logging.info(message)
+        log_slider_parameters(self.sysex_address.umb, self.sysex_address.lmb, param, value, slider_value)
         slider.blockSignals(True)
         slider.setValue(slider_value)
         slider.blockSignals(False)
@@ -885,14 +875,16 @@ class DigitalSynthEditor(SynthEditor):
         else:
             failures.append(param.name)
 
-    def _update_waveform_buttons(self, partial_number, value):
-        """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
-        logging.debug(
-            f"Updating waveform buttons for partial {partial_number} with value {value}"
-        )
-
+    def _update_waveform_buttons(self, partial_number: int, value: int):
+        """
+         Update the waveform buttons based on the OSC_WAVE value with visual feedback
+        :param partial_number: int
+        :param value: int
+        :return:
+        """
+        log_parameter(
+            f"Updating waveform buttons for partial {partial_number}", value)
         if partial_number is None:
-            logging.warning("Cannot update waveform buttons: partial_number is None")
             return
 
         waveform_map = {
@@ -912,7 +904,7 @@ class DigitalSynthEditor(SynthEditor):
             logging.warning(f"Unknown waveform value: {value}")
             return
 
-        logging.debug(f"Waveform value {value} found, selecting {selected_waveform}")
+        log_parameter(f"Waveform value {value} found, selecting", selected_waveform)
 
         # Retrieve waveform buttons for the given partial
         if partial_number not in self.partial_editors:

@@ -107,7 +107,7 @@ class MidiOutHandler(MidiIOController):
             return False
 
         try:
-            log_parameter("QC passed, sending message: ", formatted_message, level=logging.INFO)
+            log_parameter("QC passed, sending message ", formatted_message, level=logging.INFO)
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)
             return True

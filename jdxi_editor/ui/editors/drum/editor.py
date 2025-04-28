@@ -462,7 +462,7 @@ class DrumCommonEditor(SynthEditor):
                 logging.info(f"successes: \t{successes}")
                 logging.info(f"failures: \t{failures}")
                 logging.info(f"success rate: \t{success_rate:.1f}%")
-                logging.info("--------------------------------")
+                logging.info("======================================================================================================")
 
         _log_debug_info()
 
@@ -537,9 +537,10 @@ class DrumCommonEditor(SynthEditor):
                 success_rate = (
                     (len(successes) / len(sysex_data) * 100) if sysex_data else 0
                 )
-                logging.info(f"Successes: {successes}")
-                logging.info(f"Failures: {failures}")
-                logging.info(f"Success Rate: {success_rate:.1f}%")
-                logging.info("--------------------------------")
+                logging.info("======================================================================================================")
+                logging.info(f"Successes: \t{successes}")
+                logging.info(f"Failures: \t{failures}")
+                logging.info(f"Success Rate: \t{success_rate:.1f}%")
+                logging.info("======================================================================================================")
 
         _log_debug_info()

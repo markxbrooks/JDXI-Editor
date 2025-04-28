@@ -4,6 +4,7 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressMemoryAreaMSB,
@@ -17,7 +18,7 @@ def _log_debug_info(data, successes, failures, enabled):
     logging.info(f"successes: \t{successes}")
     logging.info(f"failures: \t{failures}")
     logging.info(f"success rate: \t{success_rate:.1f}%")
-    logging.info("--------------------------------")
+    logging.info("======================================================================================================")
 
 
 def _filter_sysex_keys(sysex_data: dict) -> dict:
@@ -42,7 +43,7 @@ def _get_synth_number(synth_tone: str) -> int:
     if synth_no is None:
         logging.warning(f"Unknown synth tone: {synth_tone}")
     else:
-        logging.info(f"Synth number: {synth_no}")
+        log_parameter("Synth number:", synth_no)
     return synth_no
 
 
@@ -60,15 +61,15 @@ def _get_partial_number(synth_tone: str) -> int:
     if partial_no is None:
         logging.warning(f"Unknown synth tone: {synth_tone}")
     else:
-        logging.info(f"Partial number: {partial_no}")
+        log_parameter("Partial number", partial_no)
     return partial_no
 
 
 def _is_valid_sysex_area(sysex_data):
     """Check if the SysEx data is from a valid digital synth area."""
-    area = sysex_data.get("TEMPORARY_AREA")
-    logging.info(f"temp_area: {area}")
-    return area in [
+    temporary_area = sysex_data.get("TEMPORARY_AREA")
+    log_parameter("temporary_area", temporary_area)
+    return temporary_area in [
         "TEMPORARY_DIGITAL_SYNTH_1_AREA",
         "TEMPORARY_DIGITAL_SYNTH_2_AREA",
     ]
