@@ -14,7 +14,7 @@ through an animated envelope curve.
 
 import re
 import logging
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
@@ -31,6 +31,7 @@ from jdxi_editor.midi.utils.conversions import (
     midi_cc_to_ms,
     ms_to_midi_cc,
 )
+from jdxi_editor.ui.widgets.adsr.graph import ADSRGraph
 from jdxi_editor.ui.widgets.adsr.parameter import ADSRParameter
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.slider.slider import Slider
@@ -50,8 +51,8 @@ class ADSR(QWidget):
         decay_param: AddressParameter,
         sustain_param: AddressParameter,
         release_param: AddressParameter,
-        initial_param: AddressParameter = None,
-        peak_param: AddressParameter = None,
+        initial_param: Optional[AddressParameter] = None,
+        peak_param: Optional[AddressParameter] = None,
         midi_helper=None,
         address=None,
         parent=None,
@@ -117,6 +118,11 @@ class ADSR(QWidget):
         self.release_slider = self._create_parameter_slider(
             release_param, "Release", value=self.envelope["release_time"]
         )
+        if peak_param:
+            self.peak_slider = self._create_parameter_slider(
+                peak_param, "Peak", value=self.envelope["peak_level"]
+            )
+            self.layout.addWidget(self.peak_slider, 0, 4)
 
         # Add sliders to layout
         self.layout.addWidget(self.attack_slider, 0, 0)
@@ -141,6 +147,8 @@ class ADSR(QWidget):
         self.setLayout(self.layout)
         self.plot.set_values(self.envelope)
         self.update_from_envelope()
+        self.adsr_graph = ADSRGraph()
+        self.adsr_graph.point_moved.connect(self.handle_graph_movement)
 
     def update_from_envelope(self):
         """Initialize controls with parameter values"""
@@ -263,7 +271,7 @@ class ADSR(QWidget):
             spin_box.setValue(self.envelope[envelope_key])
             spin_box.blockSignals(False)
 
-    def send_midi_parameter(self, param, value) -> bool:
+    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
             logging.debug("No MIDI helper available - parameter change ignored")
@@ -326,3 +334,15 @@ class ADSR(QWidget):
         sb.setSingleStep(step)
         sb.setValue(value)
         return sb
+
+    def handle_graph_movement(self, point, value):
+        if point == "attack":
+            self.attack_slider.setValue(int(value * 127))
+        elif point == "decay":
+            self.decay_slider.setValue(int(value * 127))
+        elif point == "release":
+            self.release_slider.setValue(int(value * 127))
+
+        self.update_envelope_from_controls()
+        self.plot.set_values(self.envelope)
+        self.envelopeChanged.emit(self.envelope)

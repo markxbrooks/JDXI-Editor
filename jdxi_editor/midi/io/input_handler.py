@@ -189,7 +189,7 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         area = parsed_data.get("TEMPORARY_AREA")
-        logging.info("======================================================================================================")
+        logging.info("================================================================================================")
         log_parameter("ADDRESS", address)
         log_parameter("TEMPORARY_AREA", area)
         log_parameter("TONE_NAME", tone_name)
@@ -198,7 +198,7 @@ class MidiInHandler(MidiIOController):
         if address in valid_addresses and tone_name:
             self._emit_program_name_signal(area, tone_name)
             self._emit_tone_name_signal(area, tone_name)
-        logging.info("======================================================================================================")
+        logging.info("================================================================================================")
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
