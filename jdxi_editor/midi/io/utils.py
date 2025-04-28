@@ -7,6 +7,7 @@ from typing import Any, List, Optional, Union
 
 import mido
 
+from jdxi_editor.globals import logger
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
 
@@ -55,14 +56,14 @@ def extract_command_info(message: Any) -> None:
         address_offset = "".join(f"{byte:02X}" for byte in message.data[7:11])
         command_name = SysexParameter.get_command_name(command_type)
 
-        logging.debug(
+        logger.debug(
             "Command: %s (0x%02X), Address Offset: %s",
             command_name,
             command_type,
             address_offset,
         )
     except Exception as ex:
-        logging.warning(f"Unable to extract command or parameter address due to {ex}")
+        logger.error(f"Unable to extract command or parameter address due to {ex}")
 
 
 def rtmidi_to_mido(rtmidi_message):
@@ -142,7 +143,7 @@ def handle_identity_request(message):
         device_name = "JD-XI"
     else:
         device_name = "Unknown"
-    if manufacturer_id == RolandID.ROLAND_ID:
+    if manufacturer_id[0] == RolandID.ROLAND_ID:
         manufacturer_name = "Roland"
     else:
         manufacturer_name = "Unknown"
