@@ -3,7 +3,40 @@ import logging
 from typing import Any
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH, logger
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
+
+
+def log_slider_parameters(umb: int,
+                          lmb: int,
+                          param: AddressParameter,
+                          value: int,
+                          slider_value: int,
+                          level: int = logging.INFO):
+    """Log slider parameters for debugging."""
+    area = f"{int(umb):02X}"
+    part = f"{int(lmb):02X}"
+
+    message = (
+        f"Updating area {area:<2} "
+        f"part {part:<2} "
+        f"{param.name:<30} "
+        f"MIDI {value:<4} -> Slider {slider_value}"
+    )
+    # Use correct logging function depending on level
+    if level == logging.DEBUG:
+        logger.debug(message, stacklevel=2)
+    elif level == logging.INFO:
+        logger.info(message, stacklevel=2)
+    elif level == logging.WARNING:
+        logger.warning(message, stacklevel=2)
+    elif level == logging.ERROR:
+        logger.error(message, stacklevel=2)
+    elif level == logging.CRITICAL:
+        logger.critical(message, stacklevel=2)
+    else:
+        # fallback for non-standard levels
+        logger.log(message, stacklevel=2)
 
 
 def log_parameter(
