@@ -42,7 +42,7 @@ def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
             synth_number = 1
         return DigitalSynthData(
             midi_requests=MidiRequests.DIGITAL2 if synth_number == 2 else MidiRequests.DIGITAL1,
-            midi_channel=synth_number,
+            midi_channel=MidiChannel.DIGITAL2 if synth_number == 2 else MidiChannel.DIGITAL1,
             presets=JDXIPresets.DIGITAL_ENUMERATED,
             preset_list=JDXIPresets.DIGITAL_LIST,
             preset_type=synth_type,
