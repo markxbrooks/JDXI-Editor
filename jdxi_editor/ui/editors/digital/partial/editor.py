@@ -46,6 +46,7 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
+from jdxi_editor.globals import logger
 from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
@@ -92,7 +93,7 @@ class DigitalPartialEditor(PartialEditor):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
             log_parameter("Partial name:", self.part_name)
         else:
-            logging.error(
+            logger.error(
                 f"Invalid partial_num: {partial_number}. Using default value."
             )
             self.part_name = "Unknown"  # Provide a fallback value

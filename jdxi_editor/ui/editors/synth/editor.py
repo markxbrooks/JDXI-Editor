@@ -397,7 +397,12 @@ class SynthEditor(SynthBase):
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
-    def _update_slider(self, param, value, successes=None, failures=None, debug=None):
+    def _update_slider(self,
+                       param: AddressParameter,
+                       value: int,
+                       successes: list = None,
+                       failures: list = None,
+                       debug: bool = False):
         """Safely update sliders from NRPN messages."""
         slider = self.controls.get(param)
         if slider:
