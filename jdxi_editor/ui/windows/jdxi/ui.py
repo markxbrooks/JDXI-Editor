@@ -36,6 +36,7 @@ from PySide6.QtGui import (
     QAction,
     QFontDatabase,
 )
+import qtawesome as qta
 
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -211,7 +212,7 @@ class JdxiUi(QMainWindow):
         # File menu
         file_menu = menubar.addMenu("File")
 
-        load_program_action = QAction("Load Program...", self)
+        load_program_action = QAction(qta.icon("msc.folder-opened"), "Load Program...", self)
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
 

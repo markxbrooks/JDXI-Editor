@@ -629,7 +629,7 @@ class DigitalSynthEditor(SynthEditor):
             logging.info(f"Successes: {successes}")
             logging.info(f"Failures: {failures}")
             logging.info(f"Success Rate: {success_rate:.1f}%")
-            logging.info("======================================================================================================")
+            logging.info("============================================================================================")
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """Update sliders and combo boxes based on parsed SysEx data."""
@@ -692,7 +692,8 @@ class DigitalSynthEditor(SynthEditor):
         logging.info("\nTone common and modify")
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalCommon.get_by_name(param_name)
-            logging.info(f"Tone common/modify : param_name: {param} {param_value}")
+            log_parameter(f"Tone common/modify param", param)
+            log_parameter(f"Tone common/modify : param_value", param_value)
             if not param:
                 failures.append(param_name)
                 continue
@@ -843,7 +844,7 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        logging.info(f"Updating switch for: {param_name}, checkbox: {check_box}")
+        log_parameter(f"Updating switch for: {param_name}, checkbox:", check_box)
         if check_box:
             check_box.blockSignals(True)
             check_box.setState(bool(value), False)

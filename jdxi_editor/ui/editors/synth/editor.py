@@ -63,13 +63,15 @@ def log_changes(previous_data, current_data):
     ]
 
     if changes:
-        logging.info("Changes detected:")
+        # logging.info("Changes detected:")
         for key, prev, curr in changes:
-            logging.info(
-                f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
-            )
+            pass
+            # logging.info(
+            #     f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
+            # )
     else:
-        logging.info("No changes detected.")
+        pass
+        #logging.info("No changes detected.")
 
 
 class SynthEditor(SynthBase):

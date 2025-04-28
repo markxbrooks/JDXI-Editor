@@ -20,7 +20,7 @@ class JDXIDimensions:
     MARGIN = 15
 
     # LED display area (enlarged for 2 rows)
-    DISPLAY_WIDTH = 200
+    DISPLAY_WIDTH = 210
     DISPLAY_HEIGHT = 70
     DISPLAY_X = MARGIN + 20
     DISPLAY_Y = MARGIN + 35
