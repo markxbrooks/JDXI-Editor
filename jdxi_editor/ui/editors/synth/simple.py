@@ -57,8 +57,8 @@ class SimpleEditor(SynthEditor):
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):
         super().__init__(midi_helper=midi_helper, parent=parent)
-        self.setFixedWidth(450)
-        self.setMinimumWidth(450)
+        # self.setFixedWidth(450)
+        self.setMinimumWidth(550)
         self.setMinimumHeight(550)
 
     def load_and_set_image(self, image_path, secondary_image_path=None):

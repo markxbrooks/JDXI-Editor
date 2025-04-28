@@ -31,6 +31,7 @@ Dependencies:
 """
 
 import logging
+import platform
 
 from PySide6.QtCore import QRect
 from PySide6.QtWidgets import QWidget, QSizePolicy
@@ -82,7 +83,11 @@ class DigitalDisplayBase(QWidget):
         painter.drawRect(0, 0, display_width, display_height)
 
         # Set font
-        display_font = QFont(self.digital_font_family, 13, QFont.Bold)
+        if platform.system() == "Windows":
+            font_size = 12
+        else:
+            font_size = 13
+        display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
         painter.setFont(display_font)
 
         # Draw text
@@ -191,7 +196,11 @@ class DigitalDisplay(DigitalDisplayBase):
         painter.drawRect(display_x, display_y, display_width, display_height)
 
         # 2. Set font for digital display
-        display_font = QFont(self.digital_font_family, 13, QFont.Bold)
+        if platform.system() == "Windows":
+            font_size = 11
+        else:
+            font_size = 13
+        display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
         painter.setFont(display_font)
         painter.setPen(QPen(QColor("#FFBB33")))  # Lighter orange for text
 
