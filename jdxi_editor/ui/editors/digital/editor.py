@@ -501,8 +501,8 @@ class DigitalSynthEditor(SynthEditor):
         logging.info("\nTone common and modify")
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalCommon.get_by_name(param_name)
-            log_parameter(f"Tone common/modify param", param)
-            log_parameter(f"Tone common/modify : param_value", param_value)
+            log_parameter("Tone common/modify param", param)
+            log_parameter("Tone common/modify : param_value", param_value)
             if not param:
                 failures.append(param_name)
                 continue
@@ -682,7 +682,7 @@ class DigitalSynthEditor(SynthEditor):
         """
         switch = self.controls.get(param)
         if debug:
-            log_parameter(f"Updating switch for", param)
+            log_parameter("Updating switch for", param)
         try:
             value = int(value)
             if switch:
