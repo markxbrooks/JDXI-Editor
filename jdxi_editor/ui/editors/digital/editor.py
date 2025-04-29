@@ -655,7 +655,7 @@ class DigitalSynthEditor(SynthEditor):
         """
         slider = self.controls.get(param)
         if debug:
-            log_parameter(f"Updating slider for", param)
+            log_parameter("Updating slider for", param)
         if slider:
             slider.blockSignals(True)
             slider.setValue(value)
@@ -756,7 +756,9 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        logging.info(f"Updating switch for: {param_name}, checkbox: {check_box}")
+        logging.info("Updating switch")
+        log_parameter("param_name", param_name)
+        log_parameter("checkbox", check_box)
         if check_box:
             check_box.blockSignals(True)
             check_box.setSelected(bool(value))
@@ -795,7 +797,7 @@ class DigitalSynthEditor(SynthEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            logging.warning(f"Unknown waveform value: {value}")
+            logging.warning("Unknown waveform value: %s", value)
             return
 
         log_parameter(f"Waveform value {value} found, selecting", selected_waveform)
@@ -818,7 +820,7 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
         else:
-            logging.warning(f"Waveform button not found for {selected_waveform}")
+            logging.warning("Waveform button not found for: %s",selected_waveform)
 
 
 class DigitalSynth2Editor(DigitalSynthEditor):
