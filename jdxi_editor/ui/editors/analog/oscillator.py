@@ -1,3 +1,7 @@
+"""
+Analog Oscillator Section
+"""
+from typing import Callable
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
@@ -10,12 +14,13 @@ from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 
 class AnalogOscillatorSection(QWidget):
+    """Analog Oscillator Section"""
     def __init__(
         self,
-        create_parameter_slider,
-        create_parameter_switch,
-        waveform_selected_callback,
-        wave_buttons,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        waveform_selected_callback: Callable,
+        wave_buttons: dict,
     ):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
@@ -44,7 +49,11 @@ class AnalogOscillatorSection(QWidget):
         # Sub Oscillator
         layout.addWidget(self.create_sub_osc_group())
 
-    def create_waveform_buttons(self):
+    def create_waveform_buttons(self) -> QHBoxLayout:
+        """
+        Create the waveform buttons
+        :return: QHBoxLayout
+        """
         wave_layout = QHBoxLayout()
 
         for waveform in [
@@ -72,7 +81,11 @@ class AnalogOscillatorSection(QWidget):
 
         return wave_layout
 
-    def create_tuning_group(self):
+    def create_tuning_group(self) -> QGroupBox:
+        """
+        Create the tuning group
+        :return: QGroupBox
+        """
         tuning_group = QGroupBox("Tuning")
         tuning_layout = QVBoxLayout()
         tuning_group.setLayout(tuning_layout)
@@ -86,7 +99,11 @@ class AnalogOscillatorSection(QWidget):
 
         return tuning_group
 
-    def create_pw_group(self):
+    def create_pw_group(self) -> QGroupBox :
+        """
+        Create the pulse width group
+        :return: QGroupBox
+        """
         pw_group = QGroupBox("Pulse Width")
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
@@ -103,7 +120,11 @@ class AnalogOscillatorSection(QWidget):
 
         return pw_group
 
-    def create_pitch_env_group(self):
+    def create_pitch_env_group(self) -> QGroupBox:
+        """
+        Create the pitch envelope group
+        :return: QGroupBox
+        """
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
@@ -127,7 +148,11 @@ class AnalogOscillatorSection(QWidget):
 
         return pitch_env_group
 
-    def create_sub_osc_group(self):
+    def create_sub_osc_group(self) -> QGroupBox:
+        """
+        Create the sub oscillator group
+        :return: QGroupBox
+        """
         sub_group = QGroupBox("Sub Oscillator")
         sub_layout = QVBoxLayout()
         sub_group.setLayout(sub_layout)
@@ -145,7 +170,11 @@ class AnalogOscillatorSection(QWidget):
         return sub_group
 
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
-        """Update pulse width controls enabled state based on waveform"""
+        """
+        Update pulse width controls enabled state based on waveform
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
         pw_enabled = waveform == AnalogOscWave.PW_SQUARE
         self.pw_slider.setEnabled(pw_enabled)
         self.pwm_slider.setEnabled(pw_enabled)

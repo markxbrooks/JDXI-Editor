@@ -3,7 +3,7 @@ Digital Oscillator Section for the JDXI Editor
 """
 
 import logging
-
+from typing import Callable
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QWidget,
@@ -22,20 +22,20 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
-
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 class DigitalOscillatorSection(QWidget):
     """Digital Oscillator Section for the JDXI Editor"""
 
     def __init__(
         self,
-        create_parameter_slider,
-        create_parameter_switch,
-        create_parameter_combo_box,
-        send_midi_parameter,
-        partial_number,
-        midi_helper,
-        controls,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
+        send_midi_parameter: Callable,
+        partial_number: int,
+        midi_helper: MidiIOHelper,
+        controls: list[QWidget],
     ):
         super().__init__()
         self.partial_number = partial_number

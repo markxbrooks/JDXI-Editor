@@ -51,7 +51,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 self.parent = parent
             self.initialized = True
 
-    def load_patch(self, file_path):
+    def load_patch(self, file_path: str):
         """
         Load the JSON patch as a string and emit it.
 
@@ -65,7 +65,13 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         except Exception as ex:
             logging.error(f"Error reading or emitting sysex JSON: {ex}")
 
-    def load_sysx_patch(self, file_path):
+    def load_sysx_patch(self, file_path: str):
+        """
+        Load the SysEx patch from a file and emit it.
+
+        :param file_path: str
+        :return: None
+        """
         try:
             with open(file_path, "rb") as file:
                 sysex_data = file.read()
@@ -85,14 +91,12 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             logging.info(f"Error {ex} sending sysex list")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
-        """Set MIDI input and output ports
+        """
+        Set MIDI input and output ports
 
-        Args:
-            in_port: Input port name
-            out_port: Output port name
-
-        Returns:
-            True if successful, False otherwise
+        :param in_port: str
+        :param out_port: str
+        :return: bool
         """
         try:
             if not self.open_input_port(in_port):
@@ -106,7 +110,13 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return False
 
     def connect_port_names(self, in_port: str, out_port: str):
-        """Attempt to automatically connect to JD-Xi MIDI ports."""
+        """
+        Attempt to automatically connect to JD-Xi MIDI ports.
+
+        :param in_port: str
+        :param out_port: str
+        :return: bool
+        """
         try:
             # Ensure both ports are found
             if not in_port or not out_port:
@@ -131,7 +141,13 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return False
 
     def reconnect_port_names(self, in_port: str, out_port: str):
-        """ reconnect ports """
+        """
+        Reconnect ports
+
+        :param in_port: str
+        :param out_port: str
+        :return: None
+        """
         try:
             self.close_ports()
             self.connect_port_names(in_port, out_port)
@@ -141,13 +157,18 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             print(f"Error {ex} occurred reconnecting ports")
 
     def auto_connect_jdxi(self):
-        """Attempt to automatically connect to JD-Xi MIDI ports."""
+        """
+        Attempt to automatically connect to JD-Xi MIDI ports.
+
+        :return: bool
+        """
         try:
             # Find JD-Xi ports
             jdxi_in_port = find_jdxi_port(self.get_input_ports())
             jdxi_out_port = find_jdxi_port(self.get_output_ports())
             self.connect_port_names(jdxi_in_port, jdxi_out_port)
             self.identify_device()
+            return True
         except Exception as ex:
             logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
             return False

@@ -2,12 +2,15 @@
  AMP section for the digital partial editor.
 """
 
+from typing import Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.style import JDXIStyle
@@ -19,11 +22,11 @@ class DigitalAmpSection(QWidget):
 
     def __init__(
         self,
-        create_parameter_slider,
-        partial_number,
-        midi_helper,
-        controls,
-        address,
+        create_parameter_slider: Callable,
+        partial_number: int,
+        midi_helper: MidiIOHelper,
+        controls: dict,
+        address: RolandSysExAddress,
     ):
         super().__init__()
         self.partial_number = partial_number

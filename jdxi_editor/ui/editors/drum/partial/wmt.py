@@ -1,5 +1,37 @@
-import re
+"""
+Module: drum_wmt
+================
 
+This module defines the `DrumWMTSection` class, which provides a PySide6-based
+user interface for editing drum WMT parameters in the Roland JD-Xi synthesizer.
+It extends the `QWidget` base class and integrates MIDI communication for real-time
+parameter adjustments and preset management.
+
+Key Features:
+-------------
+- Provides a graphical editor for modifying drum WMT parameters, including
+  wave selection, gain, FXM color, depth, tempo sync, coarse tune, fine tune, pan,
+  random pan switch, alternate pan switch, velocity range lower, velocity range upper,
+  velocity fade width lower, velocity fade width upper, and wave level.
+
+Dependencies:
+-------------
+- PySide6 (for UI components and event handling)
+- MIDIHelper (for handling MIDI communication)
+- PresetHandler (for managing synth presets)
+- Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)
+
+Usage:
+------
+The `DrumWMTSection` class can be instantiated as part of a larger PySide6 application.
+It requires a `MIDIHelper` instance for proper communication with the synthesizer.
+
+Example:
+--------
+    midi_helper = MIDIHelper()
+    editor = DrumWMTSection(midi_helper)
+    editor.show()
+"""
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox, QLabel, \
     QLineEdit, QHBoxLayout
 import logging

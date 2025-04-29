@@ -1,19 +1,52 @@
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+"""
+Module: drum_pitch
+================
 
+This module defines the `DrumPitchSection` class, which provides a PySide6-based
+user interface for editing drum pitch parameters in the Roland JD-Xi synthesizer.
+It extends the `QWidget` base class and integrates MIDI communication for real-time 
+parameter adjustments and preset management.
+
+Key Features:
+-------------
+- Provides a graphical editor for modifying drum pitch parameters, including
+  partial level, partial coarse tune, partial fine tune, partial random pitch depth,
+  partial pan, partial random pan depth, partial alternate pan depth, and partial env mode.
+
+Dependencies:
+-------------
+- PySide6 (for UI components and event handling)
+- MIDIHelper (for handling MIDI communication)
+- PresetHandler (for managing synth presets)
+- Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)
+
+Usage:
+------
+The `DrumPitchSection` class can be instantiated as part of a larger PySide6 application.
+It requires a `MIDIHelper` instance for proper communication with the synthesizer.
+
+Example:
+--------
+    midi_helper = MIDIHelper()
+    editor = DrumPitchSection(midi_helper)
+    editor.show()
+"""
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from typing import Callable
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
-
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 class DrumPitchSection(QWidget):
     """Drum Pitch Section for the JDXI Editor"""
 
     def __init__(
         self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        midi_helper,
+        controls: dict[str, QWidget],
+        create_parameter_combo_box: Callable,
+        create_parameter_slider: Callable,
+        midi_helper: MidiIOHelper,
     ):
         super().__init__()
         self.controls = controls
@@ -33,8 +66,6 @@ class DrumPitchSection(QWidget):
 
         scrolled_widget = QWidget()
         scrolled_layout = QVBoxLayout(scrolled_widget)
-
-        # Add widgets to scrolled_layout here if needed
 
         scroll_area.setWidget(scrolled_widget)
 

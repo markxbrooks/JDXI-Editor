@@ -62,9 +62,11 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.factory import create_synth_data
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -88,13 +90,12 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
 
-def set_widget_value_safely(widget, value):
+def set_widget_value_safely(widget: QWidget, value: int):
     """
     Block signals for the widget, set its value, then unblock signals.
 
-    Args:
-        widget: The widget whose value is to be set.
-        value: The value to set on the widget.
+    :param widget: The widget whose value is to be set.
+    :param value: The value to set on the widget.
     """
     widget.blockSignals(True)
     if isinstance(widget, QSlider):
@@ -111,7 +112,10 @@ class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper], preset_helper=None, parent=None
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: Optional[JDXIPresetHelper] = None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
 
@@ -337,7 +341,7 @@ class AnalogSynthEditor(SynthEditor):
         Handle incoming MIDI parameter messages.
         :param address: list of address bytes
         :param value: int value
-        :return:
+        :return: None
         """
         area_code = address[0]
         if address[0] == AddressMemoryAreaMSB.ANALOG:
@@ -362,12 +366,20 @@ class AnalogSynthEditor(SynthEditor):
                         "updating waveform buttons for param {param} with {value}"
                     )
 
-    def update_filter_state(self, value):
-        """update_filter_state"""
+    def update_filter_state(self, value: int):
+        """
+        Update the filter state
+        :param value: int value
+        :return: None
+        """
         self.update_filter_controls_state(value)
 
     def _on_waveform_selected(self, waveform: AnalogOscWave):
-        """Handle waveform button selection"""
+        """
+        Handle waveform button selection
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
         if self.midi_helper:
             sysex_message = RolandSysEx(
                 msb=self.address_msb,
@@ -390,7 +402,11 @@ class AnalogSynthEditor(SynthEditor):
             self._update_pw_controls_state(waveform)
 
     def _on_lfo_shape_changed(self, value: int):
-        """Handle LFO shape change"""
+        """
+        Handle LFO shape change
+        :param value: int value
+        :return: None
+        """
         if self.midi_helper:
             sysex_message = RolandSysEx(
                 msb=self.address_msb,
@@ -412,7 +428,11 @@ class AnalogSynthEditor(SynthEditor):
                 selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str):
-        """Update sliders and combo boxes based on parsed SysEx data."""
+        """
+        Update sliders and combo boxes based on parsed SysEx data.
+        :param json_sysex_data: str JSON SysEx data
+        :return: None
+        """
         logging.info("Updating UI components from SysEx data")
 
         try:
@@ -457,22 +477,30 @@ class AnalogSynthEditor(SynthEditor):
 
         failures, successes = [], []
 
-        def update_slider(param, value):
-            """Helper function to update sliders safely."""
-            slider = self.controls.get(param)
+        def update_slider(parameter: AddressParameterAnalog, value: int):
+            """Helper function to update sliders safely.
+            :param parameter: AddressParameterAnalog value
+            :param value: int value
+            :return: None
+            """
+            slider = self.controls.get(parameter)
             if slider:
-                slider_value = param.convert_from_midi(value)
+                slider_value = parameter.convert_from_midi(value)
                 # set_widget_value_safely(slider, slider_value)
                 slider.blockSignals(True)
                 slider.setValue(slider_value)
                 slider.blockSignals(False)
-                successes.append(param.name)
+                successes.append(parameter.name)
 
-        def update_adsr_widget(param, value):
-            """Helper function to update ADSR widgets."""
+        def update_adsr_widget(parameter: AddressParameterAnalog, value: int):
+            """Helper function to update ADSR widgets.
+            :param parameter: AddressParameterAnalog value
+            :param value: int value
+            :return: None
+            """
             new_value = (
                 midi_cc_to_frac(value)
-                if param
+                if parameter
                 in [
                     AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
                     AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
@@ -491,8 +519,8 @@ class AnalogSynthEditor(SynthEditor):
                 AddressParameterAnalog.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_sb,
             }
 
-            if param in adsr_mapping:
-                spinbox = adsr_mapping[param]
+            if parameter in adsr_mapping:
+                spinbox = adsr_mapping[parameter]
                 spinbox.setValue(new_value)
 
         for param_name, param_value in current_sysex_data.items():
@@ -551,8 +579,12 @@ class AnalogSynthEditor(SynthEditor):
         if failures:
             logging.warning(f"Failed to update {len(failures)} parameters: {failures}")
 
-    def _update_waveform_buttons(self, value):
-        """Update the waveform buttons based on the OSC_WAVE value with visual feedback."""
+    def _update_waveform_buttons(self, value: int):
+        """
+        Update the waveform buttons based on the OSC_WAVE value with visual feedback.
+        :param value: int value
+        :return: None
+        """
         logging.debug(f"Updating waveform buttons with value {value}")
 
         waveform_map = {
@@ -583,8 +615,12 @@ class AnalogSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
-    def _update_lfo_shape_buttons(self, value):
-        """Update the LFO shape buttons with visual feedback."""
+    def _update_lfo_shape_buttons(self, value: int):
+        """
+        Update the LFO shape buttons with visual feedback.
+        :param value: int value
+        :return: None
+        """
         logging.debug(f"Updating LFO shape buttons with value {value}")
 
         # Reset all buttons to default style
@@ -601,7 +637,11 @@ class AnalogSynthEditor(SynthEditor):
             logging.warning(f"Unknown LFO shape value: {value}")
 
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
-        """Enable/disable PW controls based on waveform"""
+        """
+        Enable/disable PW controls based on waveform
+        :param waveform: AnalogOscWave value
+        :return: None
+        """
         pw_enabled = waveform == AnalogOscWave.PULSE
         logging.info(self.controls)
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setEnabled(pw_enabled)

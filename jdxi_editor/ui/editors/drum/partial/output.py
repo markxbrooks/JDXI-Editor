@@ -1,3 +1,38 @@
+"""
+Module: drum_output
+================
+
+This module defines the `DrumOutputSection` class, which provides a PySide6-based
+user interface for editing drum output parameters in the Roland JD-Xi synthesizer.
+It extends the `QWidget` base class and integrates MIDI communication for real-time
+parameter adjustments and preset management.
+
+Key Features:
+-------------
+- Provides a graphical editor for modifying drum output parameters, including
+  from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea   
+  partial output level, partial chorus send level, partial reverb send level, and partial output assign.
+
+Dependencies:
+-------------
+- PySide6 (for UI components and event handling)
+- MIDIHelper (for handling MIDI communication)
+- PresetHandler (for managing synth presets)
+- Various custom enums and helper classes (AnalogParameter, AnalogCommonParameter, etc.)
+
+Usage:
+------
+The `DrumOutputSection` class can be instantiated as part of a larger PySide6 application.
+It requires a `MIDIHelper` instance for proper communication with the synthesizer.
+
+Example:
+--------
+    midi_helper = MIDIHelper()
+    editor = DrumOutputSection(midi_helper)
+    editor.show()
+"""
+
+
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon

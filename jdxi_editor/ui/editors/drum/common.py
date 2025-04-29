@@ -1,8 +1,24 @@
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+"""
+Module: drum_common
+===================
 
+This module defines the `DrumCommonSection` class, which provides a PySide6-based
+user interface for editing drum common parameters in the Roland JD-Xi synthesizer.
+It extends the `QWidget` base class and integrates MIDI communication for real-time
+parameter adjustments and preset management.
+
+Key Features:
+-------------
+- Provides a graphical editor for modifying drum common parameters, including
+  kit level, partial pitch bend range, and partial receive expression.
+
+"""
+from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
+from typing import Callable
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class DrumCommonSection(QWidget):
@@ -10,10 +26,10 @@ class DrumCommonSection(QWidget):
 
     def __init__(
         self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        midi_helper,
+        controls: dict,
+        create_parameter_combo_box: Callable,
+        create_parameter_slider: Callable,
+        midi_helper: MidiIOHelper,
     ):
         super().__init__()
         self.controls = controls
