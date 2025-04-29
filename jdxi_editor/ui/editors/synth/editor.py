@@ -218,7 +218,7 @@ class SynthEditor(SynthBase):
     def _on_parameter_received(self, address, value):
         raise NotImplementedError("Should be implemented by subclass")
 
-    def _dispatch_sysex_to_area(self, data: str):
+    def _dispatch_sysex_to_area(self, json_sysex_data: str):
         raise NotImplementedError
 
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
