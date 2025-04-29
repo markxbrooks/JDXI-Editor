@@ -53,6 +53,7 @@ from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
@@ -301,7 +302,9 @@ class ProgramEditor(SimpleEditor):
 
         selected_bank = self.bank_combo_box.currentText()
         selected_genre = self.genre_combo_box.currentText()
-        logging.info(f"Selected bank: {selected_bank}, Genre: {selected_genre}")
+
+        log_parameter("selected bank", selected_bank)
+        log_parameter("selected genre", selected_genre)
 
         self.program_number_combo_box.clear()
         self.programs.clear()
@@ -374,13 +377,16 @@ class ProgramEditor(SimpleEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        logging.info(f"combo box bank_letter : {bank_letter}")
-        logging.info(f"combo box  bank_number : {bank_number}")
+        log_parameter("combo box bank_letter", bank_letter)
+        log_parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
+        logging.info(f"calculated msb, lsb, pc :")
+        log_parameter("msb", msb)
+        log_parameter("lsb", lsb)
+        log_parameter("pc", pc)
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
         self.data_request()

@@ -20,6 +20,7 @@ Dependencies:
 import json
 import logging
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -109,9 +110,9 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             # Ensure both ports are found
             if not in_port or not out_port:
-                logging.warning(
-                    f"JD-Xi MIDI auto-connect failed. Found input: {in_port}, output: {out_port}"
-                )
+                logging.warning("JD-Xi MIDI auto-connect failed")
+                log_parameter("MIDI in_port", in_port)
+                log_parameter("MIDI out_port", out_port)
                 return False
             self.set_midi_ports(in_port, out_port)
 

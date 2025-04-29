@@ -30,8 +30,10 @@ from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
+    RolandSysExAddress,
 )
 from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import (
     format_midi_message_to_hex_string,
@@ -93,21 +95,22 @@ class MidiOutHandler(MidiIOController):
         :return: True if the message was successfully sent, False otherwise.
         :rtype: bool
         """
-        # log_parameter("Attempting to send message: ", message, level=logging.INFO)
+        logging.debug("========Sending raw MIDI message==========")
 
         if not validate_midi_message(message):
             logging.info("MIDI message validation failed.")
             return False
 
         formatted_message = format_midi_message_to_hex_string(message)
-        # log_parameter("Sending MIDI message: ", formatted_message, level=logging.INFO)
 
         if not self.midi_out.is_port_open():
             logging.info("MIDI output port is not open.")
             return False
 
         try:
-            log_parameter("QC passed, sending message ", formatted_message, level=logging.INFO)
+            log_parameter(
+                "QC passed, sending message ", formatted_message, level=logging.INFO
+            )
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)
             return True
@@ -115,12 +118,27 @@ class MidiOutHandler(MidiIOController):
             logging.error(f"Error sending message: {ex}")
             return False
 
-    def send_note_on(self, note: int = 60, velocity: int = 127, channel: int = 1):
-        """Send address 'Note On' message."""
+    def send_note_on(
+        self, note: int = 60, velocity: int = 127, channel: int = 1
+    ) -> None:
+        """
+        Send 'Note On' message to the specified MIDI channel.
+
+        :param note: int MIDI note number (0–127), default is 60 (Middle C).
+        :param velocity: int Note velocity (0–127), default is 127.
+        :param channel: int MIDI channel (1–16), default is 1.
+        """
         self.send_channel_message(NOTE_ON, note, velocity, channel)
 
-    def send_note_off(self, note: int = 60, velocity: int = 0, channel: int = 1):
-        """Send address 'Note Off' message."""
+    def send_note_off(
+        self, note: int = 60, velocity: int = 0, channel: int = 1
+    ) -> None:
+        """
+        Send address 'Note Off' message
+        :param note: int MIDI note number (0–127), default is 60 (Middle C).
+        :param velocity: int Note velocity (0–127), default is 127.
+        :param channel: int MIDI channel (1–16), default is 1.
+        """
         self.send_channel_message(NOTE_OFF, note, velocity, channel)
 
     def send_channel_message(
@@ -152,16 +170,16 @@ class MidiOutHandler(MidiIOController):
 
     def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
         """
-        Send bank select messages.
-
-        Args:
-            msb: Bank Select MSB value (0-127).
-            lsb: Bank Select LSB value (0-127).
-            channel: MIDI channel (0-15).
-        Returns:
-            True if successful, False otherwise.
+        Send address bank select message.
+        :param msb: int Upper byte of the bank.
+        :param lsb: int Lower byte of the bank.
+        :param channel: int midi channel (0-15).
+        :return: bool True if successful, False otherwise.
         """
-        logging.debug(f"Sending bank select: MSB={msb}, LSB={lsb}, channel={channel}")
+        logging.debug("========Sending bank select==========")
+        log_parameter("MSB", msb)
+        log_parameter("LSB", lsb)
+        log_parameter("channel", channel)
         try:
             # Bank Select MSB (CC#0)
             self.send_raw_message([0xB0 + channel, 0x00, msb])
@@ -179,7 +197,7 @@ class MidiOutHandler(MidiIOController):
         Returns:
             True if the message was sent successfully, False otherwise.
         """
-        logging.debug("Sending identity request")
+        logging.debug("=========Sending identity request========")
         try:
             identity_request_message = IdentityRequestMessage()
             identity_request_bytes_list = identity_request_message.to_message_list()
@@ -195,16 +213,11 @@ class MidiOutHandler(MidiIOController):
 
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
         """
-        Send address parameter change message using MidiMessage.
+        Send SysEx parameter change message using a MidiMessage.
 
-        Args:
-            sysex_message: of type MidiMessage.
-        Returns:
-            True if successful, False otherwise.
+        :param sysex_message: MidiMessage instance to be converted and sent.
+        :return: True if the message was successfully sent, False otherwise.
         """
-        #logging.info(
-        #    f"send_midi_message: \t{type(sysex_message)} {sysex_message}"
-        #)
         try:
             message = sysex_message.to_message_list()
             return self.send_raw_message(message)
@@ -214,28 +227,35 @@ class MidiOutHandler(MidiIOController):
             return False
 
     def send_parameter(
-        self, area: int, part: int, group: int, param: int, value: int, size: int = 1
+        self,
+        msb: int,
+        umb: int,
+        lmb: int,
+        param: AddressParameter,
+        value: int,
+        size: int = 1,
     ) -> bool:
         """
-        Send address parameter change message using RolandSysEx.
-
-        Args:
-            area: Parameter area (e.g., Program, Digital Synth).
-            part: Part number.
-            group: Parameter area.
-            param: Parameter number.
-            value: Parameter value.
-            size: Size of the value in bytes (1, 4, or 5).
-        Returns:
-            True if successful, False otherwise.
+        Send address parameter change message.
+        :param msb: int Upper byte of the address.
+        :param umb: int Upper middle byte of the address.
+        :param lmb: int lower middle byte of the address.
+        :param param: AddressParameter
+        :param value: int Parameter value
+        :param size: int Size of the value in bytes (1, 4, or 5).
+        :return: True if successful, False otherwise.
         """
-        logging.info(
-            f"send_parameter: \tarea={hex(area)}, \tpart={hex(part)}, \tgroup={hex(group)}, "
-            f"\tparam={hex(param)}, \tvalue={value}, \tsize={size}"
-        )
+        logging.info("send_parameter:")
+        log_parameter("msb", msb)
+        log_parameter("umb", umb)
+        log_parameter("lmb", lmb)
+        log_parameter("param", param)
+        log_parameter("value", value)
+        log_parameter("size", size)
         try:
-            group = increment_group(group, param)
-            address = apply_address_offset(area, group, param, part)
+            lmb = increment_group(lmb, param)
+            address = RolandSysExAddress(msb, umb, lmb, 0x00)
+            address = apply_address_offset(address, param)
             if size == 1:
                 data_bytes = [value & 0x7F]  # Single byte format (0-127)
             elif size in [4, 5]:
@@ -254,14 +274,13 @@ class MidiOutHandler(MidiIOController):
     def send_program_change(self, program: int, channel: int = 0) -> bool:
         """
         Send address program change message.
-
-        Args:
-            program: Program number (0-127).
-            channel: MIDI channel (0-15).
-        Returns:
-            True if successful, False otherwise.
+        :param program: int Program number (0-127).
+        :param channel: int MIDI channel (0-15).
+        :return: True if successful, False otherwise.
         """
-        logging.debug(f"Sending program change: program={program}, channel={channel}")
+        logging.debug("=====Sending program change====")
+        log_parameter("program", program)
+        log_parameter("channel", channel)
         try:
             program_change_message = ProgramChangeMessage(
                 channel=channel, program=program
@@ -278,17 +297,15 @@ class MidiOutHandler(MidiIOController):
         """
         Send address control change message.
 
-        Args:
-            controller: Controller number (0-127).
-            value: Controller value (0-127).
-            channel: MIDI channel (0-15).
-        Returns:
-            True if successful, False otherwise.
+        :param controller: int Controller number (0–127).
+        :param value: int Controller value (0–127).
+        :param channel: int MIDI channel (0–15).
+        :return: True if successful, False otherwise.
         """
-        logging.info(
-            f"attempting to send - controller {controller} "
-            f"value {value} channel {channel}"
-        )
+        logging.debug("=====Sending control change====")
+        log_parameter("controller", controller)
+        log_parameter("value", value)
+        log_parameter("channel", channel)
         if not 0 <= channel <= 15:
             logging.error(f"Invalid MIDI channel: {channel}. Must be 0-15.")
             return False
@@ -310,14 +327,12 @@ class MidiOutHandler(MidiIOController):
         """
         Send a Registered Parameter Number (RPN) message via MIDI Control Change.
 
-        Args:
-            parameter: RPN parameter number (0–16383)
-            value: Parameter value (0–16383)
-            channel: MIDI channel (0–15)
-
-        Returns:
-            True if messages sent successfully, False otherwise
+        :param parameter: int RPN parameter number (0–16383).
+        :param value: int Parameter value (0–16383).
+        :param channel: int MIDI channel (0–15).
+        :return: True if messages sent successfully, False otherwise.
         """
+        logging.info("========sending rpn=========")
         if not 0 <= parameter <= 16383:
             logging.error(f"Invalid RPN parameter: {parameter}. Must be 0–16383.")
             return False
@@ -341,7 +356,10 @@ class MidiOutHandler(MidiIOController):
         )
 
         if success:
-            logging.info(f"Sent RPN: Param {parameter}, Value {value}, Ch {channel}")
+            logging.info("Success: Sent RPN")
+            log_parameter("Param", parameter)
+            log_parameter("Value", value)
+            log_parameter("Channel", channel)
         else:
             logging.error("Failed to send RPN messages.")
 
@@ -351,18 +369,19 @@ class MidiOutHandler(MidiIOController):
         self, parameter: int, value: int, channel: int = 0, use_14bit: bool = False
     ) -> bool:
         """
-        Send an NRPN (Non-Registered Parameter Number) message using MIDI Control Change.
+        Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.
 
-        Args:
-            parameter: The NRPN parameter number (0-16383).
-            value: The value to set (0-16383 for 14-bit, 0-127 for 7-bit).
-            channel: MIDI channel (0–15).
-            use_14bit: If False, only send Data Entry MSB (7-bit).
-
-        Returns:
-            True if all messages were sent successfully, False otherwise.
+        :param parameter: int NRPN parameter number (0–16383).
+        :param value: int Parameter value (0–16383 for 14-bit, 0–127 for 7-bit).
+        :param channel: int MIDI channel (0–15).
+        :param use_14bit: bool If True, send both MSB and LSB for value (14-bit). If False, send only MSB (7-bit).
+        :return: True if all messages were sent successfully, False otherwise.
         """
-        logging.info(f"sending parameter {parameter} value {value} channel {channel}")
+        logging.info("========sending nrpn=========")
+        log_parameter("parameter", parameter)
+        log_parameter("value", value)
+        log_parameter("channel", channel)
+        log_parameter("use_14bit", use_14bit)
         if not 0 <= parameter <= 16383:
             logging.error(f"Invalid NRPN parameter: {parameter}. Must be 0–16383.")
             return False
@@ -393,12 +412,12 @@ class MidiOutHandler(MidiIOController):
         ok &= self.send_control_change(98, 127, channel)  # NRPN LSB null
 
         if ok:
-            logging.info(
-                f"Sent NRPN: Param {parameter}, Value {value}, Channel {channel}, 14-bit={use_14bit}"
-            )
+            logging.info("Sent NRPN:")
+            log_parameter("parameter", parameter)
+            log_parameter("value", value)
+            log_parameter("channel", channel)
         else:
             logging.error("Failed to send NRPN messages.")
-
         return ok
 
     def send_bank_select_and_program_change(
@@ -416,34 +435,16 @@ class MidiOutHandler(MidiIOController):
             True if all messages are sent successfully, False otherwise.
         """
         try:
-            logging.info(
-                f"send_bank_select_and_program_change "
-                f"channel: {channel} "
-                f" bank_msb: {bank_msb} "
-                f" bank_lsb: {bank_lsb} "
-                f"program: {program} "
-            )
-            logging.info(
-                f"1) sending send_control_change "
-                f"controller: 0 "
-                f" bank_msb: {bank_msb} "
-                f" channel: {channel} "
-            )
+            logging.info("========send_bank_select_and_program_change=========")
+            log_parameter("channel", channel)
+            log_parameter("bank_msb", bank_msb)
+            log_parameter("bank_lsb", bank_lsb)
+            log_parameter("program", program)
+            logging.info(f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------")
             self.send_control_change(0, bank_msb, channel)
-
-            logging.info(
-                f"2) sending send_control_change "
-                f"controller: 32"
-                f" bank_lsb: {bank_lsb} "
-                f" channel: {channel} "
-            )
+            logging.info(f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------")
             self.send_control_change(32, bank_lsb, channel)
-
-            logging.info(
-                f"3) sending send_program_change "
-                f" program: {program} "
-                f" channel: {channel} "
-            )
+            logging.info(f"-------#3 send_program_change program: {program} channel: {channel} --------")
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
@@ -466,24 +467,25 @@ class MidiOutHandler(MidiIOController):
         except Exception as ex:
             logging.error(f"Error sending identity request: {str(ex)}")
 
-    def get_parameter(
-        self, area: int, part: int, group: int, param: int
+    def get_parameter(self,
+                      msb: int,
+                      umb: int,
+                      lmb: int,
+                      param: int
     ) -> Optional[int]:
         """
-        Get parameter value via MIDI System Exclusive message.
-
-        Args:
-            area: Parameter area (e.g., Digital Synth 1).
-            part: Part number.
-            group: Parameter area.
-            param: Parameter number.
-        Returns:
-            Parameter value (0-127) or None if an error occurs.
+        Request a parameter value from the JD-Xi.
+        :param msb: Most significant byte of the address.
+        :param umb: Upper middle byte of the address.
+        :param lmb: Lower middle byte of the address.
+        :param param: Address parameter to request.
+        :return: Nonne
         """
-        logging.info(
-            f"Requesting parameter: area={area}, part={part}, "
-            f"group={group}, param={param}"
-        )
+        logging.info("Requesting parameter")
+        log_parameter("msb", msb)
+        log_parameter("umb", umb)
+        log_parameter("lmb", lmb)
+        log_parameter("param", param)
 
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             logging.error("MIDI ports not open")
@@ -496,7 +498,7 @@ class MidiOutHandler(MidiIOController):
                 device_id=RolandID.DEVICE_ID,
                 model_id=[0x00, 0x00, 0x3B, 0x00],  # Example model ID
                 command=CommandID.RQ1,  # RQ1 (Request Data) command for Roland
-                address=[area, part, group, param],  # Address of parameter
+                address=[msb, umb, lmb, param],  # Address of parameter
                 data=[],  # No payload for request
             )
 
@@ -524,13 +526,10 @@ class MidiOutHandler(MidiIOController):
             return None
 
     def save_patch(self, file_path: str) -> bool:
-        """Save current patch state to JSON file
-
-        Args:
-            file_path: Path to save the .jdx file
-
-        Returns:
-            bool: True if successful, False otherwise
+        """
+        Save the current patch to a file in JD-Xi format.
+        :param file_path: str Path to the file where the patch will be saved.
+        :return: bool True if successful, False otherwise.
         """
         try:
             # Ensure file has .jdx extension

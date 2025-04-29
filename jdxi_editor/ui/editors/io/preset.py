@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -319,9 +320,10 @@ class PresetEditor(SimpleEditor):
     def load_preset_by_program_change(self, preset_index):
         """Load a preset by program change."""
         preset_name = self.preset_combo_box.currentText()
-        logging.info(f"combo box preset_name : {preset_name}")
+        logging.info(f"=======load_preset_by_program_change=======")
+        log_parameter("combo box preset_name", preset_name)
         program_number = preset_name[:3]
-        logging.info(f"combo box program_number : {program_number}")
+        log_parameter("combo box program_number", program_number)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number)
@@ -334,7 +336,10 @@ class PresetEditor(SimpleEditor):
             )
             return
 
-        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        logging.info("retrieved msb, lsb, pc :")
+        log_parameter("combo box msb", msb)
+        log_parameter("combo box lsb", lsb)
+        log_parameter("combo box pc", pc)
         log_midi_info(msb, lsb, pc)
 
         # Send bank select and program change
@@ -427,13 +432,16 @@ class PresetEditor(SimpleEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        logging.info(f"combo box bank_letter : {bank_letter}")
-        logging.info(f"combo box  bank_number : {bank_number}")
+        log_parameter("combo box bank_letter", bank_letter)
+        log_parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
+        logging.info(f"calculated msb, lsb, pc :")
+        log_parameter("combo box msb", msb)
+        log_parameter("combo box lsb", lsb)
+        log_parameter("combo box pc", pc)
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel, msb, lsb, pc

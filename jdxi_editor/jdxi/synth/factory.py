@@ -9,83 +9,8 @@ from jdxi_editor.jdxi.synth.drum import DrumSynthData
 from jdxi_editor.jdxi.synth.data import SynthData
 from jdxi_editor.midi.sysex.requests import MidiRequests
 
-synth_data_map = {
-    JDXISynth.DRUM: {
-        "cls": DrumSynthData,
-        "midi_requests": MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
-        "midi_channel": MidiChannel.DRUM,
-        "presets": JDXIPresets.DRUM_ENUMERATED,
-        "preset_list": JDXIPresets.DRUM_KIT_LIST,
-        "instrument_icon_folder": "drum_kits",
-        "instrument_default_image": "drums.png",
-        "window_title": "Drum Kit",
-        "display_prefix": "DR",
-        "address_umb": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
-    },
-    JDXISynth.DIGITAL_1: {
-        "cls": DigitalSynthData,
-        "midi_requests": MidiRequests.DIGITAL1,
-        "midi_channel": MidiChannel.DIGITAL1,
-        "presets": JDXIPresets.DIGITAL_ENUMERATED,
-        "preset_list": JDXIPresets.DIGITAL_LIST,
-        "instrument_icon_folder": "digital_synths",
-        "instrument_default_image": "jdxi_vector.png",
-        "window_title": "Digital Synth 1",
-        "display_prefix": "D1",
-        "address_umb": AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
-        "synth_number": 1,
-    },
-    JDXISynth.DIGITAL_2: {
-        "cls": DigitalSynthData,
-        "midi_requests": MidiRequests.DIGITAL2,
-        "midi_channel": MidiChannel.DIGITAL2,
-        "presets": JDXIPresets.DIGITAL_ENUMERATED,
-        "preset_list": JDXIPresets.DIGITAL_LIST,
-        "instrument_icon_folder": "digital_synths",
-        "instrument_default_image": "jdxi_vector.png",
-        "window_title": "Digital Synth 2",
-        "display_prefix": "D2",
-        "address_umb": AddressOffsetTemporaryToneUMB.DIGITAL_PART_2,
-        "synth_number": 2,
-    },
-    JDXISynth.ANALOG: {
-        "cls": AnalogSynthData,
-        "midi_requests": [MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
-        "midi_channel": MidiChannel.ANALOG,
-        "presets": JDXIPresets.ANALOG_ENUMERATED,
-        "preset_list": JDXIPresets.ANALOG_LIST,
-        "instrument_icon_folder": "analog_synths",
-        "instrument_default_image": "analog.png",
-        "window_title": "Analog Synth",
-        "display_prefix": "AN",
-        "address_umb": AddressOffsetTemporaryToneUMB.ANALOG_PART,
-    },
-}
 
-def create_synth_data_new(synth_type: JDXISynth, partial_number=0) -> SynthData:
-    """Factory to create the right SynthData based on kind."""
-    config = synth_data_map.get(synth_type)
-    if config is None:
-        raise ValueError(f"Unknown synth type: {synth_type}")
-
-    # Calculate special values if needed
-    if synth_type == JDXISynth.DRUM:
-        address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)
-    elif synth_type in (JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2):
-        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(partial_number)
-    else:  # Analog
-        address_lmb = AddressOffsetProgramLMB.COMMON
-
-    cls = config.pop("cls")
-    return cls(
-        address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-        address_lmb=address_lmb,
-        partial_number=partial_number,
-        preset_type=synth_type,
-        **config
-    )
-
-def create_synth_data(synth_type: JDXISynth, partial_number=0) -> SynthData:
+def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthData:
     """Factory to create the right SynthData based on kind."""
     if synth_type == JDXISynth.DRUM:
         address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)
