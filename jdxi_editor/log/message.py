@@ -3,8 +3,11 @@ import logging
 from typing import Any
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH, logger
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, \
+    AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
+from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
 def log_slider_parameters(umb: int,
@@ -14,12 +17,19 @@ def log_slider_parameters(umb: int,
                           slider_value: int,
                           level: int = logging.INFO):
     """Log slider parameters for debugging."""
-    area = f"{int(umb):02X}"
-    part = f"{int(lmb):02X}"
+    synth = f"0x{int(umb):02X}"
+    part = f"0x{int(lmb):02X}"
+
+    synth_name = parse_sysex_byte(int(synth, 16), AddressOffsetTemporaryToneUMB)
+    if part != "0x00":
+        # part_name = parse_sysex_byte(int(part, 16), AddressOffsetProgramLMB)
+        part_name = parse_sysex_byte(int(part, 16), AddressOffsetSuperNATURALLMB)
+    else:
+        part_name = "COMMON"
 
     message = (
-        f"Updating area {area:<2} "
-        f"part {part:<2} "
+        f"Updating synth {synth:<2} \t {synth_name:<20} "
+        f"part {part:<2} \t {part_name:<20} "
         f"{param.name:<30} "
         f"MIDI {value:<4} -> Slider {slider_value}"
     )

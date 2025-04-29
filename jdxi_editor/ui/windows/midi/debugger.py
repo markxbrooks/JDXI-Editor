@@ -71,6 +71,13 @@ from typing import Protocol, TypeVar, Optional
 
 T = TypeVar("T", bound="EnumWithAddress")
 
+PARAMETER_PART_MAP = {
+    "DIGITAL_PART_1": AddressParameterDigitalPartial,
+    "DIGITAL_PART_2": AddressParameterDigitalPartial,
+    "ANALOG_PART": AddressParameterAnalog,
+    "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
+    "COMMON": AddressParameterDigitalCommon
+}
 
 class EnumWithAddress(Protocol):
     @classmethod
@@ -80,8 +87,25 @@ class EnumWithAddress(Protocol):
     def get_parameter_by_address(cls, address: int) -> Optional[T]: ...
 
 
-def parse_sysex_byte(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str, int]:
-    """Extract and describe a byte from a SysEx message using a given enum class."""
+def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
+    """
+    Get the name of a SysEx byte value using a given enum class.
+    :param byte_value:
+    :param enum_cls:
+    :return: name of the parameter or "Unknown" if not found
+    """
+    enum_member = enum_cls.get_parameter_by_address(byte_value)
+    name = enum_member.name if enum_member else f"Unknown ({hex(byte_value)})"
+    return name
+
+
+def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str, int]:
+    """
+    Parse a SysEx message and return the name and byte value of the specified parameter.
+    :param message:
+    :param enum_cls:
+    :return: Tuple containing the name and byte value
+    """
     byte_value = int(message[enum_cls.message_position()])
     enum_member = enum_cls.get_parameter_by_address(byte_value)
     name = enum_member.name if enum_member else f"Unknown ({hex(byte_value)})"
@@ -205,26 +229,18 @@ class MIDIDebugger(QMainWindow):
         if message[0] != 0xF0 or message[1] != 0x41:
             return "Not a Roland address SysEx message"
 
-        PARAMETER_PART_MAP = {
-            "DIGITAL_PART_1": AddressParameterDigitalPartial,
-            "DIGITAL_PART_2": AddressParameterDigitalPartial,
-            "ANALOG_PART": AddressParameterAnalog,
-            "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
-            "COMMON": AddressParameterDigitalCommon
-        }
-
         try:
             # Parse top-level SysEx components
-            command_str, command_byte = parse_sysex_byte(message, CommandID)
-            area_str, area_byte = parse_sysex_byte(message, AddressMemoryAreaMSB)
-            synth_str, synth_byte = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
-            part_str, part_byte = parse_sysex_byte(message, AddressOffsetProgramLMB)
+            command_str, command_byte = parse_sysex_message(message, CommandID)
+            area_str, area_byte = parse_sysex_message(message, AddressMemoryAreaMSB)
+            synth_str, synth_byte = parse_sysex_message(message, AddressOffsetTemporaryToneUMB)
+            part_str, part_byte = parse_sysex_message(message, AddressOffsetProgramLMB)
             part_address = hex(part_byte)
 
             try:
                 parameter_enum = PARAMETER_PART_MAP.get(synth_str)
                 if parameter_enum is not None:
-                    param_str, param = parse_sysex_byte(message, parameter_enum)
+                    param_str, param = parse_sysex_message(message, parameter_enum)
                 else:
                     raise ValueError(f"No parameter enum defined for synth type: {synth_str}")
                 param_address = hex(param)
@@ -281,14 +297,14 @@ class MIDIDebugger(QMainWindow):
         }
         try:
             # Parse top-level SysEx components
-            command_str, command_byte = parse_sysex_byte(message, CommandID)
-            area_str, area_byte = parse_sysex_byte(message, AddressMemoryAreaMSB)
-            synth_str, synth_byte = parse_sysex_byte(message, AddressOffsetTemporaryToneUMB)
-            part_str, part_byte = parse_sysex_byte(message, AddressOffsetProgramLMB)
+            command_str, command_byte = parse_sysex_message(message, CommandID)
+            area_str, area_byte = parse_sysex_message(message, AddressMemoryAreaMSB)
+            synth_str, synth_byte = parse_sysex_message(message, AddressOffsetTemporaryToneUMB)
+            part_str, part_byte = parse_sysex_message(message, AddressOffsetProgramLMB)
             part_address = hex(part_byte)
             try:
                 parameter = PARAMETER_PART_MAP.get(synth_str)
-                param_str, param = parse_sysex_byte(message, parameter)
+                param_str, param = parse_sysex_message(message, parameter)
                 param_address = hex(param)
             except Exception as ex:
                 logging.info(f"Error {ex} parsing sysex bytes")

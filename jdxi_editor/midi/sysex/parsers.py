@@ -19,7 +19,7 @@ Functions:
 import logging
 from typing import List, Dict, Type
 
-from jdxi_editor.log.message import log_parameter
+# from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
@@ -44,7 +44,7 @@ def extract_hex(data: List[int], start: int, end: int, default: str = "N/A") -> 
 
 def get_temporary_area(data: List[int]) -> str:
     """Map address bytes to corresponding temporary area."""
-    log_parameter("data for temporary area", data)
+    # log_parameter("data for temporary area", data)
     area_mapping = {
         (0x18, 0x00): "TEMPORARY_PROGRAM_AREA",
         (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
@@ -144,7 +144,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
             parsed_data.update(parse_parameters(data, AddressParameterDrumCommon))
         parsed_data.update(parse_parameters(data, AddressParameterDrumPartial))
 
-    log_parameter("Address", parsed_data['ADDRESS'])
-    log_parameter("Temporary Area:", temporary_area)
+    # log_parameter("Address", parsed_data['ADDRESS'])
+    # log_parameter("Temporary Area:", temporary_area)
     log_to_json(parsed_data)
     return parsed_data
