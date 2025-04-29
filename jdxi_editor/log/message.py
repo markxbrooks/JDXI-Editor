@@ -9,6 +9,15 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
+# Add emojis based on log level
+LEVEL_EMOJIS = {
+    logging.DEBUG: "🔍",
+    logging.INFO: "ℹ️",
+    logging.WARNING: "⚠️",
+    logging.ERROR: "❌",
+    logging.CRITICAL: "💥",
+}
+
 
 def log_slider_parameters(umb: int,
                           lmb: int,
@@ -33,6 +42,14 @@ def log_slider_parameters(umb: int,
         f"{param.name:<30} "
         f"MIDI {value:<4} -> Slider {slider_value}"
     )
+
+    emoji = LEVEL_EMOJIS.get(level, "🔔")
+
+    # Add MIDI flair if message seems MIDI-related
+    midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
+    qc_passed_tag = "✅" if "updat" in message.lower() else ""
+    message = f"{emoji} {qc_passed_tag} {midi_tag} {message}"
+
     # Use correct logging function depending on level
     if level == logging.DEBUG:
         logger.debug(message, stacklevel=2)
@@ -47,6 +64,7 @@ def log_slider_parameters(umb: int,
     else:
         # fallback for non-standard levels
         logger.log(message, stacklevel=2)
+
 
 def log_parameter(
     message: str,
@@ -79,15 +97,7 @@ def log_parameter(
     padded_message = f"{message:<{LOG_PADDING_WIDTH}}"
     padded_type = f"{type_name:<12}"
 
-    # Add emojis based on log level
-    level_emojis = {
-        logging.DEBUG: "🔍",
-        logging.INFO: "ℹ️",
-        logging.WARNING: "⚠️",
-        logging.ERROR: "❌",
-        logging.CRITICAL: "💥",
-    }
-    emoji = level_emojis.get(level, "🔔")
+    emoji = LEVEL_EMOJIS.get(level, "🔔")
 
     # Add MIDI flair if message seems MIDI-related
     midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
