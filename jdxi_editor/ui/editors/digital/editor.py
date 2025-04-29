@@ -45,6 +45,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.log.message import log_parameter, log_slider_parameters
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
@@ -85,9 +86,9 @@ class DigitalSynthEditor(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXIPresetHelper = None,
         synth_number: int = 1,
         parent: QWidget = None,
-        preset_helper: QWidget = None,
     ):
         super().__init__(parent)
         self.instrument_image_group = None
@@ -805,9 +806,9 @@ class DigitalSynth2Editor(DigitalSynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: JDXIPresetHelper = None,
         synth_number: int = 2,
         parent: QWidget = None,
-        preset_helper: QWidget = None,
     ):
         super().__init__(midi_helper=midi_helper,
                          synth_number=synth_number,

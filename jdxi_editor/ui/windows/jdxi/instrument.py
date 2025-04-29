@@ -395,8 +395,8 @@ class JdxiInstrument(JdxiUi):
 
             editor = editor_class(
                 midi_helper=self.midi_helper,
-                parent=self,
                 preset_helper=preset_helper,
+                parent=self,
                 **kwargs,
             ) if preset_helper else editor_class(
                 midi_out=self.midi_helper.midi_out,
