@@ -20,6 +20,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH
+from jdxi_editor.log.message import log_slider_parameters
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
@@ -206,17 +207,7 @@ class ADSR(QWidget):
                 if match := ENVELOPE_PATTERN.search(param.name):
                     key = f"{match.group().lower()}_time"
                     self.envelope[key] = midi_cc_to_ms(slider.value())
-
-                    area = f"{int(self.address.umb):02X}"
-                    part = f"{int(self.address.lmb):02X}"
-
-                    message = (
-                        f"Updating area {area:<2} "
-                        f"part {part:<2} "
-                        f"{param.name:<30} "
-                        f"MIDI {param.value[0]:<4} -> Slider {slider.value()}"
-                    )
-                    logging.info(message)
+                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
 
     def update_controls_from_envelope(self):
         """Update slider controls from envelope values."""
