@@ -60,7 +60,7 @@ class MidiInHandler(MidiIOController):
         """
         Initialize the MIDIInHandler.
 
-        :param parent: Optional parent widget or object.
+        :param parent: Optional[Any] parent widget or object.
         """
         super().__init__(parent)
         self.parent = parent
@@ -72,9 +72,11 @@ class MidiInHandler(MidiIOController):
         self.midi_in.set_callback(self.midi_callback)
         self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
 
-    def midi_callback(self, message, data):
+    def midi_callback(self, message: list[Any], data: Any) -> None:
         """callback for rtmidi
         mido doesn't have callbacks, so we convert
+        :param message: list[Any]
+        :param data: Any
         """
         try:
             message_content, data = message
@@ -87,8 +89,11 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             logging.info(ex)
 
-    def reopen_input_port_name(self, in_port) -> bool:
-        """Reopen the current MIDI input port and reattach the callback."""
+    def reopen_input_port_name(self, in_port: str) -> bool:
+        """Reopen the current MIDI input port and reattach the callback.
+        :param in_port: str
+        :return: bool
+        """
         try:
             if self.input_port_number is None:
                 logging.warning("No MIDI input port to reopen.")
@@ -156,7 +161,7 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             logging.info(f"Error {ex} occurred")
 
-    def _handle_note_change(self, message: Any, preset_data) -> None:
+    def _handle_note_change(self, message: Any, preset_data: dict) -> None:
         """
         Handle Note On and Note Off MIDI messages.
 
@@ -165,7 +170,7 @@ class MidiInHandler(MidiIOController):
         """
         logging.info("MIDI message note change: %s as %s", message.type, message)
 
-    def _handle_clock(self, message: Any, preset_data) -> None:
+    def _handle_clock(self, message: Any, preset_data: dict) -> None:
         """
         Handle MIDI Clock messages quietly.
 
@@ -176,8 +181,10 @@ class MidiInHandler(MidiIOController):
         if message.type == "clock":
             return
 
-    def _emit_program_or_tone_name(self, parsed_data):
-        """Emits the appropriate Qt signal for the extracted tone name."""
+    def _emit_program_or_tone_name(self, parsed_data: dict) -> None:
+        """Emits the appropriate Qt signal for the extracted tone name.
+        :param parsed_data: dict
+        """
         valid_addresses = {
             "12180000",
             "12190100",
@@ -223,7 +230,7 @@ class MidiInHandler(MidiIOController):
         else:
             logging.warning(f"Unknown area: {area}. Cannot emit tone name.")
 
-    def _handle_sysex_message(self, message: Any, preset_data) -> None:
+    def _handle_sysex_message(self, message: Any, preset_data: dict) -> None:
         """
         Handle SysEx MIDI messages from the Roland JD-Xi.
 
@@ -270,7 +277,7 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             logging.error(f"Unexpected error {ex} while handling SysEx message")
 
-    def _handle_control_change(self, message: Any, preset_data) -> None:  # @@
+    def _handle_control_change(self, message: Any, preset_data: dict) -> None:  # @@
         """
         Handle Control Change (CC) MIDI messages.
 
@@ -304,7 +311,7 @@ class MidiInHandler(MidiIOController):
         elif control == 32:
             self.cc_lsb_value = value
 
-    def _handle_program_change(self, message: Any, preset_data) -> None:
+    def _handle_program_change(self, message: Any, preset_data: dict) -> None:
         """
         Handle Program Change (PC) MIDI messages.
 

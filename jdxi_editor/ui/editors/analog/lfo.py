@@ -1,3 +1,7 @@
+"""
+Analog LFO Section
+"""
+from typing import Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import QSize
 import qtawesome as qta
@@ -7,13 +11,14 @@ from jdxi_editor.ui.style import JDXIStyle
 
 
 class AnalogLFOSection(QWidget):
+    """Analog LFO Section"""
     def __init__(
         self,
-        create_parameter_slider,
-        create_parameter_switch,
-        create_parameter_combo_box,
-        on_lfo_shape_changed,
-        lfo_shape_buttons,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
+        on_lfo_shape_changed: Callable,
+        lfo_shape_buttons: dict,
     ):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
@@ -24,6 +29,7 @@ class AnalogLFOSection(QWidget):
         self._init_ui()
 
     def _init_ui(self):
+        """Initialize the UI"""
         layout = QVBoxLayout()
         self.setLayout(layout)
 

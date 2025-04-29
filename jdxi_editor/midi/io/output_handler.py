@@ -95,7 +95,6 @@ class MidiOutHandler(MidiIOController):
         :return: True if the message was successfully sent, False otherwise.
         :rtype: bool
         """
-        logging.debug("========Sending raw MIDI message==========")
 
         if not validate_midi_message(message):
             logging.info("MIDI message validation failed.")
@@ -109,7 +108,7 @@ class MidiOutHandler(MidiIOController):
 
         try:
             log_parameter(
-                "QC passed, sending message ", formatted_message, level=logging.INFO
+                "[MIDI ✅] QC passed — Sending message:", formatted_message, level=logging.INFO
             )
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)

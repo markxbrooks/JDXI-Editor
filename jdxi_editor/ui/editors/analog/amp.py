@@ -1,20 +1,28 @@
+"""
+Amp section of the JD-Xi editor
+
+This section contains the controls for the amp section of the JD-Xi editor.
+"""
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
-
+from typing import Callable
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 
 
 class AmpSection(QWidget):
+    """Amp section of the JD-Xi editor"""
     def __init__(
         self,
-        midi_helper,
-        address,
-        create_parameter_slider,
-        generate_waveform_icon,
-        base64_to_pixmap,
+        midi_helper: MidiIOHelper,
+        address: RolandSysExAddress,
+        create_parameter_slider: Callable,
+        generate_waveform_icon: Callable,
+        base64_to_pixmap: Callable,
     ):
         super().__init__()
         self.midi_helper = midi_helper

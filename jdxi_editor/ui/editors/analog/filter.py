@@ -1,21 +1,29 @@
+"""
+Analog Filter Section
+"""
+from typing import Callable
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
 class AnalogFilterSection(QWidget):
+    """Analog Filter Section"""
     def __init__(
         self,
-        create_parameter_slider,
-        create_parameter_switch,
-        on_filter_mode_changed,
-        send_control_change,
-        midi_helper,
-        address
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        on_filter_mode_changed: Callable,
+        send_control_change: Callable,
+        midi_helper: MidiIOHelper,
+        address: RolandSysExAddress
     ):
         super().__init__()
         self.filter_resonance = None
@@ -28,6 +36,7 @@ class AnalogFilterSection(QWidget):
         self.init_ui()
 
     def init_ui(self):
+        """Initialize the UI"""
         layout = QVBoxLayout()
         self.setLayout(layout)
 
