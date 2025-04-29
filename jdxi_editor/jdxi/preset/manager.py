@@ -67,8 +67,6 @@ class JDXIPresetManager:
         if preset_type in self.current_preset_names:
             self.current_preset_names[preset_type] = preset_name
             self._update_display()
-        #else:
-        #    raise ValueError(f"Invalid tone type: {preset_type}")
 
     def get_preset_name_by_type(self, tone_type: JDXISynth) -> str:
         """Get the tone name for a specific tone type."""
