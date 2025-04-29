@@ -36,6 +36,7 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
 
+from jdxi_editor.log.message import log_parameter
 from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
     get_next_program_bank_and_number,
@@ -104,7 +105,10 @@ class JDXIProgramHelper(QObject):
         self.current_program_number = program_number
         self.program_changed.emit(bank_letter, program_number)
         msb, lsb, pc = calculate_midi_values(bank_letter, program_number)
-        logging.info(f"calculated msb, lsb, pc : {msb}, {lsb}, {pc} ")
+        logging.info(f"calculated msb, lsb, pc :")
+        log_parameter("msb", msb)
+        log_parameter("lsb", lsb)
+        log_parameter("pc", pc)
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
         program_details = get_program_by_bank_and_number(bank_letter, program_number)
         logging.info(program_details)
