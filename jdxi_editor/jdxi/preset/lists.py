@@ -3361,7 +3361,7 @@ class JDXIPresets:
         {
             "id": "256",
             "name": "Init Tone",
-            "category": "FX\/Other",
+            "category": r"FX/Other",
             "msb": 95.0,
             "lsb": 65.0,
             "pc": 128.0,
