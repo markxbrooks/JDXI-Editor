@@ -491,13 +491,12 @@ class DigitalSynthEditor(SynthEditor):
                                       failures: list = None,
                                       debug: bool = False):
         """
+        Update the UI components for tone common and modify parameters.
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
         :param failures: List of failed parameters
         :param debug: bool
         :return: None
-
-        _update_tone_common_modify_ui
         """
         logging.info("\nTone common and modify")
         for param_name, param_value in sysex_data.items():
@@ -594,6 +593,13 @@ class DigitalSynthEditor(SynthEditor):
                                     partial_no: int,
                                     param: AddressParameter,
                                     value: int):
+        """
+        Update the ADSR widget for a specific partial based on the parameter and value.
+        :param partial_no: int Partial number
+        :param param: AddressParameter address
+        :param value: int value
+        :return: None
+        """
         use_frac = param in {
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
@@ -636,8 +642,16 @@ class DigitalSynthEditor(SynthEditor):
                        value: int,
                        successes: list = None,
                        failures: list = None,
-                       debug: bool = False):
-        """Update slider based on parameter and value."""
+                       debug: bool = False) -> None:
+        """
+        Update slider based on parameter and value.
+        :param param: AddressParameter
+        :param value: int value
+        :param successes: list
+        :param failures: list
+        :param debug: bool
+        :return: None
+        """
         slider = self.controls.get(param)
         if debug:
             log_parameter(f"Updating slider for", param)
@@ -656,8 +670,16 @@ class DigitalSynthEditor(SynthEditor):
                        value: int,
                        successes: list = None,
                        failures: list = None,
-                       debug: bool = False):
-        """Update switch based on parameter and value."""
+                       debug: bool = False) -> None:
+        """
+        Update switch based on parameter and value.
+        :param param: AddressParameter
+        :param value: int value
+        :param successes: list
+        :param failures: list
+        :param debug: bool
+        :return: None
+        """
         switch = self.controls.get(param)
         if debug:
             log_parameter(f"Updating switch for", param)
