@@ -46,6 +46,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -359,10 +360,10 @@ class DigitalSynthEditor(SynthEditor):
         param = get_digital_parameter_by_address(parameter_address)
 
         if not param:
-            logging.debug(f"No parameter found for address: {parameter_address}")
+            log_parameter("No parameter found for address", parameter_address)
             return
 
-        logging.info(f"Received param: {param} | address: {address} | value: {value}")
+        log_message(f"Received param: {param} | address: {address} | value: {value}")
         self._update_partial_slider(partial_no, param, value)
         self._handle_special_params(partial_no, param, value)
 
@@ -379,12 +380,12 @@ class DigitalSynthEditor(SynthEditor):
         """
         if param == AddressParameterDigitalPartial.OSC_WAVE:
             self._update_waveform_buttons(partial_no, value)
-            logging.debug(f"Updated waveform buttons for OSC_WAVE: value={value}")
+            log_parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
             self.partial_editors[partial_no].filter_mode_switch.setValue(value)
             self._update_filter_state(partial_no, value)
-            logging.debug(f"Updated filter state for FILTER_MODE_SWITCH: value={value}")
+            log_parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
     def _apply_partial_ui_updates(self,
                                   partial_no: int,
@@ -535,7 +536,7 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
-        logging.info("Updating UI components from SysEx data")
+        log_message("Updating UI components from SysEx data")
         debug_param_updates = True
         debug_stats = True
 
