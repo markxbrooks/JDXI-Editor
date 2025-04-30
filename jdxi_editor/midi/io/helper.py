@@ -17,15 +17,13 @@ Dependencies:
     - jdxi_manager.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
 
 """
-import json
+
 import logging
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
-from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
-from jdxi_editor.midi.message.midi import MidiMessage
-from jdxi_editor.midi.message.roland import JDXiSysEx
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
 
 
@@ -120,7 +118,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             # Ensure both ports are found
             if not in_port or not out_port:
-                logging.warning("JD-Xi MIDI auto-connect failed")
+                log_message("JD-Xi MIDI auto-connect failed", level=logging.WARNING)
                 log_parameter("MIDI in_port", in_port)
                 log_parameter("MIDI out_port", out_port)
                 return False
@@ -128,12 +126,11 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
 
             # Verify connection
             if self.identify_device():
-                logging.info(
-                    f"Successfully connected to JD-Xi MIDI: {in_port} / {out_port}"
-                )
+                log_parameter("Successfully connected to JD-Xi MIDI:", in_port)
+                log_message("Successfully connected to JD-Xi MIDI", out_port)
                 return True
             else:
-                logging.warning("JD-Xi identity verification failed.")
+                log_message("JD-Xi identity verification failed.", level=logging.WARNING)
                 return False
 
         except Exception as ex:

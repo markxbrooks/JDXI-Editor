@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressOffsetProgramLMB,

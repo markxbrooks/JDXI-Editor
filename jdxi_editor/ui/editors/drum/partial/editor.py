@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
 )
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
 from jdxi_editor.jdxi.synth.factory import create_synth_data

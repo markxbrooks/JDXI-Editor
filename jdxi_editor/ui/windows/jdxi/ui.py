@@ -39,6 +39,7 @@ from PySide6.QtGui import (
 import qtawesome as qta
 
 from jdxi_editor.globals import logger
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io import MidiIOHelper
@@ -402,19 +403,19 @@ class JdxiUi(QMainWindow):
         font_path = resource_path(os.path.join("resources", "fonts", font_name
                                                ))
         if os.path.exists(font_path):
-            logging.debug(f"Found font file, loading...")
-            logger.info("font_name: \t%s", font_name)
-            logger.info("font_path: \t%s", font_path)
+            log_message(f"Success: found font file, loading...")
+            log_message(f"font_name: \t{font_name}")
+            log_message(f"font_path: \t{font_path}")
             try:
                 font_id = QFontDatabase.addApplicationFont(font_path)
                 if font_id < 0:
-                    logging.debug(f"Error loading {font_name} font")
+                    log_message(f"Error loading {font_name} font", level=logging.WARNING)
                 font_families = QFontDatabase.applicationFontFamilies(font_id)
                 if font_families:
                     self.digital_font_family = font_families[0]
-                    logger.info("Successfully loaded font family: \t%s", self.digital_font_family)
+                    log_message(f"Successfully loaded font family: \t{self.digital_font_family}", )
                 else:
-                    logging.debug("No font families found after loading font")
+                    log_message("No font families found after loading font", level=logging.WARNING)
             except Exception as ex:
                 logging.exception(
                     f"Error loading {font_name} font from {font_path}: {ex}"

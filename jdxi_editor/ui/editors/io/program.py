@@ -53,7 +53,7 @@ from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper

@@ -4,7 +4,7 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressMemoryAreaMSB,

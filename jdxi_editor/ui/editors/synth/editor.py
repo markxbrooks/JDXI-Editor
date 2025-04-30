@@ -28,7 +28,7 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -375,7 +375,7 @@ class SynthEditor(SynthBase):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
-            log_parameter(f"selected instrument text:", selected_instrument_name)
+            log_parameter(f"selected instrument name:", selected_instrument_name)
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
