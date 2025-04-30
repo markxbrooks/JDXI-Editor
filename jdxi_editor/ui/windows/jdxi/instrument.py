@@ -45,7 +45,8 @@ from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetProgramLMB, \
     AddressOffsetTemporaryToneUMB, AddressOffsetSystemUMB, RolandSysExAddress
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
@@ -854,7 +855,7 @@ class JdxiInstrument(JdxiUi):
                 if input_port and output_port:
                     self._midi_init_ports(input_port, output_port)
 
-                logging.debug("Settings loaded successfully")
+                log_message("JDXI Settings loaded successfully")
 
         except Exception as ex:
             logging.error(f"Error loading settings: {str(ex)}")

@@ -38,6 +38,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 import qtawesome as qta
+
+from jdxi_editor.log.message import log_message
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
@@ -139,10 +141,11 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.close_ports()
         input_port_text = self.get_input_port()
         output_port_text = self.get_output_port()
-        logging.debug(f"Reconnecting to: IN='{input_port_text}', OUT='{output_port_text}'")
+        log_message(f"Reconnecting to: MIDI OUT='{output_port_text}'", level=logging.INFO)
+        log_message(f"Reconnecting to: MIDI OUT='{output_port_text}'", level=logging.INFO)
         success = self.midi_helper.reconnect_port_names(input_port_text, output_port_text)
         if not success:
-            logging.warning("Failed to reopen MIDI ports")
+            log_message("Failed to reopen MIDI ports", level=logging.WARNING)
 
     def get_input_port(self) -> str:
         """Get selected input port name

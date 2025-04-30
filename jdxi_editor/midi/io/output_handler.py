@@ -24,9 +24,10 @@ from typing import List, Optional, Union
 
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
+
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
-from jdxi_editor.globals import LOG_PADDING_WIDTH
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
@@ -103,7 +104,7 @@ class MidiOutHandler(MidiIOController):
         formatted_message = format_midi_message_to_hex_string(message)
 
         if not self.midi_out.is_port_open():
-            logging.info("MIDI output port is not open.")
+            log_message("MIDI output port is not open.")
             return False
 
         try:

@@ -28,7 +28,8 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import extract_command_info, handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
@@ -109,9 +110,9 @@ class MidiInHandler(MidiIOController):
             # Reset callback
             if hasattr(self, "midi_callback"):
                 self.midi_in.set_callback(self.midi_callback)
-                logging.info(f"Callback reattached to MIDI input port {in_port}")
+                log_message(f"Callback reattached to MIDI input port {in_port}")
             else:
-                logging.warning("No handle_midi_input() method found for callback.")
+                log_message("No handle_midi_input() method found for callback.", level="warning")
             return True
 
         except Exception as ex:

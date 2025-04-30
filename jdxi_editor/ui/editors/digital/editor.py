@@ -46,7 +46,8 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
-from jdxi_editor.log.message import log_parameter, log_slider_parameters
+from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.jdxi.synth.type import JDXISynth

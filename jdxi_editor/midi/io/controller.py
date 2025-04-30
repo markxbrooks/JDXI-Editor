@@ -29,7 +29,8 @@ from typing import Optional, List, Tuple
 
 import rtmidi
 from PySide6.QtCore import QObject
-from rtmidi import MidiOut
+from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 
 
 class MidiIOController(QObject):
@@ -84,7 +85,6 @@ class MidiIOController(QObject):
         """
         return self.midi_out.get_ports()
 
-
     def find_jdxi_ports(self) -> Tuple[Optional[str], Optional[str]]:
         """
         Find JD-Xi input and output ports
@@ -134,20 +134,20 @@ class MidiIOController(QObject):
                         port_index = i
                         break
                 else:
-                    logging.error(f"MIDI input port not found: {port_name_or_index}")
+                    log_message(f"MIDI input port not found: {port_name_or_index}", level=logging.ERROR)
                     return False
 
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
-                logging.error(f"Invalid MIDI input port index: {port_index}")
+                log_parameter("Invalid MIDI input port index:", port_index)
                 return False
 
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
-            logging.info(f"Opened MIDI input port: \t{ports[port_index]}")
+            log_parameter(f"Opened MIDI input port:", ports[port_index])
             return True
 
         except Exception as ex:
-            logging.error(f"Error opening MIDI input port: {str(ex)}")
+            log_message(f"Error opening MIDI input port: {str(ex)}", level=logging.ERROR)
             return False
 
     def open_output_port(self, port_name_or_index: str) -> bool:
@@ -171,7 +171,7 @@ class MidiIOController(QObject):
                     port_index = port_name_or_index
 
             if port_index is None:
-                logging.error(f"Invalid or missing MIDI output port: {port_name_or_index}")
+                log_message(f"Invalid or missing MIDI output port: {port_name_or_index}", level=logging.ERROR)
                 return False
 
             # Safely close if already open
@@ -182,43 +182,9 @@ class MidiIOController(QObject):
             self.midi_out = rtmidi.MidiOut()  # <- reinitialize
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
-            logging.info(f"Opened MIDI output port: {ports[port_index]}")
+            log_parameter(f"Opened MIDI output port:", ports[port_index])
             return True
 
-        except Exception as e:
-            logging.error(f"Error opening MIDI output port: {str(e)}")
-            return False
-
-    def open_output_port_old(self, port_name_or_index: str) -> bool:
-        """
-        Open MIDI output port by name or index
-
-        :param port_name_or_index: str, MIDI output port name or index
-        :return: bool True if successful, False otherwise
-        """
-        try:
-            ports = self.get_output_ports()
-            port_index = port_name_or_index
-
-            if isinstance(port_name_or_index, str):
-                # Find port index by name
-                for i, name in enumerate(ports):
-                    if port_name_or_index.lower() in name.lower():
-                        port_index = i
-                        break
-                else:
-                    logging.error(f"MIDI output port not found: {port_name_or_index}")
-                    return False
-
-            # Validate port index
-            if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
-                logging.error(f"Invalid MIDI output port index: {port_index}")
-                return False
-            self.midi_out = rtmidi.MidiOut()
-            self.midi_out.open_port(port_index)
-            self.output_port_number = port_index
-            logging.info(f"Opened MIDI output port: {ports[port_index]}")
-            return True
         except Exception as ex:
             logging.error(f"Error opening MIDI output port: {str(ex)}")
             return False

@@ -156,7 +156,7 @@ class RolandSysExAddress:
         )
 
     def __str__(self):
-        return f"{self.__class__.__name__} 0x{int(self.msb):02X} 0x{int(self.umb):02X} 0x{int(self.lmb):02X} 0x{int(self.lsb):02X}"
+        return f"0x{int(self.msb):02X} 0x{int(self.umb):02X} 0x{int(self.lmb):02X} 0x{int(self.lsb):02X}"
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RolandSysExAddress):

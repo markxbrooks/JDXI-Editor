@@ -19,7 +19,7 @@ from typing import Dict, Union, Optional
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout, QVBoxLayout
-from jdxi_editor.log.message import log_slider_parameters
+from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
@@ -75,8 +75,8 @@ class AdsrSliderSpinbox(QWidget):
 
     def __init__(self,
                  param: AddressParameter,
-                 min_value: int = 0,
-                 max_value: int = 1,
+                 min_value: float = 0.0,
+                 max_value: float = 1.0,
                  suffix: str = "",
                  label: str = "",
                  value: int = None,

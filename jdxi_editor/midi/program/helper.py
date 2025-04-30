@@ -36,7 +36,7 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.log.message import log_parameter
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
     get_next_program_bank_and_number,

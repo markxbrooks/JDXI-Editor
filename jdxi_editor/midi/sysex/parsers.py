@@ -19,7 +19,7 @@ Functions:
 import logging
 from typing import List, Dict, Type
 
-# from jdxi_editor.log.message import log_parameter
+# from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
