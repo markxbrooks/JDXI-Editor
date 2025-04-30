@@ -266,18 +266,16 @@ class ADSRPlotNew(QWidget):
 
 
 class ADSRPlot(QWidget):
-    def __init__(self, width=400, height=400, parent=None):
+    def __init__(self,
+                 width: int = 400,
+                 height: int = 400,
+                 envelope: dict = None,
+                 parent: QWidget = None):
         super().__init__(parent)
+        self.parent = parent
         # Default envelope parameters (times in ms)
         self.enabled = True
-        self.envelope = {
-            "attack_time": 100,
-            "decay_time": 400,
-            "release_time": 100,
-            "initial_level": 0,
-            "peak_level": 1,
-            "sustain_level": 0.8,
-        }
+        self.envelope = envelope
         # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
@@ -298,6 +296,12 @@ class ADSRPlot(QWidget):
         self.sustain_level = 0.5
         self.release_x = 0.7
         self.dragging = None
+        if hasattr(self.parent, "envelopeChanged"):
+            self.parent.envelopeChanged.connect(self.set_values)
+
+    def set_values(self, envelope: dict):
+        self.envelope = envelope
+        self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)

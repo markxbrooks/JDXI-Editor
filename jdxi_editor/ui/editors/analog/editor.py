@@ -509,19 +509,19 @@ class AnalogSynthEditor(SynthEditor):
             )
 
             adsr_mapping = {
-                AddressParameterAnalog.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_sb,
-                AddressParameterAnalog.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_sb,
-                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_sb,
-                AddressParameterAnalog.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_sb,
-                AddressParameterAnalog.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_sb,
-                AddressParameterAnalog.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_sb,
-                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_sb,
-                AddressParameterAnalog.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_sb,
+                AddressParameterAnalog.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_control,
+                AddressParameterAnalog.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_control,
+                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_control,
+                AddressParameterAnalog.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_control,
+                AddressParameterAnalog.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_control,
+                AddressParameterAnalog.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_control,
+                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_control,
+                AddressParameterAnalog.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_control,
             }
 
             if parameter in adsr_mapping:
-                spinbox = adsr_mapping[parameter]
-                spinbox.setValue(new_value)
+                control = adsr_mapping[parameter]
+                control.setValue(new_value)
 
         for param_name, param_value in current_sysex_data.items():
             param = AddressParameterAnalog.get_by_name(param_name)

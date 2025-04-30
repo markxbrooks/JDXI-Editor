@@ -601,34 +601,32 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
         new_value = midi_cc_to_frac(value) if use_frac else midi_cc_to_ms(value)
-
         adsr_map = {
             AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.attack_sb,
+            ].amp_tab.amp_env_adsr_widget.attack_control,
             AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.decay_sb,
+            ].amp_tab.amp_env_adsr_widget.decay_control,
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.sustain_sb,
+            ].amp_tab.amp_env_adsr_widget.sustain_control,
             AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.release_sb,
+            ].amp_tab.amp_env_adsr_widget.release_control,
             AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.attack_sb,
+            ].filter_tab.filter_adsr_widget.attack_control,
             AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.decay_sb,
+            ].filter_tab.filter_adsr_widget.decay_control,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.sustain_sb,
+            ].filter_tab.filter_adsr_widget.sustain_control,
             AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.release_sb,
+            ].filter_tab.filter_adsr_widget.release_control,
         }
-
         spinbox = adsr_map.get(param)
         if spinbox:
             spinbox.setValue(new_value)
