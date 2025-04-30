@@ -272,6 +272,40 @@ class JDXIStyle:
         SLIDER_NEON_GRADIENT_STOP,
     )
 
+    LOG_VIEWER = """
+            QMainWindow {
+                background-color: #2E2E2E;
+            }
+            QWidget {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QTextEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #FF3333;
+            }
+            QPushButton:border_pressed {
+                background-color: #2D2D2D;
+            }
+        """
+
     SPLASH_SCREEN = generate_editor_style(
         ACCENT,
         ACCENT_HOVER,
