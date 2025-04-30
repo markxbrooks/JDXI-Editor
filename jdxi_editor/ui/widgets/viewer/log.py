@@ -35,6 +35,9 @@ Usage Example:
 import logging
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit, QPushButton
 
+from jdxi_editor.log.emoji import LEVEL_EMOJIS
+from jdxi_editor.ui.style import JDXIStyle
+
 
 class LogViewer(QMainWindow):
     def __init__(self, midi_helper=None, parent=None):
@@ -43,41 +46,7 @@ class LogViewer(QMainWindow):
         self.setMinimumSize(980, 400)
 
         # Apply dark theme styling
-        self.setStyleSheet(
-            """
-            QMainWindow {
-                background-color: #2E2E2E;
-            }
-            QWidget {
-                background-color: #2E2E2E;
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QTextEdit {
-                background-color: #1A1A1A;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px;
-                font-family: 'Consolas';
-            }
-            QPushButton {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
-                background-color: #4D4D4D;
-                border: 1px solid #FF3333;
-            }
-            QPushButton:border_pressed {
-                background-color: #2D2D2D;
-            }
-        """
-        )
+        self.setStyleSheet(JDXIStyle.LOG_VIEWER)
 
         # Create central widget and layout
         main_widget = QWidget()
@@ -85,6 +54,7 @@ class LogViewer(QMainWindow):
 
         # Create log text area
         self.log_text = QTextEdit()
+        self.log_text.setLineWrapMode(QTextEdit.NoWrap)
         self.log_text.setReadOnly(True)
         layout.addWidget(self.log_text)
 
@@ -118,20 +88,18 @@ class LogHandler(logging.Handler):
         self.text_widget = text_widget
         self.setFormatter(
             logging.Formatter(
-                "%(asctime)s - %(levelname)s - %(message)s %(filename)s:%(lineno)d"
+                "%(filename)-20s| %(lineno)-5s| %(levelname)-8s| %(message)-24s"
             )
         )
 
     def emit(self, record):
         msg = self.format(record)
-        # Add color based on log level
-        if record.levelno >= logging.ERROR:
-            msg = f'<span style="color: #FF0000;">{msg}</span>'  # Red for errors
-        elif record.levelno >= logging.WARNING:
-            msg = f'<span style="color: #FFA500;">{msg}</span>'  # Orange for warnings
-        elif record.levelno >= logging.INFO:
-            msg = f'<span style="color: #FFFFFF;">{msg}</span>'  # White for info
-        else:
-            msg = f'<span style="color: #888888;">{msg}</span>'  # Grey for debug
-
-        self.text_widget.append(msg)
+        # Add emojis based on log level
+        emoji = LEVEL_EMOJIS.get(record.levelno, "🔔")
+        message = self.format(record)
+        # Add MIDI flair if message seems MIDI-related
+        # midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
+        # jdxi_tag = "🎹" if "jdxi" or "jd-xi" in message.lower() in message.lower() else ""
+        # qc_passed_tag = "✅" if "updat" in message.lower() or "success" in message.lower() else ""
+        full_message = message  # f"{emoji}{jdxi_tag}{qc_passed_tag}{midi_tag} {message}"
+        self.text_widget.append(full_message)
