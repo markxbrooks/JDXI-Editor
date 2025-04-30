@@ -144,7 +144,7 @@ class DigitalSynthEditor(SynthEditor):
         top_layout = QVBoxLayout()
         top_widget.setLayout(top_layout)
 
-        # Partials panel only!
+        # Partials panel only
         self.partials_panel = PartialsPanel()
         self.partials_panel.setStyleSheet(JDXIStyle.TABS)
 
@@ -160,7 +160,6 @@ class DigitalSynthEditor(SynthEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        # 1. Add the instrument image group
         self.instrument_image_group = QGroupBox()
         instrument_group_layout = QVBoxLayout()
         self.instrument_image_group.setLayout(instrument_group_layout)
@@ -170,18 +169,14 @@ class DigitalSynthEditor(SynthEditor):
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.instrument_image_group.setMinimumWidth(450)
 
-        # 2. Add instrument image first (optional: you can move if needed later)
         container_layout.addWidget(self.instrument_image_group)
 
-        # 3. Create upper_layout
         upper_layout = QHBoxLayout()
         top_layout.addLayout(upper_layout)
         top_layout.addWidget(self.partials_panel)
 
-        # 4. Setup instrument preset group and put it into upper_layout
         self._create_instrument_group(container_layout, upper_layout)
 
-        # 5. Create partial tabs below
         self._create_partial_tab_widget(container_layout, self.midi_helper)
 
         scroll.setWidget(container)

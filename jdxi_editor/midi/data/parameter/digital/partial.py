@@ -39,7 +39,10 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 
 from typing import Tuple, Optional
+
+from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
+
 
 
 def map_range(value, in_min=-100, in_max=100, out_min=54, out_max=74):
@@ -267,3 +270,10 @@ class AddressParameterDigitalPartial(AddressParameter):
     def convert_from_midi(self, midi_value: int) -> int:
         """Convert from MIDI value to display value"""
         return self.convert_value(midi_value, reverse=True)
+
+    def get_envelope_param_type(self):
+        """
+        Returns a envelope_param_type, if the parameter is part of an envelope,
+        otherwise returns None.
+        """
+        return ENVELOPE_MAPPING.get(self.name)

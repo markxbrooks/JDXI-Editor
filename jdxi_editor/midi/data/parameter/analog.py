@@ -39,6 +39,7 @@ This class helps structure and manage parameter mappings for JD-Xi SysEx process
 
 from typing import Optional, Tuple
 
+from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
@@ -290,3 +291,10 @@ class AddressParameterAnalog(AddressParameter):
             partial_number, 0x00
         )  # Default to 0x20 if partial_name is not 1, 2, or 3
         return group, self.address
+
+    def get_envelope_param_type(self):
+        """
+        Returns a envelope_param_type, if the parameter is part of an envelope,
+        otherwise returns None.
+        """
+        return ENVELOPE_MAPPING.get(self.name)
