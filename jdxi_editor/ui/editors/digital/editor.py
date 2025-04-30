@@ -426,7 +426,7 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data:
         :return: None
         """
-        logging.info("Updating UI components from SysEx data")
+        logging.info("\nUpdating UI components from SysEx data")
         failures, successes = [], []
 
         # Parse SysEx data
@@ -462,7 +462,7 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
-        logging.info("Updating Partial UI components from SysEx data")
+        logging.info("\nUpdating Partial UI components from SysEx data")
 
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
