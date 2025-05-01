@@ -2,8 +2,8 @@ from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout
 from PySide6.QtWidgets import QHBoxLayout, QGridLayout
 
-from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.ui.style.helpers import (
+from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style.factory import (
     generate_sequencer_button_style,
     toggle_button_style,
 )

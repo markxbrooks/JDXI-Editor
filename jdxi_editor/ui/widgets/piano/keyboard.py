@@ -46,7 +46,7 @@ from jdxi_editor.midi.data.piano.keyboard import (
     KEYBOARD_WHITE_NOTES,
     DRUM_LABELS,
 )
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 

@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 
 from jdxi_editor.midi.data.digital import DigitalPartial
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class PartialSwitch(QWidget):

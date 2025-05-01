@@ -60,7 +60,7 @@ from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class DigitalPartialEditor(PartialEditor):

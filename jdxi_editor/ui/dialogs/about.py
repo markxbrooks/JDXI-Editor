@@ -9,7 +9,7 @@ from PySide6.QtCore import QSettings, QRect
 from jdxi_editor.project import __version__, __program__
 
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 CREDITS_LABEL_STYLE = """
         /* QLabels */

@@ -22,7 +22,7 @@ from PySide6.QtCore import Signal
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class PresetComboBox(QWidget):

@@ -77,8 +77,8 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.ui.editors.io.player import MidiPlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
 from jdxi_editor.ui.editors.io.preset import PresetEditor
-from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.ui.style.helpers import generate_sequencer_button_style
+from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog

@@ -44,7 +44,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_preset_parameter_value,
 )
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 def log_changes(previous_data, current_data):

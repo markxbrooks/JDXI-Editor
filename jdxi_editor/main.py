@@ -32,7 +32,7 @@ from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"

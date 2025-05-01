@@ -7,7 +7,7 @@ from PySide6.QtCore import QSize
 import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class AnalogLFOSection(QWidget):

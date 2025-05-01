@@ -62,7 +62,7 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 from typing import Protocol, TypeVar, Optional
