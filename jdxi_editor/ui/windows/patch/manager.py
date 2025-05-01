@@ -36,7 +36,7 @@ import logging
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
 

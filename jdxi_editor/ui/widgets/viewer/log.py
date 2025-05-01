@@ -36,7 +36,7 @@ import logging
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit, QPushButton
 
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class LogViewer(QMainWindow):

@@ -69,7 +69,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 
 

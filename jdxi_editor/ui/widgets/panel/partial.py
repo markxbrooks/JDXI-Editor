@@ -3,7 +3,7 @@ from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel
 
 from jdxi_editor.midi.data.digital import DigitalPartial
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 
 

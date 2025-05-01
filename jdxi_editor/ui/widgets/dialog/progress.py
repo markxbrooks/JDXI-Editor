@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QApplication
 
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class ProgressDialog(QDialog):

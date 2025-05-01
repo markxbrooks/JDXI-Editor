@@ -55,19 +55,15 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSlider,
     QTabWidget,
-    QComboBox,
-    QSpinBox, QSplitter,
+    QSplitter,
 )
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QShortcut, QKeySequence
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
-from jdxi_editor.jdxi.synth.analog import AnalogSynthData
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -86,27 +82,9 @@ from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_addres
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
-
-
-def set_widget_value_safely(widget: QWidget, value: int):
-    """
-    Block signals for the widget, set its value, then unblock signals.
-
-    :param widget: The widget whose value is to be set.
-    :param value: The value to set on the widget.
-    """
-    widget.blockSignals(True)
-    if isinstance(widget, QSlider):
-        widget.setValue(value)
-    elif isinstance(widget, QComboBox):
-        widget.setCurrentIndex(value)
-    elif isinstance(widget, QSpinBox):
-        widget.setValue(value)
-    # Add other widget types as needed
-    widget.blockSignals(False)
 
 
 class AnalogSynthEditor(SynthEditor):
@@ -512,11 +490,11 @@ class AnalogSynthEditor(SynthEditor):
             adsr_mapping = {
                 AddressParameterAnalog.AMP_ENV_ATTACK_TIME: self.amp_section.amp_env_adsr_widget.attack_control,
                 AddressParameterAnalog.AMP_ENV_DECAY_TIME: self.amp_section.amp_env_adsr_widget.decay_control,
-                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.sustain_control,
+                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL: self.amp_section.amp_env_adsr_widget.depth_control,
                 AddressParameterAnalog.AMP_ENV_RELEASE_TIME: self.amp_section.amp_env_adsr_widget.release_control,
                 AddressParameterAnalog.FILTER_ENV_ATTACK_TIME: self.filter_section.filter_adsr_widget.attack_control,
                 AddressParameterAnalog.FILTER_ENV_DECAY_TIME: self.filter_section.filter_adsr_widget.decay_control,
-                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.sustain_control,
+                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL: self.filter_section.filter_adsr_widget.depth_control,
                 AddressParameterAnalog.FILTER_ENV_RELEASE_TIME: self.filter_section.filter_adsr_widget.release_control,
             }
 

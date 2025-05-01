@@ -87,7 +87,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle

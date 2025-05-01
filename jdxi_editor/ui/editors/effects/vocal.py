@@ -43,7 +43,7 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.data.address.vocal import VocalAddress
 from jdxi_editor.midi.data.vocal_effects.vocal import (
     VocalAutoPitchType,

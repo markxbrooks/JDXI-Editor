@@ -75,7 +75,7 @@ Attributes:
 
 """
 
-from jdxi_editor.ui.style.helpers import (
+from jdxi_editor.jdxi.style.factory import (
     generate_button_style,
     generate_tab_style,
     generate_editor_style,

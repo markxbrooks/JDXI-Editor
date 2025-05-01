@@ -20,7 +20,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigi
 from jdxi_editor.midi.data.presets.pcm_waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 from jdxi_editor.midi.io.helper import MidiIOHelper
 

@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
 )
 
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class PatchNameEditor(QDialog):

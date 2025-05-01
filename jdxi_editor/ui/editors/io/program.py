@@ -66,7 +66,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
 )
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class ProgramEditor(SimpleEditor):

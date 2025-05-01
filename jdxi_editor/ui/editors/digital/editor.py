@@ -74,7 +74,7 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
@@ -617,7 +617,7 @@ class DigitalSynthEditor(SynthEditor):
             ].amp_tab.amp_env_adsr_widget.decay_control,
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.sustain_control,
+            ].amp_tab.amp_env_adsr_widget.depth_control,
             AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.release_control,
@@ -629,7 +629,7 @@ class DigitalSynthEditor(SynthEditor):
             ].filter_tab.filter_adsr_widget.decay_control,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.sustain_control,
+            ].filter_tab.filter_adsr_widget.depth_control,
             AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.release_control,

@@ -33,7 +33,7 @@ from jdxi_editor.midi.utils.conversions import (
 from jdxi_editor.ui.widgets.adsr.graph import ADSRGraph
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.slider.slider import Slider
-from jdxi_editor.ui.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXIStyle
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -228,16 +228,6 @@ class ADSR(QWidget):
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
-        self.release_control = AdsrSliderSpinbox(
-            release_param,
-            min_value=0,
-            max_value=1000,
-            suffix=" ms",
-            label="Release",
-            value=self.envelope["release_time"],
-            create_parameter_slider=self._create_parameter_slider,
-            parent=self,
-        )
         self.sustain_control = AdsrSliderSpinbox(
             sustain_param,
             min_value=0.0,
@@ -245,6 +235,16 @@ class ADSR(QWidget):
             suffix="",
             label="Sustain",
             value=self.envelope["sustain_level"],
+            create_parameter_slider=self._create_parameter_slider,
+            parent=self,
+        )
+        self.release_control = AdsrSliderSpinbox(
+            release_param,
+            min_value=0,
+            max_value=1000,
+            suffix=" ms",
+            label="Release",
+            value=self.envelope["release_time"],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -290,7 +290,6 @@ class ADSR(QWidget):
         :param envelope: dict
         :return: None
         """
-        # self.envelopeChanged.emit(self.envelope)
         self.plot.set_values(self.envelope)
 
     def setEnabled(self, enabled: bool):
@@ -300,11 +299,11 @@ class ADSR(QWidget):
         :return:
         """
         super().setEnabled(enabled)
-        for control in [self.attack_control, self.decay_control, self.sustain_control, self.release_control]:
+        for control in self.adsr_controls:
             control.setEnabled(enabled)
         self.plot.setEnabled(enabled)
 
-    def update_controls_from_envelope(self):
+    def update_controls_from_envelope_old(self):
         """Update slider controls from envelope values."""
         self.attack_control.setValue(self.envelope["attack_time"])
         self.decay_control.setValue(self.envelope["decay_time"])
