@@ -46,6 +46,8 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.log.footer import log_footer_message
+from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
@@ -417,8 +419,8 @@ class DigitalSynthEditor(SynthEditor):
             success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
             log_message(f"Successes: \t{successes}")
             log_message(f"Failures: \t{failures}")
-            log_message(f"Success Rate: \t{success_rate:.1f}%")
-            log_message("============================================================================================")
+            log_footer_message(f"Success Rate: \t{success_rate:.1f}%")
+
 
     def _dispatch_sysex_to_area(self,
                                 json_sysex_data: str) -> None:
@@ -436,9 +438,7 @@ class DigitalSynthEditor(SynthEditor):
         temp_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
 
-        log_message("\n========================================================================================================================================================================================")
-        log_message(f"Updating UI components from SysEx data for \t{temp_area} \t{synth_tone}")
-        log_message("========================================================================================================================================================================================")
+        log_header_message(f"Updating UI components from SysEx data for \t{temp_area} \t{synth_tone}")
 
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             log_message("\nTone common")
@@ -539,9 +539,7 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
-        log_message("\n============================================================================================")
-        log_message("Updating UI components from SysEx data")
-        log_message("\n============================================================================================")
+        log_header_message("Updating UI components from SysEx data")
         debug_param_updates = True
         debug_stats = True
 
