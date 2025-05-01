@@ -19,6 +19,8 @@ from typing import Dict, Union, Optional
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout, QVBoxLayout
+
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -50,12 +52,15 @@ def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> Q
     return sb
 
 
-def create_double_spinbox(min_value: int, max_value: int, step: int, value: int) -> QDoubleSpinBox:
+def create_double_spinbox(min_value: int,
+                          max_value: int,
+                          step: float,
+                          value: int) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
     :param min_value: int
     :param max_value: int
-    :param step: int
+    :param step: float
     :param value: int
     :return: QDoubleSpinBox
     """
@@ -103,10 +108,17 @@ class AdsrSliderSpinbox(QWidget):
         self.slider = self.create_parameter_slider(param,
                                                    label,
                                                    value)
-        self.spinbox = create_spinbox(min_value=min_value,
-                                      max_value=max_value,
-                                      suffix=suffix,
-                                      value=value)
+        param_type = param.get_envelope_param_type()
+        if param_type == "sustain_level":
+            self.spinbox = create_double_spinbox(min_value=int(min_value),
+                                                 max_value=int(min_value),
+                                                 step=0.01,
+                                                 value=value)
+        else:
+            self.spinbox = create_spinbox(min_value=int(min_value),
+                                          max_value=int(max_value),
+                                          suffix=suffix,
+                                          value=value)
         self.spinbox.setRange(min_value, max_value)
 
         layout = QVBoxLayout()
@@ -131,6 +143,8 @@ class AdsrSliderSpinbox(QWidget):
             return int(value * 127)
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return ms_to_midi_cc(value)
+        else:
+            return 64
 
     def _slider_changed(self, value: int):
         self.spinbox.blockSignals(True)
@@ -140,7 +154,7 @@ class AdsrSliderSpinbox(QWidget):
 
     def _spinbox_changed(self, value: int):
         self.slider.blockSignals(True)
-        self.slider.setValue(int(self.convert_from_envelope(value)))
+        self.slider.setValue(int(self.convert_from_envelope(int(value))))
         self.slider.blockSignals(False)
         self.envelopeChanged.emit({self.param.get_envelope_param_type(): value})
 
@@ -168,20 +182,19 @@ class AdsrSliderSpinbox(QWidget):
 
 
 class ADSR(QWidget):
-
     envelopeChanged = Signal(dict)
 
     def __init__(
-        self,
-        attack_param: AddressParameter,
-        decay_param: AddressParameter,
-        sustain_param: AddressParameter,
-        release_param: AddressParameter,
-        initial_param: Optional[AddressParameter] = None,
-        peak_param: Optional[AddressParameter] = None,
-        midi_helper: Optional[MidiIOHelper] = None,
-        address: Optional[RolandSysExAddress] = None,
-        parent: Optional[QWidget] = None,
+            self,
+            attack_param: AddressParameter,
+            decay_param: AddressParameter,
+            sustain_param: AddressParameter,
+            release_param: AddressParameter,
+            initial_param: Optional[AddressParameter] = None,
+            peak_param: Optional[AddressParameter] = None,
+            midi_helper: Optional[MidiIOHelper] = None,
+            address: Optional[RolandSysExAddress] = None,
+            parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         self.address = address
@@ -227,8 +240,8 @@ class ADSR(QWidget):
         )
         self.sustain_control = AdsrSliderSpinbox(
             sustain_param,
-            min_value=0,
-            max_value=1,
+            min_value=0.0,
+            max_value=1.0,
             suffix="",
             label="Sustain",
             value=self.envelope["sustain_level"],
@@ -364,7 +377,7 @@ class ADSR(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
-            logging.error(f"Error updating parameter: {ex}")
+            log_message(f"Error updating parameter: {ex}")
         # 4) Update plot
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
@@ -381,7 +394,7 @@ class ADSR(QWidget):
                     self.envelope[envelope_param_type] = midi_cc_to_ms(slider.value())
                     log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
         except Exception as ex:
-            logging.error(f"Error updating envelope from controls: {ex}")
+            log_message(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self):
@@ -394,7 +407,7 @@ class ADSR(QWidget):
                 else:
                     slider.setValue(int(ms_to_midi_cc(self.envelope[envelope_param_type])))
         except Exception as ex:
-            logging.error(f"Error updating controls from envelope: {ex}")
+            log_message(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
@@ -413,5 +426,5 @@ class ADSR(QWidget):
             )
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
+            log_message(f"MIDI error setting {param}: {str(e)}")
             return False

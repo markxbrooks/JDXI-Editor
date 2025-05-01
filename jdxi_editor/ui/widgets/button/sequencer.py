@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QPainter, QPen, QColor
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
@@ -86,7 +87,7 @@ class SequencerSquare(QPushButton):
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
         except Exception as e:
-            logging.error(f"Error loading preset: {e}")
+            log_message(f"Error loading preset: {e}")
 
     """
     def _save_to_settings(self):

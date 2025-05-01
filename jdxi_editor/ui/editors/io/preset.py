@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -291,7 +292,7 @@ class PresetEditor(SimpleEditor):
     def on_preset_type_changed(self, index):
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
-        logging.info(f"preset_type: {preset_type}")
+        log_message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL1
         elif preset_type == "Digital Synth 2":
@@ -320,7 +321,7 @@ class PresetEditor(SimpleEditor):
     def load_preset_by_program_change(self, preset_index):
         """Load a preset by program change."""
         preset_name = self.preset_combo_box.currentText()
-        logging.info(f"=======load_preset_by_program_change=======")
+        log_message(f"=======load_preset_by_program_change=======")
         log_parameter("combo box preset_name", preset_name)
         program_number = preset_name[:3]
         log_parameter("combo box program_number", program_number)
@@ -331,12 +332,12 @@ class PresetEditor(SimpleEditor):
         pc = get_preset_parameter_value("pc", program_number)
 
         if None in [msb, lsb, pc]:
-            logging.error(
+            log_message(
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
 
-        logging.info("retrieved msb, lsb, pc :")
+        log_message("retrieved msb, lsb, pc :")
         log_parameter("combo box msb", msb)
         log_parameter("combo box lsb", lsb)
         log_parameter("combo box pc", pc)
@@ -369,7 +370,7 @@ class PresetEditor(SimpleEditor):
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()
-        logging.info(f"Selected Category: {selected_category}")
+        log_message(f"Selected Category: {selected_category}")
 
         self.preset_combo_box.clear()
         self.presets.clear()
@@ -438,7 +439,7 @@ class PresetEditor(SimpleEditor):
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        logging.info(f"calculated msb, lsb, pc :")
+        log_message(f"calculated msb, lsb, pc :")
         log_parameter("combo box msb", msb)
         log_parameter("combo box lsb", lsb)
         log_parameter("combo box pc", pc)
@@ -456,7 +457,7 @@ class PresetEditor(SimpleEditor):
             self.drum_kit_current_synth.setText(program_details["drum"])
             self.analog_synth_current_synth.setText(program_details["analog"])
         except KeyError:
-            logging.error(f"Program details missing required keys: {program_details}")
+            log_message(f"Program details missing required keys: {program_details}")
             self.digital_synth_1_current_synth.setText("Unknown")
             self.digital_synth_2_current_synth.setText("Unknown")
             self.drum_kit_current_synth.setText("Unknown")

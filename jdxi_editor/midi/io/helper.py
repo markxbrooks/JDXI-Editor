@@ -61,7 +61,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 json_string = file_handle.read()
                 self.midi_sysex_json.emit(json_string)
         except Exception as ex:
-            logging.error(f"Error reading or emitting sysex JSON: {ex}")
+            log_message(f"Error reading or emitting sysex JSON: {ex}", level=logging.ERROR)
 
     def load_sysx_patch(self, file_path: str):
         """
@@ -75,18 +75,18 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 sysex_data = file.read()
 
             if not sysex_data.startswith(b"\xF0") or not sysex_data.endswith(b"\xF7"):
-                logging.error("Invalid SysEx file format")
+                log_message("Invalid SysEx file format")
                 return
         except Exception as ex:
-            logging.info(f"Error {ex} occurred opening file")
+            log_message(f"Error {ex} occurred opening file")
 
         self.midi_messages.append(sysex_data)
         try:
-            logging.info(f"attempting to send message: {sysex_data}")
+            log_message(f"attempting to send message: {sysex_data}")
             sysex_list = list(sysex_data)
             self.send_raw_message(sysex_list)
         except Exception as ex:
-            logging.info(f"Error {ex} sending sysex list")
+            log_message(f"Error {ex} sending sysex list")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """
@@ -104,7 +104,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return True
 
         except Exception as ex:
-            logging.error(f"Error setting MIDI ports: {str(ex)}")
+            log_message(f"Error setting MIDI ports: {str(ex)}")
             return False
 
     def connect_port_names(self, in_port: str, out_port: str):
@@ -134,7 +134,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 return False
 
         except Exception as ex:
-            logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            log_message(f"Error auto-connecting to JD-Xi: {str(ex)}")
             return False
 
     def reconnect_port_names(self, in_port: str, out_port: str):
@@ -167,5 +167,5 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.identify_device()
             return True
         except Exception as ex:
-            logging.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            log_message(f"Error auto-connecting to JD-Xi: {str(ex)}")
             return False

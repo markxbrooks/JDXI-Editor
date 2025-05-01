@@ -12,6 +12,8 @@ from collections import deque
 from rtmidi.midiconstants import TIMING_CLOCK, SONG_CONTINUE, SONG_START, SONG_STOP
 from rtmidi.midiutil import open_midiinput
 
+from jdxi_editor.log.message import log_message
+
 
 class MIDIClockReceiver:
     def __init__(self, bpm=None):
@@ -41,10 +43,10 @@ class MIDIClockReceiver:
 
         elif msg[0] in (SONG_CONTINUE, SONG_START):
             self.running = True
-            logging.info("START/CONTINUE received.")
+            log_message("START/CONTINUE received.")
         elif msg[0] == SONG_STOP:
             self.running = False
-            logging.info("STOP received.")
+            log_message("STOP received.")
 
 
 def main(args=None):
@@ -65,15 +67,15 @@ def main(args=None):
     m_in.ignore_types(timing=False)
 
     try:
-        logging.info("Waiting for clock sync...")
+        log_message("Waiting for clock sync...")
         while True:
             time.sleep(1)
 
             if clock.running:
                 if clock.sync:
-                    logging.info("%.2f bpm" % clock.bpm)
+                    log_message("%.2f bpm" % clock.bpm)
                 else:
-                    logging.info("%.2f bpm (no sync)" % clock.bpm)
+                    log_message("%.2f bpm (no sync)" % clock.bpm)
 
     except KeyboardInterrupt:
         pass

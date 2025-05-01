@@ -1,4 +1,13 @@
-import logging
+"""
+combo_box.py
+
+This module defines a custom combo box widget for selecting presets in the JDXI editor.
+It provides a user-friendly interface for searching and selecting presets from a list,
+and emits a signal when a preset is loaded. The widget includes a search box, a category
+selector, and a load button. The presets are displayed in a combo box, allowing users
+to filter and select them easily.
+#                 selected_text.split(":")[0].strip()
+"""
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -11,14 +20,19 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.ui.style import JDXIStyle
 
 
 class PresetComboBox(QWidget):
+    """
+    A custom widget for selecting presets from a combo box.
+    """
     preset_loaded = Signal(int)  # Signal to emit when address preset is loaded
 
     def __init__(self, presets, parent=None):
+        """initialize the PresetComboBox widget."""
         super().__init__(parent)
         self.preset_list = presets
         self.full_presets = presets
@@ -60,13 +74,19 @@ class PresetComboBox(QWidget):
         self.setStyleSheet(JDXIStyle.COMBO_BOX)
 
     def _on_load_clicked(self):
+        """Handle load button click."""
         preset_name = self.combo_box.currentText()
-        logging.info(f"combo box preset_name : {preset_name}")
+        log_message(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
         self.preset_loaded.emit(int(program_number))
-        logging.info(f"combo box program_number : {program_number}")
+        log_message(f"combo box program_number : {program_number}")
 
     def _filter_presets(self, search_text: str):
+        """
+        Filter presets based on the search text.
+        :param search_text: str
+        :return: None
+        """
         filtered_presets = []
         self.index_mapping = []
 
@@ -86,7 +106,7 @@ class PresetComboBox(QWidget):
         self.combo_box.addItems(filtered_presets)
 
     def update_category_combo_box_categories(self):
-        # Update the category combo box
+        """ Update the category combo box with available categories. """
         categories = set(preset["category"] for preset in self.preset_list)
         self.category_combo_box.blockSignals(True)  # Block signals during update
 
@@ -111,6 +131,7 @@ class PresetComboBox(QWidget):
         self._filter_presets(self.search_box.text())
 
     def current_preset(self):
+        """Get the currently selected preset."""
         return self.combo_box.currentText()
 
     def on_category_changed(self, _):

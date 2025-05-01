@@ -38,7 +38,6 @@ from PySide6.QtGui import (
 )
 import qtawesome as qta
 
-from jdxi_editor.globals import logger
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -403,7 +402,7 @@ class JdxiUi(QMainWindow):
         font_path = resource_path(os.path.join("resources", "fonts", font_name
                                                ))
         if os.path.exists(font_path):
-            log_message(f"Success: found font file, loading...")
+            log_message("Success: found font file, loading...")
             log_message(f"font_name: \t{font_name}")
             log_message(f"font_path: \t{font_path}")
             try:
@@ -431,7 +430,7 @@ class JdxiUi(QMainWindow):
 
     def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
         """Update the display with the new preset information."""
-        logging.info(
+        log_message(
             f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
         )
         self.current_preset_index = preset_number
@@ -457,7 +456,7 @@ class JdxiUi(QMainWindow):
             )
 
         except Exception as ex:
-            logging.error(f"Error updating display: {ex}")
+            log_message(f"Error updating display: {ex}")
 
     def show_error(self, title: str, message: str):
         """Show error message dialog

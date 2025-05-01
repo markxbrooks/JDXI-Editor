@@ -28,6 +28,7 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
@@ -63,15 +64,15 @@ def log_changes(previous_data, current_data):
     ]
 
     if changes:
-        # logging.info("Changes detected:")
+        # log_message("Changes detected:")
         for key, prev, curr in changes:
             pass
-            # logging.info(
+            # log_message(
             #     f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
             # )
     else:
         pass
-        #logging.info("No changes detected.")
+        #log_message("No changes detected.")
 
 
 class SynthEditor(SynthBase):
@@ -146,9 +147,9 @@ class SynthEditor(SynthBase):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             # self.midi_helper.midi_control_changed.connect(self._handle_control_change)
-            logging.info("MIDI helper initialized")
+            log_message("MIDI helper initialized")
         else:
-            logging.error("MIDI helper not initialized")
+            log_message("MIDI helper not initialized")
         self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
@@ -198,11 +199,11 @@ class SynthEditor(SynthBase):
 
             for param in self.controls:
                 controls_data[param.name] = param.value
-            logging.info(controls_data)
+            log_message(controls_data)
             return controls_data
 
         except Exception as ex:
-            logging.info(f"Failed to get controls: {ex}")
+            log_message(f"Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):
@@ -229,7 +230,7 @@ class SynthEditor(SynthBase):
             log_changes(self.sysex_previous_data, data)
             return data
         except json.JSONDecodeError as ex:
-            logging.error(f"Invalid JSON format: {ex}")
+            log_message(f"Invalid JSON format: {ex}")
             return None
 
     def set_instrument_title_label(self, name: str, synth_type: str):
@@ -238,12 +239,12 @@ class SynthEditor(SynthBase):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        logging.info(f"Updating combo to preset {preset_number}")
+        log_message(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        logging.info(f"selected_synth_text: {selected_synth_text}")
+        log_message(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(selected_synth_text)
 
     def update_instrument_preset(self, text):
@@ -255,7 +256,7 @@ class SynthEditor(SynthBase):
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
             one_based_preset_index = int(selected_synth_padded_number)
-            logging.info(f"preset_index: {one_based_preset_index}")
+            log_message(f"preset_index: {one_based_preset_index}")
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def load_preset(self, preset_index):
@@ -263,9 +264,9 @@ class SynthEditor(SynthBase):
         preset_name = (
             self.instrument_selection_combo.combo_box.currentText()
         )  # Get the selected preset name
-        logging.info(f"combo box preset_name : {preset_name}")
+        log_message(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
-        logging.info(f"combo box program_number : {program_number}")
+        log_message(f"combo box program_number : {program_number}")
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -273,12 +274,12 @@ class SynthEditor(SynthBase):
         pc = get_preset_parameter_value("pc", program_number, self.preset_list)
 
         if None in [msb, lsb, pc]:
-            logging.error(
+            log_message(
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
 
-        logging.info(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log_message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
         log_midi_info(msb, lsb, pc)
 
         # Send bank select and program change
@@ -293,10 +294,10 @@ class SynthEditor(SynthBase):
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
-        logging.info(
+        log_message(
             f"Program change {program} detected on channel {channel}, requesting data update"
         )
-        self.data_request(channel, program)
+        self.data_request()
 
     def _handle_dt1_message(self, data):
         """Handle Data Set 1 (DT1) messages
@@ -309,9 +310,9 @@ class SynthEditor(SynthBase):
             return
 
         address = data[0:3]
-        logging.info(f"DT1 message Address: {address}")
+        log_message(f"DT1 message Address: {address}")
         value = data[3]
-        logging.info(f"DT1 message Value: {value}")
+        log_message(f"DT1 message Value: {value}")
         # Emit signal with parameter data
         self.parameter_received.emit(address, value)
 
@@ -407,11 +408,11 @@ class SynthEditor(SynthBase):
         slider = self.controls.get(param)
         if slider:
             slider_value = param.convert_from_midi(value)
-            logging.info(f"Updating {param.name}: MIDI {value} -> Slider {slider_value}")
+            log_message(f"Updating {param.name}: MIDI {value} -> Slider {slider_value}")
             slider.blockSignals(True)
             slider.setValue(slider_value)
             slider.blockSignals(False)
-            logging.info(f"Updated {param.name} slider to {slider_value}")
+            log_message(f"Updated {param.name} slider to {slider_value}")
 
     def send_analog_synth_parameter(
         self, parameter: str, value: int, channel: int = 0
@@ -439,12 +440,12 @@ class SynthEditor(SynthBase):
             return self.midi_helper.send_nrpn((msb << 7) | lsb, value, channel)
 
         else:
-            logging.error(f"Invalid Analog Synth parameter: {parameter}")
+            log_message(f"Invalid Analog Synth parameter: {parameter}")
             return False
 
     def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
         """Process incoming NRPN messages and update UI controls."""
-        logging.info(
+        log_message(
             f"Received NRPN {nrpn_address} with value {value} on channel {channel}"
         )
 
@@ -471,12 +472,12 @@ class SynthEditor(SynthBase):
         :param preset_data: Dictionary for preset data modifications.
         """
         try:
-            logging.info(
+            log_message(
                 f"Control change {control} detected on channel {channel}, value {value} "
                 f"requesting data update"
             )
             self.data_request()
-            logging.info(
+            log_message(
                 "Control Change - Channel: %d, Control: %d, Value: %d",
                 channel,
                 control,
@@ -501,4 +502,4 @@ class SynthEditor(SynthBase):
             elif control == 32:
                 self.cc_lsb_value = value
         except Exception as ex:
-            logging.info(f"Error {ex} occurred handling control change")
+            log_message(f"Error {ex} occurred handling control change")

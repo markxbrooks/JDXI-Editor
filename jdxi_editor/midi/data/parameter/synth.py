@@ -46,7 +46,7 @@ class AddressParameter(Enum):
         self.bipolar_parameters = []
 
     def __str__(self) -> str:
-        return f"{self.name} (addr: {self.address:02X}, range: {self.min_val}-{self.max_val})"
+        return f"{self.name} Address: 0x{self.address:02X}, Range: {self.min_val}-{self.max_val}"
 
     @classmethod
     def message_position(cls):

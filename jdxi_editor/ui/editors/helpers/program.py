@@ -45,18 +45,19 @@ import logging
 import re
 from typing import Optional, Dict, Union, Any, List
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 
 
 def get_program_index_by_id(program_id: str) -> Optional[int]:
     """Retrieve the index of a program by its ID from PROGRAM_LIST."""
-    logging.info(f"Getting program index for {program_id}")
+    log_message(f"Getting program index for {program_id}")
     for index, program in enumerate(PROGRAM_LIST):
         if program["id"] == program_id:
-            logging.info(f"Index for {program_id} is {index - 1}")
+            log_message(f"Index for {program_id} is {index - 1}")
             return index - 1  # Convert to 0-based index
-    logging.warning(f"Program with ID {program_id} not found.")
+    log_message(f"Program with ID {program_id} not found.", level=logging.WARNING)
     return None
 
 
@@ -87,12 +88,12 @@ def get_program_id_by_name_new(name: str) -> Optional[str]:
 
 def get_program_id_by_name_new(name: str) -> Optional[str]:
     """Retrieve a program's ID from PROGRAM_LIST by matching its name flexibly."""
-    logging.info(f"Searching for program name: {name}")
+    log_message(f"Searching for program name: {name}")
 
     for program in PROGRAM_LIST:
         # Match 'name' as a substring of 'program["name"]' (correct order)
         if re.search(re.escape(rf"{name}"), rf'{program["name"]}', re.IGNORECASE):
-            logging.info(program)
+            log_message(program)
             return program["id"]
 
     logging.warning(f"Program named '{name}' not found.")
@@ -101,11 +102,11 @@ def get_program_id_by_name_new(name: str) -> Optional[str]:
 
 def get_program_id_by_name(name: str) -> Optional[str]:
     """Retrieve a program's ID from PROGRAM_LIST by matching its name as a substring."""
-    logging.info(f"Searching for program name: {name}")
+    log_message(f"Searching for program name: {name}")
 
     for program in PROGRAM_LIST:
         if name in program["name"]:  # Check if 'name' is a substring
-            logging.info(program)
+            log_message(program)
             return program["id"]
 
     logging.warning(f"Program named '{name}' not found.")
@@ -185,7 +186,7 @@ def calculate_midi_values(bank: str, program_number: int):
 
     # Ensure PC is within range
     if not 0 <= pc <= 127:
-        logging.error(f"Invalid Program Change value: {pc}")
+        log_message(f"Invalid Program Change value: {pc}")
         raise ValueError(f"Program Change value {pc} is out of range")
 
     return msb, lsb, pc - 1
@@ -200,16 +201,16 @@ def calculate_index(bank, program_number: int):
 
 def log_midi_info(msb: int, lsb: int, pc: int):
     """Log MIDI information in a consistent format."""
-    logging.info(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
+    log_message(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
 
 
 def log_program_info(program_name, program_id=None, program_details=None):
     """Helper function to log program info."""
-    logging.info(f"load_program: program_name: {program_name}")
+    log_message(f"load_program: program_name: {program_name}")
     if program_id:
-        logging.info(f"load_program: program_id: {program_id}")
+        log_message(f"load_program: program_id: {program_id}")
     if program_details:
-        logging.info(f"load_program: program_details: {program_details}")
+        log_message(f"load_program: program_details: {program_details}")
 
 
 def get_msb_lsb_pc(program_number: int):

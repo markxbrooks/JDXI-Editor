@@ -7,7 +7,7 @@ sysex_data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x7E, 0x7F, 0x06, 0x01, 
 
 parser = SysExParser(sysex_data)
 parsed_data = parser.parse()
-logging.info(f"Parsed Data: {parsed_data}")
+log_message(f"Parsed Data: {parsed_data}")
 
 
 """
@@ -15,6 +15,7 @@ logging.info(f"Parsed Data: {parsed_data}")
 import logging
 from typing import List, Type, Dict
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
     AddressOffsetTemporaryToneUMB,
@@ -158,4 +159,4 @@ if __name__ == "__main__":
 
     parser = SysExParser(sysex_data)
     parsed_data = parser.parse()
-    logging.info(f"Parsed Data: {parsed_data}")
+    log_message(f"Parsed Data: {parsed_data}")

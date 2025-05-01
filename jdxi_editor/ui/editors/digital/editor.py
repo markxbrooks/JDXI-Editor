@@ -328,7 +328,7 @@ class DigitalSynthEditor(SynthEditor):
             )
             return True
         except Exception as ex:
-            logging.error(f"Error setting partial {partial.name} state: {str(ex)}")
+            log_message(f"Error setting partial {partial.name} state: {str(ex)}")
             return False
 
     def _initialize_partial_states(self):
@@ -415,10 +415,10 @@ class DigitalSynthEditor(SynthEditor):
 
         if debug_stats:
             success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-            logging.info(f"Successes: \t{successes}")
-            logging.info(f"Failures: \t{failures}")
-            logging.info(f"Success Rate: \t{success_rate:.1f}%")
-            logging.info("============================================================================================")
+            log_message(f"Successes: \t{successes}")
+            log_message(f"Failures: \t{failures}")
+            log_message(f"Success Rate: \t{success_rate:.1f}%")
+            log_message("============================================================================================")
 
     def _dispatch_sysex_to_area(self,
                                 json_sysex_data: str) -> None:
@@ -427,18 +427,21 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data:
         :return: None
         """
-        logging.info("\nUpdating UI components from SysEx data")
         failures, successes = [], []
 
         # Parse SysEx data
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-
+        temp_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
 
+        log_message("\n========================================================================================================================================================================================")
+        log_message(f"Updating UI components from SysEx data for \t{temp_area} \t{synth_tone}")
+        log_message("========================================================================================================================================================================================")
+
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            logging.info("\nTone common")
+            log_message("\nTone common")
             self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
         elif synth_tone in ["PRC3"]:  # This is for drums but comes through
             pass
@@ -463,7 +466,7 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
-        logging.info("\nUpdating Partial UI components from SysEx data")
+        log_message("\nUpdating Partial UI components from SysEx data")
 
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
@@ -473,9 +476,9 @@ class DigitalSynthEditor(SynthEditor):
         temp_area = sysex_data.get("TEMPORARY_AREA")
         log_parameter("temp_area", temp_area)
         if not current_synth == temp_area:
-            logging.info(f"temp_area: {temp_area} is not current_synth: {current_synth}, Skipping update")
+            log_message(f"temp_area: {temp_area} is not current_synth: {current_synth}, Skipping update")
             return
-        logging.info(f"temp_area: {temp_area} is current_synth: {current_synth}, updating...")
+        log_message(f"temp_area: {temp_area} is current_synth: {current_synth}, updating...")
         incoming_data_partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
         log_parameter("incoming_data_partial_no", incoming_data_partial_no)
         if incoming_data_partial_no is None:
@@ -496,7 +499,7 @@ class DigitalSynthEditor(SynthEditor):
         :param debug: bool
         :return: None
         """
-        logging.info("\nTone common and modify")
+        log_message("\nTone common and modify")
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalCommon.get_by_name(param_name)
             log_parameter("Tone common/modify param", param)
@@ -527,7 +530,7 @@ class DigitalSynthEditor(SynthEditor):
                 else:
                     self._update_slider(param, param_value, successes, failures, debug)
             except Exception as ex:
-                logging.info(f"Error {ex} occurred")
+                log_message(f"Error {ex} occurred")
 
     def _update_tone_common_modify_sliders_from_sysex(self,
                                                       json_sysex_data: str) -> None:
@@ -536,7 +539,9 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
+        log_message("\n============================================================================================")
         log_message("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
         debug_param_updates = True
         debug_stats = True
 
@@ -691,7 +696,7 @@ class DigitalSynthEditor(SynthEditor):
             else:
                 failures.append(param.name)
         except Exception as ex:
-            logging.error(f"Error {ex} occurred setting switch {param.name} to {value}")
+            log_message(f"Error {ex} occurred setting switch {param.name} to {value}")
             failures.append(param.name)
 
     def _update_partial_selection_switch(self,
@@ -724,7 +729,7 @@ class DigitalSynthEditor(SynthEditor):
             check_box.blockSignals(False)
             successes.append(param.name)
             if debug:
-                logging.info(f"Updated: {param.name:50} {value}")
+                log_message(f"Updated: {param.name:50} {value}")
         else:
             failures.append(param.name)
 
@@ -751,7 +756,7 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        logging.info("Updating switch")
+        log_message("Updating switch")
         log_parameter("param_name", param_name)
         log_parameter("checkbox", check_box)
         if check_box:
@@ -760,7 +765,7 @@ class DigitalSynthEditor(SynthEditor):
             check_box.blockSignals(False)
             successes.append(param.name)
             if debug:
-                logging.info(f"Updated: {param.name:50} {value}")
+                log_message(f"Updated: {param.name:50} {value}")
         else:
             failures.append(param.name)
 

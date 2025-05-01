@@ -4,6 +4,7 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
@@ -23,10 +24,10 @@ def _log_debug_info(data: list, successes: list, failures: list, enabled: bool):
     if not enabled:
         return
     success_rate = (len(successes) / len(data) * 100) if data else 0
-    logging.info(f"successes: \t{successes}")
-    logging.info(f"failures: \t{failures}")
-    logging.info(f"success rate: \t{success_rate:.1f}%")
-    logging.info("======================================================================================================")
+    log_message(f"successes: \t{successes}")
+    log_message(f"failures: \t{failures}")
+    log_message(f"success rate: \t{success_rate:.1f}%")
+    log_message("\n======================================================================================================")
 
 
 def _filter_sysex_keys(sysex_data: dict) -> dict:
@@ -132,7 +133,7 @@ def _sysex_area_matches(sysex_data: dict, area: int) -> bool:
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
-    logging.info(
+    log_message(
         f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}"
     )
     return match
@@ -151,7 +152,7 @@ def _sysex_area2_matches(sysex_data: dict, area: int) -> bool:
     }
     expected_area = area_map.get(area)
     match = temp_area == expected_area
-    logging.info(
+    log_message(
         f"SysEx TEMP_AREA: {temp_area}, expected: {expected_area}, match: {match}"
     )
     return match
@@ -164,17 +165,17 @@ def _sysex_tone_matches(sysex_data: dict, part: int) -> bool:
     :param part: int
     :return: bool
     """
-    logging.info(f"looking for part {part}")
+    log_message(f"looking for part {part}")
 
     temp_part = sysex_data.get("SYNTH_TONE")
-    logging.info(f"found part {temp_part}")
+    log_message(f"found part {temp_part}")
     part_map = {
         AddressOffsetTemporaryToneUMB.DIGITAL_PART_1: "PARTIAL_1",
         AddressOffsetTemporaryToneUMB.DIGITAL_PART_2: "PARTIAL_2",
     }
     expected_part = part_map.get(part)
     match = part == expected_part
-    logging.info(f"SysEx PART: {temp_part}, expected: {expected_part}, match: {match}")
+    log_message(f"SysEx PART: {temp_part}, expected: {expected_part}, match: {match}")
     return match
 
 
@@ -187,7 +188,7 @@ def _sysex_group_matches(sysex_data: dict, expected_group: str) -> bool:
     """
     found_group = sysex_data.get("SYNTH_TONE")
     match = found_group == expected_group
-    logging.info(
+    log_message(
         f"SysEx TEMP_AREA: {found_group}, expected: {expected_group}, match: {match}"
     )
     return match
@@ -199,7 +200,7 @@ def get_area(data: list[int, int]) -> str:
     :param data: list[int, int]
     :return: str
     """
-    logging.info(f"data for temporary area: {data}")
+    log_message(f"data for temporary area: {data}")
     area_mapping = {
         (0x18, 0x00): "PROGRAM",
         (0x19, 0x42): "ANALOG",
@@ -220,8 +221,8 @@ def to_hex(value: int, width: int = 2) -> str:
     try:
         int_value = int(value, 0) if isinstance(value, str) else value
         hex_str = f"{int_value:0{width}X}"
-        logging.info(f"to_hex: value: {value} -> 0x{int(int_value):02X} (width={width})")
+        log_message(f"to_hex: value: {value} -> 0x{int(int_value):02X} (width={width})")
         return hex_str
     except Exception as ex:
-        logging.error(f"Error {ex} occurred in to_hex with value: {value}")
+        log_message(f"Error {ex} occurred in to_hex with value: {value}")
         return "??"

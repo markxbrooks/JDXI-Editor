@@ -37,6 +37,7 @@ from PySide6.QtCore import QRect
 from PySide6.QtWidgets import QWidget, QSizePolicy
 from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
@@ -301,14 +302,12 @@ class DigitalDisplay(DigitalDisplayBase):
             tone_number = get_preset_list_number_by_name(tone_name, ANALOG_PRESET_LIST)
         else:
             active_synth = "D1"
-        logging.info(f"current tone number: {tone_number}")
-        logging.info(f"current tone name: {tone_name}")
+        log_message(f"current tone number: {tone_number}")
+        log_message(f"current tone name: {tone_name}")
         self.repaint_display(
             current_octave=self.current_octave,
             tone_number=tone_number,
             tone_name=tone_name,
             program_name=program_name,
-            program_number=program_number,
-            program_bank_letter=program_bank_letter,
             active_synth=active_synth,
         )

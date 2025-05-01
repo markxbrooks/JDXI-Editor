@@ -12,6 +12,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 
 import logging
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.widgets.slider import Slider
 
@@ -66,7 +67,7 @@ class NRPNSlider(Slider):
         """
         Set the current value of the slider and send NRPN or RPN messages.
         """
-        logging.info(f"{self.label} value changed to {value}")
+        log_message(f"{self.label} value changed to {value}")
 
         if not self.min_value <= value <= self.max_value:
             raise ValueError("Value out of range.")

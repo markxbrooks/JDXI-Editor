@@ -2,6 +2,8 @@ import logging
 
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QComboBox
 
+from jdxi_editor.log.message import log_message
+
 
 class WaveSelector(QWidget):
     def __init__(self, wave_list):
@@ -91,6 +93,6 @@ window.show()
 
 # Example: Get the selected wave number
 selected_wave_number = window.get_selected_wave_number()
-logging.info(f"Selected Wave Number: {selected_wave_number}")
+log_message(f"Selected Wave Number: {selected_wave_number}")
 
 app.exec()

@@ -276,7 +276,7 @@ class DrumWMTSection(QWidget):
                 index_in_rm_waves = rm_waves.index(wave)
                 combo.combo_box.addItem(wave, index_in_rm_waves)
 
-            logging.info(
+            log_message(
                 f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'")
         except Exception as ex:
             logging.warning(f"WMT{wmt_index}: Error filtering L waves: {ex}")
@@ -300,7 +300,7 @@ class DrumWMTSection(QWidget):
             for wave in filtered:
                 index_in_rm_waves = rm_waves.index(wave)
                 combo.combo_box.addItem(wave, index_in_rm_waves)
-            logging.info(
+            log_message(
                 f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'")
         except Exception as ex:
             logging.warning(f"WMT{wmt_index}: Error filtering R waves: {ex}")

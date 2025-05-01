@@ -8,6 +8,7 @@ from typing import Any, List, Optional, Union
 import mido
 
 from jdxi_editor.globals import logger
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
 
@@ -63,7 +64,7 @@ def extract_command_info(message: Any) -> None:
             address_offset,
         )
     except Exception as ex:
-        logger.error(f"Unable to extract command or parameter address due to {ex}")
+        log_message(f"Unable to extract command or parameter address due to {ex}", level=logging.ERROR)
 
 
 def rtmidi_to_mido(rtmidi_message):
@@ -71,7 +72,7 @@ def rtmidi_to_mido(rtmidi_message):
     try:
         return mido.Message.from_bytes(rtmidi_message)
     except ValueError as err:
-        logging.error("Failed to convert rtmidi message: %s", err)
+        log_message(f"Failed to convert rtmidi message: {err}", level=logging.ERROR)
         return None
 
 
@@ -91,7 +92,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
             return mido.Message("sysex", data=sys_ex_data)
     except Exception as ex:
-        logging.info(f"Error {ex} occurred")
+        log_message(f"Error {ex} occurred")
     try:
         # Program Change
         if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
@@ -99,7 +100,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             program = message_content[1]
             return mido.Message("program_change", channel=channel, program=program)
     except Exception as ex:
-        logging.info(f"Error {ex} occurred")
+        log_message(f"Error {ex} occurred")
 
     try:
         # Control Change
@@ -109,10 +110,10 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             value = message_content[2]
             return mido.Message("control_change", channel=channel, control=control, value=value)
     except Exception as ex:
-        logging.info(f"Error {ex} occurred")
+        log_message(f"Error {ex} occurred", level=logging.ERROR)
 
     # Other (not yet implemented)
-    logging.info(f"Unhandled MIDI message: {message_content}")
+    log_message(f"Unhandled MIDI message: {message_content}")
     return None
 
 
@@ -133,7 +134,7 @@ def handle_identity_request(message):
     byte_list = mido_message_data_to_byte_list(message)
     device_info = DeviceInfo.from_identity_reply(byte_list)
     if device_info:
-        logging.info(device_info.to_string)
+        log_message(device_info.to_string)
     device_id = device_info.device_id
     manufacturer_id = device_info.manufacturer
     version = message.data[9:12]  # Extract firmware version bytes
@@ -147,9 +148,9 @@ def handle_identity_request(message):
         manufacturer_name = "Roland"
     else:
         manufacturer_name = "Unknown"
-    logging.info(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
-    logging.info(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
-    logging.info(f"🔄 Firmware Version: \t{version_str}")
+    log_message(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
+    log_message(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
+    log_message(f"🔄 Firmware Version: \t{version_str}")
     return {
         "device_id": device_id,
         "manufacturer_id": manufacturer_id,
@@ -162,6 +163,6 @@ def listen_midi(port_name, callback):
     Function to listen for MIDI messages and call address callback.
     """
     with mido.open_input(port_name) as inport:
-        logging.info(f"Listening on port: {port_name}")
+        log_message(f"Listening on port: {port_name}")
         for msg in inport:
             callback(msg)  # Call the provided callback function

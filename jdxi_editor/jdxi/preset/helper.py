@@ -34,6 +34,7 @@ import logging
 
 from PySide6.QtCore import Signal, QObject
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -90,7 +91,7 @@ class JDXIPresetHelper(QObject):
         self, preset_index, synth_type=JDXISynth.DIGITAL_1
     ):
         """Load a preset using program change."""
-        logging.info(f"Preset index: {preset_index}")
+        log_message(f"Preset index: {preset_index}")
         preset_list_map = {
             JDXISynth.DIGITAL_1: DIGITAL_PRESET_LIST,
             JDXISynth.DIGITAL_2: DIGITAL_PRESET_LIST,
@@ -114,7 +115,7 @@ class JDXIPresetHelper(QObject):
 
     def load_preset(self, preset_data):
         """Load the preset based on the provided data."""
-        logging.info(f"Loading preset: {preset_data}")
+        log_message(f"Loading preset: {preset_data}")
         program_number, channel = preset_data.number, preset_data.channel
 
         # Select the correct preset list based on the channel
@@ -144,7 +145,7 @@ class JDXIPresetHelper(QObject):
         log_midi_info(msb, lsb, pc)
 
         if pc is None:
-            logging.error("Program Change value is None, aborting.")
+            log_message("Program Change value is None, aborting.")
             return
 
         # Convert 1-based PC to 0-based
