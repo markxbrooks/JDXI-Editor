@@ -9,7 +9,7 @@ input_name = mido.get_input_names()[0]  # You can replace [0] with the index of 
 recording_duration = 3  # Record for 3 seconds
 
 with mido.open_input(input_name) as inport:
-    logging.info(f"Recording MIDI from {input_name} for {recording_duration} seconds...")
+    log_message(f"Recording MIDI from {input_name} for {recording_duration} seconds...")
 
     # Create a MidiFile to store the recorded messages
     midi_file = MidiFile(type=1)
