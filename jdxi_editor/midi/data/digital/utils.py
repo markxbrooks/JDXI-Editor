@@ -1,6 +1,8 @@
-import logging
+"""Utility functions for digital parameters and partials."""
+
 from typing import Tuple, Optional
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressMemoryAreaMSB,
@@ -16,10 +18,10 @@ from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigi
 
 def get_digital_parameter_by_address(address: Tuple[int, int]):
     """Retrieve the DigitalParameter by its address."""
-    logging.info(f"address: {address}")
+    log_message(f"address: {address}")
     for param in AddressParameterDigitalPartial:
         if (param.group, param.address) == address:
-            logging.info(f"param found: {param}")
+            log_message(f"param found: {param}")
             return param
     return None
 
@@ -122,5 +124,5 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
         return (switch_value == 1, select_value == 1)
 
     except Exception as e:
-        logging.error(f"Error getting partial {partial.name} state: {str(e)}")
+        log_message(f"Error getting partial {partial.name} state: {str(e)}")
         return (False, False)

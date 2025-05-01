@@ -40,6 +40,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.log.message import log_message
 from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
@@ -314,14 +315,12 @@ class EffectsCommonEditor(SimpleEditor):
                 midi_value = param.convert_to_midi(display_value)
             else:
                 midi_value = param.validate_value(display_value)
-            logging.info(
-                f"parameter: {param} display {display_value} midi value {midi_value}"
-            )
+            log_message(f"parameter: {param} display {display_value} midi value {midi_value}")
             # Ensure we get address valid common parameter
             common_param = AddressParameterEffect.get_common_param_by_name(param.name)
             midi_value = param.convert_to_midi(display_value)
             if common_param is None:
-                logging.error(f"Unknown common parameter preset_type for: {param.name}")
+                log_message(f"Unknown common parameter preset_type for: {param.name}")
                 return False
             try:
                 # Send MIDI message
@@ -334,9 +333,9 @@ class EffectsCommonEditor(SimpleEditor):
                 )
                 return self.midi_helper.send_midi_message(sysex_message)
             except Exception as ex:
-                logging.error(f"MIDI error setting {param}: {str(ex)}")
+                log_message(f"MIDI error setting {param}: {str(ex)}")
                 return False
 
         except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {str(ex)}")
+            log_message(f"Error handling parameter {param.name}: {str(ex)}")
             return False

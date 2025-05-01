@@ -38,6 +38,7 @@ from PySide6.QtCore import Qt, QTimer
 from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage, bpm2tempo
 from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
@@ -259,7 +260,7 @@ class PatternSequencer(SynthEditor):
     def _update_combo_boxes(self, message):
         """Update the combo box index to match the note for each channel."""
         if message.type == "note_on" and message.velocity > 0:
-            logging.info(f"message note: {message.note} channel: {message.channel}")
+            log_message(f"message note: {message.note} channel: {message.channel}")
             if message.type == "note_on":
                 if message.channel == MidiChannel.DIGITAL1:
                     self.digital1_selector.setCurrentIndex(message.note - 36)
@@ -318,7 +319,7 @@ class PatternSequencer(SynthEditor):
                 button.note = None
                 button.setStyleSheet(self.generate_sequencer_button_style(False))
 
-        logging.info("Cleared learned pattern.")
+        log_message("Cleared learned pattern.")
 
     def _on_measure_count_changed(self, count: int):
         """Handle measure count changes"""
@@ -422,9 +423,9 @@ class PatternSequencer(SynthEditor):
                 filename += ".mid"
             try:
                 self.save_pattern(filename)
-                logging.info(f"Pattern saved to {filename}")
+                log_message(f"Pattern saved to {filename}")
             except Exception as ex:
-                logging.error(f"Error saving pattern: {ex}")
+                log_message(f"Error saving pattern: {ex}")
                 QMessageBox.critical(
                     self, "Error", f"Could not save pattern: {str(ex)}"
                 )
@@ -439,7 +440,7 @@ class PatternSequencer(SynthEditor):
         if filename:
             try:
                 self.load_pattern(filename)
-                logging.info(f"Pattern loaded from {filename}")
+                log_message(f"Pattern loaded from {filename}")
 
                 # Update tempo from loaded file
                 if self.midi_file and self.midi_file.tracks:
@@ -453,7 +454,7 @@ class PatternSequencer(SynthEditor):
                             self.tempo_spinbox.setValue(bpm)
                             break
             except Exception as ex:
-                logging.error(f"Error loading pattern: {ex}")
+                log_message(f"Error loading pattern: {ex}")
                 QMessageBox.critical(
                     self, "Error", f"Could not load pattern: {str(ex)}"
                 )
@@ -476,7 +477,7 @@ class PatternSequencer(SynthEditor):
             ms_per_step = (60000 / bpm) / 4  # ms per 16th note
             self.timer.setInterval(int(ms_per_step))
 
-        logging.info(f"Tempo set to {bpm} BPM")
+        log_message(f"Tempo set to {bpm} BPM")
 
     def _init_midi_file(self):
         """Initialize a new MIDI file with 4 tracks"""
@@ -559,7 +560,7 @@ class PatternSequencer(SynthEditor):
 
         # Save the MIDI file
         midi_file.save(filename)
-        logging.info(f"Pattern saved to {filename}")
+        log_message(f"Pattern saved to {filename}")
 
     def clear_pattern(self):
         """Clear the current pattern, resetting all steps."""
@@ -583,7 +584,7 @@ class PatternSequencer(SynthEditor):
 
             for track_num, track in enumerate(midi_file.tracks[:4]):
                 if track_num >= len(self.buttons):
-                    logging.error(f"Track {track_num} exceeds available button rows.")
+                    log_message(f"Track {track_num} exceeds available button rows.")
                     continue
 
                 absolute_time = 0
@@ -592,7 +593,7 @@ class PatternSequencer(SynthEditor):
                     if msg.type == "note_on" and msg.velocity > 0:
                         step = int((absolute_time / ppq) * 4) % self.total_steps
                         if step >= len(self.buttons[track_num]):
-                            logging.error(
+                            log_message(
                                 f"Step {step} exceeds available buttons in row {track_num}."
                             )
                             continue
@@ -615,7 +616,7 @@ class PatternSequencer(SynthEditor):
                     self.tempo_spinbox.setValue(bpm)
 
         except Exception as ex:
-            logging.error(f"Error loading pattern: {ex}")
+            log_message(f"Error loading pattern: {ex}")
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
     def play_pattern(self):
@@ -637,7 +638,7 @@ class PatternSequencer(SynthEditor):
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
 
-        logging.info("Pattern playback started")
+        log_message("Pattern playback started")
 
     def stop_pattern(self):
         """Stop playing the pattern"""
@@ -657,7 +658,7 @@ class PatternSequencer(SynthEditor):
             for channel in range(16):
                 self.midi_helper.send_raw_message([CONTROL_CHANGE | channel, 123, 0])
 
-        logging.info("Pattern playback stopped")
+        log_message("Pattern playback stopped")
 
     def _note_name_to_midi(self, note_name: str) -> int:
         """Convert note name (e.g., 'C4') to MIDI note number"""
@@ -723,7 +724,7 @@ class PatternSequencer(SynthEditor):
     def _play_step(self):
         """Plays the current step and advances to the next one."""
         step = self.current_step % self.total_steps
-        logging.info(f"Playing step {step}")
+        log_message(f"Playing step {step}")
 
         # Check each row's button at the current step
         for row in range(4):
@@ -741,7 +742,7 @@ class PatternSequencer(SynthEditor):
                 # Send Note On message using the stored note
                 if self.midi_helper:
                     if channel not in self.muted_channels:
-                        logging.info(
+                        log_message(
                             f"Row {row} active at step {step}, sending note {button.note} on channel {channel}"
                         )
                         self.midi_helper.send_raw_message(
@@ -802,7 +803,7 @@ class PatternSequencer(SynthEditor):
             for row in range(4):
                 if note in self._get_note_range_for_row(row):
                     # Record the note in the current step
-                    logging.info(f"Recording note: {note} at step {self.current_step}")
+                    log_message(f"Recording note: {note} at step {self.current_step}")
                     self.learned_pattern[row][self.current_step] = note
                     self.active_notes[note] = row  # Mark the note as active
                     self._apply_learned_pattern()
@@ -817,7 +818,7 @@ class PatternSequencer(SynthEditor):
             note = message.note
             if note in self.active_notes:
                 # Advance step only if the note was previously turned on
-                logging.info(f"Note off: {note} at step {self.current_step}")
+                log_message(f"Note off: {note} at step {self.current_step}")
                 del self.active_notes[note]  # Remove the note from active notes
 
                 # Add the note_off message to the MIDI track
@@ -873,27 +874,27 @@ class PatternSequencer(SynthEditor):
 
         # Stop learning after 16 steps
         if self.current_step == 0:
-            logging.info("Learning complete after 16 steps.")
+            log_message("Learning complete after 16 steps.")
             self.on_stop_learn_pattern_button_clicked()
             self.timer.stop()
             del self.timer
         else:
-            logging.info(f"Moved to step {self.current_step}")
+            log_message(f"Moved to step {self.current_step}")
 
     def save_midi_file(self, filename: str):
         """Save the recorded MIDI messages to a file."""
         with open(filename, "wb") as output_file:
             self.midi_file.save(output_file)
-        logging.info(f"MIDI file saved to {filename}")
+        log_message(f"MIDI file saved to {filename}")
 
     def _toggle_mute(self, row, checked):
         """Toggle mute for a specific row."""
         channel = row if row < 3 else 9  # channels 0,1,2 for synths, 9 for drums
         if checked:
-            logging.info(f"Row {row} muted")
+            log_message(f"Row {row} muted")
             self.muted_channels.append(channel)
         else:
-            logging.info(f"Row {row} unmuted")
+            log_message(f"Row {row} unmuted")
             self.muted_channels.remove(channel)
 
         # Update the UI or internal state to reflect the mute status

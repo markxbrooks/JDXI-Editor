@@ -1,4 +1,4 @@
-"""
+f"""
 ADSR Widget for Roland JD-Xi
 
 This widget provides address visual interface for editing ADSR (Attack, Decay, Sustain, Release)
@@ -19,6 +19,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QGridLayout
 from typing import Dict, Union
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
@@ -175,8 +176,8 @@ class PitchEnvelope(QWidget):
             if match := ENVELOPE_PATTERN.search(param.name):
                 key = f"{match.group().lower()}_time"
                 self.envelope[key] = midi_cc_to_ms(slider.value())
-                logging.info(f"param: {param} slider value: {slider.value()}")
-                logging.info(f"{key}: {self.envelope[key]}")
+                log_message(f"param: {param} slider value: {slider.value()}")
+                log_message(f"{key}: {self.envelope[key]}")
 
     def update_spin_box(self, param):
         """Update the corresponding spin box based on the given parameter."""
@@ -196,7 +197,7 @@ class PitchEnvelope(QWidget):
 
     def _on_parameter_changed(self, param: AddressParameter, value: int):
         """Handle parameter value changes and update envelope accordingly."""
-        # logging.info(f"_on_parameter_changed param: {param} value: {value}")
+        # log_message(f"_on_parameter_changed param: {param} value: {value}")
         # Update envelope based on slider values
         self.update_envelope_from_controls()
         self.update_spin_box(param)
@@ -211,7 +212,7 @@ class PitchEnvelope(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
-            logging.error(f"Error updating parameter: {ex}")
+            log_message(f"Error updating parameter: {ex}")
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
@@ -253,5 +254,5 @@ class PitchEnvelope(QWidget):
             )
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as e:
-            logging.error(f"MIDI error setting {param}: {str(e)}")
+            log_message(f"MIDI error setting {param}: {str(e)}")
             return False

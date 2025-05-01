@@ -25,6 +25,7 @@ import time
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -59,7 +60,7 @@ class SynthBase(QWidget):
     def send_raw_message(self, message: bytes):
         """Send address SysEx message using the MIDI helper"""
         if not self.midi_helper:
-            logging.error("MIDI helper not initialized")
+            log_message("MIDI helper not initialized")
             return
         self.midi_helper.send_raw_message(message)
 
@@ -76,7 +77,7 @@ class SynthBase(QWidget):
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""
         if not message.type == "clock":
-            logging.info(f"MIDI message: {message}")
+            log_message(f"MIDI message: {message}")
             self.blockSignals(True)
             self.data_request()
             self.blockSignals(False)
@@ -91,10 +92,11 @@ class SynthBase(QWidget):
             address = apply_address_offset(
                 self.sysex_address, param
             )
-            log_parameter("sysex_address", self.sysex_address)
-            log_parameter("parameter", param)
-            log_parameter("parameter value", value)
-            log_parameter("final address", address)
+            log_message(f"applying address offset ->")
+            log_parameter("base sysex_address:", self.sysex_address)
+            log_parameter("parameter offset to apply:", param)
+            log_parameter("  -->  final address", address)
+            log_parameter("parameter value:", value)
             sysex_message = RolandSysEx(
                 msb=address.msb,
                 umb=address.umb,
@@ -106,7 +108,7 @@ class SynthBase(QWidget):
             result = self.midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
-            logging.error(f"MIDI error setting {param.name}: {ex}")
+            log_message(f"MIDI error setting {param.name}: {ex}")
             return False
 
     def _on_parameter_changed(self, param: AddressParameter, display_value: int):
@@ -125,7 +127,7 @@ class SynthBase(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            logging.error(f"Error handling parameter {param.name}: {ex}")
+            log_message(f"Error handling parameter {param.name}: {ex}")
 
     def _create_parameter_slider(
         self,

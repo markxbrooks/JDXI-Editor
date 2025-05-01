@@ -32,7 +32,7 @@ Methods:
 
 Usage Example:
     filter_cutoff = DigitalParameter(0x0C, 0, 127)  # Filter Cutoff Frequency
-    logging.info(filter_cutoff.address)  # Output: 0x0C
+    log_message(filter_cutoff.address)  # Output: 0x0C
 
 This class helps structure and manage parameter mappings for JD-Xi SysEx processing.
 """

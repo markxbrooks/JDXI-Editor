@@ -23,10 +23,10 @@ print("Parsed Value:", parsed_message.value)
 
 """
 
-import logging
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     ModelID,
     CommandID,
@@ -166,9 +166,17 @@ class RolandSysEx(SysExMessage):
         msg.append(self.end_of_sysex)
         return msg
 
-    def construct_sysex(self, address, *data_bytes, request=False):
-        """Construct a SysEx message with a checksum and update instance variables."""
-        logging.info(f"address: {address} data_bytes: {data_bytes} request: {request}")
+    def construct_sysex(self, address: RolandSysExAddress,
+                        *data_bytes: list,
+                        request: bool = False):
+        """
+        Construct a SysEx message based on the provided address and data bytes.
+        :param address: RolandSysExAddress
+        :param data_bytes: list of data bytes
+        :param request: bool is this a request?
+        :return: None
+        """
+        log_message(f"address: {address} data_bytes: {data_bytes} request: {request}")
 
         # Convert address and data_bytes from hex strings to integers if needed
         address = [int(a, 16) if isinstance(a, str) else a for a in address]

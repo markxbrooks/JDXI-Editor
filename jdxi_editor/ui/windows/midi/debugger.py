@@ -36,9 +36,8 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 
 import logging
 import re
-from typing import Type, Union, Tuple
+from typing import Tuple
 
-from tabulate import tabulate
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -52,19 +51,18 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data import AddressParameterAnalog
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB, Address,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.ui.style import JDXIStyle
-from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 from typing import Protocol, TypeVar, Optional
@@ -245,7 +243,7 @@ class MIDIDebugger(QMainWindow):
                     raise ValueError(f"No parameter enum defined for synth type: {synth_str}")
                 param_address = hex(param)
             except Exception as ex:
-                logging.info(f"Error {ex} parsing sysex bytes")
+                log_message(f"Error {ex} parsing sysex bytes")
                 param = message[11]
                 param_address = hex(param)
                 param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
@@ -307,7 +305,7 @@ class MIDIDebugger(QMainWindow):
                 param_str, param = parse_sysex_message(message, parameter)
                 param_address = hex(param)
             except Exception as ex:
-                logging.info(f"Error {ex} parsing sysex bytes")
+                log_message(f"Error {ex} parsing sysex bytes")
                 param = message[11]
                 param_address = hex(param)
                 param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")

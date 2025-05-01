@@ -13,6 +13,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPainter, QColor, QPen
 from PySide6.QtCore import Qt, QRectF
 
+from jdxi_editor.log.message import log_message
+
 RAINBOW_COLORS = [
     QColor(255, 0, 0, 150),  # Pure Red
     QColor(0, 255, 0, 150),  # Pure Green
@@ -159,8 +161,8 @@ class MidiTrackWidget(QWidget):
         #    json.dump(json_safe_data, f, indent=2)
 
     def toggle_channel_mute(self, channel, is_muted):
-        logging.info(
-            f"Track Widget Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
+        log_message(
+            f"Track Widget Toggling mute for channel {channel}: {'Muted' if is_muted else 'Un-muted'}"
         )
         if is_muted:
             self.muted_channels.add(channel)
@@ -251,7 +253,7 @@ class MidiTrackWidget(QWidget):
                     # If the channel is muted, draw it in a different color
                     if channel in self.muted_channels:
                         color = QColor(150, 150, 150, 150)
-                    # logging.info(f"Drawing color {color} for channel {channel}")
+                    # log_message(f"Drawing color {color} for channel {channel}")
                     painter.setBrush(color)
                     x = norm_time * widget_width
                     rect = QRectF(x, y, 4, int(track_height))
@@ -343,7 +345,7 @@ class MidiTrackViewer(QWidget):
 
     def toggle_channel_mute(self, channel, is_muted):
         """Add or remove the channel from muted set."""
-        logging.info(
+        log_message(
             f"Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
         )
         if is_muted:

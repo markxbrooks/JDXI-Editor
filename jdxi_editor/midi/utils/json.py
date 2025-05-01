@@ -2,6 +2,8 @@ import json
 import logging
 from typing import Dict
 
+from jdxi_editor.log.message import log_message
+
 
 def log_to_json(data: Dict) -> None:
     """Helper function to log JSON data as address single line."""
@@ -10,14 +12,14 @@ def log_to_json(data: Dict) -> None:
         try:
             data = json.loads(data)
         except json.JSONDecodeError:
-            logging.error("Invalid JSON string provided.")
+            log_message("Invalid JSON string provided.")
             return
 
     # Serialize the JSON into address single line string (compact form)
     compact_json = json.dumps(data)
 
     # Log the JSON in address single line
-    logging.info(compact_json)
+    log_message(compact_json)
 
 
 def log_changes(previous_data, current_data):
@@ -42,14 +44,14 @@ def log_changes(previous_data, current_data):
 
     # If there are changes, log them
     if changes:
-        logging.info("Parameter changes detected:")
+        log_message("Parameter changes detected:")
         for change in changes:
             diff_str = (
                 f" (Δ: {change['difference']})"
                 if change["difference"] is not None
                 else ""
             )
-            logging.info(
+            log_message(
                 f"  {change['parameter']}: {change['previous']} → {change['current']}{diff_str}"
             )
     else:

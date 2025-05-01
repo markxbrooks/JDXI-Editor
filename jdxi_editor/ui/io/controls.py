@@ -1,6 +1,8 @@
 import json
 import logging
 
+from jdxi_editor.log.message import log_message
+
 
 def save_all_controls_to_single_file(editors, file_path):
     """
@@ -21,7 +23,7 @@ def save_all_controls_to_single_file(editors, file_path):
         with open(file_path, 'w') as file_name:
             json.dump(combined_data, file_name, indent=4)
 
-        logging.info(f"All controls saved successfully to {file_path}")
+        log_message(f"All controls saved successfully to {file_path}")
 
     except Exception as e:
-        logging.error(f"Failed to save all controls: {e}")
+        log_message(f"Failed to save all controls: {e}", level=logging.ERROR)

@@ -63,6 +63,7 @@ from PySide6.QtGui import QIcon, QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -143,9 +144,9 @@ class AnalogSynthEditor(SynthEditor):
             self.midi_helper.midi_parameter_received.connect(
                 self._on_parameter_received
             )
-            logging.info("MIDI helper initialized")
+            log_message("MIDI helper initialized")
         else:
-            logging.error("MIDI helper not initialized")
+            log_message("MIDI helper not initialized")
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -351,7 +352,7 @@ class AnalogSynthEditor(SynthEditor):
             # Retrieve the corresponding DigitalParameter
             param = get_analog_parameter_by_address(parameter_address)
             if param:
-                logging.info(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
+                log_message(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
             elif param == AddressParameterAnalog.FILTER_MODE_SWITCH:
                 self.update_filter_state(value=AddressParameterAnalog.FILTER_MODE_SWITCH.value)
 
@@ -433,12 +434,12 @@ class AnalogSynthEditor(SynthEditor):
         :param json_sysex_data: str JSON SysEx data
         :return: None
         """
-        logging.info("Updating UI components from SysEx data")
+        log_message("Updating UI components from SysEx data")
 
         try:
             current_sysex_data = json.loads(json_sysex_data)
         except json.JSONDecodeError as ex:
-            logging.error(f"Invalid JSON format: {ex}")
+            log_message(f"Invalid JSON format: {ex}")
             return
 
         # Compare with previous data and log changes
@@ -575,7 +576,7 @@ class AnalogSynthEditor(SynthEditor):
             else:
                 failures.append(param_name)
 
-        logging.info(f"Updated {len(successes)} parameters successfully.")
+        log_message(f"Updated {len(successes)} parameters successfully.")
         if failures:
             logging.warning(f"Failed to update {len(failures)} parameters: {failures}")
 
@@ -643,7 +644,7 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         pw_enabled = waveform == AnalogOscWave.PULSE
-        logging.info(self.controls)
+        log_message(self.controls)
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
         # Update the visual state

@@ -28,6 +28,8 @@ Example Usage:
 
 import logging
 from typing import Optional
+
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 
@@ -81,13 +83,13 @@ class MIDIConnection:
                 logging.warning("No MIDI output port available")
 
         except Exception as ex:
-            logging.error(f"Error sending MIDI message: {str(ex)}")
+            log_message(f"Error sending MIDI message: {str(ex)}", level=logging.ERROR)
 
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
-        logging.info(f"sending identity request message: {request}")
+        log_message(f"sending identity request message: {request}")
 
     @property
     def is_connected(self) -> bool:

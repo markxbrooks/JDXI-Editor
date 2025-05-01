@@ -74,6 +74,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, ZERO_BYTE
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
@@ -246,7 +247,7 @@ class DrumCommonEditor(SynthEditor):
         :param channel: int
         :param program: int
         """
-        logging.info(
+        log_message(
             f"Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request(channel, program)
@@ -286,9 +287,9 @@ class DrumCommonEditor(SynthEditor):
         try:
             partial_name = list(self.partial_editors.keys())[index]
             self.partial_number = index
-            logging.info(f"Updated to partial {partial_name} (index {index})")
+            log_message(f"Updated to partial {partial_name} (index {index})")
         except IndexError:
-            logging.error(f"Invalid partial index: {index}")
+            log_message(f"Invalid partial index: {index}")
 
     def _on_parameter_received(self, address: int, value: int):
         """
@@ -303,7 +304,9 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        logging.info("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
+        log_message("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
 
         # failures, successes = [], []
 
@@ -317,7 +320,7 @@ class DrumCommonEditor(SynthEditor):
                 sysex_data = json.loads(json_data)
                 return sysex_data
             except json.JSONDecodeError as ex:
-                logging.error(f"Invalid JSON format: {ex}")
+                log_message(f"Invalid JSON format: {ex}")
                 return None
 
         # Parse SysEx data
@@ -328,7 +331,7 @@ class DrumCommonEditor(SynthEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if synth_tone == "TONE_COMMON":
-            logging.info("Tone common")
+            log_message("Tone common")
             self._update_common_sliders_from_sysex(json_sysex_data)
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
@@ -338,7 +341,9 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        logging.info("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
+        log_message("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
         debug_param_updates = True
         debug_stats = True
         failures, successes = [], []
@@ -356,7 +361,7 @@ class DrumCommonEditor(SynthEditor):
                 log_changes(self.sysex_previous_data, sysex_json_data)
                 return sysex_json_data
             except json.JSONDecodeError as ex:
-                logging.error(f"Invalid JSON format: {ex}")
+                log_message(f"Invalid JSON format: {ex}")
                 return None
 
         def _is_valid_sysex_area(sysex_json_data: dict):
@@ -395,7 +400,7 @@ class DrumCommonEditor(SynthEditor):
                 slider.blockSignals(False)
                 successes.append(parameter.name)
                 if debug_param_updates:
-                    logging.info(f"Updated parameter: ")
+                    log_message(f"Updated parameter: ")
                     log_parameter("parameter", parameter)
                     log_parameter("value", value)
             else:
@@ -407,7 +412,7 @@ class DrumCommonEditor(SynthEditor):
             :param parameter: AddressParameterDrumCommon
             :param value: int
             """
-            logging.info(f"Checkbox parameter: ")
+            log_message(f"Checkbox parameter: ")
             log_parameter("parameter", parameter)
             log_parameter("value", value)
             partial_switch_map = {
@@ -417,14 +422,14 @@ class DrumCommonEditor(SynthEditor):
             }
             partial_number = partial_switch_map.get(param_name)
             check_box = self.partials_panel.switches.get(partial_number)
-            logging.info(f"check_box: {check_box}")
+            log_message(f"check_box: {check_box}")
             if check_box:  # and isinstance(check_box, QCheckBox):
                 check_box.blockSignals(True)
                 check_box.setState(bool(value), False)
                 check_box.blockSignals(False)
                 successes.append(parameter.name)
                 if debug_param_updates:
-                    logging.info(f"Updated parameter: ")
+                    log_message(f"Updated parameter: ")
                     log_parameter("parameter", parameter)
                     log_parameter("value", value)
             else:
@@ -468,10 +473,10 @@ class DrumCommonEditor(SynthEditor):
         }
 
         if synth_tone == "TONE_COMMON":
-            logging.info("\nTone common")
+            log_message("\nTone common")
             for param_name, param_value in sysex_data.items():
                 param = AddressParameterDrumCommon.get_by_name(param_name)
-                logging.info(f"Tone common: param_name: {param} {param_value}")
+                log_message(f"Tone common: param_name: {param} {param_value}")
                 try:
                     if param:
                         if param_name in [
@@ -488,9 +493,9 @@ class DrumCommonEditor(SynthEditor):
                     else:
                         failures.append(param_name)
                 except Exception as ex:
-                    logging.info(f"Error {ex} occurred")
+                    log_message(f"Error {ex} occurred")
 
-        logging.info(f"Updating sliders for Partial {partial_no}")
+        log_message(f"Updating sliders for Partial {partial_no}")
 
         def _update_slider(param: AddressParameterDrumPartial, value: int):
             """
@@ -505,7 +510,7 @@ class DrumCommonEditor(SynthEditor):
                 slider.blockSignals(False)
                 successes.append(param.name)
                 if debug_param_updates:
-                    logging.info(f"Updated: {param.name:50} {value}")
+                    log_message(f"Updated: {param.name:50} {value}")
             else:
                 failures.append(param.name)
 
@@ -517,10 +522,10 @@ class DrumCommonEditor(SynthEditor):
                 success_rate = (
                     (len(successes) / len(sysex_data) * 100) if sysex_data else 0
                 )
-                logging.info(f"successes: \t{successes}")
-                logging.info(f"failures: \t{failures}")
-                logging.info(f"success rate: \t{success_rate:.1f}%")
-                logging.info("======================================================================================================")
+                log_message(f"successes: \t{successes}")
+                log_message(f"failures: \t{failures}")
+                log_message(f"success rate: \t{success_rate:.1f}%")
+                log_message("======================================================================================================")
 
         _log_debug_info()
 
@@ -529,7 +534,9 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        logging.info("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
+        log_message("Updating UI components from SysEx data")
+        log_message("\n============================================================================================")
         debug_param_updates = True
         debug_stats = True
 
@@ -539,7 +546,7 @@ class DrumCommonEditor(SynthEditor):
             self.sysex_current_data = sysex_data
             log_changes(self.sysex_previous_data, sysex_data)
         except json.JSONDecodeError as ex:
-            logging.error(f"Invalid JSON format: {ex}")
+            log_message(f"Invalid JSON format: {ex}")
             return
 
         def _is_valid_sysex_area(sysex_data):
@@ -587,7 +594,7 @@ class DrumCommonEditor(SynthEditor):
             slider = self.partial_editors[partial_no].controls.get(param)
             if slider:
                 slider_value = param.convert_from_midi(value)
-                logging.info(
+                log_message(
                     f"midi value {value} converted to slider value {slider_value}"
                 )
                 slider.blockSignals(True)
@@ -595,7 +602,7 @@ class DrumCommonEditor(SynthEditor):
                 slider.blockSignals(False)
                 successes.append(param.name)
                 if debug_param_updates:
-                    logging.info(f"Updated: {param.name:50} {value}")
+                    log_message(f"Updated: {param.name:50} {value}")
 
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDrumPartial.get_by_name(param_name)
@@ -612,10 +619,10 @@ class DrumCommonEditor(SynthEditor):
                 success_rate = (
                     (len(successes) / len(sysex_data) * 100) if sysex_data else 0
                 )
-                logging.info("======================================================================================================")
-                logging.info(f"Successes: \t{successes}")
-                logging.info(f"Failures: \t{failures}")
-                logging.info(f"Success Rate: \t{success_rate:.1f}%")
-                logging.info("======================================================================================================")
+                log_message("\n======================================================================================================")
+                log_message(f"Successes: \t{successes}")
+                log_message(f"Failures: \t{failures}")
+                log_message(f"Success Rate: \t{success_rate:.1f}%")
+                log_message("\n======================================================================================================")
 
         _log_debug_info()

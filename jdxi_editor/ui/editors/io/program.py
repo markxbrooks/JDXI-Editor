@@ -53,6 +53,7 @@ from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -383,7 +384,7 @@ class ProgramEditor(SimpleEditor):
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        logging.info(f"calculated msb, lsb, pc :")
+        log_message(f"calculated msb, lsb, pc :")
         log_parameter("msb", msb)
         log_parameter("lsb", lsb)
         log_parameter("pc", pc)
@@ -399,7 +400,7 @@ class ProgramEditor(SimpleEditor):
             self.drum_kit_current_synth.setText(program_details["drum"])
             self.analog_synth_current_synth.setText(program_details["analog"])
         except KeyError:
-            logging.error(f"Program details missing required keys: {program_details}")
+            log_message(f"Program details missing required keys: {program_details}")
             self.digital_synth_1_current_synth.setText("Unknown")
             self.digital_synth_2_current_synth.setText("Unknown")
             self.drum_kit_current_synth.setText("Unknown")

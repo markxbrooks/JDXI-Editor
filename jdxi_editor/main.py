@@ -30,6 +30,7 @@ from PySide6.QtWidgets import QApplication, QProgressBar, QLabel, QWidget, QVBox
     QGroupBox
 from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
@@ -141,7 +142,7 @@ def main():
             pixmap.fill(QColor("#2897B7"))  # Use the app's theme color
             icon.addPixmap(pixmap)
             app.setWindowIcon(icon)
-            logging.info("Using fallback icon")
+            log_message("Using fallback icon")
 
         splash = QWidget()
         splash.setWindowFlags(Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)

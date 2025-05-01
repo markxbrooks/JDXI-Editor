@@ -1,5 +1,6 @@
 import logging
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.jdxi.synth.type import JDXISynth
@@ -42,7 +43,7 @@ class JDXIPresetManager:
         try:
             presets = self.preset_synth_map.get(synth_type, JDXIPresets.DIGITAL_ENUMERATED)
             preset_name = presets[preset_index]
-            logging.info(f"preset_name: {preset_name}")
+            log_message(f"preset_name: {preset_name}")
             return preset_name
         except IndexError:
             return "Index Error for current preset"

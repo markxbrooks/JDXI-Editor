@@ -160,7 +160,7 @@ class JdxiInstrument(JdxiUi):
             self._save_settings()
             event.accept()
         except Exception as ex:
-            logging.error(f"Error during close event: {str(ex)}")
+            log_message(f"Error during close event: {str(ex)}")
             event.ignore()
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -299,7 +299,7 @@ class JdxiInstrument(JdxiUi):
 
     def update_display_callback(self, synth_type: JDXISynth, preset_index: int, channel: int):
         """Update the display for the given synth preset_type and preset index."""
-        logging.info(
+        log_message(
             f"update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
         )
         presets = self.preset_manager.get_presets_for_channel(channel)
@@ -414,7 +414,7 @@ class JdxiInstrument(JdxiUi):
                 editor.preset_helper.update_display.connect(self.update_display_callback)
 
         except Exception as ex:
-            logging.error(f"Error showing {title} editor: {str(ex)}")
+            log_message(f"Error showing {title} editor: {str(ex)}")
 
     def _show_log_viewer(self) -> None:
         """Show log viewer window"""
@@ -433,13 +433,13 @@ class JdxiInstrument(JdxiUi):
             dialog.exec()
 
         except Exception as ex:
-            logging.error(f"Error showing MIDI configuration: {str(ex)}")
+            log_message(f"Error showing MIDI configuration: {str(ex)}")
             self.show_error("MIDI Configuration Error", str(ex))
 
     def _show_midi_debugger(self) -> None:
         """Open MIDI debugger window"""
         if not self.midi_helper:
-            logging.error("MIDI helper not initialized")
+            log_message("MIDI helper not initialized")
             return
         if not self.midi_debugger:
             self.midi_debugger = MIDIDebugger(self.midi_helper)
@@ -482,7 +482,7 @@ class JdxiInstrument(JdxiUi):
             )
             patch_manager.show()
         except Exception as ex:
-            logging.error(f"Error loading patch: {str(ex)}")
+            log_message(f"Error loading patch: {str(ex)}")
 
     def _patch_save(self) -> None:
         """Show save patch dialog"""
@@ -495,7 +495,7 @@ class JdxiInstrument(JdxiUi):
             )
             patch_manager.show()
         except Exception as ex:
-            logging.error(f"Error saving patch: {str(ex)}")
+            log_message(f"Error saving patch: {str(ex)}")
 
     def load_button_preset(self, button: SequencerSquare) -> None:
         """load preset dat stored on the button"""
@@ -523,7 +523,7 @@ class JdxiInstrument(JdxiUi):
             logging.debug(f"Current preset retrieved: {button_preset}")
             return button_preset
         except Exception as ex:
-            logging.error(f"Error generating button preset: {str(ex)}")
+            log_message(f"Error generating button preset: {str(ex)}")
             return None
 
     def _get_current_preset_name_from_settings(self) -> str:
@@ -575,7 +575,7 @@ class JdxiInstrument(JdxiUi):
             self.midi_out_indicator.set_active(self.midi_helper.midi_out is not None)
             self._save_settings()
         except Exception as ex:
-            logging.error(f"Error setting MIDI ports: {str(ex)}")
+            log_message(f"Error setting MIDI ports: {str(ex)}")
 
     def _midi_blink_input(self, _):
         """Handle incoming MIDI messages and flash indicator"""
@@ -649,14 +649,14 @@ class JdxiInstrument(JdxiUi):
                     self.midi_helper.send_control_change(cc, cc_value, MidiChannel.DIGITAL1)
                 logging.debug(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
         except Exception as ex:
-            logging.error(f"Error sending arp key hold: {str(ex)}")
+            log_message(f"Error sending arp key hold: {str(ex)}")
 
     def _midi_send_arp_on_off(self, state):
         """Send arpeggiator on/off command"""
         try:
             if self.midi_helper:
                 value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
-                logging.info(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
+                log_message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [AddressOffsetProgramLMB.CONTROLLER,
                              AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1,
@@ -675,7 +675,7 @@ class JdxiInstrument(JdxiUi):
                     )
                     self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
-            logging.error(f"Error sending arp on/off: {str(ex)}")
+            log_message(f"Error sending arp on/off: {str(ex)}")
 
     def handle_piano_note_on(self, note_num):
         """Handle piano key press"""
@@ -683,7 +683,7 @@ class JdxiInstrument(JdxiUi):
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
             msg = [0x90 + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
-            logging.info(f"Sent Note On: {note_num} on channel {self.channel + 1}")
+            log_message(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
     def handle_piano_note_off(self, note_num):
         """Handle piano key release"""
@@ -694,7 +694,7 @@ class JdxiInstrument(JdxiUi):
                 status = 0x80 + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
-                logging.info(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
+                log_message(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
 
     def _load_last_preset(self):
         """Load the last used preset from settings."""
@@ -729,7 +729,7 @@ class JdxiInstrument(JdxiUi):
                 logging.debug(f"Loaded last preset: {preset_name} on channel {channel}")
 
         except Exception as ex:
-            logging.error(f"Error loading last preset: {str(ex)}")
+            log_message(f"Error loading last preset: {str(ex)}")
 
     def _save_last_preset(self, synth_type: str, preset_num: int, channel: int):
         """Save the last used preset to settings
@@ -748,7 +748,7 @@ class JdxiInstrument(JdxiUi):
             )
 
         except Exception as ex:
-            logging.error(f"Error saving last preset: {str(ex)}")
+            log_message(f"Error saving last preset: {str(ex)}")
 
     def _show_favorite_context_menu(self, pos, button: Union[FavoriteButton, SequencerSquare]):
         """Show context menu for favorite button"""
@@ -785,7 +785,7 @@ class JdxiInstrument(JdxiUi):
                 self._update_display_preset(preset_num, preset_name, channel)
 
             except Exception as ex:
-                logging.error(f"Error saving to favorite: {str(ex)}")
+                log_message(f"Error saving to favorite: {str(ex)}")
                 QMessageBox.warning(self, "Error", f"Error saving preset: {str(ex)}")
 
     def _clear_favorite(self, button: FavoriteButton):
@@ -828,7 +828,7 @@ class JdxiInstrument(JdxiUi):
                 button.setChecked(True)  # Keep it checked
                 button.setCheckable(False)  # Prevent unchecking directly
                 self.settings.setValue(preset_name, button_preset)  # Save preset
-                logging.info(f"Saved {button_preset} as {preset_name}")
+                log_message(f"Saved {button_preset} as {preset_name}")
         else:
             self.load_button_preset(button)  # Load stored preset if checked
 
@@ -858,7 +858,7 @@ class JdxiInstrument(JdxiUi):
                 log_message("JDXI Settings loaded successfully")
 
         except Exception as ex:
-            logging.error(f"Error loading settings: {str(ex)}")
+            log_message(f"Error loading settings: {str(ex)}")
 
     def _save_settings(self):
         """Save application settings"""
@@ -878,4 +878,4 @@ class JdxiInstrument(JdxiUi):
                 logging.debug("Settings saved successfully")
 
         except Exception as ex:
-            logging.error(f"Error saving settings: {str(ex)}")
+            log_message(f"Error saving settings: {str(ex)}")
