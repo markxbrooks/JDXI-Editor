@@ -68,8 +68,8 @@ from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import (
     _log_debug_info,
-    _filter_sysex_keys,
-    _get_partial_number,
+    filter_sysex_keys,
+    get_partial_number,
     _is_valid_sysex_area,
     _log_synth_area_info,
     _is_digital_synth_area,
@@ -470,14 +470,14 @@ class DigitalSynthEditor(SynthEditor):
         if not sysex_data:
             return
         current_synth = get_area([self.sysex_address.msb, self.sysex_address.umb])
-        temp_area = sysex_data.get("TEMPORARY_AREA")
+        temporary_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
-        if not current_synth == temp_area:
-            log_message(f"temp_area: {temp_area} is not current_synth: {current_synth}, Skipping update")
+        if not current_synth == temporary_area:
+            log_message(f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update")
             return
-        log_header_message(f"Updating UI components from SysEx data for \t{temp_area} \t{synth_tone}")
-        incoming_data_partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        filtered_data = _filter_sysex_keys(sysex_data)
+        log_header_message(f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}")
+        incoming_data_partial_no = get_partial_number(sysex_data.get("SYNTH_TONE"))
+        filtered_data = filter_sysex_keys(sysex_data)
         self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
     def _update_tone_common_modify_ui(self,
