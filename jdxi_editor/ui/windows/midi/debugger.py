@@ -51,6 +51,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data import AddressParameterAnalog
 from jdxi_editor.midi.data.address.address import (
@@ -243,7 +244,7 @@ class MIDIDebugger(QMainWindow):
                     raise ValueError(f"No parameter enum defined for synth type: {synth_str}")
                 param_address = hex(param)
             except Exception as ex:
-                log_message(f"Error {ex} parsing sysex bytes", level=logging.ERROR)
+                log_error(f"Error {ex} parsing sysex bytes", level=logging.ERROR)
                 param = message[11]
                 param_address = hex(param)
                 param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
@@ -305,7 +306,7 @@ class MIDIDebugger(QMainWindow):
                 param_str, param = parse_sysex_message(message, parameter)
                 param_address = hex(param)
             except Exception as ex:
-                log_message(f"Error {ex} parsing sysex bytes", level=logging.ERROR)
+                log_error(f"Error {ex} parsing sysex bytes", level=logging.ERROR)
                 param = message[11]
                 param_address = hex(param)
                 param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
@@ -411,7 +412,7 @@ class MIDIDebugger(QMainWindow):
             else:
                 self.log_response(f"Failed to send: {hex_str}")
 
-            logging.debug(f"Sent SysEx: {hex_str}")
+            log_message(f"Sent SysEx: {hex_str}")
 
         except ValueError as e:
             self.log_response(f"Error parsing message: {match}\n{str(e)}")

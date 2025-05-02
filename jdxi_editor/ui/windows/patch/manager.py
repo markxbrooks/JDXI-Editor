@@ -34,6 +34,7 @@ from PySide6.QtWidgets import (
 )
 import logging
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXIStyle
@@ -100,7 +101,7 @@ class PatchManager(QMainWindow):
             if file_path:
                 self.path_input.setText(file_path)
         except Exception as ex:
-            log_message(f"Error browsing for file: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error browsing for file: {str(ex)}", level=logging.ERROR)
 
     def _handle_action(self):
         """Handle save/load action"""

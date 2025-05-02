@@ -28,6 +28,7 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.control_change.base import ControlChange
@@ -506,4 +507,4 @@ class SynthEditor(SynthBase):
             elif control == 32:
                 self.cc_lsb_value = value
         except Exception as ex:
-            log_message(f"Error {ex} occurred handling control change", level=logging.ERROR)
+            log_error(f"Error {ex} occurred handling control change")

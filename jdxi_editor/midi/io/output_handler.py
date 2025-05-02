@@ -25,6 +25,7 @@ from typing import List, Optional, Union
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.log.parameter import log_parameter
@@ -115,7 +116,7 @@ class MidiOutHandler(MidiIOController):
             self.midi_message_outgoing.emit(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending message: {ex}", level=logging.ERROR)
+            log_error(f"Error sending message: {ex}", level=logging.ERROR)
             return False
 
     def send_note_on(
@@ -176,7 +177,7 @@ class MidiOutHandler(MidiIOController):
         :param channel: int midi channel (0-15).
         :return: bool True if successful, False otherwise.
         """
-        logging.debug("========Sending bank select==========")
+        log_message("========Sending bank select==========")
         log_parameter("MSB", msb)
         log_parameter("LSB", lsb)
         log_parameter("channel", channel)
@@ -187,7 +188,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message([0xB0 + channel, 0x20, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending bank select: {ex}", level=logging.ERROR)
+            log_error(f"Error sending bank select: {ex}", level=logging.ERROR)
             return False
 
     def send_identity_request(self) -> bool:
@@ -197,7 +198,7 @@ class MidiOutHandler(MidiIOController):
         Returns:
             True if the message was sent successfully, False otherwise.
         """
-        logging.debug("=========Sending identity request========")
+        log_message("=========Sending identity request========")
         try:
             identity_request_message = IdentityRequestMessage()
             identity_request_bytes_list = identity_request_message.to_message_list()
@@ -208,7 +209,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message(identity_request_bytes_list)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending identity request: {ex}", level=logging.ERROR)
+            log_error(f"Error sending identity request: {ex}", level=logging.ERROR)
             return False
 
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
@@ -223,7 +224,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error sending parameter: {ex}", level=logging.ERROR)
             return False
 
     def send_parameter(
@@ -268,7 +269,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error sending parameter: {ex}", level=logging.ERROR)
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -278,7 +279,7 @@ class MidiOutHandler(MidiIOController):
         :param channel: int MIDI channel (0-15).
         :return: True if successful, False otherwise.
         """
-        logging.debug("=====Sending program change====")
+        log_message("=====Sending program change====")
         log_parameter("program", program)
         log_parameter("channel", channel)
         try:
@@ -288,7 +289,7 @@ class MidiOutHandler(MidiIOController):
             message = program_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending program change: {ex}", level=logging.ERROR)
+            log_error(f"Error sending program change: {ex}", level=logging.ERROR)
             return False
 
     def send_control_change(
@@ -448,7 +449,7 @@ class MidiOutHandler(MidiIOController):
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
-            log_message(f"Error {ex} occurred sending bank and program change message", level=logging.ERROR)
+            log_error(f"Error {ex} occurred sending bank and program change message", level=logging.ERROR)
             return False
 
     def identify_device(self) -> bool:
@@ -465,7 +466,7 @@ class MidiOutHandler(MidiIOController):
             log_parameter("Sent MIDI message:", raw_message)
 
         except Exception as ex:
-            log_message(f"Error sending identity request: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error sending identity request: {str(ex)}", level=logging.ERROR)
 
     def get_parameter(self,
                       msb: int,
@@ -522,7 +523,7 @@ class MidiOutHandler(MidiIOController):
             raise TimeoutError
 
         except (TimeoutError, OSError, IOError) as ex:
-            log_message(f"Error getting parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error getting parameter: {ex}", level=logging.ERROR)
             return None
 
     def save_patch(self, file_path: str) -> bool:
@@ -557,7 +558,7 @@ class MidiOutHandler(MidiIOController):
             log_message(f"Patch saved to {file_path}")
             return True
         except Exception as e:
-            log_message(f"Error saving patch: {str(e)}", level=logging.ERROR)
+            log_error(f"Error saving patch: {str(e)}", level=logging.ERROR)
             return False
 
     def _get_digital_parameters(self):

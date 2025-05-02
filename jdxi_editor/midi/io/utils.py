@@ -8,6 +8,7 @@ from typing import Any, List, Optional, Union
 import mido
 
 from jdxi_editor.globals import logger
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
@@ -92,7 +93,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
             return mido.Message("sysex", data=sys_ex_data)
     except Exception as ex:
-        log_message(f"Error {ex} occurred", level=logging.ERROR)
+        log_error(f"Error {ex} occurred", level=logging.ERROR)
     try:
         # Program Change
         if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
@@ -100,7 +101,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             program = message_content[1]
             return mido.Message("program_change", channel=channel, program=program)
     except Exception as ex:
-        log_message(f"Error {ex} occurred", level=logging.ERROR)
+        log_error(f"Error {ex} occurred", level=logging.ERROR)
 
     try:
         # Control Change
@@ -110,7 +111,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             value = message_content[2]
             return mido.Message("control_change", channel=channel, control=control, value=value)
     except Exception as ex:
-        log_message(f"Error {ex} occurred", level=logging.ERROR)
+        log_error(f"Error {ex} occurred", level=logging.ERROR)
 
     # Other (not yet implemented)
     log_message(f"Unhandled MIDI message: {message_content}")

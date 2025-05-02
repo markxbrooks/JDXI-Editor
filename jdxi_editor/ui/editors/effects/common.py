@@ -337,5 +337,5 @@ class EffectsCommonEditor(SimpleEditor):
                 return False
 
         except Exception as ex:
-            log_message(f"Error handling parameter {param.name}: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error handling parameter {param.name}: {str(ex)}", level=logging.ERROR)
             return False

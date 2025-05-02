@@ -29,6 +29,8 @@ from typing import Optional, List, Tuple
 
 import rtmidi
 from PySide6.QtCore import QObject
+
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 
@@ -147,7 +149,7 @@ class MidiIOController(QObject):
             return True
 
         except Exception as ex:
-            log_message(f"Error opening MIDI input port: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error opening MIDI input port: {str(ex)}", level=logging.ERROR)
             return False
 
     def open_output_port(self, port_name_or_index: str) -> bool:
@@ -186,7 +188,7 @@ class MidiIOController(QObject):
             return True
 
         except Exception as ex:
-            log_message(f"Error opening MIDI output port: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error opening MIDI output port: {str(ex)}", level=logging.ERROR)
             return False
 
     def close_ports(self):
@@ -242,5 +244,5 @@ class MidiIOController(QObject):
             return input_success and output_success
 
         except Exception as ex:
-            log_message(f"Error opening MIDI ports: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error opening MIDI ports: {str(ex)}", level=logging.ERROR)
             return False

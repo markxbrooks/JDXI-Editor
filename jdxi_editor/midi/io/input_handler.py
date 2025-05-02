@@ -28,6 +28,7 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.io.controller import MidiIOController
@@ -88,7 +89,7 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-            log_message(f"Error {ex} occurred", level=logging.ERROR)
+            log_error(f"Error {ex} occurred", level=logging.ERROR)
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """Reopen the current MIDI input port and reattach the callback.
@@ -159,7 +160,7 @@ class MidiInHandler(MidiIOController):
                 log_message(f"Unhandled MIDI message type: {message.type}")
             self.midi_message_incoming.emit(message)
         except Exception as ex:
-            log_message(f"Error {ex} occurred", level=logging.ERROR)
+            log_error(f"Error {ex} occurred", level=logging.ERROR)
 
     def _handle_note_change(self, message: Any, preset_data: dict) -> None:
         """

@@ -4,6 +4,7 @@ This module contains utility functions for handling SysEx data related to digita
 
 import logging
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
@@ -107,7 +108,7 @@ def _log_synth_area_info(sysex_data: dict) -> None:
     :return: None
     """
     if not _is_valid_sysex_area(sysex_data):
-        logging.warning("SysEx data not from a valid digital synth area. Skipping.")
+        log_message("SysEx data not from a valid digital synth area. Skipping.", level=logging.WARNING)
         return
 
 
@@ -158,14 +159,14 @@ def _sysex_area2_matches(sysex_data: dict, area: int) -> bool:
     return match
 
 
-def _sysex_tone_matches(sysex_data: dict, part: int) -> bool:
+def _sysex_tone_matches(sysex_data: dict, tone: int) -> bool:
     """
     Check if the SysEx data matches the expected area.
     :param sysex_data: dict
-    :param part: int
+    :param tone: int
     :return: bool
     """
-    log_message(f"looking for part {part}")
+    log_message(f"looking for tone {tone}")
 
     temp_part = sysex_data.get("SYNTH_TONE")
     log_message(f"found part {temp_part}")
@@ -173,24 +174,9 @@ def _sysex_tone_matches(sysex_data: dict, part: int) -> bool:
         AddressOffsetTemporaryToneUMB.DIGITAL_PART_1: "PARTIAL_1",
         AddressOffsetTemporaryToneUMB.DIGITAL_PART_2: "PARTIAL_2",
     }
-    expected_part = part_map.get(part)
-    match = part == expected_part
+    expected_part = part_map.get(tone)
+    match = tone == expected_part
     log_message(f"SysEx PART: {temp_part}, expected: {expected_part}, match: {match}")
-    return match
-
-
-def _sysex_group_matches(sysex_data: dict, expected_group: str) -> bool:
-    """
-    Check if the SysEx data matches the expected area.
-    :param sysex_data: dict
-    :param expected_group: str
-    :return: bool
-    """
-    found_group = sysex_data.get("SYNTH_TONE")
-    match = found_group == expected_group
-    log_message(
-        f"SysEx TEMP_AREA: {found_group}, expected: {expected_group}, match: {match}"
-    )
     return match
 
 
@@ -224,5 +210,5 @@ def to_hex(value: int, width: int = 2) -> str:
         log_message(f"to_hex: value: {value} -> 0x{int(int_value):02X} (width={width})")
         return hex_str
     except Exception as ex:
-        log_message(f"Error {ex} occurred in to_hex with value: {value}", level=logging.ERROR)
+        log_error(f"Error {ex} occurred in to_hex with value: {value}", level=logging.ERROR)
         return "??"

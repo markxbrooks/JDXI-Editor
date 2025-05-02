@@ -32,9 +32,9 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthDa
             instrument_default_image="drums.png",
             window_title="Drum Kit",
             display_prefix="DR",
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
-            address_lmb=address_lmb,
+            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
+            lmb=address_lmb,
             partial_number=partial_number
         )
     elif synth_type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
@@ -58,9 +58,9 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthDa
             instrument_default_image="jdxi_vector.png",
             window_title=f"Digital Synth {synth_number}",
             display_prefix=f"D{synth_number}",
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=digital_partial_address_umb,
-            address_lmb=address_lmb,
+            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            umb=digital_partial_address_umb,
+            lmb=address_lmb,
             synth_number=synth_number,
             partial_number=partial_number
         )
@@ -75,8 +75,8 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthDa
             instrument_default_image="analog.png",
             window_title="Analog Synth",
             display_prefix="AN",
-            address_msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            address_umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            address_lmb=AddressOffsetProgramLMB.COMMON
+            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
+            lmb=AddressOffsetProgramLMB.COMMON
         )
     raise ValueError(f"Error occurred setting up {synth_type}")

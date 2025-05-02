@@ -38,6 +38,7 @@ from PySide6.QtCore import Qt, QTimer
 from mido import tempo2bpm, MidiFile, MidiTrack, Message, MetaMessage, bpm2tempo
 from rtmidi.midiconstants import NOTE_ON, CONTROL_CHANGE
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
@@ -425,7 +426,7 @@ class PatternSequencer(SynthEditor):
                 self.save_pattern(filename)
                 log_message(f"Pattern saved to {filename}")
             except Exception as ex:
-                log_message(f"Error saving pattern: {ex}", level=logging.ERROR)
+                log_error(f"Error saving pattern: {ex}")
                 QMessageBox.critical(
                     self, "Error", f"Could not save pattern: {str(ex)}"
                 )
@@ -454,7 +455,7 @@ class PatternSequencer(SynthEditor):
                             self.tempo_spinbox.setValue(bpm)
                             break
             except Exception as ex:
-                log_message(f"Error loading pattern: {ex}", level=logging.ERROR)
+                log_error(f"Error loading pattern: {ex}", level=logging.ERROR)
                 QMessageBox.critical(
                     self, "Error", f"Could not load pattern: {str(ex)}"
                 )
@@ -616,7 +617,7 @@ class PatternSequencer(SynthEditor):
                     self.tempo_spinbox.setValue(bpm)
 
         except Exception as ex:
-            log_message(f"Error loading pattern: {ex}", level=logging.ERROR)
+            log_error(f"Error loading pattern: {ex}", level=logging.ERROR)
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
     def play_pattern(self):

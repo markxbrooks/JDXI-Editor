@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Signal, QSettings
 import logging
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
@@ -35,7 +36,7 @@ class FavoriteButton(QPushButton):
         self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
         self._update_style()
         # self._save_to_settings()
-        logging.debug(f"Saved preset to favorite {self.slot_num}: {preset_name}")
+        log_message(f"Saved preset to favorite {self.slot_num}: {preset_name}")
 
     def load_preset_from_favourites(self):
         """Load saved preset"""
@@ -54,7 +55,7 @@ class FavoriteButton(QPushButton):
         # self.settings.setValue('last_preset/channel', self.preset.channel)
         # self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
         # Update the display
-        logging.debug(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
+        log_message(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
 
     def load_preset(self, preset_data):
         """Load preset data into synth"""
@@ -68,8 +69,8 @@ class FavoriteButton(QPushButton):
                 # Store as last loaded preset
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
-        except Exception as e:
-            log_message(f"Error loading preset: {e}", level=logging.ERROR)
+        except Exception as ex:
+            log_error(f"Error loading preset: {ex}")
 
     def _save_to_settings(self):
         """Save preset data to settings"""

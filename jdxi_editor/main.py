@@ -128,7 +128,7 @@ def main():
         for icon_path in icon_locations:
             if icon_path.exists():
                 app.setWindowIcon(QIcon(str(icon_path)))
-                logging.debug(f"Loaded icon from {icon_path}")
+                log_message(f"Loaded icon from {icon_path}")
                 icon_found = True
                 break
 

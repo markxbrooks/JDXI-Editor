@@ -2,6 +2,7 @@
 import logging
 from typing import Tuple, Optional
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
@@ -124,5 +125,5 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
         return (switch_value == 1, select_value == 1)
 
     except Exception as ex:
-        log_message(f"Error getting partial {partial.name} state: {str(ex)}", level=logging.ERROR)
+        log_error(f"Error getting partial {partial.name} state: {str(ex)}", level=logging.ERROR)
         return False, False

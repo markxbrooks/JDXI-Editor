@@ -19,12 +19,12 @@ Classes:
 """
 
 
-import logging
 import threading
 import time
 from typing import Dict
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
@@ -126,9 +126,9 @@ class SynthBase(QWidget):
                 )
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
+                log_message(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            log_message(f"Error handling parameter {param.name}: {ex}", level=logging.ERROR)
+            log_error(f"Error handling parameter {param.name}: {ex}")
 
     def _create_parameter_slider(
         self,
