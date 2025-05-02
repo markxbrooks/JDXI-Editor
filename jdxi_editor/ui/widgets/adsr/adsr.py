@@ -32,6 +32,7 @@ from jdxi_editor.midi.utils.conversions import (
 )
 from jdxi_editor.ui.widgets.adsr.graph import ADSRGraph
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
+from jdxi_editor.ui.widgets.slider import slider
 from jdxi_editor.ui.widgets.slider.slider import Slider
 from jdxi_editor.jdxi.style import JDXIStyle
 
@@ -375,6 +376,8 @@ class ADSR(QWidget):
             # 3) Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
+            else:
+                log_slider_parameters(self.address.umb, self.address.lmb, param, value, midi_value)
         except ValueError as ex:
             log_message(f"Error updating parameter: {ex}")
         # 4) Update plot
@@ -388,10 +391,10 @@ class ADSR(QWidget):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "sustain_level":
                     self.envelope["sustain_level"] = slider.value() / 127
-                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
+                    # log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
                 else:
                     self.envelope[envelope_param_type] = midi_cc_to_ms(slider.value())
-                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
+                    # log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
         except Exception as ex:
             log_message(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
