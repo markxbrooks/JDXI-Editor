@@ -30,7 +30,7 @@ def _log_debug_info(data: list, successes: list, failures: list, enabled: bool):
     log_message("\n======================================================================================================")
 
 
-def _filter_sysex_keys(sysex_data: dict) -> dict:
+def filter_sysex_keys(sysex_data: dict) -> dict:
     """
     Filter out unwanted keys from the SysEx data.
     :param sysex_data: dict
@@ -64,7 +64,7 @@ def _get_synth_number(synth_tone: str) -> int:
     return synth_no
 
 
-def _get_partial_number(synth_tone: str) -> int:
+def get_partial_number(synth_tone: str) -> int:
     """
     Get the partial number based on the synth tone.
     :param synth_tone: str
