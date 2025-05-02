@@ -31,6 +31,7 @@ from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
@@ -69,7 +70,7 @@ class SynthBase(QWidget):
             for midi_request in midi_requests:
                 byte_list_message = bytes.fromhex(midi_request)
                 self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(0.075)  # Blocking delay in a separate thread
+                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
 
         # Run the function in a separate thread
         threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()

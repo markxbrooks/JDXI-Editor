@@ -36,6 +36,7 @@ from PySide6.QtGui import QPainter, QPen
 
 class Slider(QWidget):
     """Custom slider widget with label and value display"""
+    rpn_slider_changed = Signal(int)
 
     # Define tick positions enum to match QSlider
     class TickPosition:

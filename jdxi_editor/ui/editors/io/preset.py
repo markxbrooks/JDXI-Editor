@@ -316,7 +316,7 @@ class PresetEditor(SimpleEditor):
         if label:
             label.setText(tone_name)
         else:
-            logging.warning(f"Unknown synth type: {synth_type}. Cannot update tone name.")
+            logging.warning(f"MIDI_SLEEP_TIME: {synth_type}. Cannot update tone name.")
 
     def load_preset_by_program_change(self, preset_index):
         """Load a preset by program change."""

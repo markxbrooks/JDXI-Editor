@@ -11,9 +11,13 @@ def send_nrpn(self, channel, msb, lsb, value):
 """
 
 import logging
+import threading
+import time
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
+from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.widgets.slider import Slider
 
 
@@ -56,12 +60,26 @@ class NRPNSlider(Slider):
         self.valueChanged.connect(self.on_value_changed)
         self.param_type = param_type  # "nrpn" or "rpn"
         self.update_style(self.current_value)
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
 
     def update_style(self, value: int):
         if value == 0:
             self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
         else:
             self.setStyleSheet(JDXIStyle.ADSR)
+
+    def data_request(self):
+        """
+        Request the current value of the NRPN parameter from the device.
+        """
+        def send_with_delay(midi_requests):
+            for midi_request in midi_requests:
+                byte_list_message = bytes.fromhex(midi_request)
+                self.midi_helper.send_raw_message(byte_list_message)
+                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
+
+        # Run the function in a separate thread
+        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
 
     def on_value_changed(self, value: int):
         """
@@ -91,5 +109,6 @@ class NRPNSlider(Slider):
                     self.midi_helper.send_rpn(
                         parameter=parameter, value=value, channel=channel
                     )
+                    self.data_request()
                 else:
                     raise ValueError(f"Unsupported parameter type: {self.param_type}")

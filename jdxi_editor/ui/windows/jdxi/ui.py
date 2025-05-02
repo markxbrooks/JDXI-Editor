@@ -378,7 +378,7 @@ class JdxiUi(QMainWindow):
         # synth_data = self.synth_data_map.get(self.current_synth_type)
         synth_data = create_synth_data(self.current_synth_type)
         if not synth_data:
-            logging.warning("Unknown synth type. Defaulting to DIGITAL_1.")
+            logging.warning("MIDI_SLEEP_TIME. Defaulting to DIGITAL_1.")
             synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
 
         self.preset_manager.current_preset_name = self.preset_manager.get_preset_name_by_type(self.current_synth_type)

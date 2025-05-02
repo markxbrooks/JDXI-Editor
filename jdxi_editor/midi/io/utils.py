@@ -120,7 +120,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
 def mido_message_data_to_byte_list(message):
     """mido message data to byte list"""
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-    logging.debug("converting (%d bytes)", len(message.data))
+    log_message(f"converting ({len(message.data)} bytes)")
 
     # Reconstruct SysEx message bytes
     message_byte_list = bytes(

@@ -17,20 +17,23 @@ in address synthesizer or effect unit.
 
 def midi_cc_to_ms(cc_value, min_time=10, max_time=1000):
     """
-    Converts address MIDI CC value (0-127) to address time value in milliseconds.
+    Converts a MIDI CC value (0–127) to a time value in milliseconds.
 
     Parameters:
-        cc_value (int): MIDI CC value (0-127).
+        cc_value (int): MIDI CC value (0–127).
         min_time (int, optional): Minimum time in milliseconds. Default is 10 ms.
         max_time (int, optional): Maximum time in milliseconds. Default is 1000 ms.
 
     Returns:
         float: Corresponding time value in milliseconds.
     """
+    if min_time >= max_time:
+        raise ValueError("min_time must be less than max_time")
+
+    cc_value = max(0, min(127, cc_value))  # Clamp to valid MIDI range
     time_range = max_time - min_time
-    cc_range = 127
-    conversion_factor = time_range / cc_range
-    return min_time + (cc_value * conversion_factor)
+    return min_time + (cc_value / 127.0) * time_range
+
 
 
 def ms_to_midi_cc(ms_value, min_time=10, max_time=1000):

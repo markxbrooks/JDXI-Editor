@@ -20,6 +20,7 @@ from typing import Dict, Union, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QDoubleSpinBox, QGridLayout, QVBoxLayout
 
+from jdxi_editor.globals import logger
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
@@ -53,8 +54,8 @@ def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> Q
     return sb
 
 
-def create_double_spinbox(min_value: int,
-                          max_value: int,
+def create_double_spinbox(min_value: float,
+                          max_value: float,
                           step: float,
                           value: int) -> QDoubleSpinBox:
     """
@@ -110,9 +111,10 @@ class AdsrSliderSpinbox(QWidget):
                                                    label,
                                                    value)
         param_type = param.get_envelope_param_type()
+        print(f"param_type: {param_type}")
         if param_type == "sustain_level":
-            self.spinbox = create_double_spinbox(min_value=int(min_value),
-                                                 max_value=int(min_value),
+            self.spinbox = create_double_spinbox(min_value=min_value,
+                                                 max_value=max_value,
                                                  step=0.01,
                                                  value=value)
         else:
@@ -137,6 +139,9 @@ class AdsrSliderSpinbox(QWidget):
             return value / 127
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return midi_cc_to_ms(int(value))
+        else:
+            logger.warning(f"Unknown envelope parameter type: {param_type}")
+            return 0.0  # or raise an error, depending on design
 
     def convert_from_envelope(self, value: float):
         param_type = self.param.get_envelope_param_type()
@@ -274,6 +279,7 @@ class ADSR(QWidget):
         self.plot.set_values(self.envelope)
         for control in self.adsr_controls:
             control.envelopeChanged.connect(self.on_control_changed)
+        self.update_controls_from_envelope()
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)
