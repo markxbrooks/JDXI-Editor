@@ -25,7 +25,7 @@ import os
 import logging
 from typing import Optional, Any
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QGroupBox
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.log.error import log_error
@@ -187,6 +187,40 @@ class SynthEditor(SynthBase):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
+
+    def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+        raise NotImplementedError("Should be implemented by subclass")
+
+    """def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+        ""
+        Create the instrument preset group box.
+        :param synth_type: str
+        :return: QGroupBox
+        ""
+        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
+        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
+        self.instrument_title_label = DigitalTitle()
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+        self.instrument_selection_label = QLabel(f"Select an {synth_type} synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+        self.instrument_selection_combo = PresetComboBox(self.preset_list)
+        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
+        self.instrument_selection_combo.combo_box.setEditable(True)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+        return instrument_preset_group"""
         
     def get_controls_as_dict(self):
         """
