@@ -8,6 +8,7 @@ def log_footer_message(message: str, level: int = logging.INFO) -> None:
     """
     Log a message with emojis based on severity and content keywords.
 
+    :rtype: object
     :param message: The message to log.
     :param level: Logging level (default: logging.INFO).
     """

@@ -167,7 +167,7 @@ class PianoKeyboard(QWidget):
     def set_midi_channel(self, channel: int):
         """Set MIDI channel for note messages"""
         self.current_channel = channel
-        logging.debug(f"Piano keyboard set to channel {channel}")
+        log_message(f"Piano keyboard set to channel {channel}")
 
     def _update_channel_display(self):
         """Update channel indicator"""

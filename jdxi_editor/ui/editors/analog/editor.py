@@ -364,7 +364,7 @@ class AnalogSynthEditor(SynthEditor):
                 # Handle OSC_WAVE parameter to update waveform buttons
                 if param == AddressParameterAnalog.OSC_WAVEFORM:
                     self._update_waveform_buttons(value)
-                    logging.debug(
+                    log_message(
                         "updating waveform buttons for param {param} with {value}"
                     )
 
@@ -612,7 +612,7 @@ class AnalogSynthEditor(SynthEditor):
             logging.warning(f"Unknown waveform value: {value}")
             return
 
-        logging.debug(f"Waveform value {value} found, selecting {selected_waveform}")
+        log_message(f"Waveform value {value} found, selecting {selected_waveform}")
 
         # Retrieve waveform buttons for the given partial
         wave_buttons = self.wave_buttons
@@ -634,7 +634,7 @@ class AnalogSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
-        logging.debug(f"Updating LFO shape buttons with value {value}")
+        log_message(f"Updating LFO shape buttons with value {value}")
 
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():

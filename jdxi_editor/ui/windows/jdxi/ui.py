@@ -38,6 +38,7 @@ from PySide6.QtGui import (
 )
 import qtawesome as qta
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -408,7 +409,7 @@ class JdxiUi(QMainWindow):
             try:
                 font_id = QFontDatabase.addApplicationFont(font_path)
                 if font_id < 0:
-                    log_message(f"Error loading {font_name} font", level=logging.WARNING)
+                    log_error(f"Error loading {font_name} font", level=logging.WARNING)
                 font_families = QFontDatabase.applicationFontFamilies(font_id)
                 if font_families:
                     self.digital_font_family = font_families[0]
@@ -420,7 +421,7 @@ class JdxiUi(QMainWindow):
                     f"Error loading {font_name} font from {font_path}: {ex}"
                 )
         else:
-            logging.debug(f"File not found: {font_path}")
+            log_message(f"File not found: {font_path}")
 
     def update_preset_display(self, preset_number: int, preset_name: str):
         """Update the current preset display"""
@@ -451,12 +452,12 @@ class JdxiUi(QMainWindow):
             if hasattr(self, "piano_keyboard"):
                 self.piano_keyboard.set_midi_channel(channel)
 
-            logging.debug(
+            log_message(
                 f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})"
             )
 
         except Exception as ex:
-            log_message(f"Error updating display: {ex}", level=logging.ERROR)
+            log_error(f"Error updating display: {ex}", level=logging.ERROR)
 
     def show_error(self, title: str, message: str):
         """Show error message dialog

@@ -8,16 +8,16 @@ from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig
 
 @dataclass
 class SynthData(MidiSynthConfig, InstrumentDisplayConfig):
-    address_msb: int
-    address_umb: int
-    address_lmb: int
+    msb: int
+    umb: int
+    lmb: int
     sysex_address: RolandSysExAddress = field(init=False)
 
     def __post_init__(self):
         self.sysex_address = RolandSysExAddress(
-            msb=self.address_msb,
-            umb=self.address_umb,
-            lmb=self.address_lmb,
+            msb=self.msb,
+            umb=self.umb,
+            lmb=self.lmb,
             lsb=ZERO_BYTE
         )
 

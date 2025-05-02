@@ -55,4 +55,4 @@ def log_changes(previous_data, current_data):
                 f"  {change['parameter']}: {change['previous']} → {change['current']}{diff_str}"
             )
     else:
-        logging.debug("No parameter changes detected")
+        log_message("No parameter changes detected")

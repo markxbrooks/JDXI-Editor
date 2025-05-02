@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QPainter, QPen, QColor
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
@@ -67,7 +68,7 @@ class SequencerSquare(QPushButton):
         """Save current preset to this favorite slot"""
         self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
         # self._save_to_settings()
-        logging.debug(f"Saved preset to favorite {self.slot_number}: {preset_name}")
+        log_message(f"Saved preset to favorite {self.slot_number}: {preset_name}")
 
     def clear_preset(self):
         """Clear the saved preset"""
@@ -87,7 +88,7 @@ class SequencerSquare(QPushButton):
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
         except Exception as ex:
-            log_message(f"Error loading preset: {ex}", level=logging.ERROR)
+            log_error(f"Error loading preset: {ex}", level=logging.ERROR)
 
     """
     def _save_to_settings(self):
@@ -131,5 +132,5 @@ class SequencerSquare(QPushButton):
         # self.settings.setValue('last_preset/channel', self.preset.channel)
         # self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
         # Update the display
-        logging.debug(f"Loading favorite {self.slot_num}: {self.preset.preset_name}")
+        log_message(f"Loading favorite {self.slot_num}: {self.preset.preset_name}")
     """

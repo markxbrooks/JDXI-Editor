@@ -29,6 +29,7 @@ Example Usage:
 import logging
 from typing import Optional
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -64,7 +65,7 @@ class MIDIConnection:
         self._midi_out = midi_out
         self._main_window = main_window
         self.identify_device()
-        logging.debug("MIDI Connection singleton initialized")
+        log_message("MIDI Connection singleton initialized")
 
     def send_message(self, message):
         """Send MIDI message and trigger indicator"""
@@ -76,14 +77,14 @@ class MIDIConnection:
                     self._main_window, "midi_out_indicator"
                 ):
                     self._main_window.midi_out_indicator.blink()
-                logging.debug(
+                log_message(
                     f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in message])}"
                 )
             else:
                 logging.warning("No MIDI output port available")
 
         except Exception as ex:
-            log_message(f"Error sending MIDI message: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error sending MIDI message: {str(ex)}", level=logging.ERROR)
 
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""

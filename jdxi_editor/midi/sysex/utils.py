@@ -1,6 +1,7 @@
 import logging
 from typing import List
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.digital import get_digital_parameter_by_address
 
@@ -66,7 +67,7 @@ def validate_sysex_message(message: List[int]) -> bool:
         return True
 
     except Exception as ex:
-        log_message(f"Error validating SysEx message: {str(ex)}", level=logging.ERROR)
+        log_error(f"Error validating SysEx message: {str(ex)}", level=logging.ERROR)
         return False
 
 
@@ -86,9 +87,9 @@ def bytes_to_hex_string(byte_list, prefix="F0"):
     try:
         return f"{prefix} " + " ".join(f"{int(byte):02X}" for byte in byte_list)
     except ValueError as ex:
-        log_message(f"Error {ex} occurred formatting hex", level=logging.ERROR)
+        log_error(f"Error {ex} occurred formatting hex", level=logging.ERROR)
     except Exception as ex:
-        log_message(f"Error {ex} occurred formatting hex", level=logging.ERROR)
+        log_error(f"Error {ex} occurred formatting hex", level=logging.ERROR)
 
 
 def to_hex_string(value: int) -> str:
