@@ -11,7 +11,8 @@ def log_header_message(message: str, level: int = logging.INFO) -> None:
     :param message: The message to log.
     :param level: Logging level (default: logging.INFO).
     """
-    log_message("\n============================================================================================", level=level)
-    log_message(f"  {message}", level=level)
-    log_message("============================================================================================", level=level)
+    stacklevel = 3
+    log_message("\n======================================================================================================================================", level=level, stacklevel=stacklevel)
+    log_message(f"  {message}", level=level, stacklevel=stacklevel)
+    log_message("============================================================================================", level=level, stacklevel=stacklevel)
 
