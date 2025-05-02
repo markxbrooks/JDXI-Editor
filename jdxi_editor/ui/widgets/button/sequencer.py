@@ -86,8 +86,8 @@ class SequencerSquare(QPushButton):
                 # Store as last loaded preset
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
-        except Exception as e:
-            log_message(f"Error loading preset: {e}")
+        except Exception as ex:
+            log_message(f"Error loading preset: {ex}", level=logging.ERROR)
 
     """
     def _save_to_settings(self):

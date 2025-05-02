@@ -220,7 +220,7 @@ class PitchEnvelope(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
-            log_message(f"Error updating parameter: {ex}")
+            log_message(f"Error updating parameter: {ex}", level=logging.ERROR)
         # 4) Update plot
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
@@ -237,7 +237,7 @@ class PitchEnvelope(QWidget):
                     self.envelope[envelope_param_type] = midi_cc_to_ms(slider.value())
                     log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
         except Exception as ex:
-            log_message(f"Error updating envelope from controls: {ex}")
+            log_message(f"Error updating envelope from controls: {ex}", level=logging.ERROR)
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self):
@@ -250,7 +250,7 @@ class PitchEnvelope(QWidget):
                 else:
                     slider.setValue(int(ms_to_midi_cc(self.envelope[envelope_param_type])))
         except Exception as ex:
-            log_message(f"Error updating controls from envelope: {ex}")
+            log_message(f"Error updating controls from envelope: {ex}", level=logging.ERROR)
         self.plot.set_values(self.envelope)
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
@@ -442,7 +442,7 @@ class PitchEnvelopeOld(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
-            log_message(f"Error updating parameter: {ex}")
+            log_message(f"Error updating parameter: {ex}", level=logging.ERROR)
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 

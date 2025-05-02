@@ -127,7 +127,7 @@ class SynthBase(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            log_message(f"Error handling parameter {param.name}: {ex}")
+            log_message(f"Error handling parameter {param.name}: {ex}", level=logging.ERROR)
 
     def _create_parameter_slider(
         self,

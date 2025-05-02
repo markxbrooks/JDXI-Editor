@@ -65,8 +65,8 @@ def validate_sysex_message(message: List[int]) -> bool:
 
         return True
 
-    except Exception as e:
-        log_message(f"Error validating SysEx message: {str(e)}")
+    except Exception as ex:
+        log_message(f"Error validating SysEx message: {str(ex)}", level=logging.ERROR)
         return False
 
 
@@ -86,9 +86,9 @@ def bytes_to_hex_string(byte_list, prefix="F0"):
     try:
         return f"{prefix} " + " ".join(f"{int(byte):02X}" for byte in byte_list)
     except ValueError as ex:
-        log_message(f"Error {ex} occurred formatting hex")
+        log_message(f"Error {ex} occurred formatting hex", level=logging.ERROR)
     except Exception as ex:
-        log_message(f"Error {ex} occurred formatting hex")
+        log_message(f"Error {ex} occurred formatting hex", level=logging.ERROR)
 
 
 def to_hex_string(value: int) -> str:

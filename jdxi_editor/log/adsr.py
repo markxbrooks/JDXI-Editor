@@ -18,13 +18,13 @@ def log_adsr_parameter(umb: int,
 
     synth_name = parse_sysex_byte(int(synth, 16), AddressOffsetTemporaryToneUMB)
     if part != "0x00":
-        part_name = parse_sysex_byte(int(part, 16), AddressOffsetSuperNATURALLMB)
+        part_name_lmb = parse_sysex_byte(int(part, 16), AddressOffsetSuperNATURALLMB)
     else:
-        part_name = "COMMON"
+        part_name_lmb = "COMMON"
 
     message = (
         f"Updating synth {synth:<2} \t {synth_name:<20} "
-        f"part {part:<2} \t {part_name:<20} "
+        f"part {part:<2} \t {part_name_lmb:<20} "
         f"{param.name:<30} "
         f"MIDI {value:<4} "
     )

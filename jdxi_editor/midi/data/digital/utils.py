@@ -1,5 +1,5 @@
 """Utility functions for digital parameters and partials."""
-
+import logging
 from typing import Tuple, Optional
 
 from jdxi_editor.log.message import log_message
@@ -123,6 +123,6 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
 
         return (switch_value == 1, select_value == 1)
 
-    except Exception as e:
-        log_message(f"Error getting partial {partial.name} state: {str(e)}")
-        return (False, False)
+    except Exception as ex:
+        log_message(f"Error getting partial {partial.name} state: {str(ex)}", level=logging.ERROR)
+        return False, False

@@ -46,6 +46,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
@@ -330,7 +331,7 @@ class DigitalSynthEditor(SynthEditor):
             )
             return True
         except Exception as ex:
-            log_message(f"Error setting partial {partial.name} state: {str(ex)}")
+            log_message(f"Error setting partial {partial.name} state: {str(ex)}", level=logging.ERROR)
             return False
 
     def _initialize_partial_states(self):
@@ -465,23 +466,17 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
-        log_message("\nUpdating Partial UI components from SysEx data")
-
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
         current_synth = get_area([self.sysex_address.msb, self.sysex_address.umb])
-        log_parameter("current_synth", current_synth)
         temp_area = sysex_data.get("TEMPORARY_AREA")
-        log_parameter("temp_area", temp_area)
+        synth_tone = sysex_data.get("SYNTH_TONE")
         if not current_synth == temp_area:
             log_message(f"temp_area: {temp_area} is not current_synth: {current_synth}, Skipping update")
             return
-        log_message(f"temp_area: {temp_area} is current_synth: {current_synth}, updating...")
+        log_header_message(f"Updating UI components from SysEx data for \t{temp_area} \t{synth_tone}")
         incoming_data_partial_no = _get_partial_number(sysex_data.get("SYNTH_TONE"))
-        log_parameter("incoming_data_partial_no", incoming_data_partial_no)
-        if incoming_data_partial_no is None:
-            return
         filtered_data = _filter_sysex_keys(sysex_data)
         self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
@@ -529,7 +524,7 @@ class DigitalSynthEditor(SynthEditor):
                 else:
                     self._update_slider(param, param_value, successes, failures, debug)
             except Exception as ex:
-                log_message(f"Error {ex} occurred")
+                log_message(f"Error {ex} occurred", level=logging.ERROR)
 
     def _update_tone_common_modify_sliders_from_sysex(self,
                                                       json_sysex_data: str) -> None:
@@ -581,9 +576,9 @@ class DigitalSynthEditor(SynthEditor):
         if not slider:
             failures.append(param.name)
             return
-
+        synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_no)
         slider_value = param.convert_from_midi(value)
-        log_slider_parameters(self.sysex_address.umb, self.sysex_address.lmb, param, value, slider_value)
+        log_slider_parameters(self.sysex_address.umb, synth_data.address_lmb, param, value, slider_value)
         slider.blockSignals(True)
         slider.setValue(slider_value)
         slider.blockSignals(False)
@@ -693,7 +688,7 @@ class DigitalSynthEditor(SynthEditor):
             else:
                 failures.append(param.name)
         except Exception as ex:
-            log_message(f"Error {ex} occurred setting switch {param.name} to {value}")
+            log_message(f"Error {ex} occurred setting switch {param.name} to {value}", level=logging.ERROR)
             failures.append(param.name)
 
     def _update_partial_selection_switch(self,

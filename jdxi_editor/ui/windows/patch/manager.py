@@ -97,12 +97,10 @@ class PatchManager(QMainWindow):
                 file_path, _ = QFileDialog.getOpenFileName(
                     self, "Load Patch File", "", "Patch Files (*.syx);(*.json);All Files (*.*)"
                 )
-
             if file_path:
                 self.path_input.setText(file_path)
-
         except Exception as ex:
-            log_message(f"Error browsing for file: {str(ex)}")
+            log_message(f"Error browsing for file: {str(ex)}", level=logging.ERROR)
 
     def _handle_action(self):
         """Handle save/load action"""

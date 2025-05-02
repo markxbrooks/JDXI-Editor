@@ -243,7 +243,7 @@ class MIDIDebugger(QMainWindow):
                     raise ValueError(f"No parameter enum defined for synth type: {synth_str}")
                 param_address = hex(param)
             except Exception as ex:
-                log_message(f"Error {ex} parsing sysex bytes")
+                log_message(f"Error {ex} parsing sysex bytes", level=logging.ERROR)
                 param = message[11]
                 param_address = hex(param)
                 param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
@@ -305,7 +305,7 @@ class MIDIDebugger(QMainWindow):
                 param_str, param = parse_sysex_message(message, parameter)
                 param_address = hex(param)
             except Exception as ex:
-                log_message(f"Error {ex} parsing sysex bytes")
+                log_message(f"Error {ex} parsing sysex bytes", level=logging.ERROR)
                 param = message[11]
                 param_address = hex(param)
                 param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
