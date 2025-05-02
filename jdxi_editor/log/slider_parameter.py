@@ -1,6 +1,6 @@
 import logging
 
-from jdxi_editor.globals import logger
+from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -36,18 +36,17 @@ def log_slider_parameters(umb: int,
     midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
     qc_passed_tag = "✅" if "updat" in message.lower() else ""
     message = f"{emoji} {qc_passed_tag} {midi_tag} {message}"
-
-    # Use correct logging function depending on level
-    if level == logging.DEBUG:
-        logger.debug(message, stacklevel=2)
-    elif level == logging.INFO:
-        logger.info(message, stacklevel=2)
-    elif level == logging.WARNING:
-        logger.warning(message, stacklevel=2)
-    elif level == logging.ERROR:
-        logger.error(message, stacklevel=2)
-    elif level == logging.CRITICAL:
-        logger.critical(message, stacklevel=2)
-    else:
-        # fallback for non-standard levels
-        logger.log(message, stacklevel=2)
+    if LOGGING:
+        if level == logging.DEBUG:
+            logger.debug(message, stacklevel=2)
+        elif level == logging.INFO:
+            logger.info(message, stacklevel=2)
+        elif level == logging.WARNING:
+            logger.warning(message, stacklevel=2)
+        elif level == logging.ERROR:
+            logger.error(message, stacklevel=2)
+        elif level == logging.CRITICAL:
+            logger.critical(message, stacklevel=2)
+        else:
+            # fallback for non-standard levels
+            logger.log(message, stacklevel=2)

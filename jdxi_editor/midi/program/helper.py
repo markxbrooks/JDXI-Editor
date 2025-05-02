@@ -42,6 +42,7 @@ from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
     get_next_program_bank_and_number,
 )
+from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
@@ -120,7 +121,7 @@ class JDXIProgramHelper(QObject):
             for midi_request in midi_requests:
                 byte_list_message = bytes.fromhex(midi_request)
                 self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(0.075)  # Blocking delay in a separate thread
+                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
 
         # Run the function in a separate thread
         threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()

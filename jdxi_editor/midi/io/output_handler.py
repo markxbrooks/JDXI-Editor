@@ -302,7 +302,7 @@ class MidiOutHandler(MidiIOController):
         :param channel: int MIDI channel (0–15).
         :return: True if successful, False otherwise.
         """
-        logging.debug("=====Sending control change====")
+        log_message("=====Sending control change====")
         log_parameter("controller", controller)
         log_parameter("value", value)
         log_parameter("channel", channel)

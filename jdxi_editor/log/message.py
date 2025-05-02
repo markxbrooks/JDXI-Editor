@@ -1,7 +1,7 @@
 """ log message """
 import logging
 
-from jdxi_editor.globals import logger
+from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 
 
@@ -24,6 +24,6 @@ def log_message(message: str, level: int = logging.INFO, stacklevel=2) -> None:
     # Combine emoji tags, then append message
     tags = f"{emoji}{jdxi_tag}{qc_passed_tag}{qc_failed_tag}{midi_tag}"
     full_message = f"{tags} {message}".strip()
-
-    logger.log(level, full_message, stacklevel=stacklevel)
+    if LOGGING:
+        logger.log(level, full_message, stacklevel=stacklevel)
 

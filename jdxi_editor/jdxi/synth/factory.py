@@ -1,3 +1,6 @@
+"""
+factory.py
+"""
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -11,7 +14,12 @@ from jdxi_editor.midi.sysex.requests import MidiRequests
 
 
 def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthData:
-    """Factory to create the right SynthData based on kind."""
+    """
+    Factory function to create synth data based on the synth type and partial number.
+    :param synth_type: str
+    :param partial_number: int
+    :return: SynthData
+    """
     if synth_type == JDXISynth.DRUM:
         address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)
         return DrumSynthData(
@@ -71,4 +79,4 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthDa
             address_umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
             address_lmb=AddressOffsetProgramLMB.COMMON
         )
-    raise ValueError(f"Unknown synth type: {synth_type}")
+    raise ValueError(f"Error occurred setting up {synth_type}")

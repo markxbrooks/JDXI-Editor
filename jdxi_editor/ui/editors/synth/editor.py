@@ -146,7 +146,7 @@ class SynthEditor(SynthBase):
         # Connect to program change signal if MIDI helper exists
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
-            # self.midi_helper.midi_control_changed.connect(self._handle_control_change)
+            self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             log_message("MIDI helper initialized")
         else:
             log_message("MIDI helper not initialized")
@@ -278,12 +278,9 @@ class SynthEditor(SynthBase):
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
-
         log_message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
         log_midi_info(msb, lsb, pc)
-
         # Send bank select and program change
-        # Note: PC is 0-based in MIDI, so subtract 1
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel,  # MIDI channel
             msb,  # MSB is already correct
@@ -296,6 +293,13 @@ class SynthEditor(SynthBase):
         """Handle program change messages by requesting updated data"""
         log_message(
             f"Program change {program} detected on channel {channel}, requesting data update"
+        )
+        self.data_request()
+
+    def _handle_control_change(self, channel: int, control: int, value: int):
+        """Handle program change messages by requesting updated data"""
+        log_message(
+            f"control change {channel} {control} detected with value {value}, requesting data update"
         )
         self.data_request()
 

@@ -145,7 +145,7 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data.sysex_address,
         )
         self.tab_widget.addTab(
-            self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amplitude"
+            self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amp"
         )
         self.lfo_tab = DigitalLFOSection(
             self._create_parameter_slider, self._create_parameter_switch, self.controls

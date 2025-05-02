@@ -60,6 +60,7 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.midi.program.helper import JDXIProgramHelper
+from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
@@ -182,7 +183,7 @@ class JdxiInstrument(JdxiUi):
             for midi_request in midi_requests:
                 byte_list_message = bytes.fromhex(midi_request)
                 self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(0.075)  # Blocking delay in a separate thread
+                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
 
         # Run the function in a separate thread
         threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
