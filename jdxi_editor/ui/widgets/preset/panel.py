@@ -1,3 +1,6 @@
+"""
+Panel for loading/saving presets
+"""
 from PySide6.QtWidgets import (
     QWidget,
     QHBoxLayout,
@@ -7,7 +10,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.jdxi.synth.type import JDXISynth
 
 
