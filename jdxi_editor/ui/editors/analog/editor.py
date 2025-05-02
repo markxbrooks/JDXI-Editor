@@ -271,18 +271,22 @@ class AnalogSynthEditor(SynthEditor):
             self.lfo_section, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
         )
 
-    def _create_instrument_preset_group(self):
-        """Create the instrument preset group"""
-        instrument_preset_group = QGroupBox("Analog Synth")
+    def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+        """
+        Create the instrument preset group box.
+        :param synth_type: str
+        :return: QGroupBox
+        """
+        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
         instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
         self.instrument_title_label = DigitalTitle()
         instrument_title_group_layout.addWidget(self.instrument_title_label)
         self.read_request_button = QPushButton("Send Read Request to Synth")
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
-        self.instrument_selection_label = QLabel("Select an Analog synth:")
+        self.instrument_selection_label = QLabel(f"Select an {synth_type} synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        self.instrument_selection_combo = PresetComboBox(ANALOG_PRESET_LIST)
+        self.instrument_selection_combo = PresetComboBox(self.preset_list)
         self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
         self.instrument_selection_combo.combo_box.setEditable(True)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
@@ -345,7 +349,6 @@ class AnalogSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
-        area_code = address[0]
         if address[0] == AddressMemoryAreaMSB.ANALOG:
             # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
             parameter_address = tuple(address[2:])  # (80, 0)
@@ -387,7 +390,7 @@ class AnalogSynthEditor(SynthEditor):
                 msb=self.sysex_address.msb,
                 umb=self.sysex_address.umb,
                 lmb=self.sysex_address.lmb,
-                lsb=AddressParameterAnalog.OSC_WAVEFORM.value[0],
+                lsb=AddressParameterAnalog.OSC_WAVEFORM.lsb,
                 value=waveform.midi_value,
             )
             self.midi_helper.send_midi_message(sysex_message)
