@@ -208,6 +208,8 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
             self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
+        elif synth_type == "Drums":
+            self.instrument_selection_combo.setStyleSheet(JDXIStyle.DRUM_GROUP)
         else:
             self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX)
         self.instrument_selection_combo.combo_box.setEditable(True)
@@ -224,37 +226,17 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         return instrument_preset_group
 
-    """def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
-        ""
-        Create the instrument preset group box.
-        :param synth_type: str
-        :return: QGroupBox
-        ""
-        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
-        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
-        self.instrument_title_label = DigitalTitle()
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        instrument_title_group_layout.addWidget(self.read_request_button)
-        self.instrument_selection_label = QLabel(f"Select an {synth_type} synth:")
-        instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        self.instrument_selection_combo = PresetComboBox(self.preset_list)
-        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
-        self.instrument_selection_combo.combo_box.setEditable(True)
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
-        return instrument_preset_group"""
-        
+    def _create_instrument_image_group(self):
+        # Image group
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setMinimumWidth(350)
+
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.

@@ -170,9 +170,6 @@ class AnalogSynthEditor(SynthEditor):
         # === Top half ===
         upper_widget = QWidget()
 
-        self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -187,11 +184,12 @@ class AnalogSynthEditor(SynthEditor):
         upper_layout = QHBoxLayout()
         upper_widget.setLayout(upper_layout)
 
+
         instrument_preset_group = self._create_instrument_preset_group()
-
         upper_layout.addWidget(instrument_preset_group)
-        upper_layout.addWidget(self.instrument_image_label)
 
+        self._create_instrument_image_group()
+        upper_layout.addWidget(self.instrument_image_group)
         self.update_instrument_image()
 
         # Tab sections
@@ -212,18 +210,7 @@ class AnalogSynthEditor(SynthEditor):
         splitter.addWidget(scroll)
         splitter.setSizes([300, 300])  # give more room to bottom
         # Splitter handle style
-        splitter.setStyleSheet("""
-             QSplitter::handle {
-                 background-color: #444;
-                 border: 1px solid #666;
-             }
-             QSplitter::handle:vertical {
-                 height: 6px;
-             }
-             QSplitter::handle:horizontal {
-                 width: 6px;
-             }
-         """)
+        splitter.setStyleSheet(JDXIStyle.SPLITTER)
         self.show()
 
     def _create_sections(self):
