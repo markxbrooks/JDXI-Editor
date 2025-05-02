@@ -421,7 +421,6 @@ class DigitalSynthEditor(SynthEditor):
             log_message(f"Failures: \t{failures}")
             log_footer_message(f"Success Rate: \t{success_rate:.1f}%")
 
-
     def _dispatch_sysex_to_area(self,
                                 json_sysex_data: str) -> None:
         """
@@ -615,7 +614,7 @@ class DigitalSynthEditor(SynthEditor):
             ].amp_tab.amp_env_adsr_widget.decay_control,
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.depth_control,
+            ].amp_tab.amp_env_adsr_widget.release_control,
             AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.release_control,
@@ -627,7 +626,7 @@ class DigitalSynthEditor(SynthEditor):
             ].filter_tab.filter_adsr_widget.decay_control,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.depth_control,
+            ].filter_tab.filter_adsr_widget.release_control,
             AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.release_control,
