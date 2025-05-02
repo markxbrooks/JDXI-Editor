@@ -178,22 +178,9 @@ class DrumCommonEditor(SynthEditor):
 
         # Optionally set initial sizes
         splitter.setSizes([300, 300])
-        splitter.setStyleSheet("""
-            QSplitter::handle {
-                background-color: #444;
-                border: 1px solid #666;
-            }
-            QSplitter::handle:vertical {
-                height: 6px;
-            }
-            QSplitter::handle:horizontal {
-                width: 6px;
-            }
-        """)
+        splitter.setStyleSheet(JDXIStyle.SPLITTER)
         # Setup tab widget
         self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
-        # scroll.setWidget(self.partial_tab_widget)
-
         # Initialize partial editors
         self._setup_partial_editors()
 
