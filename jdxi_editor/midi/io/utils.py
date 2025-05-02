@@ -92,7 +92,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
             return mido.Message("sysex", data=sys_ex_data)
     except Exception as ex:
-        log_message(f"Error {ex} occurred")
+        log_message(f"Error {ex} occurred", level=logging.ERROR)
     try:
         # Program Change
         if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
@@ -100,7 +100,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             program = message_content[1]
             return mido.Message("program_change", channel=channel, program=program)
     except Exception as ex:
-        log_message(f"Error {ex} occurred")
+        log_message(f"Error {ex} occurred", level=logging.ERROR)
 
     try:
         # Control Change

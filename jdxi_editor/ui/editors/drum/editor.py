@@ -493,7 +493,7 @@ class DrumCommonEditor(SynthEditor):
                     else:
                         failures.append(param_name)
                 except Exception as ex:
-                    log_message(f"Error {ex} occurred")
+                    log_message(f"Error {ex} occurred", level=logging.ERROR)
 
         log_message(f"Updating sliders for Partial {partial_no}")
 

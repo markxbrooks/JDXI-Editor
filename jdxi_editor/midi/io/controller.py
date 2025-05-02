@@ -186,7 +186,7 @@ class MidiIOController(QObject):
             return True
 
         except Exception as ex:
-            log_message(f"Error opening MIDI output port: {str(ex)}")
+            log_message(f"Error opening MIDI output port: {str(ex)}", level=logging.ERROR)
             return False
 
     def close_ports(self):
@@ -242,5 +242,5 @@ class MidiIOController(QObject):
             return input_success and output_success
 
         except Exception as ex:
-            log_message(f"Error opening MIDI ports: {str(ex)}")
+            log_message(f"Error opening MIDI ports: {str(ex)}", level=logging.ERROR)
             return False

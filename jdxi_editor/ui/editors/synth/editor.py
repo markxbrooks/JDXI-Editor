@@ -502,4 +502,4 @@ class SynthEditor(SynthBase):
             elif control == 32:
                 self.cc_lsb_value = value
         except Exception as ex:
-            log_message(f"Error {ex} occurred handling control change")
+            log_message(f"Error {ex} occurred handling control change", level=logging.ERROR)

@@ -115,7 +115,7 @@ class MidiOutHandler(MidiIOController):
             self.midi_message_outgoing.emit(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending message: {ex}")
+            log_message(f"Error sending message: {ex}", level=logging.ERROR)
             return False
 
     def send_note_on(
@@ -187,7 +187,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message([0xB0 + channel, 0x20, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending bank select: {ex}")
+            log_message(f"Error sending bank select: {ex}", level=logging.ERROR)
             return False
 
     def send_identity_request(self) -> bool:
@@ -208,7 +208,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message(identity_request_bytes_list)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending identity request: {ex}")
+            log_message(f"Error sending identity request: {ex}", level=logging.ERROR)
             return False
 
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
@@ -223,7 +223,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending parameter: {ex}")
+            log_message(f"Error sending parameter: {ex}", level=logging.ERROR)
             return False
 
     def send_parameter(
@@ -268,7 +268,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending parameter: {ex}")
+            log_message(f"Error sending parameter: {ex}", level=logging.ERROR)
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -288,7 +288,7 @@ class MidiOutHandler(MidiIOController):
             message = program_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"Error sending program change: {ex}")
+            log_message(f"Error sending program change: {ex}", level=logging.ERROR)
             return False
 
     def send_control_change(
@@ -448,7 +448,7 @@ class MidiOutHandler(MidiIOController):
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
-            log_message(f"Error {ex} occurred sending bank and program change message")
+            log_message(f"Error {ex} occurred sending bank and program change message", level=logging.ERROR)
             return False
 
     def identify_device(self) -> bool:
@@ -465,7 +465,7 @@ class MidiOutHandler(MidiIOController):
             log_parameter("Sent MIDI message:", raw_message)
 
         except Exception as ex:
-            log_message(f"Error sending identity request: {str(ex)}")
+            log_message(f"Error sending identity request: {str(ex)}", level=logging.ERROR)
 
     def get_parameter(self,
                       msb: int,
@@ -522,7 +522,7 @@ class MidiOutHandler(MidiIOController):
             raise TimeoutError
 
         except (TimeoutError, OSError, IOError) as ex:
-            log_message(f"Error getting parameter: {ex}")
+            log_message(f"Error getting parameter: {ex}", level=logging.ERROR)
             return None
 
     def save_patch(self, file_path: str) -> bool:
@@ -557,7 +557,7 @@ class MidiOutHandler(MidiIOController):
             log_message(f"Patch saved to {file_path}")
             return True
         except Exception as e:
-            log_message(f"Error saving patch: {str(e)}")
+            log_message(f"Error saving patch: {str(e)}", level=logging.ERROR)
             return False
 
     def _get_digital_parameters(self):

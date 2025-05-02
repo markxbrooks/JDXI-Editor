@@ -425,7 +425,7 @@ class PatternSequencer(SynthEditor):
                 self.save_pattern(filename)
                 log_message(f"Pattern saved to {filename}")
             except Exception as ex:
-                log_message(f"Error saving pattern: {ex}")
+                log_message(f"Error saving pattern: {ex}", level=logging.ERROR)
                 QMessageBox.critical(
                     self, "Error", f"Could not save pattern: {str(ex)}"
                 )
@@ -454,7 +454,7 @@ class PatternSequencer(SynthEditor):
                             self.tempo_spinbox.setValue(bpm)
                             break
             except Exception as ex:
-                log_message(f"Error loading pattern: {ex}")
+                log_message(f"Error loading pattern: {ex}", level=logging.ERROR)
                 QMessageBox.critical(
                     self, "Error", f"Could not load pattern: {str(ex)}"
                 )
@@ -616,7 +616,7 @@ class PatternSequencer(SynthEditor):
                     self.tempo_spinbox.setValue(bpm)
 
         except Exception as ex:
-            log_message(f"Error loading pattern: {ex}")
+            log_message(f"Error loading pattern: {ex}", level=logging.ERROR)
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
     def play_pattern(self):

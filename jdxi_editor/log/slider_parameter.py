@@ -14,19 +14,18 @@ def log_slider_parameters(umb: int,
                           slider_value: int,
                           level: int = logging.INFO):
     """Log slider parameters for debugging."""
-    synth = f"0x{int(umb):02X}"
-    part = f"0x{int(lmb):02X}"
+    synth_umb = f"0x{int(umb):02X}"
+    part_lmb = f"0x{int(lmb):02X}"
 
-    synth_name = parse_sysex_byte(int(synth, 16), AddressOffsetTemporaryToneUMB)
-    if part != "0x00":
-        # part_name = parse_sysex_byte(int(part, 16), AddressOffsetProgramLMB)
-        part_name = parse_sysex_byte(int(part, 16), AddressOffsetSuperNATURALLMB)
+    synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
+    if part_lmb != "0x00":
+        part_name_lmb = parse_sysex_byte(int(part_lmb, 16), AddressOffsetSuperNATURALLMB)
     else:
-        part_name = "COMMON"
+        part_name_lmb = "COMMON"
 
     message = (
-        f"Updating synth {synth:<2} \t {synth_name:<20} "
-        f"part {part:<2} \t {part_name:<20} "
+        f"Updating synth umb {synth_umb:<2} \t {synth_name_umb:<20} "
+        f"part lmb {part_lmb:<2} \t {part_name_lmb:<20} "
         f"{param.name:<30} "
         f"MIDI {value:<4} -> Slider {slider_value}"
     )

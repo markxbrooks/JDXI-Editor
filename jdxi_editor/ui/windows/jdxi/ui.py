@@ -456,7 +456,7 @@ class JdxiUi(QMainWindow):
             )
 
         except Exception as ex:
-            log_message(f"Error updating display: {ex}")
+            log_message(f"Error updating display: {ex}", level=logging.ERROR)
 
     def show_error(self, title: str, message: str):
         """Show error message dialog

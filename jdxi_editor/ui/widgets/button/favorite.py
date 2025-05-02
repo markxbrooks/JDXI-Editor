@@ -69,7 +69,7 @@ class FavoriteButton(QPushButton):
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
         except Exception as e:
-            log_message(f"Error loading preset: {e}")
+            log_message(f"Error loading preset: {e}", level=logging.ERROR)
 
     def _save_to_settings(self):
         """Save preset data to settings"""

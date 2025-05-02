@@ -224,5 +224,5 @@ def to_hex(value: int, width: int = 2) -> str:
         log_message(f"to_hex: value: {value} -> 0x{int(int_value):02X} (width={width})")
         return hex_str
     except Exception as ex:
-        log_message(f"Error {ex} occurred in to_hex with value: {value}")
+        log_message(f"Error {ex} occurred in to_hex with value: {value}", level=logging.ERROR)
         return "??"
