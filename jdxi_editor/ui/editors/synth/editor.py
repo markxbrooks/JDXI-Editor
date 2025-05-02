@@ -267,11 +267,11 @@ class SynthEditor(SynthBase):
 
             for param in self.controls:
                 controls_data[param.name] = param.value
-            log_message(controls_data)
+            log_message(f"controls_data: {controls_data}")
             return controls_data
 
         except Exception as ex:
-            log_message(f"Failed to get controls: {ex}")
+            log_error(f"Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):
