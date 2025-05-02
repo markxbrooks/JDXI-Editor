@@ -148,52 +148,11 @@ class DrumCommonEditor(SynthEditor):
         upper_layout = QHBoxLayout(upper_widget)
         upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
 
-        # Drum group
-        drum_group = QGroupBox("Drum Kit")
-        self.instrument_title_label = DigitalTitle()
-        drum_group.setStyleSheet(JDXIStyle.DRUM_GROUP)
-        self.instrument_title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        drum_group_layout = QVBoxLayout()
-        drum_group.setLayout(drum_group_layout)
-        drum_group_layout.addWidget(self.instrument_title_label)
-
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        drum_group_layout.addWidget(self.read_request_button)
-
-        self.selection_label = QLabel("Select address drum kit:")
-        drum_group_layout.addWidget(self.selection_label)
-
-        self.instrument_selection_combo = PresetComboBox(DRUM_KIT_LIST)
-        self.instrument_selection_combo.combo_box.setEditable(True)
-        self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_helper.preset_number
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.preset_helper.preset_changed.connect(
-            self.update_combo_box_index
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        drum_group_layout.addWidget(self.instrument_selection_combo)
-        upper_layout.addWidget(drum_group)
-
-        # Image group
-        self.instrument_image_group = QGroupBox()
-        instrument_group_layout = QVBoxLayout()
-        self.instrument_image_group.setLayout(instrument_group_layout)
-        self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
-        self.instrument_image_group.setMinimumWidth(350)
+        instrument_preset_group = self._create_instrument_preset_group(synth_type="Drums")
+        upper_layout.addWidget(instrument_preset_group)
+        self._create_instrument_image_group()
         upper_layout.addWidget(self.instrument_image_group)
+        self.update_instrument_image()
 
         # Common section
         common_group = DrumCommonSection(

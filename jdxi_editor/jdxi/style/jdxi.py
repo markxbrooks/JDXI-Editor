@@ -339,6 +339,19 @@ class JDXIStyle:
         SLIDER_NEON_GRADIENT_STOP_ANALOG,
     )
 
+    SPLITTER = """
+                 QSplitter::handle {
+                     background-color: #444;
+                     border: 1px solid #666;
+                 }
+                 QSplitter::handle:vertical {
+                     height: 6px;
+                 }
+                 QSplitter::handle:horizontal {
+                     width: 6px;
+                 }
+             """
+
     INSTRUMENT = f"""
             QMainWindow {{
                 background-color: black;
