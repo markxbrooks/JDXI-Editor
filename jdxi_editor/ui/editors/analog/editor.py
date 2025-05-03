@@ -388,7 +388,10 @@ class AnalogSynthEditor(SynthEditor):
                 selected_btn.setChecked(True)
                 selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
-    def update_slider(self, param: AddressParameterAnalog, value: int, successes: list = None, failures: list = None):
+    def update_slider(self, param: AddressParameterAnalog,
+                      value: int,
+                      successes: list = None,
+                      failures: list = None) -> None:
         """
         Helper function to update sliders safely.
         :param param: AddressParameterAnalog value
@@ -400,7 +403,6 @@ class AnalogSynthEditor(SynthEditor):
         slider = self.controls.get(param)
         if slider:
             slider_value = param.convert_from_midi(value)
-            # set_widget_value_safely(slider, slider_value)
             slider.blockSignals(True)
             slider.setValue(slider_value)
             slider.blockSignals(False)
@@ -449,7 +451,6 @@ class AnalogSynthEditor(SynthEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if temp_area != "TEMPORARY_ANALOG_SYNTH_AREA" or synth_tone != "TONE_COMMON":
-            # log_message("Invalid SysEx data: TEMPORARY_AREA or SYNTH_TONE mismatch")
             return
         log_header_message(f"Updating {temp_area} {synth_tone} UI components from SysEx data")
 
@@ -533,9 +534,12 @@ class AnalogSynthEditor(SynthEditor):
 
         log_message(f"Updated {len(successes)} parameters successfully.")
         if failures:
-            logging.warning(f"Failed to update {len(failures)} parameters: {failures}")
+            log_message(f"Failed to update {len(failures)} parameters: {failures}", level=logging.WARNING)
 
-    def update_switch(self, switch: Switch, value: int, successes: list = None, failures: list = None):
+    def update_switch(self, switch: Switch,
+                      value: int,
+                      successes: list = None,
+                      failures: list = None) -> None:
         """
         Update switch state and log success/failure.
         :param switch: QWidget representing the switch
@@ -550,15 +554,12 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(switch.objectName())
 
-
     def _update_waveform_buttons(self, value: int):
         """
         Update the waveform buttons based on the OSC_WAVE value with visual feedback.
         :param value: int value
         :return: None
         """
-        log_parameter("Updating waveform buttons with value", value)
-
         waveform_map = {
             0: AnalogOscWave.SAW,
             1: AnalogOscWave.TRIANGLE,
@@ -568,7 +569,7 @@ class AnalogSynthEditor(SynthEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            logging.warning(f"Unknown waveform value: {value}")
+            log_message(f"Unknown waveform value: {value}", level=logging.WARNING)
             return
 
         log_message(f"Waveform value {value} found, selecting {selected_waveform}")
@@ -593,8 +594,6 @@ class AnalogSynthEditor(SynthEditor):
         :param value: int value
         :return: None
         """
-        log_message(f"Updating LFO shape buttons with value {value}")
-
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
@@ -606,7 +605,7 @@ class AnalogSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
         else:
-            logging.warning(f"Unknown LFO shape value: {value}")
+            log_message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
         """
