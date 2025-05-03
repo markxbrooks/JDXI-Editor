@@ -1,6 +1,8 @@
 """
 Analog Filter Section
 """
+
+
 from typing import Callable
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
