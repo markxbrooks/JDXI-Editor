@@ -34,11 +34,13 @@ import logging
 
 from PySide6.QtCore import Signal, QObject
 
+from jdxi_editor.jdxi.preset.data import JDXIPresetData
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.utils import get_preset_values
@@ -114,8 +116,13 @@ class JDXIPresetHelper(QObject):
 
         self.send_program_change(channel, msb, lsb, pc)
 
-    def load_preset(self, preset_data):
-        """Load the preset based on the provided data."""
+    def load_preset(self,
+                    preset_data: JDXIPresetData):
+        """
+        Load the preset based on the provided data
+        :param preset_data: JDXIPresetData
+        :return: None
+        """
         log_message(f"Loading preset: {preset_data}")
         program_number, channel = preset_data.number, preset_data.channel
 
@@ -131,18 +138,27 @@ class JDXIPresetHelper(QObject):
 
         self.send_program_change(channel, msb, lsb, pc)
 
-    def data_request(self):
-        def send_with_delay(midi_requests):
-            for midi_request in midi_requests:
-                byte_list_message = bytes.fromhex(midi_request)
-                self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
+    def data_request(self) -> None:
+        """
+        Request the current value of the NRPN parameter from the device.
+        """
+        threading.Thread(target=send_with_delay,
+                         args=(self.midi_helper,
+                               self.midi_requests,)).start()
 
-        # Run the function in a separate thread
-        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
-
-    def send_program_change(self, channel, msb, lsb, pc):
-        """Send a Bank Select and Program Change message."""
+    def send_program_change(self,
+                            channel: int,
+                            msb: int,
+                            lsb: int,
+                            pc: int) -> None:
+        """
+        Send a Bank Select and Program Change message
+        :param channel: int
+        :param msb: int
+        :param lsb: int
+        :param pc: int
+        :return: None
+        """
         log_midi_info(msb, lsb, pc)
 
         if pc is None:

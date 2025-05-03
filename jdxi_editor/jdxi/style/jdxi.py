@@ -852,6 +852,12 @@ class JDXIStyle:
             }}
         """
 
+    ADSR_PLOT = """
+        QWidget {
+            background-color: #333333;
+        }
+    """
+
     COMBO_BOX = f"""
     QComboBox {{
         background-color: {BACKGROUND};

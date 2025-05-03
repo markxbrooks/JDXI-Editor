@@ -30,7 +30,6 @@ Dependencies:
 
 """
 
-import logging
 import platform
 
 from PySide6.QtCore import QRect

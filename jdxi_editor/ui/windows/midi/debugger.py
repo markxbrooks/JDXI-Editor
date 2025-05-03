@@ -78,6 +78,7 @@ PARAMETER_PART_MAP = {
     "COMMON": AddressParameterDigitalCommon
 }
 
+
 class EnumWithAddress(Protocol):
     @classmethod
     def message_position(cls) -> int: ...

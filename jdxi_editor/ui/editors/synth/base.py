@@ -30,6 +30,7 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
@@ -66,14 +67,12 @@ class SynthBase(QWidget):
         self.midi_helper.send_raw_message(message)
 
     def data_request(self):
-        def send_with_delay(midi_requests):
-            for midi_request in midi_requests:
-                byte_list_message = bytes.fromhex(midi_request)
-                self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
-
-        # Run the function in a separate thread
-        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
+        """
+        Request the current value of the NRPN parameter from the device.
+        """
+        threading.Thread(target=send_with_delay,
+                         args=(self.midi_helper,
+                               self.midi_requests,)).start()
 
     def _on_midi_message_received(self, message):
         """Handle incoming MIDI messages"""

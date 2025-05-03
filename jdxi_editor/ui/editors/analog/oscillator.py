@@ -1,15 +1,19 @@
 """
 Analog Oscillator Section
 """
+
 from typing import Callable
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
+from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 
@@ -21,12 +25,16 @@ class AnalogOscillatorSection(QWidget):
         create_parameter_switch: Callable,
         waveform_selected_callback: Callable,
         wave_buttons: dict,
+        midi_helper: MidiIOHelper,
+        address: RolandSysExAddress
     ):
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._on_waveform_selected = waveform_selected_callback
         self.wave_buttons = wave_buttons
+        self.midi_helper = midi_helper
+        self.address = address
         self.init_ui()
 
     def init_ui(self):
@@ -145,7 +153,21 @@ class AnalogOscillatorSection(QWidget):
         pitch_env_layout.addWidget(
             self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_ENV_DEPTH, "Depth")
         )
-
+        # pitch env Widget
+        self.pitch_env_widget = PitchEnvelope(
+            attack_param=AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY,
+            depth_param=AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
+            midi_helper=self.midi_helper,
+            address=self.address
+        )
+        self.pitch_env_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
+        env_group = QGroupBox("Envelope")
+        env_group.setProperty("adsr", True)
+        env_layout = QHBoxLayout()
+        # env_layout.addWidget(self.pitch_env_widget)
+        env_group.setLayout(env_layout)
+        pitch_env_layout.addWidget(self.pitch_env_widget)
         return pitch_env_group
 
     def create_sub_osc_group(self) -> QGroupBox:
