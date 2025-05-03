@@ -157,8 +157,6 @@ class DigitalSynthEditor(SynthEditor):
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
 
-        # === Bottom half (scroll area) ===
-        # inside setup_ui()
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
 
@@ -166,95 +164,22 @@ class DigitalSynthEditor(SynthEditor):
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
 
-        self.instrument_image_group = QGroupBox()
-        instrument_group_layout = QVBoxLayout()
-        self.instrument_image_group.setLayout(instrument_group_layout)
-        self.instrument_image_label = QLabel()
-        instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.instrument_image_group.setMinimumWidth(450)
-
-        container_layout.addWidget(self.instrument_image_group)
-
         upper_layout = QHBoxLayout()
         top_layout.addLayout(upper_layout)
         top_layout.addWidget(self.partials_panel)
-
-        self._create_instrument_group(container_layout, upper_layout)
-
+        instrument_preset_group = self._create_instrument_preset_group(synth_type="Drums")
+        upper_layout.addWidget(instrument_preset_group)
+        self._create_instrument_image_group()
+        upper_layout.addWidget(self.instrument_image_group)
+        self.update_instrument_image()
         self._create_partial_tab_widget(container_layout, self.midi_helper)
-
         scroll.setWidget(container)
-
         splitter.addWidget(top_widget)
         splitter.addWidget(scroll)
-
         splitter.setSizes([100, 600])  # give more room to bottom
-
-        # Splitter handle style
-        splitter.setStyleSheet("""
-            QSplitter::handle {
-                background-color: #444;
-                border: 1px solid #666;
-            }
-            QSplitter::handle:vertical {
-                height: 6px;
-            }
-            QSplitter::handle:horizontal {
-                width: 6px;
-            }
-        """)
-
+        splitter.setStyleSheet(JDXIStyle.SPLITTER)
         self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
-
         self.show()
-
-    def _create_instrument_group(self,
-                                 container_layout: QVBoxLayout,
-                                 upper_layout:  QHBoxLayout) -> None:
-        """
-        Create the instrument group for the digital synth editor.
-        :param container_layout: Layout for the main container
-        :param upper_layout: Upper layout for the instrument group
-        :return: None
-        """
-        instrument_preset_group = QGroupBox("Digital Synth")
-        self.instrument_title_label = QLabel(self.presets[0] if self.presets else "")
-        self.instrument_title_label = DigitalTitle()
-        instrument_title_group_layout = QVBoxLayout()
-        instrument_preset_group.setLayout(instrument_title_group_layout)
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
-        # Add the "Read Request" button
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        instrument_title_group_layout.addWidget(self.read_request_button)
-        self.instrument_selection_label = QLabel("Select preset for Digital synth:")
-        instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        # Synth selection
-        self.instrument_selection_combo = PresetComboBox(self.synth_data.preset_list)
-        self.instrument_selection_combo.combo_box.setEditable(True)  # Allow text search
-        self.instrument_selection_combo.combo_box.setCurrentIndex(
-            self.preset_helper.current_preset_zero_indexed
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        # Connect QComboBox signal to PresetHandler
-        self.preset_helper.preset_changed.connect(self.update_combo_box_index)
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
-        upper_layout.addWidget(instrument_preset_group)
-        upper_layout.addStretch(1)
-        upper_layout.addWidget(self.instrument_image_group)
-        container_layout.addLayout(upper_layout)
-        self.update_instrument_image()
 
     def _create_partial_tab_widget(self,
                                    container_layout: QVBoxLayout,
@@ -336,15 +261,15 @@ class DigitalSynthEditor(SynthEditor):
             return False
 
     def _initialize_partial_states(self):
-        """Initialize partial states with defaults"""
-        # Default: Partial 1 enabled and selected, others disabled
+        """
+        Initialize partial states with defaults
+        Default: Partial 1 enabled and selected, others disabled
+        """
         for partial in DigitalPartial.get_partials():
             enabled = partial == DigitalPartial.PARTIAL_1
             selected = enabled
             self.partials_panel.switches[partial].setState(enabled, selected)
             self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
-
-        # Show first tab
         self.partial_tab_widget.setCurrentIndex(0)
 
     def _on_parameter_received(self,

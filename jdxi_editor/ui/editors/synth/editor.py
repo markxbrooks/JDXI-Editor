@@ -227,7 +227,10 @@ class SynthEditor(SynthBase):
         return instrument_preset_group
 
     def _create_instrument_image_group(self):
-        # Image group
+        """
+        Create image group
+        :return: None
+        """
         self.instrument_image_group = QGroupBox()
         instrument_group_layout = QVBoxLayout()
         self.instrument_image_group.setLayout(instrument_group_layout)
@@ -235,7 +238,7 @@ class SynthEditor(SynthBase):
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         instrument_group_layout.addWidget(self.instrument_image_label)
         self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
-        self.instrument_image_group.setMinimumWidth(350)
+        self.instrument_image_group.setMinimumWidth(400)
 
     def get_controls_as_dict(self):
         """
@@ -270,7 +273,7 @@ class SynthEditor(SynthBase):
         raise NotImplementedError("Should be implemented by subclass")
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented by subclass")
 
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
         try:
@@ -385,7 +388,6 @@ class SynthEditor(SynthBase):
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
-        file_to_load = ""
         if os.path.exists(image_path):
             file_to_load = image_path
         elif os.path.exists(secondary_image_path):
@@ -402,15 +404,7 @@ class SynthEditor(SynthBase):
         )  # Resize to 250px height
         self.instrument_image_label.setPixmap(scaled_pixmap)
         self.instrument_image_label.setScaledContents(True)
-        self.instrument_image_label.setStyleSheet(
-            """
-            QLabel {
-                    height: 150px;
-                    background-color: transparent;
-                    border: none;
-                }
-            """
-        )
+        self.instrument_image_label.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
         return True
 
     def update_instrument_image(self):
