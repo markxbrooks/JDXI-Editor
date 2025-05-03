@@ -64,7 +64,7 @@ from jdxi_editor.midi.data.digital import (
 )
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
-from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, midi_cc_to_frac
+from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import (
@@ -538,7 +538,7 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
-        new_value = midi_cc_to_frac(value) if use_frac else midi_cc_to_ms(value)
+        new_value = midi_value_to_fraction(value) if use_frac else midi_value_to_ms(value)
         self.adsr_map = {
             AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no

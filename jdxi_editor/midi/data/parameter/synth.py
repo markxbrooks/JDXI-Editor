@@ -204,3 +204,6 @@ class AddressParameter(Enum):
         :return: int LSB of the address
         """
         return self.address & 0xFF  # Extract LSB
+
+    def get_envelope_param_type(self):
+        raise NotImplementedError("should be implemented by a subclass")

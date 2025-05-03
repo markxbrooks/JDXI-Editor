@@ -29,6 +29,7 @@ class AnalogOscillatorSection(QWidget):
         address: RolandSysExAddress
     ):
         super().__init__()
+        self.pitch_env_widget = None
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._on_waveform_selected = waveform_selected_callback
@@ -142,6 +143,7 @@ class AnalogOscillatorSection(QWidget):
                 AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
             )
         )
+        """
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
                 AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
@@ -152,8 +154,8 @@ class AnalogOscillatorSection(QWidget):
         )
         pitch_env_layout.addWidget(
             self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_ENV_DEPTH, "Depth")
-        )
-        # pitch env Widget
+        )"""
+        # Pitch Env Widget
         self.pitch_env_widget = PitchEnvelope(
             attack_param=AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME,
             decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY,

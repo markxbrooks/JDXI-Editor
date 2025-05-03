@@ -32,7 +32,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.utils import extract_command_info, handle_identity_request
+from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.utils.json import log_to_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
