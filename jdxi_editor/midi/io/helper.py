@@ -124,15 +124,11 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 log_parameter("MIDI out_port", out_port)
                 return False
             self.set_midi_ports(in_port, out_port)
-
             # Verify connection
-            if self.identify_device():
-                log_parameter("Successfully connected to JD-Xi MIDI:", in_port)
-                log_message("Successfully connected to JD-Xi MIDI", out_port)
-                return True
-            else:
-                log_message("JD-Xi identity verification failed.", level=logging.WARNING)
-                return False
+            log_parameter("Successfully connected to JD-Xi MIDI:", in_port)
+            log_parameter("Successfully connected to JD-Xi MIDI", out_port)
+            self.identify_device()
+            return True
 
         except Exception as ex:
             log_error(f"Error auto-connecting to JD-Xi: {str(ex)}", level=logging.ERROR)
@@ -165,7 +161,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             jdxi_in_port = find_jdxi_port(self.get_input_ports())
             jdxi_out_port = find_jdxi_port(self.get_output_ports())
             self.connect_port_names(jdxi_in_port, jdxi_out_port)
-            self.identify_device()
+            # self.identify_device()
             return True
         except Exception as ex:
             log_error(f"Error auto-connecting to JD-Xi: {str(ex)}", level=logging.ERROR)

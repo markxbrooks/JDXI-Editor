@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.utils.conversions import midi_cc_to_ms, ms_to_midi_cc
+from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 
 
 def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
@@ -111,7 +111,7 @@ class AdsrSliderSpinbox(QWidget):
         if param_type == "peak_level":
             return value / 127
         elif param_type in ["attack_time", "decay_time", "release_time"]:
-            return midi_cc_to_ms(int(value))
+            return midi_value_to_ms(int(value))
         else:
             log_error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
@@ -121,7 +121,7 @@ class AdsrSliderSpinbox(QWidget):
         if param_type == "sustain_level":
             return int(value * 127)
         elif param_type in ["attack_time", "decay_time", "release_time"]:
-            return ms_to_midi_cc(value)
+            return ms_to_midi_value(value)
         else:
             return 64
 
@@ -143,6 +143,7 @@ class AdsrSliderSpinbox(QWidget):
         :param value: int
         :return: None
         """
+        print(f"ADSRSliderSpinbox {self}: value: {value}")
         self.spinbox.setValue(value)
 
     def value(self) -> float:

@@ -26,8 +26,8 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
-    midi_cc_to_ms,
-    ms_to_midi_cc,
+    midi_value_to_ms,
+    ms_to_midi_value,
 )
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
@@ -245,7 +245,7 @@ class ADSR(QWidget):
                 if envelope_param_type in ["sustain_level", "peak_level"]:
                     self.envelope["sustain_level"] = slider.value() / 127
                 else:
-                    self.envelope[envelope_param_type] = midi_cc_to_ms(slider.value())
+                    self.envelope[envelope_param_type] = midi_value_to_ms(slider.value())
         except Exception as ex:
             log_error(f"Error updating envelope from controls: {ex}", level=logging.ERROR)
         self.plot.set_values(self.envelope)
@@ -258,7 +258,7 @@ class ADSR(QWidget):
                 if envelope_param_type == "sustain_level":
                     slider.setValue(int(self.envelope["sustain_level"] * 127))
                 else:
-                    slider.setValue(int(ms_to_midi_cc(self.envelope[envelope_param_type])))
+                    slider.setValue(int(ms_to_midi_value(self.envelope[envelope_param_type])))
         except Exception as ex:
             log_error(f"Error updating controls from envelope: {ex}", level=logging.ERROR)
         self.plot.set_values(self.envelope)

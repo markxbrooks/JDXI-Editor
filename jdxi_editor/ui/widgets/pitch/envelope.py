@@ -19,8 +19,8 @@ from typing import Dict, Optional
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
-from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -28,8 +28,8 @@ from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
 from jdxi_editor.ui.widgets.slider.slider import Slider
 from jdxi_editor.midi.utils.conversions import (
-    midi_cc_to_ms,
-    ms_to_midi_cc,
+    midi_value_to_ms,
+    ms_to_midi_value,
 )
 
 
@@ -82,8 +82,8 @@ class PitchEnvelope(QWidget):
         )
         self.depth_control = AdsrSliderSpinbox(
             depth_param,
-            min_value=0.0,
-            max_value=1.0,
+            min_value=1,
+            max_value=127,
             suffix="",
             label="Depth",
             value=self.envelope["peak_level"],
@@ -125,7 +125,6 @@ class PitchEnvelope(QWidget):
         """
         self.envelope.update(change)
         self.plot.set_values(self.envelope)
-        # self.pitchEnvelopeChanged.emit(self.envelope)
 
     def update(self) -> None:
         """Update the envelope values and plot"""
@@ -240,9 +239,9 @@ class PitchEnvelope(QWidget):
                 if envelope_param_type == "sustain_level":
                     self.envelope["sustain_level"] = slider.value() / 127
                 elif envelope_param_type == "peak_level":
-                    pass
+                    self.envelope["peak_level"] = (slider.value() / 127) - 0.5
                 else:
-                    self.envelope[envelope_param_type] = midi_cc_to_ms(slider.value())
+                    self.envelope[envelope_param_type] = midi_value_to_ms(slider.value())
         except Exception as ex:
             log_error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
@@ -255,9 +254,9 @@ class PitchEnvelope(QWidget):
                 if envelope_param_type == "sustain_level":
                     slider.setValue(int(self.envelope["sustain_level"] * 127))
                 elif envelope_param_type == "peak_level":
-                    pass
+                    slider.setValue(int((self.envelope["peak_level"] + 0.5) * 127))
                 else:
-                    slider.setValue(int(ms_to_midi_cc(self.envelope[envelope_param_type])))
+                    slider.setValue(int(ms_to_midi_value(self.envelope[envelope_param_type])))
         except Exception as ex:
             log_error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
@@ -274,13 +273,16 @@ class PitchEnvelope(QWidget):
         if not self.midi_helper:
             log_message("No MIDI helper available - parameter change ignored")
             return False
+        address = apply_address_offset(
+            self.address, param
+        )
 
         try:
             sysex_message = RolandSysEx(
-                msb=self.address.msb,
-                umb=self.address.umb,
-                lmb=self.address.lmb,
-                lsb=param.lsb,
+                msb=address.msb,
+                umb=address.umb,
+                lmb=address.lmb,
+                lsb=address.lsb,
                 value=value,
             )
             return self.midi_helper.send_midi_message(sysex_message)

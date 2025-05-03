@@ -64,7 +64,7 @@ class MIDIConnection:
         self._midi_in = midi_in
         self._midi_out = midi_out
         self._main_window = main_window
-        self.identify_device()
+        # self.identify_device()
         log_message("MIDI Connection singleton initialized")
 
     def send_message(self, message):

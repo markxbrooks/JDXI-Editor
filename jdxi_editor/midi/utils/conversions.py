@@ -1,90 +1,80 @@
 """
 Module: MIDI CC Conversion Utilities
 
-This module provides utility functions for converting between MIDI Control Change (CC) values
+This module provides utility functions for converting between MIDI values
 and various numerical representations such as milliseconds and fractional values.
 
 Functions:
-- midi_cc_to_ms: Converts address MIDI CC value (0-127) to address time value in milliseconds.
-- ms_to_midi_cc: Converts address time value in milliseconds to address MIDI CC value (0-127).
-- frac_to_midi_cc: Converts address fractional value (0.0-1.0) to address MIDI CC value (0-127).
-- midi_cc_to_frac: Converts address MIDI CC value (0-127) to address fractional value (0.0-1.0).
+- midi_value_to_ms: Converts address MIDI value (0-127) to address time value in milliseconds.
+- ms_to_midi_value: Converts address time value in milliseconds to address MIDI value (0-127).
+- fraction_to_midi_value: Converts address fractional value (0.0-1.0) to address MIDI value (0-127).
+- midi_value_to_fraction: Converts address MIDI value (0-127) to address fractional value (0.0-1.0).
 
-These functions are useful for mapping MIDI CC messages to meaningful time or intensity values
+These functions are useful for mapping MIDI messages to meaningful time or intensity values
 in address synthesizer or effect unit.
 """
 
 
-def midi_cc_to_ms(cc_value, min_time=10, max_time=1000):
+def midi_value_to_ms(midi_value: int, min_time: int = 10, max_time: int = 1000) -> float:
     """
-    Converts a MIDI CC value (0–127) to a time value in milliseconds.
-
-    Parameters:
-        cc_value (int): MIDI CC value (0–127).
-        min_time (int, optional): Minimum time in milliseconds. Default is 10 ms.
-        max_time (int, optional): Maximum time in milliseconds. Default is 1000 ms.
-
-    Returns:
-        float: Corresponding time value in milliseconds.
+    Converts a MIDI value (0–127) to a time value in milliseconds.
+    :param midi_value: int MIDI CC value (0–127).
+    :param min_time: int, optional: Minimum time in milliseconds. Default is 10 ms.
+    :param max_time: int, optional: Maximum time in milliseconds. Default is 1000 ms.
+    :returns: float Corresponding time value in milliseconds.
     """
     if min_time >= max_time:
         raise ValueError("min_time must be less than max_time")
 
-    cc_value = max(0, min(127, cc_value))  # Clamp to valid MIDI range
+    midi_value = max(0, min(127, midi_value))  # Clamp to valid MIDI range
     time_range = max_time - min_time
-    return min_time + (cc_value / 127.0) * time_range
+    return min_time + (midi_value / 127.0) * time_range
 
 
-
-def ms_to_midi_cc(ms_value, min_time=10, max_time=1000):
+def ms_to_midi_value(ms_value: float,
+                     min_time: int = 10,
+                     max_time: int = 1000) -> int:
     """
-    Converts address time value in milliseconds to address MIDI CC value (0-127).
-
-    Parameters:
-        ms_value (float): Time value in milliseconds.
-        min_time (int, optional): Minimum time in milliseconds. Default is 10 ms.
-        max_time (int, optional): Maximum time in milliseconds. Default is 1000 ms.
-
-    Returns:
-        float: Corresponding MIDI CC value.
+    Converts address time value in milliseconds to address MIDI byte range value (0-127)
+    :param ms_value: float: Time value in milliseconds.
+    :param min_time: int, optional: Minimum time in milliseconds. Default is 10 ms.
+    :param max_time: int, optional: Maximum time in milliseconds. Default is 1000 ms.
+    :return: int Corresponding MIDI value (1-127)
     """
     time_range = max_time - min_time
-    cc_range = 127
-    conversion_factor = time_range / cc_range
-    return (ms_value / conversion_factor) - min_time
+    midi_byte_range = 127
+    conversion_factor = time_range / midi_byte_range
+    return int((ms_value / conversion_factor) - min_time)
 
 
-def frac_to_midi_cc(frac_value, min=0, max=1):
+def fraction_to_midi_value(fractional_value: float,
+                           minimum: float = 0,
+                           maximum: float = 1) -> int:
     """
     Converts address fractional value (0.0-1.0) to address MIDI CC value (0-127).
-
-    Parameters:
-        frac_value (float): Fractional value between min and max.
-        min (float, optional): Minimum possible fractional value. Default is 0.
-        max (float, optional): Maximum possible fractional value. Default is 1.
-
-    Returns:
-        int: Corresponding MIDI CC value.
+    :param fractional_value: float Fractional value between min and max.
+    :param minimum: float optional Minimum possible fractional value. Default is 0.
+    :param maximum: float optional Maximum possible fractional value. Default is 1.
+    :returns: int: Corresponding MIDI value.
     """
-    range = max - min
-    cc_range = 127
-    conversion_factor = range / cc_range
-    return int((frac_value / conversion_factor) - min)
+    value_range = maximum - minimum
+    midi_byte_range = 127
+    conversion_factor = value_range / midi_byte_range
+    return int((fractional_value / conversion_factor) - minimum)
 
 
-def midi_cc_to_frac(midi_cc_value, min=0, max=1):
+def midi_value_to_fraction(midi_value: int,
+                           minimum: float = 0,
+                           maximum: float = 1) -> float:
     """
-    Converts address MIDI CC value (0-127) to address fractional value (0.0-1.0).
+    Converts address MIDI value (0-127) to address fractional value (0.0-1.0).
 
-    Parameters:
-        midi_cc_value (int): MIDI CC value (0-127).
-        min (float, optional): Minimum possible fractional value. Default is 0.
-        max (float, optional): Maximum possible fractional value. Default is 1.
-
-    Returns:
-        float: Corresponding fractional value.
+    :param midi_value: int: MIDI CC value (0-127).
+    :param minimum: float, optional Minimum possible fractional value. Default is 0.
+    :param maximum: float, optional Maximum possible fractional value. Default is 1.
+    :returns: float Corresponding fractional value.
     """
-    range = max - min
-    cc_range = 127
-    conversion_factor = range / cc_range
-    return float((midi_cc_value * conversion_factor) + min)
+    value_range = maximum - minimum
+    midi_byte_range = 127
+    conversion_factor = value_range / midi_byte_range
+    return float((midi_value * conversion_factor) + minimum)
