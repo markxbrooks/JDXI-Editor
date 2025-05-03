@@ -373,7 +373,7 @@ class AnalogSynthEditor(SynthEditor):
                 msb=self.sysex_address.msb,
                 umb=self.sysex_address.umb,
                 lmb=self.sysex_address.lmb,
-                lsb=AddressParameterAnalog.LFO_SHAPE.value[0],
+                lsb=AddressParameterAnalog.LFO_SHAPE.lsb,
                 value=value,
             )
             self.midi_helper.send_midi_message(sysex_message)
@@ -438,7 +438,8 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str):
+    def _dispatch_sysex_to_area(self,
+                                json_sysex_data: str):
         """
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str JSON SysEx data
@@ -526,9 +527,26 @@ class AnalogSynthEditor(SynthEditor):
                     )
                     self.filter_section.filter_mode_switch.blockSignals(False)
                     self.update_filter_controls_state(bool(param_value))
+                elif param in [
+                    AddressParameterAnalog.AMP_ENV_ATTACK_TIME,
+                    AddressParameterAnalog.AMP_ENV_DECAY_TIME,
+                    AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
+                    AddressParameterAnalog.AMP_ENV_RELEASE_TIME,
+                    AddressParameterAnalog.FILTER_ENV_ATTACK_TIME,
+                    AddressParameterAnalog.FILTER_ENV_DECAY_TIME,
+                    AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
+                    AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
+                ]:
+                    self.update_adsr_widget(param,
+                                            param_value,
+                                            successes,
+                                            failures)
                 else:
-                    self.update_slider(param, param_value, successes, failures)
-                    self.update_adsr_widget(param, param_value, successes, failures)
+                    self.update_slider(param,
+                                       param_value,
+                                       successes,
+                                       failures)
+
             else:
                 failures.append(param_name)
 

@@ -201,7 +201,10 @@ class DigitalSynthEditor(SynthEditor):
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
         self.common_section = DigitalCommonSection(
-            self._create_parameter_slider, self._create_parameter_switch, self.controls
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self._create_parameter_combo_box,
+            self.controls
         )
         self.partial_tab_widget.addTab(self.common_section, "Common")
         self.tone_modify_section = DigitalToneModifySection(
@@ -338,9 +341,19 @@ class DigitalSynthEditor(SynthEditor):
                 self._update_waveform_buttons(partial_no, param_value)
             elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
+            elif param in [
+                    AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
+                    AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
+                    AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+                    AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
+                    AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
+                    AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
+                    AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+                    AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+                ]:
+                self._update_partial_adsr_widget(partial_no, param, param_value)
             else:
                 self._update_partial_slider(partial_no, param, param_value, successes, failures)
-                self._update_partial_adsr_widget(partial_no, param, param_value)
 
         if debug_stats:
             success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
@@ -526,7 +539,7 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
         new_value = midi_cc_to_frac(value) if use_frac else midi_cc_to_ms(value)
-        adsr_map = {
+        self.adsr_map = {
             AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.attack_control,
@@ -552,7 +565,7 @@ class DigitalSynthEditor(SynthEditor):
                 partial_no
             ].filter_tab.filter_adsr_widget.release_control,
         }
-        spinbox = adsr_map.get(param)
+        spinbox = self.adsr_map.get(param)
         if spinbox:
             spinbox.setValue(new_value)
 

@@ -19,7 +19,9 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QSpinBox, QGridLayout
 from typing import Dict, Union, Optional
 
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
@@ -232,10 +234,10 @@ class PitchEnvelope(QWidget):
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "sustain_level":
                     self.envelope["sustain_level"] = slider.value() / 127
-                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
+                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.lsb, slider.value())
                 else:
                     self.envelope[envelope_param_type] = midi_cc_to_ms(slider.value())
-                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.value[0], slider.value())
+                    log_slider_parameters(self.address.umb, self.address.lmb, param, param.lsb, slider.value())
         except Exception as ex:
             log_error(f"Error updating envelope from controls: {ex}", level=logging.ERROR)
         self.plot.set_values(self.envelope)
@@ -250,7 +252,7 @@ class PitchEnvelope(QWidget):
                 else:
                     slider.setValue(int(ms_to_midi_cc(self.envelope[envelope_param_type])))
         except Exception as ex:
-            log_error(f"Error updating controls from envelope: {ex}", level=logging.ERROR)
+            log_error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
@@ -264,9 +266,13 @@ class PitchEnvelope(QWidget):
                 msb=self.address.msb,
                 umb=self.address.umb,
                 lmb=self.address.lmb,
-                lsb=param.address,
+                lsb=param.lsb,
                 value=value,
             )
+            self.midi_helper.send_midi_message(sysex_message)
+        except Exception as ex:
+            log_message(f"MIDI error setting {param}: {str(ex)}")
+            return False
 
 
 class PitchEnvelopeOld(QWidget):
