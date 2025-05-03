@@ -55,6 +55,7 @@ from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper, MidiIOController
+from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
@@ -179,15 +180,13 @@ class JdxiInstrument(JdxiUi):
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = None
 
-    def data_request(self):
-        def send_with_delay(midi_requests):
-            for midi_request in midi_requests:
-                byte_list_message = bytes.fromhex(midi_request)
-                self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
-
-        # Run the function in a separate thread
-        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
+    def data_request(self) -> None:
+        """
+        Request the current value of the NRPN parameter from the device.
+        """
+        threading.Thread(target=send_with_delay,
+                         args=(self.midi_helper,
+                               self.midi_requests,)).start()
 
     def _handle_program_change(self, bank_letter: str, program_number: int):
         """perform data request"""
@@ -231,7 +230,7 @@ class JdxiInstrument(JdxiUi):
 
     def _select_synth(self, synth_type):
         """Select address synth and update button styles."""
-        log_parameter(f"Selected synth:", synth_type)
+        log_parameter("Selected synth:", synth_type)
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
         self.preset_helper = self._get_preset_helper_for_current_synth()

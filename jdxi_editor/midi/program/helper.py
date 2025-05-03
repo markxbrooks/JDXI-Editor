@@ -38,6 +38,7 @@ from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
     get_next_program_bank_and_number,
@@ -79,7 +80,7 @@ class JDXIProgramHelper(QObject):
             self._initialized = True
 
     def next_program(self):
-        """Increase the tone index and return the new preset."""
+        """Increase the tone index and load the new program"""
         (
             self.current_program_number,
             self.current_bank_letter,
@@ -89,7 +90,7 @@ class JDXIProgramHelper(QObject):
         self.load_program(self.current_bank_letter, self.current_program_number)
 
     def previous_program(self):
-        """Decrease the tone index and return the new preset."""
+        """Decrease the tone index and load the new program."""
         (
             self.current_bank_letter,
             self.current_program_number,
@@ -98,11 +99,22 @@ class JDXIProgramHelper(QObject):
         )
         self.load_program(self.current_bank_letter, self.current_program_number)
 
-    def get_current_program(self):
+    def get_current_program(self) -> tuple[str, int]:
+        """
+        Get current program bank and number
+        :return: tuple[str, int]
+        """
         return self.current_bank_letter, self.current_program_number
 
-    def load_program(self, bank_letter: str, program_number: int):
-        """load program"""
+    def load_program(self,
+                     bank_letter: str,
+                     program_number: int) -> None:
+        """
+        Load Program
+        :param bank_letter: str
+        :param program_number: int
+        :return: None
+        """
         self.current_bank_letter = bank_letter
         self.current_program_number = program_number
         self.program_changed.emit(bank_letter, program_number)
@@ -116,12 +128,10 @@ class JDXIProgramHelper(QObject):
         log_message(program_details)
         self.data_request()
 
-    def data_request(self):
-        def send_with_delay(midi_requests):
-            for midi_request in midi_requests:
-                byte_list_message = bytes.fromhex(midi_request)
-                self.midi_helper.send_raw_message(byte_list_message)
-                time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
-
-        # Run the function in a separate thread
-        threading.Thread(target=send_with_delay, args=(self.midi_requests,)).start()
+    def data_request(self) -> None:
+        """
+        Request the current value of the NRPN parameter from the device.
+        """
+        threading.Thread(target=send_with_delay,
+                         args=(self.midi_helper,
+                               self.midi_requests,)).start()

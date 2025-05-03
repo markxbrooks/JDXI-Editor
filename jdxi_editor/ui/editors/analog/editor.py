@@ -220,6 +220,8 @@ class AnalogSynthEditor(SynthEditor):
             self._create_parameter_switch,
             self._on_waveform_selected,
             self.wave_buttons,
+            self.midi_helper,
+            self.sysex_address
         )
         self.tab_widget.addTab(
             self.oscillator_section,
