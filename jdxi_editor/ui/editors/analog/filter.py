@@ -84,7 +84,7 @@ class AnalogFilterSection(QWidget):
         # Connect filter controls
         self.filter_resonance.valueChanged.connect(
             lambda v: self.send_control_change(
-                AddressParameterAnalog.FILTER_RESONANCE.value[0], v
+                AddressParameterAnalog.FILTER_RESONANCE.lsb, v
             )
         )
 

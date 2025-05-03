@@ -204,8 +204,10 @@ class MidiInHandler(MidiIOController):
         log_parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"))
 
         if address in valid_addresses and tone_name:
-            self._emit_program_name_signal(area, tone_name)
-            self._emit_tone_name_signal(area, tone_name)
+            if address == "12180000":
+                self._emit_program_name_signal(area, tone_name)
+            else:
+                self._emit_tone_name_signal(area, tone_name)
         log_message("================================================================================================")
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
@@ -223,7 +225,6 @@ class MidiInHandler(MidiIOController):
             "TEMPORARY_ANALOG_SYNTH_AREA": JDXISynth.ANALOG,
             "TEMPORARY_DRUM_KIT_AREA": JDXISynth.DRUM,
         }
-
         synth_type = synth_type_map.get(area)
         if synth_type:
             log_message(f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type})")

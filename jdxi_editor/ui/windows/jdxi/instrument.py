@@ -604,7 +604,7 @@ class JdxiInstrument(JdxiUi):
                 msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                 umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
                 lmb=AddressOffsetProgramLMB.COMMON,
-                lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.value[0],
+                lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.lsb,
             )
             sysex_message = RolandSysEx(
                 sysex_address=address,
@@ -669,7 +669,7 @@ class JdxiInstrument(JdxiUi):
                         msb=AddressMemoryAreaMSB.PROGRAM,
                         umb=AddressOffsetSystemUMB.COMMON,
                         lmb=zone,
-                        lsb=AddressParameterArpeggio.ARPEGGIO_SWITCH.value[0]
+                        lsb=AddressParameterArpeggio.ARPEGGIO_SWITCH.lsb
                     )
                     sysex_message = RolandSysEx(
                         sysex_address=address,

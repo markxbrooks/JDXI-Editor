@@ -168,6 +168,7 @@ PCM_WAVES = [
 ]
 
 PCM_WAVES_CATEGORIZED = [
+    {"Category": "None", "Wave Number": 0, "Wave Name": "Off"},
     {"Category": "Lead & Synth Waves", "Wave Number": 1, "Wave Name": "Calc.Saw"},
     {"Category": "Lead & Synth Waves", "Wave Number": 2, "Wave Name": "DistSaw Wave"},
     {"Category": "Lead & Synth Waves", "Wave Number": 3, "Wave Name": "GR-300 Saw"},
