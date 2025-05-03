@@ -306,6 +306,14 @@ class JDXIStyle:
             }
         """
 
+    INSTRUMENT_IMAGE_LABEL = """
+            QLabel {
+                    height: 150px;
+                    background-color: transparent;
+                    border: none;
+                }
+        """
+
     SPLASH_SCREEN = generate_editor_style(
         ACCENT,
         ACCENT_HOVER,

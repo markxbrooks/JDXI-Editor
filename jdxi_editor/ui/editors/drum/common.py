@@ -109,4 +109,6 @@ class DrumCommonSection(QWidget):
         )
         common_layout.addRow(one_shot_mode_combo)
         common_group.setLayout(common_layout)
+        common_group.setContentsMargins(0, 0, 0, 0)
         scrolled_layout.addWidget(common_group)
+        scrolled_layout.setContentsMargins(0, 0, 0, 0)

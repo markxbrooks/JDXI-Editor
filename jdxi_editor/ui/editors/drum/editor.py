@@ -161,6 +161,7 @@ class DrumCommonEditor(SynthEditor):
             self._create_parameter_slider,
             self.midi_helper
         )
+        common_group.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
         upper_layout.addWidget(common_group)
 
         # Add upper half to splitter

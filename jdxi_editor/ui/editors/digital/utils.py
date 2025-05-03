@@ -186,7 +186,6 @@ def get_area(data: list[int, int]) -> str:
     :param data: list[int, int]
     :return: str
     """
-    log_message(f"data for temporary area: {data}")
     area_mapping = {
         (0x18, 0x00): "PROGRAM",
         (0x19, 0x42): "ANALOG",
