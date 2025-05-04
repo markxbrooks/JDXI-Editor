@@ -44,6 +44,7 @@ class PitchEnvPlot(QWidget):
                  envelope: dict = None,
                  parent: QWidget = None):
         super().__init__(parent)
+        self.point_moved = None
         self.parent = parent
         # Default envelope parameters (times in ms)
         self.enabled = True
@@ -69,7 +70,12 @@ class PitchEnvPlot(QWidget):
         if hasattr(self.parent, "pitchEnvelopeChanged"):
             self.parent.pitchEnvelopeChanged.connect(self.set_values)
 
-    def set_values(self, envelope: dict):
+    def set_values(self, envelope: dict) -> None:
+        """
+        Update envelope values and trigger address redraw
+        :param envelope: dict
+        :return: None
+        """
         self.envelope = envelope
         self.update()
 
@@ -105,11 +111,6 @@ class PitchEnvPlot(QWidget):
         super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
         self.enabled = enabled
 
-    def set_values(self, envelope):
-        """Update envelope values and trigger address redraw."""
-        self.envelope = envelope
-        self.update()
-
     def paintEvent(self, event):
         """ Paint the plot in the style of an LCD """
         painter = QPainter(self)
@@ -135,27 +136,19 @@ class PitchEnvPlot(QWidget):
             painter.setFont(QFont("Consolas", 10))
 
             # Envelope parameters
-            attack_time = self.envelope["attack_time"] / 100.0
-            decay_time = self.envelope["decay_time"] / 200.0
-            release_time = self.envelope["release_time"] / 1000.0
-            sustain_level = self.envelope["sustain_level"]
+            attack_time = self.envelope["attack_time"] / 1000.0
+            decay_time = self.envelope["decay_time"] / 1000.0
             peak_level = self.envelope["peak_level"]
             initial_level = self.envelope["initial_level"]
 
-            # attack_samples = int(attack_time * self.sample_rate)
-            # decay_samples = int(decay_time * self.sample_rate)
             attack_samples = max(int(attack_time * self.sample_rate), 1)
             decay_samples = max(int(decay_time * self.sample_rate), 1)
-            sustain_samples = int(self.sample_rate * 2)
-            release_samples = int(release_time * self.sample_rate)
 
             attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
             decay = np.linspace(peak_level, initial_level, decay_samples, endpoint=False)
-            # sustain = np.full(sustain_samples, peak_level)
-            # release = np.linspace(peak_level, 0, release_samples)
             envelope = np.concatenate([attack, decay])
             total_samples = len(envelope)
-            total_time = 15  # seconds
+            total_time = 10  # seconds
 
             # Plot area dimensions
             w = self.width()
@@ -186,7 +179,8 @@ class PitchEnvPlot(QWidget):
             for i in range(num_ticks + 1):
                 x = left_padding + i * plot_w / num_ticks
                 painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                label = f"{i * (total_time // num_ticks)}"
+                # label = f"{i * (total_time // num_ticks)}"
+                label = f"{i * (total_time / num_ticks):.0f}"
                 painter.drawText(x - 10, zero_y + 20, label)
 
             # Y-axis ticks and labels from +0.6 to -0.6

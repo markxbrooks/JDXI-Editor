@@ -14,8 +14,12 @@ These functions are useful for mapping MIDI messages to meaningful time or inten
 in address synthesizer or effect unit.
 """
 
+# from jdxi_editor.log.parameter import log_parameter
 
-def midi_value_to_ms(midi_value: int, min_time: int = 10, max_time: int = 1000) -> float:
+
+def midi_value_to_ms(midi_value: int,
+                     min_time: int = 10,
+                     max_time: int = 1000) -> float:
     """
     Converts a MIDI value (0–127) to a time value in milliseconds.
     :param midi_value: int MIDI CC value (0–127).
@@ -28,15 +32,21 @@ def midi_value_to_ms(midi_value: int, min_time: int = 10, max_time: int = 1000) 
 
     midi_value = max(0, min(127, midi_value))  # Clamp to valid MIDI range
     time_range = max_time - min_time
-    return min_time + (midi_value / 127.0) * time_range
+    ms_time = min_time + (midi_value / 127.0) * time_range
+    """
+    log_parameter("midi_value", midi_value)
+    log_parameter("min_time", min_time)
+    log_parameter("max_time", max_time)
+    log_parameter("ms_time", ms_time)"""
+    return ms_time
 
 
-def ms_to_midi_value(ms_value: float,
+def ms_to_midi_value(ms_time: float,
                      min_time: int = 10,
                      max_time: int = 1000) -> int:
     """
     Converts address time value in milliseconds to address MIDI byte range value (0-127)
-    :param ms_value: float: Time value in milliseconds.
+    :param ms_time: float: Time value in milliseconds.
     :param min_time: int, optional: Minimum time in milliseconds. Default is 10 ms.
     :param max_time: int, optional: Maximum time in milliseconds. Default is 1000 ms.
     :return: int Corresponding MIDI value (1-127)
@@ -44,7 +54,13 @@ def ms_to_midi_value(ms_value: float,
     time_range = max_time - min_time
     midi_byte_range = 127
     conversion_factor = time_range / midi_byte_range
-    return int((ms_value / conversion_factor) - min_time)
+    midi_value = int((ms_time / conversion_factor) - min_time)
+    """
+    log_parameter("ms_time", ms_time)
+    log_parameter("min_time", min_time)
+    log_parameter("max_time", max_time)
+    log_parameter("midi_value", midi_value)"""
+    return midi_value
 
 
 def fraction_to_midi_value(fractional_value: float,
@@ -60,7 +76,13 @@ def fraction_to_midi_value(fractional_value: float,
     value_range = maximum - minimum
     midi_byte_range = 127
     conversion_factor = value_range / midi_byte_range
-    return int((fractional_value / conversion_factor) - minimum)
+    midi_value = int((fractional_value / conversion_factor) - minimum)
+    """
+    log_parameter("fractional_value", fractional_value)
+    log_parameter("minimum", minimum)
+    log_parameter("maximum", maximum)
+    log_parameter("midi_value", midi_value)"""
+    return midi_value
 
 
 def midi_value_to_fraction(midi_value: int,

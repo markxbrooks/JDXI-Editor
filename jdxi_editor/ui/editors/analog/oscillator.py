@@ -158,7 +158,7 @@ class AnalogOscillatorSection(QWidget):
         # Pitch Env Widget
         self.pitch_env_widget = PitchEnvelope(
             attack_param=AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME,
-            decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY,
+            decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
             address=self.address

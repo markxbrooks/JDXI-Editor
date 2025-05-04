@@ -81,7 +81,7 @@ class AddressParameterAnalog(AddressParameter):
     OSC_PULSE_WIDTH_MOD_DEPTH = (0x1A, 0, 127)
     OSC_PITCH_ENV_VELOCITY_SENSITIVITY = (0x1B, 1, 127, -63, 63)  # -63 - +63
     OSC_PITCH_ENV_ATTACK_TIME = (0x1C, 0, 127)
-    OSC_PITCH_ENV_DECAY = (0x1D, 0, 127)
+    OSC_PITCH_ENV_DECAY_TIME = (0x1D, 0, 127)
     OSC_PITCH_ENV_DEPTH = (0x1E, 1, 127, -63, 63)  # -63 - +63
     SUB_OSCILLATOR_TYPE = (0x1F, 0, 2)
 
@@ -297,4 +297,5 @@ class AddressParameterAnalog(AddressParameter):
         Returns a envelope_param_type, if the parameter is part of an envelope,
         otherwise returns None.
         """
+        print(self.name)
         return ENVELOPE_MAPPING.get(self.name)

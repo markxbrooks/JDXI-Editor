@@ -146,7 +146,7 @@ class AnalogSynthEditor(SynthEditor):
         }
         self.pitch_env_mapping = {
             AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME: self.oscillator_section.pitch_env_widget.attack_control,
-            AddressParameterAnalog.OSC_PITCH_ENV_DECAY: self.oscillator_section.pitch_env_widget.decay_control,
+            AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
             AddressParameterAnalog.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
         }
         self.data_request()
@@ -444,21 +444,18 @@ class AnalogSynthEditor(SynthEditor):
         :param successes: list of successful parameters
         :return: None
         """
-
-        """
         new_value = (
-            midi_cc_to_frac(value)
+            midi_value_to_fraction(value)
             if parameter
                in [
-                   AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
-                   AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
+                   AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
                ]
-            else midi_cc_to_ms(value)
-        )"""
+            else midi_value_to_ms(value, 10, 1000)
+        )
 
         if parameter in self.pitch_env_mapping:
             control = self.pitch_env_mapping[parameter]
-            control.setValue(value)
+            control.setValue(new_value)
             successes.append(parameter.name)
         else:
             failures.append(parameter.name)

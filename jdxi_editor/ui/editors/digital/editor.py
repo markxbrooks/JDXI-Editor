@@ -90,11 +90,11 @@ class DigitalSynthEditor(SynthEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: JDXIPresetHelper = None,
-        synth_number: int = 1,
-        parent: QWidget = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            preset_helper: JDXIPresetHelper = None,
+            synth_number: int = 1,
+            parent: QWidget = None,
     ):
         super().__init__(parent)
         self.instrument_image_group = None
@@ -342,18 +342,28 @@ class DigitalSynthEditor(SynthEditor):
             elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
             elif param in [
-                    AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
-                    AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
-                    AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-                    AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
-                    AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
-                    AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
-                    AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
-                    AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
-                ]:
-                self._update_partial_adsr_widget(partial_no, param, param_value)
+                AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+                AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+                AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+            ]:
+                self._update_partial_adsr_widgets(partial_no, param, param_value)
+            elif param in [
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH
+            ]:
+                self._update_partial_pitch_env_widgets(partial_no, param, param_value)
             else:
-                self._update_partial_slider(partial_no, param, param_value, successes, failures)
+                self._update_partial_slider(partial_no,
+                                            param,
+                                            param_value,
+                                            successes,
+                                            failures)
 
         if debug_stats:
             success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
@@ -523,10 +533,10 @@ class DigitalSynthEditor(SynthEditor):
         slider.blockSignals(False)
         successes.append(param.name)
 
-    def _update_partial_adsr_widget(self,
-                                    partial_no: int,
-                                    param: AddressParameter,
-                                    value: int):
+    def _update_partial_adsr_widgets(self,
+                                     partial_no: int,
+                                     param: AddressParameter,
+                                     value: int):
         """
         Update the ADSR widget for a specific partial based on the parameter and value.
         :param partial_no: int Partial number
@@ -568,6 +578,36 @@ class DigitalSynthEditor(SynthEditor):
         spinbox = self.adsr_map.get(param)
         if spinbox:
             spinbox.setValue(new_value)
+
+    def _update_partial_pitch_env_widgets(self,
+                                          partial_no: int,
+                                          param: AddressParameter,
+                                          value: int):
+        """
+        Update the Pitch Env widget for a specific partial based on the parameter and value.
+        :param partial_no: int Partial number
+        :param param: AddressParameter address
+        :param value: int value
+        :return: None
+        """
+        use_frac = param in {
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+        }
+        new_value = midi_value_to_fraction(value) if use_frac else midi_value_to_ms(value, 10, 5000)
+        self.pitch_env_map = {
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME: self.partial_editors[
+                partial_no
+            ].oscillator_tab.pitch_env_widget.attack_control,
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME: self.partial_editors[
+                partial_no
+            ].oscillator_tab.pitch_env_widget.decay_control,
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH: self.partial_editors[
+                partial_no
+            ].oscillator_tab.pitch_env_widget.depth_control,
+        }
+        control = self.pitch_env_map.get(param)
+        if control:
+            control.setValue(new_value)
 
     def _update_slider(self,
                        param: AddressParameter,
@@ -751,7 +791,7 @@ class DigitalSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
         else:
-            logging.warning("Waveform button not found for: %s",selected_waveform)
+            logging.warning("Waveform button not found for: %s", selected_waveform)
 
 
 class DigitalSynth2Editor(DigitalSynthEditor):
@@ -760,11 +800,11 @@ class DigitalSynth2Editor(DigitalSynthEditor):
     preset_changed = Signal(int, str, int)
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: JDXIPresetHelper = None,
-        synth_number: int = 2,
-        parent: QWidget = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            preset_helper: JDXIPresetHelper = None,
+            synth_number: int = 2,
+            parent: QWidget = None,
     ):
         super().__init__(midi_helper=midi_helper,
                          synth_number=synth_number,
