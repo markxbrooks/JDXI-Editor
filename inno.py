@@ -1,5 +1,4 @@
 import os
-from jdxi_editor.project import __version__
 
 inno_exe = r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 cwd = os.getcwd()
