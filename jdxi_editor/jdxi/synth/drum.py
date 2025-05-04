@@ -1,16 +1,22 @@
+"""
+Drum Synth Data
+"""
+
 from dataclasses import dataclass, field
 from typing import Dict
 
-from jdxi_editor.jdxi.synth.data import SynthData
+from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 
 
 @dataclass
-class DrumSynthData(SynthData):
+class DrumSynthData(JDXISynthData):
+    """Drum Synth Data"""
     partial_number: int = 0
     _group_map: Dict[int, AddressOffsetProgramLMB] = field(default_factory=dict, init=False, repr=False)
 
     def __post_init__(self):
+        """Post Init"""
         super().__post_init__()
         self._build_group_map()
 

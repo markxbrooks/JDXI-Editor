@@ -1,4 +1,8 @@
-from PySide6.QtWidgets import QPushButton
+"""
+Favorite Button
+"""
+
+from PySide6.QtWidgets import QPushButton, QWidget
 from PySide6.QtCore import Signal, QSettings
 import logging
 
@@ -8,6 +12,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.preset.data import JDXIPresetData
 
 
 class FavoriteButton(QPushButton):
@@ -15,7 +20,13 @@ class FavoriteButton(QPushButton):
 
     preset_selected = Signal(str, int, int)  # synth_type, preset_num, channel
 
-    def __init__(self, slot_num: int, midi_helper: MidiIOHelper, parent=None):
+    def __init__(self, slot_num: int, midi_helper: MidiIOHelper, parent: QWidget = None):
+        """Initialize the FavoriteButton
+
+        :param slot_num: int
+        :param midi_helper: MidiIOHelper
+        :param parent: QWidget
+        """
         super().__init__(parent)
         self.last_preset = None
         self.preset_helper = None
@@ -30,8 +41,14 @@ class FavoriteButton(QPushButton):
 
     def save_preset_as_favourite(
         self, synth_type: str, preset_num: int, preset_name: str, channel: int
-    ):
-        """Save current preset to this favorite slot"""
+    ) -> None:
+        """Save current preset to this favorite slot
+
+        :param synth_type: str
+        :param preset_num: int
+        :param preset_name: str
+        :param channel: int
+        """
         # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
         self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
         self._update_style()
@@ -57,7 +74,7 @@ class FavoriteButton(QPushButton):
         # Update the display
         log_message(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
 
-    def load_preset(self, preset_data):
+    def load_preset(self, preset_data: JDXIPresetData):
         """Load preset data into synth"""
         try:
             if self.midi_helper:

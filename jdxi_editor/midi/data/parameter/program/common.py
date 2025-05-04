@@ -98,7 +98,11 @@ class AddressParameterProgramCommon(AddressParameter):
         }.get(self, self.name.replace("_", " ").title())
 
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
-        """Get parameter area and address adjusted for partial number."""
+        """
+        Get parameter area and address adjusted for partial number.
+        :param partial_number: int The partial number
+        :return: Tuple[int, int] The address
+        """
         group_map = {0: 0x00}
         group = group_map.get(
             partial_number, 0x00
@@ -111,7 +115,10 @@ class AddressParameterProgramCommon(AddressParameter):
         return self in []
 
     def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
+        """Get display text for switch values
+        :param value: int The value
+        :return: str The display text
+        """
         if self == self.AUTO_NOTE_SWITCH:
             return ["OFF", "---", "ON"][value]
         elif self.is_switch:
@@ -119,7 +126,10 @@ class AddressParameterProgramCommon(AddressParameter):
         return str(value)
 
     def validate_value(self, value: int) -> int:
-        """Validate and convert parameter value"""
+        """Validate and convert parameter value
+        :param value: int The value
+        :return: int The validated value
+        """
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
 
@@ -153,7 +163,11 @@ class AddressParameterProgramCommon(AddressParameter):
         return partial_params.get(self)
 
     @staticmethod
-    def get_by_name(param_name):
-        """Get the Parameter by name."""
-        # Return the parameter member by name, or None if not found
+    def get_by_name(param_name: str) -> Optional[object]:
+        """Get the Parameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[object] The parameter
+        Return the parameter member by name, or None if not found
+        """
+  
         return AddressParameterProgramCommon.__members__.get(param_name, None)

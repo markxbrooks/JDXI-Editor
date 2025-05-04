@@ -34,7 +34,8 @@ Example:
 
 
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
-
+from typing import Callable
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
@@ -45,10 +46,10 @@ class DrumOutputSection(QWidget):
 
     def __init__(
         self,
-        controls,
-        create_parameter_combo_box,
-        create_parameter_slider,
-        midi_helper,
+        controls: dict,
+        create_parameter_combo_box: Callable,
+        create_parameter_slider: Callable,
+        midi_helper: MidiIOHelper,
     ):
         super().__init__()
         self.controls = controls
@@ -57,7 +58,7 @@ class DrumOutputSection(QWidget):
         self.midi_helper = midi_helper
         self.setup_ui()
 
-    def setup_ui(self):
+    def setup_ui(self) -> None:
         """setup UI"""
         layout = QVBoxLayout(self)
 

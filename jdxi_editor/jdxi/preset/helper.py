@@ -28,9 +28,8 @@ This class is typically used within a larger MIDI control application to handle
 preset changes and communicate them to the UI and MIDI engine.
 
 """
-import time
+
 import threading
-import logging
 
 from PySide6.QtCore import Signal, QObject
 
@@ -39,12 +38,11 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.utils import get_preset_values
-from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import log_midi_info
 

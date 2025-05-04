@@ -27,10 +27,14 @@ Example Usage:
 """
 
 import logging
-from typing import Optional
+from typing import Iterable, Optional
+
+import rtmidi
+from PySide6.QtWidgets import QMainWindow
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 
@@ -49,6 +53,9 @@ class MIDIConnection:
         return cls._instance
 
     def __init__(self):
+        self._midi_in = None
+        self._midi_out = None
+        self._main_window = None
         self.device_info: Optional[DeviceInfo] = None
 
     @property
@@ -59,15 +66,14 @@ class MIDIConnection:
     def midi_out(self):
         return self._midi_out
 
-    def initialize(self, midi_in, midi_out, main_window=None):
+    def initialize(self, midi_in: rtmidi.MidiIn, midi_out: rtmidi.MidiOut, main_window=Optional[QMainWindow]):
         """Initialize MIDI connections"""
         self._midi_in = midi_in
         self._midi_out = midi_out
         self._main_window = main_window
-        # self.identify_device()
         log_message("MIDI Connection singleton initialized")
 
-    def send_message(self, message):
+    def send_message(self, message: Iterable[int]):
         """Send MIDI message and trigger indicator"""
         try:
             if self._midi_out:
@@ -77,14 +83,12 @@ class MIDIConnection:
                     self._main_window, "midi_out_indicator"
                 ):
                     self._main_window.midi_out_indicator.blink()
-                log_message(
-                    f"Sent MIDI message: {' '.join([hex(b)[2:].upper().zfill(2) for b in message])}"
-                )
+                log_parameter("Sent MIDI message", message)
             else:
                 logging.warning("No MIDI output port available")
 
         except Exception as ex:
-            log_error(f"Error sending MIDI message: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error sending MIDI message: {str(ex)}")
 
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""

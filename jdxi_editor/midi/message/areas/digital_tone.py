@@ -29,27 +29,23 @@ msg = DigitalToneMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, \
+    AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
 @dataclass
 class DigitalToneMessage(RolandSysEx):
-    """SuperNATURAL Synth Tone parameter message"""
-
+    """
+    SuperNATURAL Synth Tone parameter message for JD-Xi.
+    Defaults to TEMPORARY_TONE / Digital 1 / Common / Param 0x00
+    """
     command: int = CommandID.DT1
-    area: int = ProgramAreaParameter.TEMPORARY_TONE  # Temporary area
-    tone_type: int = 0x01  # Digital tone (0x01 or 0x02)
-    section: int = 0x00  # Section from DigitalToneSection
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE
+    umb: int = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA  # Digital Tone 1
+    lmb: int = AddressOffsetSuperNATURALLMB.PARTIAL_1  # Section (e.g., Common, Partial 1 etc. )
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
-        """Set up address and data"""
-        self.address = [
-            self.msb,  # Temporary area (0x19)
-            self.tone_type,  # Digital 1 or 2 (0x01/0x02)
-            self.section,  # Section (Common/Partial/Modify)
-            self.param,  # Parameter number
-        ]
-        self.data = [self.value]
+        super().__post_init__()  # Set address and data from RolandSysEx

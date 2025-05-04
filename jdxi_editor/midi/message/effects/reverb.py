@@ -15,8 +15,11 @@ msg = ReverbMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB
+from jdxi_editor.midi.data import AddressParameterEffect
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetSystemUMB, \
+    AddressOffsetProgramLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
 @dataclass
@@ -24,29 +27,21 @@ class ReverbMessage(RolandSysEx):
     """Program Reverb parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
-    section: int = ProgramParameter.REVERB  # 0x08: Reverb section
-    group: int = 0x00  # Always 0x00
-    lsb: int = 0x00  # Parameter number
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    umb: int = AddressOffsetSystemUMB.COMMON  # 0x00: Common section
+    lmb: int = AddressOffsetProgramLMB.EFFECT_1  # Effect 1 = 0x02
+    lsb: int = AddressParameterEffect.REVERB_LEVEL  # Parameter number 0x03
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
-        """Set up address and data"""
-        self.address = [
-            self.msb,  # Program area (0x18)
-            self.section,  # Reverb section (0x08)
-            self.group,  # Always 0x00
-            self.param,  # Parameter number
-        ]
+        super().__post_init__()  # Set address and data from RolandSysEx
         # Handle 4-byte parameters
-        if 0x03 <= self.param <= 0x5F:
-            # Convert -20000/+20000 to 12768-52768
-            value = self.value + 32768
-            self.data = [
-                (value >> 24) & 0x0F,  # High nibble
-                (value >> 16) & 0x0F,
-                (value >> 8) & 0x0F,
-                value & 0x0F,  # Low nibble
-            ]
+        if not isinstance(self.value, int):
+            raise TypeError("ReverbMessage.value must be an integer")
+
+        if 0x04 <= self.lsb <= 0x60:
+            # Convert signed value to unsigned offset for SysEx
+            offset_value = self.value + 32768
+            self.data = split_16bit_value_to_nibbles(offset_value)
         else:
             self.data = [self.value]

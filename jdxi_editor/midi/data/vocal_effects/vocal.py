@@ -1,3 +1,5 @@
+"""Vocal Effects"""
+
 from enum import Enum
 
 

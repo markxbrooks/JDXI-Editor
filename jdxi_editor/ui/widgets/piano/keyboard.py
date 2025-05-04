@@ -29,7 +29,6 @@ Usage Example:
 This module requires PySide6 and proper integration with the JD-Xi Manager's signal handling for note events.
 """
 
-import logging
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -41,6 +40,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.piano.keyboard import (
     KEYBOARD_BLACK_NOTES,
     KEYBOARD_WHITE_NOTES,
@@ -53,7 +53,7 @@ from jdxi_editor.ui.widgets.piano.key import PianoKey
 class PianoKeyboard(QWidget):
     """Widget containing a row of piano keys styled like JD-Xi"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.current_channel = 0  # Default to analog synth channel
 
@@ -112,8 +112,12 @@ class PianoKeyboard(QWidget):
 
         main_layout.addWidget(keyboard_widget)
 
-    def _create_keys(self, keyboard_widget):
-        """Create piano keys with individual shadows"""
+    def _create_keys(self, keyboard_widget: QWidget) -> None:
+        """
+        Create piano keys with individual shadows
+
+        :param keyboard_widget: QWidget
+        """
 
         def apply_shadow(widget):
             shadow = QGraphicsDropShadowEffect()
@@ -164,11 +168,10 @@ class PianoKeyboard(QWidget):
             if hasattr(self.parent(), "handle_piano_note_off"):
                 black_key.noteOff.connect(self.parent().handle_piano_note_off)
 
-    def set_midi_channel(self, channel: int):
-        """Set MIDI channel for note messages"""
+    def set_midi_channel(self, channel: int) -> None:
+        """Set MIDI channel for note messages
+
+        :param channel: int
+        """
         self.current_channel = channel
         log_message(f"Piano keyboard set to channel {channel}")
-
-    def _update_channel_display(self):
-        """Update channel indicator"""
-        self.channel_button.set_channel(self.current_channel)

@@ -1,4 +1,7 @@
 """
+Control Change Slider
+
+sends CC, (N)RPN messages to the synth
 
 def send_nrpn(self, channel, msb, lsb, value):
     self.send_control_change(99, msb, channel)  # NRPN MSB
@@ -41,12 +44,19 @@ class ControlChangeSlider(Slider):
             show_value_label=False,
             draw_tick_marks=False,
         )
+        """Initialize the ControlChangeSlider.
+
+        :param midi_helper: MidiIOHelper
+        :param label: str
+        :param nrpn_map: dict
+        :param partial: int
+        :param min_value: int
+        :param max_value: int
+        :param vertical: bool
+        :param channels: list
+        """
         self.channels = channels
         self.label = label
-        self.midi_helper = midi_helper
-        self.partial = partial  # 1, 2, or 3
-        self.min_value = min_value
-        self.max_value = max_value
         self.current_value = min_value
         self.vertical = vertical
         self.update_style(min_value)
@@ -55,7 +65,11 @@ class ControlChangeSlider(Slider):
         self.nrpn_map = nrpn_map
         self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
 
-    def update_style(self, value: int):
+    def update_style(self, value: int) -> None:
+        """Update the style of the slider.
+
+        :param value: int
+        """
         if value == 0:
             self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
         else:
@@ -64,6 +78,8 @@ class ControlChangeSlider(Slider):
     def on_value_changed(self, value: int):
         """
         Set the current value of the slider and send Control Change (CC) messages.
+
+        :param value: int
         """
         self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
         log_message(f"filter value: {value} for cutoff slider")

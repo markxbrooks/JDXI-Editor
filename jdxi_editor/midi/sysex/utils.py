@@ -1,4 +1,18 @@
-import logging
+"""
+MIDI SysEx Utils
+===============
+
+This module provides utility functions for handling MIDI SysEx messages.
+
+Functions:
+    - get_parameter_from_address: Map address to DigitalParameter
+    - validate_sysex_message: Validate JD-Xi SysEx message format
+    - calculate_checksum: Calculate Roland checksum for parameter messages
+    - bytes_to_hex_string: Convert a list of byte values to a space-separated hex string
+    - to_hex_string: Convert an integer value to a hexadecimal string representation
+
+"""
+
 from typing import List
 
 from jdxi_editor.log.error import log_error
@@ -67,7 +81,7 @@ def validate_sysex_message(message: List[int]) -> bool:
         return True
 
     except Exception as ex:
-        log_error(f"Error validating SysEx message: {str(ex)}", level=logging.ERROR)
+        log_error(f"Error validating SysEx message: {str(ex)}")
         return False
 
 
@@ -87,9 +101,9 @@ def bytes_to_hex_string(byte_list, prefix="F0"):
     try:
         return f"{prefix} " + " ".join(f"{int(byte):02X}" for byte in byte_list)
     except ValueError as ex:
-        log_error(f"Error {ex} occurred formatting hex", level=logging.ERROR)
+        log_error(f"Error {ex} occurred formatting hex")
     except Exception as ex:
-        log_error(f"Error {ex} occurred formatting hex", level=logging.ERROR)
+        log_error(f"Error {ex} occurred formatting hex")
 
 
 def to_hex_string(value: int) -> str:

@@ -84,7 +84,11 @@ class DeviceInfo:
 
     @classmethod
     def from_identity_reply(cls, data: bytes) -> Optional["DeviceInfo"]:
-        """Parse an Identity Reply SysEx message into a DeviceInfo object."""
+        """
+        Parse an Identity Reply SysEx message into a DeviceInfo object.
+        :param data: bytes
+        :return: DeviceInfo
+        """
         try:
             if (
                 len(data) < 14

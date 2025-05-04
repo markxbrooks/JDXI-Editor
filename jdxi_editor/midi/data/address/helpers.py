@@ -38,8 +38,8 @@ def apply_address_offset(base_address: RolandSysExAddress,
 def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     """
     Converts a 4-byte SysEx address into a hex string.
-    :param address:
-    :return:
+    :param address: Tuple[int, int, int, int]
+    :return: str
     """
     return " ".join(f"{b:02X}" for b in address)
 

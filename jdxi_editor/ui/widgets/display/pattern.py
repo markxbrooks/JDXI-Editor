@@ -1,23 +1,37 @@
+"""
+Pattern Display Widget
+"""
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QPen, QColor, QFont
+from PySide6.QtGui import QPainter, QPen, QColor, QFont, QPaintEvent    
 
 
 class PatternDisplay(QWidget):
-    def __init__(self, parent=None):
+    """Pattern Display Widget"""
+
+    def __init__(self, parent: QWidget = None):
         super().__init__(parent)
         self.setMinimumSize(240, 120)
         self.pattern_type = 0  # Default to "Up"
         self.octave_range = 0
         self.accent_rate = 0
 
-    def set_pattern(self, pattern_type, octave_range, accent_rate):
+    def set_pattern(
+        self,
+        pattern_type: int,
+        octave_range: int,
+        accent_rate: int,
+    ) -> None:
         self.pattern_type = pattern_type
         self.octave_range = octave_range
         self.accent_rate = accent_rate
         self.update()  # Trigger repaint
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Paint the pattern display.
+
+        :param event: QPaintEvent
+        """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -37,7 +51,15 @@ class PatternDisplay(QWidget):
         points = self._get_pattern_points(x_start, y_start, width, height)
         self._draw_pattern(painter, points)
 
-    def _draw_grid(self, painter, x, y, width, height):
+    def _draw_grid(self, painter: QPainter, x: int, y: int, width: int, height: int) -> None:
+        """Draw the grid.
+
+        :param painter: QPainter
+        :param x: int
+        :param y: int
+        :param width: int
+        :param height: int
+        """
         # Note names
         note_names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
@@ -102,7 +124,14 @@ class PatternDisplay(QWidget):
                 )
             painter.drawLine(int(x_pos), y, int(x_pos), y - height)
 
-    def _get_pattern_points(self, x, y, width, height):
+    def _get_pattern_points(self, x: int, y: int, width: int, height: int) -> list:
+        """Get the pattern points.
+
+        :param x: int
+        :param y: int
+        :param width: int
+        :param height: int
+        """
         points = []
         steps = 16
         step_width = width / steps
@@ -134,7 +163,12 @@ class PatternDisplay(QWidget):
 
         return points
 
-    def _draw_pattern(self, painter, points):
+    def _draw_pattern(self, painter: QPainter, points: list) -> None:
+        """Draw the pattern.
+
+        :param painter: QPainter
+        :param points: list
+        """
         if not points:
             return
 
@@ -157,7 +191,7 @@ class PatternDisplay(QWidget):
             painter.drawEllipse(point[0] - size // 2, point[1] - size // 2, size, size)
 
     # Pattern generation methods
-    def _generate_up_pattern(self):
+    def _generate_up_pattern(self) -> list:
         return list(range(13)) * 2
 
     def _generate_down_pattern(self):

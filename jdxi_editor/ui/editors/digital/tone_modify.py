@@ -6,17 +6,23 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
-
+from typing import Callable
 
 class DigitalToneModifySection(QWidget):
     def __init__(
         self,
-        create_parameter_slider,
-        create_parameter_combo_box,
-        create_parameter_switch,
-        controls,
+        create_parameter_slider: Callable,
+        create_parameter_combo_box: Callable,
+        create_parameter_switch: Callable,
+        controls: dict,
     ):
-        """Digital Tone Modify Section"""
+        """
+        Initialize the DigitalToneModifySection
+        :param create_parameter_slider: Callable
+        :param create_parameter_combo_box: Callable
+        :param create_parameter_switch: Callable
+        :param controls: dict
+        """
         super().__init__()
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
@@ -25,6 +31,9 @@ class DigitalToneModifySection(QWidget):
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initialize the UI for the DigitalToneModifySection
+        """
         layout = QVBoxLayout()
         self.setLayout(layout)
 

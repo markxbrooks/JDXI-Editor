@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PySide6.QtCore import Qt, Signal, QPointF
 from PySide6.QtWidgets import QVBoxLayout, QWidget
-from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
+from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont, QPaintEvent, QMouseEvent
 
 from jdxi_editor.jdxi.style import JDXIStyle
 
@@ -44,6 +44,13 @@ class ADSRPlot(QWidget):
                  envelope: dict = None,
                  parent: QWidget = None):
         super().__init__(parent)
+        """
+        Initialize the ADSRPlot
+        :param width: int
+        :param height: int
+        :param envelope: dict
+        :param parent: QWidget
+        """
         self.parent = parent
         # Default envelope parameters (times in ms)
         self.enabled = True
@@ -69,11 +76,14 @@ class ADSRPlot(QWidget):
         if hasattr(self.parent, "pitchEnvelopeChanged"):
             self.parent.pitchEnvelopeChanged.connect(self.set_values)
 
-    def set_values(self, envelope: dict):
+    def set_values(self, envelope: dict) -> None:
+        """Update envelope values and trigger address redraw.
+        :param envelope: dict
+        """
         self.envelope = envelope
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         pen = QPen(QColor("#ffffff"), 2)
@@ -99,7 +109,7 @@ class ADSRPlot(QWidget):
         for pt in [p1, p2, p3]:
             painter.drawEllipse(pt, 6, 6)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         pos = event.position()
         points = {
             "attack": QPointF(self.attack_x * self.width(), 0),
@@ -111,7 +121,7 @@ class ADSRPlot(QWidget):
                 self.dragging = name
                 break
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if self.dragging:
             pos = event.position()
             if self.dragging == "attack":
@@ -124,19 +134,24 @@ class ADSRPlot(QWidget):
             self.point_moved.emit(self.dragging, pos.x() / self.width())
             self.update()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         self.dragging = None
 
-    def setEnabled(self, enabled):
+    def setEnabled(self, enabled: bool) -> None:
         super().setEnabled(enabled)  # Ensure QWidget's default behavior is applied
         self.enabled = enabled
 
-    def set_values(self, envelope):
-        """Update envelope values and trigger address redraw."""
+    def set_values(self, envelope: dict) -> None:
+        """Update envelope values and trigger address redraw.
+        :param envelope: dict
+        """
         self.envelope = envelope
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Paint the ADSR plot.
+        :param event: QPaintEvent
+        """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -273,83 +288,3 @@ class ADSRPlot(QWidget):
                     path.lineTo(*pt)
                 painter.drawPath(path)
 
-
-class ADSRMatplot(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.envelope = {
-            "attack_time": 100,
-            "decay_time": 400,
-            "release_time": 100,
-            "initial_level": 0,
-            "peak_level": 1,
-            "sustain_level": 0.8,
-        }
-
-        # Set font globally
-        plt.rcParams["font.family"] = "Consolas"
-
-        # Create the figure and axis
-        self.figure, self.ax = plt.subplots(figsize=(4, 4))
-        self.ax.set_facecolor("#333333")  # Dark gray background
-        self.figure.patch.set_facecolor("#333333")  # Background color for the figure
-
-        # Create canvas and layout
-        self.canvas = FigureCanvas(self.figure)
-        self.layout = QVBoxLayout(self)
-        self.layout.addWidget(self.canvas)
-        self.setLayout(self.layout)
-
-        # Plot the envelope
-        self.plot_envelope()
-
-    def plot_envelope(self):
-        """Draw matplotlib plot in JDXI style"""
-        self.ax.clear()  # Clear previous plot
-        self.ax.set_facecolor("#333333")  # Ensure background stays dark gray
-
-        # Adjust tick and label colors for visibility
-        self.ax.tick_params(axis="both", colors="orange")
-        self.ax.xaxis.label.set_color("orange")
-        self.ax.yaxis.label.set_color("orange")
-        self.ax.title.set_color("orange")
-        self.ax.set_xlim(0, 5)
-
-        # Extract envelope parameters
-        attack_time = self.envelope["attack_time"] / 1000
-        decay_time = self.envelope["decay_time"] / 1000
-        release_time = self.envelope["release_time"] / 1000
-        sustain_level = self.envelope["sustain_level"]
-        peak_level = self.envelope["peak_level"]
-        initial_level = self.envelope["initial_level"]
-
-        # Convert to samples (assuming address 44.1 kHz sample rate)
-        attack_samples = int(attack_time * 44100)
-        decay_samples = int(decay_time * 44100)
-        sustain_samples = int(44100 * 2)  # Sustain for 2 seconds
-        release_samples = int(release_time * 44100)
-
-        # Construct ADSR envelope
-        envelope = np.concatenate(
-            [
-                np.linspace(initial_level, peak_level, attack_samples),
-                np.linspace(peak_level, sustain_level, decay_samples),
-                np.full(sustain_samples, sustain_level),
-                np.linspace(sustain_level, 0, release_samples),
-            ]
-        )
-
-        time = np.linspace(0, len(envelope) / 44100, len(envelope))
-
-        # Plot envelope with orange color
-        self.ax.plot(time, envelope, color="orange", linewidth=2)
-        self.ax.set_xlabel("Time [s]")
-        self.ax.set_ylabel("Amplitude")
-        self.ax.set_title("ADSR Envelope")
-
-        self.canvas.draw()
-
-    def set_values(self, envelope):
-        """Update envelope values and refresh the plot."""
-        self.envelope = envelope
-        self.plot_envelope()

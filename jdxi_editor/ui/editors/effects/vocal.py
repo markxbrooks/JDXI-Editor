@@ -35,16 +35,14 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE, AddressMemoryAreaMSB, \
+    AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
-from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.jdxi.style import JDXIStyle
-from jdxi_editor.midi.data.address.vocal import VocalAddress
 from jdxi_editor.midi.data.vocal_effects.vocal import (
     VocalAutoPitchType,
     VocalOutputAssign,
@@ -63,17 +61,17 @@ class VocalFXEditor(SimpleEditor):
     """Vocal Effects Window Class"""
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: JDXIPresetHelper = None,
-        parent: Optional[QWidget] = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            preset_helper: JDXIPresetHelper = None,
+            parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.setWindowTitle("Vocal FX")
         self.preset_helper = preset_helper
-        self.sysex_address = RolandSysExAddress(VocalAddress.FX_AREA,
-                                          VocalAddress.FX_PART,
-                                          VocalAddress.FX_GROUP,
+        self.address = RolandSysExAddress(AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
+                                          AddressOffsetTemporaryToneUMB.COMMON,
+                                          AddressOffsetProgramLMB.VOCAL_EFFECT,
                                           ZERO_BYTE)
         self.setStyleSheet(JDXIStyle.EDITOR + JDXIStyle.TABS)
 

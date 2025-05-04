@@ -5,17 +5,24 @@ Common Section
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Qt
 import qtawesome as qta
-
+from typing import Callable
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 
 
 class DigitalCommonSection(QWidget):
     def __init__(self,
-                 create_parameter_slider,
-                 create_parameter_switch,
-                 create_parameter_combo_box,
-                 controls):
+                 create_parameter_slider: Callable,
+                 create_parameter_switch: Callable,
+                 create_parameter_combo_box: Callable,
+                 controls: dict):
         super().__init__()
+        """
+        Initialize the DigitalCommonSection
+        :param create_parameter_slider: Callable
+        :param create_parameter_switch: Callable
+        :param create_parameter_combo_box: Callable
+        :param controls: dict
+        """
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box

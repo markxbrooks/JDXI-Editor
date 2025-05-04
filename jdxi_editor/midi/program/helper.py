@@ -29,9 +29,7 @@ preset changes and communicate them to the UI and MIDI engine.
 
 """
 
-import logging
 import threading
-import time
 from typing import Optional
 
 from PySide6.QtCore import Signal, QObject

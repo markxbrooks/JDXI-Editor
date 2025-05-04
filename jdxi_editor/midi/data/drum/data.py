@@ -1,3 +1,4 @@
+"""Drum Data"""
 from typing import Tuple, Dict
 
 DRUM_PARTIAL_NAMES = [
@@ -697,3 +698,31 @@ rm_waves = [
     "452: SH2 U Zap 4",
     "453: SH2 U Zap 5",
 ]
+DRUM_PARTIAL_MAPPING = {
+    "BD1": 1,
+    "RIM": 2,
+    "BD2": 3,
+    "CLAP": 4,
+    "BD3": 5,
+    "SD1": 6,
+    "CHH": 7,
+    "SD2": 8,
+    "PHH": 9,
+    "SD3": 10,
+    "OHH": 11,
+    "SD4": 12,
+    "TOM1": 13,
+    "PRC1": 14,
+    "TOM2": 15,
+    "PRC2": 16,
+    "TOM3": 17,
+    "PRC3": 18,
+    "CYM1": 19,
+    "PRC4": 20,
+    "CYM2": 21,
+    "PRC5": 22,
+    "CYM3": 23,
+    "HIT": 24,
+    "OTH1": 25,
+    "OTH2": 26,
+}

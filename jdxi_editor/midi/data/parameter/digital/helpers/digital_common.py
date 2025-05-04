@@ -1,3 +1,5 @@
+"""Digital Common"""
+
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 
 

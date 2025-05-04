@@ -81,6 +81,12 @@ class ProgramEditor(SimpleEditor):
         preset_helper: JDXIPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        """
+        Initialize the ProgramEditor
+        :param midi_helper: Optional[MidiIOHelper]
+        :param parent: Optional[QWidget]
+        :param preset_helper: JDXIPresetHelper
+        """
         self.setWindowFlag(Qt.Window)
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
@@ -291,9 +297,11 @@ class ProgramEditor(SimpleEditor):
         self.populate_programs()
 
     def start_playback(self):
+        """Start playback of the MIDI file."""
         self.midi_helper.send_raw_message([SONG_START])
 
     def stop_playback(self):
+        """Stop playback of the MIDI file."""
         self.midi_helper.send_raw_message([SONG_STOP])
 
     def populate_programs(self):
@@ -338,8 +346,11 @@ class ProgramEditor(SimpleEditor):
             0
         )  # Update the UI with the new program list
 
-    def add_user_banks(self, filtered_list, bank):
-        """Add user banks to the program list."""
+    def add_user_banks(self, filtered_list: list, bank: str) -> None:
+        """Add user banks to the program list.
+        :param filtered_list: list
+        :param bank: str
+        """
         user_banks = ["E", "F", "G", "H"]
         for user_bank in user_banks:
             if bank in ["No Bank Selected", user_bank]:
@@ -364,12 +375,14 @@ class ProgramEditor(SimpleEditor):
                     )
                     self.programs[program_name] = index
 
-    def on_bank_changed(self, _):
+    def on_bank_changed(self, _: int) -> None:
         """Handle bank selection change."""
         self.populate_programs()
 
-    def on_program_number_changed(self, index):
-        """Handle program number selection change."""
+    def on_program_number_changed(self, index: int) -> None:
+        """Handle program number selection change.
+        :param index: int
+        """
         # self.load_program()
 
     def load_program(self):
@@ -392,8 +405,10 @@ class ProgramEditor(SimpleEditor):
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
         self.data_request()
 
-    def update_current_synths(self, program_details: dict):
-        """Update the current synth label."""
+    def update_current_synths(self, program_details: dict) -> None:
+        """Update the current synth label.
+        :param program_details: dict
+        """
         try:
             self.digital_synth_1_current_synth.setText(program_details["digital_1"])
             self.digital_synth_2_current_synth.setText(program_details["digital_2"])
@@ -406,17 +421,22 @@ class ProgramEditor(SimpleEditor):
             self.drum_kit_current_synth.setText("Unknown")
             self.analog_synth_current_synth.setText("Unknown")
 
-    def load_preset(self, program_number: int):
-        """Load preset data and update UI."""
+    def load_preset(self, program_number: int) -> None:
+        """Load preset data and update UI.
+        :param program_number: int
+        """
         if not self.preset_helper:
             return
         self.preset_helper.load_preset(program_number)
         self.data_request()
 
-    def _update_program_list(self):
+    def _update_program_list(self) -> None:
         """Update the program list with available presets."""
         self.populate_programs()
 
-    def on_genre_changed(self, _):
-        """Handle genre selection change."""
+    def on_genre_changed(self, _: int) -> None:
+        """
+        Handle genre selection change.
+        :param _: int
+        """
         self.populate_programs()

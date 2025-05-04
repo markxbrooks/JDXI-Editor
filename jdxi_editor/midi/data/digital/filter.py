@@ -1,3 +1,4 @@
+"""Digital Filter"""
 from enum import IntEnum, Enum
 
 

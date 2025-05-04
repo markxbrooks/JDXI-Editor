@@ -99,15 +99,12 @@ class AddressParameterVocalFX(AddressParameter):
             )
         return value
 
-    # @staticmethod
-    # def get_by_name(param_name):
-    #    """Get the VocalFXParameter by name."""
-    #    # Return the parameter member by name, or None if not found
-    #    return VocalFXParameter.__members__.get(param_name, None)
-
     @staticmethod
-    def get_name_by_address(address: int):
-        """Return the parameter name for address given address."""
+    def get_name_by_address(address: int) -> Optional[str]:
+        """Return the parameter name for address given address.
+        :param address: int The address
+        :return: Optional[str] The parameter name
+        """
         for param in AddressParameterVocalFX:
             if param.address == address:
                 return param.name
@@ -127,37 +124,56 @@ class AddressParameterVocalFX(AddressParameter):
         ]
 
     @staticmethod
-    def get_address(param_name):
-        """Get the address of address parameter by name."""
+    def get_address(param_name: str) -> Optional[int]:
+        """
+        Get the address of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[int] The address
+        """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.value[0]
         return None
 
     @staticmethod
-    def get_range(param_name):
-        """Get the value range (min, max) of address parameter by name."""
+    def get_range(param_name: str) -> Tuple[int, int]:
+        """
+        Get the value range (min, max) of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Tuple[int, int] The value range
+        """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.value[1], param.value[2]
         return None, None
 
     @staticmethod
-    def get_display_range(param_name):
-        """Get the display value range (min, max) of address parameter by name."""
+    def get_display_range(param_name: str) -> Tuple[int, int]:
+        """
+        Get the display value range (min, max) of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Tuple[int, int] The display value range
+        """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.display_min, param.display_max
         return None, None
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display value range (min, max) for the parameter"""
+        """
+        Get the display value range (min, max) for the parameter
+        :return: Tuple[int, int] The display value range
+        """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
     def convert_from_display(self, display_value: int) -> int:
-        """Convert from display value to MIDI value (0-127)"""
+        """
+        Convert from display value to MIDI value (0-127)
+        :param display_value: int The display value
+        :return: int The MIDI value
+        """
         # Handle bipolar parameters
         if self in [
             self.AUTO_PITCH_GENDER,
@@ -169,17 +185,27 @@ class AddressParameterVocalFX(AddressParameter):
             return display_value  # -63 to +63 -> 0 to 126
 
     @staticmethod
-    def convert_to_display(value, min_val, max_val, display_min, display_max):
-        """Convert address value to address display value within address range."""
-        if min_val == max_val:
-            return display_min
+    def convert_to_display(value: int, min_val: int, max_val: int, display_min: int, display_max: int) -> int:
+        """
+        Convert address value to address display value within address range.
+        :param value: int The address value
+        :param min_val: int The address minimum value
+        :param max_val: int The address maximum value
+        :param display_min: int The display minimum value
+        :param display_max: int The display maximum value
+        :return: int The display value
+        """
         return int(
             (value - min_val) * (display_max - display_min) / (max_val - min_val)
             + display_min
         )
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value"""
+        """
+        Convert from display value to MIDI value
+        :param display_value: int The display value
+        :return: int The MIDI value
+        """
         # Handle special bipolar cases first
         if self == AddressParameterVocalFX.PAN:
             return display_value + 64  # -63 to +63 -> 0 to 127
@@ -197,7 +223,11 @@ class AddressParameterVocalFX(AddressParameter):
         return display_value
 
     def convert_from_midi(self, midi_value: int) -> int:
-        """Convert from MIDI value to display value"""
+        """
+        Convert from MIDI value to display value
+        :param midi_value: int The MIDI value
+        :return: int The display value
+        """
         # Handle special bipolar cases first
         if self == AddressParameterVocalFX.PAN:
             return midi_value - 64  # 0 to 127 -> -63 to +63
@@ -216,22 +246,36 @@ class AddressParameterVocalFX(AddressParameter):
 
     @staticmethod
     def get_display_value_by_name(param_name: str, value: int) -> int:
-        """Get the display value for address parameter by name and value."""
+        """
+        Get the display value for address parameter by name and value.
+        :param param_name: str The parameter name
+        :param value: int The value
+        :return: int The display value
+        """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.convert_from_midi(value)
         return value
 
     @staticmethod
-    def get_midi_range(param_name):
-        """Get the MIDI value range (min, max) of address parameter by name."""
+    def get_midi_range(param_name: str) -> Tuple[int, int]:
+        """
+        Get the MIDI value range (min, max) of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Tuple[int, int] The MIDI value range
+        """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.min_val, param.max_val
 
     @staticmethod
-    def get_midi_value(param_name, value):
-        """Get the MIDI value for address parameter by name and value."""
+    def get_midi_value(param_name: str, value: int) -> Optional[int]:
+        """
+        Get the MIDI value for address parameter by name and value.
+        :param param_name: str The parameter name
+        :param value: int The value
+        :return: Optional[int] The MIDI value
+        """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)

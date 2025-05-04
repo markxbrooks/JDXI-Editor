@@ -29,6 +29,15 @@ class AnalogOscillatorSection(QWidget):
         address: RolandSysExAddress
     ):
         super().__init__()
+        """
+        Initialize the AnalogOscillatorSection
+        :param create_parameter_slider: Callable
+        :param create_parameter_switch: Callable
+        :param waveform_selected_callback: Callable
+        :param wave_buttons: dict
+        :param midi_helper: MidiIOHelper
+        :param address: RolandSysExAddress
+        """
         self.pitch_env_widget = None
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch

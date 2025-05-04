@@ -2,8 +2,9 @@
 btk_dialog for about JD-XI Editor
 """
 import os
+from typing import Optional
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox, QHBoxLayout
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox, QHBoxLayout, QWidget
 from PySide6.QtCore import QSettings, QRect
 
 from jdxi_editor.project import __version__, __program__
@@ -21,12 +22,12 @@ CREDITS_LABEL_STYLE = """
 
 class UiAboutDialog(QDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.version_label = None
         self.settings = QSettings('mabsoft', 'jdxi_editor')
 
-    def setup_ui(self, parent=None):
+    def setup_ui(self, parent: QWidget = None) -> None:
         """
         setup_ui
         :param parent: QWidget
@@ -90,40 +91,4 @@ class UiAboutDialog(QDialog):
 
         # show all the widgets
         self.show()
-
-
-        """
-        def add_credit_row(layout, icon_filename, html_text):
-            row_layout = QHBoxLayout()
-            icon_label = QLabel()
-            icon_pixmap = QPixmap(resource_path(os.path.join('resources', icon_filename)))
-            icon_label.setPixmap(icon_pixmap.scaled(20, 20, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            icon_label.setFixedSize(24, 24)
-            row_layout.addWidget(icon_label)
-        
-            text_label = QLabel()
-            text_label.setTextFormat(Qt.RichText)
-            text_label.setText(html_text)
-            text_label.setOpenExternalLinks(True)
-            row_layout.addWidget(text_label)
-            layout.addLayout(row_layout)
-        
-        group_box_layout.addLayout(credits_layout)
-        credits_layout = QVBoxLayout()
-        divider = QLabel("<hr>")
-        group_box_layout.addWidget(divider)
-        add_credit_row(credits_layout, 'mido.png',
-                       "<a href='https://mido.readthedocs.io/'>Mido</a> – MIDI message parsing and sending")
-        add_credit_row(credits_layout, 'rtmidi.png',
-                       "<a href='https://www.music.mcgill.ca/~gary/rtmidi/'>RtMidi</a> – Low-level MIDI communication")
-        add_credit_row(credits_layout, 'qt.png',
-                       "<a href='https://www.qt.io/'>Qt</a> – Cross-platform application framework")
-        add_credit_row(credits_layout, 'github.png',
-                       "Source code on <a href='https://github.com/yourusername/jdxi-editor'>GitHub</a>")
-        add_credit_row(credits_layout, 'license.png',
-                       "Licensed under the <a href='https://opensource.org/licenses/MIT'>MIT License</a>")
-
-        image_layout.addLayout(credits_layout)
-"""
-
 

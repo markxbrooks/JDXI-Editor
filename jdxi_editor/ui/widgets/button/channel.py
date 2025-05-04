@@ -1,4 +1,8 @@
-from PySide6.QtWidgets import QPushButton
+"""
+Channel Button
+"""
+
+from PySide6.QtWidgets import QPushButton, QWidget
 
 
 class ChannelButton(QPushButton):
@@ -11,20 +15,30 @@ class ChannelButton(QPushButton):
         9: ("DRUMS", "#FF0000"),  # Red for Drums
     }
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
+        """Initialize the ChannelButton
+
+        :param parent: QWidget
+        """
         super().__init__(parent)
         self.setFixedSize(60, 30)  # Horizontal layout
         self.setFlat(True)
         self.current_channel = 0
         self._update_style()
 
-    def set_channel(self, channel: int):
-        """Set channel and update appearance"""
+    def set_channel(self, channel: int) -> None:
+        """Set channel and update appearance
+
+        :param channel: int
+        """
         self.current_channel = channel
         self._update_style()
 
-    def _update_style(self):
-        """Update button appearance based on channel"""
+    def _update_style(self) -> None:
+        """Update button appearance based on channel
+
+        :return: None
+        """
         style, color = self.CHANNEL_STYLES.get(
             self.current_channel, (f"CH {self.current_channel + 1}", "#FFFFFF")
         )

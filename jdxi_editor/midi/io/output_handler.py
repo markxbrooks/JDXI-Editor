@@ -20,7 +20,7 @@ Example usage:
 import logging
 import time
 import json
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Iterable
 
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
@@ -49,10 +49,10 @@ from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.message.channel import ChannelMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.utils.byte import split_value_to_nibbles
+from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
-def validate_midi_message(message: Union[bytes, List[int]]) -> bool:
+def validate_midi_message(message: Iterable[int]) -> bool:
     """
     Validate a raw MIDI message.
 
@@ -60,7 +60,7 @@ def validate_midi_message(message: Union[bytes, List[int]]) -> bool:
     within the valid MIDI byte range (0–255).
 
     :param message: A MIDI message represented as a list of integers or a bytes object.
-    :type message: Union[bytes, List[int]]
+    :type message: Iterable[int], can be a list, bytes, tuple, set
     :return: True if the message is valid, False otherwise.
     :rtype: bool
     """
@@ -68,9 +68,10 @@ def validate_midi_message(message: Union[bytes, List[int]]) -> bool:
         log_message("MIDI message is empty.")
         return False
 
-    if any(not (0 <= x <= 255) for x in message):
-        log_parameter("Invalid MIDI value detected:", message)
-        return False
+    for byte in message:
+        if not isinstance(byte, int) or not (0 <= byte <= 255):
+            log_parameter("Invalid MIDI value detected:", message)
+            return False
 
     return True
 
@@ -85,7 +86,7 @@ class MidiOutHandler(MidiIOController):
         self.parent = parent
         self.channel = 1
 
-    def send_raw_message(self, message: Union[bytes, List[int]]) -> bool:
+    def send_raw_message(self, message: Iterable[int]) -> bool:
         """
         Send a validated raw MIDI message through the output port.
 
@@ -116,7 +117,7 @@ class MidiOutHandler(MidiIOController):
             self.midi_message_outgoing.emit(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending message: {ex}", level=logging.ERROR)
+            log_error(f"Error sending message: {ex}")
             return False
 
     def send_note_on(
@@ -188,7 +189,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message([0xB0 + channel, 0x20, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending bank select: {ex}", level=logging.ERROR)
+            log_error(f"Error sending bank select: {ex}")
             return False
 
     def send_identity_request(self) -> bool:
@@ -209,7 +210,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message(identity_request_bytes_list)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending identity request: {ex}", level=logging.ERROR)
+            log_error(f"Error sending identity request: {ex}")
             return False
 
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
@@ -224,7 +225,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error sending parameter: {ex}")
             return False
 
     def send_parameter(
@@ -260,7 +261,7 @@ class MidiOutHandler(MidiIOController):
             if size == 1:
                 data_bytes = [value & 0x7F]  # Single byte format (0-127)
             elif size in [4, 5]:
-                data_bytes = split_value_to_nibbles(value)  # Convert to nibbles
+                data_bytes = split_16bit_value_to_nibbles(value)  # Convert to nibbles
             else:
                 log_message(f"Unsupported parameter size: {size}")
                 return False
@@ -269,7 +270,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error sending parameter: {ex}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -289,7 +290,7 @@ class MidiOutHandler(MidiIOController):
             message = program_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending program change: {ex}", level=logging.ERROR)
+            log_error(f"Error sending program change: {ex}")
             return False
 
     def send_control_change(
@@ -449,7 +450,7 @@ class MidiOutHandler(MidiIOController):
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
-            log_error(f"Error {ex} occurred sending bank and program change message", level=logging.ERROR)
+            log_error(f"Error {ex} occurred sending bank and program change message")
             return False
 
     def identify_device(self) -> bool:
@@ -466,7 +467,7 @@ class MidiOutHandler(MidiIOController):
             log_parameter("Sent MIDI message:", raw_message)
 
         except Exception as ex:
-            log_error(f"Error sending identity request: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error sending identity request: {str(ex)}")
 
     def get_parameter(self,
                       msb: int,
@@ -523,7 +524,7 @@ class MidiOutHandler(MidiIOController):
             raise TimeoutError
 
         except (TimeoutError, OSError, IOError) as ex:
-            log_error(f"Error getting parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error getting parameter: {ex}")
             return None
 
     def save_patch(self, file_path: str) -> bool:
@@ -558,7 +559,7 @@ class MidiOutHandler(MidiIOController):
             log_message(f"Patch saved to {file_path}")
             return True
         except Exception as e:
-            log_error(f"Error saving patch: {str(e)}", level=logging.ERROR)
+            log_error(f"Error saving patch: {str(e)}")
             return False
 
     def _get_digital_parameters(self):

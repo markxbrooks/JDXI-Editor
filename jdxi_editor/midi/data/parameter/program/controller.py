@@ -83,19 +83,31 @@ class AddressParameterProgramController(AddressParameter):
 
     @staticmethod
     def get_grid_name(value: int) -> str:
-        """Get grid name from value"""
+        """
+        Get grid name from value
+        :param value: int The value
+        :return: str The grid name
+        """
         names = ["04_", "08_", "08L", "08H", "08t", "16_", "16L", "16H", "16t"]
         return names[value] if 0 <= value <= 8 else str(value)
 
     @staticmethod
     def get_duration_name(value: int) -> str:
-        """Get duration name from value"""
+        """
+        Get duration name from value
+        :param value: int The value
+        :return: str The duration name
+        """
         names = ["30", "40", "50", "60", "70", "80", "90", "100", "120", "FUL"]
         return names[value] if 0 <= value <= 9 else str(value)
 
     @staticmethod
     def get_motif_name(value: int) -> str:
-        """Get motif name from value"""
+        """
+        Get motif name from value
+        :param value: int The value
+        :return: str The motif name
+        """
         names = [
             "UP/L",
             "UP/H",
@@ -114,7 +126,12 @@ class AddressParameterProgramController(AddressParameter):
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
-        """Convert raw value to display value"""
+        """
+        Convert raw value to display value
+        :param param: int The parameter
+        :param value: int The value
+        :return: str The display value
+        """
         if param == AddressParameterProgramController.ARPEGGIO_GRID:  # Grid
             return AddressParameterProgramController.get_grid_name(value)
         elif param == AddressParameterProgramController.ARPEGGIO_DURATION:  # Duration

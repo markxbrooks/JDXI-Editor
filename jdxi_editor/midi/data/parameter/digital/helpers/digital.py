@@ -1,3 +1,5 @@
+"""Digital"""
+
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 
 
@@ -5,15 +7,17 @@ def parse_digital_parameters(data: list) -> dict:
     """
     Parses JD-Xi tone parameters from SysEx data, including Oscillator, Filter, and Amplitude parameters.
 
-    Args:
-        data (bytes): SysEx message containing tone parameters.
-
-    Returns:
-        dict: Parsed parameters.
+    :param data: bytes SysEx message containing tone parameters.
+    :return: dict Parsed parameters.
     """
 
-    # Function to safely retrieve values from `data`
-    def safe_get(index, default=0):
+    def safe_get(index: int, default: int = 0) -> int:
+        """
+        Safely retrieve values from `data`
+        :param index: int The index
+        :param default: int The default value
+        :return: int The value
+        """
         tone_name_length = 12
         index = (
             index + tone_name_length

@@ -1,3 +1,7 @@
+"""
+Drum & digital options
+"""
+
 DIGITAL_OPTIONS = [
     "C4",
     "C#4",

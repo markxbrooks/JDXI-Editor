@@ -177,14 +177,22 @@ class AddressParameterAnalog(AddressParameter):
         return value
 
     @staticmethod
-    def get_by_name(param_name):
-        """Get the AnalogParameter by name."""
+    def get_by_name(param_name: str) -> Optional[object]:
+        """
+        Get the AnalogParameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[object] The parameter
+        """
         # Return the parameter member by name, or None if not found
         return AddressParameterAnalog.__members__.get(param_name, None)
 
     @staticmethod
-    def get_name_by_address(address: int):
-        """Return the parameter name for address given address."""
+    def get_name_by_address(address: int) -> Optional[str]:
+        """
+        Return the parameter name for address given address.
+        :param address: int The address
+        :return: Optional[str] The parameter name
+        """
         for param in AddressParameterAnalog:
             if param.address == address:
                 return param.name
@@ -196,37 +204,56 @@ class AddressParameterAnalog(AddressParameter):
         return self.name.replace("_", " ").title()
 
     @staticmethod
-    def get_address(param_name):
-        """Get the address of address parameter by name."""
+    def get_address(param_name: str) -> Optional[int]:
+        """
+        Get the address of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[int] The address
+        """
         param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.value[0]
         return None
 
     @staticmethod
-    def get_range(param_name):
-        """Get the value range (min, max) of address parameter by name."""
+    def get_range(param_name: str) -> Tuple[int, int]:
+        """
+        Get the value range (min, max) of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Tuple[int, int] The value range
+        """
         param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.value[1], param.value[2]
         return None, None
 
     @staticmethod
-    def get_display_range(param_name):
-        """Get the display value range (min, max) of address parameter by name."""
+    def get_display_range(param_name: str) -> Tuple[int, int]:
+        """
+        Get the display value range (min, max) of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Tuple[int, int] The display value range
+        """
         param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.display_min, param.display_max
         return None, None
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display value range (min, max) for the parameter"""
+        """
+        Get the display value range (min, max) for the parameter
+        :return: Tuple[int, int] The display value range
+        """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value"""
+        """
+        Convert from display value to MIDI value
+        :param display_value: int The display value
+        :return: int The MIDI value
+        """
         # Handle special bipolar cases first
         if self == AddressParameterAnalog.OSC_PITCH_FINE:
             return display_value + 64  # -63 to +63 -> 0 to 127
@@ -244,7 +271,11 @@ class AddressParameterAnalog(AddressParameter):
         return display_value
 
     def convert_from_midi(self, midi_value: int) -> int:
-        """Convert from MIDI value to display value"""
+        """
+        Convert from MIDI value to display value
+        :param midi_value: int The MIDI value
+        :return: int The display value
+        """
         # Handle special bipolar cases first
         if self == AddressParameterAnalog.OSC_PITCH_FINE:
             return midi_value - 64  # 0 to 127 -> -63 to +63
@@ -263,29 +294,47 @@ class AddressParameterAnalog(AddressParameter):
 
     @staticmethod
     def get_display_value_by_name(param_name: str, value: int) -> int:
-        """Get the display value for address parameter by name and value."""
+        """
+        Get the display value for address parameter by name and value.
+        :param param_name: str The parameter name
+        :param value: int The value
+        :return: int The display value
+        """
         param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.convert_from_midi(value)
         return value
 
     @staticmethod
-    def get_midi_range(param_name):
-        """Get the MIDI value range (min, max) of address parameter by name."""
+    def get_midi_range(param_name: str) -> Tuple[int, int]:
+        """
+        Get the MIDI value range (min, max) of address parameter by name.
+        :param param_name: str The parameter name
+        :return: Tuple[int, int] The MIDI value range
+        """
         param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.min_val, param.max_val
 
     @staticmethod
-    def get_midi_value(param_name, value):
-        """Get the MIDI value for address parameter by name and value."""
+    def get_midi_value(param_name: str, value: int) -> Optional[int]:
+        """
+        Get the MIDI value for address parameter by name and value.
+        :param param_name: str The parameter name
+        :param value: int The value
+        :return: Optional[int] The MIDI value
+        """
         param = AddressParameterAnalog.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
 
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
-        """Get parameter area and address adjusted for partial number."""
+        """
+        Get parameter area and address adjusted for partial number.
+        :param partial_number: int The partial number
+        :return: Tuple[int, int] The parameter area and address
+        """
         group_map = {0: 0x00}
         group = group_map.get(
             partial_number, 0x00
@@ -297,5 +346,4 @@ class AddressParameterAnalog(AddressParameter):
         Returns a envelope_param_type, if the parameter is part of an envelope,
         otherwise returns None.
         """
-        print(self.name)
         return ENVELOPE_MAPPING.get(self.name)

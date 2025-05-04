@@ -25,8 +25,8 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
     try:
         combined_data = {"JD_XI_HEADER": "f041100000000e"}
         for editor in editors:
-            combined_data["ADDRESS"] = str(editor.sysex_address)
-            combined_data["TEMPORARY_AREA"] = parse_sysex_byte(editor.sysex_address.umb, AddressOffsetTemporaryToneUMB)
+            combined_data["ADDRESS"] = str(editor.address)
+            combined_data["TEMPORARY_AREA"] = parse_sysex_byte(editor.address.umb, AddressOffsetTemporaryToneUMB)
             other_data = editor.get_controls_as_dict()
             for k, v in other_data.items():
                 combined_data[k] = v

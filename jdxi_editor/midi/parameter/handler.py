@@ -29,16 +29,25 @@ class ParameterHandler(QObject):
         self._parameters = {}
 
     def update_parameter(self, address: List[int], value: int):
-        """Update address parameter value"""
+        """Update address parameter value
+        :param address: List[int]
+        :param value: int
+        :return: None
+        """
         addr_key = ".".join(str(x) for x in address)
         self._parameters[addr_key] = value
         self.parameters_updated.emit(self._parameters.copy())
 
     def get_parameter(self, address: List[int]) -> int:
-        """Get address parameter value"""
+        """Get address parameter value
+        :param address: List[int]
+        :return: int
+        """
         addr_key = ".".join(str(x) for x in address)
         return self._parameters.get(addr_key, 0)
 
     def clear_parameters(self):
-        """Clear all parameters"""
+        """Clear all parameters
+        :return: None
+        """
         self._parameters.clear()

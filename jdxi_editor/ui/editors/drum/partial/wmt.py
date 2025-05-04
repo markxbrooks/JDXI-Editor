@@ -51,6 +51,13 @@ class DrumWMTSection(QWidget):
             midi_helper,
     ):
         super().__init__()
+        """
+        Initialize the DrumWMTSection
+        :param controls: dict
+        :param create_parameter_combo_box: Callable
+        :param create_parameter_slider: Callable
+        :param midi_helper: MidiIOHelper
+        """
         self.l_wave_combos = {}
         self.l_wave_search_boxes = {}
         self.l_wave_selectors = {}

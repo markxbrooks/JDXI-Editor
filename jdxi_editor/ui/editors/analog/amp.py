@@ -25,6 +25,14 @@ class AmpSection(QWidget):
         base64_to_pixmap: Callable,
     ):
         super().__init__()
+        """
+        Initialize the Amp section of the JD-Xi editor
+        :param midi_helper: MidiIOHelper
+        :param address: RolandSysExAddress
+        :param create_parameter_slider: Callable
+        :param generate_waveform_icon: Callable
+        :param base64_to_pixmap: Callable
+        """
         self.midi_helper = midi_helper
         self.address = address
         self._create_parameter_slider = create_parameter_slider

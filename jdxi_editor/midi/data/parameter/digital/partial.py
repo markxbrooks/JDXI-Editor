@@ -234,7 +234,11 @@ class AddressParameterDigitalPartial(AddressParameter):
         return value
 
     def get_address_for_partial(self, partial_number: int) -> Tuple[int, int]:
-        """Get parameter area and address adjusted for partial number."""
+        """
+        Get parameter area and address adjusted for partial number.
+        :param partial_number: int The partial number
+        :return: Tuple[int, int] The (group, address) tuple
+        """
         group_map = {1: 0x20, 2: 0x21, 3: 0x22}
         group = group_map.get(
             partial_number, 0x20
@@ -242,13 +246,22 @@ class AddressParameterDigitalPartial(AddressParameter):
         return group, self.address
 
     @staticmethod
-    def get_by_name(param_name):
-        """Get the DigitalParameter by name."""
-        # Return the parameter member by name, or None if not found
+    def get_by_name(param_name: str) -> Optional[object]:
+        """
+        Get the DigitalParameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[AddressParameterDigitalPartial] The parameter
+        Return the parameter member by name, or None if not found
+        """
         return AddressParameterDigitalPartial.__members__.get(param_name, None)
 
     def convert_value(self, value: int, reverse: bool = False) -> int:
-        """Converts value in both directions based on CONVERSION_OFFSETS"""
+        """
+        Converts value in both directions based on CONVERSION_OFFSETS
+        :param value: int The value
+        :param reverse: bool The reverse flag
+        :return: int The converted value
+        """
         conversion = self.CONVERSION_OFFSETS.get(self.name)
 
         if conversion == "map_range":
@@ -264,16 +277,26 @@ class AddressParameterDigitalPartial(AddressParameter):
         return value  # Default case: return as is
 
     def convert_to_midi(self, slider_value: int) -> int:
-        """Convert from display value to MIDI value"""
+        """
+        Convert from display value to MIDI value
+        :param slider_value: int The display value
+        :return: int The MIDI value
+        """
         return self.convert_value(slider_value)
 
     def convert_from_midi(self, midi_value: int) -> int:
-        """Convert from MIDI value to display value"""
+        """
+        Convert from MIDI value to display value
+        :param midi_value: int The MIDI value
+        :return: int The display value
+        """
         return self.convert_value(midi_value, reverse=True)
 
     def get_envelope_param_type(self):
         """
         Returns a envelope_param_type, if the parameter is part of an envelope,
         otherwise returns None.
+        
+        :return: Optional[str] The envelope parameter type
         """
         return ENVELOPE_MAPPING.get(self.name)

@@ -1,6 +1,7 @@
 """
  LFO section of the digital partial editor.
 """
+from typing import Callable
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
@@ -12,8 +13,16 @@ from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigi
 class DigitalLFOSection(QWidget):
     """LFO section for the digital partial editor."""
 
-    def __init__(self, create_parameter_slider, create_parameter_switch, controls):
+    def __init__(self, create_parameter_slider: Callable, 
+                 create_parameter_switch: Callable, 
+                 controls: dict):
         super().__init__()
+        """
+        Initialize the DigitalLFOSection
+        :param create_parameter_slider: Callable
+        :param create_parameter_switch: Callable
+        :param controls: dict
+        """
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self.controls = controls

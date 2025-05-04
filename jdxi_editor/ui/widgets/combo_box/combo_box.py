@@ -101,25 +101,37 @@ class ComboBox(QWidget):
         self.combo_box.currentIndexChanged.connect(self._on_value_changed)
 
     @Slot(int)
-    def _on_value_changed(self, index: int):
-        """Emit the corresponding value when the selected index changes."""
+    def _on_value_changed(self, index: int) -> None:
+        """Emit the corresponding value when the selected index changes.
+
+        :param index: int
+        """
         if self.values:
             if 0 <= index < len(self.values):
                 self.valueChanged.emit(self.values[index])
         else:
             self.valueChanged.emit(int(index))
 
-    def setLabelVisible(self, visible: bool):
-        """Show or hide the label dynamically."""
+    def setLabelVisible(self, visible: bool) -> None:
+        """Show or hide the label dynamically.
+
+        :param visible: bool
+        """
         self.label_widget.setVisible(visible)
 
-    def setValue(self, value: int):
-        """Set combo box index based on the value."""
+    def setValue(self, value: int) -> None :
+        """Set combo box index based on the value.
+
+        :param value: int
+        """
         if self.values:
             if value in self.values:
                 index = self.values.index(value)
                 self.combo_box.setCurrentIndex(index)
 
-    def value(self):
-        """ get current index """
+    def value(self) -> int:
+        """Get current index
+
+        :return: int
+        """
         return self.combo_box.currentIndex()

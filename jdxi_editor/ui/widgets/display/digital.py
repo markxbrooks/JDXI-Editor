@@ -34,12 +34,12 @@ import platform
 
 from PySide6.QtCore import QRect
 from PySide6.QtWidgets import QWidget, QSizePolicy
-from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont
+from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont, QPaintEvent
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
@@ -51,14 +51,19 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 class DigitalDisplayBase(QWidget):
     """Base class for JD-Xi style digital displays."""
 
-    def __init__(self, digital_font_family="Consolas", parent=None):
+    def __init__(self, digital_font_family: str = "Consolas", parent: QWidget = None):
         super().__init__(parent)
+        """Initialize the DigitalDisplayBase
+
+        :param digital_font_family: str
+        :param parent: QWidget
+        """
         self.digital_font_family = digital_font_family
         self.display_texts = []
         self.setMinimumSize(210, 70)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         """Handles rendering of the digital display."""
         painter = QPainter(self)
         if not painter.isActive():
@@ -101,8 +106,11 @@ class DigitalDisplayBase(QWidget):
             painter.drawText(rect, 1, str(text))
             y_offset += 30  # Space out text lines
 
-    def update_display(self, texts):
-        """Update the display text and trigger repaint."""
+    def update_display(self, texts: list) -> None:
+        """Update the display text and trigger repaint.
+
+        :param texts: list
+        """
         self.display_texts = texts
         self.update()
 
@@ -111,7 +119,11 @@ class DigitalTitle(DigitalDisplayBase):
     """Simplified display showing only the current tone name."""
 
     def __init__(
-        self, tone_name="Init Tone", digital_font_family="Consolas", show_upper_text=True, parent=None
+        self,
+        tone_name: str = "Init Tone",
+        digital_font_family: str = "Consolas",
+        show_upper_text: bool = True,
+        parent: QWidget = None,
     ):
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
@@ -120,19 +132,25 @@ class DigitalTitle(DigitalDisplayBase):
         self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
 
-    def set_tone_name(self, tone_name):
-        """Update the tone name display."""
+    def set_tone_name(self, tone_name: str) -> None:
+        """Update the tone name display.
+
+        :param tone_name: str
+        """
         if self.show_upper_text:
             self.update_display(["Currently Editing:", tone_name])
         else:
             self.update_display([tone_name])
 
     @property
-    def text(self):
+    def text(self) -> str:
         return self.display_texts[-1] if self.display_texts else ""
 
-    def setText(self, value):
-        """Alias for set_tone_name."""
+    def setText(self, value: str) -> None:
+        """Alias for set_tone_name.
+
+        :param value: str
+        """
         self.set_tone_name(value)
 
 
@@ -149,7 +167,7 @@ class DigitalDisplay(DigitalDisplayBase):
         program_name: str = "Init Program",
         program_bank_letter: str = "A",
         program_number: int = 1,
-        parent=None,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
         self.active_synth = active_synth
@@ -168,8 +186,11 @@ class DigitalDisplay(DigitalDisplayBase):
         )  # Set size matching display
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
-    def paintEvent(self, event):
-        """Handles the rendering of the digital display."""
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Handles the rendering of the digital display.
+
+        :param event: QPaintEvent
+        """
         painter = QPainter(self)
         if not painter.isActive():
             return  # Prevents drawing if painter failed to initialize
@@ -233,34 +254,54 @@ class DigitalDisplay(DigitalDisplayBase):
         painter.drawText(display_x + display_width - 66, display_y + 50, oct_text)
 
     # --- Property Setters ---
-    def setPresetText(self, text: str):
-        """Set preset name and trigger repaint."""
+    def setPresetText(self, text: str) -> None:
+        """Set preset name and trigger repaint.
+
+        :param text: str
+        """
         self.tone_name = text
         self.update()
 
-    def setPresetNumber(self, number: int):
-        """Set preset number and trigger repaint."""
+    def setPresetNumber(self, number: int) -> None:
+        """Set preset number and trigger repaint.
+
+        :param number: int
+        """
         self.tone_number = number
         self.update()
 
-    def setProgramText(self, text: str):
-        """Set program name and trigger repaint."""
+    def setProgramText(self, text: str) -> None:
+        """Set program name and trigger repaint.
+
+        :param text: str
+        """
         self.program_name = text
         self.update()
 
-    def setProgramNumber(self, number: int):
-        """Set program number and trigger repaint."""
+    def setProgramNumber(self, number: int) -> None:
+        """Set program number and trigger repaint.
+
+        :param number: int
+        """
         self.program_number = number
         self.update()
 
-    def setOctave(self, octave: int):
-        """Set current octave and trigger repaint."""
+    def setOctave(self, octave: int) -> None:
+        """Set current octave and trigger repaint.
+
+        :param octave: int
+        """
         self.current_octave = octave
         self.update()
 
     def repaint_display(
-        self, current_octave, tone_number, tone_name, program_name, active_synth="D1"
-    ):
+        self,
+        current_octave: int,
+        tone_number: int,
+        tone_name: str,
+        program_name: str,
+        active_synth: str = "D1",
+    ) -> None:
         self.current_octave = current_octave
         self.tone_number = tone_number
         self.tone_name = tone_name
@@ -282,7 +323,14 @@ class DigitalDisplay(DigitalDisplayBase):
         program_number,
         program_bank_letter="A",  # Default bank
     ):
-        """Update the JD-Xi display image"""
+        """Update the JD-Xi display image.
+
+        :param synth_type: str
+        :param digital1_tone_name: str
+        :param digital2_tone_name: str
+        :param drums_tone_name: str
+        :param analog_tone_name: str
+        """
         if synth_type == JDXISynth.DIGITAL_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)

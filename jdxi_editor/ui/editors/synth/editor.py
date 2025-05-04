@@ -179,7 +179,7 @@ class SynthEditor(SynthBase):
 
         # Dynamically assign attributes
         for attr in [
-            "sysex_address",
+            "address",
             "preset_type",
             "instrument_default_image",
             "instrument_icon_folder",

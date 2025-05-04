@@ -22,7 +22,9 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB,
 )
+from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
 @dataclass
@@ -30,29 +32,21 @@ class DelayMessage(RolandSysEx):
     """Program Delay parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
-    section: int = AddressOffsetProgramLMB.DELAY  # 0x06: Delay section
-    group: int = 0x00  # Always 0x00
-    lsb: int = 0x00  # Parameter number
-    value: int = 0x00  # Parameter value
+    msb: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
+    umb: int = AddressOffsetProgramLMB.DELAY  # 0x06: Delay section
+    lmb: int = ZERO_BYTE
+    lsb: int = ZERO_BYTE
+    value: int = ZERO_BYTE
 
     def __post_init__(self):
-        """Set up address and data"""
-        self.address = [
-            self.msb,  # Program area (0x18)
-            self.section,  # Delay section (0x06)
-            self.group,  # Always 0x00
-            self.param,  # Parameter number
-        ]
-        # Handle 4-byte parameters
-        if 0x04 <= self.param <= 0x60:
-            # Convert -20000/+20000 to 12768-52768
-            value = self.value + 32768
-            self.data = [
-                (value >> 24) & 0x0F,  # High nibble
-                (value >> 16) & 0x0F,
-                (value >> 8) & 0x0F,
-                value & 0x0F,  # Low nibble
-            ]
+        super().__post_init__()
+
+        if not isinstance(self.value, int):
+            raise TypeError("DelayMessage.value must be an integer")
+
+        if 0x04 <= self.lsb <= 0x60:
+            # Convert signed value to unsigned offset for SysEx
+            offset_value = self.value + 32768
+            self.data = split_16bit_value_to_nibbles(offset_value)
         else:
             self.data = [self.value]

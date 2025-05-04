@@ -22,7 +22,8 @@ from jdxi_editor.midi.data.address.address import (
     Address,
     AddressMemoryAreaMSB,
 )
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
+from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 
 
@@ -78,7 +79,7 @@ def safe_get(data: List[int], address: int) -> int:
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
     return {
-        param.name: safe_get(data, param.sysex_address)
+        param.name: safe_get(data, param.address)
         for param in parameter_type
     }
 

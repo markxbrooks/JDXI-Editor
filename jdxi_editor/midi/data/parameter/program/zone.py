@@ -59,13 +59,20 @@ class AddressParameterProgramZone(AddressParameter):
     ZONAL_OCTAVE_SHIFT = (0x19, 61, 67, -3, +3)  # Octave shift
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display value range (min, max) for the parameter"""
+        """
+        Get the display value range (min, max) for the parameter
+        :return: Tuple[int, int] The display value range
+        """
         if hasattr(self, "display_min") and hasattr(self, "display_max"):
             return self.display_min, self.display_max
         return self.min_val, self.max_val
 
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
-        """Get parameter area and address adjusted for partial number."""
+        """
+        Get parameter area and address adjusted for partial number.
+        :param partial_number: int The partial number
+        :return: Tuple[int, int] The parameter area and address
+        """
         group_map = {0: 0x30, 1: 0x31, 2: 0x32, 3: 0x33}
         group = group_map.get(
             partial_number, 0x30
@@ -74,11 +81,18 @@ class AddressParameterProgramZone(AddressParameter):
 
     @property
     def is_switch(self) -> bool:
-        """Returns True if parameter is address binary/enum switch"""
+        """
+        Returns True if parameter is address binary/enum switch
+        :return: bool True if parameter is address binary/enum switch
+        """
         return self in [self.ARPEGGIO_SWITCH]
 
     def get_switch_text(self, value: int) -> str:
-        """Get display text for switch values"""
+        """
+        Get display text for switch values
+        :param value: int The value
+        :return: str The display text
+        """
         if self == self.ARPEGGIO_SWITCH:
             return ["OFF", "ON"][value]
         elif self.is_switch:
@@ -86,7 +100,11 @@ class AddressParameterProgramZone(AddressParameter):
         return str(value)
 
     def validate_value(self, value: int) -> int:
-        """Validate and convert parameter value"""
+        """
+        Validate and convert parameter value
+        :param value: int The value
+        :return: int The validated value
+        """
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
 
@@ -100,15 +118,26 @@ class AddressParameterProgramZone(AddressParameter):
         return value
 
     def set_partial_number(self, partial_number: int) -> Optional[int]:
-        """Returns the partial number (1-4) if this is address partial parameter, None otherwise"""
+        """
+        Returns the partial number (1-4) if this is address partial parameter, None otherwise
+        :param partial_number: int The partial number
+        :return: Optional[int] The partial number
+        """
         self.partial_number = partial_number
 
     def get_partial_number(self) -> Optional[int]:
-        """Returns the partial number (1-4) if this is address partial parameter, None otherwise"""
+        """
+        Returns the partial number (1-4) if this is address partial parameter, None otherwise
+        :return: Optional[int] The partial number
+        """
         return self.partial_number
 
     @staticmethod
-    def get_by_name(param_name):
-        """Get the Parameter by name."""
-        # Return the parameter member by name, or None if not found
+    def get_by_name(param_name: str) -> Optional[object]:
+        """
+        Get the Parameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[object] The parameter
+        Return the parameter member by name, or None if not found
+        """
         return AddressParameterProgramZone.__members__.get(param_name, None)

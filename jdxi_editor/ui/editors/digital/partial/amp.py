@@ -29,6 +29,14 @@ class DigitalAmpSection(QWidget):
         address: RolandSysExAddress,
     ):
         super().__init__()
+        """
+        Initialize the DigitalAmpSection
+        :param create_parameter_slider: Callable
+        :param partial_number: int
+        :param midi_helper: MidiIOHelper
+        :param controls: dict
+        :param address: RolandSysExAddress
+        """
         self.partial_number = partial_number
         self.midi_helper = midi_helper
         self.address = address

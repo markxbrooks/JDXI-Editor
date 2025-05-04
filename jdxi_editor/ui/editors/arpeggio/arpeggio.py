@@ -37,7 +37,7 @@ Dependencies:
 """
 
 import os
-from typing import Dict
+from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
     QVBoxLayout,
@@ -48,6 +48,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
+from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
 from jdxi_editor.midi.data.arpeggio import ArpeggioSwitch
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
@@ -76,12 +77,20 @@ from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
 class ArpeggioEditor(SimpleEditor):
     """Arpeggio Editor Window"""
 
-    def __init__(self, midi_helper: MidiIOHelper, preset_helper=None, parent=None):
+    def __init__(self, midi_helper: MidiIOHelper, 
+                 preset_helper: Optional[JDXIPresetHelper] = None, 
+                 parent: Optional[QWidget] = None):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        """
+        Initialize the ArpeggioEditor
+        :param midi_helper: MidiIOHelper
+        :param preset_helper: JDXIPresetHelper
+        :param parent: QWidget
+        """
         self.setWindowTitle("Arpeggio Editor")
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
-        self.sysex_address = RolandSysExAddress(
+        self.address = RolandSysExAddress(
             msb=ArpeggioAddress.TEMPORARY_PROGRAM,
             umb=ArpeggioAddress.ARP_PART,
             lmb=ArpeggioAddress.ARP_GROUP,

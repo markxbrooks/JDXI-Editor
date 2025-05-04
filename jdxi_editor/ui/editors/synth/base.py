@@ -47,7 +47,7 @@ class SynthBase(QWidget):
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
         self.sysex_data = None
-        self.sysex_address = None
+        self.address = None
         self.partial_number = None
         self.bipolar_parameters = []
         self.controls: Dict[AddressParameter, QWidget] = {}
@@ -104,10 +104,10 @@ class SynthBase(QWidget):
             else:
                 size = 1
             address = apply_address_offset(
-                self.sysex_address, param
+                self.address, param
             )
             log_message(f"applying address offset ->")
-            log_parameter("base sysex_address:", self.sysex_address)
+            log_parameter("base address:", self.address)
             log_parameter("parameter offset to apply:", param)
             log_parameter("  -->  final address", address)
             log_parameter("parameter value:", value)

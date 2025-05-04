@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 import qtawesome as qta
 
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.ui.editors import SynthEditor
@@ -37,6 +37,12 @@ class MidiPlayer(SynthEditor):
         preset_helper=None,
     ):
         super().__init__()
+        """
+        Initialize the MidiPlayer
+        :param midi_helper: Optional[MidiIOHelper]
+        :param parent: Optional[QWidget]
+        :param preset_helper: Optional[JDXIPresetHelper]
+        """
 
         self.init_ui()
         self.midi_helper = midi_helper if midi_helper else MidiIOHelper()
@@ -62,6 +68,9 @@ class MidiPlayer(SynthEditor):
         self.paused = False
 
     def init_ui(self):
+        """
+        Initialize the UI for the MidiPlayer
+        """
         layout = QVBoxLayout()
 
         self.file_label = DigitalTitle("No file loaded")
@@ -123,11 +132,19 @@ class MidiPlayer(SynthEditor):
         self.setLayout(layout)
 
     def format_time(self, seconds: float) -> str:
+        """
+        Format a time in seconds to a string
+        :param seconds: float
+        :return: str
+        """
         mins = int(seconds) // 60
         secs = int(seconds) % 60
         return f"{mins}:{secs:02}"
 
     def load_midi(self):
+        """
+        Load a MIDI file
+        """
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "Open MIDI File",
@@ -173,6 +190,9 @@ class MidiPlayer(SynthEditor):
             )
 
     def start_playback(self):
+        """
+        Start playback of the MIDI file
+        """
         if not self.midi_file or not self.midi_events:
             return
 
@@ -186,6 +206,9 @@ class MidiPlayer(SynthEditor):
         self.timer.start(10)  # check every 10ms
 
     def play_next_event(self):
+        """
+        Play the next event in the MIDI file
+        """
         if self.event_index >= len(self.midi_events):
             self.stop_playback()
             return
@@ -216,7 +239,9 @@ class MidiPlayer(SynthEditor):
                 break
 
     def scrub_position(self):
-        """scrub to a new position in the file"""
+        """
+        Scrub to a new position in the file
+        """
         new_seconds = self.position_slider.value()
         self.start_time = time.time() - new_seconds
 
@@ -228,7 +253,9 @@ class MidiPlayer(SynthEditor):
                 break
 
     def toggle_pause_playback(self):
-        """ pause/restart file playback """
+        """
+        Pause/restart file playback
+        """
         if not self.midi_file or not self.midi_events:
             return
 
@@ -253,7 +280,9 @@ class MidiPlayer(SynthEditor):
             self.paused = True
 
     def stop_playback(self):
-        """ stop playback of the MIDI file"""
+        """
+        Stop playback of the MIDI file
+        """
         self.timer.stop()
         if self.midi_port:
             self.midi_port.close()

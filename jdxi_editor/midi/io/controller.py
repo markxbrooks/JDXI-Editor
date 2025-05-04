@@ -136,7 +136,7 @@ class MidiIOController(QObject):
                         port_index = i
                         break
                 else:
-                    log_message(f"MIDI input port not found: {port_name_or_index}", level=logging.ERROR)
+                    log_error(f"MIDI input port not found: {port_name_or_index}")
                     return False
 
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
@@ -149,7 +149,7 @@ class MidiIOController(QObject):
             return True
 
         except Exception as ex:
-            log_error(f"Error opening MIDI input port: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error opening MIDI input port: {str(ex)}")
             return False
 
     def open_output_port(self, port_name_or_index: str) -> bool:
@@ -173,7 +173,7 @@ class MidiIOController(QObject):
                     port_index = port_name_or_index
 
             if port_index is None:
-                log_message(f"Invalid or missing MIDI output port: {port_name_or_index}", level=logging.ERROR)
+                log_error(f"Invalid or missing MIDI output port: {port_name_or_index}")
                 return False
 
             # Safely close if already open
@@ -188,7 +188,7 @@ class MidiIOController(QObject):
             return True
 
         except Exception as ex:
-            log_error(f"Error opening MIDI output port: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error opening MIDI output port: {str(ex)}")
             return False
 
     def close_ports(self):
@@ -244,5 +244,5 @@ class MidiIOController(QObject):
             return input_success and output_success
 
         except Exception as ex:
-            log_error(f"Error opening MIDI ports: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error opening MIDI ports: {str(ex)}")
             return False
