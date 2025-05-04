@@ -43,15 +43,6 @@ def _parse_program_parameter(
     return {}
 
 
-def _parse_drum_kit_parameter(parameter: DrumKitParameter, data: List[int]):
-    """Parse data for Drum Kit parameters."""
-    # Example: Extract drum kit data
-    if parameter == DrumKitParameter.PARTIAL_1:
-        return {"drum_part_1": data}
-    # Add other drum kit parameter parsing logic here
-    return {}
-
-
 def _parse_temporary_parameter(
         parameter: AddressOffsetTemporaryToneUMB, data: List[int]
 ):
