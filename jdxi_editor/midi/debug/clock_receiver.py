@@ -8,6 +8,7 @@ MIDI clock (status 0xF8) is sent 24 times per quarter note by clock generators.
 import argparse
 import time
 from collections import deque
+from typing import Optional
 
 from rtmidi.midiconstants import TIMING_CLOCK, SONG_CONTINUE, SONG_START, SONG_STOP
 from rtmidi.midiutil import open_midiinput
