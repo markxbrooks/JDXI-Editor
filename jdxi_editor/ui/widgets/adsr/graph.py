@@ -4,7 +4,6 @@ from PySide6.QtGui import QPainter, QPen, QColor
 
 
 class ADSRGraph(QWidget):
-
     point_moved = Signal(str, float)  # Signal(name of point, new normalized x)
 
     def __init__(self, parent=None):
@@ -56,8 +55,12 @@ class ADSRGraph(QWidget):
         pos = event.position()
         points = {
             "attack": QPointF(self.attack_x * self.width(), 0),
-            "decay": QPointF(self.decay_x * self.width(), (1 - self.sustain_level) * self.height()),
-            "release": QPointF(self.release_x * self.width(), (1 - self.sustain_level) * self.height()),
+            "decay": QPointF(
+                self.decay_x * self.width(), (1 - self.sustain_level) * self.height()
+            ),
+            "release": QPointF(
+                self.release_x * self.width(), (1 - self.sustain_level) * self.height()
+            ),
         }
         for name, pt in points.items():
             if (pt - pos).manhattanLength() < 15:
@@ -73,9 +76,13 @@ class ADSRGraph(QWidget):
             if self.dragging == "attack":
                 self.attack_x = max(0.01, min(pos.x() / self.width(), 1.0))
             elif self.dragging == "decay":
-                self.decay_x = max(self.attack_x + 0.01, min(pos.x() / self.width(), 1.0))
+                self.decay_x = max(
+                    self.attack_x + 0.01, min(pos.x() / self.width(), 1.0)
+                )
             elif self.dragging == "release":
-                self.release_x = max(self.decay_x + 0.01, min(pos.x() / self.width(), 1.0))
+                self.release_x = max(
+                    self.decay_x + 0.01, min(pos.x() / self.width(), 1.0)
+                )
 
             self.point_moved.emit(self.dragging, pos.x() / self.width())
             self.update()

@@ -7,7 +7,9 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -71,7 +73,9 @@ class DigitalAmpSection(QWidget):
         controls_group.setLayout(controls_layout)
 
         controls_layout.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.AMP_LEVEL, "Level")
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.AMP_LEVEL, "Level"
+            )
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
@@ -117,7 +121,7 @@ class DigitalAmpSection(QWidget):
             sustain_param=AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            address=self.address
+            address=self.address,
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
         env_layout.addLayout(amp_env_adsr_vlayout)

@@ -18,6 +18,7 @@ from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 class AnalogFilterSection(QWidget):
     """Analog Filter Section"""
+
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -25,7 +26,7 @@ class AnalogFilterSection(QWidget):
         on_filter_mode_changed: Callable,
         send_control_change: Callable,
         midi_helper: MidiIOHelper,
-        address: RolandSysExAddress
+        address: RolandSysExAddress,
     ):
         super().__init__()
         """
@@ -102,7 +103,8 @@ class AnalogFilterSection(QWidget):
             AddressParameterAnalog.FILTER_ENV_DEPTH, "Depth"
         )
         self.filter_env_velocity_sens = self.create_parameter_slider(
-            AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY, "Env. Velocity Sens."
+            AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY,
+            "Env. Velocity Sens.",
         )
 
         layout.addWidget(self.filter_env_depth)
@@ -116,7 +118,7 @@ class AnalogFilterSection(QWidget):
             sustain_param=AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
-            address=self.address
+            address=self.address,
         )
         self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")

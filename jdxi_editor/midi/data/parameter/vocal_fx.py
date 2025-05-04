@@ -185,7 +185,9 @@ class AddressParameterVocalFX(AddressParameter):
             return display_value  # -63 to +63 -> 0 to 126
 
     @staticmethod
-    def convert_to_display(value: int, min_val: int, max_val: int, display_min: int, display_max: int) -> int:
+    def convert_to_display(
+        value: int, min_val: int, max_val: int, display_min: int, display_max: int
+    ) -> int:
         """
         Convert address value to address display value within address range.
         :param value: int The address value

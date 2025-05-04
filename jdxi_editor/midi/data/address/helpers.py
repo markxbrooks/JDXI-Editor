@@ -19,8 +19,9 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-def apply_address_offset(base_address: RolandSysExAddress,
-                         param: AddressParameter) -> RolandSysExAddress:
+def apply_address_offset(
+    base_address: RolandSysExAddress, param: AddressParameter
+) -> RolandSysExAddress:
     """
     Applies the offset of a parameter to a base address.
     :param base_address: RolandSysExAddress
@@ -70,7 +71,9 @@ def parse_sysex_address_json(
     return {f"level_{i + 1}": level for i, level in enumerate(levels)}
 
 
-def find_matching_symbol(value: int, base_classes: Tuple[Type[Any], ...]) -> Union[Dict[str, Any], None]:
+def find_matching_symbol(
+    value: int, base_classes: Tuple[Type[Any], ...]
+) -> Union[Dict[str, Any], None]:
     """
     Finds a matching symbol in the provided base classes.
     :param value: int

@@ -119,7 +119,7 @@ class ComboBox(QWidget):
         """
         self.label_widget.setVisible(visible)
 
-    def setValue(self, value: int) -> None :
+    def setValue(self, value: int) -> None:
         """Set combo box index based on the value.
 
         :param value: int

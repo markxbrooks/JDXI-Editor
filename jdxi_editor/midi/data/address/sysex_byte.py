@@ -18,4 +18,6 @@ class SysExByte(IntEnum):
         :param address: int The address
         :return: Optional[T] The parameter
         """
-        return next((parameter for parameter in cls if parameter.value == address), None)
+        return next(
+            (parameter for parameter in cls if parameter.value == address), None
+        )

@@ -12,8 +12,11 @@ from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 @dataclass
 class DrumSynthData(JDXISynthData):
     """Drum Synth Data"""
+
     partial_number: int = 0
-    _group_map: Dict[int, AddressOffsetProgramLMB] = field(default_factory=dict, init=False, repr=False)
+    _group_map: Dict[int, AddressOffsetProgramLMB] = field(
+        default_factory=dict, init=False, repr=False
+    )
 
     def __post_init__(self):
         """Post Init"""

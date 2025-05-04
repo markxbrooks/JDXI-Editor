@@ -20,7 +20,9 @@ import logging
 from typing import List, Dict, Type
 
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial

@@ -110,7 +110,9 @@ class MidiOutHandler(MidiIOController):
 
         try:
             log_parameter(
-                "[MIDI ✅] QC passed — Sending message:", formatted_message, level=logging.INFO
+                "[MIDI ✅] QC passed — Sending message:",
+                formatted_message,
+                level=logging.INFO,
             )
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)
@@ -441,11 +443,17 @@ class MidiOutHandler(MidiIOController):
             log_parameter("bank_msb", bank_msb)
             log_parameter("bank_lsb", bank_lsb)
             log_parameter("program", program)
-            log_message(f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------")
+            log_message(
+                f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
+            )
             self.send_control_change(0, bank_msb, channel)
-            log_message(f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------")
+            log_message(
+                f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------"
+            )
             self.send_control_change(32, bank_lsb, channel)
-            log_message(f"-------#3 send_program_change program: {program} channel: {channel} --------")
+            log_message(
+                f"-------#3 send_program_change program: {program} channel: {channel} --------"
+            )
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
@@ -468,12 +476,7 @@ class MidiOutHandler(MidiIOController):
         except Exception as ex:
             log_error(f"Error sending identity request: {str(ex)}")
 
-    def get_parameter(self,
-                      msb: int,
-                      umb: int,
-                      lmb: int,
-                      param: int
-    ) -> Optional[int]:
+    def get_parameter(self, msb: int, umb: int, lmb: int, param: int) -> Optional[int]:
         """
         Request a parameter value from the JD-Xi.
         :param msb: Most significant byte of the address.

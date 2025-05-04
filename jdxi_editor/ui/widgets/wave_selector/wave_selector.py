@@ -8,7 +8,8 @@ from jdxi_editor.log.message import log_message
 
 
 class WaveSelector(QWidget):
-    """ Wave Selector """
+    """Wave Selector"""
+
     def __init__(self, wave_list):
         super().__init__()
 

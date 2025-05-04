@@ -1,6 +1,8 @@
 """Digital"""
 
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 
 
 def parse_digital_parameters(data: list) -> dict:

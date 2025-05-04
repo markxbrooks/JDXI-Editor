@@ -16,6 +16,7 @@ from typing import Tuple, List
 
 class JDXiAddress(Enum):
     """Base Addresses (4-byte addresses)"""
+
     SETUP = (0x01, 0x00, 0x00, 0x00)
     SYSTEM = (0x02, 0x00, 0x00, 0x00)
     TEMP_PROGRAM = (0x18, 0x00, 0x00, 0x00)
@@ -67,6 +68,7 @@ PROGRAM_OFFSETS = {
 
 class JDxiSysExBuilder:
     """JDxiSysExBuilder"""
+
     MODEL_ID = [0x00, 0x00, 0x00, 0x0E]
 
     @staticmethod

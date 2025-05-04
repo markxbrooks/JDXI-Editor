@@ -14,7 +14,9 @@ from jdxi_editor.midi.data.digital.oscillator import DigitalOscPcmWaveGain
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape, DigitalLFOTempoSyncNote
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode, DigitalFilterSlope
 
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 
 
 def get_digital_parameter_by_address(address: Tuple[int, int]):

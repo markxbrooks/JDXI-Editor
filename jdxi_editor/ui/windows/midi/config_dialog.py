@@ -45,9 +45,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class MIDIConfigDialog(QDialog):
-    def __init__(
-        self, midi_helper=MidiIOHelper, parent=None
-    ):
+    def __init__(self, midi_helper=MidiIOHelper, parent=None):
         super().__init__(parent)
         self.setWindowTitle("MIDI Configuration")
         self.setMinimumSize(300, 300)
@@ -141,9 +139,15 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.close_ports()
         input_port_text = self.get_input_port()
         output_port_text = self.get_output_port()
-        log_message(f"Reconnecting to: Midi In:\t'{input_port_text}'", level=logging.INFO)
-        log_message(f"Reconnecting to: Midi Out:\t'{output_port_text}'", level=logging.INFO)
-        success = self.midi_helper.reconnect_port_names(input_port_text, output_port_text)
+        log_message(
+            f"Reconnecting to: Midi In:\t'{input_port_text}'", level=logging.INFO
+        )
+        log_message(
+            f"Reconnecting to: Midi Out:\t'{output_port_text}'", level=logging.INFO
+        )
+        success = self.midi_helper.reconnect_port_names(
+            input_port_text, output_port_text
+        )
         if not success:
             log_message("Failed to reopen both MIDI ports", level=logging.WARNING)
 

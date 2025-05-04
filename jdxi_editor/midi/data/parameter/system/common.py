@@ -26,11 +26,13 @@ class AddressParameterSystemCommon(AddressParameter):
         elif param == AddressParameterSystemCommon.MASTER_KEY_SHIFT:  # Master Key Shift
             semitones = value - 64  # Convert 40-88 to -24/+24
             return f"{semitones:+d} st"
-        elif param == AddressParameterSystemCommon.PROGRAM_CTRL_CH:  # Program Control Channel
+        elif (
+            param == AddressParameterSystemCommon.PROGRAM_CTRL_CH
+        ):  # Program Control Channel
             return "OFF" if value == 0 else str(value)
         elif param in (
-                AddressParameterSystemCommon.RX_PROGRAM_CHANGE,
-                AddressParameterSystemCommon.RX_BANK_SELECT,
+            AddressParameterSystemCommon.RX_PROGRAM_CHANGE,
+            AddressParameterSystemCommon.RX_BANK_SELECT,
         ):  # Switches
             return "ON" if value else "OFF"
         return str(value)

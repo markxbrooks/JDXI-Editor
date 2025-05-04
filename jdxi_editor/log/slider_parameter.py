@@ -5,17 +5,22 @@ import logging
 
 from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetSuperNATURALLMB,
+)
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
-def log_slider_parameters(umb: int,
-                          lmb: int,
-                          param: AddressParameter,
-                          value: int,
-                          slider_value: int,
-                          level: int = logging.INFO) -> None:
+def log_slider_parameters(
+    umb: int,
+    lmb: int,
+    param: AddressParameter,
+    value: int,
+    slider_value: int,
+    level: int = logging.INFO,
+) -> None:
     """
     Log slider parameters for debugging.
     :param umb: int The UMB
@@ -30,7 +35,9 @@ def log_slider_parameters(umb: int,
     part_lmb = f"0x{int(lmb):02X}"
     synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
     if part_lmb != "0x00":
-        part_name_lmb = parse_sysex_byte(int(part_lmb, 16), AddressOffsetSuperNATURALLMB)
+        part_name_lmb = parse_sysex_byte(
+            int(part_lmb, 16), AddressOffsetSuperNATURALLMB
+        )
     else:
         part_name_lmb = "COMMON"
 

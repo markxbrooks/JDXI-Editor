@@ -4,7 +4,14 @@ btk_dialog for about JD-XI Editor
 import os
 from typing import Optional
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox, QWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QDialogButtonBox,
+    QGroupBox,
+    QWidget,
+)
 from PySide6.QtCore import QSettings, QRect
 
 from jdxi_editor.project import __version__, __program__
@@ -20,12 +27,12 @@ CREDITS_LABEL_STYLE = """
         }}
         """
 
-class UiAboutDialog(QDialog):
 
+class UiAboutDialog(QDialog):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.version_label = None
-        self.settings = QSettings('mabsoft', 'jdxi_editor')
+        self.settings = QSettings("mabsoft", "jdxi_editor")
 
     def setup_ui(self, parent: QWidget = None) -> None:
         """
@@ -43,10 +50,14 @@ class UiAboutDialog(QDialog):
         image_layout = QVBoxLayout(self)
         group_box.setLayout(image_layout)
         image_label = QLabel()
-        image_pixmap = QPixmap(resource_path(os.path.join('resources', 'jdxi_cartoon_600.png')))
+        image_pixmap = QPixmap(
+            resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
+        )
 
         # Scale the pixmap to 200x200 while keeping aspect ratio
-        scaled_pixmap = image_pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        scaled_pixmap = image_pixmap.scaled(
+            200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )
 
         image_label.setPixmap(scaled_pixmap)
         image_label.setFixedSize(200, 200)  # Optional: set the label size as well
@@ -74,13 +85,15 @@ class UiAboutDialog(QDialog):
             "Source code available on <a style='color: blue' href='https://github.com/markxbrooks/jdxi-editor'>GitHub</a><br>"
             "Licensed under the <a style='color: blue' href='https://opensource.org/licenses/MIT'>MIT License</a>"
         )
-        credits_label.setStyleSheet("""
+        credits_label.setStyleSheet(
+            """
                 /* QLabels */
                     QLabel {{
                         color: 'black';
                         background: #FFFFFF;
                 }}
-                """)
+                """
+        )
         credits_label.setOpenExternalLinks(True)
         credits_label.setAlignment(Qt.AlignCenter)
         divider = QLabel("<hr>")
@@ -91,4 +104,3 @@ class UiAboutDialog(QDialog):
 
         # show all the widgets
         self.show()
-

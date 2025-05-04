@@ -172,7 +172,8 @@ class ProgramEditor(SimpleEditor):
 
         # Load button
         self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXIStyle.FOREGROUND), "Load Program"
+            qta.icon("ph.folder-notch-open-fill", color=JDXIStyle.FOREGROUND),
+            "Load Program",
         )
         self.load_button.clicked.connect(self.load_program)
         layout.addWidget(self.load_button)
@@ -182,8 +183,12 @@ class ProgramEditor(SimpleEditor):
         transport_group = QGroupBox("Transport")
         transport_layout = QHBoxLayout()
 
-        self.start_button = QPushButton(qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play")
-        self.stop_button = QPushButton(qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop")
+        self.start_button = QPushButton(
+            qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play"
+        )
+        self.stop_button = QPushButton(
+            qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop"
+        )
         self.start_button.clicked.connect(self.start_playback)
         self.stop_button.clicked.connect(self.stop_playback)
 
@@ -196,7 +201,9 @@ class ProgramEditor(SimpleEditor):
         layout.addLayout(self.digital_synth_1_hlayout)
 
         self.digital_synth_1_icon = QLabel()
-        self.digital_synth_1_icon.setPixmap(qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
+        self.digital_synth_1_icon.setPixmap(
+            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+        )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
         self.digital_synth_1_title = QLabel("Digital Synth 1")
@@ -220,7 +227,9 @@ class ProgramEditor(SimpleEditor):
         self.digital_synth_2_hlayout = QHBoxLayout()
 
         self.digital_synth_2_icon = QLabel()
-        self.digital_synth_2_icon.setPixmap(qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
+        self.digital_synth_2_icon.setPixmap(
+            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+        )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
         layout.addLayout(self.digital_synth_2_hlayout)
@@ -247,7 +256,9 @@ class ProgramEditor(SimpleEditor):
         layout.addLayout(self.drum_kit_hlayout)
 
         self.drum_kit_icon = QLabel()
-        self.drum_kit_icon.setPixmap(qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
+        self.drum_kit_icon.setPixmap(
+            qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+        )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
 
         self.drum_kit_title = QLabel("Drums")
@@ -272,7 +283,9 @@ class ProgramEditor(SimpleEditor):
         layout.addLayout(self.analog_synth_hlayout)
 
         self.analog_synth_icon = QLabel()
-        self.analog_synth_icon.setPixmap(qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40))
+        self.analog_synth_icon.setPixmap(
+            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+        )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
         self.analog_synth_title = QLabel("Analog Synth")

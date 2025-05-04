@@ -50,7 +50,9 @@ from jdxi_editor.globals import logger
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
@@ -68,10 +70,13 @@ from jdxi_editor.jdxi.style import JDXIStyle
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper: Optional[MidiIOHelper] = None, 
-                 synth_number: int = 1, 
-                 partial_number: int = 1, 
-                 parent: Optional[QWidget] = None):
+    def __init__(
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        synth_number: int = 1,
+        partial_number: int = 1,
+        parent: Optional[QWidget] = None,
+    ):
         super().__init__(parent)
         """
         Initialize the DigitalPartialEditor
@@ -95,22 +100,25 @@ class DigitalPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number
         if synth_number == 1:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=partial_number)
+            self.synth_data = create_synth_data(
+                JDXISynth.DIGITAL_1, partial_number=partial_number
+            )
         elif synth_number == 2:
-            self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=partial_number)
+            self.synth_data = create_synth_data(
+                JDXISynth.DIGITAL_2, partial_number=partial_number
+            )
         self.address = self.synth_data.address  # Shortcut for convenience
         log_parameter("Initializing partial:", self.synth_data.address)
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
             log_parameter("Partial name:", self.part_name)
         else:
-            logger.error(
-                f"Invalid partial_num: {partial_number}. Using default value."
-            )
+            logger.error(f"Invalid partial_num: {partial_number}. Using default value.")
             self.part_name = "Unknown"  # Provide a fallback value
         # Store parameter controls for easy access
         self.controls: Dict[
-            Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon], QWidget
+            Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
+            QWidget,
         ] = {}
 
         # Main layout
@@ -132,7 +140,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.address
+            self.address,
         )
         self.tab_widget.addTab(
             self.oscillator_tab,

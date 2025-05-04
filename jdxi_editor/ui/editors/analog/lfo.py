@@ -12,6 +12,7 @@ from jdxi_editor.jdxi.style import JDXIStyle
 
 class AnalogLFOSection(QWidget):
     """Analog LFO Section"""
+
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -72,7 +73,9 @@ class AnalogLFOSection(QWidget):
         layout.addLayout(shape_row)
 
         # Rate and Fade Time
-        self.lfo_rate = self._create_parameter_slider(AddressParameterAnalog.LFO_RATE, "Rate")
+        self.lfo_rate = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_RATE, "Rate"
+        )
         self.lfo_fade = self._create_parameter_slider(
             AddressParameterAnalog.LFO_FADE_TIME, "Fade Time"
         )

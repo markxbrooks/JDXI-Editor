@@ -2,6 +2,7 @@ import os
 
 from jdxi_editor.project import __version__
 from distutils.dir_util import copy_tree
+
 print("jdxi_editor version " + __version__ + " build system")
 destination_path_1 = f"dist\\jdxi_editor"
 destination_path_2 = rf"build\\jdxi_editor"

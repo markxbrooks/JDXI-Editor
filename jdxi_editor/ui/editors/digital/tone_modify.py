@@ -8,6 +8,7 @@ from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from typing import Callable
 
+
 class DigitalToneModifySection(QWidget):
     def __init__(
         self,

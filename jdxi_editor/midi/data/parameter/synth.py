@@ -38,10 +38,8 @@ class AddressParameter(Enum):
     """
     Base class for synthesizer parameters with associated addresses and valid value ranges.
     """
-    def __init__(self,
-                 address: int,
-                 min_val: int,
-                 max_val: int):
+
+    def __init__(self, address: int, min_val: int, max_val: int):
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
@@ -70,7 +68,9 @@ class AddressParameter(Enum):
         :param address: int
         :return: parameter member or None
         """
-        return next((parameter for parameter in cls if parameter.address == address), None)
+        return next(
+            (parameter for parameter in cls if parameter.address == address), None
+        )
 
     @property
     def is_switch(self) -> bool:
@@ -183,7 +183,7 @@ class AddressParameter(Enum):
             return 1
         else:
             return 4  # I don't know of any other sizes
-            
+
     def get_offset(self) -> tuple:
         """
         Return a 3-byte tuple representing the address offset (UMB, LMB, LSB)
@@ -194,7 +194,7 @@ class AddressParameter(Enum):
         value = self.address
         umb = 0x00  # Default Upper Middle Byte
         lmb = (value >> 8) & 0xFF  # Extract LMB
-        lsb = value & 0xFF         # Extract LSB
+        lsb = value & 0xFF  # Extract LSB
         return umb, lmb, lsb
 
     @property

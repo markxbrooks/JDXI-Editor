@@ -29,6 +29,7 @@ class MidiChannel(IntEnum):
     """
     MIDI Channel Enum
     """
+
     DIGITAL1 = 0  # Corresponds to channel 1
     DIGITAL2 = 1  # Corresponds to channel 2
     ANALOG = 2  # Corresponds to channel 3

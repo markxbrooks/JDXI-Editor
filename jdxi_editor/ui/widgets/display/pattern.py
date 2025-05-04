@@ -3,7 +3,7 @@ Pattern Display Widget
 """
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QPen, QColor, QFont, QPaintEvent    
+from PySide6.QtGui import QPainter, QPen, QColor, QFont, QPaintEvent
 
 
 class PatternDisplay(QWidget):
@@ -51,7 +51,9 @@ class PatternDisplay(QWidget):
         points = self._get_pattern_points(x_start, y_start, width, height)
         self._draw_pattern(painter, points)
 
-    def _draw_grid(self, painter: QPainter, x: int, y: int, width: int, height: int) -> None:
+    def _draw_grid(
+        self, painter: QPainter, x: int, y: int, width: int, height: int
+    ) -> None:
         """Draw the grid.
 
         :param painter: QPainter

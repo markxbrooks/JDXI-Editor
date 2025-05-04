@@ -71,9 +71,12 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 class ArpeggioEditor(SimpleEditor):
     """Arpeggio Editor Window"""
 
-    def __init__(self, midi_helper: MidiIOHelper, 
-                 preset_helper: Optional[JDXIPresetHelper] = None, 
-                 parent: Optional[QWidget] = None):
+    def __init__(
+        self,
+        midi_helper: MidiIOHelper,
+        preset_helper: Optional[JDXIPresetHelper] = None,
+        parent: Optional[QWidget] = None,
+    ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """
         Initialize the ArpeggioEditor
@@ -88,7 +91,7 @@ class ArpeggioEditor(SimpleEditor):
             msb=ArpeggioAddress.TEMPORARY_PROGRAM,
             umb=ArpeggioAddress.ARP_PART,
             lmb=ArpeggioAddress.ARP_GROUP,
-            lsb=ZERO_BYTE
+            lsb=ZERO_BYTE,
         )
         self.partial_number = 0
         self.instrument_icon_folder = "arpeggiator"

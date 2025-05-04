@@ -10,11 +10,13 @@ from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigit
 
 
 class DigitalCommonSection(QWidget):
-    def __init__(self,
-                 create_parameter_slider: Callable,
-                 create_parameter_switch: Callable,
-                 create_parameter_combo_box: Callable,
-                 controls: dict):
+    def __init__(
+        self,
+        create_parameter_slider: Callable,
+        create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
+        controls: dict,
+    ):
         super().__init__()
         """
         Initialize the DigitalCommonSection
@@ -53,8 +55,9 @@ class DigitalCommonSection(QWidget):
         # Mono Switch
         self.octave_shift_switch = self._create_parameter_combo_box(
             AddressParameterDigitalCommon.OCTAVE_SHIFT,
-            "Octave shift", ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
-            [61, 62, 63, 64, 65, 66, 67]
+            "Octave shift",
+            ["-3", "-2", "-1", "0", "+1", "+2", "+3"],
+            [61, 62, 63, 64, 65, 66, 67],
         )
         octave_shift_switch_row = QHBoxLayout()
         octave_shift_switch_row.addWidget(self.octave_shift_switch)

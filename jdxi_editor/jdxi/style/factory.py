@@ -211,7 +211,7 @@ def generate_editor_style(
     slider_groove: str,
     slider_neon: str,
     slider_neon_gradient_stop: str,
-    font_weight: str = "normal"
+    font_weight: str = "normal",
 ) -> str:
     """
     Generate editor style dynamically.

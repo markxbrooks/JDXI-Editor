@@ -142,9 +142,13 @@ class AddressParameterProgramController(AddressParameter):
             return str(value + 1)  # Convert 0-127 to 1-128
         elif param == AddressParameterProgramController.ARPEGGIO_MOTIF:  # Motif
             return AddressParameterProgramController.get_motif_name(value)
-        elif param == AddressParameterProgramController.ARPEGGIO_OCTAVE_RANGE:  # Octave Range
+        elif (
+            param == AddressParameterProgramController.ARPEGGIO_OCTAVE_RANGE
+        ):  # Octave Range
             return f"{value - 64:+d}"  # Convert 61-67 to -3/+3
-        elif param == AddressParameterProgramController.ARPEGGIO_ACCENT_RATE:  # Accent Rate
+        elif (
+            param == AddressParameterProgramController.ARPEGGIO_ACCENT_RATE
+        ):  # Accent Rate
             return f"{value}%"
         elif param == AddressParameterProgramController.ARPEGGIO_VELOCITY:  # Velocity
             return "REAL" if value == 0 else str(value)

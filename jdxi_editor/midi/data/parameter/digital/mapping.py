@@ -11,4 +11,3 @@ ENVELOPE_MAPPING = {
     "OSC_PITCH_ENV_DECAY_TIME": "decay_time",
     "OSC_PITCH_ENV_DEPTH": "peak_level",
 }
-

@@ -29,8 +29,12 @@ msg = DigitalToneMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, \
-    AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetSuperNATURALLMB,
+)
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -40,10 +44,15 @@ class DigitalToneMessage(RolandSysEx):
     SuperNATURAL Synth Tone parameter message for JD-Xi.
     Defaults to TEMPORARY_TONE / Digital 1 / Common / Param 0x00
     """
+
     command: int = CommandID.DT1
     msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE
-    umb: int = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA  # Digital Tone 1
-    lmb: int = AddressOffsetSuperNATURALLMB.PARTIAL_1  # Section (e.g., Common, Partial 1 etc. )
+    umb: int = (
+        AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+    )  # Digital Tone 1
+    lmb: int = (
+        AddressOffsetSuperNATURALLMB.PARTIAL_1
+    )  # Section (e.g., Common, Partial 1 etc. )
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 

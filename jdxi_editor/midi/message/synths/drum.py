@@ -20,7 +20,11 @@ msg = DrumKitMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    AddressOffsetTemporaryToneUMB,
+)
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 

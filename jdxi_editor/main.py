@@ -26,8 +26,15 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from PySide6.QtWidgets import QApplication, QProgressBar, QLabel, QWidget, QVBoxLayout, QHBoxLayout, \
-    QGroupBox
+from PySide6.QtWidgets import (
+    QApplication,
+    QProgressBar,
+    QLabel,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+)
 from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
 from jdxi_editor.log.message import log_message
@@ -70,7 +77,9 @@ def setup_logging():
 
         # Configure console logging
         # console_handler = logging.StreamHandler(sys.stdout)
-        console_handler = logging.StreamHandler(sys.__stdout__)  # Use sys.__stdout__ explicitly
+        console_handler = logging.StreamHandler(
+            sys.__stdout__
+        )  # Use sys.__stdout__ explicitly
         console_handler.setLevel(logging.DEBUG)
         console_formatter = logging.Formatter(
             "%(filename)-20s| %(lineno)-5s| %(levelname)-8s| %(message)-24s"
@@ -146,7 +155,9 @@ def main():
             log_message("Using fallback icon")
 
         splash = QWidget()
-        splash.setWindowFlags(Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+        splash.setWindowFlags(
+            Qt.SplashScreen | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+        )
         splash.setFixedSize(500, 400)
         splash.setStyleSheet("background-color: black;")
 
@@ -172,8 +183,10 @@ def main():
         group_box.setLayout(group_layout)
 
         # Image
-        image_path = resource_path(os.path.join('resources', 'jdxi_cartoon_600.png'))
-        pixmap = QPixmap(image_path).scaled(250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        image_path = resource_path(os.path.join("resources", "jdxi_cartoon_600.png"))
+        pixmap = QPixmap(image_path).scaled(
+            250, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )
 
         image_label = QLabel()
         image_label.setPixmap(pixmap)
@@ -195,8 +208,10 @@ def main():
         progress_container.addStretch()
         group_layout.addLayout(progress_container)
         from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-        sub_text_label = DigitalTitle("An editor & toolkit for the Roland JD-Xi instrument",
-                                      show_upper_text=False)
+
+        sub_text_label = DigitalTitle(
+            "An editor & toolkit for the Roland JD-Xi instrument", show_upper_text=False
+        )
         sub_text_label.setMinimumHeight(80)
         sub_text_label.setFixedSize(475, 80)
         group_layout.addWidget(sub_text_label)
@@ -205,6 +220,7 @@ def main():
         splash.raise_()  # Ensure the splash screen is raised
         splash.activateWindow()  # Activate the splash screen window
         import time
+
         for i in range(101):
             progress_bar.setValue(i)
             app.processEvents()

@@ -141,7 +141,9 @@ class DrumCommonEditor(SynthEditor):
         upper_layout = QHBoxLayout(upper_widget)
         upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
 
-        instrument_preset_group = self._create_instrument_preset_group(synth_type="Drums")
+        instrument_preset_group = self._create_instrument_preset_group(
+            synth_type="Drums"
+        )
         upper_layout.addWidget(instrument_preset_group)
         self._create_instrument_image_group()
         upper_layout.addWidget(self.instrument_image_group)
@@ -152,7 +154,7 @@ class DrumCommonEditor(SynthEditor):
             self.controls,
             self._create_parameter_combo_box,
             self._create_parameter_slider,
-            self.midi_helper
+            self.midi_helper,
         )
         common_group.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
         upper_layout.addWidget(common_group)
@@ -208,7 +210,9 @@ class DrumCommonEditor(SynthEditor):
         for count, (partial_name, partial_number) in enumerate(
             self.partial_mapping.items(), 1
         ):
-            progress_dialog.progress_bar.setFormat(f"Loading {partial_name} ({count} of {total})")
+            progress_dialog.progress_bar.setFormat(
+                f"Loading {partial_name} ({count} of {total})"
+            )
             editor = DrumPartialEditor(
                 midi_helper=self.midi_helper,
                 partial_number=partial_number,
@@ -247,9 +251,13 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        log_message("\n============================================================================================")
+        log_message(
+            "\n============================================================================================"
+        )
         log_message("Updating UI components from SysEx data")
-        log_message("\n============================================================================================")
+        log_message(
+            "\n============================================================================================"
+        )
 
         # failures, successes = [], []
 
@@ -284,9 +292,13 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        log_message("\n============================================================================================")
+        log_message(
+            "\n============================================================================================"
+        )
         log_message("Updating UI components from SysEx data")
-        log_message("\n============================================================================================")
+        log_message(
+            "\n============================================================================================"
+        )
         debug_param_updates = True
         debug_stats = True
         failures, successes = [], []
@@ -314,8 +326,8 @@ class DrumCommonEditor(SynthEditor):
             :return: bool
             """
             return (
-                    sysex_json_data.get("TEMPORARY_AREA")
-                    == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
+                sysex_json_data.get("TEMPORARY_AREA")
+                == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART
             )
 
         def _get_partial_number(synth_tone_name: str) -> Optional[int]:
@@ -328,7 +340,9 @@ class DrumCommonEditor(SynthEditor):
                 synth_tone_name, None
             )
 
-        def _update_common_slider(parameter: AddressParameterDrumCommon, value: int) -> None:
+        def _update_common_slider(
+            parameter: AddressParameterDrumCommon, value: int
+        ) -> None:
             """
             Helper function to update sliders safely.
             :param parameter: AddressParameterDrumCommon
@@ -350,7 +364,9 @@ class DrumCommonEditor(SynthEditor):
             else:
                 failures.append(parameter.name)
 
-        def _update_common_switch(parameter: AddressParameterDrumCommon, value: int) -> None:
+        def _update_common_switch(
+            parameter: AddressParameterDrumCommon, value: int
+        ) -> None:
             """
             Helper function to update checkbox safely.
             :param parameter: AddressParameterDrumCommon
@@ -453,6 +469,7 @@ class DrumCommonEditor(SynthEditor):
                 log_message(f"successes: \t{successes}")
                 log_message(f"failures: \t{failures}")
                 log_footer_message(f"success rate: \t{success_rate:.1f}%")
+
         _log_debug_info()
 
     def _update_partial_sliders_from_sysex(self, json_sysex_data: str):
@@ -543,10 +560,14 @@ class DrumCommonEditor(SynthEditor):
                 success_rate = (
                     (len(successes) / len(sysex_data) * 100) if sysex_data else 0
                 )
-                log_message("\n======================================================================================================")
+                log_message(
+                    "\n======================================================================================================"
+                )
                 log_message(f"Successes: \t{successes}")
                 log_message(f"Failures: \t{failures}")
                 log_message(f"Success Rate: \t{success_rate:.1f}%")
-                log_message("\n======================================================================================================")
+                log_message(
+                    "\n======================================================================================================"
+                )
 
         _log_debug_info()

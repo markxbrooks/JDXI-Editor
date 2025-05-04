@@ -29,6 +29,7 @@ class PresetComboBox(QWidget):
     """
     A custom widget for selecting presets from a combo box.
     """
+
     preset_loaded = Signal(int)  # Signal to emit when address preset is loaded
 
     def __init__(self, presets, parent=None):
@@ -106,7 +107,7 @@ class PresetComboBox(QWidget):
         self.combo_box.addItems(filtered_presets)
 
     def update_category_combo_box_categories(self):
-        """ Update the category combo box with available categories. """
+        """Update the category combo box with available categories."""
         categories = set(preset["category"] for preset in self.preset_list)
         self.category_combo_box.blockSignals(True)  # Block signals during update
 

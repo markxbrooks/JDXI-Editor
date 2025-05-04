@@ -43,10 +43,11 @@ from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
 class PatchManager(QMainWindow):
     def __init__(
-        self, midi_helper: Optional[MidiIOHelper] = None,
-            parent=None,
-            save_mode=False,
-            editors=None
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        parent=None,
+        save_mode=False,
+        editors=None,
     ):
         super().__init__(parent)
         self.midi_helper = midi_helper
@@ -92,11 +93,17 @@ class PatchManager(QMainWindow):
         try:
             if self.save_mode:
                 file_path, _ = QFileDialog.getSaveFileName(
-                    self, "Save Patch File", "", "Patch Files (*.syx);(*.json);All Files (*.*)"
+                    self,
+                    "Save Patch File",
+                    "",
+                    "Patch Files (*.syx);(*.json);All Files (*.*)",
                 )
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
-                    self, "Load Patch File", "", "Patch Files (*.syx);(*.json);All Files (*.*)"
+                    self,
+                    "Load Patch File",
+                    "",
+                    "Patch Files (*.syx);(*.json);All Files (*.*)",
                 )
             if file_path:
                 self.path_input.setText(file_path)

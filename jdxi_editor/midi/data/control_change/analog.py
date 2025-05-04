@@ -21,7 +21,6 @@ class AnalogControlChange(ControlChange):
 
     KEY_HOLD = 64
 
-
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""

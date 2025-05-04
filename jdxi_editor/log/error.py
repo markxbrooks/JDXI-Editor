@@ -6,7 +6,12 @@ from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 
 
-def log_error(message: str, exception: Optional[Exception] = None, level: int = logging.ERROR, stacklevel=2) -> None:
+def log_error(
+    message: str,
+    exception: Optional[Exception] = None,
+    level: int = logging.ERROR,
+    stacklevel=2,
+) -> None:
     """
     Log an error message with emojis based on severity and content keywords.
 
@@ -29,4 +34,3 @@ def log_error(message: str, exception: Optional[Exception] = None, level: int = 
     full_message = f"{tags} {message}".strip()
     if LOGGING:
         logger.log(level, full_message, stacklevel=stacklevel)
-

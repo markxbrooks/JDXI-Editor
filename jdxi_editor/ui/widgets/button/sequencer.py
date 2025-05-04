@@ -65,7 +65,9 @@ class SequencerSquare(QPushButton):
         self, synth_type: str, preset_num: int, preset_name: str, channel: int
     ):
         """Save current preset to this favorite slot"""
-        self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
+        self.preset = JDXIPresetButton(
+            number=preset_num, name=preset_name, type=synth_type
+        )
         # self._save_to_settings()
         log_message(f"Saved preset to favorite {self.slot_number}: {preset_name}")
 

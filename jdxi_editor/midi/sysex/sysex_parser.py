@@ -32,9 +32,7 @@ def _verify_header(header_data: List[int]) -> bool:
     return header_data == JD_XI_HEADER_LIST
 
 
-def _parse_program_parameter(
-        parameter: AddressOffsetProgramLMB, data: List[int]
-):
+def _parse_program_parameter(parameter: AddressOffsetProgramLMB, data: List[int]):
     """Parse data for Program parameters."""
     # Example: Extract and process data for PART_DIGITAL_SYNTH_1
     if parameter == AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1:
@@ -44,7 +42,7 @@ def _parse_program_parameter(
 
 
 def _parse_temporary_parameter(
-        parameter: AddressOffsetTemporaryToneUMB, data: List[int]
+    parameter: AddressOffsetTemporaryToneUMB, data: List[int]
 ):
     """Parse data for Temporary parameters."""
     # Example: Extract and process data for Temporary parameters
@@ -69,10 +67,7 @@ def safe_get(data: List[int], address: int) -> int:
 
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
-    return {
-        param.name: safe_get(data, param.address)
-        for param in parameter_type
-    }
+    return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
 def parse_sysex(data: List[int]):

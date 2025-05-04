@@ -17,6 +17,7 @@ class JDXIPresetButton:
         channel: The MIDI channel of the preset button.
         name: The name of the preset button.
     """
+
     type: str = JDXISynth.DIGITAL_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0

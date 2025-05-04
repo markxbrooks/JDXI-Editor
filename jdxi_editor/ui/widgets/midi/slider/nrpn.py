@@ -82,9 +82,13 @@ class NRPNSlider(Slider):
         """
         Request the current value of the NRPN parameter from the device.
         """
-        threading.Thread(target=send_with_delay,
-                         args=(self.midi_helper,
-                               self.midi_requests,)).start()
+        threading.Thread(
+            target=send_with_delay,
+            args=(
+                self.midi_helper,
+                self.midi_requests,
+            ),
+        ).start()
 
     def on_value_changed(self, value: int):
         """
