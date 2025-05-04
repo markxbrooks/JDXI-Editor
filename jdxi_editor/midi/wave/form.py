@@ -34,7 +34,6 @@ OSC_WAVE_SUPER_SAW = 0x05  # Super saw
 OSC_WAVE_PCM = 0x06  # PCM waveform
 
 
-
 class Waveform(Enum):
     """Waveform types available on the JD-Xi"""
 

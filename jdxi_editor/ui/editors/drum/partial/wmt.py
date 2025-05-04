@@ -32,6 +32,7 @@ Example:
     editor = DrumWMTSection(midi_helper)
     editor.show()
 """
+import re
 
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox, QLabel, \
     QLineEdit, QHBoxLayout

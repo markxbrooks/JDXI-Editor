@@ -1,4 +1,5 @@
-
+# Add this at the top of your test_mido.py
+import mido
 # List available MIDI input ports
 print("Available MIDI input ports:")
 input_ports = mido.get_input_names()
