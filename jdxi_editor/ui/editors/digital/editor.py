@@ -133,8 +133,8 @@ class DigitalSynthEditor(SynthEditor):
 
     def setup_ui(self):
         """ set up user interface """
-        self.setMinimumSize(800, 300)
-        self.resize(930, 600)
+        self.setMinimumSize(850, 300)
+        self.resize(1030, 600)
         self.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
 
         # Main layout
