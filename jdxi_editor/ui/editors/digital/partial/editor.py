@@ -120,6 +120,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
+            self.sysex_address
         )
         self.tab_widget.addTab(
             self.oscillator_tab,

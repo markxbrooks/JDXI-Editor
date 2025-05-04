@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
     QComboBox,
 )
 
+from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital import DigitalOscWave
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.presets.pcm_waves import PCM_WAVES_CATEGORIZED
@@ -23,6 +24,8 @@ from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.button.waveform import WaveformButton
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope
+
 
 class DigitalOscillatorSection(QWidget):
     """Digital Oscillator Section for the JDXI Editor"""
@@ -36,6 +39,7 @@ class DigitalOscillatorSection(QWidget):
         partial_number: int,
         midi_helper: MidiIOHelper,
         controls: list[QWidget],
+        address: RolandSysExAddress
     ):
         super().__init__()
         self.partial_number = partial_number
@@ -45,6 +49,7 @@ class DigitalOscillatorSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box
         self.send_midi_parameter = send_midi_parameter
+        self.address = address
         self.setup_ui()
 
     def setup_ui(self):
@@ -152,6 +157,7 @@ class DigitalOscillatorSection(QWidget):
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
+        """
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
                 AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
@@ -167,6 +173,17 @@ class DigitalOscillatorSection(QWidget):
                 AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH, "Depth"
             )
         )
+        """
+        # Pitch Env Widget
+        self.pitch_env_widget = PitchEnvelope(
+            attack_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
+            decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
+            depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            midi_helper=self.midi_helper,
+            address=self.address
+        )
+        self.pitch_env_widget.setStyleSheet(JDXIStyle.ADSR)
+        pitch_env_layout.addWidget(self.pitch_env_widget)
         layout.addWidget(pitch_env_group)
 
         # Initialize states

@@ -44,9 +44,9 @@ def create_double_spinbox(min_value: float,
     return sb
 
 
-class AdsrSliderSpinbox(QWidget):
+class PitchEnvSliderSpinbox(QWidget):
     """
-    ADSR Slider and Spinbox widget for Roland JD-Xi
+    Pitch Env Slider and Spinbox widget for Roland JD-Xi
     """
 
     envelopeChanged = Signal(dict)
@@ -111,7 +111,7 @@ class AdsrSliderSpinbox(QWidget):
         if param_type == "peak_level":
             return value / 127
         elif param_type in ["attack_time", "decay_time", "release_time"]:
-            return midi_value_to_ms(int(value))
+            return midi_value_to_ms(int(value), min_time=10, max_time=5000)
         else:
             log_error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
@@ -123,7 +123,7 @@ class AdsrSliderSpinbox(QWidget):
         if param_type in ["sustain_level"]:
             return int(value * 127)
         elif param_type in ["attack_time", "decay_time", "release_time"]:
-            return ms_to_midi_value(value)
+            return ms_to_midi_value(value, min_time=10, max_time=5000)
         else:
             return 64
 

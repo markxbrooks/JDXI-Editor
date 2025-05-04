@@ -22,6 +22,8 @@ Classes:
 import threading
 import time
 from typing import Dict
+
+import mido
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.log.error import log_error
@@ -48,42 +50,54 @@ class SynthBase(QWidget):
         self.sysex_address = None
         self.partial_number = None
         self.bipolar_parameters = []
-        self.address_lmb = None
-        self.address_msb = None
-        self.address_umb = None
         self.controls: Dict[AddressParameter, QWidget] = {}
-        self.midi_helper = midi_helper
+        self._midi_helper = midi_helper
         self.midi_requests = []
 
-    def set_midi_helper(self, midi_helper: MidiIOHelper):
-        """Set MIDI helper instance"""
-        self.midi_helper = midi_helper
+    @property
+    def midi_helper(self) -> MidiIOHelper:
+        return self._midi_helper
 
-    def send_raw_message(self, message: bytes):
+    @midi_helper.setter
+    def midi_helper(self, helper: MidiIOHelper) -> None:
+        self._midi_helper = helper
+
+    def send_raw_message(self, message: bytes) -> bool:
         """Send address SysEx message using the MIDI helper"""
-        if not self.midi_helper:
+        if not self._midi_helper:
             log_message("MIDI helper not initialized")
-            return
-        self.midi_helper.send_raw_message(message)
+            return False
+        return self._midi_helper.send_raw_message(message)
 
     def data_request(self):
         """
         Request the current value of the NRPN parameter from the device.
         """
         threading.Thread(target=send_with_delay,
-                         args=(self.midi_helper,
+                         args=(self._midi_helper,
                                self.midi_requests,)).start()
 
-    def _on_midi_message_received(self, message):
-        """Handle incoming MIDI messages"""
+    def _on_midi_message_received(self, message: mido.Message) -> None:
+        """
+        Handle incoming MIDI messages
+        :param message: mido.Message
+        :return: None
+        """
         if not message.type == "clock":
             log_message(f"MIDI message: {message}")
             self.blockSignals(True)
             self.data_request()
             self.blockSignals(False)
 
-    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
-        """Send MIDI parameter with error handling."""
+    def send_midi_parameter(self,
+                            param: AddressParameter,
+                            value: int) -> bool:
+        """
+        Send MIDI parameter with error handling
+        :param param: AddressParameter
+        :param value: int value
+        :return: bool True on success, False otherwise
+        """
         try:
             if hasattr(param, "get_nibbled_size"):
                 size = param.get_nibbled_size()
@@ -105,7 +119,7 @@ class SynthBase(QWidget):
                 value=value,
                 size=size,
             )
-            result = self.midi_helper.send_midi_message(sysex_message)
+            result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
             log_message(f"MIDI error setting {param.name}: {ex}")
