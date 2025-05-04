@@ -10,7 +10,7 @@ SUB_ID_1 = 0x06
 SUB_ID_2 = 0x01
 ZERO_BYTE = 0x00
 
-T = TypeVar("T", bound="Address")
+
 DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
 
 
