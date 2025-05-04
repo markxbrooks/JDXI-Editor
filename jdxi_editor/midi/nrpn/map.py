@@ -1,6 +1,7 @@
 """
 NRPN Map class
 """
+from typing import Any
 
 
 class ParameterMap:

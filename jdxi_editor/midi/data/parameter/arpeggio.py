@@ -40,6 +40,7 @@ Usage example:
 
 from typing import Optional
 
+from jdxi_editor.midi.data.address.arpeggio import ARP_GROUP
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 

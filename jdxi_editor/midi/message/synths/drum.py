@@ -20,7 +20,7 @@ msg = DrumKitMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import CommandID
+from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -29,18 +29,11 @@ class DrumKitMessage(RolandSysEx):
     """Drum Kit parameter message"""
 
     command: int = CommandID.DT1
-    area: int = ProgramAreaParameter.TEMPORARY_TONE  # Temporary area
-    tone_type: int = TemporaryParameter.DRUM_KIT_PART  # Drum Kit
-    section: int = 0x00  # Section (Common or Pad offset)
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    umb: int = AddressOffsetTemporaryToneUMB.DRUM_KIT_PART  # Drum Kit
+    lmb: int = 0x00  # Section (Common or Pad offset)
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
     def __post_init__(self):
-        """Set up address and data"""
-        self.address = [
-            self.msb,  # Temporary area (0x19)
-            self.tone_type,  # Drum Kit (0x10)
-            self.section,  # Section (Common/Pad offset)
-            self.param,  # Parameter number
-        ]
-        self.data = [self.value]
+        super().__post_init__()
