@@ -1,7 +1,5 @@
-from typing import List
 
 from jdxi_editor.midi.data.address.address import (
-    ModelID,
     CommandID,
     MODEL_ID,
 )

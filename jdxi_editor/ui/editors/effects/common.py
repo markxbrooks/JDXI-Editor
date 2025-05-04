@@ -24,8 +24,6 @@ Features:
 
 """
 
-import os
-import logging
 from typing import Union, Dict
 
 from PySide6.QtWidgets import (
@@ -37,20 +35,17 @@ from PySide6.QtWidgets import (
     QFormLayout,
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
-from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB, RolandSysExAddress, ZERO_BYTE, AddressOffsetSystemUMB,
 )
-from jdxi_editor.midi.data.parameter.effects import AddressParameterEffect
+from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -334,7 +329,7 @@ class EffectsCommonEditor(SimpleEditor):
                 )
                 return self.midi_helper.send_midi_message(sysex_message)
             except Exception as ex:
-                log_message(f"MIDI error setting {param}: {str(ex)}")
+                log_error(f"MIDI error setting {param}: {str(ex)}")
                 return False
 
         except Exception as ex:

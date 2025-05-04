@@ -13,12 +13,10 @@ def send_nrpn(self, channel, msb, lsb, value):
 """
 
 import threading
-import time
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.io.delay import send_with_delay
-from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.widgets.slider import Slider
 

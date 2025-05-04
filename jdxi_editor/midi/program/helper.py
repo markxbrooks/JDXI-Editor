@@ -34,14 +34,13 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
     get_next_program_bank_and_number,
 )
-from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
@@ -117,7 +116,7 @@ class JDXIProgramHelper(QObject):
         self.current_program_number = program_number
         self.program_changed.emit(bank_letter, program_number)
         msb, lsb, pc = calculate_midi_values(bank_letter, program_number)
-        log_message(f"calculated msb, lsb, pc :")
+        log_message("calculated msb, lsb, pc :")
         log_parameter("msb", msb)
         log_parameter("lsb", lsb)
         log_parameter("pc", pc)

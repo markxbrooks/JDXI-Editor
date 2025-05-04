@@ -51,7 +51,8 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
-from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
+from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper

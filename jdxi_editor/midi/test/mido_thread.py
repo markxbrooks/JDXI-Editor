@@ -1,4 +1,3 @@
-import test_mido
 import threading
 
 

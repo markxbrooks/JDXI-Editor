@@ -1,5 +1,4 @@
 """Utility functions for digital parameters and partials."""
-import logging
 from typing import Tuple, Optional
 
 from jdxi_editor.log.error import log_error
@@ -9,7 +8,8 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.digital import DigitalPartial, DigitalOscWave
+from jdxi_editor.midi.data.digital.partial import DigitalPartial
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscPcmWaveGain
 from jdxi_editor.midi.data.digital.lfo import DigitalLFOShape, DigitalLFOTempoSyncNote
 from jdxi_editor.midi.data.digital.filter import DigitalFilterMode, DigitalFilterSlope

@@ -52,8 +52,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
@@ -335,7 +335,7 @@ class PresetEditor(SimpleEditor):
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
-        log_message(f"=======load_preset_by_program_change=======")
+        log_message("=======load_preset_by_program_change=======")
         log_parameter("combo box preset_name", preset_name)
         program_number = preset_name[:3]
         log_parameter("combo box program_number", program_number)
@@ -459,7 +459,7 @@ class PresetEditor(SimpleEditor):
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log_message(f"calculated msb, lsb, pc :")
+        log_message("calculated msb, lsb, pc :")
         log_parameter("combo box msb", msb)
         log_parameter("combo box lsb", lsb)
         log_parameter("combo box pc", pc)

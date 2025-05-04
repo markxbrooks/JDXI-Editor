@@ -12,14 +12,13 @@ The widget supports both analog and digital synth parameters and provides visual
 through an animated envelope curve.
 """
 
-import logging
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
 from typing import Dict, Optional
 
 from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter

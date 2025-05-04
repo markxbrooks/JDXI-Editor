@@ -82,7 +82,6 @@ class AdsrSliderSpinbox(QWidget):
                                                    label,
                                                    value,)
         param_type = param.get_envelope_param_type()
-        log_parameter("param_type", param_type)
         if param_type in ["sustain_level", "peak_level"]:
             self.spinbox = create_double_spinbox(min_value=min_value,
                                                  max_value=max_value,

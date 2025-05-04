@@ -1,4 +1,3 @@
-import logging
 
 import mido
 from PySide6.QtWidgets import (

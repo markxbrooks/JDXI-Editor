@@ -1,5 +1,5 @@
 """Digital Filter"""
-from enum import IntEnum, Enum
+from enum import Enum
 
 
 class DigitalFilterMode(Enum):

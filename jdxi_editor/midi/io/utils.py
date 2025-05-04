@@ -2,20 +2,16 @@
 utility functions 
 
 """
-import logging
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 import mido
 from black.lines import Callable
-from mido import Message
 
-from jdxi_editor.globals import logger
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
 
-from jdxi_editor.midi.message.sysex import SysexParameter
 from jdxi_editor.midi.sysex.device import DeviceInfo
 
 

@@ -15,7 +15,6 @@ import inspect
 from enum import IntEnum
 from typing import Tuple, Type, Any, Dict, Union
 
-from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 

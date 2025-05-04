@@ -31,6 +31,7 @@ from PySide6.QtWidgets import QApplication, QProgressBar, QLabel, QWidget, QVBox
 from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.message import log_message
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument

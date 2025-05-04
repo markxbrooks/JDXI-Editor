@@ -36,7 +36,6 @@ Dependencies:
 
 """
 
-import os
 from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
@@ -46,7 +45,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
@@ -58,20 +56,16 @@ from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioDuration,
 )
 from jdxi_editor.midi.data.arpeggio.data import (
-    ARPEGGIO_GRID,
-    ARP_DURATION,
     ARPEGGIO_STYLE,
-    ArpeggioStyle,
 )
-from jdxi_editor.midi.data.parameter.arpeggio import ArpeggioAddress, AddressParameterArpeggio
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.address.arpeggio import ArpeggioAddress
+from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.editors.synth.simple import SimpleEditor
 from jdxi_editor.jdxi.style import JDXIStyle
-from jdxi_editor.ui.widgets.display.digital import DigitalDisplay, DigitalTitle
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
 class ArpeggioEditor(SimpleEditor):

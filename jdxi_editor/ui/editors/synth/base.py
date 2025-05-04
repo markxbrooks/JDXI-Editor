@@ -20,7 +20,6 @@ Classes:
 
 
 import threading
-import time
 from typing import Dict
 
 import mido
@@ -34,7 +33,6 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
@@ -106,7 +104,7 @@ class SynthBase(QWidget):
             address = apply_address_offset(
                 self.address, param
             )
-            log_message(f"applying address offset ->")
+            log_message("applying address offset ->")
             log_parameter("base address:", self.address)
             log_parameter("parameter offset to apply:", param)
             log_parameter("  -->  final address", address)
@@ -122,7 +120,7 @@ class SynthBase(QWidget):
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
-            log_message(f"MIDI error setting {param.name}: {ex}")
+            log_error(f"MIDI error setting {param.name}: {ex}")
             return False
 
     def _on_parameter_changed(self, param: AddressParameter, display_value: int):

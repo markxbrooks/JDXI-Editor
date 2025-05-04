@@ -13,10 +13,8 @@ from jdxi_editor.ui.widgets.midi.slider.effects import (
     Effect2Slider,
     ReverbSlider,
 )
-from jdxi_editor.ui.widgets.midi.slider.filter import (
-    FilterCutoffSlider,
-    FilterResonanceSlider,
-)
+from jdxi_editor.ui.widgets.midi.slider.filter.cutoff import FilterCutoffSlider
+from jdxi_editor.ui.widgets.midi.slider.filter.resonance import FilterResonanceSlider
 from jdxi_editor.ui.widgets.midi.slider.lfo import (
     LFOAmpDepthSlider,
     LFOFilterDepthSlider,
@@ -101,9 +99,9 @@ def add_slider_container(central_widget, midi_helper):
     lfo_filter_slider = LFOFilterDepthSlider(midi_helper, label="Filter")
     lfo_amp_slider = LFOAmpDepthSlider(midi_helper, label="Amp")
 
-    effect1_slider = Effect1Slider(midi_helper, label="Efx1")
-    effect2_slider = Effect2Slider(midi_helper, label="Efx2")
-    lfo_shape_slider = LFOShapeSlider(midi_helper, label="LFSh")
+    Effect1Slider(midi_helper, label="Efx1")
+    Effect2Slider(midi_helper, label="Efx2")
+    LFOShapeSlider(midi_helper, label="LFSh")
 
     delay_slider = DelaySlider(midi_helper, label="Delay")
     reverb_slider = ReverbSlider(midi_helper, label="Reverb")

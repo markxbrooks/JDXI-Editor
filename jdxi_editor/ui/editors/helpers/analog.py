@@ -1,6 +1,7 @@
 """ Helper function for the AnalogParameterEditor."""
 
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 

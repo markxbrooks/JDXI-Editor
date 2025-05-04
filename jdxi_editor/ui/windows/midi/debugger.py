@@ -34,7 +34,6 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 
 """
 
-import logging
 import re
 from typing import Tuple
 
@@ -53,7 +52,7 @@ from PySide6.QtCore import Qt
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
@@ -279,8 +278,8 @@ class MIDIDebugger(QMainWindow):
 
             return decoded
 
-        except Exception as e:
-            return f"Error decoding message: {str(e)}"
+        except Exception as ex:
+            return f"Error decoding message: {str(ex)}"
 
     def _decode_sysex_15_old(self, message):
         """Decode address SysEx message"""
@@ -340,8 +339,8 @@ class MIDIDebugger(QMainWindow):
 
             return decoded
 
-        except Exception as e:
-            return f"Error decoding message: {str(e)}"
+        except Exception as ex:
+            return f"Error decoding message: {str(ex)}"
 
     def _decode_current(self):
         """Decode the currently entered message"""
@@ -358,10 +357,10 @@ class MIDIDebugger(QMainWindow):
                 decoded = self._decode_sysex_15(message)
                 self.decoded_text.append(decoded)
 
-            except ValueError as e:
-                self.decoded_text.setText(f"Error parsing hex values: {str(e)}")
-            except Exception as e:
-                self.decoded_text.setText(f"Error decoding message: {str(e)}")
+            except ValueError as ex:
+                self.decoded_text.setText(f"Error parsing hex values: {str(ex)}")
+            except Exception as ex:
+                self.decoded_text.setText(f"Error decoding message: {str(ex)}")
 
     def _send_commands(self):
         """Send all valid SysEx MIDI messages from user-entered text input."""
@@ -393,8 +392,8 @@ class MIDIDebugger(QMainWindow):
             for match in matches:
                 self.send_message(match)
 
-        except Exception as e:
-            self.log_response(f"Unhandled error in _send_commands: {str(e)}")
+        except Exception as ex:
+            self.log_response(f"Unhandled error in _send_commands: {str(ex)}")
 
     def send_message(self, match):
         try:
@@ -415,10 +414,10 @@ class MIDIDebugger(QMainWindow):
 
             log_message(f"Sent SysEx: {hex_str}")
 
-        except ValueError as e:
-            self.log_response(f"Error parsing message: {match}\n{str(e)}")
-        except Exception as e:
-            self.log_response(f"Unexpected error: {match}\n{str(e)}")
+        except ValueError as ex:
+            self.log_response(f"Error parsing message: {match}\n{str(ex)}")
+        except Exception as ex:
+            self.log_response(f"Unexpected error: {match}\n{str(ex)}")
 
     def log_response(self, text):
         """Add text to response log"""
@@ -431,5 +430,5 @@ class MIDIDebugger(QMainWindow):
             hex_str = " ".join([f"{b:02X}" for b in message])
             self.log_response(f"Received: {hex_str}")
 
-        except Exception as e:
-            self.log_response(f"Error handling response: {str(e)}")
+        except Exception as ex:
+            self.log_response(f"Error handling response: {str(ex)}")

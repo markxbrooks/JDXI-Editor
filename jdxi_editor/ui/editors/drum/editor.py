@@ -65,36 +65,29 @@ from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
-    QLabel,
-    QGroupBox,
     QScrollArea,
     QWidget,
     QTabWidget,
-    QPushButton, QSplitter,
+    QSplitter,
 )
 from PySide6.QtCore import Qt
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, ZERO_BYTE
-from jdxi_editor.jdxi.synth.drum import DrumSynthData
-from jdxi_editor.jdxi.synth.factory import create_synth_data
+from jdxi_editor.log.message import log_message
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
-from jdxi_editor.ui.editors.drum.partial import DrumPartialEditor
+from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 
 
@@ -351,7 +344,7 @@ class DrumCommonEditor(SynthEditor):
                 slider.blockSignals(False)
                 successes.append(parameter.name)
                 if debug_param_updates:
-                    log_message(f"Updated parameter: ")
+                    log_message("Updated parameter: ")
                     log_parameter("parameter", parameter)
                     log_parameter("value", value)
             else:
@@ -364,7 +357,7 @@ class DrumCommonEditor(SynthEditor):
             :param value: int
             :return: None
             """
-            log_message(f"Checkbox parameter: ")
+            log_message("Checkbox parameter: ")
             log_parameter("parameter", parameter)
             log_parameter("value", value)
             partial_switch_map = {
@@ -381,7 +374,7 @@ class DrumCommonEditor(SynthEditor):
                 check_box.blockSignals(False)
                 successes.append(parameter.name)
                 if debug_param_updates:
-                    log_message(f"Updated parameter: ")
+                    log_message("Updated parameter: ")
                     log_parameter("parameter", parameter)
                     log_parameter("value", value)
             else:

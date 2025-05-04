@@ -82,7 +82,6 @@ class PitchEnvSliderSpinbox(QWidget):
                                                    label,
                                                    value,)
         param_type = param.get_envelope_param_type()
-        log_parameter("param_type", param_type)
         if param_type in ["sustain_level", "peak_level"]:
             self.spinbox = create_double_spinbox(min_value=min_value,
                                                  max_value=max_value,
@@ -127,13 +126,23 @@ class PitchEnvSliderSpinbox(QWidget):
         else:
             return 64
 
-    def _slider_changed(self, value: int):
+    def _slider_changed(self, value: int) -> None:
+        """
+        slider changed
+        :param value: int slider value
+        :return: None
+        """
         self.spinbox.blockSignals(True)
         self.spinbox.setValue(int(self.convert_to_envelope(value)))
         self.spinbox.blockSignals(False)
         self.envelopeChanged.emit({self.param.get_envelope_param_type(): self.convert_to_envelope(value)})
 
-    def _spinbox_changed(self, value: int):
+    def _spinbox_changed(self, value: float):
+        """
+        spinbox changed
+        :param value: float double spinbox value
+        :return: None
+        """
         self.slider.blockSignals(True)
         self.slider.setValue(int(self.convert_from_envelope(int(value))))
         self.slider.blockSignals(False)
@@ -141,12 +150,12 @@ class PitchEnvSliderSpinbox(QWidget):
 
     def setValue(self, value: float):
         """
-        Set the value of the spinbox and slider
-        :param value: int
+        Set the value of the double spinbox and slider
+        :param value: float
         :return: None
         """
-        print(f"ADSRSliderSpinbox {self}: value: {value}")
-        self.spinbox.setValue(value)
+        self.slider.setValue(value)
+        self.spinbox.setValue(int(value))
 
     def value(self) -> float:
         """

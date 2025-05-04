@@ -5,7 +5,7 @@ import mido
 import time
 from pathlib import Path
 from typing import Optional
-from mido import MidiFile, Message, open_output, tempo2bpm, bpm2tempo
+from mido import MidiFile, open_output, tempo2bpm, bpm2tempo
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QVBoxLayout,
@@ -26,7 +26,7 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.midi.track import MidiTrackWidget, MidiTrackViewer
+from jdxi_editor.ui.widgets.midi.track import MidiTrackViewer
 
 
 class MidiPlayer(SynthEditor):
