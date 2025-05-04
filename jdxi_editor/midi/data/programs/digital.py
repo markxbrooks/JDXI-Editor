@@ -10,7 +10,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "001",
         "name": "JP8 Strings1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 1.0,
@@ -18,7 +18,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "002",
         "name": "Soft Pad 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 2.0,
@@ -26,7 +26,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "003",
         "name": "JP8 Strings2",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 3.0,
@@ -34,7 +34,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "004",
         "name": "JUNO Str 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 4.0,
@@ -42,7 +42,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "005",
         "name": "Oct Strings",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 5.0,
@@ -50,7 +50,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "006",
         "name": "Brite Str 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 6.0,
@@ -58,7 +58,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "007",
         "name": "Boreal Pad",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 7.0,
@@ -66,7 +66,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "008",
         "name": "JP8 Strings3",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 8.0,
@@ -74,7 +74,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "009",
         "name": "JP8 Strings4",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 9.0,
@@ -82,7 +82,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "010",
         "name": "Hollow Pad 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 10.0,
@@ -90,7 +90,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "011",
         "name": "LFO Pad 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 11.0,
@@ -98,7 +98,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "012",
         "name": "Hybrid Str",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 12.0,
@@ -106,7 +106,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "013",
         "name": "Awakening 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 13.0,
@@ -114,7 +114,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "014",
         "name": "Cincosoft 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 14.0,
@@ -122,7 +122,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "015",
         "name": "Bright Pad 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 15.0,
@@ -130,7 +130,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "016",
         "name": "Analog Str 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 16.0,
@@ -138,7 +138,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "017",
         "name": "Soft ResoPd1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 17.0,
@@ -146,7 +146,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "018",
         "name": "HPF Poly 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 18.0,
@@ -154,7 +154,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "019",
         "name": "BPF Poly",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 19.0,
@@ -162,7 +162,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "020",
         "name": "Sweep Pad 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 20.0,
@@ -170,7 +170,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "021",
         "name": "Soft Pad 2",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 21.0,
@@ -178,7 +178,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "022",
         "name": "Sweep JD 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 22.0,
@@ -186,7 +186,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "023",
         "name": "FltSweep Pd1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 23.0,
@@ -194,7 +194,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "024",
         "name": "HPF Pad",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 24.0,
@@ -202,7 +202,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "025",
         "name": "HPF SweepPd1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 25.0,
@@ -210,7 +210,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "026",
         "name": "KO Pad",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 26.0,
@@ -218,7 +218,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "027",
         "name": "Sweep Pad 2",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 27.0,
@@ -226,7 +226,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "028",
         "name": "TrnsSweepPad",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 28.0,
@@ -234,7 +234,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "029",
         "name": "Revalation 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 29.0,
@@ -242,7 +242,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "030",
         "name": "LFO CarvePd1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 30.0,
@@ -250,7 +250,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "031",
         "name": "RETROX 139 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 31.0,
@@ -258,7 +258,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "032",
         "name": "LFO ResoPad1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 32.0,
@@ -266,7 +266,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "033",
         "name": "PLS Pad 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 33.0,
@@ -274,7 +274,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "034",
         "name": "PLS Pad 2",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 34.0,
@@ -282,7 +282,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "035",
         "name": "Trip 2 Mars1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 35.0,
@@ -290,7 +290,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "036",
         "name": "Reso S&H Pd1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 36.0,
@@ -298,7 +298,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "037",
         "name": "SideChainPd1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 37.0,
@@ -306,7 +306,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "038",
         "name": "PXZoon 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 38.0,
@@ -314,7 +314,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "039",
         "name": "Psychoscilo1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 39.0,
@@ -322,7 +322,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "040",
         "name": "Fantasy 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 40.0,
@@ -330,7 +330,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "041",
         "name": "D-50 Stack 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 41.0,
@@ -338,7 +338,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "042",
         "name": "Organ Pad",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 42.0,
@@ -346,7 +346,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "043",
         "name": "Bell Pad",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 43.0,
@@ -354,7 +354,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "044",
         "name": "Dreaming 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 44.0,
@@ -362,7 +362,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "045",
         "name": "Syn Sniper 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 45.0,
@@ -370,7 +370,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "046",
         "name": "Strings 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 46.0,
@@ -378,7 +378,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "047",
         "name": "D-50 Pizz 1",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 47.0,
@@ -386,7 +386,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "048",
         "name": "Super Saw 1 Lead",
-        "category": "Strings\/Pad",
+        "category": r"Strings/Pad",
         "msb": 95.0,
         "lsb": 64.0,
         "pc": 48.0,
@@ -1386,7 +1386,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "187",
         "name": "FX 1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 59.0,
@@ -1394,7 +1394,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "188",
         "name": "FX 2",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 60.0,
@@ -1402,7 +1402,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "189",
         "name": "FX 3",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 61.0,
@@ -1410,7 +1410,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "190",
         "name": "Tuned Winds1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 62.0,
@@ -1418,7 +1418,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "191",
         "name": "Bend Lead 1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 63.0,
@@ -1426,7 +1426,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "192",
         "name": "RiSER 1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 64.0,
@@ -1434,7 +1434,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "193",
         "name": "Rising SEQ 1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 65.0,
@@ -1442,7 +1442,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "194",
         "name": "Scream Saw",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 66.0,
@@ -1450,7 +1450,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "195",
         "name": "Noise SEQ 1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 67.0,
@@ -1458,7 +1458,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "196",
         "name": "Syn Vox 1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 68.0,
@@ -1466,7 +1466,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "197",
         "name": "JD SoftVox",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 69.0,
@@ -1474,7 +1474,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "198",
         "name": "Vox Pad",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 70.0,
@@ -1482,7 +1482,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "199",
         "name": "VP-330 Chr",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 71.0,
@@ -1490,7 +1490,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "200",
         "name": "Orch Hit",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 72.0,
@@ -1498,7 +1498,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "201",
         "name": "Philly Hit",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 73.0,
@@ -1506,7 +1506,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "202",
         "name": "House Hit",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 74.0,
@@ -1514,7 +1514,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "203",
         "name": "O'Skool Hit1",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 75.0,
@@ -1522,7 +1522,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "204",
         "name": "Punch Hit",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 76.0,
@@ -1530,7 +1530,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "205",
         "name": "Tao Hit",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 77.0,
@@ -1858,7 +1858,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "246",
         "name": "Voc:Ensemble",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 118.0,
@@ -1866,7 +1866,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "247",
         "name": "Voc:5thStack",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 119.0,
@@ -1874,7 +1874,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "248",
         "name": "Voc:Robot",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 120.0,
@@ -1882,7 +1882,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "249",
         "name": "Voc:Saw",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 121.0,
@@ -1890,7 +1890,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "250",
         "name": "Voc:Sqr",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 122.0,
@@ -1898,7 +1898,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "251",
         "name": "Voc:Rise Up",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 123.0,
@@ -1906,7 +1906,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "252",
         "name": "Voc:Auto Vib",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 124.0,
@@ -1914,7 +1914,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "253",
         "name": "Voc:PitchEnv",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 125.0,
@@ -1922,7 +1922,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "254",
         "name": "Voc:VP-330",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 126.0,
@@ -1930,7 +1930,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "255",
         "name": "Voc:Noise",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 127.0,
@@ -1938,7 +1938,7 @@ DIGITAL_PRESET_LIST = [
     {
         "id": "256",
         "name": "Init Tone",
-        "category": "FX\/Other",
+        "category": r"FX/Other",
         "msb": 95.0,
         "lsb": 65.0,
         "pc": 128.0,
