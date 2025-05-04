@@ -19,6 +19,7 @@ from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 class AnalogOscillatorSection(QWidget):
     """Analog Oscillator Section"""
+
     def __init__(
         self,
         create_parameter_slider: Callable,
@@ -26,7 +27,7 @@ class AnalogOscillatorSection(QWidget):
         waveform_selected_callback: Callable,
         wave_buttons: dict,
         midi_helper: MidiIOHelper,
-        address: RolandSysExAddress
+        address: RolandSysExAddress,
     ):
         super().__init__()
         """
@@ -109,15 +110,19 @@ class AnalogOscillatorSection(QWidget):
         tuning_group.setLayout(tuning_layout)
 
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse (1/2 tones)")
+            self._create_parameter_slider(
+                AddressParameterAnalog.OSC_PITCH_COARSE, "Coarse (1/2 tones)"
+            )
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_FINE, "Fine (cents)")
+            self._create_parameter_slider(
+                AddressParameterAnalog.OSC_PITCH_FINE, "Fine (cents)"
+            )
         )
 
         return tuning_group
 
-    def create_pw_group(self) -> QGroupBox :
+    def create_pw_group(self) -> QGroupBox:
         """
         Create the pulse width group
         :return: QGroupBox
@@ -170,7 +175,7 @@ class AnalogOscillatorSection(QWidget):
             decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
-            address=self.address
+            address=self.address,
         )
         self.pitch_env_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")

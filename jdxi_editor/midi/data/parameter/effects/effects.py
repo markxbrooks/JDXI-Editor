@@ -210,7 +210,9 @@ class AddressParameterEffect(AddressParameter):
         return None
 
     @classmethod
-    def get_common_param_by_name(cls, name: str) -> Optional[AddressParameterEffectCommon]:
+    def get_common_param_by_name(
+        cls, name: str
+    ) -> Optional[AddressParameterEffectCommon]:
         """
         Look up an effect parameter's category using address dictionary mapping
         :param name: str The parameter name

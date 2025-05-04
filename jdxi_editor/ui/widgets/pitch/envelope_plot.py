@@ -36,11 +36,13 @@ from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class PitchEnvPlot(QWidget):
-    def __init__(self,
-                 width: int = 400,
-                 height: int = 400,
-                 envelope: dict = None,
-                 parent: QWidget = None):
+    def __init__(
+        self,
+        width: int = 400,
+        height: int = 400,
+        envelope: dict = None,
+        parent: QWidget = None,
+    ):
         super().__init__(parent)
         self.point_moved = None
         self.parent = parent
@@ -52,9 +54,7 @@ class PitchEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        self.setStyleSheet(
-            JDXIStyle.ADSR_PLOT
-        )
+        self.setStyleSheet(JDXIStyle.ADSR_PLOT)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)
@@ -81,8 +81,12 @@ class PitchEnvPlot(QWidget):
         pos = event.position()
         points = {
             "attack": QPointF(self.attack_x * self.width(), 0),
-            "decay": QPointF(self.decay_x * self.width(), (1 - self.peak_level) * self.height()),
-            "release": QPointF(self.release_x * self.width(), (1 - self.peak_level) * self.height()),
+            "decay": QPointF(
+                self.decay_x * self.width(), (1 - self.peak_level) * self.height()
+            ),
+            "release": QPointF(
+                self.release_x * self.width(), (1 - self.peak_level) * self.height()
+            ),
         }
         for name, pt in points.items():
             if (pt - pos).manhattanLength() < 15:
@@ -95,9 +99,13 @@ class PitchEnvPlot(QWidget):
             if self.dragging == "attack":
                 self.attack_x = max(0.01, min(pos.x() / self.width(), 1.0))
             elif self.dragging == "decay":
-                self.decay_x = max(self.attack_x + 0.01, min(pos.x() / self.width(), 1.0))
+                self.decay_x = max(
+                    self.attack_x + 0.01, min(pos.x() / self.width(), 1.0)
+                )
             elif self.dragging == "release":
-                self.release_x = max(self.decay_x + 0.01, min(pos.x() / self.width(), 1.0))
+                self.release_x = max(
+                    self.decay_x + 0.01, min(pos.x() / self.width(), 1.0)
+                )
 
             self.point_moved.emit(self.dragging, pos.x() / self.width())
             self.update()
@@ -110,7 +118,7 @@ class PitchEnvPlot(QWidget):
         self.enabled = enabled
 
     def paintEvent(self, event):
-        """ Paint the plot in the style of an LCD """
+        """Paint the plot in the style of an LCD"""
         painter = QPainter(self)
         try:
             painter.setRenderHint(QPainter.Antialiasing)
@@ -142,8 +150,12 @@ class PitchEnvPlot(QWidget):
             attack_samples = max(int(attack_time * self.sample_rate), 1)
             decay_samples = max(int(decay_time * self.sample_rate), 1)
 
-            attack = np.linspace(initial_level, peak_level, attack_samples, endpoint=False)
-            decay = np.linspace(peak_level, initial_level, decay_samples, endpoint=False)
+            attack = np.linspace(
+                initial_level, peak_level, attack_samples, endpoint=False
+            )
+            decay = np.linspace(
+                peak_level, initial_level, decay_samples, endpoint=False
+            )
             envelope = np.concatenate([attack, decay])
             total_samples = len(envelope)
             total_time = 10  # seconds
@@ -164,10 +176,14 @@ class PitchEnvPlot(QWidget):
 
             # Draw axes
             painter.setPen(axis_pen)
-            painter.drawLine(left_padding, top_padding, left_padding, top_padding + plot_h)  # Y-axis
+            painter.drawLine(
+                left_padding, top_padding, left_padding, top_padding + plot_h
+            )  # Y-axis
 
             zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
-            painter.drawLine(left_padding, zero_y, left_padding + plot_w, zero_y)  # X-axis at Y=0
+            painter.drawLine(
+                left_padding, zero_y, left_padding + plot_w, zero_y
+            )  # X-axis at Y=0
 
             # X-axis labels
             # painter.drawText(left_padding, zero_y + 20, "0")
@@ -191,11 +207,15 @@ class PitchEnvPlot(QWidget):
             # Draw top title
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("Consolas", 12))
-            painter.drawText(left_padding + plot_w / 2 - 40, top_padding / 2, "Pitch Envelope")
+            painter.drawText(
+                left_padding + plot_w / 2 - 40, top_padding / 2, "Pitch Envelope"
+            )
 
             # Draw X-axis label
             painter.setPen(QPen(QColor("white")))
-            painter.drawText(left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)")
+            painter.drawText(
+                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
+            )
 
             # Y-axis label rotated
             painter.save()
@@ -216,7 +236,9 @@ class PitchEnvPlot(QWidget):
                 y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
                 painter.drawLine(left_padding, y, left_padding + plot_w, y)
                 y_mirror = top_padding + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding, y_mirror, left_padding + plot_w, y_mirror)
+                painter.drawLine(
+                    left_padding, y_mirror, left_padding + plot_w, y_mirror
+                )
 
             # Draw envelope polyline
             if self.enabled:
@@ -239,4 +261,3 @@ class PitchEnvPlot(QWidget):
                     painter.drawPath(path)
         finally:
             painter.end()
-

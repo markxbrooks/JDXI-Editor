@@ -60,7 +60,9 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
@@ -74,16 +76,18 @@ PARAMETER_PART_MAP = {
     "TEMPORARY_DIGITAL_SYNTH_2_AREA": AddressParameterDigitalPartial,
     "ANALOG_PART": AddressParameterAnalog,
     "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
-    "COMMON": AddressParameterDigitalCommon
+    "COMMON": AddressParameterDigitalCommon,
 }
 
 
 class EnumWithAddress(Protocol):
     @classmethod
-    def message_position(cls) -> int: ...
+    def message_position(cls) -> int:
+        ...
 
     @classmethod
-    def get_parameter_by_address(cls, address: int) -> Optional[T]: ...
+    def get_parameter_by_address(cls, address: int) -> Optional[T]:
+        ...
 
 
 def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
@@ -232,7 +236,9 @@ class MIDIDebugger(QMainWindow):
             # Parse top-level SysEx components
             command_str, command_byte = parse_sysex_message(message, CommandID)
             area_str, area_byte = parse_sysex_message(message, AddressMemoryAreaMSB)
-            synth_str, synth_byte = parse_sysex_message(message, AddressOffsetTemporaryToneUMB)
+            synth_str, synth_byte = parse_sysex_message(
+                message, AddressOffsetTemporaryToneUMB
+            )
             part_str, part_byte = parse_sysex_message(message, AddressOffsetProgramLMB)
             part_address = hex(part_byte)
 
@@ -241,13 +247,17 @@ class MIDIDebugger(QMainWindow):
                 if parameter_enum is not None:
                     param_str, param = parse_sysex_message(message, parameter_enum)
                 else:
-                    raise ValueError(f"No parameter enum defined for synth type: {synth_str}")
+                    raise ValueError(
+                        f"No parameter enum defined for synth type: {synth_str}"
+                    )
                 param_address = hex(param)
             except Exception as ex:
                 log_error(f"Error {ex} parsing sysex bytes")
                 param = message[11]
                 param_address = hex(param)
-                param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
+                param_str = self.PARAMETERS.get(
+                    param, f"Unknown Parameter ({param_address})"
+                )
 
             # Get value
             value = message[12]
@@ -292,13 +302,15 @@ class MIDIDebugger(QMainWindow):
             "TEMPORARY_DIGITAL_SYNTH_2_AREA": AddressParameterDigitalPartial,
             "ANALOG_PART": AddressParameterAnalog,
             "DRUM_KIT_PART": AddressParameterDrumPartial,
-            "COMMON": AddressParameterDigitalCommon
+            "COMMON": AddressParameterDigitalCommon,
         }
         try:
             # Parse top-level SysEx components
             command_str, command_byte = parse_sysex_message(message, CommandID)
             area_str, area_byte = parse_sysex_message(message, AddressMemoryAreaMSB)
-            synth_str, synth_byte = parse_sysex_message(message, AddressOffsetTemporaryToneUMB)
+            synth_str, synth_byte = parse_sysex_message(
+                message, AddressOffsetTemporaryToneUMB
+            )
             part_str, part_byte = parse_sysex_message(message, AddressOffsetProgramLMB)
             part_address = hex(part_byte)
             try:
@@ -309,7 +321,9 @@ class MIDIDebugger(QMainWindow):
                 log_error(f"Error {ex} parsing sysex bytes")
                 param = message[11]
                 param_address = hex(param)
-                param_str = self.PARAMETERS.get(param, f"Unknown Parameter ({param_address})")
+                param_str = self.PARAMETERS.get(
+                    param, f"Unknown Parameter ({param_address})"
+                )
             # Get value
             value = message[12]
 
@@ -379,10 +393,10 @@ class MIDIDebugger(QMainWindow):
                 return
 
             # Normalize line breaks and whitespace
-            normalized = re.sub(r'\s+', ' ', text)
+            normalized = re.sub(r"\s+", " ", text)
 
             # Regex pattern to match all SysEx messages (F0 ... F7)
-            sysex_pattern = r'F0(?:\s[0-9A-Fa-f]{2})+?\sF7'
+            sysex_pattern = r"F0(?:\s[0-9A-Fa-f]{2})+?\sF7"
             matches = re.findall(sysex_pattern, normalized)
 
             if not matches:

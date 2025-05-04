@@ -17,7 +17,9 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -39,7 +41,7 @@ class DigitalOscillatorSection(QWidget):
         partial_number: int,
         midi_helper: MidiIOHelper,
         controls: list[QWidget],
-        address: RolandSysExAddress
+        address: RolandSysExAddress,
     ):
         super().__init__()
         self.partial_number = partial_number
@@ -84,7 +86,9 @@ class DigitalOscillatorSection(QWidget):
 
         top_row.addLayout(wave_layout)
         self.wave_variation_switch = self._create_parameter_switch(
-            AddressParameterDigitalPartial.OSC_WAVE_VARIATION, "Variation", ["A", "B", "C"]
+            AddressParameterDigitalPartial.OSC_WAVE_VARIATION,
+            "Variation",
+            ["A", "B", "C"],
         )
         top_row.addWidget(self.wave_variation_switch)
         layout.addLayout(top_row)
@@ -94,10 +98,14 @@ class DigitalOscillatorSection(QWidget):
         tuning_layout = QVBoxLayout()
         tuning_group.setLayout(tuning_layout)
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_PITCH, "Pitch (1/2 tones)")
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.OSC_PITCH, "Pitch (1/2 tones)"
+            )
         )
         tuning_layout.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.OSC_DETUNE, "Detune (cents)")
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.OSC_DETUNE, "Detune (cents)"
+            )
         )
         layout.addWidget(tuning_group)
 
@@ -109,10 +117,12 @@ class DigitalOscillatorSection(QWidget):
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
         )
         self.pw_mod_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth (of LFO applied)"
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+            "Mod Depth (of LFO applied)",
         )
         self.pw_shift_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT, "Shift (range of change)"
+            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
+            "Shift (range of change)",
         )
         pw_layout.addWidget(self.pw_slider)
         pw_layout.addWidget(self.pw_mod_slider)
@@ -124,7 +134,9 @@ class DigitalOscillatorSection(QWidget):
         pcm_layout = QGridLayout()
         pcm_group.setLayout(pcm_layout)
         self.pcm_wave_gain = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.PCM_WAVE_GAIN, "Gain [dB]", ["-6", "0", "+6", "+12"]
+            AddressParameterDigitalPartial.PCM_WAVE_GAIN,
+            "Gain [dB]",
+            ["-6", "0", "+6", "+12"],
         )
         self.pcm_wave_number = self._create_parameter_combo_box(
             AddressParameterDigitalPartial.PCM_WAVE_NUMBER,
@@ -180,7 +192,7 @@ class DigitalOscillatorSection(QWidget):
             decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
-            address=self.address
+            address=self.address,
         )
         self.pitch_env_widget.setStyleSheet(JDXIStyle.ADSR)
         pitch_env_layout.addWidget(self.pitch_env_widget)

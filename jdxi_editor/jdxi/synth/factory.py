@@ -4,8 +4,12 @@ Synth Factory
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, AddressMemoryAreaMSB, \
-    AddressOffsetTemporaryToneUMB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    AddressMemoryAreaMSB,
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetSuperNATURALLMB,
+)
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
@@ -35,22 +39,34 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
             lmb=address_lmb,
-            partial_number=partial_number
+            partial_number=partial_number,
         )
     elif synth_type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
-        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(partial_number)
+        address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(
+            partial_number
+        )
         if synth_type == JDXISynth.DIGITAL_1:
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+            digital_partial_address_umb = (
+                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+            )
             synth_number = 1
-        elif synth_type == JDXISynth.DIGITAL_2: # JDXISynth.DIGITAL_2
+        elif synth_type == JDXISynth.DIGITAL_2:  # JDXISynth.DIGITAL_2
             synth_number = 2
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA
+            digital_partial_address_umb = (
+                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA
+            )
         else:  # Default case
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+            digital_partial_address_umb = (
+                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+            )
             synth_number = 1
         return DigitalSynthData(
-            midi_requests=MidiRequests.DIGITAL2 if synth_number == 2 else MidiRequests.DIGITAL1,
-            midi_channel=MidiChannel.DIGITAL2 if synth_number == 2 else MidiChannel.DIGITAL1,
+            midi_requests=MidiRequests.DIGITAL2
+            if synth_number == 2
+            else MidiRequests.DIGITAL1,
+            midi_channel=MidiChannel.DIGITAL2
+            if synth_number == 2
+            else MidiChannel.DIGITAL1,
             presets=JDXIPresets.DIGITAL_ENUMERATED,
             preset_list=JDXIPresets.DIGITAL_LIST,
             preset_type=synth_type,
@@ -62,7 +78,7 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             umb=digital_partial_address_umb,
             lmb=address_lmb,
             synth_number=synth_number,
-            partial_number=partial_number
+            partial_number=partial_number,
         )
     elif synth_type == JDXISynth.ANALOG:
         return AnalogSynthData(
@@ -77,6 +93,6 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             display_prefix="AN",
             msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            lmb=AddressOffsetProgramLMB.COMMON
+            lmb=AddressOffsetProgramLMB.COMMON,
         )
     raise ValueError(f"Error occurred setting up {synth_type}")

@@ -25,10 +25,9 @@ def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> Q
     return sb
 
 
-def create_double_spinbox(min_value: float,
-                          max_value: float,
-                          step: float,
-                          value: int) -> QDoubleSpinBox:
+def create_double_spinbox(
+    min_value: float, max_value: float, step: float, value: int
+) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
     :param min_value: int
@@ -51,15 +50,17 @@ class PitchEnvSliderSpinbox(QWidget):
 
     envelopeChanged = Signal(dict)
 
-    def __init__(self,
-                 param: AddressParameter,
-                 min_value: float = 0.0,
-                 max_value: float = 1.0,
-                 suffix: str = "",
-                 label: str = "",
-                 value: int = None,
-                 create_parameter_slider: Callable = None,
-                 parent: QWidget = None):
+    def __init__(
+        self,
+        param: AddressParameter,
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+        suffix: str = "",
+        label: str = "",
+        value: int = None,
+        create_parameter_slider: Callable = None,
+        parent: QWidget = None,
+    ):
         """
         Initialize the ADSR slider and spinbox widget.
         :param param: AddressParameter
@@ -78,20 +79,23 @@ class PitchEnvSliderSpinbox(QWidget):
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
-        self.slider = self.create_parameter_slider(param,
-                                                   label,
-                                                   value,)
+        self.slider = self.create_parameter_slider(
+            param,
+            label,
+            value,
+        )
         param_type = param.get_envelope_param_type()
         if param_type in ["sustain_level", "peak_level"]:
-            self.spinbox = create_double_spinbox(min_value=min_value,
-                                                 max_value=max_value,
-                                                 step=0.01,
-                                                 value=value)
+            self.spinbox = create_double_spinbox(
+                min_value=min_value, max_value=max_value, step=0.01, value=value
+            )
         else:
-            self.spinbox = create_spinbox(min_value=int(min_value),
-                                          max_value=int(max_value),
-                                          suffix=suffix,
-                                          value=value)
+            self.spinbox = create_spinbox(
+                min_value=int(min_value),
+                max_value=int(max_value),
+                suffix=suffix,
+                value=value,
+            )
         self.spinbox.setRange(min_value, max_value)
 
         layout = QVBoxLayout()
@@ -135,7 +139,9 @@ class PitchEnvSliderSpinbox(QWidget):
         self.spinbox.blockSignals(True)
         self.spinbox.setValue(int(self.convert_to_envelope(value)))
         self.spinbox.blockSignals(False)
-        self.envelopeChanged.emit({self.param.get_envelope_param_type(): self.convert_to_envelope(value)})
+        self.envelopeChanged.emit(
+            {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
+        )
 
     def _spinbox_changed(self, value: float):
         """

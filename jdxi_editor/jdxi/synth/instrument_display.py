@@ -10,6 +10,7 @@ class InstrumentDisplayConfig:
     """
     Instrument Display Config
     """
+
     instrument_icon_folder: str
     instrument_default_image: str
     window_title: str

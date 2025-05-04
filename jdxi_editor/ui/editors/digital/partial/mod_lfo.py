@@ -4,7 +4,9 @@ MOD LFO section of the digital partial editor.
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 from typing import Callable
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 
 
 class DigitalModLFOSection(QWidget):
@@ -45,7 +47,9 @@ class DigitalModLFOSection(QWidget):
         top_row.addWidget(self.mod_lfo_shape)
 
         self.mod_lfo_sync = self._create_parameter_combo_box(
-            AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_SWITCH, "Sync", ["OFF", "ON"]
+            AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_SWITCH,
+            "Sync",
+            ["OFF", "ON"],
         )
         top_row.addWidget(self.mod_lfo_sync)
         mod_lfo_layout.addLayout(top_row)
@@ -53,7 +57,9 @@ class DigitalModLFOSection(QWidget):
         # Rate and note controls
         rate_row = QHBoxLayout()
         rate_row.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.MOD_LFO_RATE, "Rate")
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.MOD_LFO_RATE, "Rate"
+            )
         )
         self.mod_lfo_note = self._create_parameter_combo_box(
             AddressParameterDigitalPartial.MOD_LFO_TEMPO_SYNC_NOTE,
@@ -84,7 +90,9 @@ class DigitalModLFOSection(QWidget):
             )
         )
         depths_layout.addWidget(
-            self._create_parameter_slider(AddressParameterDigitalPartial.MOD_LFO_PAN, "Pan")
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.MOD_LFO_PAN, "Pan"
+            )
         )
 
         mod_lfo_layout.addWidget(depths_group)

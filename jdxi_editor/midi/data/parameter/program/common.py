@@ -169,5 +169,5 @@ class AddressParameterProgramCommon(AddressParameter):
         :return: Optional[object] The parameter
         Return the parameter member by name, or None if not found
         """
-  
+
         return AddressParameterProgramCommon.__members__.get(param_name, None)

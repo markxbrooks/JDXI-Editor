@@ -113,7 +113,10 @@ class MidiInHandler(MidiIOController):
                 self.midi_in.set_callback(self.midi_callback)
                 log_message(f"Callback reattached to MIDI input port {in_port}")
             else:
-                log_message("No handle_midi_input() method found for callback.", level=logging.WARNING)
+                log_message(
+                    "No handle_midi_input() method found for callback.",
+                    level=logging.WARNING,
+                )
             return True
 
         except Exception as ex:
@@ -139,7 +142,8 @@ class MidiInHandler(MidiIOController):
             self.midi_in.set_callback(callback)
         except Exception as ex:
             log_message(
-                f"Error {ex} occurred calling self.midi_in.set_callback(callback)")
+                f"Error {ex} occurred calling self.midi_in.set_callback(callback)"
+            )
 
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
@@ -197,7 +201,9 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         area = parsed_data.get("TEMPORARY_AREA")
-        log_message("================================================================================================")
+        log_message(
+            "================================================================================================"
+        )
         log_parameter("ADDRESS", address)
         log_parameter("TEMPORARY_AREA", area)
         log_parameter("TONE_NAME", tone_name)
@@ -208,7 +214,9 @@ class MidiInHandler(MidiIOController):
                 self._emit_program_name_signal(area, tone_name)
             else:
                 self._emit_tone_name_signal(area, tone_name)
-        log_message("================================================================================================")
+        log_message(
+            "================================================================================================"
+        )
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
@@ -227,7 +235,9 @@ class MidiInHandler(MidiIOController):
         }
         synth_type = synth_type_map.get(area)
         if synth_type:
-            log_message(f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type})")
+            log_message(
+                f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type})"
+            )
             self.update_tone_name.emit(tone_name, synth_type)
         else:
             logging.warning(f"Unknown area: {area}. Cannot emit tone name.")
@@ -251,7 +261,9 @@ class MidiInHandler(MidiIOController):
                 handle_identity_request(message)
             # Convert raw SysEx data to address hex string
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            log_parameter(f"SysEx message of length {len(message.data)} received:", hex_string)
+            log_parameter(
+                f"SysEx message of length {len(message.data)} received:", hex_string
+            )
 
             # Reconstruct SysEx message bytes
             sysex_message_bytes = bytes(
@@ -266,7 +278,10 @@ class MidiInHandler(MidiIOController):
                     self._emit_program_or_tone_name(parsed_data_dict)
                     json_log_folder = Path.home() / ".jdxi_editor" / "logs"
                     json_log_folder.mkdir(parents=True, exist_ok=True)
-                    json_log_file = json_log_folder / f"jdxi_tone_data_{parsed_data_dict['ADDRESS']}.json"
+                    json_log_file = (
+                        json_log_folder
+                        / f"jdxi_tone_data_{parsed_data_dict['ADDRESS']}.json"
+                    )
                     with open(json_log_file, "w", encoding="utf-8") as f:
                         json.dump(parsed_data_dict, f, ensure_ascii=False, indent=2)
                     # Emit the parsed data as a JSON string
@@ -289,7 +304,9 @@ class MidiInHandler(MidiIOController):
         channel = message.channel + 1
         control = message.control
         value = message.value
-        log_message(f"Control Change - Channel: {channel}, Control: {control}, Value: {value}")
+        log_message(
+            f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
+        )
         self.midi_control_changed.emit(channel, control, value)
         if control == 99:  # NRPN MSB
             self.nrpn_msb = value

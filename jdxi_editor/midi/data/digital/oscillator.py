@@ -1,8 +1,16 @@
 """Digital Oscillator"""
 from enum import IntEnum, Enum
 
-from jdxi_editor.midi.wave.form import Waveform, OSC_WAVE_SAW, OSC_WAVE_SQUARE, OSC_WAVE_TRIANGLE, OSC_WAVE_SINE, \
-    OSC_WAVE_NOISE, OSC_WAVE_SUPER_SAW, OSC_WAVE_PCM
+from jdxi_editor.midi.wave.form import (
+    Waveform,
+    OSC_WAVE_SAW,
+    OSC_WAVE_SQUARE,
+    OSC_WAVE_TRIANGLE,
+    OSC_WAVE_SINE,
+    OSC_WAVE_NOISE,
+    OSC_WAVE_SUPER_SAW,
+    OSC_WAVE_PCM,
+)
 
 
 class DigitalOscPcmWaveGain(IntEnum):

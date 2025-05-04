@@ -34,8 +34,18 @@ Example:
 """
 import re
 
-from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox, QLabel, \
-    QLineEdit, QHBoxLayout
+from PySide6.QtWidgets import (
+    QGroupBox,
+    QFormLayout,
+    QWidget,
+    QVBoxLayout,
+    QScrollArea,
+    QTabWidget,
+    QComboBox,
+    QLabel,
+    QLineEdit,
+    QHBoxLayout,
+)
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
@@ -48,11 +58,11 @@ class DrumWMTSection(QWidget):
     """Drum TVF Section for the JDXI Editor"""
 
     def __init__(
-            self,
-            controls,
-            create_parameter_combo_box,
-            create_parameter_slider,
-            midi_helper,
+        self,
+        controls,
+        create_parameter_combo_box,
+        create_parameter_slider,
+        midi_helper,
     ):
         super().__init__()
         """
@@ -134,40 +144,104 @@ class DrumWMTSection(QWidget):
         def p(name):  # helper to get DrumPartialParameter by name
             return getattr(AddressParameterDrumPartial, prefix + name)
 
-        self.wave_switch = self._create_parameter_combo_box(p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"], [0, 1])
+        self.wave_switch = self._create_parameter_combo_box(
+            p("WAVE_SWITCH"), "Wave Switch", ["OFF", "ON"], [0, 1]
+        )
         layout.addRow(self.wave_switch)
 
         rm_wave_groups = [
-
             "",  # Empty string for the first item
-
             # === Drum Machine Sources ===
-            "Drum Machines", "    606", "    626", "    707", "    808", "    909", "    78", "    106", "    TM-2",
-
+            "Drum Machines",
+            "    606",
+            "    626",
+            "    707",
+            "    808",
+            "    909",
+            "    78",
+            "    106",
+            "    TM-2",
             # === Musical Genres & Styles ===
-            "Genres/Styles", "    Ballad", "    Break", "    Dance", "    DanceHall", "    Hip-Hop", "    HipHop", "    Jazz",
-            "    Jungle", "    Ragga", "    Reggae", "    Rock",
-
+            "Genres/Styles",
+            "    Ballad",
+            "    Break",
+            "    Dance",
+            "    DanceHall",
+            "    Hip-Hop",
+            "    HipHop",
+            "    Jazz",
+            "    Jungle",
+            "    Ragga",
+            "    Reggae",
+            "    Rock",
             # === Sound Character & Texture ===
-            "Character", "    Analog", "    Bright", "    Dry", "    Hard", "    Lite", "    Lo-Bit", "    Lo-Fi", "    Old",
-            "    Plastic", "    Power", "    Tight", "    Turbo", "    Vint", "    Warm", "    Wet", "    Wide", "    Wild",
-
+            "Character",
+            "    Analog",
+            "    Bright",
+            "    Dry",
+            "    Hard",
+            "    Lite",
+            "    Lo-Bit",
+            "    Lo-Fi",
+            "    Old",
+            "    Plastic",
+            "    Power",
+            "    Tight",
+            "    Turbo",
+            "    Vint",
+            "    Warm",
+            "    Wet",
+            "    Wide",
+            "    Wild",
             # === Instrument Types ===
-            "Instruments" "    Kick", "    Snare", "    Tom", "    Clap", "    Cymbal", "    Crash",
-
+            "Instruments" "    Kick",
+            "    Snare",
+            "    Tom",
+            "    Clap",
+            "    Cymbal",
+            "    Crash",
             # === Percussion Types ===
-            "Percussion", "    Bongo", "    Brush", "    Brsh", "    Conga", "    Cowbell", "    Piccolo", "    Rim", "    Rimshot",
-            "    Stick", "    Cstick", "    Swish", "    Swish&Trn",
-
+            "Percussion",
+            "    Bongo",
+            "    Brush",
+            "    Brsh",
+            "    Conga",
+            "    Cowbell",
+            "    Piccolo",
+            "    Rim",
+            "    Rimshot",
+            "    Stick",
+            "    Cstick",
+            "    Swish",
+            "    Swish&Trn",
             # === Hi-Hats ===
-            "Hi-Hats", "    CHH", "    OHH", "    PHH", "    C&OHH", "    Tip",
-
+            "Hi-Hats",
+            "    CHH",
+            "    OHH",
+            "    PHH",
+            "    C&OHH",
+            "    Tip",
             # === Layer/Expression/Technique Tags ===
-            "Layer Tags", "    Jazz Rim", "    Jazz Snare", "    Jz", "    HphpJazz",
-
+            "Layer Tags",
+            "    Jazz Rim",
+            "    Jazz Snare",
+            "    Jz",
+            "    HphpJazz",
             # === Synthesis & Processing ===
-            "Synthesis",  "    Dst", "    Hush", "    Hash", "    LD", "    MG", "    Mix", "    PurePhat", "    SF", "    Sim", "    SimV",
-            "    Synth", "    TY", "    WD"
+            "Synthesis",
+            "    Dst",
+            "    Hush",
+            "    Hash",
+            "    LD",
+            "    MG",
+            "    Mix",
+            "    PurePhat",
+            "    SF",
+            "    Sim",
+            "    SimV",
+            "    Synth",
+            "    TY",
+            "    WD",
         ]
 
         # --- Combo and Search Controls for L Wave ---
@@ -184,14 +258,18 @@ class DrumWMTSection(QWidget):
         self.l_wave_selectors[wmt_index] = l_wave_selector
 
         # Combo box (wave list)
-        l_wave_combo = self._create_parameter_combo_box(p("WAVE_NUMBER_L"), "Wave Number L/Mono",
-                                                        rm_waves,
-                                                        list(range(453)))
+        l_wave_combo = self._create_parameter_combo_box(
+            p("WAVE_NUMBER_L"), "Wave Number L/Mono", rm_waves, list(range(453))
+        )
         self.l_wave_combos[wmt_index] = l_wave_combo
 
         # Connect both search & selector to populate method
-        l_wave_search_box.textChanged.connect(lambda _, i=wmt_index: self._populate_l_waves(i))
-        l_wave_selector.currentTextChanged.connect(lambda _, i=wmt_index: self._populate_l_waves(i))
+        l_wave_search_box.textChanged.connect(
+            lambda _, i=wmt_index: self._populate_l_waves(i)
+        )
+        l_wave_selector.currentTextChanged.connect(
+            lambda _, i=wmt_index: self._populate_l_waves(i)
+        )
 
         # Add widgets to layout
         search_row = QHBoxLayout()
@@ -220,14 +298,18 @@ class DrumWMTSection(QWidget):
         self.r_wave_selectors[wmt_index] = r_wave_selector
 
         # Combo box (wave list)
-        r_wave_combo = self._create_parameter_combo_box(p("WAVE_NUMBER_R"), "Wave Number R",
-                                                        rm_waves,
-                                                        list(range(453)))
+        r_wave_combo = self._create_parameter_combo_box(
+            p("WAVE_NUMBER_R"), "Wave Number R", rm_waves, list(range(453))
+        )
         self.r_wave_combos[wmt_index] = r_wave_combo
 
         # Connect both search & selector to populate method
-        r_wave_search_box.textChanged.connect(lambda _, i=wmt_index: self._populate_r_waves(i))
-        r_wave_selector.currentTextChanged.connect(lambda _, i=wmt_index: self._populate_r_waves(i))
+        r_wave_search_box.textChanged.connect(
+            lambda _, i=wmt_index: self._populate_r_waves(i)
+        )
+        r_wave_selector.currentTextChanged.connect(
+            lambda _, i=wmt_index: self._populate_r_waves(i)
+        )
 
         # Add widgets to layout
         r_search_row = QHBoxLayout()
@@ -239,31 +321,74 @@ class DrumWMTSection(QWidget):
         layout.addRow(r_wave_combo)
 
         layout.addRow(
-            self._create_parameter_combo_box(p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]))
-        layout.addRow(self._create_parameter_combo_box(p("WAVE_GAIN"), "Wave FXM Switch", ["OFF", "ON"],
-                                                       [0, 1]))  # If this is correct — maybe it’s a typo?
+            self._create_parameter_combo_box(
+                p("WAVE_GAIN"), "Wave Gain", ["-6", "0", "6", "12"], [0, 1, 2, 3]
+            )
+        )
+        layout.addRow(
+            self._create_parameter_combo_box(
+                p("WAVE_GAIN"), "Wave FXM Switch", ["OFF", "ON"], [0, 1]
+            )
+        )  # If this is correct — maybe it’s a typo?
 
         # Sliders
-        layout.addRow(self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color"))
-        layout.addRow(self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth"))
-        layout.addRow(self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync"))
-        layout.addRow(self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune"))
-        layout.addRow(self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune"))
+        layout.addRow(
+            self._create_parameter_slider(p("WAVE_FXM_COLOR"), "Wave FXM Color")
+        )
+        layout.addRow(
+            self._create_parameter_slider(p("WAVE_FXM_DEPTH"), "Wave FXM Depth")
+        )
+        layout.addRow(
+            self._create_parameter_slider(p("WAVE_TEMPO_SYNC"), "Wave Tempo Sync")
+        )
+        layout.addRow(
+            self._create_parameter_slider(p("WAVE_COARSE_TUNE"), "Wave Coarse Tune")
+        )
+        layout.addRow(
+            self._create_parameter_slider(p("WAVE_FINE_TUNE"), "Wave Fine Tune")
+        )
         layout.addRow(self._create_parameter_slider(p("WAVE_PAN"), "Wave Pan"))
 
         # More combo boxes
         layout.addRow(
-            self._create_parameter_combo_box(p("WAVE_RANDOM_PAN_SWITCH"), "Wave Random Pan Switch", ["OFF", "ON"],
-                                             [0, 1]))
-        layout.addRow(self._create_parameter_combo_box(p("WAVE_ALTERNATE_PAN_SWITCH"), "Wave Alternate Pan Switch",
-                                                       ["OFF", "ON", "REVERSE"], [0, 1, 2]))
+            self._create_parameter_combo_box(
+                p("WAVE_RANDOM_PAN_SWITCH"),
+                "Wave Random Pan Switch",
+                ["OFF", "ON"],
+                [0, 1],
+            )
+        )
+        layout.addRow(
+            self._create_parameter_combo_box(
+                p("WAVE_ALTERNATE_PAN_SWITCH"),
+                "Wave Alternate Pan Switch",
+                ["OFF", "ON", "REVERSE"],
+                [0, 1, 2],
+            )
+        )
 
         # More sliders
         layout.addRow(self._create_parameter_slider(p("WAVE_LEVEL"), "Wave Level"))
-        layout.addRow(self._create_parameter_slider(p("VELOCITY_RANGE_LOWER"), "Velocity Range Lower"))
-        layout.addRow(self._create_parameter_slider(p("VELOCITY_RANGE_UPPER"), "Velocity Range Upper"))
-        layout.addRow(self._create_parameter_slider(p("VELOCITY_FADE_WIDTH_LOWER"), "Velocity Fade Width Lower"))
-        layout.addRow(self._create_parameter_slider(p("VELOCITY_FADE_WIDTH_UPPER"), "Velocity Fade Width Upper"))
+        layout.addRow(
+            self._create_parameter_slider(
+                p("VELOCITY_RANGE_LOWER"), "Velocity Range Lower"
+            )
+        )
+        layout.addRow(
+            self._create_parameter_slider(
+                p("VELOCITY_RANGE_UPPER"), "Velocity Range Upper"
+            )
+        )
+        layout.addRow(
+            self._create_parameter_slider(
+                p("VELOCITY_FADE_WIDTH_LOWER"), "Velocity Fade Width Lower"
+            )
+        )
+        layout.addRow(
+            self._create_parameter_slider(
+                p("VELOCITY_FADE_WIDTH_UPPER"), "Velocity Fade Width Upper"
+            )
+        )
 
         return layout
 
@@ -288,7 +413,8 @@ class DrumWMTSection(QWidget):
                 combo.combo_box.addItem(wave, index_in_rm_waves)
 
             log_message(
-                f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'")
+                f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'"
+            )
         except Exception as ex:
             log_error(f"WMT{wmt_index}: Error filtering L waves:", exception=ex)
 
@@ -312,7 +438,8 @@ class DrumWMTSection(QWidget):
                 index_in_rm_waves = rm_waves.index(wave)
                 combo.combo_box.addItem(wave, index_in_rm_waves)
             log_message(
-                f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'")
+                f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'"
+            )
         except Exception as ex:
             log_error(f"WMT{wmt_index}: Error filtering R waves: {ex}")
 

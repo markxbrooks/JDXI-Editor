@@ -39,6 +39,7 @@ from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPar
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
+
 class DrumTVFSection(QWidget):
     """Drum TVF Section for the JDXI Editor"""
 

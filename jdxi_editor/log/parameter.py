@@ -22,6 +22,7 @@ def log_parameter(
     :param max_length: int The max length.
     :param level: int The log level.
     """
+
     def format_value(param):
         if param is None:
             return "None"
@@ -42,7 +43,7 @@ def log_parameter(
     formatted_value = format_value(parameter)
 
     if len(formatted_value) > max_length:
-        formatted_value = formatted_value[:max_length - 3] + "..."
+        formatted_value = formatted_value[: max_length - 3] + "..."
 
     # Style formatting
     padded_message = f"{message:<{LOG_PADDING_WIDTH}}"
@@ -50,10 +51,16 @@ def log_parameter(
 
     # Emoji & MIDI context
     emoji = LEVEL_EMOJIS.get(level, "🔔")
-    midi_tag = "🎵" if any(word in message.lower() for word in ["midi", "sysex", "address"]) else ""
+    midi_tag = (
+        "🎵"
+        if any(word in message.lower() for word in ["midi", "sysex", "address"])
+        else ""
+    )
 
     # Compose final log message
-    final_message = f"{emoji} {midi_tag} {padded_message} {padded_type} {formatted_value}".rstrip()
+    final_message = (
+        f"{emoji} {midi_tag} {padded_message} {padded_type} {formatted_value}".rstrip()
+    )
 
     if LOGGING:
         # Dispatch to appropriate logging level

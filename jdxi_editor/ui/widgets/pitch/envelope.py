@@ -37,16 +37,17 @@ class PitchEnvelope(QWidget):
     """
     Pitch Envelope Class
     """
+
     pitchEnvelopeChanged = Signal(dict)
 
     def __init__(
-            self,
-            attack_param: AddressParameter,
-            decay_param: AddressParameter,
-            depth_param: AddressParameter,
-            midi_helper: Optional[MidiIOHelper] = None,
-            address: Optional[RolandSysExAddress] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        attack_param: AddressParameter,
+        decay_param: AddressParameter,
+        depth_param: AddressParameter,
+        midi_helper: Optional[MidiIOHelper] = None,
+        address: Optional[RolandSysExAddress] = None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         self.address = address
@@ -106,10 +107,9 @@ class PitchEnvelope(QWidget):
             "decay_time": self.decay_control.spinbox,
             "peak_level": self.depth_control.spinbox,
         }
-        self.plot = PitchEnvPlot(width=300,
-                                 height=250,
-                                 envelope=self.envelope,
-                                 parent=self)
+        self.plot = PitchEnvPlot(
+            width=300, height=250, envelope=self.envelope, parent=self
+        )
         self.layout.addWidget(self.plot, 0, 4, 3, 1)
         self.plot.set_values(self.envelope)
         for control in self.pitch_envelope_controls:
@@ -172,10 +172,9 @@ class PitchEnvelope(QWidget):
         self.plot.set_values(self.envelope)
         self.pitchEnvelopeChanged.emit(self.envelope)
 
-    def _create_parameter_slider(self,
-                                 param: AddressParameter,
-                                 label: str,
-                                 value: int = None) -> Slider:
+    def _create_parameter_slider(
+        self, param: AddressParameter, label: str, value: int = None
+    ) -> Slider:
         """
         Create address slider for address parameter with proper display conversion
         :param param: AddressParameter
@@ -188,22 +187,24 @@ class PitchEnvelope(QWidget):
         else:
             display_min, display_max = param.min_val, param.max_val
         # Create vertical slider
-        slider = Slider(label,
-                        display_min,
-                        display_max,
-                        vertical=True,
-                        show_value_label=False,
-                        is_bipolar=param.is_bipolar)
+        slider = Slider(
+            label,
+            display_min,
+            display_max,
+            vertical=True,
+            show_value_label=False,
+            is_bipolar=param.is_bipolar,
+        )
         slider.setValue(value)
         # Connect value changed signal
-        slider.valueChanged.connect(lambda v, s=slider: self.update_envelope_from_slider(s))
+        slider.valueChanged.connect(
+            lambda v, s=slider: self.update_envelope_from_slider(s)
+        )
         slider.valueChanged.connect(lambda v: self.send_parameter_message(param, v))
         self.controls[param] = slider
         return slider
 
-    def send_parameter_message(self,
-                               param: AddressParameter,
-                               value: int) -> None:
+    def send_parameter_message(self, param: AddressParameter, value: int) -> None:
         """
         Handle slider value changes and send midi message
         :param param: AddressParameter
@@ -223,9 +224,7 @@ class PitchEnvelope(QWidget):
         except ValueError as ex:
             log_error(f"Error updating parameter: {ex}")
 
-    def _on_parameter_changed(self,
-                              param: AddressParameter,
-                              value: int) -> None:
+    def _on_parameter_changed(self, param: AddressParameter, value: int) -> None:
         """
         Handle parameter value changes and update envelope accordingly
         :param param: AddressParameter
@@ -250,7 +249,9 @@ class PitchEnvelope(QWidget):
                 elif envelope_param_type == "peak_level":
                     self.envelope["sustain_level"] = slider.value() / 127
                 else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(slider.value(), min_time=10, max_time=5000)
+                    self.envelope[envelope_param_type] = midi_value_to_ms(
+                        slider.value(), min_time=10, max_time=5000
+                    )
                 break
 
     def log_envelope(self) -> None:
@@ -272,7 +273,9 @@ class PitchEnvelope(QWidget):
                     pass
                     # self.envelope["peak_level"] = (slider.value() / 127)
                 else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(slider.value())
+                    self.envelope[envelope_param_type] = midi_value_to_ms(
+                        slider.value()
+                    )
             log_message(f"{self.envelope}")
         except Exception as ex:
             log_error(f"Error updating envelope from controls: {ex}")
@@ -289,14 +292,14 @@ class PitchEnvelope(QWidget):
                     pass
                     # slider.setValue(int((self.envelope["peak_level"] + 0.5) * 127))
                 else:
-                    slider.setValue(int(ms_to_midi_value(self.envelope[envelope_param_type])))
+                    slider.setValue(
+                        int(ms_to_midi_value(self.envelope[envelope_param_type]))
+                    )
         except Exception as ex:
             log_error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
-    def send_midi_parameter(self,
-                            param: AddressParameter,
-                            value: int) -> bool:
+    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
         Send MIDI parameter with error handling
         :param param: AddressParameter
@@ -306,9 +309,7 @@ class PitchEnvelope(QWidget):
         if not self.midi_helper:
             log_message("No MIDI helper available - parameter change ignored")
             return False
-        address = apply_address_offset(
-            self.address, param
-        )
+        address = apply_address_offset(self.address, param)
 
         try:
             sysex_message = RolandSysEx(

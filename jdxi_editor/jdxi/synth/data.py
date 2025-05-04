@@ -1,7 +1,11 @@
 from dataclasses import dataclass, field
 from typing import Dict
 
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    RolandSysExAddress,
+    ZERO_BYTE,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.jdxi.synth.instrument_display import InstrumentDisplayConfig
 from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig
 
@@ -9,6 +13,7 @@ from jdxi_editor.jdxi.synth.midi_config import MidiSynthConfig
 @dataclass
 class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
     """Synth Data"""
+
     msb: int
     umb: int
     lmb: int
@@ -17,10 +22,7 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
     def __post_init__(self):
         """Post Init"""
         self.address = RolandSysExAddress(
-            msb=self.msb,
-            umb=self.umb,
-            lmb=self.lmb,
-            lsb=ZERO_BYTE
+            msb=self.msb, umb=self.umb, lmb=self.lmb, lsb=ZERO_BYTE
         )
 
     @property

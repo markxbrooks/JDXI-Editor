@@ -13,5 +13,7 @@ def log_footer_message(message: str, level: int = logging.INFO) -> None:
     :return: None
     """
     log_message(f"  {message}", level=level)
-    log_message("============================================================================================", level=level)
-
+    log_message(
+        "============================================================================================",
+        level=level,
+    )

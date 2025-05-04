@@ -6,16 +6,17 @@ import logging
 
 from jdxi_editor.globals import logger
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetTemporaryToneUMB,
+    AddressOffsetSuperNATURALLMB,
+)
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
-def log_adsr_parameter(umb: int,
-                       lmb: int,
-                       param: AddressParameter,
-                       value: int,
-                       level: int = logging.INFO) -> None:
+def log_adsr_parameter(
+    umb: int, lmb: int, param: AddressParameter, value: int, level: int = logging.INFO
+) -> None:
     """
     Log slider parameters for debugging.
     :param umb: int The UMB

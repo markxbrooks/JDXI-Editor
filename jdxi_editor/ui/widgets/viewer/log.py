@@ -101,5 +101,7 @@ class LogHandler(logging.Handler):
         # midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
         # jdxi_tag = "🎹" if "jdxi" or "jd-xi" in message.lower() in message.lower() else ""
         # qc_passed_tag = "✅" if "updat" in message.lower() or "success" in message.lower() else ""
-        full_message = message  # f"{emoji}{jdxi_tag}{qc_passed_tag}{midi_tag} {message}"
+        full_message = (
+            message  # f"{emoji}{jdxi_tag}{qc_passed_tag}{midi_tag} {message}"
+        )
         self.text_widget.append(full_message)

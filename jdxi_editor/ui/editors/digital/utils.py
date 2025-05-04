@@ -13,10 +13,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 
 
-def _log_debug_info(data: list,
-                    successes: list,
-                    failures: list,
-                    enabled: bool) -> None:
+def _log_debug_info(data: list, successes: list, failures: list, enabled: bool) -> None:
     """
     Log debug information about the SysEx data.
     :param data: list
@@ -31,7 +28,9 @@ def _log_debug_info(data: list,
     log_message(f"successes: \t{successes}")
     log_message(f"failures: \t{failures}")
     log_message(f"success rate: \t{success_rate:.1f}%")
-    log_message("\n======================================================================================================")
+    log_message(
+        "\n======================================================================================================"
+    )
 
 
 def filter_sysex_keys(sysex_data: dict) -> dict:
@@ -111,7 +110,10 @@ def _log_synth_area_info(sysex_data: dict) -> None:
     :return: None
     """
     if not _is_valid_sysex_area(sysex_data):
-        log_message("SysEx data not from a valid digital synth area. Skipping.", level=logging.WARNING)
+        log_message(
+            "SysEx data not from a valid digital synth area. Skipping.",
+            level=logging.WARNING,
+        )
         return
 
 

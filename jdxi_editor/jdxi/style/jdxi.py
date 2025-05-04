@@ -328,7 +328,7 @@ class JDXIStyle:
         SLIDER_GROOVE,
         SLIDER_NEON,
         SLIDER_NEON_GRADIENT_STOP,
-        'bold'
+        "bold",
     )
 
     EDITOR_ANALOG = generate_editor_style(

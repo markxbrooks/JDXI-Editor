@@ -44,7 +44,6 @@ from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-
 def map_range(value, in_min=-100, in_max=100, out_min=54, out_max=74):
     return int(out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min))
 
@@ -296,7 +295,7 @@ class AddressParameterDigitalPartial(AddressParameter):
         """
         Returns a envelope_param_type, if the parameter is part of an envelope,
         otherwise returns None.
-        
+
         :return: Optional[str] The envelope parameter type
         """
         return ENVELOPE_MAPPING.get(self.name)

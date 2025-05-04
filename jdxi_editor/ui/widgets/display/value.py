@@ -6,7 +6,7 @@ from PySide6.QtCore import Qt, Signal
 
 
 class ValueDisplay(QWidget):
-    """Value Display Widget"""  
+    """Value Display Widget"""
 
     valueChanged = Signal(int)
 

@@ -87,10 +87,10 @@ class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
     def __init__(
-            self,
-            midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional[JDXIPresetHelper] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        preset_helper: Optional[JDXIPresetHelper] = None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
         """
@@ -221,7 +221,7 @@ class AnalogSynthEditor(SynthEditor):
             self._on_waveform_selected,
             self.wave_buttons,
             self.midi_helper,
-            self.address
+            self.address,
         )
         self.tab_widget.addTab(
             self.oscillator_section,
@@ -234,7 +234,7 @@ class AnalogSynthEditor(SynthEditor):
             self._on_filter_mode_changed,
             self.send_control_change,
             self.midi_helper,
-            self.synth_data.address
+            self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
@@ -314,7 +314,9 @@ class AnalogSynthEditor(SynthEditor):
             if param:
                 log_message(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
             elif param == AddressParameterAnalog.FILTER_MODE_SWITCH:
-                self.update_filter_state(value=AddressParameterAnalog.FILTER_MODE_SWITCH.value)
+                self.update_filter_state(
+                    value=AddressParameterAnalog.FILTER_MODE_SWITCH.value
+                )
                 if param in self.controls:
                     self._update_slider(param, param.value)
                 # Handle OSC_WAVE parameter to update waveform buttons
@@ -385,10 +387,13 @@ class AnalogSynthEditor(SynthEditor):
                 selected_btn.setChecked(True)
                 selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
-    def update_slider(self, param: AddressParameterAnalog,
-                      value: int,
-                      successes: list = None,
-                      failures: list = None) -> None:
+    def update_slider(
+        self,
+        param: AddressParameterAnalog,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
         """
         Helper function to update sliders safely.
         :param param: AddressParameterAnalog value
@@ -404,15 +409,19 @@ class AnalogSynthEditor(SynthEditor):
             slider.setValue(slider_value)
             slider.blockSignals(False)
             successes.append(param.name)
-            log_slider_parameters(self.address.umb, self.address.lmb, param, value, slider_value)
+            log_slider_parameters(
+                self.address.umb, self.address.lmb, param, value, slider_value
+            )
         else:
             failures.append(param.name)
 
-    def update_adsr_widget(self,
-                           parameter: AddressParameterAnalog,
-                           value: int,
-                           successes: list = None,
-                           failures: list = None) -> None:
+    def update_adsr_widget(
+        self,
+        parameter: AddressParameterAnalog,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
         """
         Helper function to update ADSR widgets.
         :param parameter: AddressParameterAnalog value
@@ -424,10 +433,10 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-               in [
-                   AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
-                   AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
-               ]
+            in [
+                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
+                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
+            ]
             else midi_value_to_ms(value)
         )
 
@@ -438,10 +447,13 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def update_pitch_env_widget(self,
-                                parameter: AddressParameterAnalog,
-                                value: int, successes: list = None,
-                                failures: list = None) -> None:
+    def update_pitch_env_widget(
+        self,
+        parameter: AddressParameterAnalog,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
         """
         Helper function to update ADSR widgets.
         :param parameter: AddressParameterAnalog value
@@ -453,9 +465,9 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-               in [
-                   AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
-               ]
+            in [
+                AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
+            ]
             else midi_value_to_ms(value, 10, 1000)
         )
 
@@ -466,8 +478,7 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def _dispatch_sysex_to_area(self,
-                                json_sysex_data: str):
+    def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str JSON SysEx data
@@ -481,7 +492,9 @@ class AnalogSynthEditor(SynthEditor):
 
         if temp_area != "TEMPORARY_ANALOG_SYNTH_AREA" or synth_tone != "TONE_COMMON":
             return
-        log_header_message(f"Updating {temp_area} {synth_tone} UI components from SysEx data")
+        log_header_message(
+            f"Updating {temp_area} {synth_tone} UI components from SysEx data"
+        )
 
         # Compare with previous data and log changes
         if self.previous_json_data:
@@ -495,13 +508,22 @@ class AnalogSynthEditor(SynthEditor):
             "JD_XI_HEADER",
             "ADDRESS",
             "TEMPORARY_AREA",
-            "TONE_NAME", "TONE_NAME_1", "TONE_NAME_2", "TONE_NAME_3", "TONE_NAME_4", "TONE_NAME_5", "TONE_NAME_6",
-            "TONE_NAME_7", "TONE_NAME_8", "TONE_NAME_9", "TONE_NAME_10", "TONE_NAME_11", "TONE_NAME_12",
+            "TONE_NAME",
+            "TONE_NAME_1",
+            "TONE_NAME_2",
+            "TONE_NAME_3",
+            "TONE_NAME_4",
+            "TONE_NAME_5",
+            "TONE_NAME_6",
+            "TONE_NAME_7",
+            "TONE_NAME_8",
+            "TONE_NAME_9",
+            "TONE_NAME_10",
+            "TONE_NAME_11",
+            "TONE_NAME_12",
             "SYNTH_TONE",
         }
-        sysex_data = {
-            k: v for k, v in sysex_data.items() if k not in ignored_keys
-        }
+        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
         failures, successes = [], []
 
@@ -525,8 +547,8 @@ class AnalogSynthEditor(SynthEditor):
                 #    if nrpn_address:
                 #        self._handle_nrpn_message(nrpn_address, param_value, channel=1)
                 if (
-                        param_name == "SUB_OSCILLATOR_TYPE"
-                        and param_value in self.sub_osc_type_map
+                    param_name == "SUB_OSCILLATOR_TYPE"
+                    and param_value in self.sub_osc_type_map
                 ):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(
                         True
@@ -537,17 +559,26 @@ class AnalogSynthEditor(SynthEditor):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(
                         False
                     )
-                elif param_name == "OSC_WAVEFORM" and param_value in self.osc_waveform_map:
+                elif (
+                    param_name == "OSC_WAVEFORM"
+                    and param_value in self.osc_waveform_map
+                ):
                     self._update_waveform_buttons(param_value)
-                elif param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons:
+                elif (
+                    param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
+                ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
-                    self.controls[AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH].setValue(param_value)
+                    self.controls[
+                        AddressParameterAnalog.LFO_TEMPO_SYNC_SWITCH
+                    ].setValue(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_NOTE":
-                    self.controls[AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE].setValue(param_value)
+                    self.controls[AddressParameterAnalog.LFO_TEMPO_SYNC_NOTE].setValue(
+                        param_value
+                    )
                 elif (
-                        param == AddressParameterAnalog.FILTER_MODE_SWITCH
-                        and param_value in self.filter_switch_map
+                    param == AddressParameterAnalog.FILTER_MODE_SWITCH
+                    and param_value in self.filter_switch_map
                 ):
                     self.filter_section.filter_mode_switch.blockSignals(True)
                     self.filter_section.filter_mode_switch.setValue(
@@ -565,32 +596,27 @@ class AnalogSynthEditor(SynthEditor):
                     AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
                     AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
                 ]:
-                    self.update_adsr_widget(param,
-                                            param_value,
-                                            successes,
-                                            failures)
+                    self.update_adsr_widget(param, param_value, successes, failures)
                 elif param in self.pitch_env_mapping:
-                    self.update_pitch_env_widget(param,
-                                                 param_value,
-                                                 successes,
-                                                 failures)
+                    self.update_pitch_env_widget(
+                        param, param_value, successes, failures
+                    )
                 else:
-                    self.update_slider(param,
-                                       param_value,
-                                       successes,
-                                       failures)
+                    self.update_slider(param, param_value, successes, failures)
 
             else:
                 failures.append(param_name)
 
         log_message(f"Updated {len(successes)} parameters successfully.")
         if failures:
-            log_message(f"Failed to update {len(failures)} parameters: {failures}", level=logging.WARNING)
+            log_message(
+                f"Failed to update {len(failures)} parameters: {failures}",
+                level=logging.WARNING,
+            )
 
-    def update_switch(self, switch: Switch,
-                      value: int,
-                      successes: list = None,
-                      failures: list = None) -> None:
+    def update_switch(
+        self, switch: Switch, value: int, successes: list = None, failures: list = None
+    ) -> None:
         """
         Update switch state and log success/failure.
         :param switch: QWidget representing the switch
@@ -667,7 +693,9 @@ class AnalogSynthEditor(SynthEditor):
         pw_enabled = waveform == AnalogOscWave.PULSE
         log_message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
-        self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(pw_enabled)
+        self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
+            pw_enabled
+        )
         # Update the visual state
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setStyleSheet(
             "" if pw_enabled else "QSlider::groove:vertical { background: #000000; }"

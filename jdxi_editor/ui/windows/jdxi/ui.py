@@ -29,7 +29,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QMessageBox,
-    QLabel, QLayout,
+    QLabel,
+    QLayout,
 )
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import (
@@ -47,7 +48,10 @@ from jdxi_editor.jdxi.preset.manager import JDXIPresetManager
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.sysex.requests import MidiRequests
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name, get_program_name_by_id
+from jdxi_editor.ui.editors.helpers.program import (
+    get_preset_list_number_by_name,
+    get_program_name_by_id,
+)
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.jdxi.style.jdxi import JDXIStyle
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
@@ -214,7 +218,9 @@ class JdxiUi(QMainWindow):
         # File menu
         file_menu = menubar.addMenu("File")
 
-        load_program_action = QAction(qta.icon("msc.folder-opened"), "Load Program...", self)
+        load_program_action = QAction(
+            qta.icon("msc.folder-opened"), "Load Program...", self
+        )
         load_program_action.triggered.connect(lambda: self.show_editor("program"))
         file_menu.addAction(load_program_action)
 
@@ -382,7 +388,9 @@ class JdxiUi(QMainWindow):
             logging.warning("MIDI_SLEEP_TIME. Defaulting to DIGITAL_1.")
             synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
 
-        self.preset_manager.current_preset_name = self.preset_manager.get_preset_name_by_type(self.current_synth_type)
+        self.preset_manager.current_preset_name = (
+            self.preset_manager.get_preset_name_by_type(self.current_synth_type)
+        )
         # Update preset number
         self.preset_manager.current_preset_number = get_preset_list_number_by_name(
             self.preset_manager.current_preset_name, synth_data.preset_list
@@ -391,7 +399,9 @@ class JdxiUi(QMainWindow):
         self.digital_display.repaint_display(
             current_octave=self.current_octave,
             tone_number=self.preset_manager.current_preset_number,
-            tone_name=self.preset_manager.get_preset_name_by_type(self.current_synth_type),
+            tone_name=self.preset_manager.get_preset_name_by_type(
+                self.current_synth_type
+            ),
             program_name=self.current_program_name,
             active_synth=synth_data.display_prefix,
         )
@@ -400,8 +410,7 @@ class JdxiUi(QMainWindow):
         """Load the digital LCD font for the display"""
 
         font_name = "JdLCD.ttf"
-        font_path = resource_path(os.path.join("resources", "fonts", font_name
-                                               ))
+        font_path = resource_path(os.path.join("resources", "fonts", font_name))
         if os.path.exists(font_path):
             log_message("Success: found font file, loading...")
             log_message(f"font_name: \t{font_name}")
@@ -413,13 +422,16 @@ class JdxiUi(QMainWindow):
                 font_families = QFontDatabase.applicationFontFamilies(font_id)
                 if font_families:
                     self.digital_font_family = font_families[0]
-                    log_message(f"Successfully loaded font family: \t{self.digital_font_family}", )
+                    log_message(
+                        f"Successfully loaded font family: \t{self.digital_font_family}",
+                    )
                 else:
-                    log_message("No font families found after loading font", level=logging.WARNING)
+                    log_message(
+                        "No font families found after loading font",
+                        level=logging.WARNING,
+                    )
             except Exception as ex:
-                log_error(
-                    f"Error loading {font_name} font from {font_path}: {ex}"
-                )
+                log_error(f"Error loading {font_name} font from {font_path}: {ex}")
         else:
             log_message(f"File not found: {font_path}")
 
@@ -429,7 +441,9 @@ class JdxiUi(QMainWindow):
         self.preset_manager.current_preset_name = preset_name
         self._update_display()
 
-    def _update_display_preset(self, preset_number: int, preset_name: str, channel: int):
+    def _update_display_preset(
+        self, preset_number: int, preset_name: str, channel: int
+    ):
         """Update the display with the new preset information."""
         log_message(
             f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
@@ -522,7 +536,9 @@ class JdxiUi(QMainWindow):
     def _select_synth(self, synth_type):
         raise NotImplementedError("Should be implemented in subclass")
 
-    def _show_favorite_context_menu(self, pos, button: Union[FavoriteButton, SequencerSquare]):
+    def _show_favorite_context_menu(
+        self, pos, button: Union[FavoriteButton, SequencerSquare]
+    ):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _save_favorite(self, button, idx):

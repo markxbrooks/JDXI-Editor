@@ -5,12 +5,16 @@ Digital Synth Data
 from dataclasses import dataclass
 
 from jdxi_editor.jdxi.synth.data import JDXISynthData
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import (
+    AddressOffsetProgramLMB,
+    AddressOffsetSuperNATURALLMB,
+)
 
 
 @dataclass
 class DigitalSynthData(JDXISynthData):
     """Digital Synth Data"""
+
     synth_number: int = 1
     partial_number: int = 0
 
@@ -38,6 +42,6 @@ class DigitalSynthData(JDXISynthData):
 
     @property
     def partial_lmb(self) -> int:
-        """Partial LMB"""       
+        """Partial LMB"""
         # Use group_map lookup
         return self.group_map.get(self.partial_number, AddressOffsetProgramLMB.COMMON)

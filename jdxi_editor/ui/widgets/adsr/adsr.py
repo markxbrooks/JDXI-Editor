@@ -38,16 +38,16 @@ class ADSR(QWidget):
     envelopeChanged = Signal(dict)
 
     def __init__(
-            self,
-            attack_param: AddressParameter,
-            decay_param: AddressParameter,
-            sustain_param: AddressParameter,
-            release_param: AddressParameter,
-            initial_param: Optional[AddressParameter] = None,
-            peak_param: Optional[AddressParameter] = None,
-            midi_helper: Optional[MidiIOHelper] = None,
-            address: Optional[RolandSysExAddress] = None,
-            parent: Optional[QWidget] = None,
+        self,
+        attack_param: AddressParameter,
+        decay_param: AddressParameter,
+        sustain_param: AddressParameter,
+        release_param: AddressParameter,
+        initial_param: Optional[AddressParameter] = None,
+        peak_param: Optional[AddressParameter] = None,
+        midi_helper: Optional[MidiIOHelper] = None,
+        address: Optional[RolandSysExAddress] = None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         """
@@ -196,10 +196,9 @@ class ADSR(QWidget):
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
-    def _create_parameter_slider(self,
-                                 param: AddressParameter,
-                                 label: str,
-                                 value: int = None) -> Slider:
+    def _create_parameter_slider(
+        self, param: AddressParameter, label: str, value: int = None
+    ) -> Slider:
         """
         Create address slider for address parameter with proper display conversion
         :param param: AddressParameter
@@ -242,7 +241,9 @@ class ADSR(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
             else:
-                log_slider_parameters(self.address.umb, self.address.lmb, param, value, midi_value)
+                log_slider_parameters(
+                    self.address.umb, self.address.lmb, param, value, midi_value
+                )
         except ValueError as ex:
             log_error(f"Error updating parameter: {ex}")
         # 4) Update plot
@@ -257,7 +258,9 @@ class ADSR(QWidget):
                 if envelope_param_type in ["sustain_level", "peak_level"]:
                     self.envelope["sustain_level"] = slider.value() / 127
                 else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(slider.value())
+                    self.envelope[envelope_param_type] = midi_value_to_ms(
+                        slider.value()
+                    )
         except Exception as ex:
             log_error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
@@ -270,7 +273,9 @@ class ADSR(QWidget):
                 if envelope_param_type == "sustain_level":
                     slider.setValue(int(self.envelope["sustain_level"] * 127))
                 else:
-                    slider.setValue(int(ms_to_midi_value(self.envelope[envelope_param_type])))
+                    slider.setValue(
+                        int(ms_to_midi_value(self.envelope[envelope_param_type]))
+                    )
         except Exception as ex:
             log_error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)

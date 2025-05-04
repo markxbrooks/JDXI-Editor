@@ -42,6 +42,7 @@ DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3:
 @unique
 class RolandID(IntEnum):
     """Roland IDs"""
+
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
 
@@ -61,7 +62,7 @@ class Address(SysExByte):
     """
 
     def add_offset(
-            self, address_offset: Union[int, Tuple[int, int, int]]
+        self, address_offset: Union[int, Tuple[int, int, int]]
     ) -> tuple[int, Any]:
         """
         Returns the full 4-byte address by adding a 3-byte offset to the base address.
@@ -71,7 +72,11 @@ class Address(SysExByte):
         """
         base = self.value
         if isinstance(address_offset, int):
-            offset_bytes = [(address_offset >> 16) & 0xFF, (address_offset >> 8) & 0xFF, address_offset & 0xFF]
+            offset_bytes = [
+                (address_offset >> 16) & 0xFF,
+                (address_offset >> 8) & 0xFF,
+                address_offset & 0xFF,
+            ]
         elif isinstance(address_offset, tuple) and len(address_offset) == 3:
             offset_bytes = list(address_offset)
         else:
@@ -81,7 +86,7 @@ class Address(SysExByte):
         return base, *offset_bytes
 
     def to_sysex_address(
-            self, address_offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)
+        self, address_offset: Union[int, Tuple[int, int, int]] = (0, 0, 0)
     ) -> bytes:
         """
         Returns the full 4-byte address as a `bytes` object, suitable for SysEx messages.
@@ -119,7 +124,6 @@ class RolandSysExAddress:
     """
 
     def __init__(self, msb: int, umb: int, lmb: int, lsb: int):
-
         self.msb = msb
         self.umb = umb
         self.lmb = lmb
@@ -150,7 +154,9 @@ class RolandSysExAddress:
         """
         return bytes([self.msb, self.umb, self.lmb, self.lsb])
 
-    def add_offset(self, offset: Union[int, tuple[int, int, int]]) -> RolandSysExAddress:
+    def add_offset(
+        self, offset: Union[int, tuple[int, int, int]]
+    ) -> RolandSysExAddress:
         """
         Adds a 3-byte offset to the lower three bytes (UMB, LMB, LSB).
         MSB remains unchanged.
@@ -213,6 +219,7 @@ class ModelID(Address):
     """
     Model ID
     """
+
     ROLAND_ID = 0x41
     DEVICE_ID = 0x10
     # Model ID bytes
@@ -255,6 +262,7 @@ class AddressMemoryAreaMSB(Address):
     """
     Memory and Program Areas
     """
+
     SYSTEM = 0x01
     SETUP = 0x02
     TEMPORARY_PROGRAM = 0x18
@@ -273,6 +281,7 @@ class AddressOffsetTemporaryToneUMB(Address):
     """
     Address Offset Temporary Tone UMB
     """
+
     TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x01
     TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x21
     ANALOG_PART = 0x42
@@ -289,6 +298,7 @@ class AddressOffsetSystemUMB(Address):
     """
     Address Offset System UMB
     """
+
     COMMON = 0x00
 
     @classmethod
@@ -302,6 +312,7 @@ class AddressOffsetSystemLMB(Address):
     """
     Address Offset System LMB
     """
+
     COMMON = 0x00
     CONTROLLER = 0x03
 
@@ -316,6 +327,7 @@ class AddressOffsetSuperNATURALLMB(Address):
     """
     Address Offset SuperNATURAL LMB
     """
+
     COMMON = 0x00
     PARTIAL_1 = 0x20
     PARTIAL_2 = 0x21

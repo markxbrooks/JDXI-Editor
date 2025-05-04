@@ -65,7 +65,10 @@ class DrumCommonSection(QWidget):
         common_group = QGroupBox("Common")
         common_layout = QFormLayout()
         assign_type_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.ASSIGN_TYPE, "Assign Type", ["MULTI", "SINGLE"], [0, 1]
+            AddressParameterDrumPartial.ASSIGN_TYPE,
+            "Assign Type",
+            ["MULTI", "SINGLE"],
+            [0, 1],
         )
         common_layout.addRow(assign_type_combo)
         # Mute Group control
@@ -112,7 +115,10 @@ class DrumCommonSection(QWidget):
         common_layout.addRow(receive_hold_combo)
         # One Shot Mode
         one_shot_mode_combo = self._create_parameter_combo_box(
-            AddressParameterDrumPartial.ONE_SHOT_MODE, "One Shot Mode", ["OFF", "ON"], [0, 1]
+            AddressParameterDrumPartial.ONE_SHOT_MODE,
+            "One Shot Mode",
+            ["OFF", "ON"],
+            [0, 1],
         )
         common_layout.addRow(one_shot_mode_combo)
         common_group.setLayout(common_layout)

@@ -30,9 +30,15 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     ModelID,
     CommandID,
-    AddressMemoryAreaMSB, RolandSysExAddress,
+    AddressMemoryAreaMSB,
+    RolandSysExAddress,
 )
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE,  RolandID
+from jdxi_editor.midi.data.address.sysex import (
+    START_OF_SYSEX,
+    END_OF_SYSEX,
+    ZERO_BYTE,
+    RolandID,
+)
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
@@ -43,12 +49,14 @@ class RolandSysExMessage(SysExMessage):
 
     manufacturer_id: int = RolandID.ROLAND_ID
     device_id: int = RolandID.DEVICE_ID
-    model_id: list[int] = field(default_factory=lambda: [
-        ModelID.MODEL_ID_1,
-        ModelID.MODEL_ID_2,
-        ModelID.MODEL_ID_3,
-        ModelID.MODEL_ID_4,
-    ])
+    model_id: list[int] = field(
+        default_factory=lambda: [
+            ModelID.MODEL_ID_1,
+            ModelID.MODEL_ID_2,
+            ModelID.MODEL_ID_3,
+            ModelID.MODEL_ID_4,
+        ]
+    )
     command: int = CommandID.DT1
 
     address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
@@ -64,7 +72,9 @@ class RolandSysExMessage(SysExMessage):
 
     def __post_init__(self):
         """Initialize data and resolve address bytes."""
-        self.address_bytes = self.address.to_list()  # Assuming this method returns [msb, umb, lmb, lsb]
+        self.address_bytes = (
+            self.address.to_list()
+        )  # Assuming this method returns [msb, umb, lmb, lsb]
 
         if isinstance(self.value, int) and self.size == 4:
             self.data = split_16bit_value_to_nibbles(self.value)
@@ -152,7 +162,7 @@ class RolandSysEx(SysExMessage):
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
     def from_sysex_address(self, sysex_address: RolandSysExAddress):
-        """ from_sysex_address
+        """from_sysex_address
         :param sysex_address: RolandSysExAddress
         :return: None
         """
@@ -177,9 +187,9 @@ class RolandSysEx(SysExMessage):
         msg.append(self.end_of_sysex)
         return msg
 
-    def construct_sysex(self, address: RolandSysExAddress,
-                        *data_bytes: list,
-                        request: bool = False):
+    def construct_sysex(
+        self, address: RolandSysExAddress, *data_bytes: list, request: bool = False
+    ):
         """
         Construct a SysEx message based on the provided address and data bytes.
         :param address: RolandSysExAddress
@@ -318,7 +328,7 @@ class JDXiSysEx(RolandSysEx):
         """Convert message to bytes for sending"""
         msg = [
             START_OF_SYSEX,  # Start of SysEx
-            RolandID.ROLAND_ID,  # Roland ID    
+            RolandID.ROLAND_ID,  # Roland ID
             self.device_id,  # Device ID
             *self.model_id,  # Model ID (4 bytes)
             self.command,  # Command ID
@@ -842,9 +852,7 @@ def create_patch_load_message(
     ]
 
 
-def create_patch_request_message(
-    msb: int, umb: int = 0x00, size: int = 0
-) -> JDXiSysEx:
+def create_patch_request_message(msb: int, umb: int = 0x00, size: int = 0) -> JDXiSysEx:
     """Create address message to request patch data"""
     return JDXiSysEx(
         command=CommandID.RQ1,  # Data request command

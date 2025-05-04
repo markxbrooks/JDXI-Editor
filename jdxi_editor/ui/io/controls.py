@@ -26,12 +26,14 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
         combined_data = {"JD_XI_HEADER": "f041100000000e"}
         for editor in editors:
             combined_data["ADDRESS"] = str(editor.address)
-            combined_data["TEMPORARY_AREA"] = parse_sysex_byte(editor.address.umb, AddressOffsetTemporaryToneUMB)
+            combined_data["TEMPORARY_AREA"] = parse_sysex_byte(
+                editor.address.umb, AddressOffsetTemporaryToneUMB
+            )
             other_data = editor.get_controls_as_dict()
             for k, v in other_data.items():
                 combined_data[k] = v
         # Save the combined data to a single JSON file
-        with open(file_path, 'w') as file_name:
+        with open(file_path, "w") as file_name:
             json.dump(combined_data, file_name, indent=4)
         log_message(f"All controls saved successfully to {file_path}")
     except Exception as ex:

@@ -41,7 +41,10 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
-    AddressOffsetProgramLMB, RolandSysExAddress, ZERO_BYTE, AddressOffsetSystemUMB,
+    AddressOffsetProgramLMB,
+    RolandSysExAddress,
+    ZERO_BYTE,
+    AddressOffsetSystemUMB,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
@@ -55,10 +58,12 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 class EffectsCommonEditor(SimpleEditor):
     """Effects Editor Window"""
 
-    def __init__(self,
-                 midi_helper: MidiIOHelper,
-                 preset_helper: JDXIPresetHelper = None,
-                 parent=None):
+    def __init__(
+        self,
+        midi_helper: MidiIOHelper,
+        preset_helper: JDXIPresetHelper = None,
+        parent=None,
+    ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         self.efx2_additional_params = [
             AddressParameterEffect.EFX2_PARAM_1,
@@ -76,10 +81,12 @@ class EffectsCommonEditor(SimpleEditor):
         # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.address = RolandSysExAddress(AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
-                                          AddressOffsetSystemUMB.COMMON,
-                                          AddressOffsetProgramLMB.COMMON,
-                                          ZERO_BYTE)
+        self.address = RolandSysExAddress(
+            AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
+            AddressOffsetSystemUMB.COMMON,
+            AddressOffsetProgramLMB.COMMON,
+            ZERO_BYTE,
+        )
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 
@@ -91,7 +98,9 @@ class EffectsCommonEditor(SimpleEditor):
         self.update_instrument_image()
 
         self.setLayout(main_layout)
-        self.controls: Dict[Union[AddressParameterEffect, AddressParameterEffectCommon], QWidget] = {}
+        self.controls: Dict[
+            Union[AddressParameterEffect, AddressParameterEffectCommon], QWidget
+        ] = {}
 
         # Create address tab widget
         self.tabs = QTabWidget()
@@ -168,12 +177,14 @@ class EffectsCommonEditor(SimpleEditor):
         layout.addRow(self.efx1_level)
 
         self.efx1_delay_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_DELAY_SEND_LEVEL, "EFX1 Delay Send Level (0-127)"
+            AddressParameterEffect.EFX1_DELAY_SEND_LEVEL,
+            "EFX1 Delay Send Level (0-127)",
         )
         layout.addRow(self.efx1_delay_send_level)
 
         self.efx1_reverb_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_REVERB_SEND_LEVEL, "EFX1 Reverb Send Level (0-127)"
+            AddressParameterEffect.EFX1_REVERB_SEND_LEVEL,
+            "EFX1 Reverb Send Level (0-127)",
         )
         layout.addRow(self.efx1_reverb_send_level)
 
@@ -221,12 +232,14 @@ class EffectsCommonEditor(SimpleEditor):
         layout.addRow(self.efx2_level)
 
         self.efx2_delay_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_DELAY_SEND_LEVEL, "EFX2 Delay Send Level (0-127)"
+            AddressParameterEffect.EFX2_DELAY_SEND_LEVEL,
+            "EFX2 Delay Send Level (0-127)",
         )
         layout.addRow(self.efx2_delay_send_level)
 
         self.efx2_reverb_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_REVERB_SEND_LEVEL, "EFX2 Reverb Send Level (0-127)"
+            AddressParameterEffect.EFX2_REVERB_SEND_LEVEL,
+            "EFX2 Reverb Send Level (0-127)",
         )
         layout.addRow(self.efx2_reverb_send_level)
 
@@ -311,7 +324,9 @@ class EffectsCommonEditor(SimpleEditor):
                 midi_value = param.convert_to_midi(display_value)
             else:
                 midi_value = param.validate_value(display_value)
-            log_message(f"parameter: {param} display {display_value} midi value {midi_value}")
+            log_message(
+                f"parameter: {param} display {display_value} midi value {midi_value}"
+            )
             # Ensure we get address valid common parameter
             common_param = AddressParameterEffect.get_common_param_by_name(param.name)
             midi_value = param.convert_to_midi(display_value)

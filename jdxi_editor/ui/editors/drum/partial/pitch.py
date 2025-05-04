@@ -37,6 +37,7 @@ from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPar
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
+
 class DrumPitchSection(QWidget):
     """Drum Pitch Section for the JDXI Editor"""
 
@@ -109,7 +110,8 @@ class DrumPitchSection(QWidget):
         pitch_layout.addRow(partial_pan_slider)
 
         partial_random_pan_depth_slider = self._create_parameter_slider(
-            AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH, "Partial Random Pan Depth"
+            AddressParameterDrumPartial.PARTIAL_RANDOM_PAN_DEPTH,
+            "Partial Random Pan Depth",
         )
         pitch_layout.addRow(partial_random_pan_depth_slider)
 

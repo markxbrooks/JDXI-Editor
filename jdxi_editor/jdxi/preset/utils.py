@@ -1,4 +1,3 @@
-
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.ui.editors.helpers.program import get_preset_parameter_value
@@ -16,9 +15,7 @@ def get_preset_values(preset_index, preset_list=DIGITAL_PRESET_LIST):
     pc = get_preset_parameter_value("pc", preset_index, preset_list)
 
     if None in [msb, lsb, pc]:
-        log_message(
-            f"Could not retrieve preset parameters for program {preset_index}"
-        )
+        log_message(f"Could not retrieve preset parameters for program {preset_index}")
         return None, None, None
 
     log_message(f"Retrieved MSB, LSB, PC: {msb}, {lsb}, {pc}")

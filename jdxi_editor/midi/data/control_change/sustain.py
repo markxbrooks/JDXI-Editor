@@ -4,6 +4,7 @@ from jdxi_editor.midi.data.control_change.base import ControlChange
 
 class ControlChangeSustain(ControlChange):
     """Control Change Sustain values"""
+
     HOLD1 = 64  # Hold-1 Damper (Sustain) – CC64
     PORTAMENTO = 65  # Portamento (on/off)
     SOSTENUTO = 66  # Sostenuto – CC66

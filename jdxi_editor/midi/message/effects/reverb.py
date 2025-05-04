@@ -16,8 +16,12 @@ msg = ReverbMessage(
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data import AddressParameterEffect
-from jdxi_editor.midi.data.address.address import CommandID, AddressMemoryAreaMSB, AddressOffsetSystemUMB, \
-    AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import (
+    CommandID,
+    AddressMemoryAreaMSB,
+    AddressOffsetSystemUMB,
+    AddressOffsetProgramLMB,
+)
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 

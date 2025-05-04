@@ -71,9 +71,13 @@ class SynthBase(QWidget):
         """
         Request the current value of the NRPN parameter from the device.
         """
-        threading.Thread(target=send_with_delay,
-                         args=(self._midi_helper,
-                               self.midi_requests,)).start()
+        threading.Thread(
+            target=send_with_delay,
+            args=(
+                self._midi_helper,
+                self.midi_requests,
+            ),
+        ).start()
 
     def _on_midi_message_received(self, message: mido.Message) -> None:
         """
@@ -87,9 +91,7 @@ class SynthBase(QWidget):
             self.data_request()
             self.blockSignals(False)
 
-    def send_midi_parameter(self,
-                            param: AddressParameter,
-                            value: int) -> bool:
+    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
         Send MIDI parameter with error handling
         :param param: AddressParameter
@@ -101,9 +103,7 @@ class SynthBase(QWidget):
                 size = param.get_nibbled_size()
             else:
                 size = 1
-            address = apply_address_offset(
-                self.address, param
-            )
+            address = apply_address_offset(self.address, param)
             log_message("applying address offset ->")
             log_parameter("base address:", self.address)
             log_parameter("parameter offset to apply:", param)

@@ -4,6 +4,7 @@ from jdxi_editor.ui.widgets.midi.slider.nrpn import NRPNSlider
 from jdxi_editor.midi.data.control_change.digital import DigitalControlChange
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
+
 class AmpEnvelopeSlider(NRPNSlider):
     """
     A class to represent a amp slider for JD-Xi using NRPN.

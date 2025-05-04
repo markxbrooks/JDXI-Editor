@@ -27,4 +27,3 @@ def log_message(message: str, level: int = logging.INFO, stacklevel=2) -> None:
     full_message = f"{tags} {message}".strip()
     if LOGGING:
         logger.log(level, full_message, stacklevel=stacklevel)
-

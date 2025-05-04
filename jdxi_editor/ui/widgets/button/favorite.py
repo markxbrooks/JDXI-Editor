@@ -20,7 +20,9 @@ class FavoriteButton(QPushButton):
 
     preset_selected = Signal(str, int, int)  # synth_type, preset_num, channel
 
-    def __init__(self, slot_num: int, midi_helper: MidiIOHelper, parent: QWidget = None):
+    def __init__(
+        self, slot_num: int, midi_helper: MidiIOHelper, parent: QWidget = None
+    ):
         """Initialize the FavoriteButton
 
         :param slot_num: int
@@ -50,7 +52,9 @@ class FavoriteButton(QPushButton):
         :param channel: int
         """
         # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-        self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
+        self.preset = JDXIPresetButton(
+            number=preset_num, name=preset_name, type=synth_type
+        )
         self._update_style()
         # self._save_to_settings()
         log_message(f"Saved preset to favorite {self.slot_num}: {preset_name}")
@@ -123,7 +127,9 @@ class FavoriteButton(QPushButton):
             # channel = self.settings.value(
             #    f"favorites/slot{self.slot_num}/channel", 0, type=int
             # )
-            self.preset = JDXIPresetButton(number=preset_num, name=preset_name, type=synth_type)
+            self.preset = JDXIPresetButton(
+                number=preset_num, name=preset_name, type=synth_type
+            )
 
     def clear_preset(self):
         """Clear the saved preset"""

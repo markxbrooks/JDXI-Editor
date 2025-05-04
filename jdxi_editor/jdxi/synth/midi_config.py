@@ -13,6 +13,7 @@ class MidiSynthConfig:
     """
     Midi Synth Config
     """
+
     midi_requests: List[str]
     midi_channel: int
     presets: List[str]

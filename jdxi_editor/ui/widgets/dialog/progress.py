@@ -2,7 +2,14 @@
 Progress Dialog
 """
 
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QWidget, QApplication
+from PySide6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QProgressBar,
+    QWidget,
+    QApplication,
+)
 
 from jdxi_editor.jdxi.style import JDXIStyle
 

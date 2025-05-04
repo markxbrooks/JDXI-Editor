@@ -19,7 +19,9 @@ from jdxi_editor.midi.io import MidiIOHelper
 
 
 class MIDIMessageMonitor(QMainWindow):
-    def __init__(self, midi_helper: MidiIOHelper = None, parent: Optional[QWidget] = None):
+    def __init__(
+        self, midi_helper: MidiIOHelper = None, parent: Optional[QWidget] = None
+    ):
         super().__init__(parent)
         self.setWindowTitle("MIDI Message Monitor")
         self.setMinimumSize(600, 400)
@@ -34,7 +36,7 @@ class MIDIMessageMonitor(QMainWindow):
         self.log_view.setReadOnly(True)
         self.log_view.setLineWrapMode(QTextEdit.NoWrap)
         self.log_view.setStyleSheet(
-        """
+            """
             QTextEdit {
                 font-family: monospace;
                 background-color: #1E1E1E;

@@ -66,7 +66,12 @@ class MIDIConnection:
     def midi_out(self):
         return self._midi_out
 
-    def initialize(self, midi_in: rtmidi.MidiIn, midi_out: rtmidi.MidiOut, main_window=Optional[QMainWindow]):
+    def initialize(
+        self,
+        midi_in: rtmidi.MidiIn,
+        midi_out: rtmidi.MidiOut,
+        main_window=Optional[QMainWindow],
+    ):
         """Initialize MIDI connections"""
         self._midi_in = midi_in
         self._midi_out = midi_out

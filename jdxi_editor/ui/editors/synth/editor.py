@@ -75,7 +75,7 @@ def log_changes(previous_data, current_data):
             # )
     else:
         pass
-        #log_message("No changes detected.")
+        # log_message("No changes detected.")
 
 
 class SynthEditor(SynthBase):
@@ -112,7 +112,8 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo = None
         self.preset_type = None
         self.midi_helper.update_tone_name.connect(
-            lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
+            lambda title, synth_type: self.set_instrument_title_label(title, synth_type)
+        )
         self.midi_helper.midi_program_changed.connect(self.data_request)
         log_parameter("Initialized:", self.__class__.__name__)
         log_parameter("---> Using MIDI helper:", midi_helper)
@@ -153,7 +154,9 @@ class SynthEditor(SynthBase):
             log_message("MIDI helper initialized")
         else:
             log_message("MIDI helper not initialized")
-        self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
+        self.preset_loader = JDXIPresetHelper(
+            self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED
+        )
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
@@ -170,12 +173,15 @@ class SynthEditor(SynthBase):
             for synth_type, presets, channel in preset_configs
         }
 
-    def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
-                         partial_number: Optional[int] = 0):
+    def _init_synth_data(
+        self,
+        synth_type: JDXISynth = JDXISynth.DIGITAL_1,
+        partial_number: Optional[int] = 0,
+    ):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
-        self.synth_data = create_synth_data(synth_type,
-                                            partial_number=partial_number)
+
+        self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
 
         # Dynamically assign attributes
         for attr in [
@@ -409,9 +415,11 @@ class SynthEditor(SynthBase):
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
-        default_image_path = resource_path(os.path.join(
-            "resources", self.instrument_icon_folder, self.instrument_default_image
-        ))
+        default_image_path = resource_path(
+            os.path.join(
+                "resources", self.instrument_icon_folder, self.instrument_default_image
+            )
+        )
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
@@ -429,29 +437,37 @@ class SynthEditor(SynthBase):
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
             log_parameter("Selected instrument type:", selected_instrument_type)
-            specific_image_path = resource_path(os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_name}.png",
-            ))
-            generic_image_path = resource_path(os.path.join(
-                "resources",
-                self.instrument_icon_folder,
-                f"{selected_instrument_type}.png",
-            ))
-            image_loaded = self.load_and_set_image(specific_image_path, generic_image_path)
+            specific_image_path = resource_path(
+                os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    f"{selected_instrument_name}.png",
+                )
+            )
+            generic_image_path = resource_path(
+                os.path.join(
+                    "resources",
+                    self.instrument_icon_folder,
+                    f"{selected_instrument_type}.png",
+                )
+            )
+            image_loaded = self.load_and_set_image(
+                specific_image_path, generic_image_path
+            )
 
         # Fallback to default image if no specific image is found
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
-    def _update_slider(self,
-                       param: AddressParameter,
-                       value: int,
-                       successes: list = None,
-                       failures: list = None,
-                       debug: bool = False):
+    def _update_slider(
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+        debug: bool = False,
+    ):
         """Safely update sliders from NRPN messages."""
         slider = self.controls.get(param)
         if slider:

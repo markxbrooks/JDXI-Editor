@@ -3,7 +3,7 @@ import sys
 
 
 def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
+    if hasattr(sys, "_MEIPASS"):
         base_path = sys._MEIPASS
     else:
         base_path = os.path.abspath(".")

@@ -75,7 +75,9 @@ def rtmidi_to_mido(rtmidi_message: bytes) -> Union[bool, mido.Message]:
         return False
 
 
-def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.Message, List[mido.Message]]]:
+def convert_to_mido_message(
+    message_content: List[int],
+) -> Optional[Union[mido.Message, List[mido.Message]]]:
     """
     Convert raw MIDI message content to a mido.Message object or a list of them.
     :param message_content: List[int] byte list
@@ -89,7 +91,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
         if status_byte == 0xF0 and message_content[-1] == 0xF7:
             sysex_data = nibble_data(message_content[1:-1])
             if len(sysex_data) > 128:
-                nibbles = [sysex_data[i:i + 4] for i in range(0, len(sysex_data), 4)]
+                nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
             return mido.Message("sysex", data=sysex_data)
     except Exception as ex:
@@ -108,7 +110,9 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             channel = status_byte & 0x0F
             control = message_content[1]
             value = message_content[2]
-            return mido.Message("control_change", channel=channel, control=control, value=value)
+            return mido.Message(
+                "control_change", channel=channel, control=control, value=value
+            )
     except Exception as ex:
         log_error(f"Error {ex} occurred")
 

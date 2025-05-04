@@ -41,7 +41,9 @@ class JDXIPresetData:
     program: int
 
     @staticmethod
-    def get_preset_details(synth_type: JDXISynth, preset_number: int) -> "JDXIPresetData":
+    def get_preset_details(
+        synth_type: JDXISynth, preset_number: int
+    ) -> "JDXIPresetData":
         """
         Get preset details based on the synth type and preset number.
 

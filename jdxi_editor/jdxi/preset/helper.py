@@ -114,8 +114,7 @@ class JDXIPresetHelper(QObject):
 
         self.send_program_change(channel, msb, lsb, pc)
 
-    def load_preset(self,
-                    preset_data: JDXIPresetData):
+    def load_preset(self, preset_data: JDXIPresetData):
         """
         Load the preset based on the provided data
         :param preset_data: JDXIPresetData
@@ -140,15 +139,15 @@ class JDXIPresetHelper(QObject):
         """
         Request the current value of the NRPN parameter from the device.
         """
-        threading.Thread(target=send_with_delay,
-                         args=(self.midi_helper,
-                               self.midi_requests,)).start()
+        threading.Thread(
+            target=send_with_delay,
+            args=(
+                self.midi_helper,
+                self.midi_requests,
+            ),
+        ).start()
 
-    def send_program_change(self,
-                            channel: int,
-                            msb: int,
-                            lsb: int,
-                            pc: int) -> None:
+    def send_program_change(self, channel: int, msb: int, lsb: int, pc: int) -> None:
         """
         Send a Bank Select and Program Change message
         :param channel: int

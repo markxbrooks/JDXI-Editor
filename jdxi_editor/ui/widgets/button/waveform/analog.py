@@ -23,7 +23,9 @@ class AnalogWaveformButton(WaveformButton):
 
     waveform_selected = Signal(Waveform)  # Emits selected waveform
 
-    def __init__(self, waveform: Waveform, style: str = "digital", parent: QWidget = None):
+    def __init__(
+        self, waveform: Waveform, style: str = "digital", parent: QWidget = None
+    ):
         """Initialize waveform button
 
         :param waveform: Waveform enum value

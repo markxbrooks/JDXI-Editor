@@ -103,9 +103,7 @@ class JDXIProgramHelper(QObject):
         """
         return self.current_bank_letter, self.current_program_number
 
-    def load_program(self,
-                     bank_letter: str,
-                     program_number: int) -> None:
+    def load_program(self, bank_letter: str, program_number: int) -> None:
         """
         Load Program
         :param bank_letter: str
@@ -129,6 +127,10 @@ class JDXIProgramHelper(QObject):
         """
         Request the current value of the NRPN parameter from the device.
         """
-        threading.Thread(target=send_with_delay,
-                         args=(self.midi_helper,
-                               self.midi_requests,)).start()
+        threading.Thread(
+            target=send_with_delay,
+            args=(
+                self.midi_helper,
+                self.midi_requests,
+            ),
+        ).start()

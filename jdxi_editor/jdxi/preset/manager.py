@@ -1,4 +1,3 @@
-
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
@@ -8,6 +7,7 @@ from jdxi_editor.jdxi.synth.type import JDXISynth
 class JDXIPresetManager:
     _instance = None
     """Singleton class to manage presets."""
+
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(JDXIPresetManager, cls).__new__(cls)
@@ -22,7 +22,7 @@ class JDXIPresetManager:
             JDXISynth.DIGITAL_1: "Init Tone",
             JDXISynth.DIGITAL_2: "Init Tone",
             JDXISynth.ANALOG: "Init Tone",
-            JDXISynth.DRUM: "Init Tone"
+            JDXISynth.DRUM: "Init Tone",
         }
         self.preset_channel_map = {
             MidiChannel.ANALOG: JDXIPresets.ANALOG_ENUMERATED,
@@ -37,7 +37,9 @@ class JDXIPresetManager:
             JDXISynth.DRUM: JDXIPresets.DRUM_ENUMERATED,
         }
 
-    def get_preset_name_by_type_and_index(self, synth_type: JDXISynth, preset_index: int) -> str:
+    def get_preset_name_by_type_and_index(
+        self, synth_type: JDXISynth, preset_index: int
+    ) -> str:
         """
         Get the name of the currently selected preset
         :param synth_type: JDXISynth The type of synth
@@ -45,7 +47,9 @@ class JDXIPresetManager:
         :return: str The name of the preset
         """
         try:
-            presets = self.preset_synth_map.get(synth_type, JDXIPresets.DIGITAL_ENUMERATED)
+            presets = self.preset_synth_map.get(
+                synth_type, JDXIPresets.DIGITAL_ENUMERATED
+            )
             preset_name = presets[preset_index]
             log_message(f"preset_name: {preset_name}")
             return preset_name

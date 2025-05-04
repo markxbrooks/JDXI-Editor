@@ -1,4 +1,3 @@
-
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     MODEL_ID,
