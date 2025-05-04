@@ -1,8 +1,12 @@
-import logging
+"""
+Midi Track tester
+"""
 
 import mido
 import time
 from mido import MidiFile, MidiTrack
+
+from jdxi_editor.log.message import log_message
 
 # Open the MIDI input port
 input_name = mido.get_input_names()[0]  # You can replace [0] with the index of the device you want
