@@ -10,6 +10,8 @@ import json
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressMemoryAreaMSB
+from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 
 def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
@@ -23,9 +25,11 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
     try:
         combined_data = {"JD_XI_HEADER": "f041100000000e"}
         for editor in editors:
-            combined_data["ADDRESS"] = editor.sysex_address
-            editor_part = editor.sysex_address.umb.name  # Get the part of the editor class
-            combined_data[editor_part] = editor.get_controls_as_dict()
+            combined_data["ADDRESS"] = str(editor.sysex_address)
+            combined_data["TEMPORARY_AREA"] = parse_sysex_byte(editor.sysex_address.umb, AddressOffsetTemporaryToneUMB)
+            other_data = editor.get_controls_as_dict()
+            for k, v in other_data.items():
+                combined_data[k] = v
         # Save the combined data to a single JSON file
         with open(file_path, 'w') as file_name:
             json.dump(combined_data, file_name, indent=4)

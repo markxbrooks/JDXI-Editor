@@ -251,7 +251,7 @@ class SynthEditor(SynthBase):
             controls_data = {}
 
             for param in self.controls:
-                controls_data[param.name] = param.value
+                controls_data[param.name] = self.controls[param].value()
             log_message(f"controls_data: {controls_data}")
             return controls_data
 

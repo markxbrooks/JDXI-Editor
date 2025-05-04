@@ -46,7 +46,6 @@ class PartialEditor(SynthBase):
         self,
         midi_helper=None,
         partial_number=1,
-        part=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
         parent=None,
     ):
         super().__init__(midi_helper, parent)

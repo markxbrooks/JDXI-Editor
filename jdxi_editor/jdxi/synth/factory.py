@@ -40,13 +40,13 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthDa
     elif synth_type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
         address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(partial_number)
         if synth_type == JDXISynth.DIGITAL_1:
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
+            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
             synth_number = 1
         elif synth_type == JDXISynth.DIGITAL_2: # JDXISynth.DIGITAL_2
             synth_number = 2
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_2
+            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA
         else:  # Default case
-            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.DIGITAL_PART_1
+            digital_partial_address_umb = AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
             synth_number = 1
         return DigitalSynthData(
             midi_requests=MidiRequests.DIGITAL2 if synth_number == 2 else MidiRequests.DIGITAL1,

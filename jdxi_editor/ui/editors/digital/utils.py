@@ -171,8 +171,8 @@ def _sysex_tone_matches(sysex_data: dict, tone: int) -> bool:
     temp_part = sysex_data.get("SYNTH_TONE")
     log_message(f"found part {temp_part}")
     part_map = {
-        AddressOffsetTemporaryToneUMB.DIGITAL_PART_1: "PARTIAL_1",
-        AddressOffsetTemporaryToneUMB.DIGITAL_PART_2: "PARTIAL_2",
+        AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA: "PARTIAL_1",
+        AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA: "PARTIAL_2",
     }
     expected_part = part_map.get(tone)
     match = tone == expected_part
