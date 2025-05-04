@@ -78,7 +78,7 @@ def get_program_by_bank_and_number(
     )
 
 
-def get_program_id_by_name_new(name: str) -> Optional[str]:
+def get_program_id_by_name(name: str) -> Optional[str]:
     """Retrieve a program's ID by its name from PROGRAM_LIST."""
     program = next(
         (program for program in PROGRAM_LIST if program["name"] == name), None

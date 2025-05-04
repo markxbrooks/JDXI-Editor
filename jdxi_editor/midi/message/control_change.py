@@ -24,11 +24,10 @@ from dataclasses import dataclass
 from typing import List
 
 from jdxi_editor.midi.data.control_change.drum import DrumKitCC
-from jdxi_editor.midi.message.channel import ChannelMessage
 
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List
 
 from jdxi_editor.midi.message.midi import MidiMessage
 

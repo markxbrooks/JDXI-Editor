@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 
-from jdxi_editor.midi.data.digital import DigitalPartial
+from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.jdxi.style import JDXIStyle
 
 

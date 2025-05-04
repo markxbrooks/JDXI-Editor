@@ -23,7 +23,6 @@ Example Usage:
 
 """
 
-import logging
 import time
 from typing import Optional, List, Tuple
 
@@ -31,7 +30,6 @@ import rtmidi
 from PySide6.QtCore import QObject
 
 from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 
 
@@ -145,7 +143,7 @@ class MidiIOController(QObject):
 
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
-            log_parameter(f"Opened MIDI input port:", ports[port_index])
+            log_parameter("Opened MIDI input port:", ports[port_index])
             return True
 
         except Exception as ex:
@@ -184,7 +182,7 @@ class MidiIOController(QObject):
             self.midi_out = rtmidi.MidiOut()  # <- reinitialize
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
-            log_parameter(f"Opened MIDI output port:", ports[port_index])
+            log_parameter("Opened MIDI output port:", ports[port_index])
             return True
 
         except Exception as ex:

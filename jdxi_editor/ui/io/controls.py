@@ -10,7 +10,7 @@ import json
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, AddressMemoryAreaMSB
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
 

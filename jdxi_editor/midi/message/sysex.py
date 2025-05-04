@@ -31,7 +31,7 @@ print(sysex_bytes)  # Outputs a valid SysEx message as a byte sequence
 """
 
 from enum import Enum
-from typing import List, Optional
+from typing import List
 from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
@@ -130,7 +130,7 @@ class SysExMessage(MidiMessage):
         if data[0] != 0xF0 or data[-1] != 0xF7:
             raise ValueError("Invalid SysEx message: missing start or end bytes")
 
-        manufacturer_id = [data[1]]
+        [data[1]]
         device_id = data[2]
         model_id = list(data[3:7])  # Extract model_id (4 bytes)
         command = data[7]

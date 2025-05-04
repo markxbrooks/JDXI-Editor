@@ -37,7 +37,6 @@ Methods:
 import logging
 import platform
 import threading
-import time
 from typing import Union
 
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
@@ -62,7 +61,6 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.midi.program.helper import JDXIProgramHelper
-from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,

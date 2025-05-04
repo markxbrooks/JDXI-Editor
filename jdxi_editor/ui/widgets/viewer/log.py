@@ -93,9 +93,9 @@ class LogHandler(logging.Handler):
         )
 
     def emit(self, record):
-        msg = self.format(record)
+        self.format(record)
         # Add emojis based on log level
-        emoji = LEVEL_EMOJIS.get(record.levelno, "🔔")
+        LEVEL_EMOJIS.get(record.levelno, "🔔")
         message = self.format(record)
         # Add MIDI flair if message seems MIDI-related
         # midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""

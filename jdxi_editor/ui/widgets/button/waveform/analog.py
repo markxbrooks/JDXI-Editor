@@ -15,7 +15,7 @@ from PySide6.QtWidgets import QWidget
 from jdxi_editor.midi.wave.form import Waveform
 from jdxi_editor.jdxi.style import JDXIStyle
 
-from jdxi_editor.ui.widgets.button.waveform import WaveformButton
+from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 
 
 class AnalogWaveformButton(WaveformButton):

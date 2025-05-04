@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.message import log_message
 from jdxi_editor.jdxi.style import JDXIStyle
 
 

@@ -124,7 +124,7 @@ class PatchManager(QMainWindow):
 
             self.close()
 
-        except Exception as e:
+        except Exception as ex:
             log_message(
-                f"Error {'saving' if self.save_mode else 'loading'} patch: {str(e)}"
+                f"Error {'saving' if self.save_mode else 'loading'} patch: {str(ex)}"
             )

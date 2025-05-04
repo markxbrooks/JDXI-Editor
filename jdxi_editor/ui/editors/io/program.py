@@ -37,7 +37,6 @@ Dependencies:
 
 """
 
-import logging
 from typing import Optional
 
 from PySide6.QtWidgets import (
@@ -53,8 +52,8 @@ from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
@@ -397,7 +396,7 @@ class ProgramEditor(SimpleEditor):
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log_message(f"calculated msb, lsb, pc :")
+        log_message("calculated msb, lsb, pc :")
         log_parameter("msb", msb)
         log_parameter("lsb", lsb)
         log_parameter("pc", pc)

@@ -36,7 +36,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QGroupBox,
     QTabWidget,
     QScrollArea,
     QSplitter,
@@ -49,18 +48,17 @@ from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.digital.utils import get_digital_parameter_by_address
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.data.digital import (
-    DigitalOscWave,
-    DigitalPartial,
-    get_digital_parameter_by_address,
-)
+from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
+from jdxi_editor.midi.data.digital.partial import DigitalPartial
+
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
@@ -76,10 +74,8 @@ from jdxi_editor.ui.editors.digital.utils import (
     get_area,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.editors.digital.partial import DigitalPartialEditor
+from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
 from jdxi_editor.jdxi.style import JDXIStyle
-from jdxi_editor.ui.widgets.display.digital import DigitalTitle
-from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 
 

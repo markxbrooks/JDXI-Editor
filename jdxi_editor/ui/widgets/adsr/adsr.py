@@ -290,6 +290,6 @@ class ADSR(QWidget):
                 value=value,
             )
             return self.midi_helper.send_midi_message(sysex_message)
-        except Exception as e:
-            log_message(f"MIDI error setting {param}: {str(e)}")
+        except Exception as ex:
+            log_error(f"MIDI error setting {param}: {str(ex)}")
             return False

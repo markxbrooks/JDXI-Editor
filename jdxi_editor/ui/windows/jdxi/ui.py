@@ -50,10 +50,10 @@ from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import get_preset_list_number_by_name, get_program_name_by_id
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
 from jdxi_editor.jdxi.style.jdxi import JDXIStyle
-from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
-from jdxi_editor.ui.widgets.indicator import LEDIndicator
+from jdxi_editor.ui.widgets.indicator.led import LEDIndicator
 from jdxi_editor.ui.windows.jdxi.containers import (
     add_arpeggiator_buttons,
     add_slider_container,
@@ -417,7 +417,7 @@ class JdxiUi(QMainWindow):
                 else:
                     log_message("No font families found after loading font", level=logging.WARNING)
             except Exception as ex:
-                logging.exception(
+                log_error(
                     f"Error loading {font_name} font from {font_path}: {ex}"
                 )
         else:

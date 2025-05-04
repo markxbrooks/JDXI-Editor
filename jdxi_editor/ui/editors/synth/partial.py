@@ -20,22 +20,13 @@ Dependencies:
 
 """
 
-import logging
 from typing import Dict
 
 from PySide6.QtWidgets import (
     QWidget,
 )
 
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB,
-    Address,
-)
-from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.base import SynthBase
 
 

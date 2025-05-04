@@ -1,4 +1,3 @@
-import logging
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST

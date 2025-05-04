@@ -340,7 +340,7 @@ class PatternSequencer(SynthEditor):
         else:
             # Remove measures from the end
             while len(self.measures) > count:
-                measure = self.measures.pop()
+                self.measures.pop()
                 # the plan is to add more measures via tab 2, 3 & 4
                 # index = self.tab_widget.indexOf(measure)
                 # self.tab_widget.removeTab(index)
@@ -912,7 +912,7 @@ class PatternSequencer(SynthEditor):
 
     def _update_drum_rows(self):
         """Update displayed buttons based on the selected drum option."""
-        selected_option = self.drum_selector.currentText()
+        self.drum_selector.currentText()
 
         """ 
         for option, layout in self.drum_row_layouts.items():

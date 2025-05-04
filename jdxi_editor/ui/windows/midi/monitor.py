@@ -11,6 +11,7 @@ Methods:
     log_message(message, direction="→"): Logs a MIDI message with a timestamp. Optionally, the direction (input or output) of the message can be specified.
     clear_log(): Clears the message log view.
 """
+from typing import Optional
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
 
@@ -18,7 +19,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 
 
 class MIDIMessageMonitor(QMainWindow):
-    def __init__(self, midi_helper: MidiIOHelper = None, parent = None):
+    def __init__(self, midi_helper: MidiIOHelper = None, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setWindowTitle("MIDI Message Monitor")
         self.setMinimumSize(600, 400)

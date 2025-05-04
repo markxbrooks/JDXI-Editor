@@ -4,7 +4,7 @@ btk_dialog for about JD-XI Editor
 import os
 from typing import Optional
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox, QHBoxLayout, QWidget
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QDialogButtonBox, QGroupBox, QWidget
 from PySide6.QtCore import QSettings, QRect
 
 from jdxi_editor.project import __version__, __program__

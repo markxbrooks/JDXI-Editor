@@ -32,9 +32,12 @@ Example:
     editor = DrumWMTSection(midi_helper)
     editor.show()
 """
+
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea, QTabWidget, QComboBox, QLabel, \
     QLineEdit, QHBoxLayout
-import logging
+
+from jdxi_editor.log.error import log_error
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
@@ -286,7 +289,7 @@ class DrumWMTSection(QWidget):
             log_message(
                 f"WMT{wmt_index}: Showing {len(filtered)} results for group '{group_filter}' + search '{search_text}'")
         except Exception as ex:
-            logging.warning(f"WMT{wmt_index}: Error filtering L waves: {ex}")
+            log_error(f"WMT{wmt_index}: Error filtering L waves:", exception=ex)
 
     def _populate_r_waves(self, wmt_index):
         try:
@@ -310,7 +313,7 @@ class DrumWMTSection(QWidget):
             log_message(
                 f"WMT{wmt_index}: Showing {len(filtered)} R wave results for group '{group_filter}' + search '{search_text}'")
         except Exception as ex:
-            logging.warning(f"WMT{wmt_index}: Error filtering R waves: {ex}")
+            log_error(f"WMT{wmt_index}: Error filtering R waves: {ex}")
 
     def _create_wmt1_layout(self):
         return self._create_wmt_layout(1)

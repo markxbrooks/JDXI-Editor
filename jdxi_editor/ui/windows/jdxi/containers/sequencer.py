@@ -7,7 +7,7 @@ from jdxi_editor.jdxi.style.factory import (
     generate_sequencer_button_style,
     toggle_button_style,
 )
-from jdxi_editor.ui.widgets.button import SequencerSquare
+from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 

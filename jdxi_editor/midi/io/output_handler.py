@@ -20,15 +20,15 @@ Example usage:
 import logging
 import time
 import json
-from typing import List, Optional, Union, Iterable
+from typing import Optional, Iterable
 
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 from jdxi_editor.log.error import log_error
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
-from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
@@ -39,7 +39,6 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import (
     format_midi_message_to_hex_string,
-    construct_address,
     increment_group,
 )
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
@@ -558,8 +557,8 @@ class MidiOutHandler(MidiIOController):
 
             log_message(f"Patch saved to {file_path}")
             return True
-        except Exception as e:
-            log_error(f"Error saving patch: {str(e)}")
+        except Exception as ex:
+            log_error(f"Error saving patch: {str(ex)}")
             return False
 
     def _get_digital_parameters(self):

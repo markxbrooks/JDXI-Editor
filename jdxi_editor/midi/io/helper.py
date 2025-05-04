@@ -148,7 +148,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.open_output_port(out_port)
             self.reopen_input_port_name(in_port)
         except Exception as ex:
-            print(f"Error {ex} occurred reconnecting ports")
+            log_error(f"Error {ex} occurred reconnecting ports")
 
     def auto_connect_jdxi(self):
         """
