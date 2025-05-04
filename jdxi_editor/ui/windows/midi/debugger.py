@@ -71,8 +71,8 @@ from typing import Protocol, TypeVar, Optional
 T = TypeVar("T", bound="EnumWithAddress")
 
 PARAMETER_PART_MAP = {
-    "DIGITAL_PART_1": AddressParameterDigitalPartial,
-    "DIGITAL_PART_2": AddressParameterDigitalPartial,
+    "TEMPORARY_DIGITAL_SYNTH_1_AREA": AddressParameterDigitalPartial,
+    "TEMPORARY_DIGITAL_SYNTH_2_AREA": AddressParameterDigitalPartial,
     "ANALOG_PART": AddressParameterAnalog,
     "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
     "COMMON": AddressParameterDigitalCommon
@@ -289,8 +289,8 @@ class MIDIDebugger(QMainWindow):
         if message[0] != 0xF0 or message[1] != 0x41:
             return "Not a Roland address SysEx message"
         PARAMETER_PART_MAP = {
-            "DIGITAL_PART_1": AddressParameterDigitalPartial,
-            "DIGITAL_PART_2": AddressParameterDigitalPartial,
+            "TEMPORARY_DIGITAL_SYNTH_1_AREA": AddressParameterDigitalPartial,
+            "TEMPORARY_DIGITAL_SYNTH_2_AREA": AddressParameterDigitalPartial,
             "ANALOG_PART": AddressParameterAnalog,
             "DRUM_KIT_PART": AddressParameterDrumPartial,
             "COMMON": AddressParameterDigitalCommon

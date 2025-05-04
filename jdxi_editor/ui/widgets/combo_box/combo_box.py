@@ -119,3 +119,7 @@ class ComboBox(QWidget):
             if value in self.values:
                 index = self.values.index(value)
                 self.combo_box.setCurrentIndex(index)
+
+    def value(self):
+        """ get current index """
+        return self.combo_box.currentIndex()

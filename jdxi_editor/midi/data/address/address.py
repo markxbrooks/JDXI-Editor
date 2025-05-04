@@ -225,8 +225,8 @@ class AddressMemoryAreaMSB(Address):
 
 @unique
 class AddressOffsetTemporaryToneUMB(Address):
-    DIGITAL_PART_1 = 0x01
-    DIGITAL_PART_2 = 0x21
+    TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x01
+    TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x21
     ANALOG_PART = 0x42
     DRUM_KIT_PART = 0x70
     COMMON = 0x00

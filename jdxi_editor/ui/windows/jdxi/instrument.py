@@ -601,7 +601,7 @@ class JdxiInstrument(JdxiUi):
             )
             address = RolandSysExAddress(
                 msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+                umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
                 lmb=AddressOffsetProgramLMB.COMMON,
                 lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.lsb,
             )
@@ -620,7 +620,7 @@ class JdxiInstrument(JdxiUi):
                 value = 0x01 if state else 0x00
                 address1 = RolandSysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                    umb=AddressOffsetTemporaryToneUMB.DIGITAL_PART_1,
+                    umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
                     lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46
                 )
