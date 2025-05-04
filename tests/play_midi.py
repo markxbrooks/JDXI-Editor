@@ -1,4 +1,5 @@
-
+# Add this at the top of parse_patch_file.py
+from jdxi_editor.log.message import log_message
 from pathlib import Path
 
 import mido
