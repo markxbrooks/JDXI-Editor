@@ -1,21 +1,27 @@
 # setup.py
 from setuptools import setup, find_packages
 
-APP = ['jdxi_editor/main.py']  # Path to your main script
-DATA_FILES = ['jdxi_editor.icns', "resources/jdxi_icon.png", "resources/fonts/JdLCD.ttf"]  # Include any additional files your app needs
+APP = ["jdxi_editor/main.py"]  # Path to your main script
+DATA_FILES = [
+    "jdxi_editor.icns",
+    "resources/jdxi_icon.png",
+    "resources/fonts/JdLCD.ttf",
+]  # Include any additional files your app needs
 OPTIONS = {
-    'argv_emulation': False,
-    'packages': [
+    "argv_emulation": False,
+    "packages": [
         "PySide6",
         "pubsub",
         "qtpy",
         "mido",
         "qtawesome",
-        "mido"]
-    ,  # List any packages your app uses
-    'iconfile': 'jdxi_editor.icns',  # Path to your app icon file (optional)
-    'excludes': ['Carbon'],
-    'plist': {'CFBundleShortVersionString': '0.1.0', }
+        "mido",
+    ],  # List any packages your app uses
+    "iconfile": "jdxi_editor.icns",  # Path to your app icon file (optional)
+    "excludes": ["Carbon"],
+    "plist": {
+        "CFBundleShortVersionString": "0.1.0",
+    },
 }
 
 setup(
@@ -33,10 +39,10 @@ setup(
         "mido",
     ],
     entry_points={
-        'console_scripts': [
-            'jdxi_editor=jdxi_editor.main:main',
+        "console_scripts": [
+            "jdxi_editor=jdxi_editor.main:main",
         ],
     },
-    options={'py2app': OPTIONS},
-    setup_requires=['py2app'],
-) 
+    options={"py2app": OPTIONS},
+    setup_requires=["py2app"],
+)
