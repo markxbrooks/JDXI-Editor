@@ -1,7 +1,8 @@
 """Digital Oscillator"""
 from enum import IntEnum, Enum
 
-from jdxi_editor.midi.wave.form import Waveform
+from jdxi_editor.midi.wave.form import Waveform, OSC_WAVE_SAW, OSC_WAVE_SQUARE, OSC_WAVE_TRIANGLE, OSC_WAVE_SINE, \
+    OSC_WAVE_NOISE, OSC_WAVE_SUPER_SAW, OSC_WAVE_PCM
 
 
 class DigitalOscPcmWaveGain(IntEnum):
@@ -96,7 +97,7 @@ class DigitalWaveform(Enum):
         return values[self]
 
     @classmethod
-    def from_midi_value(cls, value: int) -> "Waveform":
+    def from_midi_value(cls, value: int) -> Waveform:
         """Create Waveform from MIDI value"""
         for waveform in cls:
             if waveform.midi_value == value:
