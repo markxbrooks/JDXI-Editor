@@ -25,7 +25,8 @@ msg = SystemControllerMessage(
 
 from dataclasses import dataclass
 
-from jdxi_editor.midi.data.address.address import AddressOffsetSystemLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetSystemLMB, CommandID, AddressMemoryAreaMSB, \
+    AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 
@@ -34,12 +35,12 @@ from jdxi_editor.midi.message.roland import RolandSysEx
 class SystemControllerMessage(RolandSysEx):
     """System Controller parameter message"""
 
-    command: int = CommandParameter.DT1
-    area: int = ProgramAreaParameter.SETUP  # 0x02: Setup area
-    section: int = AddressOffsetSystemLMB.SYSTEM_CONTROLLER  # 0x03: Controller section
-    group: int = ZERO_BYTE  # Always 0x00
-    lsb: int = 0x00  # Parameter number
-    value: int = 0x00  # Parameter value
+    command: int = CommandID.DT1
+    msb: int = AddressMemoryAreaMSB.SETUP  # 0x02: Setup area
+    umb: int = AddressOffsetTemporaryToneUMB.COMMON  # 0x03: Controller section
+    lmb: int = AddressOffsetSystemLMB.CONTROLLER  # Always 0x00
+    lsb: int = ZERO_BYTE  # Parameter number
+    value: int = ZERO_BYTE  # Parameter value
 
     def __post_init__(self):
         super().__post_init__()  # Set address and data from RolandSysEx
