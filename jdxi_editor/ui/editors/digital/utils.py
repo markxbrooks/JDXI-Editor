@@ -13,7 +13,10 @@ from jdxi_editor.midi.data.address.address import (
 )
 
 
-def _log_debug_info(data: list, successes: list, failures: list, enabled: bool):
+def _log_debug_info(data: list,
+                    successes: list,
+                    failures: list,
+                    enabled: bool) -> None:
     """
     Log debug information about the SysEx data.
     :param data: list
@@ -209,5 +212,5 @@ def to_hex(value: int, width: int = 2) -> str:
         log_message(f"to_hex: value: {value} -> 0x{int(int_value):02X} (width={width})")
         return hex_str
     except Exception as ex:
-        log_error(f"Error {ex} occurred in to_hex with value: {value}", level=logging.ERROR)
+        log_error(f"Error {ex} occurred in to_hex with value: {value}")
         return "??"

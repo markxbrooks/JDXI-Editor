@@ -1,10 +1,18 @@
+"""
+Pattern Measure
+"""
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 
 
 class PatternMeasure(QWidget):
     """Widget representing a single measure of the pattern"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
+        """Initialize the PatternMeasure widget.
+
+        :param parent: QWidget
+        """
         super().__init__(parent)
         self.buttons = [[] for _ in range(4)]
         self._setup_ui()

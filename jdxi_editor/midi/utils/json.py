@@ -6,7 +6,11 @@ from jdxi_editor.log.message import log_message
 
 
 def log_to_json(data: Dict) -> None:
-    """Helper function to log JSON data as address single line."""
+    """
+    Helper function to log JSON data as address single line.
+    :param data: Dict
+    :return: None
+    """
     # Ensure `data` is address dictionary, if it's address string, try parsing it as JSON
     if isinstance(data, str):
         try:
@@ -22,8 +26,13 @@ def log_to_json(data: Dict) -> None:
     log_message(compact_json)
 
 
-def log_changes(previous_data, current_data):
-    """Log changes between previous and current JSON data at INFO level."""
+def log_changes(previous_data: Dict, current_data: Dict) -> None:
+    """
+    Log changes between previous and current JSON data at INFO level.
+    :param previous_data: Dict
+    :param current_data: Dict
+    :return: None
+    """
     changes = []
 
     # Compare all keys in current data with previous data

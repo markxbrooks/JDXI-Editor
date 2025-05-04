@@ -39,7 +39,12 @@ class JDXIPresetManager:
         }
 
     def get_preset_name_by_type_and_index(self, synth_type: JDXISynth, preset_index: int) -> str:
-        """Get the name of the currently selected preset"""
+        """
+        Get the name of the currently selected preset
+        :param synth_type: JDXISynth The type of synth
+        :param preset_index: int The index of the preset
+        :return: str The name of the preset
+        """
         try:
             presets = self.preset_synth_map.get(synth_type, JDXIPresets.DIGITAL_ENUMERATED)
             preset_name = presets[preset_index]
@@ -49,28 +54,47 @@ class JDXIPresetManager:
             return "Index Error for current preset"
 
     def get_presets_for_synth(self, synth: JDXISynth) -> JDXIPresets:
-        """Get the available presets for the given synth type."""
+        """
+        Get the available presets for the given synth type.
+        :param synth: JDXISynth The type of synth
+        :return: JDXIPresets The available presets
+        """
         presets = self.preset_synth_map.get(synth, JDXIPresets.DIGITAL_ENUMERATED)
         return presets
 
     def get_presets_for_channel(self, channel: MidiChannel) -> JDXIPresets:
-        """Get the available presets for the given channel."""
+        """
+        Get the available presets for the given channel.
+        :param channel: MidiChannel The MIDI channel
+        :return: JDXIPresets The available presets
+        """
         presets = self.preset_channel_map.get(channel, JDXIPresets.DIGITAL_ENUMERATED)
         return presets
 
     def set_current_preset_name(self, preset_name: str):
-        """Set the current global tone name."""
+        """
+        Set the current global tone name.
+        :param preset_name: str The name of the preset
+        """
         self.current_preset_name = preset_name
         self._update_display()
 
     def set_preset_name_by_type(self, preset_type: str, preset_name: str):
-        """Set the tone name for a specific tone type."""
+        """
+        Set the tone name for a specific tone type.
+        :param preset_type: str The type of preset
+        :param preset_name: str The name of the preset
+        """
         if preset_type in self.current_preset_names:
             self.current_preset_names[preset_type] = preset_name
             self._update_display()
 
     def get_preset_name_by_type(self, tone_type: JDXISynth) -> str:
-        """Get the tone name for a specific tone type."""
+        """
+        Get the tone name for a specific tone type.
+        :param tone_type: JDXISynth The type of tone
+        :return: str The name of the tone
+        """
         return self.current_preset_names.get(tone_type, "Unknown Tone")
 
     def reset_all_presets(self):

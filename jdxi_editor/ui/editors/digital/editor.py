@@ -39,8 +39,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QTabWidget,
     QScrollArea,
-    QLabel,
-    QPushButton, QSplitter,
+    QSplitter,
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
@@ -260,7 +259,7 @@ class DigitalSynthEditor(SynthEditor):
             )
             return True
         except Exception as ex:
-            log_error(f"Error setting partial {partial.name} state: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error setting partial {partial.name} state: {str(ex)}")
             return False
 
     def _initialize_partial_states(self):
@@ -418,7 +417,7 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        current_synth = get_area([self.sysex_address.msb, self.sysex_address.umb])
+        current_synth = get_area([self.address.msb, self.address.umb])
         temporary_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
         if not current_synth == temporary_area:
@@ -473,7 +472,7 @@ class DigitalSynthEditor(SynthEditor):
                 else:
                     self._update_slider(param, param_value, successes, failures, debug)
             except Exception as ex:
-                log_error(f"Error {ex} occurred", level=logging.ERROR)
+                log_error(f"Error {ex} occurred")
 
     def _update_tone_common_modify_sliders_from_sysex(self,
                                                       json_sysex_data: str) -> None:
@@ -527,7 +526,7 @@ class DigitalSynthEditor(SynthEditor):
             return
         synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_no)
         slider_value = param.convert_from_midi(value)
-        log_slider_parameters(self.sysex_address.umb, synth_data.lmb, param, value, slider_value)
+        log_slider_parameters(self.address.umb, synth_data.lmb, param, value, slider_value)
         slider.blockSignals(True)
         slider.setValue(slider_value)
         slider.blockSignals(False)

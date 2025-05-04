@@ -50,6 +50,18 @@ class ADSR(QWidget):
             parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
+        """
+        Initialize the ADSR widget
+        :param attack_param: AddressParameter
+        :param decay_param: AddressParameter
+        :param sustain_param: AddressParameter
+        :param release_param: AddressParameter
+        :param initial_param: Optional[AddressParameter]
+        :param peak_param: Optional[AddressParameter]
+        :param midi_helper: Optional[MidiIOHelper]
+        :param address: Optional[RolandSysExAddress]
+        :param parent: Optional[QWidget]
+        """
         self.address = address
         self.midi_helper = midi_helper
         self.controls: Dict[AddressParameter, Slider] = {}
@@ -232,7 +244,7 @@ class ADSR(QWidget):
             else:
                 log_slider_parameters(self.address.umb, self.address.lmb, param, value, midi_value)
         except ValueError as ex:
-            log_error(f"Error updating parameter: {ex}", level=logging.ERROR)
+            log_error(f"Error updating parameter: {ex}")
         # 4) Update plot
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
@@ -247,7 +259,7 @@ class ADSR(QWidget):
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(slider.value())
         except Exception as ex:
-            log_error(f"Error updating envelope from controls: {ex}", level=logging.ERROR)
+            log_error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self):
@@ -260,7 +272,7 @@ class ADSR(QWidget):
                 else:
                     slider.setValue(int(ms_to_midi_value(self.envelope[envelope_param_type])))
         except Exception as ex:
-            log_error(f"Error updating controls from envelope: {ex}", level=logging.ERROR)
+            log_error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:

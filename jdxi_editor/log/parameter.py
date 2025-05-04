@@ -14,8 +14,14 @@ def log_parameter(
     max_length: int = 300,
     level: int = logging.INFO,
 ):
-    """Log a structured representation of a parameter with type, formatted value, and optional emoji context."""
-
+    """
+    Log a structured representation of a parameter with type, formatted value, and optional emoji context.
+    :param message: str The message to log.
+    :param parameter: Any The parameter to log.
+    :param float_precision: int The float precision.
+    :param max_length: int The max length.
+    :param level: int The log level.
+    """
     def format_value(param):
         if param is None:
             return "None"

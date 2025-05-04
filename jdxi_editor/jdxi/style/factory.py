@@ -36,6 +36,7 @@ other interactive applications.
 
 """
 
+from PySide6.QtWidgets import QPushButton
 
 FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
 
@@ -43,7 +44,13 @@ FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
 def generate_polyend_sequencer_button_style(
     self, is_checked: bool, is_current: bool = False
 ) -> str:
-    """Generate button style based on state and current step"""
+    """
+    Generate button style based on state and current step
+    :param self: The instance of the class
+    :param is_checked: bool Whether the button is checked
+    :param is_current: bool Whether the button is the current step
+    :return: str The style sheet for the button
+    """
     base_color = "#3498db" if is_checked else "#2c3e50"
     border_color = "#e74c3c" if is_current else base_color
 
@@ -66,7 +73,12 @@ def generate_polyend_sequencer_button_style(
     """
 
 
-def generate_sequencer_button_style(active):
+def generate_sequencer_button_style(active: bool) -> str:
+    """
+    Generate button style based on active state
+    :param active: bool Whether the button is active
+    :return: str The style sheet for the button
+    """
     return f"""
         QPushButton {{
             border: 4px solid {'#ff6666' if active else '#666666'};
@@ -86,19 +98,26 @@ def generate_sequencer_button_style(active):
 
 
 def generate_button_style(
-    bg,
-    border,
-    radius,
-    text_color,
-    hover,
-    border_pressed,
-    background_pressed="#666666",
-    button_border_width=4,
-    font_family="Myriad Pro, Arial, sans-serif",
-    font_size="12px",
-    button_padding=4,
-):
-    """Generate address button style dynamically."""
+    bg: str,
+    border: str,
+    radius: int,
+    text_color: str,
+    hover: str,
+    border_pressed: str,
+    background_pressed: str = "#666666",
+    button_border_width: int = 4,
+    font_family: str = "Myriad Pro, Arial, sans-serif",
+    font_size: str = "12px",
+    button_padding: int = 4,
+) -> str:
+    """
+    Generate address button style dynamically.
+    :param bg: str The background color
+    :param border: str The border color
+    :param radius: int The radius of the button
+    :param text_color: str The text color
+    :param hover: str The hover color
+    """
     return f"""
             QPushButton {{
                 background-color: {bg};
@@ -122,20 +141,27 @@ def generate_button_style(
 
 
 def generate_tab_style(
-    bg,
-    border,
-    radius,
-    text_color,
-    hover_bg,
-    hover_border,
-    selected_bg,
-    selected_border,
-    font_family=FONT_FAMILY,
-    font_size="12px",
-    padding="1px 1px",
-    margin="1px",
+    bg: str,
+    border: str,
+    radius: int,
+    text_color: str,
+    hover_bg: str,
+    hover_border: str,
+    selected_bg: str,
+    selected_border: str,
+    font_family: str = FONT_FAMILY,
+    font_size: str = "12px",
+    padding: str = "1px 1px",
+    margin: str = "1px",
 ):
-    """Generate address tab style dynamically."""
+    """
+    Generate address tab style dynamically.
+    :param bg: str The background color
+    :param border: str The border color
+    :param radius: int The radius of the tab
+    :param text_color: str The text color
+    :param hover_bg: str The hover background color
+    """
     return f"""
             QTabBar::tab {{
                 background: {bg};
@@ -172,21 +198,29 @@ def generate_tab_style(
 
 
 def generate_editor_style(
-    accent,
-    accent_hover,
-    background,
-    foreground,
-    font_family,
-    font_size,
-    padding,
-    button_padding,
-    slider_handle,
-    slider_handle_border,
-    slider_groove,
-    slider_neon,
-    slider_neon_gradient_stop,
-    font_weight = "normal"
-):
+    accent: str,
+    accent_hover: str,
+    background: str,
+    foreground: str,
+    font_family: str,
+    font_size: str,
+    padding: str,
+    button_padding: str,
+    slider_handle: str,
+    slider_handle_border: str,
+    slider_groove: str,
+    slider_neon: str,
+    slider_neon_gradient_stop: str,
+    font_weight: str = "normal"
+) -> str:
+    """
+    Generate editor style dynamically.
+    :param accent: str The accent color
+    :param accent_hover: str The accent hover color
+    :param background: str The background color
+    :param foreground: str The foreground color
+    :return: str The style sheet for the editor
+    """
     return f"""
         QWidget {{
             background-color: {background};
@@ -336,8 +370,12 @@ def generate_editor_style(
     """
 
 
-def get_button_styles(active):
-    """Returns the appropriate style for active/inactive button states"""
+def get_button_styles(active: bool) -> str:
+    """
+    Returns the appropriate style for active/inactive button states
+    :param active: bool Whether the button is active
+    :return: str The style sheet for the button
+    """
     base_style = """
         QPushButton {
             border-radius: 15px;
@@ -374,13 +412,19 @@ def get_button_styles(active):
         )
 
 
-def toggle_button_style(button, checked):
-    """Update button style based on its checked state"""
+def toggle_button_style(button: QPushButton, checked: bool):
+    """Update button style based on its checked state
+    :param button: QPushButton The button to update
+    :param checked: bool Whether the button is checked
+    """
     button.setStyleSheet(
         generate_sequencer_button_style(checked)
     )  # Example style for checked
 
 
-def update_button_style(button, checked):
-    """Toggle the button style based on the state"""
+def update_button_style(button: QPushButton, checked: bool):
+    """Toggle the button style based on the state
+    :param button: QPushButton The button to update
+    :param checked: bool Whether the button is checked
+    """
     button.setStyleSheet(get_button_styles(checked))

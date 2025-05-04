@@ -82,7 +82,7 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, ZERO_BYTE
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
 from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.midi.data.editor.drum import DRUM_PARTIAL_MAPPING
+from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -445,7 +445,7 @@ class DrumCommonEditor(SynthEditor):
                     else:
                         failures.append(param_name)
                 except Exception as ex:
-                    log_error(f"Error {ex} occurred", level=logging.ERROR)
+                    log_error(f"Error {ex} occurred")
 
         log_message(f"Updating sliders for Partial {partial_no}")
 

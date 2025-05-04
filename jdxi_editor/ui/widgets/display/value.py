@@ -1,12 +1,31 @@
+"""
+Value Display Widget
+"""
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
 
 
 class ValueDisplay(QWidget):
+    """Value Display Widget"""  
+
     valueChanged = Signal(int)
 
-    def __init__(self, name, min_val, max_val, format_str="{}", parent=None):
+    def __init__(
+        self,
+        name: str,
+        min_val: int,
+        max_val: int,
+        format_str: str = "{}",
+        parent: QWidget = None,
+    ):
         super().__init__(parent)
+        """Initialize the ValueDisplay widget.
+
+        :param name: str
+        :param min_val: int
+        :param max_val: int
+        :param format_str: str
+        """
         self.min_val = min_val
         self.max_val = max_val
         self.format_str = format_str
@@ -23,12 +42,20 @@ class ValueDisplay(QWidget):
         layout.addWidget(self.name_label)
         layout.addWidget(self.value_label)
 
-    def setValue(self, value):
+    def setValue(self, value: int) -> None:
+        """Set the value of the display.
+
+        :param value: int
+        """
         clamped = max(self.min_val, min(self.max_val, value))
         self.value_label.setText(self.format_str.format(clamped))
         self.valueChanged.emit(clamped)
 
-    def value(self):
+    def value(self) -> int:
+        """Get the value of the display.
+
+        :return: int
+        """
         try:
             return int(self.value_label.text())
         except ValueError:

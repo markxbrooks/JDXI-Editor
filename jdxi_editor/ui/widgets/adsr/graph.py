@@ -9,6 +9,10 @@ class ADSRGraph(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        """
+        Initialize the ADSRGraph
+        :param parent: Optional[QWidget]
+        """
         self.setMinimumHeight(150)
         self.attack_x = 0.1
         self.decay_x = 0.3
@@ -17,6 +21,9 @@ class ADSRGraph(QWidget):
         self.dragging = None
 
     def paintEvent(self, event):
+        """Paint the ADSR graph.
+        :param event: QPaintEvent
+        """
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         pen = QPen(QColor("#ffffff"), 2)
@@ -43,6 +50,9 @@ class ADSRGraph(QWidget):
             painter.drawEllipse(pt, 6, 6)
 
     def mousePressEvent(self, event):
+        """Handle mouse press event.
+        :param event: QMouseEvent
+        """
         pos = event.position()
         points = {
             "attack": QPointF(self.attack_x * self.width(), 0),
@@ -55,6 +65,9 @@ class ADSRGraph(QWidget):
                 break
 
     def mouseMoveEvent(self, event):
+        """Handle mouse move event.
+        :param event: QMouseEvent
+        """
         if self.dragging:
             pos = event.position()
             if self.dragging == "attack":
@@ -68,4 +81,7 @@ class ADSRGraph(QWidget):
             self.update()
 
     def mouseReleaseEvent(self, event):
+        """Handle mouse release event.
+        :param event: QMouseEvent
+        """
         self.dragging = None

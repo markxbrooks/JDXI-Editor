@@ -38,9 +38,8 @@ class IdentityRequestMessage(MidiMessage):
     device_id: int = 0x10  # Default device ID
 
     def to_message_list(self) -> List[int]:
-        """Convert to list of bytes for sending
-
-        Returns:
-            List of integers representing the MIDI message
+        """
+        Convert to list of bytes for sending
+        :return: list
         """
         return [START_OF_SYSEX, ID_NUMBER, DEVICE_ID, SUB_ID_1, SUB_ID_2, END_OF_SYSEX]

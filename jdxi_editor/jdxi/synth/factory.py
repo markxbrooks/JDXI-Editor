@@ -1,5 +1,5 @@
 """
-factory.py
+Synth Factory
 """
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.jdxi.synth.type import JDXISynth
@@ -9,16 +9,16 @@ from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, Addre
 from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
-from jdxi_editor.jdxi.synth.data import SynthData
+from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.sysex.requests import MidiRequests
 
 
-def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> SynthData:
+def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISynthData:
     """
     Factory function to create synth data based on the synth type and partial number.
     :param synth_type: str
     :param partial_number: int
-    :return: SynthData
+    :return: JDXISynthData
     """
     if synth_type == JDXISynth.DRUM:
         address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)

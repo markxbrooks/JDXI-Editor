@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QPushButton,
 )
-from PySide6.QtGui import QPainter, QColor, QPen
+from PySide6.QtGui import QPainter, QColor, QPen, QPaintEvent
 from PySide6.QtCore import Qt, QRectF
 
 from jdxi_editor.log.message import log_message
@@ -46,7 +46,15 @@ CHANNEL_COLORS = {
 }
 
 
-def extract_notes_with_absolute_time(track, tempo, ticks_per_beat):
+def extract_notes_with_absolute_time(
+    track: mido.MidiTrack, tempo: int, ticks_per_beat: int
+) -> list:
+    """Extract notes with absolute time from a MIDI track.
+
+    :param track: mido.MidiTrack
+    :param tempo: int
+    :param ticks_per_beat: int
+    """
     notes = []
     current_time = 0
     for msg in track:
@@ -58,16 +66,16 @@ def extract_notes_with_absolute_time(track, tempo, ticks_per_beat):
 
 
 class TimeRulerWidget(QWidget):
-    def __init__(self, midi_file=None, parent=None):
+    def __init__(self, midi_file: mido.MidiFile = None, parent: QWidget = None):
         super().__init__(parent)
         self.midi_file = midi_file
         self.setMinimumHeight(20)
 
-    def set_midi_file(self, midi_file):
+    def set_midi_file(self, midi_file: mido.MidiFile) -> None:
         self.midi_file = midi_file
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         if not self.midi_file:
             return
 
@@ -95,7 +103,7 @@ class TimeRulerWidget(QWidget):
 
 
 class MidiTrackWidget(QWidget):
-    def __init__(self, midi_file=None, parent=None):
+    def __init__(self, midi_file: mido.MidiFile = None, parent: QWidget = None):
         super().__init__(parent)
         self.midi_file = None
         self.setMinimumHeight(400)
@@ -104,7 +112,7 @@ class MidiTrackWidget(QWidget):
             self.set_midi_file(midi_file)
         self.muted_channels = set()  # Set of muted channels
 
-    def set_midi_file(self, midi_file):
+    def set_midi_file(self, midi_file: mido.MidiFile) -> None:
         self.midi_file = midi_file
         self.track_data = []
 
@@ -160,7 +168,12 @@ class MidiTrackWidget(QWidget):
         # with open("midi_track_data.json", "w") as f:
         #    json.dump(json_safe_data, f, indent=2)
 
-    def toggle_channel_mute(self, channel, is_muted):
+    def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
+        """Toggle the mute state for a channel.
+
+        :param channel: int
+        :param is_muted: bool
+        """
         log_message(
             f"Track Widget Toggling mute for channel {channel}: {'Muted' if is_muted else 'Un-muted'}"
         )
@@ -169,7 +182,7 @@ class MidiTrackWidget(QWidget):
         else:
             self.muted_channels.discard(channel)
 
-    def paintEventNew(self, event):
+    def paintEventNew(self, event: QPaintEvent) -> None:
         if not self.track_data or not self.midi_file:
             return
 
@@ -225,7 +238,11 @@ class MidiTrackWidget(QWidget):
         finally:
             painter.end()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Paint the MIDI track widget.
+
+        :param event: QPaintEvent
+        """
         if not self.track_data or not self.midi_file:
             return
         painter = QPainter(self)
@@ -274,7 +291,7 @@ class MidiTrackWidget(QWidget):
 
 
 class MidiTrackViewer(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
         self.event_index = None

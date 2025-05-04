@@ -95,7 +95,10 @@ class AddressParameterEffect(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display range for the parameter"""
+        """
+        Get the display range for the parameter
+        :return: Tuple[int, int] The display range
+        """
         return self.display_min, self.display_max
 
     # EFX1 Parameters
@@ -131,26 +134,38 @@ class AddressParameterEffect(AddressParameter):
     REVERB_PARAM_24 = (0x5F, 12768, 52768, -20000, 20000)
 
     @classmethod
-    def get_address_by_name(cls, name):
-        """Look up an effect parameter address by its name"""
+    def get_address_by_name(cls, name: str) -> Optional[int]:
+        """Look up an effect parameter address by its name
+        :param name: str The parameter name
+        :return: Optional[int] The address
+        """
         member = cls.__members__.get(name, None)
         return member.value[0] if member else None
 
     @classmethod
-    def get_by_address(cls, address):
-        """Look up an effect parameter by its address"""
+    def get_by_address(cls, address: int) -> Optional[object]:
+        """Look up an effect parameter by its address
+        :param address: int The address
+        :return: Optional[object] The parameter
+        """
         for param in cls:
             if isinstance(param.value, tuple) and param.value[0] == address:
                 return param
         return None  # Return None if no match is found
 
     @classmethod
-    def get_by_name(cls, name):
-        """Look up an effect parameter by its name"""
+    def get_by_name(cls, name: str) -> Optional[object]:
+        """Look up an effect parameter by its name
+        :param name: str The parameter name
+        :return: Optional[object] The parameter
+        """
         return cls.__members__.get(name, None)
 
     def convert_to_midi(self, display_value: int) -> int:
-        """Convert from display value to MIDI value"""
+        """Convert from display value to MIDI value
+        :param display_value: int The display value
+        :return: int The MIDI value
+        """
         # Handle special bipolar cases first
         if self == AddressParameterEffect.EFX1_PARAM_1:
             return display_value + 32768  #
@@ -182,16 +197,25 @@ class AddressParameterEffect(AddressParameter):
     convert_from_display = convert_to_midi
 
     @staticmethod
-    def get_midi_value(param_name, value):
-        """Get the MIDI value for address parameter by name and value."""
+    def get_midi_value(param_name: str, value: int) -> Optional[int]:
+        """
+        Get the MIDI value for address parameter by name and value.
+        :param param_name: str The parameter name
+        :param value: int The value
+        :return: Optional[int] The MIDI value
+        """
         param = AddressParameterEffect.get_by_name(param_name)
         if param:
             return param.convert_to_midi(value)
         return None
 
     @classmethod
-    def get_common_param_by_name(cls, name):
-        """Look up an effect parameter's category using address dictionary mapping"""
+    def get_common_param_by_name(cls, name: str) -> Optional[AddressParameterEffectCommon]:
+        """
+        Look up an effect parameter's category using address dictionary mapping
+        :param name: str The parameter name
+        :return: Optional[AddressParameterEffectCommon] The category
+        """
         param_mapping = {
             AddressParameterEffectCommon.PROGRAM_EFFECT_1: {
                 "EFX1_TYPE",

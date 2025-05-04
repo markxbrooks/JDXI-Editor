@@ -1,3 +1,7 @@
+"""
+Log ADSR Parameter
+"""
+
 import logging
 
 from jdxi_editor.globals import logger
@@ -11,8 +15,16 @@ def log_adsr_parameter(umb: int,
                        lmb: int,
                        param: AddressParameter,
                        value: int,
-                       level: int = logging.INFO):
-    """Log slider parameters for debugging."""
+                       level: int = logging.INFO) -> None:
+    """
+    Log slider parameters for debugging.
+    :param umb: int The UMB
+    :param lmb: int The LMB
+    :param param: AddressParameter The parameter
+    :param value: int The value
+    :param level: int The log level
+    :return: None
+    """
     synth = f"0x{int(umb):02X}"
     part = f"0x{int(lmb):02X}"
 

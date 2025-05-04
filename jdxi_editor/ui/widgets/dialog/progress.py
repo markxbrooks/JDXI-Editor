@@ -1,13 +1,28 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QApplication
+"""
+Progress Dialog
+"""
+
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QWidget, QApplication
 
 from jdxi_editor.jdxi.style import JDXIStyle
 
 
 class ProgressDialog(QDialog):
     def __init__(
-        self, title="Loading", message="Please wait...", maximum=100, parent=None
+        self,
+        title: str = "Loading",
+        message: str = "Please wait...",
+        maximum: int = 100,
+        parent: QWidget = None,
     ):
         super().__init__(parent)
+        """Initialize the ProgressDialog
+
+        :param title: str
+        :param message: str
+        :param maximum: int
+        :param parent: QWidget
+        """
         self.setWindowTitle(title)
         self.setModal(True)
         layout = QVBoxLayout()

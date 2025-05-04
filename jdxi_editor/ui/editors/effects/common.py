@@ -40,6 +40,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.resources import resource_path
 from jdxi_editor.midi.data.address.address import (
@@ -80,7 +81,7 @@ class EffectsCommonEditor(SimpleEditor):
         # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
-        self.sysex_address = RolandSysExAddress(AddressMemoryAreaMSB.PROGRAM,
+        self.address = RolandSysExAddress(AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
                                           AddressOffsetSystemUMB.COMMON,
                                           AddressOffsetProgramLMB.COMMON,
                                           ZERO_BYTE)
@@ -325,8 +326,8 @@ class EffectsCommonEditor(SimpleEditor):
             try:
                 # Send MIDI message
                 sysex_message = RolandSysEx(
-                    msb=self.sysex_address.msb,
-                    umb=self.sysex_address.umb,
+                    msb=self.address.msb,
+                    umb=self.address.umb,
                     lmb=common_param.address,
                     lsb=param.address,
                     value=midi_value,
@@ -337,5 +338,5 @@ class EffectsCommonEditor(SimpleEditor):
                 return False
 
         except Exception as ex:
-            log_error(f"Error handling parameter {param.name}: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error handling parameter {param.name}: {str(ex)}")
             return False

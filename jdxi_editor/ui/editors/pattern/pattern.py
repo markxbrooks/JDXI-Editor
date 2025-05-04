@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QSpinBox,
     QMessageBox,
+    QWidget,
 )
 
 from PySide6.QtCore import Qt, QTimer
@@ -57,9 +58,15 @@ class PatternSequencer(SynthEditor):
         self,
         midi_helper: Optional[MidiIOHelper],
         preset_helper: Optional[JDXIPresetHelper],
-        parent=None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
+        """
+        Initialize the PatternSequencer
+        :param midi_helper: Optional[MidiIOHelper]
+        :param preset_helper: Optional[JDXIPresetHelper]
+        :param parent: Optional[QWidget]
+        """
         self.muted_channels = []
         self.total_measures = None
         self.midi_helper = midi_helper
@@ -455,7 +462,7 @@ class PatternSequencer(SynthEditor):
                             self.tempo_spinbox.setValue(bpm)
                             break
             except Exception as ex:
-                log_error(f"Error loading pattern: {ex}", level=logging.ERROR)
+                log_error(f"Error loading pattern: {ex}")
                 QMessageBox.critical(
                     self, "Error", f"Could not load pattern: {str(ex)}"
                 )
@@ -617,7 +624,7 @@ class PatternSequencer(SynthEditor):
                     self.tempo_spinbox.setValue(bpm)
 
         except Exception as ex:
-            log_error(f"Error loading pattern: {ex}", level=logging.ERROR)
+            log_error(f"Error loading pattern: {ex}")
             QMessageBox.critical(self, "Error", f"Could not load pattern: {str(ex)}")
 
     def play_pattern(self):

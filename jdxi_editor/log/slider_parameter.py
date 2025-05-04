@@ -1,3 +1,6 @@
+"""
+Log Slider Parameters
+"""
 import logging
 
 from jdxi_editor.globals import logger, LOGGING
@@ -12,11 +15,19 @@ def log_slider_parameters(umb: int,
                           param: AddressParameter,
                           value: int,
                           slider_value: int,
-                          level: int = logging.INFO):
-    """Log slider parameters for debugging."""
+                          level: int = logging.INFO) -> None:
+    """
+    Log slider parameters for debugging.
+    :param umb: int The UMB
+    :param lmb: int The LMB
+    :param param: AddressParameter The parameter
+    :param value: int The value
+    :param slider_value: int The slider value
+    :param level: int The log level
+    :return: None
+    """
     synth_umb = f"0x{int(umb):02X}"
     part_lmb = f"0x{int(lmb):02X}"
-
     synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
     if part_lmb != "0x00":
         part_name_lmb = parse_sysex_byte(int(part_lmb, 16), AddressOffsetSuperNATURALLMB)

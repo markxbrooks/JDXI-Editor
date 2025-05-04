@@ -21,6 +21,14 @@ class AnalogLFOSection(QWidget):
         lfo_shape_buttons: dict,
     ):
         super().__init__()
+        """
+        Initialize the AnalogLFOSection
+        :param create_parameter_slider: Callable
+        :param create_parameter_switch: Callable
+        :param create_parameter_combo_box: Callable
+        :param on_lfo_shape_changed: Callable
+        :param lfo_shape_buttons: dict
+        """
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._create_parameter_combo_box = create_parameter_combo_box

@@ -56,7 +56,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
-from jdxi_editor.midi.data.programs.presets import DIGITAL_PRESET_LIST
+from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
@@ -83,6 +83,12 @@ class PresetEditor(SimpleEditor):
         preset_helper: JDXIPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        """
+        Initialize the PresetEditor
+        :param midi_helper: Optional[MidiIOHelper]
+        :param parent: Optional[QWidget]
+        :param preset_helper: JDXIPresetHelper
+        """
         self.digital_preset_type_combo = None
         self.setWindowFlag(Qt.Window)
         self.midi_helper = midi_helper
@@ -289,7 +295,7 @@ class PresetEditor(SimpleEditor):
             lambda tone_name, synth_type: self.update_tone_name(tone_name, synth_type)
         )
 
-    def on_preset_type_changed(self, index):
+    def on_preset_type_changed(self, index: int) -> None:
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
         log_message(f"preset_type: {preset_type}")
@@ -304,7 +310,12 @@ class PresetEditor(SimpleEditor):
         self._populate_presets()
         self.update_category_combo_box_categories()
 
-    def update_tone_name(self, tone_name: str, synth_type: str):
+    def update_tone_name(self, tone_name: str, synth_type: str) -> None:
+        """
+        Update the tone name.
+        :param tone_name: str
+        :param synth_type: str
+        """
         synth_label_map = {
             "Digital Synth 1": self.digital_synth_1_current_synth,
             "Digital Synth 2": self.digital_synth_2_current_synth,
@@ -318,8 +329,11 @@ class PresetEditor(SimpleEditor):
         else:
             logging.warning(f"MIDI_SLEEP_TIME: {synth_type}. Cannot update tone name.")
 
-    def load_preset_by_program_change(self, preset_index):
-        """Load a preset by program change."""
+    def load_preset_by_program_change(self, preset_index: int) -> None:
+        """
+        Load a preset by program change.
+        :param preset_index: int
+        """
         preset_name = self.preset_combo_box.currentText()
         log_message(f"=======load_preset_by_program_change=======")
         log_parameter("combo box preset_name", preset_name)
@@ -354,7 +368,10 @@ class PresetEditor(SimpleEditor):
         self.data_request()
 
     def _populate_presets(self, search_text: str = ""):
-        """Populate the program list with available presets."""
+        """
+        Populate the program list with available presets.
+        :param search_text: str
+        """
         if not self.preset_helper:
             return
 
@@ -398,7 +415,10 @@ class PresetEditor(SimpleEditor):
             0
         )  # Select "No Category Selected" as default
 
-    def update_category_combo_box_categories(self):
+    def update_category_combo_box_categories(self) -> None:
+        """
+        Update the category combo box.
+        """
         # Update the category combo box
         categories = set(preset["category"] for preset in self.preset_list)
         self.category_combo_box.blockSignals(True)  # Block signals during update
@@ -419,15 +439,15 @@ class PresetEditor(SimpleEditor):
 
         self.category_combo_box.blockSignals(False)  # Unblock signals after update
 
-    def on_bank_changed(self, _):
+    def on_bank_changed(self, _: int) -> None:
         """Handle bank selection change."""
         self._populate_presets()
 
-    def on_preset_number_changed(self, index):
+    def on_preset_number_changed(self, index: int) -> None:
         """Handle program number selection change."""
         # self.load_program()
 
-    def load_program(self):
+    def load_program(self) -> None:
         """Load the selected program based on bank and number."""
         program_name = self.preset_combo_box.currentText()
         program_id = program_name[:3]
@@ -449,8 +469,10 @@ class PresetEditor(SimpleEditor):
         )
         self.data_request()
 
-    def update_current_synths(self, program_details: dict):
-        """Update the current synth label."""
+    def update_current_synths(self, program_details: dict) -> None:
+        """Update the current synth label.
+        :param program_details: dict
+        """
         try:
             self.digital_synth_1_current_synth.setText(program_details["digital_1"])
             self.digital_synth_2_current_synth.setText(program_details["digital_2"])
@@ -463,17 +485,19 @@ class PresetEditor(SimpleEditor):
             self.drum_kit_current_synth.setText("Unknown")
             self.analog_synth_current_synth.setText("Unknown")
 
-    def load_preset_temp(self, preset_number: int):
-        """Load preset data and update UI."""
+    def load_preset_temp(self, preset_number: int) -> None:
+        """Load preset data and update UI.
+        :param preset_number: int
+        """
         if not self.preset_helper:
             return
         self.preset_helper.load_preset(preset_number)
         self.data_request()
 
-    def _update_preset_list(self):
+    def _update_preset_list(self) -> None:
         """Update the preset list with available presets."""
         self._populate_presets()
 
-    def on_category_changed(self, _):
+    def on_category_changed(self, _: int) -> None:
         """Handle category selection change."""
         self._populate_presets()

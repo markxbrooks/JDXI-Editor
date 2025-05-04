@@ -41,7 +41,8 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
 )
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
+from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
 
 # Define constants in the SYSEX_CONSTANTS dictionary
@@ -50,7 +51,7 @@ SYSEX_CONSTANTS = {
     "END": to_hex_string(END_OF_SYSEX),
     "RQ1_COMMAND_11": to_hex_string(CommandID.RQ1),
     "JDXI_HEADER": bytes_to_hex_string(JD_XI_HEADER_LIST),
-    "TEMPORARY_PROGRAM_AREA": to_hex_string(AddressMemoryAreaMSB.PROGRAM),
+    "TEMPORARY_PROGRAM_AREA": to_hex_string(AddressMemoryAreaMSB.TEMPORARY_PROGRAM),
     "TEMPORARY_TONE_AREA": "19",
     "PROGRAM_COMMON_AREA": "00",
     "FOUR_ZERO_BYTES": "00 00 00 00",
@@ -60,8 +61,7 @@ SYSEX_CONSTANTS = {
     "DRUMS": "70",
 }
 
-# Construct headers
-# RQ11_COMMAND_HEADER = f"{SYSEX_CONSTANTS['START']} {SYSEX_CONSTANTS['JDXI_HEADER']} {SYSEX_CONSTANTS['RQ1_COMMAND_11']}"
+
 RQ11_COMMAND_HEADER = f"{SYSEX_CONSTANTS['JDXI_HEADER']} {SYSEX_CONSTANTS['RQ1_COMMAND_11']}"
 TEMPORARY_PROGRAM_RQ11_HEADER = (
     f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_PROGRAM_AREA']}"
@@ -76,19 +76,34 @@ PROGRAM_COMMON_RQ11_HEADER = (
 
 # Function to compute Roland checksum
 def roland_checksum(data: str) -> str:
+    """
+    Compute Roland checksum for a given SysEx data string.
+    :param data: str
+    :return: str
+    """
     bytes_list = [int(x, 16) for x in data.split()]
     checksum = (128 - (sum(bytes_list) % 128)) % 128
     return f"{checksum:02X}"
 
 
 # Function to create request strings
-def create_request(header, tone_area, param1):
+def create_request(header: str, tone_area: str, param1: str) -> str:
+    """
+    Create a request string for a given header, tone area, and parameter.
+    :param header: str
+    :param tone_area: str
+    :param param1: str
+    :return: str
+    """
     data = f"{tone_area} {param1}"
     checksum = roland_checksum(data)
     return f"{header} {data} {checksum} {SYSEX_CONSTANTS['END']}"
 
 
 class MidiRequests:
+    """
+    Class for creating MIDI requests.
+    """
     PROGRAM_COMMON = create_request(
         TEMPORARY_PROGRAM_RQ11_HEADER,
         SYSEX_CONSTANTS["PROGRAM_COMMON_AREA"],

@@ -26,20 +26,33 @@ def format_midi_message_to_hex_string(message):
 
 
 def construct_address(area, group, param, part):
-    """Address construction"""
+    """Address construction
+    :param area: int
+    :param group: int
+    :param param: int
+    :param part: int
+    :return: list
+    """
     address = [area, part, group & 0xFF, param & 0xFF]
     return address
 
 
 def increment_group(group, param):
-    """Adjust group if param exceeds 127"""
+    """Adjust group if param exceeds 127
+    :param group: int
+    :param param: int
+    :return: int
+    """
     if param > 127:
         group += 1
     return group
 
 
 def nibble_data(data):
-    """Sanitize the data by splitting bytes greater than 127 into 4-bit nibbles."""
+    """Sanitize the data by splitting bytes greater than 127 into 4-bit nibbles.
+    :param data: list
+    :return: list
+    """
     sanitized_data = []
     for byte in data:
         if byte > 127:
@@ -62,7 +75,7 @@ def rtmidi_to_mido(rtmidi_message: bytes) -> Union[bool, mido.Message]:
     try:
         return mido.Message.from_bytes(rtmidi_message)
     except ValueError as err:
-        log_message(f"Failed to convert rtmidi message: {err}", level=logging.ERROR)
+        log_error(f"Failed to convert rtmidi message: {err}")
         return False
 
 
@@ -84,7 +97,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
             return mido.Message("sysex", data=sysex_data)
     except Exception as ex:
-        log_error(f"Error {ex} occurred", level=logging.ERROR)
+        log_error(f"Error {ex} occurred")
     # Program Change
     try:
         if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
@@ -92,7 +105,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             program = message_content[1]
             return mido.Message("program_change", channel=channel, program=program)
     except Exception as ex:
-        log_error(f"Error {ex} occurred", level=logging.ERROR)
+        log_error(f"Error {ex} occurred")
     # Control Change
     try:
         if 0xB0 <= status_byte <= 0xBF and len(message_content) >= 3:
@@ -101,7 +114,7 @@ def convert_to_mido_message(message_content: List[int]) -> Optional[Union[mido.M
             value = message_content[2]
             return mido.Message("control_change", channel=channel, control=control, value=value)
     except Exception as ex:
-        log_error(f"Error {ex} occurred", level=logging.ERROR)
+        log_error(f"Error {ex} occurred")
 
     log_message(f"Unhandled MIDI message: {message_content}")
     return None

@@ -51,10 +51,16 @@ class DrumTVFSection(QWidget):
         midi_helper: MidiIOHelper,
     ):
         super().__init__()
+        """
+        Initialize the DrumTVFSection
+        :param controls: dict
+        :param create_parameter_combo_box: Callable
+        :param create_parameter_slider: Callable
+        :param midi_helper: MidiIOHelper
+        """
         self.controls = controls
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
-        self.midi_helper = midi_helper
         self.setup_ui()
 
     def setup_ui(self):

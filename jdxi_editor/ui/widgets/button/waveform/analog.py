@@ -11,6 +11,7 @@ Features:
 
 
 from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget
 from jdxi_editor.midi.wave.form import Waveform
 from jdxi_editor.jdxi.style import JDXIStyle
 
@@ -22,12 +23,12 @@ class AnalogWaveformButton(WaveformButton):
 
     waveform_selected = Signal(Waveform)  # Emits selected waveform
 
-    def __init__(self, waveform: Waveform, style="digital", parent=None):
+    def __init__(self, waveform: Waveform, style: str = "digital", parent: QWidget = None):
         """Initialize waveform button
 
-        Args:
-            waveform: Waveform enum value
-            parent: Parent widget
+        :param waveform: Waveform enum value
+        :param style: str
+        :param parent: Parent widget
         """
         super().__init__(waveform, style, parent)
 

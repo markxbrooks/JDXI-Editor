@@ -1,3 +1,5 @@
+"""Effects Data"""
+
 from jdxi_editor.midi.data.effects.effects import EffectParam
 
 DISTORTION_PARAMS = [

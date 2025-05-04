@@ -101,7 +101,7 @@ class PatchManager(QMainWindow):
             if file_path:
                 self.path_input.setText(file_path)
         except Exception as ex:
-            log_error(f"Error browsing for file: {str(ex)}", level=logging.ERROR)
+            log_error(f"Error browsing for file: {str(ex)}")
 
     def _handle_action(self):
         """Handle save/load action"""

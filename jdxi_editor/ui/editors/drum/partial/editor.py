@@ -21,7 +21,7 @@ The `DrumPartialEditor` is designed to work within a larger system for managing 
 
 """
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -44,13 +44,17 @@ from jdxi_editor.ui.editors.drum.partial.tva import DrumTVASection
 from jdxi_editor.ui.editors.drum.partial.tvf import DrumTVFSection
 from jdxi_editor.ui.editors.drum.partial.wmt import DrumWMTSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
-
+from jdxi_editor.midi.io import MidiIOHelper
 
 class DrumPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
     def __init__(
-        self, midi_helper=None, partial_number=0, partial_name=None, parent=None
+        self,
+        midi_helper: Optional[MidiIOHelper] = None,
+        partial_number: int = 0,
+        partial_name: Optional[str] = None,
+        parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         self.midi_helper = midi_helper
@@ -61,7 +65,7 @@ class DrumPartialEditor(PartialEditor):
         self.preset_helper = None
 
         self.synth_data = create_synth_data(JDXISynth.DRUM, partial_number)
-        self.sysex_address = self.synth_data.sysex_address  # Shortcut for convenience
+        self.address = self.synth_data.address  # Shortcut for convenience
 
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}

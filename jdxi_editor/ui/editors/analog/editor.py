@@ -93,6 +93,12 @@ class AnalogSynthEditor(SynthEditor):
             parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
+        """
+        Initialize the AnalogSynthEditor
+        :param midi_helper: MidiIOHelper
+        :param preset_helper: JDXIPresetHelper
+        :param parent: QWidget
+        """
 
         self.amp_section = None
         self.oscillator_section = None
@@ -215,7 +221,7 @@ class AnalogSynthEditor(SynthEditor):
             self._on_waveform_selected,
             self.wave_buttons,
             self.midi_helper,
-            self.sysex_address
+            self.address
         )
         self.tab_widget.addTab(
             self.oscillator_section,
@@ -228,14 +234,14 @@ class AnalogSynthEditor(SynthEditor):
             self._on_filter_mode_changed,
             self.send_control_change,
             self.midi_helper,
-            self.synth_data.sysex_address
+            self.synth_data.address
         )
         self.tab_widget.addTab(
             self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
         )
         self.amp_section = AmpSection(
             self.midi_helper,
-            self.synth_data.sysex_address,
+            self.synth_data.address,
             self._create_parameter_slider,
             generate_waveform_icon,
             base64_to_pixmap,
@@ -334,9 +340,9 @@ class AnalogSynthEditor(SynthEditor):
         """
         if self.midi_helper:
             sysex_message = RolandSysEx(
-                msb=self.sysex_address.msb,
-                umb=self.sysex_address.umb,
-                lmb=self.sysex_address.lmb,
+                msb=self.address.msb,
+                umb=self.address.umb,
+                lmb=self.address.lmb,
                 lsb=AddressParameterAnalog.OSC_WAVEFORM.lsb,
                 value=waveform.midi_value,
             )
@@ -361,9 +367,9 @@ class AnalogSynthEditor(SynthEditor):
         """
         if self.midi_helper:
             sysex_message = RolandSysEx(
-                msb=self.sysex_address.msb,
-                umb=self.sysex_address.umb,
-                lmb=self.sysex_address.lmb,
+                msb=self.address.msb,
+                umb=self.address.umb,
+                lmb=self.address.lmb,
                 lsb=AddressParameterAnalog.LFO_SHAPE.lsb,
                 value=value,
             )
@@ -398,7 +404,7 @@ class AnalogSynthEditor(SynthEditor):
             slider.setValue(slider_value)
             slider.blockSignals(False)
             successes.append(param.name)
-            log_slider_parameters(self.sysex_address.umb, self.sysex_address.lmb, param, value, slider_value)
+            log_slider_parameters(self.address.umb, self.address.lmb, param, value, slider_value)
         else:
             failures.append(param.name)
 

@@ -46,11 +46,4 @@ class SystemCommonMessage(RolandSysEx):
     value: int = ZERO_BYTE  # Parameter value
 
     def __post_init__(self):
-        """Set up address and data"""
-        self.address = [
-            self.address_msb,  # System area (0x02)
-            self.address_umb,  # Common section (0x00)
-            self.address_lmb,  # Always 0x00
-            self.address_lsb,  # Parameter number
-        ]
-        self.data = [self.value]
+        super().__post_init__()  # Set address and data from RolandSysEx

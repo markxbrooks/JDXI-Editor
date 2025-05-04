@@ -1,3 +1,7 @@
+"""
+Partial Panel
+"""
+
 import qtawesome as qta
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox, QLabel
@@ -10,7 +14,11 @@ from jdxi_editor.ui.widgets.switch.partial import PartialSwitch
 class PartialsPanel(QWidget):
     """Panel containing all partial switches"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
+        """Initialize the PartialsPanel.
+
+        :param parent: QWidget
+        """
         super().__init__(parent)
 
         layout = QVBoxLayout()

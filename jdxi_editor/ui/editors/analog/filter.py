@@ -28,6 +28,15 @@ class AnalogFilterSection(QWidget):
         address: RolandSysExAddress
     ):
         super().__init__()
+        """
+        Initialize the AnalogFilterSection
+        :param create_parameter_slider: Callable
+        :param create_parameter_switch: Callable
+        :param on_filter_mode_changed: Callable
+        :param send_control_change: Callable
+        :param midi_helper: MidiIOHelper
+        :param address: RolandSysExAddress
+        """
         self.filter_resonance = None
         self.create_parameter_slider = create_parameter_slider
         self.create_parameter_switch = create_parameter_switch

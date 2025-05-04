@@ -1,4 +1,6 @@
 """
+NRPN Slider
+sends NRPN, (N)RPN messages to the synth
 
 def send_nrpn(self, channel, msb, lsb, value):
     self.send_control_change(99, msb, channel)  # NRPN MSB
@@ -46,7 +48,13 @@ class NRPNSlider(Slider):
             show_value_label=False,
             draw_tick_marks=False,
         )
+        """Initialize the NRPNSlider.
 
+        :param midi_helper: MidiIOHelper
+        :param label: str
+        :param nrpn_map: dict
+        :param partial: int
+        """
         self.label = label
         self.midi_helper = midi_helper
         self.partial = partial
@@ -62,13 +70,17 @@ class NRPNSlider(Slider):
         self.update_style(self.current_value)
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
 
-    def update_style(self, value: int):
+    def update_style(self, value: int) -> None:
+        """Update the style of the slider.
+
+        :param value: int
+        """
         if value == 0:
             self.setStyleSheet(JDXIStyle.ADSR_DISABLED)
         else:
             self.setStyleSheet(JDXIStyle.ADSR)
 
-    def data_request(self):
+    def data_request(self) -> None:
         """
         Request the current value of the NRPN parameter from the device.
         """
@@ -78,7 +90,9 @@ class NRPNSlider(Slider):
 
     def on_value_changed(self, value: int):
         """
-        Set the current value of the slider and send NRPN or RPN messages.
+        Set the current value of the slider and send NRPN or RPN messages
+
+        :param value: int
         """
         log_message(f"{self.label} value changed to {value}")
 

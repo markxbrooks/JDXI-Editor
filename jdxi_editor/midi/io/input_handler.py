@@ -89,7 +89,7 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-            log_error(f"Error {ex} occurred", level=logging.ERROR)
+            log_error(f"Error {ex} occurred")
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """Reopen the current MIDI input port and reattach the callback.
@@ -117,7 +117,7 @@ class MidiInHandler(MidiIOController):
             return True
 
         except Exception as ex:
-            log_message(f"Failed to reopen MIDI input port: {ex}", level=logging.ERROR)
+            log_error(f"Failed to reopen MIDI input port: {ex}")
             return False
 
     def register_callback(self, callback: Callable) -> None:
@@ -139,7 +139,7 @@ class MidiInHandler(MidiIOController):
             self.midi_in.set_callback(callback)
         except Exception as ex:
             log_message(
-                f"Error {ex} occurred calling self.midi_in.set_callback(callback)", level=logging.ERROR)
+                f"Error {ex} occurred calling self.midi_in.set_callback(callback)")
 
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
@@ -160,7 +160,7 @@ class MidiInHandler(MidiIOController):
                 log_message(f"Unhandled MIDI message type: {message.type}")
             self.midi_message_incoming.emit(message)
         except Exception as ex:
-            log_error(f"Error {ex} occurred", level=logging.ERROR)
+            log_error(f"Error {ex} occurred")
 
     def _handle_note_change(self, message: Any, preset_data: dict) -> None:
         """
@@ -273,11 +273,11 @@ class MidiInHandler(MidiIOController):
                     self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
                     log_to_json(parsed_data_dict)
                 except Exception as parse_ex:
-                    log_message(f"Failed to parse JD-Xi tone data: {parse_ex}", level=logging.ERROR)
+                    log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
             # extract_command_info(message)
 
         except Exception as ex:
-            log_message(f"Unexpected error {ex} while handling SysEx message", level=logging.ERROR)
+            log_error(f"Unexpected error {ex} while handling SysEx message")
 
     def _handle_control_change(self, message: Any, preset_data: dict) -> None:  # @@
         """

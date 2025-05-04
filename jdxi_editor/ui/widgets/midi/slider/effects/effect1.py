@@ -1,5 +1,6 @@
 """filter slider to modify nrpn parameters"""
 
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.midi.slider.control_change import ControlChangeSlider
 
 
@@ -10,7 +11,7 @@ class Effect1Slider(ControlChangeSlider):
 
     def __init__(
         self,
-        midi_helper,
+        midi_helper: MidiIOHelper,
         label: str = "Delay",
     ):
         nrpn_map = {
@@ -21,3 +22,8 @@ class Effect1Slider(ControlChangeSlider):
         super().__init__(
             midi_helper=midi_helper, label=label, nrpn_map=nrpn_map, channels=[15]
         )
+        """Initialize the Effect1Slider.
+
+        :param midi_helper: MidiIOHelper
+        :param label: str
+        """

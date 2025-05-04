@@ -1,3 +1,5 @@
+"""LFO data"""
+
 from enum import Enum
 
 

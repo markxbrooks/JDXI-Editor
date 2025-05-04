@@ -16,7 +16,10 @@ from jdxi_editor.log.message import log_message
 
 
 class MIDIClockReceiver:
-    def __init__(self, bpm=None):
+    def __init__(self, bpm: Optional[float] = None):
+        """Initialize MIDIClockReceiver.
+        :param bpm: Optional[float] The initial BPM value
+        """
         self.bpm = bpm if bpm is not None else 120.0
         self.sync = False
         self.running = True
@@ -24,6 +27,10 @@ class MIDIClockReceiver:
         self._last_clock = None
 
     def __call__(self, event, data=None):
+        """Process MIDI events.
+        :param event: The MIDI event
+        :param data: The MIDI data
+        """
         msg, _ = event
 
         if msg[0] == TIMING_CLOCK:
@@ -50,6 +57,10 @@ class MIDIClockReceiver:
 
 
 def main(args=None):
+    """Main function.
+    :param args: Optional[list] The command line arguments
+    :return: int The exit code
+    """
     ap = argparse.ArgumentParser(usage=__doc__.splitlines()[0])
     ap.add_argument("-p", "--port", help="MIDI input port index / name.")
     ap.add_argument("bpm", type=int, default=120, help="Starting BPM.")

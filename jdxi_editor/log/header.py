@@ -8,8 +8,9 @@ def log_header_message(message: str, level: int = logging.INFO) -> None:
     """
     Log a message with emojis based on severity and content keywords.
 
-    :param message: The message to log.
-    :param level: Logging level (default: logging.INFO).
+    :param message: str The message to log.
+    :param level: int Logging level (default: logging.INFO).
+    :return: None
     """
     stacklevel = 3
     log_message("\n======================================================================================================================================", level=level, stacklevel=stacklevel)

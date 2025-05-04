@@ -30,7 +30,6 @@ print(sysex_bytes)  # Outputs a valid SysEx message as a byte sequence
 
 """
 
-import logging
 from enum import Enum
 from typing import List, Optional
 from dataclasses import dataclass
@@ -39,7 +38,8 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
+from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.message.midi import MidiMessage
 
 # MIDI Constants

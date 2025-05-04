@@ -33,8 +33,9 @@ def parse_sysex_address(
 ) -> Optional[Tuple[T, Tuple[int, int, int]]]:
     """
     Parse a 4-byte SysEx address into a (base, offset) tuple.
-    Example input: b'\x18\x00\x20\x00'
-    Returns: (ProgramAddress.COMMON, (0x00, 0x20, 0x00))
+    :param address_bytes: bytes The 4-byte SysEx address
+    :param enum_cls: Type[T] The enum class
+    :return: Optional[Tuple[T, Tuple[int, int, int]]] The (base, offset) tuple
     """
     if not isinstance(address_bytes, (bytes, bytearray)) or len(address_bytes) != 4:
         raise ValueError("Address must be a 4-byte bytes or bytearray")

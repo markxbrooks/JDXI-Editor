@@ -1,3 +1,4 @@
+"""Digital Oscillator"""
 from enum import IntEnum, Enum
 
 from jdxi_editor.midi.wave.form import Waveform

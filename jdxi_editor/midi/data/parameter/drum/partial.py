@@ -522,7 +522,10 @@ class AddressParameterDrumPartial(AddressParameter):
     DRUM_GROUP = (0x2F, 1, 5, 1, 5)  # Hack alert @@
 
     def validate_value(self, value: int) -> int:
-        """Validate and convert parameter value to MIDI range (0-127)"""
+        """Validate and convert parameter value to MIDI range (0-127)
+        :param value: int The value
+        :return: int The validated value
+        """
         if not isinstance(value, int):
             raise ValueError(f"Value must be integer, got {type(value)}")
 
@@ -535,15 +538,23 @@ class AddressParameterDrumPartial(AddressParameter):
         return value
 
     def convert_from_display(self, display_value: int) -> int:
-        """Convert from display value to MIDI value (0-127)"""
+        """Convert from display value to MIDI value (0-127)
+        :param display_value: int The display value
+        :return: int The MIDI value
+        """
         return display_value
 
     def get_display_value(self) -> Tuple[int, int]:
-        """Get the display range for the parameter"""
+        """Get the display range for the parameter
+        :return: Tuple[int, int] The display range
+        """
         return self.display_min, self.display_max
 
     def get_address_for_partial(self, partial_index: int) -> tuple:
-        """Get the address for address drum partial by index"""
+        """Get the address for address drum partial by index
+        :param partial_index: int The partial index
+        :return: tuple The address
+        """
         if not isinstance(partial_index, int):
             raise ValueError(
                 f"Partial index must be an integer, got {type(partial_index)}"
@@ -559,18 +570,27 @@ class AddressParameterDrumPartial(AddressParameter):
 
     @staticmethod
     def get_address_for_partial_name(partial_name: str) -> int:
-        """Get parameter area and address adjusted for partial number."""
+        """Get parameter area and address adjusted for partial number.
+        :param partial_name: str The partial name
+        :return: int The address
+        """
         address = DRUM_ADDRESS_MAP.get(
             partial_name, 0x00
         )  # Default to 0x00 for common area
         return address
 
     @staticmethod
-    def get_by_name(param_name):
-        """Get the AnalogParameter by name."""
-        # Return the parameter member by name, or None if not found
+    def get_by_name(param_name: str) -> Optional[object]:
+        """Get the AnalogParameter by name.
+        :param param_name: str The parameter name
+        :return: Optional[AddressParameterDrumPartial] The parameter
+        Return the parameter member by name, or None if not found
+        """
         return AddressParameterDrumPartial.__members__.get(param_name, None)
 
     def convert_from_midi(self, midi_value: int) -> int:
-        """Convert from MIDI value to display value"""
+        """Convert from MIDI value to display value
+        :param midi_value: int The MIDI value
+        :return: int The display value
+        """
         return midi_value

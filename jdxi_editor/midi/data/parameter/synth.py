@@ -70,7 +70,7 @@ class AddressParameter(Enum):
         :param address: int
         :return: parameter member or None
         """
-        return next((parameter for parameter in cls if parameter.sysex_address == address), None)
+        return next((parameter for parameter in cls if parameter.address == address), None)
 
     @property
     def is_switch(self) -> bool:
@@ -137,9 +137,9 @@ class AddressParameter(Enum):
 
     def get_address_for_partial(self, partial_number: int = 0) -> Tuple[int, int]:
         """
+        Get the address for the partial number.
         :param partial_number: int
-        :return: int default area
-        to be subclassed
+        :return: int default area to be subclassed
         """
         return 0x00, 0x00
 

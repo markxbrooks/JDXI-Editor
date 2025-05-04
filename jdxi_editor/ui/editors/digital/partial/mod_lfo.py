@@ -3,7 +3,7 @@ MOD LFO section of the digital partial editor.
 """
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
-
+from typing import Callable
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 
 
@@ -12,12 +12,19 @@ class DigitalModLFOSection(QWidget):
 
     def __init__(
         self,
-        create_parameter_slider,
-        create_parameter_combo_box,
-        on_parameter_changed,
-        controls,
+        create_parameter_slider: Callable,
+        create_parameter_combo_box: Callable,
+        on_parameter_changed: Callable,
+        controls: dict,
     ):
         super().__init__()
+        """
+        Initialize the DigitalModLFOSection
+        :param create_parameter_slider: Callable
+        :param create_parameter_combo_box: Callable
+        :param on_parameter_changed: Callable
+        :param controls: dict
+        """
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self._on_parameter_changed = on_parameter_changed

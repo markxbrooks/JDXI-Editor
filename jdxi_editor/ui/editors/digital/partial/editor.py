@@ -37,7 +37,7 @@ Dependencies:
 """
 
 import logging
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 import qtawesome as qta
 from PySide6.QtWidgets import (
@@ -54,6 +54,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigi
 from jdxi_editor.midi.data.digital import DigitalOscWave, DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
 from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
@@ -66,8 +67,18 @@ from jdxi_editor.jdxi.style import JDXIStyle
 class DigitalPartialEditor(PartialEditor):
     """Editor for address single partial"""
 
-    def __init__(self, midi_helper=None, synth_number=1, partial_number=1, parent=None):
+    def __init__(self, midi_helper: Optional[MidiIOHelper] = None, 
+                 synth_number: int = 1, 
+                 partial_number: int = 1, 
+                 parent: Optional[QWidget] = None):
         super().__init__(parent)
+        """
+        Initialize the DigitalPartialEditor
+        :param midi_helper: MidiIOHelper
+        :param synth_number: int
+        :param partial_number: int
+        :param parent: QWidget
+        """
         self.partial_address_default = AddressOffsetSuperNATURALLMB.PARTIAL_1
         self.partial_address_map = {
             1: AddressOffsetSuperNATURALLMB.PARTIAL_1,
@@ -86,8 +97,8 @@ class DigitalPartialEditor(PartialEditor):
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_number=partial_number)
         elif synth_number == 2:
             self.synth_data = create_synth_data(JDXISynth.DIGITAL_2, partial_number=partial_number)
-        self.sysex_address = self.synth_data.sysex_address  # Shortcut for convenience
-        log_parameter("Initializing partial:", self.synth_data.sysex_address)
+        self.address = self.synth_data.address  # Shortcut for convenience
+        log_parameter("Initializing partial:", self.synth_data.address)
         if 0 <= partial_number < len(DIGITAL_PARTIAL_NAMES):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
             log_parameter("Partial name:", self.part_name)
@@ -120,7 +131,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.sysex_address
+            self.address
         )
         self.tab_widget.addTab(
             self.oscillator_tab,
@@ -133,7 +144,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.synth_data.sysex_address,
+            self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.filter_tab, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
@@ -143,7 +154,7 @@ class DigitalPartialEditor(PartialEditor):
             self.partial_number,
             self.midi_helper,
             self.controls,
-            self.synth_data.sysex_address,
+            self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amp"
@@ -169,7 +180,10 @@ class DigitalPartialEditor(PartialEditor):
         self.updating_from_spinbox = False
 
     def update_filter_controls_state(self, mode: int):
-        """Update filter controls enabled state based on mode"""
+        """
+        Update filter controls enabled state based on mode
+        :param mode: int
+        """
         enabled = mode != 0  # Enable if not BYPASS
         for param in [
             AddressParameterDigitalPartial.FILTER_CUTOFF,
@@ -184,7 +198,10 @@ class DigitalPartialEditor(PartialEditor):
             self.filter_tab.filter_adsr_widget.setEnabled(enabled)
 
     def _on_waveform_selected(self, waveform: DigitalOscWave):
-        """Handle waveform button clicks"""
+        """
+        Handle waveform button clicks
+        :param waveform: DigitalOscWave
+        """
         # Reset all buttons to default style
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)

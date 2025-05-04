@@ -125,5 +125,5 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
         return (switch_value == 1, select_value == 1)
 
     except Exception as ex:
-        log_error(f"Error getting partial {partial.name} state: {str(ex)}", level=logging.ERROR)
+        log_error(f"Error getting partial {partial.name} state: {str(ex)}")
         return False, False

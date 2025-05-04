@@ -18,9 +18,9 @@ Usage Example:
 Requires: PySide6.QtWidgets, PySide6.QtCore, PySide6.QtGui
 """
 
-from PySide6.QtWidgets import QPushButton, QLabel, QGraphicsOpacityEffect
+from PySide6.QtWidgets import QPushButton, QLabel, QGraphicsOpacityEffect, QWidget
 from PySide6.QtCore import Qt, QRect, Signal, QPropertyAnimation, QEasingCurve
-from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
+from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient, QPaintEvent, QShowEvent, QMouseEvent
 
 
 class PianoKey(QPushButton):
@@ -30,7 +30,12 @@ class PianoKey(QPushButton):
     noteOff = Signal(int)
 
     def __init__(
-        self, note_num, is_black=False, width=22, height=160, parent=None
+        self,
+        note_num: int,
+        is_black: bool = False,
+        width: int = 22,
+        height: int = 160,
+        parent: QWidget = None,
     ) -> None:
         super().__init__(parent)
         self.note_num = note_num
@@ -64,13 +69,13 @@ class PianoKey(QPushButton):
         self.led_anim.setKeyValues([(0.0, 0.0), (0.2, 1.0), (1.0, 0.0)])
         self.led_anim.setEasingCurve(QEasingCurve.OutQuad)
 
-    def showEvent(self, event):
+    def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
         if not self._geometry_initialized:
             self.original_geometry = self.geometry()
             self._geometry_initialized = True
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self.is_pressed = True
             self.noteOn.emit(self.note_num)
@@ -93,7 +98,7 @@ class PianoKey(QPushButton):
             self.led_anim.stop()
             self.led_anim.start()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self.is_pressed = False
             self.noteOff.emit(self.note_num)
@@ -120,7 +125,7 @@ class PianoKey(QPushButton):
             self.release_animation.setEasingCurve(QEasingCurve.OutBounce)
             self.release_animation.start()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         gradient = QLinearGradient(0, 0, 0, self.height())

@@ -1,3 +1,4 @@
+"""Digital LFO"""
 from enum import IntEnum
 
 

@@ -14,7 +14,6 @@ These functions are useful for mapping MIDI messages to meaningful time or inten
 in address synthesizer or effect unit.
 """
 
-# from jdxi_editor.log.parameter import log_parameter
 
 
 def midi_value_to_ms(midi_value: int,
@@ -33,11 +32,6 @@ def midi_value_to_ms(midi_value: int,
     midi_value = max(0, min(127, midi_value))  # Clamp to valid MIDI range
     time_range = max_time - min_time
     ms_time = min_time + (midi_value / 127.0) * time_range
-    """
-    log_parameter("midi_value", midi_value)
-    log_parameter("min_time", min_time)
-    log_parameter("max_time", max_time)
-    log_parameter("ms_time", ms_time)"""
     return ms_time
 
 
@@ -55,11 +49,6 @@ def ms_to_midi_value(ms_time: float,
     midi_byte_range = 127
     conversion_factor = time_range / midi_byte_range
     midi_value = int((ms_time / conversion_factor) - min_time)
-    """
-    log_parameter("ms_time", ms_time)
-    log_parameter("min_time", min_time)
-    log_parameter("max_time", max_time)
-    log_parameter("midi_value", midi_value)"""
     return midi_value
 
 
@@ -77,11 +66,6 @@ def fraction_to_midi_value(fractional_value: float,
     midi_byte_range = 127
     conversion_factor = value_range / midi_byte_range
     midi_value = int((fractional_value / conversion_factor) - minimum)
-    """
-    log_parameter("fractional_value", fractional_value)
-    log_parameter("minimum", minimum)
-    log_parameter("maximum", maximum)
-    log_parameter("midi_value", midi_value)"""
     return midi_value
 
 

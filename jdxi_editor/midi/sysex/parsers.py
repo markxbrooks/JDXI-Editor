@@ -32,18 +32,35 @@ from jdxi_editor.midi.utils.json import log_to_json
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
-    """Safely retrieve values from SysEx data with an optional offset."""
+    """
+    Safely retrieve values from SysEx data with an optional offset.
+    :param data: List[int]
+    :param index: int
+    :param offset: int
+    :param default: int
+    :return: int
+    """
     index += offset  # Shift index to account for the tone name
-    return data[index] if index < len(data) else default
 
 
 def extract_hex(data: List[int], start: int, end: int, default: str = "N/A") -> str:
-    """Extract address hex value from data safely."""
+    """
+    Extract address hex value from data safely.
+    :param data: List[int]
+    :param start: int
+    :param end: int
+    :param default: str
+    :return: str
+    """
     return data[start:end].hex() if len(data) >= end else default
 
 
 def get_temporary_area(data: List[int]) -> str:
-    """Map address bytes to corresponding temporary area."""
+    """
+    Map address bytes to corresponding temporary area.
+    :param data: List[int]
+    :return: str
+    """
     # log_parameter("data for temporary area", data)
     area_mapping = {
         (0x18, 0x00): "TEMPORARY_PROGRAM_AREA",
@@ -58,7 +75,11 @@ def get_temporary_area(data: List[int]) -> str:
 
 
 def get_partial_address(part_name: str) -> str:
-    """Map partial address to corresponding temporary area."""
+    """
+    Map partial address to corresponding temporary area.
+    :param part_name: str
+    :return: str
+    """
     for key, value in TONE_MAPPING.items():
         if value == part_name:
             return key
@@ -66,12 +87,20 @@ def get_partial_address(part_name: str) -> str:
 
 
 def get_synth_tone(byte_value: int) -> str:
-    """Map byte value to corresponding synth tone."""
+    """
+    Map byte value to corresponding synth tone.
+    :param byte_value: int
+    :return: str
+    """
     return TONE_MAPPING.get(byte_value, "Unknown")
 
 
 def extract_tone_name(data: List[int]) -> str:
-    """Extract and clean the tone name from SysEx data."""
+    """
+    Extract and clean the tone name from SysEx data.
+    :param data: List[int]
+    :return: str
+    """
     if len(data) < 24:  # Ensure sufficient length
         return "Unknown"
 
@@ -82,12 +111,21 @@ def extract_tone_name(data: List[int]) -> str:
 
 
 def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
-    """Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types."""
+    """
+    Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
+    :param data: List[int]
+    :param parameter_type: Type
+    :return: Dict[str, int]
+    """
     return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
 def initialize_parameters(data: List[int]) -> Dict[str, str]:
-    """Initialize parameters with essential fields."""
+    """
+    Initialize parameters with essential fields.
+    :param data: List[int]
+    :return: Dict[str, str]
+    """
     if len(data) < 11:  # Ensure data has at least enough bytes for ADDRESS
         return {
             "JD_XI_HEADER": extract_hex(data, 0, 7) if len(data) >= 7 else "Unknown",
@@ -107,7 +145,11 @@ def initialize_parameters(data: List[int]) -> Dict[str, str]:
 
 
 def parse_sysex(data: bytes) -> Dict[str, str]:
-    """Parses JD-Xi tone data from SysEx messages."""
+    """
+    Parses JD-Xi tone data from SysEx messages.
+    :param data: bytes
+    :return: Dict[str, str]
+    """
     if len(data) < 11:  # Ensure at least ADDRESS section is present
         logging.warning("Insufficient data length for parsing.")
         return {

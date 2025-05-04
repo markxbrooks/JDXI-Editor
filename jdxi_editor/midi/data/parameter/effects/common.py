@@ -1,3 +1,5 @@
+"""Effects Common"""
+
 from enum import Enum
 
 

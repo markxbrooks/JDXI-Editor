@@ -56,7 +56,10 @@ class ControlChangeMessage(MidiMessage):
         self.data2 = self.value  # Control value
 
     def to_message_list(self) -> List[int]:
-        """Convert Control Change message to a list of bytes for sending"""
+        """
+        Convert Control Change message to a list of bytes for sending
+        :return: list
+        """
         status_byte = self.status | (
             self.channel & 0x0F
         )  # Ensures correct channel encoding
@@ -77,7 +80,10 @@ class DigitalToneCCMessage:
     is_nrpn: bool = False  # Whether this is an NRPN message
 
     def to_bytes(self) -> bytes:
-        """Convert to MIDI message bytes"""
+        """
+        Convert to MIDI message bytes
+        :return: bytes
+        """
         if not self.is_nrpn:
             # Standard CC message
             return bytes(
@@ -105,7 +111,11 @@ class DigitalToneCCMessage:
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        """Create message from MIDI bytes"""
+        """
+        Create message from MIDI bytes
+        :param data: bytes
+        :return: ControlChangeMessage
+        """
         if len(data) == 3:
             # Standard CC message
             return cls(channel=data[0] & 0x0F, cc=data[1], value=data[2], is_nrpn=False)
@@ -130,7 +140,10 @@ class AnalogToneCCMessage:
     is_nrpn: bool = False  # Whether this is an NRPN message
 
     def to_bytes(self) -> bytes:
-        """Convert to MIDI message bytes"""
+        """
+        Convert to MIDI message bytes
+        :return: bytes
+        """
         if not self.is_nrpn:
             # Standard CC message
             return bytes(
@@ -158,7 +171,11 @@ class AnalogToneCCMessage:
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        """Create message from MIDI bytes"""
+        """
+        Create message from MIDI bytes
+        :param data: bytes
+        :return: AnalogToneCCMessage
+        """
         if len(data) == 3:
             # Standard CC message
             return cls(channel=data[0] & 0x0F, cc=data[1], value=data[2], is_nrpn=False)
@@ -201,7 +218,10 @@ class DrumKitCCMessage:
             raise ValueError(f"Invalid parameter value: {self.value}")
 
     def to_bytes(self) -> bytes:
-        """Convert to MIDI message bytes"""
+        """
+        Convert to MIDI message bytes
+        :return: bytes
+        """
         # NRPN message sequence
         return bytes(
             [
@@ -219,7 +239,11 @@ class DrumKitCCMessage:
 
     @classmethod
     def from_bytes(cls, data: bytes):
-        """Create message from MIDI bytes"""
+        """
+        Create message from MIDI bytes
+        :param data: bytes
+        :return: DrumKitCCMessage
+        """
         if len(data) == 9:
             return cls(
                 channel=data[0] & 0x0F,

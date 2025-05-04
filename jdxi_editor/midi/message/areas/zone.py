@@ -9,5 +9,5 @@ class ZoneMessage(RolandSysEx):
     """Program Zone parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressMemoryAreaMSB.PROGRAM
-    section: int = 0x01  # Zone section
+    msb: int = AddressMemoryAreaMSB.PROGRAM
+    umb: int = 0x01  # Zone section

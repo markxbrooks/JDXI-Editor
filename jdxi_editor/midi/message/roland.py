@@ -32,9 +32,9 @@ from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB, RolandSysExAddress,
 )
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, RolandID
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE,  RolandID
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.utils.byte import split_value_to_nibbles
+from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
 @dataclass
@@ -67,11 +67,15 @@ class RolandSysExMessage(SysExMessage):
         self.address_bytes = self.address.to_list()  # Assuming this method returns [msb, umb, lmb, lsb]
 
         if isinstance(self.value, int) and self.size == 4:
-            self.data = split_value_to_nibbles(self.value)
+            self.data = split_16bit_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
     def to_message_list(self) -> List[int]:
+        """
+        Convert the SysEx message to a list of integers.
+        :return: list
+        """
         msg = (
             [START_OF_SYSEX, self.manufacturer_id, self.device_id]
             + list(self.model_id)
@@ -128,12 +132,14 @@ class RolandSysEx(SysExMessage):
         self.address = [self.msb, self.umb, self.lmb, self.lsb]
 
         if isinstance(self.value, int) and self.size == 4:
-            self.data = split_value_to_nibbles(self.value)
+            self.data = split_16bit_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
     def __post_init_old__(self):
-        """Initialize address and data based on parameters."""
+        """Initialize address and data based on parameters.
+        :return: None
+        """
         self.address = [
             self.msb,
             self.umb,
@@ -141,12 +147,15 @@ class RolandSysEx(SysExMessage):
             self.lsb,
         ]
         if isinstance(self.value, int) and self.size == 4:
-            self.data = split_value_to_nibbles(self.value)
+            self.data = split_16bit_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
     def from_sysex_address(self, sysex_address: RolandSysExAddress):
-        """ from_sysex_address """
+        """ from_sysex_address
+        :param sysex_address: RolandSysExAddress
+        :return: None
+        """
         self.msb = sysex_address.msb
         self.umb = sysex_address.umb
         self.lmb = sysex_address.lmb
@@ -154,7 +163,9 @@ class RolandSysEx(SysExMessage):
         self.address = [self.msb, self.umb, self.lmb, self.lsb]
 
     def to_message_list(self) -> List[int]:
-        """Convert the SysEx message to a list of integers."""
+        """Convert the SysEx message to a list of integers.
+        :return: list
+        """
         msg = (
             [START_OF_SYSEX, self.manufacturer_id, self.device_id]
             + list(self.model_id)
@@ -194,7 +205,7 @@ class RolandSysEx(SysExMessage):
         if (
             isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF
         ):  # Check for 4-byte integer
-            self.value = split_value_to_nibbles(self.value)  # @@@@
+            self.value = split_16bit_value_to_nibbles(self.value)  # @@@@
 
         # Determine parameter and value split
         if len(data_bytes) == 1:
@@ -307,7 +318,7 @@ class JDXiSysEx(RolandSysEx):
         """Convert message to bytes for sending"""
         msg = [
             START_OF_SYSEX,  # Start of SysEx
-            RolandID.ROLAND_ID,  # Roland ID
+            RolandID.ROLAND_ID,  # Roland ID    
             self.device_id,  # Device ID
             *self.model_id,  # Model ID (4 bytes)
             self.command,  # Command ID
@@ -543,11 +554,15 @@ class ZoneMessage(ParameterMessage):
 class ControllerMessage(ParameterMessage):
     """Program Controller parameter message"""
 
-    msb: int = AddressMemoryAreaMSB.PROGRAM  # Program area
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # Program area
     umb: int = 0x40  # Controller section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter preset_type"""
+        """
+        Convert parameter value based on parameter preset_type
+        :param value:
+        :return: List[int]
+        """
         # Parameters that need special conversion
         if self.lsb == 0x07:  # Arpeggio Octave Range
             return [value + 64]  # Convert -3/+3 to 61-67
@@ -557,7 +572,11 @@ class ControllerMessage(ParameterMessage):
 
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
+        """
+        Convert data bytes back to parameter value
+        :param data: List
+        :return: int
+        """
         param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
@@ -576,7 +595,11 @@ class DigitalToneCommonMessage(ParameterMessage):
     umb: int = ZERO_BYTE  # Common section
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter preset_type"""
+        """
+        Convert parameter value based on parameter preset_type
+        :param value:
+        :return: List[int]
+        """
         # Parameters that need special conversion
         if self.lsb == 0x15:  # Octave Shift
             return [value + 64]  # Convert -3/+3 to 61-67
@@ -586,7 +609,11 @@ class DigitalToneCommonMessage(ParameterMessage):
 
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
+        """
+        Convert data bytes back to parameter value
+        :param data: List
+        :return: int
+        """
         param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
@@ -605,13 +632,21 @@ class DigitalToneModifyMessage(ParameterMessage):
     umb: int = 0x50  # Modify section @@@ looks incorrect - should be lmb
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter preset_type"""
+        """
+        Convert parameter value based on parameter preset_type
+        :param value:
+        :return: List[int]
+        """
         # No special conversion needed for modify parameters
         return super().convert_value(value)
 
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
+        """
+        Convert data bytes back to parameter value
+        :param data: List
+        :return: int
+        """
         # No special conversion needed for modify parameters
         return super().convert_data(data)
 
@@ -624,7 +659,11 @@ class DigitalTonePartialMessage(ParameterMessage):
     umb: int = 0x20  # Partial 1 section (0x20, 0x21, 0x22 for Partials 1-3)
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter preset_type"""
+        """
+        Convert parameter value based on parameter preset_type
+        :param value:
+        :return: List[int]
+        """
         # Parameters that need special conversion
         if self.lsb == 0x00:  # OSC Wave
             return [value & 0x07]  # Ensure 3-bit value (0-7)
@@ -636,7 +675,11 @@ class DigitalTonePartialMessage(ParameterMessage):
 
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
+        """
+        Convert data bytes back to parameter value
+        :param data: List
+        :return: int
+        """
         param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
@@ -670,10 +713,10 @@ class AnalogToneMessage(ParameterMessage):
             ModelID.MODEL_ID_3,
             ModelID.MODEL_ID_4,  # Model ID
             CommandID.DT1,  # DT1 Command
-            self.address_msb,
-            self.address_umb,
-            self.address_lmb,
-            self.address_lsb,
+            self.msb,
+            self.umb,
+            self.lmb,
+            self.lsb,
             self.value,
             ZERO_BYTE,  # Checksum placeholder
             END_OF_SYSEX,  # End of SysEx
@@ -689,13 +732,21 @@ class DrumKitCommonMessage(ParameterMessage):
     lmb: int = 0x00  # Common area
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter preset_type"""
+        """
+        Convert parameter value based on parameter preset_type
+        :param value:
+        :return: List[int]
+        """
         # No special conversion needed for drum kit common parameters
         return super().convert_value(value)
 
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
+        """
+        Convert data bytes back to parameter value
+        :param data: List
+        :return: int
+        """
         # No special conversion needed for drum kit common parameters
         return super().convert_data(data)
 
@@ -709,7 +760,11 @@ class DrumKitPartialMessage(ParameterMessage):
     lmb: int = 0x01  # Partial area
 
     def convert_value(self, value: int) -> List[int]:
-        """Convert parameter value based on parameter preset_type"""
+        """
+        Convert parameter value based on parameter preset_type
+        :param value:
+        :return: List[int]
+        """
         # Parameters that need special conversion
         if self.lsb == 0x10:  # Fine Tune
             return [value + 64]  # Convert -50/+50 to 14-114
@@ -721,7 +776,11 @@ class DrumKitPartialMessage(ParameterMessage):
 
     @classmethod
     def convert_data(cls, data: List[int]) -> int:
-        """Convert data bytes back to parameter value"""
+        """
+        Convert data bytes back to parameter value
+        :param data: List
+        :return: int
+        """
         param = cls.lsb if hasattr(cls, "param") else 0
 
         # Parameters that need special conversion
@@ -735,15 +794,15 @@ class DrumKitPartialMessage(ParameterMessage):
 
 
 def create_sysex_message(
-    address_msb: int, address_umb: int, address_lmb: int, address_lsb: int, value: int
+    msb: int, umb: int, lmb: int, lsb: int, value: int
 ) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
         command=CommandID.DT1,
-        msb=address_msb,
-        umb=address_umb,
-        lmb=address_lmb,
-        lsb=address_lsb,
+        msb=msb,
+        umb=umb,
+        lmb=lmb,
+        lsb=lsb,
         value=value,
     )
 
@@ -784,13 +843,13 @@ def create_patch_load_message(
 
 
 def create_patch_request_message(
-    address_msb: int, address_umb: int = 0x00, size: int = 0
+    msb: int, umb: int = 0x00, size: int = 0
 ) -> JDXiSysEx:
     """Create address message to request patch data"""
     return JDXiSysEx(
         command=CommandID.RQ1,  # Data request command
-        msb=address_msb,
-        umb=address_umb,
+        msb=msb,
+        umb=umb,
         lmb=0x00,
         lsb=0x00,
         data=[size] if size else [],  # Some requests need address size parameter

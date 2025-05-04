@@ -12,6 +12,7 @@ def log_message(message: str, level: int = logging.INFO, stacklevel=2) -> None:
     :param stacklevel: int sets the stack level to log the message from the caller's context
     :param message: str The message to log.
     :param level: int Logging level (default: logging.INFO).
+    :return: None
     """
     # msg_lower = message.lower()
 
