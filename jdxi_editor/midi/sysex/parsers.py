@@ -32,6 +32,18 @@ from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgr
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
 from jdxi_editor.midi.utils.json import log_to_json
+from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+
+
+def safe_get2(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
+    """
+    :param data:
+    :param index:
+    :param offset:
+    :param default:
+    :return:
+    """
+    pass
 
 
 def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
@@ -43,7 +55,8 @@ def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) ->
     :param default: int
     :return: int
     """
-    index += offset  # Shift index to account for the tone name
+    index += offset
+    return data[index] if 0 <= index < len(data) else default
 
 
 def extract_hex(data: List[int], start: int, end: int, default: str = "N/A") -> str:
@@ -120,9 +133,7 @@ def parse_parameters(data: List[int], parameter_type: AddressParameter) -> Dict[
     :param parameter_type: Type
     :return: Dict[str, int]
     """
-    parameters = {param.name: safe_get(data, param.value[0]) for param in parameter_type}
-    log_parameter("parameters", parameters)
-    return parameters
+    return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
 def initialize_parameters(data: List[int]) -> Dict[str, str]:
