@@ -179,7 +179,7 @@ class SynthEditor(SynthBase):
 
         # Dynamically assign attributes
         for attr in [
-            "sysex_address",
+            "address",
             "preset_type",
             "instrument_default_image",
             "instrument_icon_folder",
@@ -189,6 +189,9 @@ class SynthEditor(SynthBase):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
+
+    def _create_instrument_image_group(self):
+        pass
 
     def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
