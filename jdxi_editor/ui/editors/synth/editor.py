@@ -191,7 +191,15 @@ class SynthEditor(SynthBase):
             setattr(self, attr, getattr(self.synth_data, attr))
 
     def _create_instrument_image_group(self):
-        pass
+        # Image group
+        self.instrument_image_group = QGroupBox()
+        instrument_group_layout = QVBoxLayout()
+        self.instrument_image_group.setLayout(instrument_group_layout)
+        self.instrument_image_label = QLabel()
+        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        instrument_group_layout.addWidget(self.instrument_image_label)
+        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setMinimumWidth(350)
 
     def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """
