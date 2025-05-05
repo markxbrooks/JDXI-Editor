@@ -62,21 +62,12 @@ PARAMETER_PART_MAP = {
     # since there are 36 partials
 }
 
-def safe_get2(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
-    """
-    :param data:
-    :param index:
-    :param offset:
-    :param default:
-    :return:
-    """
-    pass
 
 
-def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) -> int:
+def safe_get(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
     """
     Safely retrieve values from SysEx data with an optional offset.
-    :param data: List[int]
+    :param data: bytes
     :param index: int
     :param offset: int
     :param default: int
@@ -86,7 +77,7 @@ def safe_get(data: List[int], index: int, offset: int = 12, default: int = 0) ->
     return data[index] if 0 <= index < len(data) else default
 
 
-def extract_hex(data: Union[List[int] | bytes], start: int, end: int, default: str = "N/A") -> str:
+def extract_hex(data: bytes, start: int, end: int, default: str = "N/A") -> str:
     """
     Extract address hex value from data safely.
     :param data: List[int]
@@ -98,7 +89,7 @@ def extract_hex(data: Union[List[int] | bytes], start: int, end: int, default: s
     return data[start:end].hex() if len(data) >= end else default
 
 
-def get_temporary_area(data: Union[List[int] | bytes]) -> str:
+def get_temporary_area(data: bytes) -> str:
     """
     Map address bytes to corresponding temporary area.
     :param data: List[int]
@@ -138,10 +129,10 @@ def get_synth_tone(byte_value: int) -> str:
     return TONE_MAPPING.get(byte_value, "Unknown")
 
 
-def extract_tone_name(data: Union[List[int] | bytes]) -> str:
+def extract_tone_name(data: bytes) -> str:
     """
     Extract and clean the tone name from SysEx data.
-    :param data: Union[List[int]|bytes]
+    :param data: bytes
     :return: str
     """
     if len(data) < 24:  # Ensure sufficient length
@@ -153,20 +144,20 @@ def extract_tone_name(data: Union[List[int] | bytes]) -> str:
     return raw_name  # Strip null and carriage return
 
 
-def parse_parameters(data: Union[List[int] | bytes], parameter_type: AddressParameter) -> Dict[str, int]:
+def parse_parameters(data: bytes, parameter_type: AddressParameter) -> Dict[str, int]:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
-    :param data: Union[List[int]|bytes]
+    :param data: bytes
     :param parameter_type: Type
     :return: Dict[str, int]
     """
     return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
-def initialize_parameters(data: Union[List[int] | bytes]) -> Dict[str, str]:
+def initialize_parameters(data: bytes) -> Dict[str, str]:
     """
     Initialize parameters with essential fields.
-    :param data: Union[List[int]|bytes]
+    :param data: bytes
     :return: Dict[str, str]
     """
     if len(data) < 11:  # Ensure data has at least enough bytes for ADDRESS
@@ -241,6 +232,11 @@ def parse_sysex_old(data: bytes) -> Dict[str, str]:
 
 
 def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
+    """
+    Return minimal metadata for a JD-Xi SysEx message.
+    :param data: bytes
+    :return: Dict[str, str]
+    """
     return {
         "JD_XI_HEADER": extract_hex(data, JDXI_SYSEX_HEADER_START_BYTE, JDXI_SYSEX_HEADER_END_BYTE)
         if len(data) >= JDXI_SYSEX_HEADER_END_BYTE else "Unknown",
