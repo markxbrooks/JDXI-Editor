@@ -150,7 +150,6 @@ class AdsrSliderSpinbox(QWidget):
         :param value: int
         :return: None
         """
-        print(f"ADSRSliderSpinbox {self}: value: {value}")
         self.spinbox.setValue(value)
 
     def value(self) -> float:
