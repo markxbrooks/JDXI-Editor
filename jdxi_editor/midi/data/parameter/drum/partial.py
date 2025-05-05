@@ -47,7 +47,7 @@ class AddressParameterDrumPartial(AddressParameter):
         self.display_max = display_max if display_max is not None else max_val
         self.bipolar_parameters = [
             "PARTIAL_FINE_TUNE",
-            "PARTIAL_FINE_TUNE",
+            "PITCH_ENV_DEPTH",
             "PARTIAL_PAN",
             "PARTIAL_ALTERNATE_PAN_DEPTH",
             "TVA_ENV_TIME_1_VELOCITY_SENS",
@@ -537,11 +537,36 @@ class AddressParameterDrumPartial(AddressParameter):
 
         return value
 
+    def convert_to_midi(self, value: int) -> int:
+        """
+        Convert the value to MIDI range (0-127) for sending via MIDI.
+        :param value: int value to convert
+        :return: int MIDI value
+        """
+        if not isinstance(value, int):
+            raise ValueError(f"Value must be an integer, got {type(value)}")
+
+        if value < self.min_val or value > self.max_val:
+            raise ValueError(
+                f"Value {value} out of range for {self.name} (valid range: {self.min_val}-{self.max_val})"
+            )
+
+        if self.name in ["PITCH_ENV_DEPTH"]:
+            return value + 64
+
+        if self.is_bipolar:
+            # Map -max_val..+max_val to 0-127
+            return int(((value - self.min_val) / (self.max_val - self.min_val)) * 127)
+
+        return value
+
     def convert_from_display(self, display_value: int) -> int:
         """Convert from display value to MIDI value (0-127)
         :param display_value: int The display value
         :return: int The MIDI value
         """
+        if self.name in ["PITCH_ENV_DEPTH"]:
+            return display_value + 64
         return display_value
 
     def get_display_value(self) -> Tuple[int, int]:

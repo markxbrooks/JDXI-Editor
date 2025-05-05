@@ -3,6 +3,30 @@ byte data processing
 """
 
 
+def split_16bit_value_to_bytes(value: int) -> list[int]:
+    """
+    Splits a 16-bit integer into two 8-bit bytes: [LMB, LSB]
+    :param value: int (0–65535)
+    :return: list[int] [Most Significant Byte, Least Significant Byte]
+    """
+    if not (0 <= value <= 0xFFFF):
+        raise ValueError("Value must be a 16-bit integer (0–65535).")
+    lmb = (value >> 8) & 0xFF
+    lsb = value & 0xFF
+    return [lmb, lsb]
+
+
+def split_8bit_value_to_nibbles(value: int) -> list[int]:
+    """
+    Splits an 8-bit integer into two 4-bit nibbles.
+    :param value: int (0–255)
+    :return: list[int] with two 4-bit values [upper_nibble, lower_nibble]
+    """
+    if not (0 <= value <= 0xFF):
+        raise ValueError("Value must be an 8-bit integer (0–255).")
+    return [(value >> 4) & 0x0F, value & 0x0F]
+
+
 def split_16bit_value_to_nibbles(value: int) -> list[int]:
     """
     Splits an integer into exactly 4 nibbles (4-bit values), padding with zeros if necessary

@@ -48,7 +48,7 @@ from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
-from jdxi_editor.midi.data.arpeggio import ArpeggioSwitch
+from jdxi_editor.midi.data.arpeggio.arpeggio import ArpeggioSwitch
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
     ArpeggioMotif,
     ArpeggioOctaveRange,

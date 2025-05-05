@@ -208,9 +208,9 @@ class PresetEditor(SimpleEditor):
                 color: {JDXIStyle.ACCENT};
             """
         )
-        self.digital_synth_1_current_synth = QLabel("Current Tone:")
-        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_synth)
-        self.digital_synth_1_current_synth.setStyleSheet(
+        self.digital_synth_1_current_label = QLabel("Current Tone:")
+        self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_current_label)
+        self.digital_synth_1_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;
@@ -235,9 +235,9 @@ class PresetEditor(SimpleEditor):
                 color: {JDXIStyle.ACCENT};
             """
         )
-        self.digital_synth_2_current_synth = QLabel("Current Tone:")
-        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_synth)
-        self.digital_synth_2_current_synth.setStyleSheet(
+        self.digital_synth_2_current_label = QLabel("Current Tone:")
+        self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_current_label)
+        self.digital_synth_2_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;  
@@ -262,9 +262,9 @@ class PresetEditor(SimpleEditor):
                 color: {JDXIStyle.ACCENT};
             """
         )
-        self.drum_kit_current_synth = QLabel("Current Tone:")
-        self.drum_kit_hlayout.addWidget(self.drum_kit_current_synth)
-        self.drum_kit_current_synth.setStyleSheet(
+        self.drum_kit_current_label = QLabel("Current Tone:")
+        self.drum_kit_hlayout.addWidget(self.drum_kit_current_label)
+        self.drum_kit_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;
@@ -290,9 +290,9 @@ class PresetEditor(SimpleEditor):
                 color: {JDXIStyle.ACCENT_ANALOG};
             """
         )
-        self.analog_synth_current_synth = QLabel("Current Tone:")
-        self.analog_synth_hlayout.addWidget(self.analog_synth_current_synth)
-        self.analog_synth_current_synth.setStyleSheet(
+        self.analog_synth_current_label = QLabel("Current Tone:")
+        self.analog_synth_hlayout.addWidget(self.analog_synth_current_label)
+        self.analog_synth_current_label.setStyleSheet(
             f"""
                 font-size: 16px;
                 font-weight: bold;
@@ -301,7 +301,7 @@ class PresetEditor(SimpleEditor):
         )
         self._populate_presets()
         self.midi_helper.update_tone_name.connect(
-            lambda tone_name, synth_type: self.update_tone_name(tone_name, synth_type)
+             lambda tone_name, synth_type: self.update_tone_name(tone_name, synth_type)
         )
 
     def on_preset_type_changed(self, index: int) -> None:
@@ -310,12 +310,16 @@ class PresetEditor(SimpleEditor):
         log_message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL1
+            self.preset_list = DIGITAL_PRESET_LIST
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL2
+            self.preset_list = DIGITAL_PRESET_LIST
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM
+            self.preset_list = DRUM_KIT_LIST
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG
+            self.preset_list = ANALOG_PRESET_LIST
         self._populate_presets()
         self.update_category_combo_box_categories()
 
@@ -326,17 +330,17 @@ class PresetEditor(SimpleEditor):
         :param synth_type: str
         """
         synth_label_map = {
-            "Digital Synth 1": self.digital_synth_1_current_synth,
-            "Digital Synth 2": self.digital_synth_2_current_synth,
-            "Drums": self.drum_kit_current_synth,
-            "Analog Synth": self.analog_synth_current_synth,
+            "Digital Synth 1": self.digital_synth_1_current_label,
+            "Digital Synth 2": self.digital_synth_2_current_label,
+            "Drums": self.drum_kit_current_label,
+            "Analog Synth": self.analog_synth_current_label,
         }
 
         label = synth_label_map.get(synth_type)
         if label:
             label.setText(tone_name)
         else:
-            logging.warning(f"MIDI_SLEEP_TIME: {synth_type}. Cannot update tone name.")
+            logging.warning(f"synth type: {synth_type} not found in mapping. Cannot update tone name.")
 
     def load_preset_by_program_change(self, preset_index: int) -> None:
         """
@@ -350,9 +354,9 @@ class PresetEditor(SimpleEditor):
         log_parameter("combo box program_number", program_number)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
-        msb = get_preset_parameter_value("msb", program_number)
-        lsb = get_preset_parameter_value("lsb", program_number)
-        pc = get_preset_parameter_value("pc", program_number)
+        msb = get_preset_parameter_value("msb", program_number, self.preset_list)
+        lsb = get_preset_parameter_value("lsb", program_number, self.preset_list)
+        pc = get_preset_parameter_value("pc", program_number, self.preset_list)
 
         if None in [msb, lsb, pc]:
             log_message(
@@ -384,12 +388,12 @@ class PresetEditor(SimpleEditor):
         if not self.preset_helper:
             return
 
-        selected_part = self.digital_preset_type_combo.currentText()
-        if selected_part in ["Digital Synth 1", "Digital Synth 2"]:
+        preset_type = self.digital_preset_type_combo.currentText()
+        if preset_type in ["Digital Synth 1", "Digital Synth 2"]:
             self.preset_list = DIGITAL_PRESET_LIST
-        elif selected_part == "Drums":
+        elif preset_type == "Drums":
             self.preset_list = DRUM_KIT_LIST
-        elif selected_part == "Analog Synth":
+        elif preset_type == "Analog Synth":
             self.preset_list = ANALOG_PRESET_LIST
         else:
             self.preset_list = DIGITAL_PRESET_LIST  # Default to digital synth 1
@@ -483,16 +487,16 @@ class PresetEditor(SimpleEditor):
         :param program_details: dict
         """
         try:
-            self.digital_synth_1_current_synth.setText(program_details["digital_1"])
-            self.digital_synth_2_current_synth.setText(program_details["digital_2"])
-            self.drum_kit_current_synth.setText(program_details["drum"])
-            self.analog_synth_current_synth.setText(program_details["analog"])
+            self.digital_synth_1_current_label.setText(program_details["digital_1"])
+            self.digital_synth_2_current_label.setText(program_details["digital_2"])
+            self.drum_kit_current_label.setText(program_details["drum"])
+            self.analog_synth_current_label.setText(program_details["analog"])
         except KeyError:
             log_message(f"Program details missing required keys: {program_details}")
-            self.digital_synth_1_current_synth.setText("Unknown")
-            self.digital_synth_2_current_synth.setText("Unknown")
-            self.drum_kit_current_synth.setText("Unknown")
-            self.analog_synth_current_synth.setText("Unknown")
+            self.digital_synth_1_current_label.setText("Unknown")
+            self.digital_synth_2_current_label.setText("Unknown")
+            self.drum_kit_current_label.setText("Unknown")
+            self.analog_synth_current_label.setText("Unknown")
 
     def load_preset_temp(self, preset_number: int) -> None:
         """Load preset data and update UI.

@@ -19,6 +19,7 @@ Functions:
 import logging
 from typing import List, Dict, Type
 
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital.partial import (
     AddressParameterDigitalPartial,
@@ -28,6 +29,7 @@ from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumComm
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
 from jdxi_editor.midi.utils.json import log_to_json
 
@@ -111,14 +113,16 @@ def extract_tone_name(data: List[int]) -> str:
     return raw_name  # Strip null and carriage return
 
 
-def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
+def parse_parameters(data: List[int], parameter_type: AddressParameter) -> Dict[str, int]:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
     :param data: List[int]
     :param parameter_type: Type
     :return: Dict[str, int]
     """
-    return {param.name: safe_get(data, param.address) for param in parameter_type}
+    parameters = {param.name: safe_get(data, param.value[0]) for param in parameter_type}
+    log_parameter("parameters", parameters)
+    return parameters
 
 
 def initialize_parameters(data: List[int]) -> Dict[str, str]:
@@ -151,6 +155,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes
     :return: Dict[str, str]
     """
+    log_parameter("data", data)
     if len(data) < 11:  # Ensure at least ADDRESS section is present
         logging.warning("Insufficient data length for parsing.")
         return {
@@ -161,12 +166,14 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         }
 
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
+    log_parameter("temporary_area", temporary_area)
     synth_tone = get_synth_tone(data[10]) if len(data) > 10 else "Unknown"
-
+    log_parameter("synth_tone", synth_tone)
     parsed_data = initialize_parameters(data)
 
     if temporary_area == "TEMPORARY_PROGRAM_AREA":
         parsed_data.update(parse_parameters(data, AddressParameterProgramCommon))
+        log_parameter("parsed_data", parsed_data)
 
     elif temporary_area in [
         "TEMPORARY_DIGITAL_SYNTH_1_AREA",
