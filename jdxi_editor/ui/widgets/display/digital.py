@@ -160,7 +160,7 @@ class DigitalDisplay(DigitalDisplayBase):
     def __init__(
         self,
         current_octave: int = 0,
-        digital_font_family: str = "Consolas",
+        digital_font_family: str = "JD LCD Rounded",
         active_synth: str = "D1",
         tone_name: str = "Init Tone",
         tone_number: int = 1,
@@ -218,9 +218,9 @@ class DigitalDisplay(DigitalDisplayBase):
 
         # 2. Set font for digital display
         if platform.system() == "Windows":
-            font_size = 11
+            font_size = 17
         else:
-            font_size = 13
+            font_size = 19
         display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
         painter.setFont(display_font)
         painter.setPen(QPen(QColor("#FFBB33")))  # Lighter orange for text
