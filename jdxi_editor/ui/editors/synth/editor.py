@@ -23,14 +23,14 @@ import json
 import re
 import os
 import logging
-from typing import Optional
+from typing import Optional, Any
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.log.error import log_error
-from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -75,7 +75,7 @@ def log_changes(previous_data, current_data):
             # )
     else:
         pass
-        # log_message("No changes detected.")
+        #log_message("No changes detected.")
 
 
 class SynthEditor(SynthBase):
@@ -112,8 +112,7 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo = None
         self.preset_type = None
         self.midi_helper.update_tone_name.connect(
-            lambda title, synth_type: self.set_instrument_title_label(title, synth_type)
-        )
+            lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
         self.midi_helper.midi_program_changed.connect(self.data_request)
         log_parameter("Initialized:", self.__class__.__name__)
         log_parameter("---> Using MIDI helper:", midi_helper)
@@ -154,9 +153,7 @@ class SynthEditor(SynthBase):
             log_message("MIDI helper initialized")
         else:
             log_message("MIDI helper not initialized")
-        self.preset_loader = JDXIPresetHelper(
-            self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED
-        )
+        self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
         # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
@@ -173,19 +170,16 @@ class SynthEditor(SynthBase):
             for synth_type, presets, channel in preset_configs
         }
 
-    def _init_synth_data(
-        self,
-        synth_type: JDXISynth = JDXISynth.DIGITAL_1,
-        partial_number: Optional[int] = 0,
-    ):
+    def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
+                         partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
-
-        self.synth_data = create_synth_data(synth_type, partial_number=partial_number)
+        self.synth_data = create_synth_data(synth_type,
+                                            partial_number=partial_number)
 
         # Dynamically assign attributes
         for attr in [
-            "address",
+            "sysex_address",
             "preset_type",
             "instrument_default_image",
             "instrument_icon_folder",
@@ -214,8 +208,6 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
             self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
-        elif synth_type == "Drums":
-            self.instrument_selection_combo.setStyleSheet(JDXIStyle.DRUM_GROUP)
         else:
             self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX)
         self.instrument_selection_combo.combo_box.setEditable(True)
@@ -232,20 +224,37 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         return instrument_preset_group
 
-    def _create_instrument_image_group(self):
-        """
-        Create image group
-        :return: None
-        """
-        self.instrument_image_group = QGroupBox()
-        instrument_group_layout = QVBoxLayout()
-        self.instrument_image_group.setLayout(instrument_group_layout)
-        self.instrument_image_label = QLabel()
-        self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
-        self.instrument_image_group.setMinimumWidth(400)
-
+    """def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
+        ""
+        Create the instrument preset group box.
+        :param synth_type: str
+        :return: QGroupBox
+        ""
+        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
+        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
+        self.instrument_title_label = DigitalTitle()
+        instrument_title_group_layout.addWidget(self.instrument_title_label)
+        self.read_request_button = QPushButton("Send Read Request to Synth")
+        self.read_request_button.clicked.connect(self.data_request)
+        instrument_title_group_layout.addWidget(self.read_request_button)
+        self.instrument_selection_label = QLabel(f"Select an {synth_type} synth:")
+        instrument_title_group_layout.addWidget(self.instrument_selection_label)
+        self.instrument_selection_combo = PresetComboBox(self.preset_list)
+        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
+        self.instrument_selection_combo.combo_box.setEditable(True)
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_image
+        )
+        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
+            self.update_instrument_title
+        )
+        self.instrument_selection_combo.load_button.clicked.connect(
+            self.update_instrument_preset
+        )
+        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
+        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
+        return instrument_preset_group"""
+        
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
@@ -257,12 +266,12 @@ class SynthEditor(SynthBase):
             controls_data = {}
 
             for param in self.controls:
-                controls_data[param.name] = self.controls[param].value()
-            log_message(f"controls_data: {controls_data}")
+                controls_data[param.name] = param.value
+            log_message(controls_data)
             return controls_data
 
         except Exception as ex:
-            log_error(f"Failed to get controls: {ex}")
+            log_message(f"Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):
@@ -279,7 +288,7 @@ class SynthEditor(SynthBase):
         raise NotImplementedError("Should be implemented by subclass")
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
-        raise NotImplementedError("Should be implemented by subclass")
+        raise NotImplementedError
 
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
         try:
@@ -394,6 +403,7 @@ class SynthEditor(SynthBase):
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
+        file_to_load = ""
         if os.path.exists(image_path):
             file_to_load = image_path
         elif os.path.exists(secondary_image_path):
@@ -410,16 +420,22 @@ class SynthEditor(SynthBase):
         )  # Resize to 250px height
         self.instrument_image_label.setPixmap(scaled_pixmap)
         self.instrument_image_label.setScaledContents(True)
-        self.instrument_image_label.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_label.setStyleSheet(
+            """
+            QLabel {
+                    height: 150px;
+                    background-color: transparent;
+                    border: none;
+                }
+            """
+        )
         return True
 
     def update_instrument_image(self):
         """Update the instrument image based on the selected synth."""
-        default_image_path = resource_path(
-            os.path.join(
-                "resources", self.instrument_icon_folder, self.instrument_default_image
-            )
-        )
+        default_image_path = resource_path(os.path.join(
+            "resources", self.instrument_icon_folder, self.instrument_default_image
+        ))
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
@@ -432,42 +448,34 @@ class SynthEditor(SynthBase):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
-            log_parameter("selected instrument name:", selected_instrument_name)
+            log_parameter(f"selected instrument name:", selected_instrument_name)
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
             log_parameter("Selected instrument type:", selected_instrument_type)
-            specific_image_path = resource_path(
-                os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    f"{selected_instrument_name}.png",
-                )
-            )
-            generic_image_path = resource_path(
-                os.path.join(
-                    "resources",
-                    self.instrument_icon_folder,
-                    f"{selected_instrument_type}.png",
-                )
-            )
-            image_loaded = self.load_and_set_image(
-                specific_image_path, generic_image_path
-            )
+            specific_image_path = resource_path(os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                f"{selected_instrument_name}.png",
+            ))
+            generic_image_path = resource_path(os.path.join(
+                "resources",
+                self.instrument_icon_folder,
+                f"{selected_instrument_type}.png",
+            ))
+            image_loaded = self.load_and_set_image(specific_image_path, generic_image_path)
 
         # Fallback to default image if no specific image is found
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
-    def _update_slider(
-        self,
-        param: AddressParameter,
-        value: int,
-        successes: list = None,
-        failures: list = None,
-        debug: bool = False,
-    ):
+    def _update_slider(self,
+                       param: AddressParameter,
+                       value: int,
+                       successes: list = None,
+                       failures: list = None,
+                       debug: bool = False):
         """Safely update sliders from NRPN messages."""
         slider = self.controls.get(param)
         if slider:
