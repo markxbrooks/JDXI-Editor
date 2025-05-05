@@ -516,6 +516,8 @@ class DigitalSynthEditor(SynthEditor):
         :param successes: list
         :return: None
         """
+        if not value:
+            return
         slider = self.partial_editors[partial_no].controls.get(param)
         if not slider:
             failures.append(param.name)
@@ -657,6 +659,8 @@ class DigitalSynthEditor(SynthEditor):
         :param debug: bool
         :return: None
         """
+        if not value:
+            return
         switch = self.controls.get(param)
         if debug:
             log_parameter("Updating switch for", param)

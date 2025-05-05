@@ -125,10 +125,13 @@ class SynthBase(QWidget):
 
     def _on_parameter_changed(self, param: AddressParameter, display_value: int):
         """Handle parameter value changes from UI controls."""
+        log_parameter("AddressParameter", param)
+        log_parameter("_on_parameter_changed display_value", display_value)
         try:
             # Convert display value to MIDI value
             if hasattr(param, "convert_to_midi"):
                 midi_value = param.convert_to_midi(display_value)
+                log_parameter("_on_parameter_changed midi_value", midi_value)
             else:
                 midi_value = (
                     param.convert_from_display(display_value)

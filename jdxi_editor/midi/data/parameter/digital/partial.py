@@ -261,6 +261,8 @@ class AddressParameterDigitalPartial(AddressParameter):
         :param reverse: bool The reverse flag
         :return: int The converted value
         """
+        if not value:
+            return
         conversion = self.CONVERSION_OFFSETS.get(self.name)
 
         if conversion == "map_range":

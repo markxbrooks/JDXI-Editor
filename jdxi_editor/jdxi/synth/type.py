@@ -18,9 +18,9 @@ class JDXISynth:
     """Synth types and their MIDI area codes"""
 
     PROGRAM = "Program"
-    ANALOG = "Analog"
-    DIGITAL_1 = "Digital 1"  # Main digital synth
-    DIGITAL_2 = "Digital 2"  # Second digital synth
+    ANALOG = "Analog Synth"
+    DIGITAL_1 = "Digital Synth 1"  # Main digital synth
+    DIGITAL_2 = "Digital Synth 2"  # Second digital synth
     DRUM = "Drums"
     VOCAL_FX = "Vocal Effects"
 
