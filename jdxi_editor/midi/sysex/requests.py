@@ -42,10 +42,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Union
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
 from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
