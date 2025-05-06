@@ -2,10 +2,10 @@
 utility functions 
 
 """
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Callable
 
 import mido
-from black.lines import Callable
+#from black.lines import Callable
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
