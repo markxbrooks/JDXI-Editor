@@ -15,6 +15,7 @@ log_message(f"Parsed Data: {parsed_data}")
 import logging
 from typing import List, Type, Dict
 
+# from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -25,6 +26,7 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+
 
 
 def _verify_header(header_data: List[int]) -> bool:
@@ -70,7 +72,7 @@ def parse_parameters(data: List[int], parameter_type: Type) -> Dict[str, int]:
     return {param.name: safe_get(data, param.address) for param in parameter_type}
 
 
-def parse_sysex(data: List[int]):
+def parse_sysex_test(data: List[int]):
     """An example method to parse a full SysEx message."""
     # Example of extracting parameters
     analog_params = parse_parameters(
@@ -107,24 +109,27 @@ class SysExParser:
         if not _verify_header(data[: len(JD_XI_HEADER_LIST)]):
             raise ValueError("Invalid JD-Xi header")
         else:
-            log_message("correct JDXI header found")
+            print("correct JDXI header found")
 
         # Extract the address and the corresponding data
         address = data[len(JD_XI_HEADER_LIST)]
-        log_message(f"Extracted address: {address}")  # Log address for debugging
+        print(f"Extracted address: {address}")  # Log address for debugging
         try:
             parameter = AddressMemoryAreaMSB.get_parameter_by_address(int(address))
-            log_message(parameter)
+            print(parameter)
+            if parameter:
+                # Extract the parameter-specific data (following the address byte)
+                parameter_data = data[len(JD_XI_HEADER_LIST) + 1:]
+                return _parse_parameter(parameter, parameter_data)
+            else:
+                print(f"Unrecognized address: {address}. Skipping.")
+                return {}  # Handle unknown address gracefully
         except Exception as ex:
-            log_message(f"Exception {ex} occurred")
+            print(f"Exception {ex} occurred")
 
-        if parameter:
-            # Extract the parameter-specific data (following the address byte)
-            parameter_data = data[len(JD_XI_HEADER_LIST) + 1 :]
-            return _parse_parameter(parameter, parameter_data)
-        else:
-            logging.warning(f"Unrecognized address: {address}. Skipping.")
-            return {}  # Handle unknown address gracefully
+        # parsed_dict_data = parse_sysex(bytes(data))
+        # print(str(parsed_dict_data))
+
 
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
@@ -154,4 +159,4 @@ if __name__ == "__main__":
 
     parser = SysExParser(sysex_data)
     parsed_data = parser.parse()
-    log_message(f"Parsed Data: {parsed_data}")
+    print(f"Parsed Data: {parsed_data}")
