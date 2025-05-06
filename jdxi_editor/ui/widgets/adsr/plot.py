@@ -83,14 +83,7 @@ class ADSRPlot(QWidget):
         if hasattr(self.parent, "pitchEnvelopeChanged"):
             self.parent.pitchEnvelopeChanged.connect(self.set_values)
 
-    def set_values(self, envelope: dict) -> None:
-        """Update envelope values and trigger address redraw.
-        :param envelope: dict
-        """
-        self.envelope = envelope
-        self.update()
-
-    def paintEvent(self, event: QPaintEvent) -> None:
+    def paintEvent_experimental(self, event: QPaintEvent) -> None:
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         pen = QPen(QColor("#ffffff"), 2)
