@@ -1,4 +1,4 @@
-TONE_MAPPING = {
+SYNTH_TONE_MAP = {
     0x00: "TONE_COMMON",
     0x20: "PARTIAL_1",
     0x21: "PARTIAL_2",

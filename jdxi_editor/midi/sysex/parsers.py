@@ -36,13 +36,13 @@ from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPar
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
+from jdxi_editor.midi.data.partials.partials import SYNTH_TONE_MAP
 
 
 MIN_SYSEX_DATA_LENGTH = 11
 
 
-AREA_MAP = {
+TEMPORARY_AREA_MAP = {
     (0x18, 0x00): AreaMSB.TEMPORARY_PROGRAM.name,
     (0x19, 0x42): TemporaryToneUMB.ANALOG_PART.name,
     (0x19, 0x01): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
@@ -71,9 +71,9 @@ PARAMETER_PART_MAP = {
 def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
     """
     Safely retrieve values from SysEx data with an optional offset.
-    :param data: bytes
-    :param index: int
-    :param offset: int
+    :param data: bytes SysEx message data
+    :param index: int index of the byte to parse
+    :param offset: int Offset because of TONE_NAME
     :param default: int
     :return: int
     """
@@ -84,11 +84,11 @@ def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, defa
 def extract_hex(data: bytes, start: int, end: int, default: str = "N/A") -> str:
     """
     Extract address hex value from data safely.
-    :param data: List[int]
-    :param start: int
-    :param end: int
+    :param data: bytes SysEx message data
+    :param start: int Starting byte
+    :param end: int End byte
     :param default: str
-    :return: str
+    :return: str Hex form of byte string in range
     """
     return data[start:end].hex() if len(data) >= end else default
 
@@ -96,12 +96,12 @@ def extract_hex(data: bytes, start: int, end: int, default: str = "N/A") -> str:
 def get_temporary_area(data: bytes) -> str:
     """
     Map address bytes to corresponding temporary area.
-    :param data: List[int]
-    :return: str
+    :param data: bytes SysEx message data
+    :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_PART, TEMPORARY_DIGITAL_SYNTH_1_AREA ...
     """
     temp_area_bytes = data[JDXISysExOffset.ADDRESS_MSB:JDXISysExOffset.ADDRESS_LMB]
     return (
-        AREA_MAP.get(tuple(temp_area_bytes), "Unknown") if len(data) >= JDXISysExOffset.ADDRESS_LSB else "Unknown"
+        TEMPORARY_AREA_MAP.get(tuple(temp_area_bytes), "Unknown") if len(data) >= JDXISysExOffset.ADDRESS_LSB else "Unknown"
     )
 
 
@@ -111,7 +111,7 @@ def get_partial_address(part_name: str) -> str:
     :param part_name: str
     :return: str
     """
-    for key, value in TONE_MAPPING.items():
+    for key, value in SYNTH_TONE_MAP.items():
         if value == part_name:
             return key
     return "Unknown"
@@ -123,13 +123,13 @@ def get_synth_tone(byte_value: int) -> str:
     :param byte_value: int
     :return: str
     """
-    return TONE_MAPPING.get(byte_value, "Unknown")
+    return SYNTH_TONE_MAP.get(byte_value, "Unknown")
 
 
 def extract_tone_name(data: bytes) -> str:
     """
     Extract and clean the tone name from SysEx data.
-    :param data: bytes
+    :param data: bytes SysEx message data
     :return: str
     """
     if len(data) < JDXISysExOffset.TONE_NAME_END:  # Ensure sufficient length
@@ -145,7 +145,7 @@ def extract_tone_name(data: bytes) -> str:
 def parse_parameters(data: bytes, parameter_type: AddressParameter) -> Dict[str, int]:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
-    :param data: bytes
+    :param data: bytes SysEx message data
     :param parameter_type: Type
     :return: Dict[str, int]
     """
@@ -162,7 +162,7 @@ def safe_extract(data: bytes, start: int, end: int) -> str:
 def initialize_parameters(data: bytes) -> Dict[str, str]:
     """
     Initialize parameters with essential fields.
-    :param data: bytes
+    :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
     return {
@@ -183,7 +183,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
 def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     """
     Return minimal metadata for a JD-Xi SysEx message.
-    :param data: bytes
+    :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
     return {
@@ -199,7 +199,7 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
 def parse_sysex(data: bytes) -> Dict[str, str]:
     """
     Parses JD-Xi tone data from SysEx messages.
-    :param data: bytes
+    :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
     log_parameter("data", data)
@@ -229,7 +229,7 @@ def update_data_with_parsed_parameters(data: bytes,
                                        parsed_data: dict):
     """
     Update parsed_data with parsed parameters
-    :param data: bytes Sysex data to parse
+    :param data: bytes SysEx message data
     :param parameter: AddressParameter
     :param parsed_data: dict
     :return: None Parsed_data is updated in place
