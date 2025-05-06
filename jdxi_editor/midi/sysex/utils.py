@@ -90,7 +90,26 @@ def calculate_checksum(data):
     return (128 - (sum(data) & 0x7F)) & 0x7F
 
 
-def bytes_to_hex_string(byte_list, prefix="F0"):
+def bytes_to_hex_new(byte_list, prefix="F0"):
+    """
+    Convert a list of byte values (int or space-separated hex strings) to a space-separated hex string.
+    """
+    hex_parts = []
+    try:
+        for byte in byte_list:
+            if isinstance(byte, int):
+                hex_parts.append(f"{byte:02X}")
+            elif isinstance(byte, str):
+                hex_parts.extend(byte.strip().split())  # supports preformatted "F0 41 ..."
+            else:
+                raise ValueError(f"Unsupported byte type: {type(byte)}")
+        return f"{prefix} " + " ".join(hex_parts)
+    except Exception as ex:
+        log_error(f"Error {ex} occurred formatting hex")
+        return "ERROR"
+
+
+def bytes_to_hex(byte_list, prefix="F0"):
     """
     Convert a list of byte values to a space-separated hex string.
 
@@ -106,7 +125,7 @@ def bytes_to_hex_string(byte_list, prefix="F0"):
         log_error(f"Error {ex} occurred formatting hex")
 
 
-def to_hex_string(value: int) -> str:
+def int_to_hex(value: int) -> str:
     """
     Converts an integer value to a hexadecimal string representation.
     The result is formatted in uppercase and without the '0x' prefix.

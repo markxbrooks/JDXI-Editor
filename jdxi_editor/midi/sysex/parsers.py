@@ -21,6 +21,7 @@ import logging
 from typing import Dict
 
 from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.log.json import log_json
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
@@ -28,9 +29,7 @@ from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMS
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
-)
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
@@ -38,7 +37,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffe
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
-from jdxi_editor.midi.utils.json import log_to_json
+
 
 MIN_SYSEX_DATA_LENGTH = 11
 
@@ -221,7 +220,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
     else:
         update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
-        log_to_json(parsed_data)
+        log_json(parsed_data)
         return parsed_data
 
 

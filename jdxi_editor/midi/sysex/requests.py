@@ -37,22 +37,29 @@ Example usage:
     To retrieve a list of all program and tone name requests:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS
 """
-from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressMemoryAreaMSB,
-)
+from __future__ import annotations
+
+from enum import Enum
+from typing import Union
+
+from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
+from jdxi_editor.midi.data.address.address import CommandID
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
-from jdxi_editor.midi.sysex.utils import to_hex_string, bytes_to_hex_string
+from jdxi_editor.midi.sysex.utils import int_to_hex, bytes_to_hex
+
 
 # Define constants in the SYSEX_CONSTANTS dictionary
 SYSEX_CONSTANTS = {
-    "START": to_hex_string(START_OF_SYSEX),
-    "END": to_hex_string(END_OF_SYSEX),
-    "RQ1_COMMAND_11": to_hex_string(CommandID.RQ1),
-    "JDXI_HEADER": bytes_to_hex_string(JD_XI_HEADER_LIST),
-    "TEMPORARY_PROGRAM_AREA": to_hex_string(AddressMemoryAreaMSB.TEMPORARY_PROGRAM),
-    "TEMPORARY_TONE_AREA": "19",
+    "START": int_to_hex(START_OF_SYSEX),
+    "END": int_to_hex(END_OF_SYSEX),
+    "RQ1_COMMAND_11": int_to_hex(CommandID.RQ1),
+    "JDXI_HEADER": bytes_to_hex(JD_XI_HEADER_LIST),
+    "TEMPORARY_PROGRAM_AREA": int_to_hex(AreaMSB.TEMPORARY_PROGRAM),
+    "TEMPORARY_TONE_AREA": int_to_hex(AreaMSB.TEMPORARY_TONE),
     "PROGRAM_COMMON_AREA": "00",
     "FOUR_ZERO_BYTES": "00 00 00 00",
     "DIGITAL1_COMMON": "01",
@@ -62,42 +69,57 @@ SYSEX_CONSTANTS = {
 }
 
 
+class JDXISysExHex:
+    """
+    class to represent bytes as strings
+    """
+    JDXI_HEADER = bytes_to_hex(JD_XI_HEADER_LIST)
+    START = int_to_hex(START_OF_SYSEX)
+    END = int_to_hex(END_OF_SYSEX)
+    RQ1_COMMAND_11 = int_to_hex(CommandID.RQ1)
+    TEMPORARY_PROGRAM_AREA = int_to_hex(AreaMSB.TEMPORARY_PROGRAM)
+    TEMPORARY_TONE_AREA = int_to_hex(AreaMSB.TEMPORARY_TONE)
+    PROGRAM_COMMON_AREA = int_to_hex(TemporaryToneUMB.COMMON)
+    DIGITAL1_COMMON = int_to_hex(TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA)
+    DIGITAL2_COMMON = int_to_hex(TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA)
+    ANALOG = int_to_hex(TemporaryToneUMB.ANALOG_PART)
+    DRUMS = int_to_hex(TemporaryToneUMB.DRUM_KIT_PART)
+    FOUR_ZERO_BYTES = "00 00 00 00"
+
+
 RQ11_COMMAND_HEADER = (
-    f"{SYSEX_CONSTANTS['JDXI_HEADER']} {SYSEX_CONSTANTS['RQ1_COMMAND_11']}"
+    f"{JDXISysExHex.JDXI_HEADER} {JDXISysExHex.RQ1_COMMAND_11}"
 )
 TEMPORARY_PROGRAM_RQ11_HEADER = (
-    f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_PROGRAM_AREA']}"
+    f"{RQ11_COMMAND_HEADER} {JDXISysExHex.TEMPORARY_PROGRAM_AREA}"
 )
 TEMPORARY_TONE_RQ11_HEADER = (
-    f"{RQ11_COMMAND_HEADER} {SYSEX_CONSTANTS['TEMPORARY_TONE_AREA']}"
+    f"{RQ11_COMMAND_HEADER} {JDXISysExHex.TEMPORARY_TONE_AREA}"
 )
 PROGRAM_COMMON_RQ11_HEADER = (
-    f"{TEMPORARY_PROGRAM_RQ11_HEADER} {SYSEX_CONSTANTS['PROGRAM_COMMON_AREA']}"
+    f"{TEMPORARY_PROGRAM_RQ11_HEADER} {JDXISysExHex.PROGRAM_COMMON_AREA}"
 )
 
 
-# Function to compute Roland checksum
 def roland_checksum(data: str) -> str:
     """
-    Compute Roland checksum for a given SysEx data string.
-    :param data: str
-    :return: str
+    Compute Roland checksum for a given SysEx data string (space-separated hex).
     """
-    bytes_list = [int(x, 16) for x in data.split()]
-    checksum = (128 - (sum(bytes_list) % 128)) % 128
+    byte_values = [int(x, 16) for x in data.split()]
+    checksum = (128 - (sum(byte_values) % 128)) % 128
     return f"{checksum:02X}"
 
 
-# Function to create request strings
-def create_request(header: str, tone_area: str, param1: str) -> str:
+def roland_checksum_from_bytes(data: list[int]) -> int:
+    return (128 - (sum(data) % 128)) % 128
+
+
+def create_request(header: str, tone_area: Union[str, JDXISysExHex], param1: str) -> str:
     """
-    Create a request string for a given header, tone area, and parameter.
-    :param header: str
-    :param tone_area: str
-    :param param1: str
-    :return: str
+    Create a SysEx request string using header, area, parameter, and Roland checksum.
     """
-    data = f"{tone_area} {param1}"
+    tone_area_str = tone_area.value if isinstance(tone_area, Enum) else tone_area
+    data = f"{tone_area_str} {param1}"
     checksum = roland_checksum(data)
     return f"{header} {data} {checksum} {SYSEX_CONSTANTS['END']}"
 
@@ -174,31 +196,45 @@ class MidiRequests:
     )
 
     ANALOG = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["ANALOG"], "00 00 00 00 00 40"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["ANALOG"],
+        "00 00 00 00 00 40"
     )
 
     DRUMS = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "00 00 00 00 00 12"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["DRUMS"],
+        "00 00 00 00 00 12"
     )
 
     DRUMS_BD1 = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "2E 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["DRUMS"],
+        "2E 00 00 00 01 43"
     )
 
     DRUMS_RIM = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "30 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["DRUMS"],
+        "30 00 00 00 01 43"
     )
 
     DRUMS_BD2 = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "32 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["DRUMS"],
+        "32 00 00 00 01 43"
     )
 
     DRUMS_CLAP = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "34 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["DRUMS"],
+        "34 00 00 00 01 43"
     )
 
     DRUMS_BD3 = create_request(
-        TEMPORARY_TONE_RQ11_HEADER, SYSEX_CONSTANTS["DRUMS"], "36 00 00 00 01 43"
+        TEMPORARY_TONE_RQ11_HEADER,
+        SYSEX_CONSTANTS["DRUMS"],
+        "36 00 00 00 01 43"
     )
 
     DRUMS_BD1_RIM_BD2_CLAP_BD3 = [
