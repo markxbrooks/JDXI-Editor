@@ -34,7 +34,7 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
-from jdxi_editor.midi.utils.json import log_to_json
+from jdxi_editor.log.json import log_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
@@ -203,20 +203,20 @@ class MidiInHandler(MidiIOController):
 
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
-        area = parsed_data.get("TEMPORARY_AREA")
+        temporary_area = parsed_data.get("TEMPORARY_AREA")
         log_message(
             "================================================================================================"
         )
         log_parameter("ADDRESS", address)
-        log_parameter("TEMPORARY_AREA", area)
+        log_parameter("TEMPORARY_AREA", temporary_area)
         log_parameter("TONE_NAME", tone_name)
         log_parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"))
 
         if address in valid_addresses and tone_name:
             if address == "12180000":
-                self._emit_program_name_signal(area, tone_name)
+                self._emit_program_name_signal(temporary_area, tone_name)
             else:
-                self._emit_tone_name_signal(area, tone_name)
+                self._emit_tone_name_signal(temporary_area, tone_name)
         log_message(
             "================================================================================================"
         )
@@ -289,7 +289,7 @@ class MidiInHandler(MidiIOController):
                         json.dump(parsed_data_dict, f, ensure_ascii=False, indent=2)
                     # Emit the parsed data as a JSON string
                     self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
-                    log_to_json(parsed_data_dict)
+                    log_json(parsed_data_dict)
                 except Exception as parse_ex:
                     log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
             # extract_command_info(message)
