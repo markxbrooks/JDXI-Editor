@@ -39,6 +39,9 @@ from jdxi_editor.midi.sysex.parsers import parse_sysex
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
+
 
 class MidiInHandler(MidiIOController):
     """
@@ -227,11 +230,11 @@ class MidiInHandler(MidiIOController):
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
         synth_type_map = {
-            "TEMPORARY_PROGRAM_AREA": JDXISynth.PROGRAM,
-            "TEMPORARY_DIGITAL_SYNTH_1_AREA": JDXISynth.DIGITAL_1,
-            "TEMPORARY_DIGITAL_SYNTH_2_AREA": JDXISynth.DIGITAL_2,
-            "TEMPORARY_ANALOG_SYNTH_AREA": JDXISynth.ANALOG,
-            "TEMPORARY_DRUM_KIT_AREA": JDXISynth.DRUM,
+            AreaMSB.TEMPORARY_PROGRAM.name: JDXISynth.PROGRAM,
+            TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name: JDXISynth.DIGITAL_1,
+            TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name: JDXISynth.DIGITAL_2,
+            TemporaryToneUMB.ANALOG_PART.name: JDXISynth.ANALOG,
+            TemporaryToneUMB.DRUM_KIT_PART.name: JDXISynth.DRUM,
         }
         synth_type = synth_type_map.get(area)
         if synth_type:

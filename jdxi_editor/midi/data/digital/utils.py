@@ -108,7 +108,7 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
         switch_value = midi_helper.get_parameter(
             msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            lmb=AddressOffsetProgramLMB.COMMON,
+            lmb=AddressOffsetProgramLMB.TONE_COMMON,
             param=partial.switch_param.address,
         )
 
@@ -116,7 +116,7 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
         select_value = midi_helper.get_parameter(
             msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            lmb=AddressOffsetProgramLMB.COMMON,
+            lmb=AddressOffsetProgramLMB.TONE_COMMON,
             param=partial.select_param.address,
         )
 

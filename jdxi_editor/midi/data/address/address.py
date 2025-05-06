@@ -328,7 +328,7 @@ class AddressOffsetSuperNATURALLMB(Address):
     Address Offset SuperNATURAL LMB
     """
 
-    COMMON = 0x00
+    TONE_COMMON = 0x00
     PARTIAL_1 = 0x20
     PARTIAL_2 = 0x21
     PARTIAL_3 = 0x22
@@ -351,7 +351,7 @@ class AddressOffsetProgramLMB(Address):
     Address Offset Program LMB
     """
 
-    COMMON = 0x00
+    TONE_COMMON = 0x00
     VOCAL_EFFECT = 0x01
     EFFECT_1 = 0x02
     EFFECT_2 = 0x04

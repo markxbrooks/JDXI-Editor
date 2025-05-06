@@ -20,4 +20,4 @@ class AnalogSynthData(JDXISynthData):
 
     @property
     def group_map(self) -> Dict[int, AddressOffsetProgramLMB]:
-        return {0: AddressOffsetProgramLMB.COMMON}
+        return {0: AddressOffsetProgramLMB.TONE_COMMON}

@@ -84,7 +84,7 @@ class EffectsCommonEditor(SimpleEditor):
         self.address = RolandSysExAddress(
             AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
-            AddressOffsetProgramLMB.COMMON,
+            AddressOffsetProgramLMB.TONE_COMMON,
             ZERO_BYTE,
         )
         main_layout.addLayout(upper_layout)

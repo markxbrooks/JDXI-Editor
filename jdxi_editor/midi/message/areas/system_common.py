@@ -40,7 +40,7 @@ class SystemCommonMessage(RolandSysEx):
 
     command: int = CommandID.DT1
     msb: int = AddressMemoryAreaMSB.SYSTEM  # 0x02: System area
-    umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
+    umb: int = AddressOffsetProgramLMB.TONE_COMMON  # 0x00: Common section
     lmb: int = ZERO_BYTE  # Always 0x00
     lsb: int = ZERO_BYTE  # Parameter number
     value: int = ZERO_BYTE  # Parameter value

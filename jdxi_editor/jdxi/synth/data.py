@@ -32,7 +32,7 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
         :return: Dict[int, AddressOffsetProgramLMB] The group map
         Default: Only common address (override in subclasses).
         """
-        return {0: AddressOffsetProgramLMB.COMMON}
+        return {0: AddressOffsetProgramLMB.TONE_COMMON}
 
     def get_partial_lmb(self, partial_number: int) -> AddressOffsetProgramLMB:
         """
@@ -40,4 +40,4 @@ class JDXISynthData(MidiSynthConfig, InstrumentDisplayConfig):
         :param partial_number: int The partial number
         :return: AddressOffsetProgramLMB The address offset
         """
-        return self.group_map.get(partial_number, AddressOffsetProgramLMB.COMMON)
+        return self.group_map.get(partial_number, AddressOffsetProgramLMB.TONE_COMMON)

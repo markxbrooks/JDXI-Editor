@@ -139,7 +139,7 @@ class PitchEnvPlot(QWidget):
             axis_pen = QPen(QColor("white"))
             painter.setRenderHint(QPainter.Antialiasing, False)
             painter.setPen(pen)
-            painter.setFont(QFont("Consolas", 10))
+            painter.setFont(QFont("JD LCD Rounded", 10))
 
             # Envelope parameters
             attack_time = self.envelope["attack_time"] / 1000.0
@@ -206,7 +206,7 @@ class PitchEnvPlot(QWidget):
 
             # Draw top title
             painter.setPen(QPen(QColor("orange")))
-            painter.setFont(QFont("Consolas", 12))
+            painter.setFont(QFont("JD LCD Rounded", 16))
             painter.drawText(
                 left_padding + plot_w / 2 - 40, top_padding / 2, "Pitch Envelope"
             )

@@ -31,7 +31,7 @@ print(offset)  # Output: (0x00, 0x01, 0x23)
 """
 
 from enum import Enum
-from typing import Optional, Tuple, T, Type
+from typing import Optional, Tuple, Type, Iterator, T
 
 
 class AddressParameter(Enum):
@@ -47,6 +47,13 @@ class AddressParameter(Enum):
         self.bipolar_parameters = []
 
     def __str__(self) -> str:
+        """
+        Returns a string representation of the parameter.
+        :return: str string representation
+        """
+        return f"{self.name} Address: 0x{self.address:02X}, Range: {self.min_val}-{self.max_val}"
+    
+    def __repr__(self) -> str:
         """
         Returns a string representation of the parameter.
         :return: str string representation
