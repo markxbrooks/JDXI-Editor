@@ -223,7 +223,7 @@ class MidiInHandler(MidiIOController):
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
-        if area == "TEMPORARY_PROGRAM_AREA":
+        if area == AreaMSB.TEMPORARY_PROGRAM.name:
             log_message(f"Emitting tone name: {tone_name} to {area}")
             self.update_program_name.emit(tone_name)
 
