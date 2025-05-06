@@ -89,7 +89,7 @@ class DigitalDisplayBase(QWidget):
 
         # Set font
         if platform.system() == "Windows":
-            font_size = 17
+            font_size = 15
         else:
             font_size = 19
         display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
@@ -218,7 +218,7 @@ class DigitalDisplay(DigitalDisplayBase):
 
         # 2. Set font for digital display
         if platform.system() == "Windows":
-            font_size = 17
+            font_size = 15
         else:
             font_size = 19
         display_font = QFont(self.digital_font_family, font_size, QFont.Bold)

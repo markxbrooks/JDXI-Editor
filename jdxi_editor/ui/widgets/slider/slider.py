@@ -33,6 +33,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QPen
 
+from jdxi_editor.midi.io import MidiIOHelper
+
 
 class Slider(QWidget):
     """Custom slider widget with label and value display"""
@@ -53,8 +55,9 @@ class Slider(QWidget):
     def __init__(
         self,
         label: str,
-        min_val: int,
-        max_val: int,
+        min_value: int,
+        max_value: int,
+        midi_helper: MidiIOHelper,
         vertical: bool = False,
         show_value_label: bool = True,
         is_bipolar: bool = False,
@@ -64,8 +67,9 @@ class Slider(QWidget):
     ):
         super().__init__(parent)
         self.label = label
-        self.min_val = min_val
-        self.max_val = max_val
+        self.min_value = min_value
+        self.max_value = max_value
+        self.midi_helper = midi_helper
         self.value_display_format = str  # Default format function
         self.has_center_mark = False
         self.center_value = 0
@@ -86,8 +90,8 @@ class Slider(QWidget):
         self.slider = QSlider(
             Qt.Orientation.Vertical if vertical else Qt.Orientation.Horizontal
         )
-        self.slider.setMinimum(min_val)
-        self.slider.setMaximum(max_val)
+        self.slider.setMinimum(min_value)
+        self.slider.setMaximum(max_value)
         self.slider.valueChanged.connect(self._on_value_changed)
 
         # Set size policy for vertical sliders
@@ -115,7 +119,7 @@ class Slider(QWidget):
 
         # Create value display
 
-        self.value_label = QLabel(str(min_val))
+        self.value_label = QLabel(str(min_value))
         self.value_label.setMinimumWidth(20)
         if show_value_label:  # Add value label if needed
             self.value_label.setAlignment(
