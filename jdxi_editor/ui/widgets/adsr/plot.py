@@ -188,7 +188,7 @@ class ADSRPlot(QWidget):
         painter.setRenderHint(QPainter.Antialiasing, False)
         painter.setPen(QPen(Qt.PenStyle.SolidLine))
         painter.setPen(pen)
-        painter.setFont(QFont("Consolas", 10))
+        painter.setFont(QFont("JD LCD Rounded", 10))
 
         # Compute envelope segments in seconds
         attack_time = self.envelope["attack_time"] / 1000.0
@@ -251,14 +251,14 @@ class ADSRPlot(QWidget):
 
         # Draw the envelope label at the top center of the widget
         painter.setPen(QPen(QColor("orange")))
-        painter.setFont(QFont("Consolas", 12))
+        painter.setFont(QFont("JD LCD Rounded", 16))
         painter.drawText(
             left_padding + plot_w / 2 - 40, top_padding / 2, "ADSR Envelope"
         )  # half way up top padding
 
         # Write legend label for x-axis at the bottom center of the widget
         painter.setPen(QPen(QColor("white")))
-        painter.setFont(QFont("Consolas", 12))
+        painter.setFont(QFont("JD LCD Rounded", 16))
         painter.drawText(
             left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
         )

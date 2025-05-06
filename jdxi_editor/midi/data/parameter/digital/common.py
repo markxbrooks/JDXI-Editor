@@ -183,4 +183,4 @@ class AddressParameterDigitalCommon(AddressParameter):
         return AddressParameterDigitalCommon.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_number: int = 0):
-        return AddressOffsetProgramLMB.COMMON, 0x00
+        return AddressOffsetProgramLMB.TONE_COMMON, 0x00

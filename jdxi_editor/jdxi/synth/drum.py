@@ -26,7 +26,7 @@ class DrumSynthData(JDXISynthData):
     def _build_group_map(self):
         """Build the map once after initialization."""
         self._group_map = {
-            0: AddressOffsetProgramLMB.COMMON,
+            0: AddressOffsetProgramLMB.TONE_COMMON,
             1: AddressOffsetProgramLMB.DRUM_KIT_PART_1,
             2: AddressOffsetProgramLMB.DRUM_KIT_PART_2,
             3: AddressOffsetProgramLMB.DRUM_KIT_PART_3,
@@ -78,4 +78,4 @@ class DrumSynthData(JDXISynthData):
 
     def get_partial_lmb(self, partial_number: int) -> AddressOffsetProgramLMB:
         """Return the LMB for a given partial number."""
-        return self._group_map.get(partial_number, AddressOffsetProgramLMB.COMMON)
+        return self._group_map.get(partial_number, AddressOffsetProgramLMB.TONE_COMMON)

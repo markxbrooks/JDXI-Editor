@@ -51,7 +51,7 @@ from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 class DigitalDisplayBase(QWidget):
     """Base class for JD-Xi style digital displays."""
 
-    def __init__(self, digital_font_family: str = "Consolas", parent: QWidget = None):
+    def __init__(self, digital_font_family: str = "JD LCD Rounded", parent: QWidget = None):
         super().__init__(parent)
         """Initialize the DigitalDisplayBase
 
@@ -89,9 +89,9 @@ class DigitalDisplayBase(QWidget):
 
         # Set font
         if platform.system() == "Windows":
-            font_size = 12
+            font_size = 17
         else:
-            font_size = 13
+            font_size = 19
         display_font = QFont(self.digital_font_family, font_size, QFont.Bold)
         painter.setFont(display_font)
 
@@ -121,7 +121,7 @@ class DigitalTitle(DigitalDisplayBase):
     def __init__(
         self,
         tone_name: str = "Init Tone",
-        digital_font_family: str = "Consolas",
+        digital_font_family: str = "JD LCD Rounded",
         show_upper_text: bool = True,
         parent: QWidget = None,
     ):

@@ -19,8 +19,13 @@ from __future__ import annotations
 
 import logging
 from typing import List, Dict, Type, Union
+from enum import IntEnum
 
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.data.parameter.digital.partial import (
     AddressParameterDigitalPartial,
@@ -34,37 +39,57 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.partials.partials import TONE_MAPPING
 from jdxi_editor.midi.utils.json import log_to_json
 
-JDXI_SYSEX_ADDRESS_END_BYTE = 11
-
-JDXI_SYSEX_SYNTH_TONE_BYTE = 10
-
-JDXI_SYSEX_HEADER_END_BYTE = 7
-
-JDXI_SYSEX_HEADER_START_BYTE = 0
-
 MIN_SYSEX_DATA_LENGTH = 11
 
+
+class JDXISysExOffset(IntEnum):
+    SYSEX_START = 0
+    ROLAND_ID = 1
+    DEVICE_ID = 2
+    MODEL_ID_1 = 3
+    MODEL_ID_2 = 4
+    MODEL_ID_3 = 5
+    MODEL_ID_4 = 6
+    COMMAND_ID = 7
+    ADDRESS_MSB = 8
+    ADDRESS_UMB = 9
+    ADDRESS_LMB = 10
+    ADDRESS_LSB = 11
+    TONE_NAME_START = 12
+    TONE_NAME_END = 24
+    CHECKSUM = -2
+    SYSEX_END = -1
+
+
+ADDRESS_LSB = 11
+
+AREA_MAP = {
+    (0x18, 0x00): AreaMSB.TEMPORARY_PROGRAM.name,
+    (0x19, 0x42): TemporaryToneUMB.ANALOG_PART.name,
+    (0x19, 0x01): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+    (0x19, 0x21): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+    (0x19, 0x70): TemporaryToneUMB.DRUM_KIT_PART.name,
+}
+
 PARAMETER_PART_MAP = {
-    ("TEMPORARY_PROGRAM_AREA", "TEMPORARY_DIGITAL_SYNTH_1_AREA"): AddressParameterProgramCommon,
-    ("TEMPORARY_DIGITAL_SYNTH_1_AREA", "TONE_COMMON"): AddressParameterDigitalPartial,
-    ("TEMPORARY_DIGITAL_SYNTH_1_AREA", "TONE_MODIFY"): AddressParameterEffect,
-    ("TEMPORARY_DIGITAL_SYNTH_1_AREA", "PARTIAL_1"): AddressParameterDigitalPartial,
-    ("TEMPORARY_DIGITAL_SYNTH_1_AREA", "PARTIAL_2"): AddressParameterDigitalPartial,
-    ("TEMPORARY_DIGITAL_SYNTH_1_AREA", "PARTIAL_3"): AddressParameterDigitalPartial,
-    ("TEMPORARY_DIGITAL_SYNTH_2_AREA", "TONE_COMMON"): AddressParameterDigitalCommon,
-    ("TEMPORARY_DIGITAL_SYNTH_2_AREA", "TONE_MODIFY"): AddressParameterEffect,
-    ("TEMPORARY_DIGITAL_SYNTH_2_AREA", "PARTIAL_1"): AddressParameterDigitalPartial,
-    ("TEMPORARY_DIGITAL_SYNTH_2_AREA", "PARTIAL_2"): AddressParameterDigitalPartial,
-    ("TEMPORARY_DIGITAL_SYNTH_2_AREA", "PARTIAL_3"): AddressParameterDigitalPartial,
-    ("TEMPORARY_ANALOG_SYNTH_AREA", "COMMON"): AddressParameterAnalog,
-    ("ANALOG_PART", "COMMON"): AddressParameterAnalog,
-    ("TEMPORARY_DRUM_KIT_AREA", "TONE_COMMON"): AddressParameterDrumCommon,  # Default to Drums
+    (AreaMSB.TEMPORARY_PROGRAM.name, SuperNATURALLMB.TONE_COMMON.name): AddressParameterProgramCommon,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterEffect,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.PARTIAL_2.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalCommon,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterEffect,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.PARTIAL_2.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
+    (TemporaryToneUMB.ANALOG_PART.name, ProgramLMB.TONE_COMMON.name): AddressParameterAnalog,
+    (TemporaryToneUMB.DRUM_KIT_PART.name, ProgramLMB.TONE_COMMON.name): AddressParameterDrumCommon,  # Default to Drums
     # since there are 36 partials
 }
 
 
-
-def safe_get(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
+def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
     """
     Safely retrieve values from SysEx data with an optional offset.
     :param data: bytes
@@ -95,16 +120,9 @@ def get_temporary_area(data: bytes) -> str:
     :param data: List[int]
     :return: str
     """
-    # log_parameter("data for temporary area", data)
-    area_mapping = {
-        (0x18, 0x00): "TEMPORARY_PROGRAM_AREA",
-        (0x19, 0x42): "TEMPORARY_ANALOG_SYNTH_AREA",
-        (0x19, 0x01): "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-        (0x19, 0x21): "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-        (0x19, 0x70): "TEMPORARY_DRUM_KIT_AREA",
-    }
+    temp_area_bytes = data[JDXISysExOffset.ADDRESS_MSB:JDXISysExOffset.ADDRESS_LMB]
     return (
-        area_mapping.get(tuple(data[8:10]), "Unknown") if len(data) >= 10 else "Unknown"
+        AREA_MAP.get(tuple(temp_area_bytes), "Unknown") if len(data) >= JDXISysExOffset.ADDRESS_LSB else "Unknown"
     )
 
 
@@ -139,7 +157,7 @@ def extract_tone_name(data: bytes) -> str:
         return "Unknown"
 
     raw_name = (
-        bytes(data[12:24]).decode(errors="ignore").strip("\x00\r ")
+        bytes(data[JDXISysExOffset.TONE_NAME_START:JDXISysExOffset.TONE_NAME_END]).decode(errors="ignore").strip("\x00\r ")
     )  # Start at index 12
     return raw_name  # Strip null and carriage return
 
@@ -151,7 +169,7 @@ def parse_parameters(data: bytes, parameter_type: AddressParameter) -> Dict[str,
     :param parameter_type: Type
     :return: Dict[str, int]
     """
-    return {param.name: safe_get(data, param.address) for param in parameter_type}
+    return {param.name: get_byte_offset_by_tone_name(data, param.address) for param in parameter_type}
 
 
 def initialize_parameters(data: bytes) -> Dict[str, str]:
@@ -171,64 +189,11 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
 
     return {
         "JD_XI_HEADER": extract_hex(data, 0, 7),
-        "ADDRESS": extract_hex(data, 7, 11),
+        "ADDRESS": extract_hex(data, JDXISysExOffset.COMMAND_ID, JDXISysExOffset.ADDRESS_LSB),
         "TEMPORARY_AREA": get_temporary_area(data) or "Unknown",
-        "SYNTH_TONE": get_synth_tone(data[10]) if len(data) > 10 else "Unknown",
-        "TONE_NAME": extract_tone_name(data) if len(data) >= 24 else "Unknown",
+        "SYNTH_TONE": get_synth_tone(data[JDXISysExOffset.ADDRESS_LMB]) if len(data) > JDXISysExOffset.ADDRESS_LMB else "Unknown",
+        "TONE_NAME": extract_tone_name(data) if len(data) >= JDXISysExOffset.TONE_NAME_END else "Unknown",
     }
-
-
-def parse_sysex_old(data: bytes) -> Dict[str, str]:
-    """
-    Parses JD-Xi tone data from SysEx messages.
-    :param data: bytes
-    :return: Dict[str, str]
-    """
-    log_parameter("data", data)
-    if len(data) < MIN_SYSEX_DATA_LENGTH:  # Ensure at least ADDRESS section is present
-        logging.warning("Insufficient data length for parsing.")
-        return {
-            "JD_XI_HEADER": extract_hex(data,
-                                        JDXI_SYSEX_HEADER_START_BYTE,
-                                        JDXI_SYSEX_HEADER_END_BYTE) if len(data) >= JDXI_SYSEX_HEADER_END_BYTE else "Unknown",
-            "ADDRESS": extract_hex(data,
-                                   JDXI_SYSEX_HEADER_END_BYTE,
-                                   JDXI_SYSEX_ADDRESS_END_BYTE) if len(data) >= JDXI_SYSEX_ADDRESS_END_BYTE
-            else "Unknown",
-            "TEMPORARY_AREA": "Unknown",
-            "SYNTH_TONE": "Unknown",
-        }
-
-    temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
-    log_parameter("temporary_area", temporary_area)
-    synth_tone = get_synth_tone(data[JDXI_SYSEX_SYNTH_TONE_BYTE]) if len(
-        data) > JDXI_SYSEX_SYNTH_TONE_BYTE else "Unknown"
-    log_parameter("synth_tone", synth_tone)
-    parsed_data = initialize_parameters(data)
-
-    if temporary_area == "TEMPORARY_PROGRAM_AREA":
-        parsed_data.update(parse_parameters(data, AddressParameterProgramCommon))
-        log_parameter("parsed_data", parsed_data)
-    elif temporary_area in [
-        "TEMPORARY_DIGITAL_SYNTH_1_AREA",
-        "TEMPORARY_DIGITAL_SYNTH_2_AREA",
-    ]:
-        if synth_tone == "TONE_COMMON":
-            parsed_data.update(parse_parameters(data, AddressParameterDigitalCommon))
-        elif synth_tone == "TONE_MODIFY":
-            parsed_data.update(parse_parameters(data, AddressParameterEffect))
-        else:
-            parsed_data.update(parse_parameters(data, AddressParameterDigitalPartial))
-
-    elif temporary_area == "TEMPORARY_ANALOG_SYNTH_AREA":
-        parsed_data.update(parse_parameters(data, AddressParameterAnalog))
-
-    elif temporary_area == "TEMPORARY_DRUM_KIT_AREA":
-        if synth_tone == "TONE_COMMON":
-            parsed_data.update(parse_parameters(data, AddressParameterDrumCommon))
-        parsed_data.update(parse_parameters(data, AddressParameterDrumPartial))
-    log_to_json(parsed_data)
-    return parsed_data
 
 
 def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
@@ -238,10 +203,10 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     :return: Dict[str, str]
     """
     return {
-        "JD_XI_HEADER": extract_hex(data, JDXI_SYSEX_HEADER_START_BYTE, JDXI_SYSEX_HEADER_END_BYTE)
-        if len(data) >= JDXI_SYSEX_HEADER_END_BYTE else "Unknown",
-        "ADDRESS": extract_hex(data, JDXI_SYSEX_HEADER_END_BYTE, JDXI_SYSEX_ADDRESS_END_BYTE)
-        if len(data) >= JDXI_SYSEX_ADDRESS_END_BYTE else "Unknown",
+        "JD_XI_HEADER": extract_hex(data, JDXISysExOffset.SYSEX_START, JDXISysExOffset.COMMAND_ID)
+        if len(data) >= JDXISysExOffset.COMMAND_ID else "Unknown",
+        "ADDRESS": extract_hex(data, JDXISysExOffset.COMMAND_ID, JDXISysExOffset.ADDRESS_LSB)
+        if len(data) >= JDXISysExOffset.ADDRESS_LSB else "Unknown",
         "TEMPORARY_AREA": "Unknown",
         "SYNTH_TONE": "Unknown",
     }
@@ -261,10 +226,10 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
 
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
     log_parameter("temporary_area", temporary_area)
-    synth_tone = get_synth_tone(data[JDXI_SYSEX_SYNTH_TONE_BYTE]) if len(data) > JDXI_SYSEX_SYNTH_TONE_BYTE else "Unknown"
+    synth_tone = get_synth_tone(data[JDXISysExOffset.ADDRESS_LMB]) if len(data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
     log_parameter("synth_tone", synth_tone)
     parsed_data = initialize_parameters(data)
-    parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumCommon)
+    parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:
         logging.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")
         return _return_minimal_metadata(data)

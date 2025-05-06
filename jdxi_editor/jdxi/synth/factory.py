@@ -93,6 +93,6 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             display_prefix="AN",
             msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            lmb=AddressOffsetProgramLMB.COMMON,
+            lmb=AddressOffsetProgramLMB.TONE_COMMON,
         )
     raise ValueError(f"Error occurred setting up {synth_type}")

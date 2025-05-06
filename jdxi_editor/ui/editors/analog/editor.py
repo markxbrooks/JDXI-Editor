@@ -60,6 +60,7 @@ import qtawesome as qta
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
@@ -70,6 +71,8 @@ from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
     midi_value_to_fraction,
 )
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
@@ -488,9 +491,11 @@ class AnalogSynthEditor(SynthEditor):
         if not sysex_data:
             return
         temp_area = sysex_data.get("TEMPORARY_AREA")
+        log_parameter("temp_area", temp_area)
         synth_tone = sysex_data.get("SYNTH_TONE")
+        log_parameter("temp_area", temp_area)
 
-        if temp_area != "TEMPORARY_ANALOG_SYNTH_AREA" or synth_tone != "TONE_COMMON":
+        if temp_area != TemporaryToneUMB.ANALOG_PART.name or synth_tone != ProgramLMB.TONE_COMMON.name:
             return
         log_header_message(
             f"Updating {temp_area} {synth_tone} UI components from SysEx data"

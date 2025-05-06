@@ -658,7 +658,7 @@ class JdxiInstrument(JdxiUi):
             address = RolandSysExAddress(
                 msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                 umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                lmb=AddressOffsetProgramLMB.COMMON,
+                lmb=AddressOffsetProgramLMB.TONE_COMMON,
                 lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.lsb,
             )
             sysex_message = RolandSysEx(
