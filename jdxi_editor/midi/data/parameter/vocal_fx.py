@@ -268,7 +268,7 @@ class AddressParameterVocalFX(AddressParameter):
         """
         param = AddressParameterVocalFX.get_by_name(param_name)
         if param:
-            return param.min_val, param.max_val
+            return param.min_value, param.max_value
 
     @staticmethod
     def get_midi_value(param_name: str, value: int) -> Optional[int]:

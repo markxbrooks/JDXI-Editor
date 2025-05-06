@@ -37,8 +37,9 @@ class ControlChangeSlider(Slider):
     ):
         super().__init__(
             label,
-            min_val=min_value,
-            max_val=max_value,
+            min_value=min_value,
+            max_value=max_value,
+            midi_helper=midi_helper,
             vertical=vertical,
             show_value_label=False,
             draw_tick_marks=False,

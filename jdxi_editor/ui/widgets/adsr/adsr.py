@@ -212,7 +212,7 @@ class ADSR(QWidget):
             display_min, display_max = param.min_val, param.max_val
         # Create vertical slider
         slider = Slider(
-            label, display_min, display_max, vertical=True, show_value_label=False
+            label, display_min, display_max, midi_helper=self.midi_helper, vertical=True, show_value_label=False
         )
         slider.setValue(value)
         # Connect value changed signal

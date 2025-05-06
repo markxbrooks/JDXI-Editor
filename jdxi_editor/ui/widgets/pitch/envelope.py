@@ -189,8 +189,9 @@ class PitchEnvelope(QWidget):
         # Create vertical slider
         slider = Slider(
             label,
-            display_min,
-            display_max,
+            min_value=display_min,
+            max_value=display_max,
+            midi_helper=self.midi_helper,
             vertical=True,
             show_value_label=False,
             is_bipolar=param.is_bipolar,

@@ -159,10 +159,11 @@ class SynthBase(QWidget):
 
         slider = Slider(
             label,
-            display_min,
-            display_max,
-            vertical,
-            show_value_label,
+            min_value=display_min,
+            max_value=display_max,
+            midi_helper=self.midi_helper,
+            vertical=vertical,
+            show_value_label=show_value_label,
             is_bipolar=param.is_bipolar,
         )
 
