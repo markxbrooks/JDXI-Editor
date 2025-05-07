@@ -28,14 +28,16 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
+from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset, JDXIIdentityOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REQUEST, SUB_ID_2_IDENTITY_REPLY
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.log.json import log_json
-from jdxi_editor.midi.sysex.parsers import parse_sysex
+from jdxi_editor.midi.sysex.parsers import parse_sysex, SYNTH_TYPE_MAP
 from jdxi_editor.midi.sysex.sysex_parser import JDXiSysExParser
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
@@ -231,14 +233,7 @@ class MidiInHandler(MidiIOController):
 
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
-        synth_type_map = {
-            AreaMSB.TEMPORARY_PROGRAM.name: JDXISynth.PROGRAM,
-            TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name: JDXISynth.DIGITAL_1,
-            TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name: JDXISynth.DIGITAL_2,
-            TemporaryToneUMB.ANALOG_PART.name: JDXISynth.ANALOG,
-            TemporaryToneUMB.DRUM_KIT_PART.name: JDXISynth.DRUM,
-        }
-        synth_type = synth_type_map.get(area)
+        synth_type = SYNTH_TYPE_MAP.get(area)
         if synth_type:
             log_message(
                 f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type})"
@@ -258,34 +253,26 @@ class MidiInHandler(MidiIOController):
         :param preset_data: Dictionary for preset data modifications.
         """
         try:
-            if (
-                message.type == "sysex"
-                and len(message.data) > 6
-                and message.data[3] == 0x02
-            ):  # Identity request
+            if not (message.type == "sysex" and len(message.data) > 6):
+                return
+            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2 - 1 # account for lack of status byte
+            if message.data[mido_sub_id_byte_offset] == SUB_ID_2_IDENTITY_REPLY:
                 handle_identity_request(message)
-            # Convert raw SysEx data to address hex string
+                return
+
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            log_parameter(
-                f"SysEx message of length {len(message.data)} received:", hex_string
-            )
+            log_parameter(f"SysEx message of length {len(message.data)} received:", hex_string)
 
-            # Reconstruct SysEx message bytes
-            sysex_message_bytes = bytes(
-                [0xF0] + [int(byte, 16) for byte in hex_string.split()] + [0xF7]
-            )
+            sysex_message_bytes = b"\xF0" + message.data + b"\xF7"
 
-            # If the message contains tone data, attempt to parse it
-            if len(message.data) > 20:
-                try:
-                    parsed_data_dict = self.sysex_parser.parse_bytes(sysex_message_bytes)
-                    log_parameter("Parsed data", parsed_data_dict)
-                    self._emit_program_or_tone_name(parsed_data_dict)
-                    # Emit the parsed data as a JSON string
-                    self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
-                    log_json(parsed_data_dict)
-                except Exception as parse_ex:
-                    log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
+            try:
+                parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
+                log_parameter("Parsed data", parsed_data)
+                self._emit_program_or_tone_name(parsed_data)
+                self.midi_sysex_json.emit(json.dumps(parsed_data))
+                log_json(parsed_data)
+            except Exception as parse_ex:
+                log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
 
         except Exception as ex:
             log_error(f"Unexpected error {ex} while handling SysEx message")

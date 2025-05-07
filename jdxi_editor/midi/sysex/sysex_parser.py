@@ -15,6 +15,8 @@ import json
 from pathlib import Path
 from typing import Optional
 
+from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.sysex.parsers import parse_sysex
@@ -45,11 +47,15 @@ class JDXiSysExParser:
         """
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
-        # Verify the JD-Xi header
+
+        if len(self.sysex_data) <= JDXISysExOffset.ADDRESS_LSB:
+            raise ValueError("Invalid SysEx message: too short")
+
         if not self._verify_header():
             raise ValueError("Invalid JD-Xi header")
         else:
-            print("correct JDXI header found")
+            log_message("Correct JD-Xi header found")
+
         self.sysex_dict = parse_sysex(self.sysex_data)
         json_log_file = (
                 self.log_folder
@@ -80,27 +86,3 @@ class JDXiSysExParser:
         data = self.sysex_data[1:-1]
         header_data = data[:len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)
-
-
-if __name__ == "__main__":
-    sysex_data_list = [
-        0xF0,
-        0x41,
-        0x10,
-        0x00,
-        0x00,
-        0x00,
-        0x0E,
-        0x19,
-        0x01,
-        0x20,
-        0x01,
-        0x19,
-        0x01,
-        0x00,
-        0xF7,
-    ]  # Example SysEx data
-
-    parser = JDXiSysExParser(bytes(sysex_data_list))
-    parsed_data = parser.parse()
-    print(f"Parsed Data: {parsed_data}")

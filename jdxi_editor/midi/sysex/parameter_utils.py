@@ -1,19 +1,18 @@
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    MODEL_ID,
+    CommandID, JD_XI_MODEL_ID,
 )
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, RolandID
 
 
 def create_parameter_message(
-    area: int, part: int, group: int, param: int, value: int
+    msb: int, umb: int, lmb: int, lsb: int, value: int
 ) -> bytes:
     """
     Create parameter change SysEx message
-    :param area: int
-    :param part: int
-    :param group: int
-    :param param: int
+    :param msb: int
+    :param umb: int
+    :param lmb: int
+    :param lsb: int
     :param value: int
     :return: bytes
     """
@@ -21,12 +20,12 @@ def create_parameter_message(
         START_OF_SYSEX,  # F0
         RolandID.ROLAND_ID,  # 41
         RolandID.DEVICE_ID,  # 10
-        *MODEL_ID,  # 00 00 00 0E
+        *JD_XI_MODEL_ID,  # 00 00 00 0E
         CommandID.DT1,  # 12
-        area,  # 19 (Digital Synth)
-        part,  # 01 (Part 1)
-        group,  # 20 (OSC)
-        param,  # 00 (First parameter)
+        msb,  # 19 (Digital Synth)
+        umb,  # 01 (Part 1)
+        lmb,  # 20 (OSC)
+        lsb,  # 00 (First parameter)
         value,  # 00 (SAW)
     ]
 

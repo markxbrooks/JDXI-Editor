@@ -65,19 +65,14 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
 )
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from jdxi_editor.midi.sysex.parsers import PARAMETER_PART_MAP
+from jdxi_editor.midi.sysex.sysex_parser import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 from typing import Protocol, TypeVar, Optional
 
 T = TypeVar("T", bound="EnumWithAddress")
-
-PARAMETER_PART_MAP = {
-    "TEMPORARY_DIGITAL_SYNTH_1_AREA": AddressParameterDigitalPartial,
-    "TEMPORARY_DIGITAL_SYNTH_2_AREA": AddressParameterDigitalPartial,
-    "ANALOG_PART": AddressParameterAnalog,
-    "DRUM_KIT_PART": AddressParameterDrumPartial,  # Fixed key name
-    "COMMON": AddressParameterDigitalCommon,
-}
 
 
 class EnumWithAddress(Protocol):
@@ -115,38 +110,18 @@ def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str,
     return name, byte_value
 
 
+def parse_parameter(offset: int, parameter_type: AddressParameter) -> str:
+    """
+    Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
+    :param offset: int
+    :param parameter_type: AddressParameter
+    :return: str name
+    """
+    return parameter_type.get_name_by_address(offset)
+
+
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
-
-    PARAMETERS = {
-        0x00: "OSC_WAVE",
-        0x01: "OSC_VARIATION",
-        0x03: "OSC_PITCH",
-        0x04: "OSC_DETUNE",
-        0x05: "OSC_PWM_DEPTH",
-        0x06: "OSC_PW",
-        0x07: "OSC_PITCH_ENV_A",
-        0x08: "OSC_PITCH_ENV_D",
-        0x09: "OSC_PITCH_ENV_DEPTH",
-        0x0A: "FILTER_MODE",
-        0x0B: "FILTER_SLOPE",
-        0x0C: "FILTER_CUTOFF",
-        0x0D: "FILTER_KEYFOLLOW",
-        0x0E: "FILTER_ENV_VELO",
-        0x0F: "FILTER_RESONANCE",
-        0x10: "FILTER_ENV_A",
-        0x11: "FILTER_ENV_D",
-        0x12: "FILTER_ENV_S",
-        0x13: "FILTER_ENV_R",
-        0x14: "FILTER_ENV_DEPTH",
-        0x15: "AMP_LEVEL",
-        0x16: "AMP_VELO_SENS",
-        0x17: "AMP_ENV_A",
-        0x18: "AMP_ENV_D",
-        0x19: "AMP_ENV_S",
-        0x1A: "AMP_ENV_R",
-        0x1B: "AMP_PAN",
-    }
 
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
@@ -224,157 +199,79 @@ class MIDIDebugger(QMainWindow):
 
         # Add splitter to main layout
         layout.addWidget(splitter)
-
-    def _decode_sysex_15(self, message):
-        """Decode address SysEx message."""
-        if len(message) != 15:
-            return "Invalid SysEx message (must be 15 bytes)"
-        if message[0] != 0xF0 or message[1] != 0x41:
-            return "Not a Roland address SysEx message"
-
-        try:
-            # Parse top-level SysEx components
-            command_str, command_byte = parse_sysex_message(message, CommandID)
-            area_str, area_byte = parse_sysex_message(message, AddressMemoryAreaMSB)
-            synth_str, synth_byte = parse_sysex_message(
-                message, AddressOffsetTemporaryToneUMB
-            )
-            part_str, part_byte = parse_sysex_message(message, AddressOffsetProgramLMB)
-            part_address = hex(part_byte)
-
-            try:
-                parameter_enum = PARAMETER_PART_MAP.get(synth_str)
-                if parameter_enum is not None:
-                    param_str, param = parse_sysex_message(message, parameter_enum)
-                else:
-                    raise ValueError(
-                        f"No parameter enum defined for synth type: {synth_str}"
-                    )
-                param_address = hex(param)
-            except Exception as ex:
-                log_error(f"Error {ex} parsing sysex bytes")
-                param = message[11]
-                param_address = hex(param)
-                param_str = self.PARAMETERS.get(
-                    param, f"Unknown Parameter ({param_address})"
-                )
-
-            # Get value
-            value = message[12]
-
-            # Get checksum
-            checksum = message[13]
-            checksum_valid = validate_checksum(message[7:13], checksum)
-
-            # Format the output
-            decoded = (
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-                f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-                f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
-                f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
-                f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
-                f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
-                f"| {7:<5} | {'Command ID':<28} | {hex(command_byte):<17} | {command_str:<30} |\n"
-                f"| {8:<5} | {'Area':<28} | {hex(area_byte):<17} | {area_str:<30} |\n"
-                f"| {9:<5} | {'Synth':<28} | {hex(synth_byte):<17} | {synth_str:<30} |\n"
-                f"| {10:<5} | {'Parameter Address High':<28} | {part_address:<17} | {part_str:<30} |\n"
-                f"| {11:<5} | {'Parameter Address Low':<28} | {param_address:<17} | {param_str:<30} |\n"
-                f"| {12:<5} | {'Parameter Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
-                f"| {13:<5} | {'Checksum':<28} | {hex(checksum):<17} | {'Valid' if checksum_valid else 'Invalid'} {'':<22} |\n"
-                f"| {14:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-            )
-
-            return decoded
-
-        except Exception as ex:
-            return f"Error decoding message: {str(ex)}"
-
-    def _decode_sysex_15_old(self, message):
-        """Decode address SysEx message"""
-        if len(message) != 15:
-            return "Invalid SysEx message (must be 15 bytes)"
-        if message[0] != 0xF0 or message[1] != 0x41:
-            return "Not a Roland address SysEx message"
-        PARAMETER_PART_MAP = {
-            "TEMPORARY_DIGITAL_SYNTH_1_AREA": AddressParameterDigitalPartial,
-            "TEMPORARY_DIGITAL_SYNTH_2_AREA": AddressParameterDigitalPartial,
-            "ANALOG_PART": AddressParameterAnalog,
-            "DRUM_KIT_PART": AddressParameterDrumPartial,
-            "COMMON": AddressParameterDigitalCommon,
-        }
-        try:
-            # Parse top-level SysEx components
-            command_str, command_byte = parse_sysex_message(message, CommandID)
-            area_str, area_byte = parse_sysex_message(message, AddressMemoryAreaMSB)
-            synth_str, synth_byte = parse_sysex_message(
-                message, AddressOffsetTemporaryToneUMB
-            )
-            part_str, part_byte = parse_sysex_message(message, AddressOffsetProgramLMB)
-            part_address = hex(part_byte)
-            try:
-                parameter = PARAMETER_PART_MAP.get(synth_str)
-                param_str, param = parse_sysex_message(message, parameter)
-                param_address = hex(param)
-            except Exception as ex:
-                log_error(f"Error {ex} parsing sysex bytes")
-                param = message[11]
-                param_address = hex(param)
-                param_str = self.PARAMETERS.get(
-                    param, f"Unknown Parameter ({param_address})"
-                )
-            # Get value
-            value = message[12]
-
-            # Get checksum
-            checksum = message[13]
-            checksum_valid = validate_checksum(message[7:13], checksum)
-
-            # Format the output
-            decoded = (
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-                f"| {'Byte':<5} | {'Description':<28} | {'Value':<17} | {'Notes':<30} |\n"
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-                f"| {0:<5} | {'Start of SysEx':<28} | {hex(message[0]):<17} | {'':<30} |\n"
-                f"| {1:<5} | {'Manufacturer ID':<28} | {hex(message[1]):<17} | {'Roland':<30} |\n"
-                f"| {2:<5} | {'Device ID':<28} | {hex(message[2]):<17} | {'':<30} |\n"
-                f"| {'3-6':<5} | {'Model ID':<28} | {' '.join(hex(x) for x in message[3:7]):<17} | {'':<30} |\n"
-                f"| {7:<5} | {'Command ID':<28} | {hex(command_byte):<17} | {command_str:<30} |\n"
-                f"| {8:<5} | {'Area':<28} | {hex(area_byte):<17} | {area_str:<30} |\n"
-                f"| {9:<5} | {'Synth':<28} | {hex(synth_byte):<17} | {synth_str:<30} |\n"
-                f"| {10:<5} | {'Parameter Address High':<28} | {part_address:<17} | {part_str:<30} |\n"
-                f"| {11:<5} | {'Parameter Address Low':<28} | {param_address:<17} | {param_str:<30} |\n"
-                f"| {12:<5} | {'Parameter Value':<28} | {hex(value):<17} | {value} ({hex(value)}) {'':<22} |\n"
-                f"| {13:<5} | {'Checksum':<28} | {hex(checksum):<17} | {'Valid' if checksum_valid else 'Invalid'} {'':<22} |\n"
-                f"| {14:<5} | {'End of SysEx':<28} | {hex(message[-1]):<17} | {'':<30} |\n"
-                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n"
-            )
-
-            return decoded
-
-        except Exception as ex:
-            return f"Error decoding message: {str(ex)}"
+        self.sysex_parser = JDXiSysExParser()
 
     def _decode_current(self):
-        """Decode the currently entered message"""
+        """Decode the currently entered SysEx message(s)"""
         text = self.command_input.toPlainText().strip()
         if not text:
             return
-        for line in text.split("\n"):
+
+        self.decoded_text.clear()
+        lines = text.splitlines()
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
             try:
-                # Convert hex string to bytes
-                hex_values = text.split()
+                hex_values = line.split()
                 message = [int(x, 16) for x in hex_values]
-                # message = bytes(int(byte, 16) for byte in text.split())
-                # Decode and display
                 decoded = self._decode_sysex_15(message)
                 self.decoded_text.append(decoded)
-
             except ValueError as ex:
-                self.decoded_text.setText(f"Error parsing hex values: {str(ex)}")
+                self.decoded_text.append(f"Error parsing line: '{line}' -> {str(ex)}")
             except Exception as ex:
-                self.decoded_text.setText(f"Error decoding message: {str(ex)}")
+                self.decoded_text.append(f"Error decoding line: '{line}' -> {str(ex)}")
+
+    def _decode_sysex_15(self, message):
+        """Decode a 15-byte Roland address SysEx message."""
+        if len(message) != 15:
+            return "Invalid SysEx message (must be 15 bytes)"
+        if message[0] != 0xF0 or message[1] != 0x41:
+            return "Not a Roland address SysEx message"
+
+        def fmt_row(byte, desc, val, notes=""):
+            return f"| {byte:<5} | {desc:<28} | {val:<17} | {notes:<30} |\n"
+
+        try:
+            sysex_dict = self.sysex_parser.parse_bytes(bytes(message))
+            log_message(str(sysex_dict))
+
+            command_id, command_byte = parse_sysex_message(message, CommandID)
+            temporary_area = sysex_dict.get("TEMPORARY_AREA", "Unknown")
+            synth_tone = sysex_dict.get("SYNTH_TONE", "Unknown")
+            param_name = sysex_dict.get("PARAM", "Unknown")
+
+            area_byte = message[8]
+            part_address = message[10]
+            param_address = message[11]
+            value = message[12]
+            checksum = message[13]
+            checksum_valid = validate_checksum(message[7:13], checksum)
+
+            lines = [
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
+                fmt_row("Byte", "Description", "Value", "Notes"),
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
+                fmt_row(0, "Start of SysEx", hex(message[0])),
+                fmt_row(1, "Manufacturer ID", hex(message[1]), "Roland"),
+                fmt_row(2, "Device ID", hex(message[2])),
+                fmt_row("3-6", "Model ID", " ".join(hex(x) for x in message[3:7])),
+                fmt_row(7, "Command ID", hex(command_byte), command_id),
+                fmt_row("8-9", "Synth Area", hex(area_byte), temporary_area),
+                fmt_row(10, "Synth Part", hex(part_address), synth_tone),
+                fmt_row(11, "Parameter Address Low", param_address, param_name),
+                fmt_row(12, "Parameter Value", hex(value), f"{value} ({hex(value)})"),
+                fmt_row(13, "Checksum", hex(checksum), "Valid" if checksum_valid else "Invalid"),
+                fmt_row(14, "End of SysEx", hex(message[-1])),
+                f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
+            ]
+
+            return "".join(lines)
+
+        except Exception as ex:
+            return f"Error decoding message: {str(ex)}"
 
     def _send_commands(self):
         """Send all valid SysEx MIDI messages from user-entered text input."""
