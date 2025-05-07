@@ -32,7 +32,8 @@ from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset, JDXIIdentityOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REQUEST, SUB_ID_2_IDENTITY_REPLY
+from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REQUEST, SUB_ID_2_IDENTITY_REPLY, START_OF_SYSEX, \
+    END_OF_SYSEX
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
@@ -263,8 +264,7 @@ class MidiInHandler(MidiIOController):
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
             log_parameter(f"SysEx message of length {len(message.data)} received:", hex_string)
 
-            sysex_message_bytes = b"\xF0" + message.data + b"\xF7"
-
+            sysex_message_bytes = bytes([START_OF_SYSEX]) + bytes(message.data) + bytes([END_OF_SYSEX])
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 log_parameter("Parsed data", parsed_data)
