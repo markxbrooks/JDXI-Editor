@@ -58,12 +58,12 @@ SYSEX_CONSTANTS = {
     "JDXI_HEADER": bytes_to_hex(JD_XI_HEADER_LIST),
     "TEMPORARY_PROGRAM_AREA": int_to_hex(AreaMSB.TEMPORARY_PROGRAM),
     "TEMPORARY_TONE_AREA": int_to_hex(AreaMSB.TEMPORARY_TONE),
-    "PROGRAM_COMMON_AREA": "00",
-    "FOUR_ZERO_BYTES": "00 00 00 00",
+    "PROGRAM_COMMON_AREA": int_to_hex(TemporaryToneUMB.COMMON),
     "DIGITAL1_COMMON": "01",
-    "DIGITAL2_COMMON": "21",
-    "ANALOG": "42",
-    "DRUMS": "70",
+    "DIGITAL2_COMMON": int_to_hex(TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA),
+    "ANALOG": int_to_hex(TemporaryToneUMB.ANALOG_PART),
+    "DRUMS": int_to_hex(TemporaryToneUMB.DRUM_KIT_PART),
+    "FOUR_ZERO_BYTES": "00 00 00 00",
 }
 
 
@@ -78,7 +78,7 @@ class JDXISysExHex:
     TEMPORARY_PROGRAM_AREA = int_to_hex(AreaMSB.TEMPORARY_PROGRAM)
     TEMPORARY_TONE_AREA = int_to_hex(AreaMSB.TEMPORARY_TONE)
     PROGRAM_COMMON_AREA = int_to_hex(TemporaryToneUMB.COMMON)
-    DIGITAL1_COMMON = int_to_hex(TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA)
+    DIGITAL1_COMMON = "01"
     DIGITAL2_COMMON = int_to_hex(TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA)
     ANALOG = int_to_hex(TemporaryToneUMB.ANALOG_PART)
     DRUMS = int_to_hex(TemporaryToneUMB.DRUM_KIT_PART)
