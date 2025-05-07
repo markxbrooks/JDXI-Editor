@@ -228,6 +228,49 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     }
 
 
+def parse_sysex_new(data: bytes) -> Dict[str, str]:
+    """
+    Parses JD-Xi tone data from SysEx messages.
+    :param data: bytes SysEx message data
+    :return: Dict[str, str]
+    """
+    log_parameter("data", data)
+
+    # Validate minimum data length
+    if len(data) < MIN_SYSEX_DATA_LENGTH:
+        log_message("Insufficient data length for parsing.", level=logging.WARNING)
+        return _return_minimal_metadata(data)
+
+    # Parse temporary area and synth tone
+    temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
+    log_parameter("temporary_area", temporary_area)
+
+    if len(data) > JDXISysExOffset.ADDRESS_LMB:
+        synth_tone = get_synth_tone(data[JDXISysExOffset.ADDRESS_LMB])
+    else:
+        synth_tone = "Unknown"
+    log_parameter("synth_tone", synth_tone)
+
+    # Initialize default values
+    parsed_data = initialize_parameters(data)
+
+    # Get parameter class for mapping
+    parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
+    if parameter_cls is None:
+        logging.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")
+        return _return_minimal_metadata(data)
+
+    # Update parsed data depending on message length
+    if len(data) < MIN_LONG_SYSEX_DATA_LENGTH:
+        log_message("Short SysEx Detected", level=logging.WARNING)
+        update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
+    else:
+        update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
+
+    log_json(parsed_data)
+    return parsed_data
+
+
 def parse_sysex(data: bytes) -> Dict[str, str]:
     """
     Parses JD-Xi tone data from SysEx messages.
