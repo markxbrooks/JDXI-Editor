@@ -43,7 +43,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.manager import JDXIPresetManager
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.sysex.requests import MidiRequests
