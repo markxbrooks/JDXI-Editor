@@ -55,7 +55,7 @@ from jdxi_editor.midi.data.address.address import CommandID
 
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.sysex.parsers.sysex_parser import JDXiSysExParser
+from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 from typing import Protocol, TypeVar, Optional

@@ -37,7 +37,7 @@ from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REPLY, START_O
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.log.json import log_json
-from jdxi_editor.midi.sysex.parsers.sysex_parser import JDXiSysExParser
+from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 
