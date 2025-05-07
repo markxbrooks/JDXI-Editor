@@ -19,7 +19,6 @@ from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
-from jdxi_editor.midi.sysex.parsers import parse_sysex
 
 
 class JDXiSysExParser:
