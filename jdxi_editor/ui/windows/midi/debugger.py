@@ -50,24 +50,12 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressMemoryAreaMSB,
-    AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB,
-)
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
-)
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
+from jdxi_editor.midi.data.address.address import CommandID
+
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.sysex.parsers import PARAMETER_PART_MAP
-from jdxi_editor.midi.sysex.sysex_parser import JDXiSysExParser
+from jdxi_editor.midi.sysex.parsers.sysex_parser import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 from typing import Protocol, TypeVar, Optional
