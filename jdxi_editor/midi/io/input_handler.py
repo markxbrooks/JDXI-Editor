@@ -36,6 +36,7 @@ from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.log.json import log_json
 from jdxi_editor.midi.sysex.parsers import parse_sysex
+from jdxi_editor.midi.sysex.sysex_parser import JDXiSysExParser
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 
@@ -76,6 +77,7 @@ class MidiInHandler(MidiIOController):
         self.cc_lsb_value: int = 0
         self.midi_in.set_callback(self.midi_callback)
         self.midi_in.ignore_types(sysex=False, timing=True, active_sense=True)
+        self.sysex_parser = JDXiSysExParser()
 
     def midi_callback(self, message: list[Any], data: Any) -> None:
         """callback for rtmidi
@@ -276,23 +278,14 @@ class MidiInHandler(MidiIOController):
             # If the message contains tone data, attempt to parse it
             if len(message.data) > 20:
                 try:
-                    parsed_data_dict = parse_sysex(sysex_message_bytes)
+                    parsed_data_dict = self.sysex_parser.parse_bytes(sysex_message_bytes)
                     log_parameter("Parsed data", parsed_data_dict)
                     self._emit_program_or_tone_name(parsed_data_dict)
-                    json_log_folder = Path.home() / ".jdxi_editor" / "logs"
-                    json_log_folder.mkdir(parents=True, exist_ok=True)
-                    json_log_file = (
-                        json_log_folder
-                        / f"jdxi_tone_data_{parsed_data_dict['ADDRESS']}.json"
-                    )
-                    with open(json_log_file, "w", encoding="utf-8") as f:
-                        json.dump(parsed_data_dict, f, ensure_ascii=False, indent=2)
                     # Emit the parsed data as a JSON string
                     self.midi_sysex_json.emit(json.dumps(parsed_data_dict))
                     log_json(parsed_data_dict)
                 except Exception as parse_ex:
                     log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
-            # extract_command_info(message)
 
         except Exception as ex:
             log_error(f"Unexpected error {ex} while handling SysEx message")
