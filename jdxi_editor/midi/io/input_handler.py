@@ -22,7 +22,6 @@ Dependencies:
 
 import json
 import logging
-from pathlib import Path
 
 import mido
 from typing import Any, Callable, List, Optional
