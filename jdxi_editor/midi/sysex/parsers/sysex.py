@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Optional
 
 from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.midi.sysex.parse_utils import parse_sysex
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
