@@ -16,43 +16,55 @@ import os.path
 from pathlib import Path
 from typing import Optional
 
+from setuptools.command.easy_install import sys_executable
 
-class JDXiJsonParser:
-    """ JsonParser """
+from jdxi_editor.midi.utils.json import log_changes
 
-    def __init__(self, json_data: Optional[str] = None):
-        if json_data:
-            self.json_data = json_data
+
+class JDXiJsonSysexParser:
+    """ JDXiJsonSysexParser """
+
+    def __init__(self, json_sysex_data: Optional[str] = None):
+        """
+        :param json_sysex_data: Optional[str] JSON Sysex data
+        """
+        if json_sysex_data:
+            self.sysex_data_json = json_sysex_data
+        self.current_sysex_dict = None
+        self.previous_sysex_dict = None
+
         self.log_folder = Path.home() / ".jdxi_editor" / "logs"
         if not os.path.exists(self.log_folder):
             self.log_folder.mkdir(parents=True, exist_ok=True)
 
-    def from_json(self, json_data: bytes):
+    def from_json(self, json_sysex_data: bytes) -> None:
         """
         from json
-        :param json_data: bytes
-        :return:
+        :param json_sysex_data: bytes
+        :return: None
         """
-        self.json_data = json_data
+        self.sysex_data_json = json_sysex_data
 
-    def parse(self):
+    def parse(self) -> dict:
         """
         parse
-        :return: None so far
+        :return: Optional[str, None] JSON dict on success, None otherwise
         """
-        if not self._is_valid_json():
-            raise ValueError("Invalid JSON Data")
-        return
+        try:
+            sysex_dict = json.loads(self.sysex_data_json)
+            self.current_sysex_dict = sysex_dict
+            self.previous_sysex_dict = self.current_sysex_dict
+            log_changes(self.previous_sysex_dict, sysex_dict)
+            return sysex_dict
+        except json.JSONDecodeError as ex:
+            log_message(f"Invalid JSON format: {ex}")
+            return None
 
-    def parse_json(self, json_data: str):
+    def parse_json(self, json_sysex_data: str):
         """
         parse bytes
-        :param json_data: str
+        :param json_sysex_data: str
         :return: None so far
         """
-        self.json_data = json_data
+        self.sysex_data_json = json_sysex_data
         return self.parse()
-
-    def _is_valid_json(self) -> bool:
-        """Checks if the data is valid JSON"""
-        pass

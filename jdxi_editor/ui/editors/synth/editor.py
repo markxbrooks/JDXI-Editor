@@ -39,6 +39,7 @@ from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
@@ -162,7 +163,7 @@ class SynthEditor(SynthBase):
             (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
             (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
-
+        self.json_parser = JDXiJsonSysexParser()
         self.preset_helpers = {
             synth_type: JDXIPresetHelper(
                 self.midi_helper, presets, channel=channel, preset_type=synth_type
@@ -301,7 +302,24 @@ class SynthEditor(SynthBase):
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         raise NotImplementedError
 
+    def _parse_sysex_json_new(self, json_sysex_data: str) -> dict:
+        try:
+            data = self.json_parser.parse_json(json_sysex_data)
+            #data = json.loads(json_sysex_data)
+            #self.sysex_previous_data = self.sysex_current_data
+            # self.sysex_current_data = data
+            # log_changes(self.sysex_previous_data, data)
+            return data
+        except json.JSONDecodeError as ex:
+            log_message(f"Invalid JSON format: {ex}")
+            return None
+
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
+        """
+        _parse_sysex_json
+        :param json_sysex_data: str JSON SysEx data
+        :return: dict or None
+        """
         try:
             data = json.loads(json_sysex_data)
             self.sysex_previous_data = self.sysex_current_data
@@ -313,6 +331,13 @@ class SynthEditor(SynthBase):
             return None
 
     def set_instrument_title_label(self, name: str, synth_type: str):
+        """
+        set_instrument_title_label
+        :param name: str
+        :param synth_type: str
+        :return: None
+        """
+
         if self.preset_type == synth_type:
             self.instrument_title_label.setText(name)
 
