@@ -12,6 +12,7 @@ log_message(f"Parsed Data: {parsed_data}")
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -29,7 +30,8 @@ class JDXiSysExParser:
             self.sysex_data = sysex_data
         self.sysex_dict = {}
         self.log_folder = Path.home() / ".jdxi_editor" / "logs"
-        self.log_folder.mkdir(parents=True, exist_ok=True)
+        if not os.path.exists(self.log_folder):
+            self.log_folder.mkdir(parents=True, exist_ok=True)
 
     def from_bytes(self, sysex_data: bytes):
         """
