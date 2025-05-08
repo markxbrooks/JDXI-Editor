@@ -26,6 +26,7 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
+from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     ModelID,
@@ -60,7 +61,7 @@ class RolandSysExMessage(SysExMessage):
     command: int = CommandID.DT1
 
     address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
-    value: Union[int, List[int]] = 0x00
+    value: Union[int, List[int]] = ZERO_BYTE
     size: int = 1
 
     # These attributes should not be set in `__init__`
@@ -117,10 +118,10 @@ class RolandSysEx(SysExMessage):
     )
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
     sysex_address: Optional[RolandSysExAddress] = None
-    msb: int = 0x00
-    umb: int = 0x00
-    lmb: int = 0x00
-    lsb: int = 0x00
+    msb: int = ZERO_BYTE
+    umb: int = ZERO_BYTE
+    lmb: int = ZERO_BYTE
+    lsb: int = ZERO_BYTE
     value: Union[int, list[int]] = 0x00
     size: int = 1
 
@@ -189,7 +190,7 @@ class RolandSysEx(SysExMessage):
 
     def construct_sysex(
         self, address: RolandSysExAddress, *data_bytes: list, request: bool = False
-    ):
+    ) -> List[int]:
         """
         Construct a SysEx message based on the provided address and data bytes.
         :param address: RolandSysExAddress
@@ -313,7 +314,10 @@ class JDXiSysEx(RolandSysEx):
         # Validate model ID
         if len(self.model_id) != 4:
             raise ValueError("Model ID must be 4 bytes")
-        if self.model_id != [0x00, 0x00, 0x00, 0x0E]:
+        if self.model_id != [ModelID.MODEL_ID_1,
+                             ModelID.MODEL_ID_2,
+                             ModelID.MODEL_ID_3,
+                             ModelID.MODEL_ID_4]:
             raise ValueError(f"Invalid model ID: {[f'{x:02X}' for x in self.model_id]}")
 
         # Validate address
@@ -351,17 +355,17 @@ class JDXiSysEx(RolandSysEx):
         if (
             len(data)
             < 12  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-            or data[0] != 0xF0
-            or data[1] != 0x41  # Roland ID
+            or data[0] != START_OF_SYSEX
+            or data[1] != ModelID.ROLAND_ID  # Roland ID
             or data[3:7] != bytes([0x00, 0x00, 0x00, 0x0E])
         ):  # JD-Xi model ID
             raise ValueError("Invalid JD-Xi SysEx message")
 
-        device_id = data[2]
-        command = data[7]
-        address = list(data[8:12])
-        message_data = list(data[12:-2])  # Everything between address and checksum
-        received_checksum = data[-2]
+        device_id = data[JDXISysExOffset.DEVICE_ID]
+        command = data[JDXISysExOffset.COMMAND_ID]
+        address = list(data[JDXISysExOffset.ADDRESS_MSB:JDXISysExOffset.TONE_NAME_START])
+        message_data = list(data[JDXISysExOffset.TONE_NAME_START:JDXISysExOffset.CHECKSUM])  # Everything between address and checksum
+        received_checksum = data[JDXISysExOffset.CHECKSUM]
 
         # Create message and verify checksum
         message = cls(

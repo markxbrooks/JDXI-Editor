@@ -1,6 +1,7 @@
 """
 byte data processing
 """
+from jdxi_editor.midi.data.address.sysex import LOW_7_BITS_MASK
 
 
 def split_16bit_value_to_bytes(value: int) -> list[int]:
@@ -91,3 +92,23 @@ def join_nibbles_to_16bit(nibbles: list[int]) -> int:
         value = (value << 4) | nibble
 
     return value
+
+
+def encode_14bit_to_7bit_midi_bytes(value: int) -> list[int]:
+    """
+    Encodes a 14-bit integer into two 7-bit MIDI-safe bytes.
+    MIDI SysEx requires all data bytes to be in the range 0x00–0x7F.
+    # Example usage:
+    value = 0x1234  # 4660 in decimal
+    data_bytes = encode_14bit_to_7bit_midi_bytes(value)
+    print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
+
+    """
+    if not (0 <= value <= 0x3FFF):
+        raise ValueError("Value must be a 14-bit integer (0–16383)")
+
+    lsb = value & LOW_7_BITS_MASK           # Lower 7 bits
+    msb = (value >> 7) & LOW_7_BITS_MASK    # Upper 7 bits
+
+    return [msb, lsb]
+
