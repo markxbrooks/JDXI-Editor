@@ -267,7 +267,7 @@ def parse_sysex_new(data: bytes) -> Dict[str, str]:
     else:
         update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
 
-    log_json(parsed_data)
+    log_json(parsed_data, silent=True)
     return parsed_data
 
 
@@ -277,7 +277,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
-    log_parameter("data", data)
+    log_parameter("data", data, silent=True)
 
     if len(data) < MIN_SYSEX_DATA_LENGTH:
         log_message("Insufficient data length for parsing.", level=logging.WARNING)
@@ -300,7 +300,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
             update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
         else:
             update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
-        log_json(parsed_data)
+        log_json(parsed_data, silent=True)
         return parsed_data
 
 

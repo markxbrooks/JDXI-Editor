@@ -121,10 +121,10 @@ class AddressParameterAnalog(AddressParameter):
     LFO_RATE_MODULATION_CONTROL = (0x3B, 1, 127, -63, 63)
 
     # Reserve
-    RESERVE_1 = (0x37, 0, 0)
-    RESERVE_2 = (0x3C, 0, 0)
-    RESERVE_3 = (0x3D, 0, 0)
-    RESERVE_4 = (0x3F, 0, 0)
+    # RESERVE_1 = (0x37, 0, 0)
+    # RESERVE_2 = (0x3C, 0, 0)
+    # RESERVE_3 = (0x3D, 0, 0)
+    # RESERVE_4 = (0x3F, 0, 0)
 
     def __init__(
         self,

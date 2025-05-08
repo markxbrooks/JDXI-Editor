@@ -488,7 +488,7 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         sysex_data = self._parse_sysex_json(json_sysex_data)
-        log_message(f"sysex_data: {sysex_data}")
+        log_message(f"sysex_data: {sysex_data}", silent=True)
         if not sysex_data:
             return
         temp_area = sysex_data.get("TEMPORARY_AREA")

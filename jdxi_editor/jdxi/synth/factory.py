@@ -14,7 +14,8 @@ from jdxi_editor.jdxi.synth.analog import AnalogSynthData
 from jdxi_editor.jdxi.synth.digital import DigitalSynthData
 from jdxi_editor.jdxi.synth.drum import DrumSynthData
 from jdxi_editor.jdxi.synth.data import JDXISynthData
-from jdxi_editor.midi.sysex.requests import MidiRequests
+from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 
 
 def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISynthData:
@@ -25,7 +26,7 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
     :return: JDXISynthData
     """
     if synth_type == JDXISynth.DRUM:
-        address_lmb = AddressOffsetProgramLMB.drum_partial_offset(partial_number)
+        address_lmb = DRUM_GROUP_MAP.get(partial_number)
         return DrumSynthData(
             midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
             midi_channel=MidiChannel.DRUM,

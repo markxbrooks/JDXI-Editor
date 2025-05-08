@@ -79,28 +79,6 @@ def get_program_by_bank_and_number(
 
 
 def get_program_id_by_name(name: str) -> Optional[str]:
-    """Retrieve a program's ID by its name from PROGRAM_LIST."""
-    program = next(
-        (program for program in PROGRAM_LIST if program["name"] == name), None
-    )
-    return program["id"] if program else None
-
-
-def get_program_id_by_name_new(name: str) -> Optional[str]:
-    """Retrieve a program's ID from PROGRAM_LIST by matching its name flexibly."""
-    log_message(f"Searching for program name: {name}")
-
-    for program in PROGRAM_LIST:
-        # Match 'name' as a substring of 'program["name"]' (correct order)
-        if re.search(re.escape(rf"{name}"), rf'{program["name"]}', re.IGNORECASE):
-            log_message(program)
-            return program["id"]
-
-    logging.warning(f"Program named '{name}' not found.")
-    return None
-
-
-def get_program_id_by_name(name: str) -> Optional[str]:
     """Retrieve a program's ID from PROGRAM_LIST by matching its name as a substring."""
     log_message(f"Searching for program name: {name}")
 

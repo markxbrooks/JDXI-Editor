@@ -17,7 +17,7 @@ import threading
 from jdxi_editor.log.message import log_message
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.io.delay import send_with_delay
-from jdxi_editor.midi.sysex.requests import MidiRequests
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.widgets.slider import Slider
 
 

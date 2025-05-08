@@ -7,7 +7,7 @@ from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetSuperNATURALLMB,
+    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
@@ -37,7 +37,7 @@ def log_slider_parameters(
         synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
         if part_lmb != "0x00":
             part_name_lmb = parse_sysex_byte(
-                int(part_lmb, 16), AddressOffsetSuperNATURALLMB
+                int(part_lmb, 16), AddressOffsetProgramLMB
             )
         else:
             part_name_lmb = "COMMON"

@@ -4,9 +4,10 @@ from typing import Dict
 from jdxi_editor.log.message import log_message
 
 
-def log_json(data: Dict) -> None:
+def log_json(data: Dict, silent: bool = False) -> None:
     """
     Helper function to log JSON data as address single line.
+    :param silent: bool
     :param data: Dict
     :return: None
     """
@@ -22,4 +23,5 @@ def log_json(data: Dict) -> None:
     compact_json = json.dumps(data)
 
     # Log the JSON in address single line
-    log_message(compact_json)
+    if not silent:
+        log_message(compact_json, stacklevel=2)

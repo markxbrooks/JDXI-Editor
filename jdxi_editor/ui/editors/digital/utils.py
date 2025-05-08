@@ -13,7 +13,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 
 
-def _log_debug_info(data: list, successes: list, failures: list, enabled: bool) -> None:
+def _log_debug_info(data: dict, successes: list, failures: list, enabled: bool) -> None:
     """
     Log debug information about the SysEx data.
     :param data: list

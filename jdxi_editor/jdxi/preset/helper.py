@@ -43,7 +43,7 @@ from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.utils import get_preset_values
-from jdxi_editor.midi.sysex.requests import MidiRequests
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import log_midi_info
 
 

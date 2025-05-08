@@ -50,6 +50,7 @@ DRUM_ADDRESS_MAP = {
     "C5": 0x76,  # Drum Kit Partial (Key # 72)
 }
 DRUM_GROUP_MAP = {
+    0: 0x00,  # Drum Kit Partial (Key # 36)
     1: 0x2E,  # Drum Kit Partial (Key # 36)
     2: 0x30,  # Drum Kit Partial (Key # 37)
     3: 0x32,  # Drum Kit Partial (Key # 38)

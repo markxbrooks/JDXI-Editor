@@ -36,6 +36,7 @@ from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REPLY, START_O
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.log.json import log_json
+from jdxi_editor.midi.sysex.parse_utils import SYNTH_TYPE_MAP
 from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
@@ -86,8 +87,6 @@ class MidiInHandler(MidiIOController):
         """
         try:
             message_content, data = message
-            log_parameter("message_content", message_content)
-            log_parameter("data", data)
             p = mido.Parser()
             p.feed(message_content)
             for message in p:
@@ -205,9 +204,6 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         temporary_area = parsed_data.get("TEMPORARY_AREA")
-        log_message(
-            "================================================================================================"
-        )
         log_parameter("ADDRESS", address)
         log_parameter("TEMPORARY_AREA", temporary_area)
         log_parameter("TONE_NAME", tone_name)
@@ -218,9 +214,6 @@ class MidiInHandler(MidiIOController):
                 self._emit_program_name_signal(temporary_area, tone_name)
             else:
                 self._emit_tone_name_signal(temporary_area, tone_name)
-        log_message(
-            "================================================================================================"
-        )
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
@@ -266,7 +259,7 @@ class MidiInHandler(MidiIOController):
                 log_parameter("Parsed data", parsed_data)
                 self._emit_program_or_tone_name(parsed_data)
                 self.midi_sysex_json.emit(json.dumps(parsed_data))
-                log_json(parsed_data)
+                log_json(parsed_data, silent=True)
             except Exception as parse_ex:
                 log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
 
