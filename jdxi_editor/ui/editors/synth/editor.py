@@ -215,7 +215,7 @@ class SynthEditor(SynthBase):
         self.read_request_button = QPushButton("Send Read Request to Synth")
         self.read_request_button.clicked.connect(self.data_request)
         instrument_title_group_layout.addWidget(self.read_request_button)
-        self.instrument_selection_label = QLabel(f"Select an {synth_type} synth:")
+        self.instrument_selection_label = QLabel(f"Select a {synth_type} synth:")
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
@@ -235,44 +235,11 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         return instrument_preset_group
-
-    """def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
-        ""
-        Create the instrument preset group box.
-        :param synth_type: str
-        :return: QGroupBox
-        ""
-        instrument_preset_group = QGroupBox(f"{synth_type} Synth")
-        instrument_title_group_layout = QVBoxLayout(instrument_preset_group)
-        self.instrument_title_label = DigitalTitle()
-        instrument_title_group_layout.addWidget(self.instrument_title_label)
-        self.read_request_button = QPushButton("Send Read Request to Synth")
-        self.read_request_button.clicked.connect(self.data_request)
-        instrument_title_group_layout.addWidget(self.read_request_button)
-        self.instrument_selection_label = QLabel(f"Select an {synth_type} synth:")
-        instrument_title_group_layout.addWidget(self.instrument_selection_label)
-        self.instrument_selection_combo = PresetComboBox(self.preset_list)
-        self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
-        self.instrument_selection_combo.combo_box.setEditable(True)
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_image
-        )
-        self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
-            self.update_instrument_title
-        )
-        self.instrument_selection_combo.load_button.clicked.connect(
-            self.update_instrument_preset
-        )
-        self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
-        instrument_title_group_layout.addWidget(self.instrument_selection_combo)
-        return instrument_preset_group"""
         
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
-
-        Returns:
-            dict: A dictionary of control parameter names and their values.
+        :returns: dict A dictionary of control parameter names and their values.
         """
         try:
             controls_data = {}
@@ -347,6 +314,10 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
+        """
+        update instrument title
+        :return:
+        """
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
         log_message(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(selected_synth_text)
@@ -407,9 +378,9 @@ class SynthEditor(SynthBase):
         )
         self.data_request()
 
-    def _handle_dt1_message(self, data):
+    def _handle_dt1_message(self, data: str):
         """Handle Data Set 1 (DT1) messages
-
+        :param data: str
         Format: aa bb cc dd ... where:
         aa bb cc = Address
         dd ... = Data
@@ -439,7 +410,6 @@ class SynthEditor(SynthBase):
 
     def load_and_set_image(self, image_path, secondary_image_path=None):
         """Helper function to load and set the image on the label."""
-        file_to_load = ""
         if os.path.exists(image_path):
             file_to_load = image_path
         elif os.path.exists(secondary_image_path):
@@ -515,7 +485,10 @@ class SynthEditor(SynthBase):
         """Safely update sliders from NRPN messages."""
         slider = self.controls.get(param)
         if slider:
-            slider_value = param.convert_from_midi(value)
+            if hasattr(param, "convert_from_midi"):
+                slider_value = param.convert_from_midi(value)
+            else:
+                slider_value = value
             log_message(f"Updating {param.name}: MIDI {value} -> Slider {slider_value}")
             slider.blockSignals(True)
             slider.setValue(slider_value)
