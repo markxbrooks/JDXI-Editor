@@ -15,5 +15,5 @@ def log_footer_message(message: str, level: int = logging.INFO) -> None:
     log_message(f"  {message}", level=level)
     log_message(
         "============================================================================================",
-        level=level,
+        level=level, stacklevel=2
     )

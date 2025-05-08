@@ -46,7 +46,7 @@ from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.manager import JDXIPresetManager
 from jdxi_editor.jdxi.synth.type import JDXISynth
-from jdxi_editor.midi.sysex.requests import MidiRequests
+from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import (
     get_preset_list_number_by_name,

@@ -104,7 +104,6 @@ class SynthBase(QWidget):
             else:
                 size = 1
             address = apply_address_offset(self.address, param)
-            log_message("applying address offset ->")
             log_parameter("base address:", self.address)
             log_parameter("parameter offset to apply:", param)
             log_parameter("  -->  final address", address)

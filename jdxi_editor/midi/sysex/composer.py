@@ -19,7 +19,7 @@ from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
 class JDXiSysExComposer:
-    """ SysexComposer """
+    """ SysExComposer """
 
     def __init__(self):
         self.address = None

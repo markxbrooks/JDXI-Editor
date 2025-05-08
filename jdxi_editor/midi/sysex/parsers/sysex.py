@@ -56,7 +56,7 @@ class JDXiSysExParser:
         if not self._verify_header():
             raise ValueError("Invalid JD-Xi header")
         else:
-            log_message("Correct JD-Xi header found")
+            log_message("Correct JD-Xi header found", silent=True)
 
         self.sysex_dict = parse_sysex(self.sysex_data)
         json_log_file = (

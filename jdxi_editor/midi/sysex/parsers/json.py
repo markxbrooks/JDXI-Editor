@@ -16,8 +16,8 @@ import os.path
 from pathlib import Path
 from typing import Optional
 
-from setuptools.command.easy_install import sys_executable
-
+from jdxi_editor.log.error import log_error
+from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.utils.json import log_changes
 
 
@@ -30,8 +30,6 @@ class JDXiJsonSysexParser:
         """
         if json_sysex_data:
             self.sysex_data_json = json_sysex_data
-        self.current_sysex_dict = None
-        self.previous_sysex_dict = None
 
         self.log_folder = Path.home() / ".jdxi_editor" / "logs"
         if not os.path.exists(self.log_folder):
@@ -52,12 +50,9 @@ class JDXiJsonSysexParser:
         """
         try:
             sysex_dict = json.loads(self.sysex_data_json)
-            self.current_sysex_dict = sysex_dict
-            self.previous_sysex_dict = self.current_sysex_dict
-            log_changes(self.previous_sysex_dict, sysex_dict)
             return sysex_dict
         except json.JSONDecodeError as ex:
-            log_message(f"Invalid JSON format: {ex}")
+            log_error(f"Invalid JSON format: {ex}")
             return None
 
     def parse_json(self, json_sysex_data: str):

@@ -13,9 +13,11 @@ def log_parameter(
     float_precision: int = 2,
     max_length: int = 300,
     level: int = logging.INFO,
+    silent: bool = True
 ):
     """
     Log a structured representation of a parameter with type, formatted value, and optional emoji context.
+    :param silent: bool suppress the log or not
     :param message: str The message to log.
     :param parameter: Any The parameter to log.
     :param float_precision: int The float precision.
@@ -62,6 +64,6 @@ def log_parameter(
         f"{emoji} {midi_tag} {padded_message} {padded_type} {formatted_value}".rstrip()
     )
 
-    if LOGGING:
+    if LOGGING and not silent:
         # Dispatch to appropriate logging level
         logger.log(level, final_message, stacklevel=2)

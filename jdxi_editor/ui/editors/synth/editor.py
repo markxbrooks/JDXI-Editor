@@ -302,19 +302,19 @@ class SynthEditor(SynthBase):
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         raise NotImplementedError
 
-    def _parse_sysex_json_new(self, json_sysex_data: str) -> dict:
+    def _parse_sysex_json(self, json_sysex_data: str) -> dict:
         try:
             data = self.json_parser.parse_json(json_sysex_data)
-            #data = json.loads(json_sysex_data)
-            #self.sysex_previous_data = self.sysex_current_data
-            # self.sysex_current_data = data
-            # log_changes(self.sysex_previous_data, data)
+            # data = json.loads(json_sysex_data)
+            self.sysex_previous_data = self.sysex_current_data
+            self.sysex_current_data = data
+            log_changes(self.sysex_previous_data, data)
             return data
         except json.JSONDecodeError as ex:
             log_message(f"Invalid JSON format: {ex}")
             return None
 
-    def _parse_sysex_json(self, json_sysex_data: str) -> dict:
+    def _parse_sysex_json_old(self, json_sysex_data: str) -> dict:
         """
         _parse_sysex_json
         :param json_sysex_data: str JSON SysEx data

@@ -72,11 +72,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAPPING
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
@@ -251,12 +253,15 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        log_message(
-            "\n============================================================================================"
-        )
-        log_message("Updating UI components from SysEx data")
-        log_message(
-            "\n============================================================================================"
+        # Parse SysEx data
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+        temp_area = sysex_data.get("TEMPORARY_AREA")
+        synth_tone = sysex_data.get("SYNTH_TONE")
+
+        log_header_message(
+            f"Updating {temp_area} {synth_tone} UI components from SysEx data"
         )
 
         # failures, successes = [], []
@@ -282,7 +287,7 @@ class DrumCommonEditor(SynthEditor):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if synth_tone == "TONE_COMMON":
-            log_message("Tone common")
+            log_header_message("Tone common")
             self._update_common_sliders_from_sysex(json_sysex_data)
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
@@ -292,15 +297,6 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        log_message(
-            "\n============================================================================================"
-        )
-        log_message("Updating UI components from SysEx data")
-        log_message(
-            "\n============================================================================================"
-        )
-        debug_param_updates = True
-        debug_stats = True
         failures, successes = [], []
 
         def _parse_sysex_json(json_data: str):
@@ -357,10 +353,10 @@ class DrumCommonEditor(SynthEditor):
                 slider.setValue(value)
                 slider.blockSignals(False)
                 successes.append(parameter.name)
-                if debug_param_updates:
-                    log_message("Updated parameter: ")
-                    log_parameter("parameter", parameter)
-                    log_parameter("value", value)
+
+                log_message("Updated parameter: ")
+                log_parameter("parameter", parameter)
+                log_parameter("value", value)
             else:
                 failures.append(parameter.name)
 
@@ -389,10 +385,9 @@ class DrumCommonEditor(SynthEditor):
                 check_box.setState(bool(value), False)
                 check_box.blockSignals(False)
                 successes.append(parameter.name)
-                if debug_param_updates:
-                    log_message("Updated parameter: ")
-                    log_parameter("parameter", parameter)
-                    log_parameter("value", value)
+                log_message("Updated parameter: ")
+                log_parameter("parameter", parameter)
+                log_parameter("value", value)
             else:
                 failures.append(parameter.name)
 
@@ -432,9 +427,8 @@ class DrumCommonEditor(SynthEditor):
         sysex_data = {
             k: v for k, v in sysex_data.items() if k not in common_ignored_keys
         }
-
         if synth_tone == "TONE_COMMON":
-            log_message("\nTone common")
+            log_header_message("Tone common")
             for param_name, param_value in sysex_data.items():
                 param = AddressParameterDrumCommon.get_by_name(param_name)
                 log_message(f"Tone common: param_name: {param} {param_value}")
@@ -462,13 +456,12 @@ class DrumCommonEditor(SynthEditor):
             """
             Helper function to log debugging statistics.
             """
-            if debug_stats:
-                success_rate = (
-                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-                )
-                log_message(f"successes: \t{successes}")
-                log_message(f"failures: \t{failures}")
-                log_footer_message(f"success rate: \t{success_rate:.1f}%")
+            success_rate = (
+                (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+            )
+            log_message(f"successes: \t{successes}")
+            log_message(f"failures: \t{failures}")
+            log_footer_message(f"success rate: \t{success_rate:.1f}%")
 
         _log_debug_info()
 
@@ -477,10 +470,6 @@ class DrumCommonEditor(SynthEditor):
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         """
-        log_header_message("Updating UI components from SysEx data")
-        debug_param_updates = True
-        debug_stats = True
-
         try:
             sysex_data = json.loads(json_sysex_data)
             self.sysex_previous_data = self.sysex_current_data
@@ -535,15 +524,14 @@ class DrumCommonEditor(SynthEditor):
             slider = self.partial_editors[partial_no].controls.get(param)
             if slider:
                 slider_value = param.convert_from_midi(value)
-                log_message(
-                    f"midi value {value} converted to slider value {slider_value}"
-                )
                 slider.blockSignals(True)
                 slider.setValue(slider_value)
                 slider.blockSignals(False)
                 successes.append(param.name)
-                if debug_param_updates:
-                    log_message(f"Updated: {param.name:50} {value}")
+                synth_data = create_synth_data(JDXISynth.DRUM, partial_no)
+                log_slider_parameters(
+                    self.address.umb, synth_data.lmb, param, value, slider_value
+                )
 
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDrumPartial.get_by_name(param_name)
@@ -556,18 +544,17 @@ class DrumCommonEditor(SynthEditor):
             """
             Helper function to log debugging statistics.
             """
-            if debug_stats:
-                success_rate = (
-                    (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-                )
-                log_message(
-                    "\n======================================================================================================"
-                )
-                log_message(f"Successes: \t{successes}")
-                log_message(f"Failures: \t{failures}")
-                log_message(f"Success Rate: \t{success_rate:.1f}%")
-                log_message(
-                    "\n======================================================================================================"
-                )
+            success_rate = (
+                (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+            )
+            log_message(
+                "\n======================================================================================================"
+            )
+            log_message(f"Successes: \t{successes}")
+            log_message(f"Failures: \t{failures}")
+            log_message(f"Success Rate: \t{success_rate:.1f}%")
+            log_message(
+                "\n======================================================================================================"
+            )
 
         _log_debug_info()
