@@ -124,12 +124,9 @@ class AnalogSynthEditor(SynthEditor):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            self.midi_helper.midi_parameter_received.connect(
-                self._on_parameter_received
-            )
-            log_message("MIDI helper initialized")
+            log_message("MIDI signals connected")
         else:
-            log_message("MIDI helper not initialized")
+            log_message("MIDI signals not connected")
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -301,33 +298,6 @@ class AnalogSynthEditor(SynthEditor):
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""
         self.update_filter_controls_state(mode)
-
-    def _on_parameter_received(self, address: list[int], value: int):
-        """
-        Handle incoming MIDI parameter messages.
-        :param address: list of address bytes
-        :param value: int value
-        :return: None
-        """
-        if address[0] == AddressMemoryAreaMSB.ANALOG:
-            # Extract the actual parameter address (80, 0) from [25, 1, 80, 0]
-            parameter_address = tuple(address[2:])  # (80, 0)
-            # Retrieve the corresponding DigitalParameter
-            param = get_analog_parameter_by_address(parameter_address)
-            if param:
-                log_message(f"param: \t{param} \taddress=\t{address}, Value=\t{value}")
-            elif param == AddressParameterAnalog.FILTER_MODE_SWITCH:
-                self.update_filter_state(
-                    value=AddressParameterAnalog.FILTER_MODE_SWITCH.value
-                )
-                if param in self.controls:
-                    self._update_slider(param, param.value)
-                # Handle OSC_WAVE parameter to update waveform buttons
-                if param == AddressParameterAnalog.OSC_WAVEFORM:
-                    self._update_waveform_buttons(value)
-                    log_message(
-                        f"updating waveform buttons for param {param} with {value}"
-                    )
 
     def update_filter_state(self, value: int):
         """
