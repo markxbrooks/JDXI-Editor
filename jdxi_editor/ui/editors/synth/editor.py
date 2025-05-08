@@ -378,23 +378,6 @@ class SynthEditor(SynthBase):
         )
         self.data_request()
 
-    def _handle_dt1_message(self, data: str):
-        """Handle Data Set 1 (DT1) messages
-        :param data: str
-        Format: aa bb cc dd ... where:
-        aa bb cc = Address
-        dd ... = Data
-        """
-        if len(data) < 4:  # Need at least address and one data byte
-            return
-
-        address = data[0:3]
-        log_message(f"DT1 message Address: {address}")
-        value = data[3]
-        log_message(f"DT1 message Value: {value}")
-        # Emit signal with parameter data
-        self.parameter_received.emit(address, value)
-
     def send_control_change(self, control_change: ControlChange, value: int):
         """Send MIDI CC message"""
         if self.midi_helper:

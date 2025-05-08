@@ -57,8 +57,6 @@ class MidiInHandler(MidiIOController):
     update_program_name = Signal(str)
     midi_message_incoming = Signal(object)
     midi_program_changed = Signal(int, int)  # channel, program
-    midi_parameter_changed = Signal(object, int)  # Emit parameter and value
-    midi_parameter_received = Signal(list, int)  # address, value
     midi_control_changed = Signal(int, int, int)  # channel, control, value
     midi_sysex_json = Signal(str)  # Signal emitting SysEx data as address JSON string
 
@@ -312,24 +310,3 @@ class MidiInHandler(MidiIOController):
         log_message(f"Program Change - Channel: {channel}, Program: {program_number}")
 
         self.midi_program_changed.emit(channel, program_number)
-
-    def _handle_dt1_message(self, data: List[int]) -> None:
-        """
-        Handle Data Set 1 (DT1) messages.
-
-        Extracts the address and value from the data and emits address parameter change signal.
-
-        :param data: List of integers representing the DT1 message data.
-        """
-        if len(data) < 4:
-            return
-
-        # Extract address (first three bytes) and value (fourth byte)
-        address = data[:3]
-        value = data[3]
-        log_message(f"Parameter update received: Address={address}, Value={value}")
-
-        # Retrieve the parameter using the address and emit the change signal if found
-        param = get_parameter_from_address(address)
-        if param:
-            self.midi_parameter_changed.emit(param, value)

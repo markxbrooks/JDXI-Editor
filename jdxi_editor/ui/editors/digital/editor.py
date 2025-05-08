@@ -175,7 +175,6 @@ class DigitalSynthEditor(SynthEditor):
         splitter.addWidget(scroll)
         splitter.setSizes([100, 600])  # give more room to bottom
         splitter.setStyleSheet(JDXIStyle.SPLITTER)
-        self.midi_helper.midi_parameter_received.connect(self._on_parameter_received)
         self.show()
 
     def _create_partial_tab_widget(
@@ -269,28 +268,6 @@ class DigitalSynthEditor(SynthEditor):
             self.partials_panel.switches[partial].setState(enabled, selected)
             self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
         self.partial_tab_widget.setCurrentIndex(0)
-
-    def _on_parameter_received(self, address: list, value: int) -> None:
-        """
-        Handle received MIDI parameter and update UI components accordingly.
-        :param address: list
-        :param value: int
-        :return: None
-        """
-        if not _is_digital_synth_area(address[0]):
-            return
-
-        parameter_address = tuple(address[2:])
-        partial_no = address[1]
-        param = get_digital_parameter_by_address(parameter_address)
-
-        if not param:
-            log_parameter("No parameter found for address", parameter_address)
-            return
-
-        log_message(f"Received param: {param} | address: {address} | value: {value}")
-        self._update_partial_slider(partial_no, param, value)
-        self._handle_special_params(partial_no, param, value)
 
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int
