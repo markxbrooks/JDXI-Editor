@@ -90,10 +90,10 @@ class AnalogSynthEditor(SynthEditor):
     """Analog Synth Editor UI."""
 
     def __init__(
-        self,
-        midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: Optional[JDXIPresetHelper] = None,
-        parent: Optional[QWidget] = None,
+            self,
+            midi_helper: Optional[MidiIOHelper] = None,
+            preset_helper: Optional[JDXIPresetHelper] = None,
+            parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
         """
@@ -361,11 +361,11 @@ class AnalogSynthEditor(SynthEditor):
                 selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
 
     def update_slider(
-        self,
-        param: AddressParameterAnalog,
-        value: int,
-        successes: list = None,
-        failures: list = None,
+            self,
+            param: AddressParameterAnalog,
+            value: int,
+            successes: list = None,
+            failures: list = None,
     ) -> None:
         """
         Helper function to update sliders safely.
@@ -389,43 +389,46 @@ class AnalogSynthEditor(SynthEditor):
             failures.append(param.name)
 
     def update_adsr_widget(
-        self,
-        parameter: AddressParameterAnalog,
-        value: int,
-        successes: list = None,
-        failures: list = None,
+            self,
+            param: AddressParameterAnalog,
+            midi_value: int,
+            successes: list = None,
+            failures: list = None,
     ) -> None:
         """
         Helper function to update ADSR widgets.
-        :param parameter: AddressParameterAnalog value
-        :param value: int value
+        :param param: AddressParameterAnalog value
+        :param midi_value: int value
         :param failures: list of failed parameters
         :param successes: list of successful parameters
         :return: None
         """
         new_value = (
-            midi_value_to_fraction(value)
-            if parameter
-            in [
-                AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
-                AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
-            ]
-            else midi_value_to_ms(value)
+            midi_value_to_fraction(midi_value)
+            if param
+               in [
+                   AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
+                   AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
+               ]
+            else midi_value_to_ms(midi_value)
         )
 
-        if parameter in self.adsr_mapping:
-            control = self.adsr_mapping[parameter]
+        if param in self.adsr_mapping:
+            control = self.adsr_mapping[param]
             control.setValue(new_value)
-            successes.append(parameter.name)
+            successes.append(param.name)
+            log_slider_parameters(
+                self.address.umb, self.address.lmb, param, midi_value, new_value
+            )
         else:
-            failures.append(parameter.name)
+            failures.append(param.name)
 
     def update_pitch_env_widget(
-        self,
-        parameter: AddressParameterAnalog,
-        value: int,
-        successes: list = None,
-        failures: list = None,
+            self,
+            parameter: AddressParameterAnalog,
+            value: int,
+            successes: list = None,
+            failures: list = None,
     ) -> None:
         """
         Helper function to update ADSR widgets.
@@ -438,9 +441,9 @@ class AnalogSynthEditor(SynthEditor):
         new_value = (
             midi_value_to_fraction(value)
             if parameter
-            in [
-                AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
-            ]
+               in [
+                   AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
+               ]
             else midi_value_to_ms(value, 10, 1000)
         )
 
@@ -523,8 +526,8 @@ class AnalogSynthEditor(SynthEditor):
                 #    if nrpn_address:
                 #        self._handle_nrpn_message(nrpn_address, param_value, channel=1)
                 if (
-                    param_name == "SUB_OSCILLATOR_TYPE"
-                    and param_value in self.sub_osc_type_map
+                        param_name == "SUB_OSCILLATOR_TYPE"
+                        and param_value in self.sub_osc_type_map
                 ):
                     self.oscillator_section.sub_oscillator_type_switch.blockSignals(
                         True
@@ -536,12 +539,12 @@ class AnalogSynthEditor(SynthEditor):
                         False
                     )
                 elif (
-                    param_name == "OSC_WAVEFORM"
-                    and param_value in self.osc_waveform_map
+                        param_name == "OSC_WAVEFORM"
+                        and param_value in self.osc_waveform_map
                 ):
                     self._update_waveform_buttons(param_value)
                 elif (
-                    param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
+                        param_name == "LFO_SHAPE" and param_value in self.lfo_shape_buttons
                 ):
                     self._update_lfo_shape_buttons(param_value)
                 elif param_name == "LFO_TEMPO_SYNC_SWITCH":
@@ -553,8 +556,8 @@ class AnalogSynthEditor(SynthEditor):
                         param_value
                     )
                 elif (
-                    param == AddressParameterAnalog.FILTER_MODE_SWITCH
-                    and param_value in self.filter_switch_map
+                        param == AddressParameterAnalog.FILTER_MODE_SWITCH
+                        and param_value in self.filter_switch_map
                 ):
                     self.filter_section.filter_mode_switch.blockSignals(True)
                     self.filter_section.filter_mode_switch.setValue(
@@ -591,7 +594,7 @@ class AnalogSynthEditor(SynthEditor):
             )
 
     def update_switch(
-        self, switch: Switch, value: int, successes: list = None, failures: list = None
+            self, switch: Switch, value: int, successes: list = None, failures: list = None
     ) -> None:
         """
         Update switch state and log success/failure.

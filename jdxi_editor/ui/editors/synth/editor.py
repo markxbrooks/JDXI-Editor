@@ -270,6 +270,11 @@ class SynthEditor(SynthBase):
         raise NotImplementedError
 
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
+        """
+        _parse_sysex_json
+        :param json_sysex_data: str
+        :return: dict
+        """
         try:
             data = self.json_parser.parse_json(json_sysex_data)
             # data = json.loads(json_sysex_data)

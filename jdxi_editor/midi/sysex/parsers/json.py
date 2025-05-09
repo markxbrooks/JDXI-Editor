@@ -17,8 +17,6 @@ from pathlib import Path
 from typing import Optional
 
 from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.utils.json import log_changes
 
 
 class JDXiJsonSysexParser:

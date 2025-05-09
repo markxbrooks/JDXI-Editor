@@ -1,7 +1,9 @@
 """
 byte data processing
 """
-from jdxi_editor.midi.data.address.sysex import LOW_7_BITS_MASK
+
+
+from jdxi_editor.midi.data.address.sysex import LOW_7_BITS_MASK, WORD_MASK, FULL_BYTE_MASK, LOW_4_BITS_MASK
 
 
 def split_16bit_value_to_bytes(value: int) -> list[int]:
@@ -10,11 +12,11 @@ def split_16bit_value_to_bytes(value: int) -> list[int]:
     :param value: int (0–65535)
     :return: list[int] [Most Significant Byte, Least Significant Byte]
     """
-    if not (0 <= value <= 0xFFFF):
+    if not (0 <= value <= WORD_MASK):
         raise ValueError("Value must be a 16-bit integer (0–65535).")
-    lmb = (value >> 8) & 0xFF
-    lsb = value & 0xFF
-    return [lmb, lsb]
+    msb = (value >> 8) & FULL_BYTE_MASK
+    lsb = value & FULL_BYTE_MASK
+    return [msb, lsb]
 
 
 def split_8bit_value_to_nibbles(value: int) -> list[int]:
@@ -23,9 +25,9 @@ def split_8bit_value_to_nibbles(value: int) -> list[int]:
     :param value: int (0–255)
     :return: list[int] with two 4-bit values [upper_nibble, lower_nibble]
     """
-    if not (0 <= value <= 0xFF):
+    if not (0 <= value <= FULL_BYTE_MASK):
         raise ValueError("Value must be an 8-bit integer (0–255).")
-    return [(value >> 4) & 0x0F, value & 0x0F]
+    return [(value >> 4) & LOW_4_BITS_MASK, value & LOW_4_BITS_MASK]
 
 
 def split_16bit_value_to_nibbles(value: int) -> list[int]:
@@ -39,7 +41,7 @@ def split_16bit_value_to_nibbles(value: int) -> list[int]:
 
     nibbles = []
     for i in range(4):
-        nibbles.append((value >> (4 * (3 - i))) & 0x0F)  # Extract 4 bits per iteration
+        nibbles.append((value >> (4 * (3 - i))) & LOW_4_BITS_MASK)  # Extract 4 bits per iteration
 
     return nibbles  # Always returns a 4-element list
 
@@ -53,7 +55,7 @@ def split_32bit_value_to_nibbles(value: int) -> list[int]:
     if value < 0 or value > 0xFFFFFFFF:
         raise ValueError("Value must be a 32-bit unsigned integer (0–4294967295).")
 
-    return [(value >> (4 * (7 - i))) & 0x0F for i in range(8)]  # 8 nibbles, MSB first
+    return [(value >> (4 * (7 - i))) & LOW_4_BITS_MASK for i in range(8)]  # 8 nibbles, MSB first
 
 
 def join_nibbles_to_32bit(nibbles: list[int]) -> int:

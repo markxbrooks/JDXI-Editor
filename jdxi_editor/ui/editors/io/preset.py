@@ -98,7 +98,7 @@ class PresetEditor(SimpleEditor):
         )
         self.default_image = "presets.png"
         self.instrument_icon_folder = "presets"
-        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME
+        self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
         self.layout = None
         self.genre_label = None
         self.preset_combo_box = None

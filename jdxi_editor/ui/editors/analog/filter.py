@@ -63,7 +63,8 @@ class AnalogFilterSection(QWidget):
             "mdi.waveform",
         ]:
             adsr_icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(30, 30)
+            icon_pixmap = qta.icon(icon, color="#666666").pixmap(JDXIStyle.ICON_PIXMAP_SIZE,
+                                                                 JDXIStyle.ICON_PIXMAP_SIZE)
             adsr_icon_label.setPixmap(icon_pixmap)
             adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             adsr_icon_row_layout.addWidget(adsr_icon_label)
@@ -109,7 +110,7 @@ class AnalogFilterSection(QWidget):
 
         layout.addWidget(self.filter_env_depth)
         layout.addWidget(self.filter_env_velocity_sens)
-        layout.addSpacing(10)
+        layout.addSpacing(JDXIStyle.SPACING)
 
         # ADSR Widget
         self.filter_adsr_widget = ADSR(

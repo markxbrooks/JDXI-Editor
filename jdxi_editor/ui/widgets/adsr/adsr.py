@@ -169,15 +169,6 @@ class ADSR(QWidget):
             control.setEnabled(enabled)
         self.plot.setEnabled(enabled)
 
-    def update_controls_from_envelope_old(self):
-        """Update slider controls from envelope values."""
-        self.attack_control.setValue(self.envelope["attack_time"])
-        self.decay_control.setValue(self.envelope["decay_time"])
-        self.sustain_control.setValue(self.envelope["sustain_level"])
-        self.release_control.setValue(self.envelope["release_time"])
-        self.plot.set_values(self.envelope)
-        self.envelopeChanged.emit(self.envelope)
-
     def update_envelope_from_spinboxes(self):
         """Update envelope values from spinboxes"""
         self.envelope["attack_time"] = self.attack_control.value()
@@ -240,10 +231,6 @@ class ADSR(QWidget):
             # 3) Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
-            else:
-                log_slider_parameters(
-                    self.address.umb, self.address.lmb, param, value, midi_value
-                )
         except ValueError as ex:
             log_error(f"Error updating parameter: {ex}")
         # 4) Update plot

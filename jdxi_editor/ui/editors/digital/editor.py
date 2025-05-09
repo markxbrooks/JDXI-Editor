@@ -295,7 +295,6 @@ class DigitalSynthEditor(SynthEditor):
         :param sysex_data: dict
         :return: None
         """
-        debug_stats = True
         successes, failures = [], []
 
         for param_name, param_value in sysex_data.items():
@@ -318,23 +317,22 @@ class DigitalSynthEditor(SynthEditor):
                 AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
                 AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
             ]:
-                self._update_partial_adsr_widgets(partial_no, param, param_value)
+                self._update_partial_adsr_widgets(partial_no, param, param_value, successes, failures)
             elif param in [
                 AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
                 AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
                 AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
             ]:
-                self._update_partial_pitch_env_widgets(partial_no, param, param_value)
+                self._update_partial_pitch_env_widgets(partial_no, param, param_value, successes, failures)
             else:
                 self._update_partial_slider(
                     partial_no, param, param_value, successes, failures
                 )
 
-        if debug_stats:
-            success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-            log_message(f"Successes: \t{successes}")
-            log_message(f"Failures: \t{failures}")
-            log_footer_message(f"Success Rate: \t{success_rate:.1f}%")
+        success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+        log_message(f"Successes: \t{successes}")
+        log_message(f"Failures: \t{failures}")
+        log_footer_message(f"Success Rate: \t{success_rate:.1f}%")
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """
@@ -354,6 +352,7 @@ class DigitalSynthEditor(SynthEditor):
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             log_message("\nTone common")
             self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
+
         elif synth_tone in ["PRC3"]:  # This is for drums but comes through
             pass
         else:
@@ -409,8 +408,6 @@ class DigitalSynthEditor(SynthEditor):
         log_header_message("Tone common and modify")
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalCommon.get_by_name(param_name)
-            log_parameter("Tone common/modify param", param)
-            log_parameter("Tone common/modify : param_value", param_value)
             if not param:
                 failures.append(param_name)
                 continue
@@ -447,7 +444,6 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data: str
         :return: None
         """
-        debug_stats = True
 
         successes, failures = [], []
 
@@ -466,7 +462,7 @@ class DigitalSynthEditor(SynthEditor):
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             self._update_tone_common_modify_ui(filtered_data, successes, failures)
 
-        _log_debug_info(filtered_data, successes, failures, debug_stats)
+        _log_debug_info(filtered_data, successes, failures)
 
     def _update_partial_slider(
         self,
@@ -501,21 +497,25 @@ class DigitalSynthEditor(SynthEditor):
         successes.append(param.name)
 
     def _update_partial_adsr_widgets(
-        self, partial_no: int, param: AddressParameter, value: int
+        self, partial_no: int,
+            param: AddressParameterDigitalPartial,
+            midi_value: int,
+            successes: list = None,
+            failures: list = None,
     ):
         """
         Update the ADSR widget for a specific partial based on the parameter and value.
         :param partial_no: int Partial number
         :param param: AddressParameter address
-        :param value: int value
+        :param midi_value: int value
         :return: None
         """
-        use_frac = param in {
+        use_fraction = param in {
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
         new_value = (
-            midi_value_to_fraction(value) if use_frac else midi_value_to_ms(value)
+            midi_value_to_fraction(midi_value) if use_fraction else midi_value_to_ms(midi_value)
         )
         self.adsr_map = {
             AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
@@ -544,25 +544,39 @@ class DigitalSynthEditor(SynthEditor):
             ].filter_tab.filter_adsr_widget.release_control,
         }
         spinbox = self.adsr_map.get(param)
+        if not spinbox:
+            failures.append(param.name)
+            return
         if spinbox:
             spinbox.setValue(new_value)
+            synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_no)
+            log_slider_parameters(
+                self.address.umb, synth_data.lmb, param, midi_value, new_value
+            )
+            successes.append(param.name)
 
     def _update_partial_pitch_env_widgets(
-        self, partial_no: int, param: AddressParameter, value: int
+        self, partial_no: int,
+            param: AddressParameterDigitalPartial,
+            value: int,
+            successes: list = None,
+            failures: list = None,
     ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
         :param partial_no: int Partial number
         :param param: AddressParameter address
         :param value: int value
+        :param successes: list = None,
+        :param failures: list = None,
         :return: None
         """
-        use_frac = param in {
+        use_fraction = param in {
             AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
         }
         new_value = (
             midi_value_to_fraction(value)
-            if use_frac
+            if use_fraction
             else midi_value_to_ms(value, 10, 5000)
         )
         self.pitch_env_map = {
@@ -579,6 +593,9 @@ class DigitalSynthEditor(SynthEditor):
         control = self.pitch_env_map.get(param)
         if control:
             control.setValue(new_value)
+            successes.append(param.name)
+        else:
+            failures.append(param.name)
 
     def _update_slider(
         self,

@@ -93,6 +93,8 @@ class JDXIStyle:
     BUTTON_BACKGROUND_PRESSED = "#333333"
     FOREGROUND = "#FFFFFF"
     PADDING = 1  # in px
+    SPACING = 10  # in px
+    ICON_PIXMAP_SIZE = 30  # in px
     BUTTON_PADDING = 1
     ACCENT = "#FF2200"  # Red accent color
     ACCENT_HOVER = "#FF2200"  # Red for hover
