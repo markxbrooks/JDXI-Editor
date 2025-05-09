@@ -62,7 +62,7 @@ def log_parameter(
 
     # Compose final log message
     final_message = (
-        f"{emoji} {midi_tag} {padded_message} {padded_type} {formatted_value}".rstrip()
+        f"{emoji}{midi_tag} {padded_message} {padded_type} {formatted_value}".rstrip()
     )
 
     if LOGGING and not silent:

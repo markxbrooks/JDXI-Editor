@@ -53,8 +53,8 @@ def log_slider_parameters(
 
         # Add MIDI flair if message seems MIDI-related
         midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
-        qc_passed_tag = "✅" if "updat" in message.lower() else ""
-        message = f"{emoji} {qc_passed_tag} {midi_tag} {message}"
+        qc_passed_tag = "✅" if "updat" in message.lower() or "success" in message.lower() else "❌"
+        message = f"{emoji}{qc_passed_tag}{midi_tag} {message}"
         if LOGGING:
             if level == logging.DEBUG:
                 logger.debug(message, stacklevel=2)

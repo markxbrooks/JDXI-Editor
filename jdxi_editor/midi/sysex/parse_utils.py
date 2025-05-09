@@ -263,7 +263,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     parsed_data = initialize_parameters(data)
     parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:
-        logging.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")
+        log_message(f"No parameter mapping found for ({temporary_area}, {synth_tone})", level=logging.WARNING)
         return _return_minimal_metadata(data)
     else:
         if len(data) < MIN_LONG_SYSEX_DATA_LENGTH:

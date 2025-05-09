@@ -3,6 +3,25 @@ from __future__ import annotations
 from enum import IntEnum
 
 
+class JDXIControlChangeOffset(IntEnum):
+    STATUS_BYTE = 0  # Midi channel is the low 4 bits
+    CONTROL = 1
+    VALUE = 2
+    END = -1
+
+
+class JDXIProgramChangeOffset(IntEnum):
+    STATUS_BYTE = 0  # Midi channel is the low 4 bits
+    PROGRAM_NUMBER = 1
+    END = -1
+
+
+class JDXIPitchBendOffset(IntEnum):
+    STATUS_BYTE = 0  # Midi channel is the low 4 bits
+    PITCH_BEND_VALUE = 1
+    END = -1
+
+
 class JDXISysExOffset(IntEnum):
     SYSEX_START = 0
     ROLAND_ID = 1

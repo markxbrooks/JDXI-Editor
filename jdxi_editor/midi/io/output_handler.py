@@ -35,12 +35,12 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     RolandSysExAddress, ModelID,
 )
-from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX
+from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX, LOW_7_BITS_MASK
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import (
     format_midi_message_to_hex_string,
-    increment_group,
+    increment_if_lsb_exceeds_7bit,
 )
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.midi import MidiMessage
@@ -111,11 +111,10 @@ class MidiOutHandler(MidiIOController):
             return False
 
         try:
-            log_parameter(
-                "[MIDI ✅] QC passed — Sending message:",
-                formatted_message,
+            log_message(
+                f"[MIDI QC passed] — Sending message: {formatted_message}",
                 level=logging.INFO,
-                silent=True
+                silent=False
             )
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)
@@ -259,11 +258,11 @@ class MidiOutHandler(MidiIOController):
         log_parameter("value", value)
         log_parameter("size", size)
         try:
-            lmb = increment_group(lmb, param)
+            lmb = increment_if_lsb_exceeds_7bit(lmb, param)
             address = RolandSysExAddress(msb, umb, lmb, 0x00)
             address = apply_address_offset(address, param)
             if size == 1:
-                data_bytes = [value & 0x7F]  # Single byte format (0-127)
+                data_bytes = [value & LOW_7_BITS_MASK]  # Single byte format (0-127)
             elif size in [4, 5]:
                 data_bytes = split_16bit_value_to_nibbles(value)  # Convert to nibbles
             else:
@@ -347,10 +346,10 @@ class MidiOutHandler(MidiIOController):
             return False
 
         # Split into MSB/LSB
-        rpn_msb = (parameter >> 7) & 0x7F
-        rpn_lsb = parameter & 0x7F
-        value_msb = (value >> 7) & 0x7F
-        value_lsb = value & 0x7F
+        rpn_msb = (parameter >> 7) & LOW_7_BITS_MASK
+        rpn_lsb = parameter & LOW_7_BITS_MASK
+        value_msb = (value >> 7) & LOW_7_BITS_MASK
+        value_lsb = value & LOW_7_BITS_MASK
 
         success = (
             self.send_control_change(101, rpn_msb, channel)
@@ -397,13 +396,13 @@ class MidiOutHandler(MidiIOController):
             )
             return False
 
-        nrpn_msb = (parameter >> 7) & 0x7F
-        nrpn_lsb = parameter & 0x7F
+        nrpn_msb = (parameter >> 7) & LOW_7_BITS_MASK
+        nrpn_lsb = parameter & LOW_7_BITS_MASK
         if use_14bit:
-            value_msb = (value >> 7) & 0x7F
-            value_lsb = value & 0x7F
+            value_msb = (value >> 7) & LOW_7_BITS_MASK
+            value_lsb = value & LOW_7_BITS_MASK
         else:
-            value_msb = value & 0x7F
+            value_msb = value & LOW_7_BITS_MASK
             value_lsb = 0  # Optional; not sent anyway
 
         ok = True
