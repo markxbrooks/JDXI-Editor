@@ -29,6 +29,7 @@ from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLab
 from PySide6.QtCore import Qt, Signal
 
 from jdxi_editor.log.error import log_error
+from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.control_change.base import ControlChange
@@ -41,6 +42,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
+from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
 from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
     get_preset_parameter_value,
@@ -268,6 +270,40 @@ class SynthEditor(SynthBase):
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         raise NotImplementedError
+
+    def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
+        """
+        Update sliders and combo boxes based on parsed SysEx data.
+        :param json_sysex_data: str
+        :return: None
+        """
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+        current_synth = get_area([self.address.msb, self.address.umb])
+        temporary_area = sysex_data.get("TEMPORARY_AREA")
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        if not current_synth == temporary_area:
+            log_message(
+                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+            )
+            return
+        log_header_message(
+            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+        )
+        incoming_data_partial_no = get_partial_number(sysex_data.get("SYNTH_TONE"))
+        filtered_data = filter_sysex_keys(sysex_data)
+        self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
+
+    def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
+        """
+        Apply updates to the UI components based on the received SysEx data.
+        :param partial_no: int
+        :param sysex_data: dict
+        :return: None
+        By default has no partials, so subclass to implement partial updates
+        """
+        pass
 
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
         """
