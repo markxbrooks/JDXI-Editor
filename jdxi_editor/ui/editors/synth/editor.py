@@ -157,7 +157,7 @@ class SynthEditor(SynthBase):
         else:
             log_message("MIDI helper not initialized")
         self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
-        # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Initialize preset handlers dynamically
         preset_configs = [
             (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
@@ -268,8 +268,41 @@ class SynthEditor(SynthBase):
     def _on_parameter_received(self, address, value):
         raise NotImplementedError("Should be implemented by subclass")
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str):
-        raise NotImplementedError
+    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+        """
+        Dispatch SysEx data to the appropriate area for processing.
+        :param json_sysex_data:
+        :return: None
+        """
+        failures, successes = [], []
+
+        # Parse SysEx data
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+        # temp_area = sysex_data.get("TEMPORARY_AREA")
+        synth_tone = sysex_data.get("SYNTH_TONE")
+
+        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+            log_message("\nTone common")
+            self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
+
+        elif synth_tone in ["PRC3"]:  # This is for drums but comes through
+            pass
+        else:
+            self._update_sliders_from_sysex(json_sysex_data)
+
+    def _update_tone_common_modify_sliders_from_sysex(
+        self, json_sysex_data: str
+    ) -> None:
+        """
+        Update sliders and combo boxes based on parsed SysEx data.
+        :param json_sysex_data: str
+        :return: None
+        should be implemented by subclass
+        """
+        pass
+
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
         """
@@ -291,7 +324,7 @@ class SynthEditor(SynthBase):
         log_header_message(
             f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
         )
-        incoming_data_partial_no = get_partial_number(sysex_data.get("SYNTH_TONE"))
+        incoming_data_partial_no = get_partial_number(synth_tone)
         filtered_data = filter_sysex_keys(sysex_data)
         self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 

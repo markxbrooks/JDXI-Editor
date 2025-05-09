@@ -81,6 +81,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAPPING
+from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io import MidiIOHelper
@@ -248,6 +249,17 @@ class DrumCommonEditor(SynthEditor):
         """
         pass
 
+    def _log_debug_info(self, successes, failures):
+        """
+        Helper function to log debugging statistics.
+        """
+        success_rate = (
+            (len(successes) / len(sysex_data) * 100) if sysex_data else 0
+        )
+        log_message(f"successes: \t{successes}")
+        log_message(f"failures: \t{failures}")
+        log_footer_message(f"success rate: \t{success_rate:.1f}%")
+
     def _dispatch_sysex_to_area(self, json_sysex_data: str):
         """
         Update sliders and combo boxes based on parsed SysEx data.
@@ -266,21 +278,7 @@ class DrumCommonEditor(SynthEditor):
 
         # failures, successes = [], []
 
-        def _parse_sysex_json(json_data):
-            """
-            Parse JSON safely and log changes.
-            :param json_data: str
-            :return: dict
-            """
-            try:
-                sysex_data = json.loads(json_data)
-                return sysex_data
-            except json.JSONDecodeError as ex:
-                log_message(f"Invalid JSON format: {ex}")
-                return None
-
-        # Parse SysEx data
-        sysex_data = _parse_sysex_json(json_sysex_data)
+        sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
 
@@ -291,6 +289,7 @@ class DrumCommonEditor(SynthEditor):
             self._update_common_sliders_from_sysex(json_sysex_data)
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
+            self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
     def _update_common_sliders_from_sysex(self, json_sysex_data: str):
         """
@@ -298,22 +297,6 @@ class DrumCommonEditor(SynthEditor):
         :param json_sysex_data: str
         """
         failures, successes = [], []
-
-        def _parse_sysex_json(json_data: str):
-            """
-            Parse JSON safely and log changes.
-            :param json_data: str
-            :return: dict
-            """
-            try:
-                sysex_json_data = json.loads(json_data)
-                self.sysex_previous_data = self.sysex_current_data
-                self.sysex_current_data = sysex_json_data
-                log_changes(self.sysex_previous_data, sysex_json_data)
-                return sysex_json_data
-            except json.JSONDecodeError as ex:
-                log_message(f"Invalid JSON format: {ex}")
-                return None
 
         def _is_valid_sysex_area(sysex_json_data: dict):
             """
@@ -332,7 +315,7 @@ class DrumCommonEditor(SynthEditor):
             :param synth_tone_name: str
             :return: int
             """
-            return {"PARTIAL_1": 1, "PARTIAL_2": 2, "PARTIAL_3": 3}.get(
+            return DRUM_ADDRESS_MAP.get(
                 synth_tone_name, None
             )
 
@@ -360,39 +343,8 @@ class DrumCommonEditor(SynthEditor):
             else:
                 failures.append(parameter.name)
 
-        def _update_common_switch(
-            parameter: AddressParameterDrumCommon, value: int
-        ) -> None:
-            """
-            Helper function to update checkbox safely.
-            :param parameter: AddressParameterDrumCommon
-            :param value: int
-            :return: None
-            """
-            log_message("Checkbox parameter: ")
-            log_parameter("parameter", parameter)
-            log_parameter("value", value)
-            partial_switch_map = {
-                "PARTIAL1_SWITCH": 1,
-                "PARTIAL2_SWITCH": 2,
-                "PARTIAL3_SWITCH": 3,
-            }
-            partial_number = partial_switch_map.get(param_name)
-            check_box = self.partials_panel.switches.get(partial_number)
-            log_message(f"check_box: {check_box}")
-            if check_box:  # and isinstance(check_box, QCheckBox):
-                check_box.blockSignals(True)
-                check_box.setState(bool(value), False)
-                check_box.blockSignals(False)
-                successes.append(parameter.name)
-                log_message("Updated parameter: ")
-                log_parameter("parameter", parameter)
-                log_parameter("value", value)
-            else:
-                failures.append(parameter.name)
-
         # Parse SysEx data
-        sysex_data = _parse_sysex_json(json_sysex_data)
+        sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
 
@@ -434,17 +386,7 @@ class DrumCommonEditor(SynthEditor):
                 log_message(f"Tone common: param_name: {param} {param_value}")
                 try:
                     if param:
-                        if param_name in [
-                            "PARTIAL1_SWITCH",
-                            "PARTIAL1_SELECT",
-                            "PARTIAL2_SWITCH",
-                            "PARTIAL2_SELECT",
-                            "PARTIAL3_SWITCH",
-                            "PARTIAL3_SELECT",
-                        ]:
-                            _update_common_switch(param, param_value)
-                        else:
-                            _update_common_slider(param, param_value)
+                        _update_common_slider(param, param_value)
                     else:
                         failures.append(param_name)
                 except Exception as ex:
@@ -452,18 +394,7 @@ class DrumCommonEditor(SynthEditor):
 
         log_message(f"Updating sliders for Partial {partial_no}")
 
-        def _log_debug_info():
-            """
-            Helper function to log debugging statistics.
-            """
-            success_rate = (
-                (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-            )
-            log_message(f"successes: \t{successes}")
-            log_message(f"failures: \t{failures}")
-            log_footer_message(f"success rate: \t{success_rate:.1f}%")
-
-        _log_debug_info()
+        self._log_debug_info(successes, failures)
 
     def _update_partial_sliders_from_sysex(self, json_sysex_data: str):
         """
