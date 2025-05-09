@@ -452,7 +452,7 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str):
+    def _update_sliders_from_sysex(self, json_sysex_data: str):
         """
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str JSON SysEx data
@@ -508,21 +508,6 @@ class AnalogSynthEditor(SynthEditor):
             param = AddressParameterAnalog.get_by_name(param_name)
 
             if param:
-                # FIXME: Deal with NRPN later
-                # if param_name in ["LFO_SHAPE", "LFO_PITCH_DEPTH", "LFO_FILTER_DEPTH", "LFO_AMP_DEPTH", "PULSE_WIDTH"]:
-                #    nrpn_map = {
-                #        (0, 124): "Envelope",
-                #        (0, 3): "LFO Shape",
-                #        (0, 15): "LFO Pitch Depth",
-                #        (0, 18): "LFO Filter Depth",
-                #        (0, 21): "LFO Amp Depth",
-                #        (0, 37): "Pulse Width",
-                #    }
-                #    nrpn_address = next(
-                #        (addr for addr, name in nrpn_map.items() if name == param_name), None
-                #    )
-                #    if nrpn_address:
-                #        self._handle_nrpn_message(nrpn_address, param_value, channel=1)
                 if (
                         param_name == "SUB_OSCILLATOR_TYPE"
                         and param_value in self.sub_osc_type_map
