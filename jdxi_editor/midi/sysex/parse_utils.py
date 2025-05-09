@@ -37,9 +37,9 @@ from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPar
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.partials.partials import SYNTH_TONE_MAP
+from jdxi_editor.midi.data.partials.partials import DRUM_TONE_MAP, SYNTH_TONE_MAP
 
-MIN_SYSEX_DATA_LENGTH = 11
+MIN_SYSEX_DATA_LENGTH = 12
 
 MIN_LONG_SYSEX_DATA_LENGTH = 20
 
@@ -129,10 +129,19 @@ def get_partial_address(part_name: str) -> str:
     :param part_name: str
     :return: str
     """
-    for key, value in SYNTH_TONE_MAP.items():
+    for key, value in DRUM_TONE_MAP.items():
         if value == part_name:
             return key
     return "Unknown"
+
+
+def get_drum_tone(byte_value: int) -> str:
+    """
+    Map byte value to corresponding synth tone.
+    :param byte_value: int
+    :return: str
+    """
+    return DRUM_TONE_MAP.get(byte_value, "Unknown")
 
 
 def get_synth_tone(byte_value: int) -> str:
@@ -202,7 +211,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
         "ADDRESS": safe_extract(data, JDXISysExOffset.COMMAND_ID, JDXISysExOffset.ADDRESS_LSB),
         "TEMPORARY_AREA": get_temporary_area(data) or "Unknown",
         "SYNTH_TONE": (
-            get_synth_tone(data[JDXISysExOffset.ADDRESS_LMB])
+            get_drum_tone(data[JDXISysExOffset.ADDRESS_LMB])
             if len(data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
         ),
         "TONE_NAME": (
@@ -228,49 +237,6 @@ def _return_minimal_metadata(data: bytes) -> Dict[str, str]:
     }
 
 
-def parse_sysex_new(data: bytes) -> Dict[str, str]:
-    """
-    Parses JD-Xi tone data from SysEx messages.
-    :param data: bytes SysEx message data
-    :return: Dict[str, str]
-    """
-    log_parameter("data", data)
-
-    # Validate minimum data length
-    if len(data) < MIN_SYSEX_DATA_LENGTH:
-        log_message("Insufficient data length for parsing.", level=logging.WARNING)
-        return _return_minimal_metadata(data)
-
-    # Parse temporary area and synth tone
-    temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
-    log_parameter("temporary_area", temporary_area)
-
-    if len(data) > JDXISysExOffset.ADDRESS_LMB:
-        synth_tone = get_synth_tone(data[JDXISysExOffset.ADDRESS_LMB])
-    else:
-        synth_tone = "Unknown"
-    log_parameter("synth_tone", synth_tone)
-
-    # Initialize default values
-    parsed_data = initialize_parameters(data)
-
-    # Get parameter class for mapping
-    parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
-    if parameter_cls is None:
-        logging.warning(f"No parameter mapping found for ({temporary_area}, {synth_tone})")
-        return _return_minimal_metadata(data)
-
-    # Update parsed data depending on message length
-    if len(data) < MIN_LONG_SYSEX_DATA_LENGTH:
-        log_message("Short SysEx Detected", level=logging.WARNING)
-        update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
-    else:
-        update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
-
-    log_json(parsed_data, silent=True)
-    return parsed_data
-
-
 def parse_sysex(data: bytes) -> Dict[str, str]:
     """
     Parses JD-Xi tone data from SysEx messages.
@@ -284,10 +250,15 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
 
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
+    if temporary_area == TemporaryToneUMB.DRUM_KIT_PART.name:
+        synth_tone = get_drum_tone(data[
+                                        JDXISysExOffset.ADDRESS_LMB]) if len(
+            data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
+    else:
+        synth_tone = get_synth_tone(data[
+                                        JDXISysExOffset.ADDRESS_LMB]) if len(
+            data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
     log_parameter("temporary_area", temporary_area)
-    synth_tone = get_synth_tone(data[
-                                    JDXISysExOffset.ADDRESS_LMB]) if len(
-        data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
     log_parameter("synth_tone", synth_tone)
     parsed_data = initialize_parameters(data)
     parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)

@@ -108,7 +108,7 @@ class DrumCommonEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.partial_number = 0
-        self._init_synth_data(synth_type=JDXISynth.DRUM)
+        self._init_synth_data(synth_type=JDXISynth.DRUM, partial_number=0)
         self.sysex_current_data = None
         self.sysex_previous_data = None
         self.partial_mapping = DRUM_PARTIAL_MAPPING

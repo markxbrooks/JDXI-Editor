@@ -1,6 +1,7 @@
 """
 Synth Factory
 """
+
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel

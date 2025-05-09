@@ -38,9 +38,10 @@ from jdxi_editor.midi.data.address.sysex import (
     START_OF_SYSEX,
     END_OF_SYSEX,
     ZERO_BYTE,
-    RolandID,
+    RolandID, LOW_7_BITS_MASK, FULL_BYTE_MASK,
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
+from jdxi_editor.midi.sysex.parse_utils import MIN_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
@@ -88,14 +89,14 @@ class RolandSysExMessage(SysExMessage):
         :return: list
         """
         msg = (
-            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
-            + list(self.model_id)
-            + [self.command]
-            + [self.address.msb]
-            + [self.address.umb]
-            + [self.address.lmb]
-            + [self.address.lsb]
-            + self.data
+                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                + list(self.model_id)
+                + [self.command]
+                + [self.address.msb]
+                + [self.address.umb]
+                + [self.address.lmb]
+                + [self.address.lsb]
+                + self.data
         )
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
@@ -178,18 +179,18 @@ class RolandSysEx(SysExMessage):
         :return: list
         """
         msg = (
-            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
-            + list(self.model_id)
-            + [self.command]
-            + self.address
-            + self.data  # Directly append value (no extra list around it)
+                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                + list(self.model_id)
+                + [self.command]
+                + self.address
+                + self.data  # Directly append value (no extra list around it)
         )
         msg.append(self.calculate_checksum())
         msg.append(self.end_of_sysex)
         return msg
 
     def construct_sysex(
-        self, address: RolandSysExAddress, *data_bytes: list, request: bool = False
+            self, address: RolandSysExAddress, *data_bytes: list, request: bool = False
     ) -> List[int]:
         """
         Construct a SysEx message based on the provided address and data bytes.
@@ -214,7 +215,7 @@ class RolandSysEx(SysExMessage):
 
         # Convert the value into nibbles (if it's 4 bytes long)
         if (
-            isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF
+                isinstance(self.value, int) and 0 <= self.value <= 0xFFFFFFFF
         ):  # Check for 4-byte integer
             self.value = split_16bit_value_to_nibbles(self.value)  # @@@@
 
@@ -235,14 +236,14 @@ class RolandSysEx(SysExMessage):
 
         # **Validation 1: Ensure self.parameter and self.value are lists of integers**
         if not isinstance(self.parameter, list) or not all(
-            isinstance(p, int) for p in self.parameter
+                isinstance(p, int) for p in self.parameter
         ):
             raise TypeError(
                 f"Invalid parameter format: Expected list of integers, got {self.parameter}"
             )
 
         if not isinstance(self.value, list) or not all(
-            isinstance(v, int) for v in self.value
+                isinstance(v, int) for v in self.value
         ):
             raise TypeError(
                 f"Invalid value format: Expected list of integers, got {self.value}"
@@ -270,12 +271,12 @@ class RolandSysEx(SysExMessage):
 
         # Construct SysEx message
         sysex_msg = (
-            [START_OF_SYSEX, self.manufacturer_id, self.device_id]
-            + list(self.model_id)
-            + [command]
-            + address
-            + [self.parameter]
-            + [self.value]
+                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                + list(self.model_id)
+                + [command]
+                + address
+                + [self.parameter]
+                + [self.value]
         )
 
         # Append checksum
@@ -323,7 +324,7 @@ class JDXiSysEx(RolandSysEx):
         # Validate address
         if len(self.address) != 4:
             raise ValueError("Address must be 4 bytes")
-        if not all(0x00 <= x <= 0xFF for x in self.address):
+        if not all(ZERO_BYTE <= x <= FULL_BYTE_MASK for x in self.address):
             raise ValueError(
                 f"Invalid address bytes: {[f'{x:02X}' for x in self.address]}"
             )
@@ -347,24 +348,28 @@ class JDXiSysEx(RolandSysEx):
         """Calculate Roland checksum for the message"""
         # Checksum = 128 - (sum of address and data bytes % 128)
         checksum = sum(self.address) + sum(self.data)
-        return (128 - (checksum % 128)) & 0x7F
+        return (128 - (checksum % 128)) & LOW_7_BITS_MASK
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """Create message from received bytes"""
         if (
-            len(data)
-            < 12  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-            or data[0] != START_OF_SYSEX
-            or data[1] != ModelID.ROLAND_ID  # Roland ID
-            or data[3:7] != bytes([0x00, 0x00, 0x00, 0x0E])
+                len(data)
+                < MIN_SYSEX_DATA_LENGTH  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+                or data[JDXISysExOffset.SYSEX_START] != START_OF_SYSEX
+                or data[JDXISysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
+                or data[JDXISysExOffset.MODEL_ID_1:JDXISysExOffset.COMMAND_ID] != bytes([ModelID.MODEL_ID_1,
+                                                                                         ModelID.MODEL_ID_2,
+                                                                                         ModelID.MODEL_ID_3,
+                                                                                         ModelID.MODEL_ID_4])
         ):  # JD-Xi model ID
             raise ValueError("Invalid JD-Xi SysEx message")
 
         device_id = data[JDXISysExOffset.DEVICE_ID]
         command = data[JDXISysExOffset.COMMAND_ID]
         address = list(data[JDXISysExOffset.ADDRESS_MSB:JDXISysExOffset.TONE_NAME_START])
-        message_data = list(data[JDXISysExOffset.TONE_NAME_START:JDXISysExOffset.CHECKSUM])  # Everything between address and checksum
+        message_data = list(
+            data[JDXISysExOffset.TONE_NAME_START:JDXISysExOffset.CHECKSUM])  # Everything between address and checksum
         received_checksum = data[JDXISysExOffset.CHECKSUM]
 
         # Create message and verify checksum
@@ -808,7 +813,7 @@ class DrumKitPartialMessage(ParameterMessage):
 
 
 def create_sysex_message(
-    msb: int, umb: int, lmb: int, lsb: int, value: int
+        msb: int, umb: int, lmb: int, lsb: int, value: int
 ) -> JDXiSysEx:
     """Create address JD-Xi SysEx message with the given parameters"""
     return JDXiSysEx(
@@ -822,7 +827,7 @@ def create_sysex_message(
 
 
 def create_patch_load_message(
-    bank_msb: int, bank_lsb: int, program: int
+        bank_msb: int, bank_lsb: int, program: int
 ) -> List[JDXiSysEx]:
     """Create messages to load address patch (bank select + program change)"""
     return [

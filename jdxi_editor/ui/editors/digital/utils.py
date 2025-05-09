@@ -13,17 +13,14 @@ from jdxi_editor.midi.data.address.address import (
 )
 
 
-def _log_debug_info(data: dict, successes: list, failures: list, enabled: bool) -> None:
+def _log_debug_info(data: dict, successes: list, failures: list) -> None:
     """
     Log debug information about the SysEx data.
     :param data: list
     :param successes: list
     :param failures: list
-    :param enabled: bool
     :return: None
     """
-    if not enabled:
-        return
     success_rate = (len(successes) / len(data) * 100) if data else 0
     log_message(f"successes: \t{successes}")
     log_message(f"failures: \t{failures}")

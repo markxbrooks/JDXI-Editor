@@ -33,6 +33,8 @@ print(offset)  # Output: (0x00, 0x01, 0x23)
 from enum import Enum
 from typing import Optional, Tuple, Type, Iterator, T
 
+from jdxi_editor.midi.data.address.sysex import ZERO_BYTE, FULL_BYTE_MASK
+
 
 class AddressParameter(Enum):
     """
@@ -148,7 +150,7 @@ class AddressParameter(Enum):
         :param partial_number: int
         :return: int default area to be subclassed
         """
-        return 0x00, 0x00
+        return ZERO_BYTE, ZERO_BYTE
 
     def convert_to_midi(self, value: int) -> int:
         """
@@ -191,7 +193,7 @@ class AddressParameter(Enum):
         else:
             return 4  # I don't know of any other sizes
 
-    def get_offset(self) -> tuple:
+    def get_offset(self) -> tuple[int, int, int]:
         """
         Return a 3-byte tuple representing the address offset (UMB, LMB, LSB)
         for use with Address.add_offset(). The upper middle byte (UMB) is fixed at 0x00.
@@ -199,9 +201,9 @@ class AddressParameter(Enum):
         :return: tuple[int, int, int] A 3-byte offset.
         """
         value = self.address
-        umb = 0x00  # Default Upper Middle Byte
-        lmb = (value >> 8) & 0xFF  # Extract LMB
-        lsb = value & 0xFF  # Extract LSB
+        umb = ZERO_BYTE  # Default Upper Middle Byte
+        lmb = (value >> 8) & FULL_BYTE_MASK  # Extract LMB
+        lsb = value & FULL_BYTE_MASK  # Extract LSB
         return umb, lmb, lsb
 
     @property

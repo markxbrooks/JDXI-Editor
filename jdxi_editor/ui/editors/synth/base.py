@@ -20,11 +20,12 @@ Classes:
 
 
 import threading
-from typing import Dict
+from typing import Dict, Optional
 
 import mido
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
@@ -219,3 +220,23 @@ class SynthBase(QWidget):
         switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = switch
         return switch
+
+    def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
+                         partial_number: Optional[int] = 0):
+        """Initialize synth-specific data."""
+        from jdxi_editor.jdxi.synth.factory import create_synth_data
+        self.synth_data = create_synth_data(synth_type,
+                                            partial_number=partial_number)
+
+        # Dynamically assign attributes
+        for attr in [
+            "address",
+            "preset_type",
+            "instrument_default_image",
+            "instrument_icon_folder",
+            "presets",
+            "preset_list",
+            "midi_requests",
+            "midi_channel",
+        ]:
+            setattr(self, attr, getattr(self.synth_data, attr))

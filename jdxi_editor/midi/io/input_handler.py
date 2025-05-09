@@ -254,7 +254,7 @@ class MidiInHandler(MidiIOController):
             sysex_message_bytes = bytes([START_OF_SYSEX]) + bytes(message.data) + bytes([END_OF_SYSEX])
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
-                log_parameter("Parsed data", parsed_data)
+                log_parameter("Parsed data", parsed_data, silent=True)
                 self._emit_program_or_tone_name(parsed_data)
                 self.midi_sysex_json.emit(json.dumps(parsed_data))
                 log_json(parsed_data, silent=True)

@@ -25,6 +25,7 @@ from typing import Optional, Iterable
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
@@ -32,9 +33,9 @@ from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
-    RolandSysExAddress,
+    RolandSysExAddress, ModelID,
 )
-from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID
+from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import (
@@ -48,6 +49,7 @@ from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.message.channel import ChannelMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.message.sysex import SysExMessage
+from jdxi_editor.midi.sysex.parse_utils import MIN_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
@@ -113,6 +115,7 @@ class MidiOutHandler(MidiIOController):
                 "[MIDI ✅] QC passed — Sending message:",
                 formatted_message,
                 level=logging.INFO,
+                silent=True
             )
             self.midi_out.send_message(message)
             self.midi_message_outgoing.emit(message)
@@ -500,7 +503,7 @@ class MidiOutHandler(MidiIOController):
             request = SysExMessage(
                 manufacturer_id=[RolandID.ROLAND_ID],
                 device_id=RolandID.DEVICE_ID,
-                model_id=[0x00, 0x00, 0x3B, 0x00],  # Example model ID
+                model_id=[ModelID.MODEL_ID_1, ModelID.MODEL_ID_2, ModelID.MODEL_ID_3, ModelID.MODEL_ID_4],  # Example model ID
                 command=CommandID.RQ1,  # RQ1 (Request Data) command for Roland
                 address=[msb, umb, lmb, param],  # Address of parameter
                 data=[],  # No payload for request
@@ -514,7 +517,7 @@ class MidiOutHandler(MidiIOController):
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
-                    if len(msg) >= 11 and msg[0] == 0xF0 and msg[-1] == END_OF_SYSEX:
+                    if len(msg) >= MIN_SYSEX_DATA_LENGTH and msg[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and msg[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX:
                         # Parse response
                         response = SysExMessage.from_bytes(bytes(msg))
                         # Extract parameter value

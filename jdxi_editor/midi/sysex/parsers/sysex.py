@@ -79,12 +79,12 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-            self.sysex_data[0] == START_OF_SYSEX and self.sysex_data[-1] == END_OF_SYSEX
+            self.sysex_data[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and self.sysex_data[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = self.sysex_data[1:-1]
+        data = self.sysex_data[JDXISysExOffset.ROLAND_ID:JDXISysExOffset.SYSEX_END]
         header_data = data[:len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)

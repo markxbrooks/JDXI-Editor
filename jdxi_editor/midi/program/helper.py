@@ -95,7 +95,8 @@ class JDXIProgramHelper(QObject):
         ) = get_previous_program_bank_and_number(
             self.current_program_number, self.current_bank_letter
         )
-        self.load_program(self.current_bank_letter, self.current_program_number)
+        self.load_program(self.current_bank_letter,
+                          self.current_program_number)
 
     def get_current_program(self) -> tuple[str, int]:
         """
