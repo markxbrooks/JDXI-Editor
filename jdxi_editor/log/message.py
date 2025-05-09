@@ -18,10 +18,10 @@ def log_message(message: str, level: int = logging.INFO, stacklevel=2, silent=Fa
     # msg_lower = message.lower()
 
     emoji = LEVEL_EMOJIS.get(level, "🔔")
-    midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
-    jdxi_tag = "🎹" if "jdxi" in message.lower() or "jd-xi" in message.lower() else ""
-    qc_passed_tag = "✅" if "update" in message.lower() or "success" in message.lower() or "passed" in message else ""
-    qc_failed_tag = "❌" if "fail" in message.lower() else ""
+    midi_tag = "🎵" if "midi" in message or "sysex" in message else ""
+    jdxi_tag = "🎹" if "jdxi" in message or "jd-xi" in message else ""
+    qc_passed_tag = "✅" if "update" in message or "uccess" in message or "passed" in message else ""
+    qc_failed_tag = "❌" if "ail" in message else ""
 
     # Combine emoji tags, then append message
     tags = f"{emoji}{jdxi_tag}{qc_passed_tag}{qc_failed_tag}{midi_tag}"

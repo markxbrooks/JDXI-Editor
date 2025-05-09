@@ -356,7 +356,7 @@ class DigitalSynthEditor(SynthEditor):
         elif synth_tone in ["PRC3"]:  # This is for drums but comes through
             pass
         else:
-            self._update_partial_sliders_from_sysex(json_sysex_data)
+            self._update_sliders_from_sysex(json_sysex_data)
 
     def _update_filter_state(self, partial_no: int, value: int) -> None:
         """
@@ -366,30 +366,6 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         self.partial_editors[partial_no].update_filter_controls_state(value)
-
-    def _update_partial_sliders_from_sysex(self, json_sysex_data: str) -> None:
-        """
-        Update sliders and combo boxes based on parsed SysEx data.
-        :param json_sysex_data: str
-        :return: None
-        """
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data:
-            return
-        current_synth = get_area([self.address.msb, self.address.umb])
-        temporary_area = sysex_data.get("TEMPORARY_AREA")
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        if not current_synth == temporary_area:
-            log_message(
-                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
-            )
-            return
-        log_header_message(
-            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
-        )
-        incoming_data_partial_no = get_partial_number(sysex_data.get("SYNTH_TONE"))
-        filtered_data = filter_sysex_keys(sysex_data)
-        self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
     def _update_tone_common_modify_ui(
         self,

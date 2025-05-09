@@ -62,7 +62,6 @@ from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -78,7 +77,6 @@ from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
-from jdxi_editor.ui.editors.helpers.analog import get_analog_parameter_by_address
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
