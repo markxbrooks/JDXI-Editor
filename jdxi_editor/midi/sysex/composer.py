@@ -13,7 +13,7 @@ from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.address.address import Address, RolandSysExAddress, JD_XI_HEADER_LIST
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, LOW_7_BITS_MASK
-from jdxi_editor.midi.io.utils import increment_group
+from jdxi_editor.midi.io.utils import increment_if_lsb_exceeds_7bit
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
@@ -88,7 +88,7 @@ class JDXiSysExComposer:
         log_parameter("value", value)
         log_parameter("size", size)
         try:
-            self.address.lmb = increment_group(self.address.lmb, param)
+            self.address.lmb = increment_if_lsb_exceeds_7bit(self.address.lmb, param)
             address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, ZERO_BYTE)
             address = apply_address_offset(address, param)
             if size == 1:
