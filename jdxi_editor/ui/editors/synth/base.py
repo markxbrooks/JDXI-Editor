@@ -240,3 +240,65 @@ class SynthBase(QWidget):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
+            
+    def _update_slider(
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+        debug: bool = False,
+    ) -> None:
+        """
+        Update slider based on parameter and value.
+        :param param: AddressParameter
+        :param value: int value
+        :param successes: list
+        :param failures: list
+        :param debug: bool
+        :return: None
+        """
+        slider = self.controls.get(param)
+        log_parameter("Updating slider for", param)
+        if slider:
+            slider.blockSignals(True)
+            slider.setValue(value)
+            slider.blockSignals(False)
+            successes.append(param.name)
+            log_parameter(f"Updated {value} for", param)
+        else:
+            failures.append(param.name)
+
+    def _update_switch(
+        self,
+        param: AddressParameter,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+        debug: bool = False,
+    ) -> None:
+        """
+        Update switch based on parameter and value.
+        :param param: AddressParameter
+        :param value: int value
+        :param successes: list
+        :param failures: list
+        :param debug: bool
+        :return: None
+        """
+        if not value:
+            return
+        switch = self.controls.get(param)
+        try:
+            value = int(value)
+            if switch:
+                switch.blockSignals(True)
+                switch.setValue(value)
+                switch.blockSignals(False)
+                successes.append(param.name)
+                log_parameter(f"Updated {value} for", param)
+            else:
+                failures.append(param.name)
+        except Exception as ex:
+            log_error(f"Error {ex} occurred setting switch {param.name} to {value}")
+            failures.append(param.name)
