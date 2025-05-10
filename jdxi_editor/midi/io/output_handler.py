@@ -37,6 +37,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX, LOW_7_BITS_MASK
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS, OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import (
     format_midi_message_to_hex_string,
@@ -50,7 +51,9 @@ from jdxi_editor.midi.message.channel import ChannelMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.sysex.parse_utils import MIN_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+# from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 
 
 def validate_midi_message(message: Iterable[int]) -> bool:
@@ -86,6 +89,7 @@ class MidiOutHandler(MidiIOController):
         super().__init__(parent)
         self.parent = parent
         self.channel = 1
+        self.sysex_parser = JDXiSysExParser()
 
     def send_raw_message(self, message: Iterable[int]) -> bool:
         """
@@ -109,10 +113,16 @@ class MidiOutHandler(MidiIOController):
         if not self.midi_out.is_port_open():
             log_message("MIDI output port is not open.")
             return False
-
+        try:
+            parsed_data = self.sysex_parser.parse_bytes(bytes(message))
+            filtered_data = {
+                k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
+            }
+        except Exception as ex:
+            filtered_data = {}
         try:
             log_message(
-                f"[MIDI QC passed] — Sending message: {formatted_message}",
+                f"[MIDI QC passed] — Sending message: {formatted_message} {filtered_data}",
                 level=logging.INFO,
                 silent=False
             )

@@ -25,10 +25,12 @@ from typing import Dict, Optional
 import mido
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
@@ -45,6 +47,7 @@ class SynthBase(QWidget):
 
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
+        self.partial_editors = []
         self.sysex_data = None
         self.address = None
         self.partial_number = None
@@ -68,7 +71,7 @@ class SynthBase(QWidget):
             return False
         return self._midi_helper.send_raw_message(message)
 
-    def data_request(self):
+    def data_request(self, channel=None, program=None):
         """
         Request the current value of the NRPN parameter from the device.
         """
@@ -244,35 +247,38 @@ class SynthBase(QWidget):
     def _update_slider(
         self,
         param: AddressParameter,
-        value: int,
+        midi_value: int,
         successes: list = None,
-        failures: list = None,
-        debug: bool = False,
+        failures: list = None
     ) -> None:
         """
         Update slider based on parameter and value.
         :param param: AddressParameter
-        :param value: int value
+        :param midi_value: int value
         :param successes: list
         :param failures: list
-        :param debug: bool
         :return: None
         """
         slider = self.controls.get(param)
         log_parameter("Updating slider for", param)
         if slider:
+            if hasattr(param, "convert_from_midi"):
+                slider_value = param.convert_from_midi(midi_value)
+            else:
+                slider_value = midi_value
+            log_message(f"Updating {param.name}: MIDI {midi_value} -> Slider {slider_value:1f}")
             slider.blockSignals(True)
-            slider.setValue(value)
+            slider.setValue(midi_value)
             slider.blockSignals(False)
             successes.append(param.name)
-            log_parameter(f"Updated {value} for", param)
+            log_parameter(f"Updated {midi_value} for", param)
         else:
             failures.append(param.name)
 
     def _update_switch(
         self,
         param: AddressParameter,
-        value: int,
+        midi_value: int,
         successes: list = None,
         failures: list = None,
         debug: bool = False,
@@ -280,25 +286,57 @@ class SynthBase(QWidget):
         """
         Update switch based on parameter and value.
         :param param: AddressParameter
-        :param value: int value
+        :param midi_value: int value
         :param successes: list
         :param failures: list
         :param debug: bool
         :return: None
         """
-        if not value:
+        if not midi_value:
             return
         switch = self.controls.get(param)
         try:
-            value = int(value)
+            midi_value = int(midi_value)
             if switch:
                 switch.blockSignals(True)
-                switch.setValue(value)
+                switch.setValue(midi_value)
                 switch.blockSignals(False)
                 successes.append(param.name)
-                log_parameter(f"Updated {value} for", param)
+                log_parameter(f"Updated {midi_value} for", param)
             else:
                 failures.append(param.name)
         except Exception as ex:
-            log_error(f"Error {ex} occurred setting switch {param.name} to {value}")
+            log_error(f"Error {ex} occurred setting switch {param.name} to {midi_value}")
             failures.append(param.name)
+
+    def _update_partial_slider(
+        self,
+        partial_no: int,
+        param: AddressParameter,
+        value: int,
+        successes: list = None,
+        failures: list = None,
+    ) -> None:
+        """
+        Update the slider for a specific partial based on the parameter and value.
+        :param partial_no: int
+        :param param: AddressParameter
+        :param value: int
+        :param successes: list
+        :return: None
+        """
+        if not value:
+            return
+        slider = self.partial_editors[partial_no].controls.get(param)
+        if not slider:
+            failures.append(param.name)
+            return
+        synth_data = create_synth_data(self.synth_data.preset_type, partial_no)
+        slider_value = param.convert_from_midi(value)
+        log_slider_parameters(
+            self.address.umb, synth_data.lmb, param, value, slider_value
+        )
+        slider.blockSignals(True)
+        slider.setValue(slider_value)
+        slider.blockSignals(False)
+        successes.append(param.name)

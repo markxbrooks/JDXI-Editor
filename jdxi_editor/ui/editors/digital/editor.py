@@ -69,7 +69,7 @@ from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import (
     _is_valid_sysex_area,
-    _log_synth_area_info,
+    log_synth_area_info, filter_sysex_keys,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
@@ -115,12 +115,28 @@ class DigitalSynthEditor(SynthEditor):
         # Connect signals
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+            self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         # Request data from the synth for initialization of state and show the editor
         self.data_request()
         self.show()
+        self.adsr_parameters = [
+                AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+                AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+                AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+            ]
+        self.pitch_env_parameters = [
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            ]
 
     def setup_ui(self):
         """set up user interface"""
@@ -159,7 +175,7 @@ class DigitalSynthEditor(SynthEditor):
         top_layout.addLayout(upper_layout)
         top_layout.addWidget(self.partials_panel)
         instrument_preset_group = self._create_instrument_preset_group(
-            synth_type="Drums"
+            synth_type="Digital"
         )
         upper_layout.addWidget(instrument_preset_group)
         self._create_instrument_image_group()
@@ -280,7 +296,7 @@ class DigitalSynthEditor(SynthEditor):
             log_parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
-            self.partial_editors[partial_no].filter_mode_switch.setValue(value)
+            self.partial_editors[partial_no].filter_tab.filter_mode_switch.setValue(value)
             self._update_filter_state(partial_no, value)
             log_parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
@@ -303,22 +319,9 @@ class DigitalSynthEditor(SynthEditor):
                 self._update_waveform_buttons(partial_no, param_value)
             elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
-            elif param in [
-                AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-                AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
-                AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
-            ]:
+            elif param in self.adsr_parameters:
                 self._update_partial_adsr_widgets(partial_no, param, param_value, successes, failures)
-            elif param in [
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
-            ]:
+            elif param in self.pitch_env_parameters:
                 self._update_partial_pitch_env_widgets(partial_no, param, param_value, successes, failures)
             else:
                 self._update_partial_slider(
@@ -326,28 +329,6 @@ class DigitalSynthEditor(SynthEditor):
                 )
 
         log_debug_info(sysex_data, successes, failures)
-
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
-        """
-        Dispatch SysEx data to the appropriate area for processing.
-        :param json_sysex_data:
-        :return: None
-        """
-        # Parse SysEx data
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data:
-            return
-        temp_area = sysex_data.get("TEMPORARY_AREA")
-        synth_tone = sysex_data.get("SYNTH_TONE")
-
-        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            log_message("\nTone common")
-            self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
-
-        elif synth_tone in ["PRC3"]:  # This is for drums but comes through
-            pass
-        else:
-            self._update_sliders_from_sysex(json_sysex_data)
 
     def _update_filter_state(self, partial_no: int, value: int) -> None:
         """
@@ -358,7 +339,7 @@ class DigitalSynthEditor(SynthEditor):
         """
         self.partial_editors[partial_no].update_filter_controls_state(value)
 
-    def _update_tone_common_modify_ui(
+    def _update_common_controls(
         self,
         sysex_data: Dict,
         successes: list = None,
@@ -402,66 +383,6 @@ class DigitalSynthEditor(SynthEditor):
                     self._update_slider(param, param_value, successes, failures)
             except Exception as ex:
                 log_error(f"Error {ex} occurred")
-
-    def _update_tone_common_modify_sliders_from_sysex(
-        self, json_sysex_data: str
-    ) -> None:
-        """
-        Update sliders and combo boxes based on parsed SysEx data.
-        :param json_sysex_data: str
-        :return: None
-        """
-
-        successes, failures = [], []
-
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data or not _is_valid_sysex_area(sysex_data):
-            return
-
-        _log_synth_area_info(sysex_data)
-
-        synth_tone = sysex_data.get("SYNTH_TONE")
-
-        filtered_data = {
-            k: v for k, v in sysex_data.items() if k not in COMMON_IGNORED_KEYS
-        }
-
-        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            self._update_tone_common_modify_ui(filtered_data, successes, failures)
-
-        log_debug_info(filtered_data, successes, failures)
-
-    def _update_partial_slider(
-        self,
-        partial_no: int,
-        param: AddressParameter,
-        value: int,
-        successes: list = None,
-        failures: list = None,
-    ) -> None:
-        """
-        Update the slider for a specific partial based on the parameter and value.
-        :param partial_no: int
-        :param param: AddressParameter
-        :param value: int
-        :param successes: list
-        :return: None
-        """
-        if not value:
-            return
-        slider = self.partial_editors[partial_no].controls.get(param)
-        if not slider:
-            failures.append(param.name)
-            return
-        synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_no)
-        slider_value = param.convert_from_midi(value)
-        log_slider_parameters(
-            self.address.umb, synth_data.lmb, param, value, slider_value
-        )
-        slider.blockSignals(True)
-        slider.setValue(slider_value)
-        slider.blockSignals(False)
-        successes.append(param.name)
 
     def _update_partial_adsr_widgets(
         self, partial_no: int,
@@ -562,68 +483,6 @@ class DigitalSynthEditor(SynthEditor):
             control.setValue(new_value)
             successes.append(param.name)
         else:
-            failures.append(param.name)
-
-    def _update_slider(
-        self,
-        param: AddressParameter,
-        value: int,
-        successes: list = None,
-        failures: list = None,
-        debug: bool = False,
-    ) -> None:
-        """
-        Update slider based on parameter and value.
-        :param param: AddressParameter
-        :param value: int value
-        :param successes: list
-        :param failures: list
-        :param debug: bool
-        :return: None
-        """
-        slider = self.controls.get(param)
-        log_parameter("Updating slider for", param)
-        if slider:
-            slider.blockSignals(True)
-            slider.setValue(value)
-            slider.blockSignals(False)
-            successes.append(param.name)
-            log_parameter(f"Updated {value} for", param)
-        else:
-            failures.append(param.name)
-
-    def _update_switch(
-        self,
-        param: AddressParameter,
-        value: int,
-        successes: list = None,
-        failures: list = None,
-        debug: bool = False,
-    ) -> None:
-        """
-        Update switch based on parameter and value.
-        :param param: AddressParameter
-        :param value: int value
-        :param successes: list
-        :param failures: list
-        :param debug: bool
-        :return: None
-        """
-        if not value:
-            return
-        switch = self.controls.get(param)
-        try:
-            value = int(value)
-            if switch:
-                switch.blockSignals(True)
-                switch.setValue(value)
-                switch.blockSignals(False)
-                successes.append(param.name)
-                log_parameter(f"Updated {value} for", param)
-            else:
-                failures.append(param.name)
-        except Exception as ex:
-            log_error(f"Error {ex} occurred setting switch {param.name} to {value}")
             failures.append(param.name)
 
     def _update_partial_selection_switch(

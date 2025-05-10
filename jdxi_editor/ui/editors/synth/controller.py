@@ -1,6 +1,10 @@
 from typing import Dict, Optional
 from PySide6.QtCore import QObject
 
+from jdxi_editor.log.debug_info import log_debug_info
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+
+
 class PartialController(QObject):
     """
     A mixin for managing partial controls in the digital synth editor.
@@ -183,5 +187,8 @@ class PartialController(QObject):
                 )
 
         log_debug_info(sysex_data, successes, failures)
+
+    def _update_waveform_buttons(self, partial_no, param_value):
+        pass
         
     

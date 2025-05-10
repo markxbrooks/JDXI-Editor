@@ -78,6 +78,7 @@ class DigitalPartialEditor(PartialEditor):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
+        self.filter_mode_switch = None
         """
         Initialize the DigitalPartialEditor
         :param midi_helper: MidiIOHelper

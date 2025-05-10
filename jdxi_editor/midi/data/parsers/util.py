@@ -17,3 +17,21 @@ COMMON_IGNORED_KEYS = {
     "TONE_NAME_11",
     "TONE_NAME_12",
 }
+
+OUTBOUND_MESSAGE_IGNORED_KEYS = {
+    "JD_XI_HEADER",
+    "ADDRESS",
+    "TONE_NAME",
+    "TONE_NAME_1",
+    "TONE_NAME_2",
+    "TONE_NAME_3",
+    "TONE_NAME_4",
+    "TONE_NAME_5",
+    "TONE_NAME_6",
+    "TONE_NAME_7",
+    "TONE_NAME_8",
+    "TONE_NAME_9",
+    "TONE_NAME_10",
+    "TONE_NAME_11",
+    "TONE_NAME_12",
+}

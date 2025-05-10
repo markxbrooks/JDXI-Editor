@@ -215,4 +215,7 @@ class AddressParameter(Enum):
         return self.address & 0xFF  # Extract LSB
 
     def get_envelope_param_type(self):
-        raise NotImplementedError("should be implemented by a subclass")
+        raise NotImplementedError("should be over-ridden by a subclass")
+
+    def convert_from_midi(self, value):
+        raise NotImplementedError("should be over-ridden by a subclass")
