@@ -122,3 +122,66 @@ class PartialController(QObject):
         self.partial_tab_widget.setCurrentIndex(0)
         
     
+    def _handle_special_params(
+        self, partial_no: int, param: AddressParameter, value: int
+    ) -> None:
+        """
+        Handle special parameters that require additional UI updates.
+        :param partial_no: int
+        :param param: AddressParameter
+        :param value: int
+        :return: None
+        """
+        if param == AddressParameterDigitalPartial.OSC_WAVE:
+            self._update_waveform_buttons(partial_no, value)
+            log_parameter("Updated waveform buttons for OSC_WAVE", value)
+
+        elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
+            self.partial_editors[partial_no].filter_mode_switch.setValue(value)
+            self._update_filter_state(partial_no, value)
+            log_parameter("Updated filter state for FILTER_MODE_SWITCH", value)
+
+    def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
+        """
+        Apply updates to the UI components based on the received SysEx data.
+        :param partial_no: int
+        :param sysex_data: dict
+        :return: None
+        """
+        successes, failures = [], []
+
+        for param_name, param_value in sysex_data.items():
+            param = AddressParameterDigitalPartial.get_by_name(param_name)
+            if not param:
+                failures.append(param_name)
+                continue
+
+            if param == AddressParameterDigitalPartial.OSC_WAVE:
+                self._update_waveform_buttons(partial_no, param_value)
+            elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
+                self._update_filter_state(partial_no, value=param_value)
+            elif param in [
+                AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+                AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+                AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+            ]:
+                self._update_partial_adsr_widgets(partial_no, param, param_value, successes, failures)
+            elif param in [
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
+                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+            ]:
+                self._update_partial_pitch_env_widgets(partial_no, param, param_value, successes, failures)
+            else:
+                self._update_partial_slider(
+                    partial_no, param, param_value, successes, failures
+                )
+
+        log_debug_info(sysex_data, successes, failures)
+        
+    
