@@ -32,6 +32,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -153,25 +154,25 @@ class SynthEditor(SynthBase):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
+            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
+            # Initialize preset handlers dynamically
+            preset_configs = [
+                (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
+                (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
+                (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+                (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
+            ]
+            self.preset_helpers = {
+                synth_type: JDXIPresetHelper(
+                    self.midi_helper, presets, channel=channel, preset_type=synth_type
+                )
+                for synth_type, presets, channel in preset_configs
+            }
             log_message("MIDI helper initialized")
         else:
             log_message("MIDI helper not initialized")
-        self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
-        self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-        # Initialize preset handlers dynamically
-        preset_configs = [
-            (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
-            (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-            (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
-        ]
         self.json_parser = JDXiJsonSysexParser()
-        self.preset_helpers = {
-            synth_type: JDXIPresetHelper(
-                self.midi_helper, presets, channel=channel, preset_type=synth_type
-            )
-            for synth_type, presets, channel in preset_configs
-        }
 
     def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
                          partial_number: Optional[int] = 0):
@@ -280,13 +281,16 @@ class SynthEditor(SynthBase):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        # temp_area = sysex_data.get("TEMPORARY_AREA")
+        temp_area = sysex_data.get("TEMPORARY_AREA")
+        log_parameter("temp_area", temp_area)
         synth_tone = sysex_data.get("SYNTH_TONE")
 
+        # Analog is simple so deal with the 1st
+        if temp_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
+            self._update_sliders_from_sysex(json_sysex_data)
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             log_message("\nTone common")
             self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
-
         elif synth_tone in ["PRC3"]:  # This is for drums but comes through
             pass
         else:
@@ -302,7 +306,6 @@ class SynthEditor(SynthBase):
         should be implemented by subclass
         """
         pass
-
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
         """

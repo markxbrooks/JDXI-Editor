@@ -58,6 +58,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
@@ -77,6 +78,7 @@ from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
+from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
@@ -480,27 +482,7 @@ class AnalogSynthEditor(SynthEditor):
         # Store the current data for future comparison
         self.previous_json_data = sysex_data
 
-        # Remove unnecessary keys
-        ignored_keys = {
-            "JD_XI_HEADER",
-            "ADDRESS",
-            "TEMPORARY_AREA",
-            "TONE_NAME",
-            "TONE_NAME_1",
-            "TONE_NAME_2",
-            "TONE_NAME_3",
-            "TONE_NAME_4",
-            "TONE_NAME_5",
-            "TONE_NAME_6",
-            "TONE_NAME_7",
-            "TONE_NAME_8",
-            "TONE_NAME_9",
-            "TONE_NAME_10",
-            "TONE_NAME_11",
-            "TONE_NAME_12",
-            "SYNTH_TONE",
-        }
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
+        sysex_data = filter_sysex_keys(sysex_data)
 
         failures, successes = [], []
 
@@ -565,16 +547,10 @@ class AnalogSynthEditor(SynthEditor):
                     )
                 else:
                     self.update_slider(param, param_value, successes, failures)
-
+                successes.append(param_name)
             else:
                 failures.append(param_name)
-
-        log_message(f"Updated {len(successes)} parameters successfully.")
-        if failures:
-            log_message(
-                f"Failed to update {len(failures)} parameters: {failures}",
-                level=logging.WARNING,
-            )
+        log_debug_info(sysex_data, successes, failures)
 
     def update_switch(
             self, switch: Switch, value: int, successes: list = None, failures: list = None

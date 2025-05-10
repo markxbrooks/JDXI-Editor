@@ -698,7 +698,7 @@ rm_waves = [
     "452: SH2 U Zap 4",
     "453: SH2 U Zap 5",
 ]
-DRUM_PARTIAL_MAPPING = {
+DRUM_PARTIAL_MAP = {
     "BD1": 1,
     "RIM": 2,
     "BD2": 3,
