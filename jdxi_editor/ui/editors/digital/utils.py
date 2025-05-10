@@ -150,7 +150,7 @@ def _sysex_tone_matches(sysex_data: dict, tone: int) -> bool:
     return match
 
 
-def get_area(data: list[int, int]) -> str:
+def get_area(data: list) -> str:
     """
     Map address bytes to corresponding temporary area.
     :param data: list[int, int]

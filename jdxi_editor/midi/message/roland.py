@@ -148,21 +148,6 @@ class RolandSysEx(SysExMessage):
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
-    def __post_init_old__(self):
-        """Initialize address and data based on parameters.
-        :return: None
-        """
-        self.address = [
-            self.msb,
-            self.umb,
-            self.lmb,
-            self.lsb,
-        ]
-        if isinstance(self.value, int) and self.size == 4:
-            self.data = split_16bit_value_to_nibbles(self.value)
-        else:
-            self.data = [self.value] if isinstance(self.value, int) else self.value
-
     def from_sysex_address(self, sysex_address: RolandSysExAddress):
         """from_sysex_address
         :param sysex_address: RolandSysExAddress

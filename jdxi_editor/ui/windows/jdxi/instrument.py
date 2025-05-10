@@ -43,6 +43,7 @@ from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 
 from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
+from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
@@ -54,10 +55,12 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetSystemUMB,
     RolandSysExAddress,
 )
+from jdxi_editor.midi.data.address.sysex import VALUE_ON, VALUE_OFF, ZERO_BYTE
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.channel.channel import MidiChannel
+from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
 from jdxi_editor.midi.io import MidiIOHelper, MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -66,6 +69,7 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.lists import JDXIPresets
 from jdxi_editor.midi.program.helper import JDXIProgramHelper
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
 from jdxi_editor.ui.editors import (
     AnalogSynthEditor,
@@ -108,12 +112,13 @@ class JdxiInstrument(JdxiUi):
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
-            not self.midi_helper.current_in_port
-            or not self.midi_helper.current_out_port
+                not self.midi_helper.current_in_port
+                or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
+        self.sysex_composer = JDXiSysExComposer()
         self.program_helper = JDXIProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
         self.settings = QSettings("jdxi_manager2", "settings")
         self._load_settings()
@@ -313,7 +318,7 @@ class JdxiInstrument(JdxiUi):
         self._preset_update(1)
 
     def update_display_callback(
-        self, synth_type: JDXISynth, preset_index: int, channel: int
+            self, synth_type: JDXISynth, preset_index: int, channel: int
     ):
         """Update the display for the given synth preset_type and preset index."""
         log_message(
@@ -423,19 +428,19 @@ class JdxiInstrument(JdxiUi):
             preset_helper = (
                 self._get_preset_helper_for_current_synth()
                 if editor_class
-                in [
-                    ArpeggioEditor,
-                    DigitalSynthEditor,
-                    DigitalSynth2Editor,
-                    AnalogSynthEditor,
-                    DrumCommonEditor,
-                    PatternSequencer,
-                    ProgramEditor,
-                    PresetEditor,
-                    MidiPlayer,
-                    VocalFXEditor,
-                    EffectsCommonEditor,
-                ]
+                   in [
+                       ArpeggioEditor,
+                       DigitalSynthEditor,
+                       DigitalSynth2Editor,
+                       AnalogSynthEditor,
+                       DrumCommonEditor,
+                       PatternSequencer,
+                       ProgramEditor,
+                       PresetEditor,
+                       MidiPlayer,
+                       VocalFXEditor,
+                       EffectsCommonEditor,
+                   ]
                 else None
             )
 
@@ -619,7 +624,7 @@ class JdxiInstrument(JdxiUi):
         )
 
     def _midi_init_ports(
-        self, in_port: MidiIOController, out_port: MidiIOController
+            self, in_port: MidiIOController, out_port: MidiIOController
     ) -> None:
         """Set MIDI input and output ports."""
         try:
@@ -681,7 +686,7 @@ class JdxiInstrument(JdxiUi):
                 address1 = RolandSysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                    lmb=AddressOffsetProgramLMB.DIGITAL_SYNTH_PART_1,
+                    lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46,
                 )
                 address2 = RolandSysExAddress(
@@ -724,26 +729,30 @@ class JdxiInstrument(JdxiUi):
         """
         try:
             if self.midi_helper:
-                value = 0x01 if state else 0x00  # 1 = ON, 0 = OFF
+                value = VALUE_ON if state else VALUE_OFF  # 1 = ON, 0 = OFF
                 log_message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
                     AddressOffsetProgramLMB.CONTROLLER,
-                    AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_1,
-                    AddressOffsetProgramLMB.ZONE_DIGITAL_SYNTH_2,
-                    AddressOffsetProgramLMB.ZONE_ANALOG_SYNTH,
+                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2,
+                    AddressOffsetProgramLMB.PART_ANALOG,
                     AddressOffsetProgramLMB.ZONE_DRUM,
                 ]:
                     address = RolandSysExAddress(
-                        msb=AddressMemoryAreaMSB.PROGRAM,
+                        msb=AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
                         umb=AddressOffsetSystemUMB.COMMON,
                         lmb=zone,
-                        lsb=AddressParameterArpeggio.ARPEGGIO_SWITCH.lsb,
+                        lsb=ZERO_BYTE,
                     )
-                    sysex_message = RolandSysEx(
-                        sysex_address=address,
-                        value=value,
-                    )
+                    sysex_message = self.sysex_composer.compose_message(address=address,
+                                                                        param=AddressParameterProgramZone.ARPEGGIO_SWITCH,
+                                                                        value=value)
+                    print(type(sysex_message))
+                    # sysex_message = RolandSysEx(
+                    #    sysex_address=address,
+                    #    value=value,
+                    # )
                     self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
             log_error("Error sending arp on/off", exception=ex)
@@ -756,7 +765,7 @@ class JdxiInstrument(JdxiUi):
         """
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
-            msg = [0x90 + self.channel, note_num, 100]
+            msg = [NOTE_ON + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
             log_message(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
@@ -770,7 +779,7 @@ class JdxiInstrument(JdxiUi):
             # Calculate the correct status byte for note_off:
             # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
             if not self.midi_key_hold_latched:
-                status = 0x80 + self.channel
+                status = NOTE_OFF + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
                 log_message(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
@@ -832,7 +841,7 @@ class JdxiInstrument(JdxiUi):
             log_error("Error saving last preset", exception=ex)
 
     def _show_favorite_context_menu(
-        self, pos, button: Union[FavoriteButton, SequencerSquare]
+            self, pos, button: Union[FavoriteButton, SequencerSquare]
     ):
         """Show context menu for favorite button"""
         menu = QMenu()

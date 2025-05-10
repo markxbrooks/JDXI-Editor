@@ -44,7 +44,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
+from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number, log_synth_area_info
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
@@ -282,7 +282,6 @@ class SynthEditor(SynthBase):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-
         current_synth = get_area([self.address.msb, self.address.umb])
         temporary_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
@@ -313,22 +312,13 @@ class SynthEditor(SynthBase):
         :param json_sysex_data: str
         :return: None
         """
-
         successes, failures = [], []
-
         sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data or not _is_valid_sysex_area(sysex_data):
-            return
-
         log_synth_area_info(sysex_data)
-
         synth_tone = sysex_data.get("SYNTH_TONE")
-
         filtered_data = filter_sysex_keys(sysex_data)
-
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             self._update_common_controls(filtered_data, successes, failures)
-
         log_debug_info(filtered_data, successes, failures)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
@@ -363,7 +353,7 @@ class SynthEditor(SynthBase):
         :return: None
         By default has no partials, so subclass to implement partial updates
         """
-        pass
+        raise NotImplementedError("should be over-ridden in a sub class with implementation")
 
     def _parse_sysex_json(self, json_sysex_data: str) -> dict:
         """
@@ -373,23 +363,6 @@ class SynthEditor(SynthBase):
         """
         try:
             data = self.json_parser.parse_json(json_sysex_data)
-            # data = json.loads(json_sysex_data)
-            self.sysex_previous_data = self.sysex_current_data
-            self.sysex_current_data = data
-            log_changes(self.sysex_previous_data, data)
-            return data
-        except json.JSONDecodeError as ex:
-            log_message(f"Invalid JSON format: {ex}")
-            return None
-
-    def _parse_sysex_json_old(self, json_sysex_data: str) -> dict:
-        """
-        _parse_sysex_json
-        :param json_sysex_data: str JSON SysEx data
-        :return: dict or None
-        """
-        try:
-            data = json.loads(json_sysex_data)
             self.sysex_previous_data = self.sysex_current_data
             self.sysex_current_data = data
             log_changes(self.sysex_previous_data, data)
@@ -475,14 +448,14 @@ class SynthEditor(SynthBase):
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
         log_message(
-            f"Control change {channel} {control} detected with value {value}, requesting data update"
+            f"Control change {channel} {control} detected on channel {channel} with value {value}, "
+            f"requesting data update"
         )
         self.data_request()
 
     def send_control_change(self, control_change: ControlChange, value: int):
         """Send MIDI CC message"""
         if self.midi_helper:
-            # Convert enum to int if needed
             control_change_number = (
                 control_change.value
                 if isinstance(control_change, ControlChange)
