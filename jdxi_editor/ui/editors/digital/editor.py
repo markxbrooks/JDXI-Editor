@@ -45,6 +45,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
+from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
@@ -67,13 +68,8 @@ from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_f
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import (
-    _log_debug_info,
-    filter_sysex_keys,
-    get_partial_number,
     _is_valid_sysex_area,
     _log_synth_area_info,
-    _is_digital_synth_area,
-    get_area,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
@@ -329,10 +325,7 @@ class DigitalSynthEditor(SynthEditor):
                     partial_no, param, param_value, successes, failures
                 )
 
-        success_rate = (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-        log_message(f"Successes: \t{successes}")
-        log_message(f"Failures: \t{failures}")
-        log_footer_message(f"Success Rate: \t{success_rate:.1f}%")
+        log_debug_info(sysex_data, successes, failures)
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """
@@ -340,8 +333,6 @@ class DigitalSynthEditor(SynthEditor):
         :param json_sysex_data:
         :return: None
         """
-        failures, successes = [], []
-
         # Parse SysEx data
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
@@ -438,7 +429,7 @@ class DigitalSynthEditor(SynthEditor):
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             self._update_tone_common_modify_ui(filtered_data, successes, failures)
 
-        _log_debug_info(filtered_data, successes, failures)
+        log_debug_info(filtered_data, successes, failures)
 
     def _update_partial_slider(
         self,

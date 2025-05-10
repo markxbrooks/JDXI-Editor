@@ -37,6 +37,7 @@ class NRPNSlider(Slider):
         max_value: int = 127,
         vertical: bool = True,
         param_type: str = "nrpn",
+        is_bipolar: bool = False,
     ):
         super().__init__(
             label,
@@ -46,6 +47,7 @@ class NRPNSlider(Slider):
             vertical=vertical,
             show_value_label=False,
             draw_tick_marks=False,
+            is_bipolar=is_bipolar
         )
         """Initialize the NRPNSlider.
 
@@ -53,6 +55,7 @@ class NRPNSlider(Slider):
         :param label: str
         :param nrpn_map: dict
         :param partial: int
+        :param is_bipolar: bool
         """
         self.label = label
         self.midi_helper = midi_helper

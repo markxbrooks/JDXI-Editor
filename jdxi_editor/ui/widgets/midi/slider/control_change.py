@@ -34,6 +34,7 @@ class ControlChangeSlider(Slider):
         max_value: int = 127,
         vertical: bool = True,
         channels: list = [0, 1, 2],
+        is_bipolar=False,
     ):
         super().__init__(
             label,
@@ -43,6 +44,7 @@ class ControlChangeSlider(Slider):
             vertical=vertical,
             show_value_label=False,
             draw_tick_marks=False,
+            is_bipolar=is_bipolar,
         )
         """Initialize the ControlChangeSlider.
 

@@ -14,7 +14,7 @@ def log_parameter(
     float_precision: int = 2,
     max_length: int = 300,
     level: int = logging.INFO,
-    silent: bool = True
+    silent: bool = False
 ):
     """
     Log a structured representation of a parameter with type, formatted value, and optional emoji context.

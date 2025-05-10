@@ -12,22 +12,14 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
 )
 
-
-def _log_debug_info(data: dict, successes: list, failures: list) -> None:
-    """
-    Log debug information about the SysEx data.
-    :param data: list
-    :param successes: list
-    :param failures: list
-    :return: None
-    """
-    success_rate = (len(successes) / len(data) * 100) if data else 0
-    log_message(f"successes: \t{successes}")
-    log_message(f"failures: \t{failures}")
-    log_message(f"success rate: \t{success_rate:.1f}%")
-    log_message(
-        "\n======================================================================================================"
-    )
+DIGITAL_PARTIAL_MAP = {
+    "PARTIAL_1": 1,
+    "PARTIAL_2": 2,
+    "PARTIAL_3": 3,
+    "TONE_PARTIAL_1": 1,
+    "TONE_PARTIAL_2": 2,
+    "TONE_PARTIAL_3": 3,
+}
 
 
 def filter_sysex_keys(sysex_data: dict) -> dict:
@@ -37,11 +29,11 @@ def filter_sysex_keys(sysex_data: dict) -> dict:
     :return: dict
     """
     ignored_keys = {
-        "JD_XI_HEADER",
-        "ADDRESS",
-        #  "TEMPORARY_AREA",
-        "TONE_NAME",
-        #  "SYNTH_TONE",
+        "TEMPORARY_AREA", "SYNTH_TONE", "TONE_NAME_1", "TONE_NAME_2", "TONE_NAME_3", "TONE_NAME_4", "TONE_NAME_5",
+        "TONE_NAME_6", "TONE_NAME_7", "TONE_NAME_8", "TONE_NAME_9", "TONE_NAME_10", "TONE_NAME_11", "TONE_NAME_12",
+        "PARTIAL_NAME_1", "PARTIAL_NAME_2", "PARTIAL_NAME_3", "PARTIAL_NAME_4", "PARTIAL_NAME_5", "PARTIAL_NAME_6",
+        "PARTIAL_NAME_7", "PARTIAL_NAME_8", "PARTIAL_NAME_9", "PARTIAL_NAME_10", "PARTIAL_NAME_11", "PARTIAL_NAME_12",
+        "JD_XI_HEADER", "ADDRESS", "TONE_NAME",
     }
     return {k: v for k, v in sysex_data.items() if k not in ignored_keys}
 
@@ -64,20 +56,13 @@ def _get_synth_number(synth_tone: str) -> int:
     return synth_no
 
 
-def get_partial_number(synth_tone: str) -> int:
+def get_partial_number(synth_tone: str, partial_map: dict = DIGITAL_PARTIAL_MAP) -> int:
     """
     Get the partial number based on the synth tone.
     :param synth_tone: str
+    :param partial_map: str
     :return: int
     """
-    partial_map = {
-        "PARTIAL_1": 1,
-        "PARTIAL_2": 2,
-        "PARTIAL_3": 3,
-        "TONE_PARTIAL_1": 1,
-        "TONE_PARTIAL_2": 2,
-        "TONE_PARTIAL_3": 3,
-    }
     partial_no = partial_map.get(synth_tone)
     if partial_no is None:
         logging.warning(f"Unknown synth tone: {synth_tone}")

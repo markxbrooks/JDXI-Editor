@@ -73,6 +73,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.synth.factory import create_synth_data
+from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
@@ -80,12 +81,13 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
-from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAPPING
+from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.ui.editors.digital.utils import get_partial_number, filter_sysex_keys
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.jdxi.style import JDXIStyle
@@ -112,7 +114,7 @@ class DrumCommonEditor(SynthEditor):
         self._init_synth_data(synth_type=JDXISynth.DRUM, partial_number=0)
         self.sysex_current_data = None
         self.sysex_previous_data = None
-        self.partial_mapping = DRUM_PARTIAL_MAPPING
+        self.partial_mapping = DRUM_PARTIAL_MAP
         # UI Elements
         self.main_window = parent
         self.partial_editors = {}
@@ -122,8 +124,6 @@ class DrumCommonEditor(SynthEditor):
         self.setup_ui()
         self.update_instrument_image()
         # Setup signal handlers
-        if self.midi_helper:
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
         # Request initial state data & show the editor
@@ -289,6 +289,8 @@ class DrumCommonEditor(SynthEditor):
             self._update_common_sliders_from_sysex(json_sysex_data)
         else:
             self._update_partial_sliders_from_sysex(json_sysex_data)
+            incoming_data_partial_no = get_partial_number(synth_tone, DRUM_PARTIAL_MAP)
+            filtered_data = filter_sysex_keys(sysex_data)
             self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
     def _update_common_sliders_from_sysex(self, json_sysex_data: str):
@@ -418,6 +420,49 @@ class DrumCommonEditor(SynthEditor):
             """
             return sysex_data_dict.get("SYNTH_TONE") in self.partial_mapping
 
+        if not _is_valid_sysex_area(sysex_data):
+            logging.warning("SysEx data does not belong to drum area; skipping update.")
+            return
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        partial_no = get_partial_number(synth_tone, DRUM_PARTIAL_MAP)
+
+        sysex_data = filter_sysex_keys(sysex_data)
+        failures, successes = [], []
+
+        for param_name, param_value in sysex_data.items():
+            param = AddressParameterDrumPartial.get_by_name(param_name)
+            if param:
+                self._update_partial_slider(partial_no, param, param_value, successes, failures)
+            else:
+                failures.append(param_name)
+
+        log_debug_info(sysex_data, failures, successes)
+
+    def _update_partial_slider(self, partial_no: int,
+                               param: AddressParameterDrumPartial,
+                               value: int,
+                               successes: list,
+                               failures: list):
+        """
+        Helper function to update sliders safely.
+        :param param: AddressParameterDrumPartial
+        :param value: int
+        """
+        slider = self.partial_editors[partial_no].controls.get(param)
+        if slider:
+            slider_value = param.convert_from_midi(value)
+            slider.blockSignals(True)
+            slider.setValue(slider_value)
+            slider.blockSignals(False)
+            successes.append(param.name)
+            synth_data = create_synth_data(JDXISynth.DRUM, partial_no)
+            log_slider_parameters(
+                self.address.umb, synth_data.lmb, param, value, slider_value
+            )
+        else:
+            failures.append(param.name)
+
         def _get_partial_number(tone: str):
             """
             Retrieve partial number from synth tone mapping.
@@ -428,64 +473,3 @@ class DrumCommonEditor(SynthEditor):
                 if key == tone:
                     return value
             return None
-
-        if not _is_valid_sysex_area(sysex_data):
-            logging.warning("SysEx data does not belong to drum area; skipping update.")
-            return
-
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        partial_no = _get_partial_number(synth_tone)
-
-        ignored_keys = {
-            "JD_XI_HEADER",
-            "ADDRESS",
-            "TEMPORARY_AREA",
-            "TONE_NAME",
-            "SYNTH_TONE",
-        }
-        sysex_data = {k: v for k, v in sysex_data.items() if k not in ignored_keys}
-        failures, successes = [], []
-
-        def _update_slider(param: AddressParameterDrumPartial, value: int):
-            """
-            Helper function to update sliders safely.
-            :param param: AddressParameterDrumPartial
-            :param value: int
-            """
-            slider = self.partial_editors[partial_no].controls.get(param)
-            if slider:
-                slider_value = param.convert_from_midi(value)
-                slider.blockSignals(True)
-                slider.setValue(slider_value)
-                slider.blockSignals(False)
-                successes.append(param.name)
-                synth_data = create_synth_data(JDXISynth.DRUM, partial_no)
-                log_slider_parameters(
-                    self.address.umb, synth_data.lmb, param, value, slider_value
-                )
-
-        for param_name, param_value in sysex_data.items():
-            param = AddressParameterDrumPartial.get_by_name(param_name)
-            if param:
-                _update_slider(param, param_value)
-            else:
-                failures.append(param_name)
-
-        def _log_debug_info():
-            """
-            Helper function to log debugging statistics.
-            """
-            success_rate = (
-                (len(successes) / len(sysex_data) * 100) if sysex_data else 0
-            )
-            log_message(
-                "\n======================================================================================================"
-            )
-            log_message(f"Successes: \t{successes}")
-            log_message(f"Failures: \t{failures}")
-            log_message(f"Success Rate: \t{success_rate:.1f}%")
-            log_message(
-                "\n======================================================================================================"
-            )
-
-        _log_debug_info()
