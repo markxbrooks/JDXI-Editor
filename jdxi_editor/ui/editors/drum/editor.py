@@ -72,20 +72,15 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
-from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
-from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.jdxi.style import JDXIStyle
@@ -133,15 +128,12 @@ class DrumCommonEditor(SynthEditor):
         self.show()
 
     def setup_ui(self):
-        # Main layout
         main_layout = QVBoxLayout(self)
         self.setMinimumSize(1100, 500)
 
-        # Create splitter
         splitter = QSplitter(Qt.Orientation.Vertical)
         main_layout.addWidget(splitter)
 
-        # === Top half: upper_layout container ===
         upper_widget = QWidget()
         upper_layout = QHBoxLayout(upper_widget)
         upper_layout.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
@@ -154,7 +146,6 @@ class DrumCommonEditor(SynthEditor):
         upper_layout.addWidget(self.instrument_image_group)
         self.update_instrument_image()
 
-        # Common section
         common_group = DrumCommonSection(
             self.controls,
             self._create_parameter_combo_box,
@@ -164,10 +155,8 @@ class DrumCommonEditor(SynthEditor):
         common_group.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
         upper_layout.addWidget(common_group)
 
-        # Add upper half to splitter
         splitter.addWidget(upper_widget)
 
-        # === Bottom half: scrollable tab widget ===
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -177,19 +166,16 @@ class DrumCommonEditor(SynthEditor):
         scroll.setWidget(self.partial_tab_widget)
         splitter.addWidget(scroll)
 
-        # Optionally set initial sizes
         splitter.setSizes([300, 300])
         splitter.setStyleSheet(JDXIStyle.SPLITTER)
-        # Setup tab widget
         self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
-        # Initialize partial editors
         self._setup_partial_editors()
 
         self.update_instrument_image()
         self.partial_tab_widget.currentChanged.connect(self.update_partial_number)
         self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
         # Register the callback for incoming MIDI messages
-        self.data_request()  # this is giving an error
+        self.data_request()
 
     def _handle_program_change(self, channel: int, program: int):
         """
@@ -259,7 +245,7 @@ class DrumCommonEditor(SynthEditor):
             else:
                 failures.append(param_name)
 
-        log_debug_info(sysex_data, failures, successes)
+        log_debug_info(sysex_data, successes, failures)
 
     def _update_common_controls(
         self,
@@ -272,7 +258,6 @@ class DrumCommonEditor(SynthEditor):
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
         :param failures: List of failed parameters
-        :param debug: bool
         :return: None
         """
         log_header_message("Tone common")

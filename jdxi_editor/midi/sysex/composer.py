@@ -24,17 +24,9 @@ class JDXiSysExComposer:
     def __init__(self):
         self.address = None
         self.offset = None
-        self.sysex_data = None
+        self.sysex_message = None
 
-    def from_bytes(self, sysex_data: bytes):
-        """
-        from bytes
-        :param sysex_data: bytes
-        :return:
-        """
-        self.sysex_data = sysex_data
-
-    def compose(self) -> bytes:
+    def compose(self, ) -> bytes:
         """
         compose
         :return: bytes sysex message
@@ -42,7 +34,7 @@ class JDXiSysExComposer:
         if not self._is_valid_address():
             raise ValueError("Invalid address")
 
-        if len(self.sysex_data) <= JDXISysExOffset.ADDRESS_LSB:
+        if len(self.sysex_message) <= JDXISysExOffset.ADDRESS_LSB:
             raise ValueError("Invalid SysEx message: too short")
 
         if not self._verify_header():
@@ -50,7 +42,7 @@ class JDXiSysExComposer:
         else:
             log_message("Correct JD-Xi header found")
 
-        return self.compose_message()
+        return self.compose_message(param=param, value=value)
 
     def set_address(self, address: Address) -> None:
         """
@@ -70,17 +62,20 @@ class JDXiSysExComposer:
 
     def compose_message(
         self,
+        address: RolandSysExAddress,
         param: AddressParameter,
         value: int,
         size: int = 1,
-    ) -> Union[bytes, False]:
+    ) -> RolandSysEx:
         """
+        :param address: RolandSysExAddress
         :param param: AddressParameter
         :param value: int Parameter value
         :param size: int Size of the value in bytes (1, 4, or 5).
-        :return: True if successful, False otherwise.
+        :return: RolandSysEx
         """
-        log_message("send_parameter:")
+        self.address = address
+        log_message("compose_message:")
         log_parameter("self.address.msb", self.address.msb)
         log_parameter("self.address.umb", self.address.umb)
         log_parameter("self.address.lmb", self.address.lmb)
@@ -88,7 +83,7 @@ class JDXiSysExComposer:
         log_parameter("value", value)
         log_parameter("size", size)
         try:
-            self.address.lmb = increment_if_lsb_exceeds_7bit(self.address.lmb, param)
+            self.address.lmb = increment_if_lsb_exceeds_7bit(self.address.lmb, param.value[0])
             address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, ZERO_BYTE)
             address = apply_address_offset(address, param)
             if size == 1:
@@ -97,15 +92,21 @@ class JDXiSysExComposer:
                 data_bytes = split_16bit_value_to_nibbles(value)  # Convert to nibbles
             else:
                 log_message(f"Unsupported parameter size: {size}")
-                return False
-            sysex_message = RolandSysEx()
-            message = sysex_message.construct_sysex(address, *data_bytes)
-            self.sysex_data = message
-            return message
+                return None
+            sysex_message = RolandSysEx(
+                msb=address.msb,
+                umb=address.umb,
+                lmb=address.lmb,
+                lsb=param.lsb,
+                value=data_bytes,
+            )
+            print(type(sysex_message))
+            self.sysex_message = sysex_message
+            return self.sysex_message
 
         except (ValueError, TypeError, OSError, IOError) as ex:
             log_error(f"Error sending parameter: {ex}")
-            return False
+            return None
 
     def _is_valid_address(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
@@ -114,13 +115,13 @@ class JDXiSysExComposer:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-            self.sysex_data[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and
-            self.sysex_data[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX
+                self.sysex_message[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and
+                self.sysex_message[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = self.sysex_data[JDXISysExOffset.SYSEX_START:JDXISysExOffset.SYSEX_END]
+        data = self.sysex_message[JDXISysExOffset.ROLAND_ID:JDXISysExOffset.SYSEX_END]
         header_data = data[:len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)
