@@ -8,6 +8,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetProgramLMB,
 )
+from jdxi_editor.midi.data.address.sysex import LOW_7_BITS_MASK, LOW_4_BITS_MASK, ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -289,10 +290,10 @@ class Effect1Message(RolandSysEx):
             # Convert -20000/+20000 to 12768-52768
             value = self.value + 32768
             self.data = [
-                (value >> 24) & 0x0F,  # High nibble
-                (value >> 16) & 0x0F,
-                (value >> 8) & 0x0F,
-                value & 0x0F,  # Low nibble
+                (value >> 24) & LOW_4_BITS_MASK,  # High nibble
+                (value >> 16) & LOW_4_BITS_MASK,
+                (value >> 8) & LOW_4_BITS_MASK,
+                value & LOW_4_BITS_MASK,  # Low nibble
             ]
         else:
             self.data = [self.value]
@@ -325,7 +326,7 @@ class Effect2(Enum):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == 0x00:  # Effect preset_type
+        if param == ZERO_BYTE:  # Effect preset_type
             if value == 0:
                 return "OFF"
             types = ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
@@ -340,18 +341,19 @@ class Effect2Message(RolandSysEx):
     """Program Effect 2 parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # 0x18: Program area
-    section: int = 0x04  # 0x04: Effect 2 section
-    group: int = 0x00  # Always 0x00
+    msb: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    umb: int = 0x04  # 0x04: Effect 2 section
+    lmb: int = 0x00  # Always 0x00
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
-    def __post_init__(self):
+    def __post_init__(self, param):
         """Set up address and data"""
+        self.param = param
         self.address = [
             self.msb,  # Program area (0x18)
-            self.section,  # Effect 2 section (0x04)
-            self.group,  # Always 0x00
+            self.umb,  # Effect 2 section (0x04)
+            self.lmb,  # Always 0x00
             self.param,  # Parameter number
         ]
         # Handle 4-byte parameters
@@ -359,10 +361,10 @@ class Effect2Message(RolandSysEx):
             # Convert -20000/+20000 to 12768-52768
             value = self.value + 32768
             self.data = [
-                (value >> 24) & 0x0F,  # High nibble
-                (value >> 16) & 0x0F,
-                (value >> 8) & 0x0F,
-                value & 0x0F,  # Low nibble
+                (value >> 24) & LOW_4_BITS_MASK,  # High nibble
+                (value >> 16) & LOW_4_BITS_MASK,
+                (value >> 8) & LOW_4_BITS_MASK,
+                value & LOW_4_BITS_MASK,  # Low nibble
             ]
         else:
             self.data = [self.value]

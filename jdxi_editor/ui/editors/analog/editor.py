@@ -465,9 +465,9 @@ class AnalogSynthEditor(SynthEditor):
         if not sysex_data:
             return
         temp_area = sysex_data.get("TEMPORARY_AREA")
-        log_parameter("temp_area", temp_area)
+        log_parameter("temp_area", temp_area, silent=True)
         synth_tone = sysex_data.get("SYNTH_TONE")
-        log_parameter("temp_area", temp_area)
+        log_parameter("temp_area", temp_area, silent=True)
 
         if temp_area != TemporaryToneUMB.ANALOG_PART.name or synth_tone != ProgramLMB.TONE_COMMON.name:
             return
