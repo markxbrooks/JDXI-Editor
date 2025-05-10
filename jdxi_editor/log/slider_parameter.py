@@ -6,8 +6,7 @@ import logging
 from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB,
-    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB,
+    AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
@@ -43,10 +42,10 @@ def log_slider_parameters(
             part_name_lmb = "COMMON"
 
         message = (
-            f"Updating synth umb {synth_umb:<2} \t {synth_name_umb:<20} "
-            f"part lmb {part_lmb:<2} \t {part_name_lmb:<20} "
-            f"{param.name:<30} "
-            f"MIDI {value:<4} -> Slider {slider_value}"
+            f"Updating [umb {synth_umb:<3} {synth_name_umb:<20}] "
+            f"[lmb {part_lmb:<3} {part_name_lmb:<20}] "
+            f"[lsb: 0x{param.address:02X} {param.name:<35}] "
+            f"midi data: {value:<4} → Slider: {slider_value:.1f}"
         )
 
         emoji = LEVEL_EMOJIS.get(level, "🔔")
