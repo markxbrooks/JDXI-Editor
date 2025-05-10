@@ -132,7 +132,7 @@ def get_partial_address(part_name: str) -> str:
     for key, value in DRUM_TONE_MAP.items():
         if value == part_name:
             return key
-    return "Unknown"
+    return "TONE_COMMON"
 
 
 def get_drum_tone(byte_value: int) -> str:
@@ -141,7 +141,7 @@ def get_drum_tone(byte_value: int) -> str:
     :param byte_value: int
     :return: str
     """
-    return DRUM_TONE_MAP.get(byte_value, "Unknown")
+    return DRUM_TONE_MAP.get(byte_value, "TONE_COMMON")
 
 
 def get_synth_tone(byte_value: int) -> str:
@@ -150,7 +150,7 @@ def get_synth_tone(byte_value: int) -> str:
     :param byte_value: int
     :return: str
     """
-    return SYNTH_TONE_MAP.get(byte_value, "Unknown")
+    return SYNTH_TONE_MAP.get(byte_value, "TONE_COMMON")
 
 
 def extract_tone_name(data: bytes) -> str:
@@ -258,8 +258,8 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         synth_tone = get_synth_tone(data[
                                         JDXISysExOffset.ADDRESS_LMB]) if len(
             data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
-    log_parameter("temporary_area", temporary_area)
-    log_parameter("synth_tone", synth_tone)
+    log_parameter("temporary_area", temporary_area, silent=True)
+    log_parameter("synth_tone", synth_tone, silent=True)
     parsed_data = initialize_parameters(data)
     parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:

@@ -202,10 +202,10 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         temporary_area = parsed_data.get("TEMPORARY_AREA")
-        log_parameter("ADDRESS", address)
-        log_parameter("TEMPORARY_AREA", temporary_area)
-        log_parameter("TONE_NAME", tone_name)
-        log_parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"))
+        log_parameter("ADDRESS", address, silent=True)
+        log_parameter("TEMPORARY_AREA", temporary_area, silent=True)
+        log_parameter("TONE_NAME", tone_name, silent=True)
+        log_parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"), silent=True)
 
         if address in valid_addresses and tone_name:
             if address == "12180000":
