@@ -63,3 +63,62 @@ class PartialController(QObject):
         :param value: The new value.
         """
         print(f"Partial {partial_number}: {param} set to {value}")
+        
+    def _on_partial_state_changed(
+        self, partial: DigitalPartial, enabled: bool, selected: bool
+    ) -> None:
+        """
+        Handle the state change of a partial (enabled/disabled and selected/unselected).
+        :param partial: The partial to modify
+        :param enabled: Whether the partial is enabled (ON/OFF)
+        :param selected: Whether the partial is selected
+        :return: None
+        """
+        self.set_partial_state(partial, enabled, selected)
+
+        # Enable/disable corresponding tab
+        partial_num = partial.value
+        self.partial_tab_widget.setTabEnabled(partial_num - 1, enabled)
+
+        # Switch to selected partial's tab
+        if selected:
+            self.partial_tab_widget.setCurrentIndex(partial_num - 1)
+
+    def set_partial_state(
+        self, partial: DigitalPartial, enabled: bool = True, selected: bool = True
+    ) -> Optional[bool]:
+        """
+        Set the state of a partial (enabled/disabled and selected/unselected).
+        :param partial: The partial to modify
+        :param enabled: Whether the partial is enabled (ON/OFF)
+        :param selected: Whether the partial is selected
+        :return: True if successful, False otherwise
+        """
+        try:
+            log_parameter("Setting partial:", partial.switch_param)
+            log_parameter("Partial state enabled (Yes/No):", enabled)
+            log_parameter("Partial selected (Yes/No):", selected)
+            self.send_midi_parameter(
+                param=partial.switch_param, value=1 if enabled else 0
+            )
+            self.send_midi_parameter(
+                param=partial.select_param, value=1 if selected else 0
+            )
+            return True
+        except Exception as ex:
+            log_error(f"Error setting partial {partial.name} state: {str(ex)}")
+            return False
+
+    def _initialize_partial_states(self):
+        """
+        Initialize partial states with defaults
+        Default: Partial 1 enabled and selected, others disabled
+        """
+        for partial in DigitalPartial.get_partials():
+            enabled = partial == DigitalPartial.PARTIAL_1
+            selected = enabled
+            self.partials_panel.switches[partial].setState(enabled, selected)
+            self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
+        self.partial_tab_widget.setCurrentIndex(0)
+        
+    
