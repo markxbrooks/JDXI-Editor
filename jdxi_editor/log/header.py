@@ -6,21 +6,16 @@ from jdxi_editor.log.message import log_message
 
 def log_header_message(message: str, level: int = logging.INFO) -> None:
     """
-    Log a message with emojis based on severity and content keywords.
+    Logs a visually distinct header message with separator lines and emojis.
 
-    :param message: str The message to log.
-    :param level: int Logging level (default: logging.INFO).
-    :return: None
+    :param message: The message to log.
+    :param level: Logging level (default: logging.INFO).
     """
     stacklevel = 3
-    log_message(
-        "\n======================================================================================================================================",
-        level=level,
-        stacklevel=stacklevel,
-    )
-    log_message(f"  {message}", level=level, stacklevel=stacklevel)
-    log_message(
-        "============================================================================================",
-        level=level,
-        stacklevel=stacklevel,
-    )
+    full_separator = f"{'=' * 142}"
+    separator = f"{'=' * 100}"
+
+    log_message(f"\n{full_separator}", level=level, stacklevel=stacklevel)
+    log_message(f"{message}", level=level, stacklevel=stacklevel)
+    log_message(separator, level=level, stacklevel=stacklevel)
+

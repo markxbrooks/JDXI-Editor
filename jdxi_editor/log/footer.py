@@ -1,4 +1,5 @@
 """ log footer message """
+
 import logging
 
 from jdxi_editor.log.message import log_message
@@ -6,14 +7,12 @@ from jdxi_editor.log.message import log_message
 
 def log_footer_message(message: str, level: int = logging.INFO) -> None:
     """
-    Log a message with emojis based on severity and content keywords.
+    Logs a highlighted footer message with separators for visibility.
 
-    :param message: str The message to log.
-    :param level: int Logging level (default: logging.INFO).
-    :return: None
+    :param message: The message to log.
+    :param level: Logging level (default: logging.INFO).
     """
-    log_message(f"  {message}", level=level)
-    log_message(
-        "============================================================================================",
-        level=level, stacklevel=2
-    )
+    stacklevel = 3
+    separator = "=" * 100
+    log_message(f"  {message}", level=level, stacklevel=stacklevel)
+    log_message(separator, level=level, stacklevel=stacklevel)

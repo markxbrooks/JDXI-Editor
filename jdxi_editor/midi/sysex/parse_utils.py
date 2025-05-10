@@ -25,7 +25,8 @@ from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
 from jdxi_editor.log.json import log_json
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB, \
+    AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
@@ -129,7 +130,7 @@ def get_partial_address(part_name: str) -> str:
     :param part_name: str
     :return: str
     """
-    for key, value in DRUM_TONE_MAP.items():
+    for key, value in SYNTH_TONE_MAP.items():
         if value == part_name:
             return key
     return "TONE_COMMON"
@@ -206,14 +207,15 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
+    temporary_area = get_temporary_area(data) or "Unknown"
+    tone_handlers = {AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name: get_drum_tone}
+    tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
+    synth_tone = tone_handler(data[JDXISysExOffset.ADDRESS_LMB]) if len(data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
     return {
         "JD_XI_HEADER": safe_extract(data, JDXISysExOffset.SYSEX_START, JDXISysExOffset.COMMAND_ID),
         "ADDRESS": safe_extract(data, JDXISysExOffset.COMMAND_ID, JDXISysExOffset.ADDRESS_LSB),
-        "TEMPORARY_AREA": get_temporary_area(data) or "Unknown",
-        "SYNTH_TONE": (
-            get_drum_tone(data[JDXISysExOffset.ADDRESS_LMB])
-            if len(data) > JDXISysExOffset.ADDRESS_LMB else "Unknown"
-        ),
+        "TEMPORARY_AREA": temporary_area,
+        "SYNTH_TONE": synth_tone,
         "TONE_NAME": (
             extract_tone_name(data)
             if len(data) >= JDXISysExOffset.TONE_NAME_END else "Unknown"
@@ -267,7 +269,6 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         return _return_minimal_metadata(data)
     else:
         if len(data) < MIN_LONG_SYSEX_DATA_LENGTH:
-            log_message("Short SysEx Detected", level=logging.WARNING)
             update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
         else:
             update_data_with_parsed_parameters(data, parameter_cls, parsed_data)

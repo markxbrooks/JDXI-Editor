@@ -28,6 +28,7 @@ from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
@@ -44,6 +45,7 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
+from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
     get_preset_parameter_value,
@@ -93,12 +95,14 @@ class SynthEditor(SynthBase):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
+        self.partial_map = SYNTH_PARTIAL_MAP
         self.sysex_current_data = None
         self.preset_list = None
         self.presets = None
         # self.midi_helper = midi_helper
         self.midi_helper = MidiIOHelper()
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
+        self.midi_helper.midi_control_changed.connect(self._handle_control_change)
         self.cc_parameters = dict()
         self.nrpn_parameters = dict()
         self.nrpn_map = dict()
@@ -275,37 +279,57 @@ class SynthEditor(SynthBase):
         :param json_sysex_data:
         :return: None
         """
-        failures, successes = [], []
-
-        # Parse SysEx data
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
-        temp_area = sysex_data.get("TEMPORARY_AREA")
-        log_parameter("temp_area", temp_area)
+
+        current_synth = get_area([self.address.msb, self.address.umb])
+        temporary_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
+        if not current_synth == temporary_area:
+            log_message(
+                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+            )
+            return
+        log_header_message(
+            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+        )
 
         # Analog is simple so deal with the 1st
-        if temp_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
+        if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
             self._update_sliders_from_sysex(json_sysex_data)
-        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            log_message("\nTone common")
-            self._update_tone_common_modify_sliders_from_sysex(json_sysex_data)
-        elif synth_tone in ["PRC3"]:  # This is for drums but comes through
-            pass
-        else:
-            self._update_sliders_from_sysex(json_sysex_data)
+        elif synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+            self._update_common_sliders_from_sysex(json_sysex_data)
+        else:  # Drums and Digital 1 & 2 are dealt with via partials
+            incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
+            filtered_data = filter_sysex_keys(sysex_data)
+            self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
-    def _update_tone_common_modify_sliders_from_sysex(
+    def _update_common_sliders_from_sysex(
         self, json_sysex_data: str
     ) -> None:
         """
         Update sliders and combo boxes based on parsed SysEx data.
         :param json_sysex_data: str
         :return: None
-        should be implemented by subclass
         """
-        pass
+
+        successes, failures = [], []
+
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data or not _is_valid_sysex_area(sysex_data):
+            return
+
+        log_synth_area_info(sysex_data)
+
+        synth_tone = sysex_data.get("SYNTH_TONE")
+
+        filtered_data = filter_sysex_keys(sysex_data)
+
+        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+            self._update_common_controls(filtered_data, successes, failures)
+
+        log_debug_info(filtered_data, successes, failures)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
         """
@@ -451,7 +475,7 @@ class SynthEditor(SynthBase):
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
         log_message(
-            f"control change {channel} {control} detected with value {value}, requesting data update"
+            f"Control change {channel} {control} detected with value {value}, requesting data update"
         )
         self.data_request()
 
@@ -535,25 +559,6 @@ class SynthEditor(SynthBase):
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
-
-    def _update_slider(self,
-                       param: AddressParameter,
-                       value: int,
-                       successes: list = None,
-                       failures: list = None,
-                       debug: bool = False):
-        """Safely update sliders from NRPN messages."""
-        slider = self.controls.get(param)
-        if slider:
-            if hasattr(param, "convert_from_midi"):
-                slider_value = param.convert_from_midi(value)
-            else:
-                slider_value = value
-            log_message(f"Updating {param.name}: MIDI {value} -> Slider {slider_value:1f}")
-            slider.blockSignals(True)
-            slider.setValue(slider_value)
-            slider.blockSignals(False)
-            log_message(f"Updated {param.name} slider to {slider_value}")
 
     def send_analog_synth_parameter(
         self, parameter: str, value: int, channel: int = 0
@@ -644,3 +649,6 @@ class SynthEditor(SynthBase):
                 self.cc_lsb_value = value
         except Exception as ex:
             log_error(f"Error {ex} occurred handling control change")
+
+    def _update_common_controls(self, filtered_data, successes, failures):
+        pass

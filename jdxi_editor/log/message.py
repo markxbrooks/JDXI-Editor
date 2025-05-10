@@ -1,4 +1,5 @@
 """ log message """
+
 import logging
 
 from jdxi_editor.globals import logger, LOGGING
@@ -15,12 +16,11 @@ def log_message(message: str, level: int = logging.INFO, stacklevel=2, silent=Fa
     :param silent: bool
     :return: None
     """
-    # msg_lower = message.lower()
 
     emoji = LEVEL_EMOJIS.get(level, "🔔")
     midi_tag = "🎵" if "midi" in message or "sysex" in message else ""
     jdxi_tag = "🎹" if "jdxi" in message or "jd-xi" in message else ""
-    qc_passed_tag = "📊" if "Rate" in message else "✅" if "update" in message or "uccess" in message or "passed" in message else ""
+    qc_passed_tag = "📊" if "Rate" in message else "✅" if "update" in message or "uccess" in message or "passed" in message or "eceived" in message else ""
     qc_failed_tag = "❌" if "ail" in message else ""
 
     # Combine emoji tags, then append message
