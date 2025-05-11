@@ -42,6 +42,7 @@ class AddressParameter(Enum):
     """
 
     def __init__(self, address: int, min_val: int, max_val: int):
+        self.CONVERSION_OFFSETS = []
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
@@ -151,8 +152,47 @@ class AddressParameter(Enum):
         :return: int default area to be subclassed
         """
         return ZERO_BYTE, ZERO_BYTE
+    
+    def convert_value(self, value: int, reverse: bool = False) -> int:
+        """
+        Converts value in both directions based on CONVERSION_OFFSETS
+        :param value: int The value
+        :param reverse: bool The reverse flag
+        :return: int The converted value
+        """
+        if value is None:
+            return
+        conversion = self.CONVERSION_OFFSETS.get(self.name)
 
-    def convert_to_midi(self, value: int) -> int:
+        if conversion == "map_range":
+            return (
+                map_range(value, 54, 74, -100, 100)
+                if reverse
+                else map_range(value, -100, 100, 54, 74)
+            )
+
+        if isinstance(conversion, int):
+            return value - conversion if reverse else value + conversion
+
+        return value  # Default case: return as is
+
+    def convert_to_midi(self, slider_value: int) -> int:
+        """
+        Convert from display value to MIDI value
+        :param slider_value: int The display value
+        :return: int The MIDI value
+        """
+        return self.convert_value(slider_value)
+
+    def convert_from_midi(self, midi_value: int) -> int:
+        """
+        Convert from MIDI value to display value
+        :param midi_value: int The MIDI value
+        :return: int The display value
+        """
+        return self.convert_value(midi_value, reverse=True)
+
+    def convert_to_midi_old(self, value: int) -> int:
         """
         Convert the value to MIDI range (0-127) for sending via MIDI.
         :param value: int value to convert

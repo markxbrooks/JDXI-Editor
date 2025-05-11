@@ -70,6 +70,31 @@ class AddressParameterDrumPartial(AddressParameter):
             "WMT4_WAVE_FINE_TUNE",
             "WMT4_WAVE_PAN",
         ]
+        self.CONVERSION_OFFSETS = {
+            "PITCH_ENV_DEPTH": 64,
+            "OSC_PITCH_ENV_DEPTH": 64,
+            "AMP_PAN": 64,
+            "FILTER_CUTOFF_KEYFOLLOW": "map_range",
+            "AMP_LEVEL_KEYFOLLOW": "map_range",
+            "OSC_PITCH": 64,
+            "FILTER_ENV_VELOCITY_SENSITIVITY": 64,
+            "FILTER_ENV_DEPTH": 64,
+            "FILTER_ENV_ATTACK_TIME": 64,
+            "FILTER_ENV_DECAY_TIME": 64,
+            "FILTER_ENV_SUSTAIN_LEVEL": 64,
+            "FILTER_ENV_RELEASE_TIME": 64,
+            "LFO_PITCH_DEPTH": 64,
+            "LFO_FILTER_DEPTH": 64,
+            "LFO_AMP_DEPTH": 64,
+            "LFO_PAN_DEPTH": 64,
+            "MOD_LFO_PITCH_DEPTH": 64,
+            "MOD_LFO_FILTER_DEPTH": 64,
+            "MOD_LFO_AMP_DEPTH": 64,
+            "MOD_LFO_PAN": 64,
+            "MOD_LFO_RATE_CTRL": 64,
+            "CUTOFF_AFTERTOUCH": 64,
+            "LEVEL_AFTERTOUCH": 64,
+        }
 
     # Partial Name parameters
     PARTIAL_NAME_1 = (0x00, 32, 127)
@@ -537,7 +562,7 @@ class AddressParameterDrumPartial(AddressParameter):
 
         return value
 
-    def convert_to_midi(self, value: int) -> int:
+    def convert_to_midi_old(self, value: int) -> int:
         """
         Convert the value to MIDI range (0-127) for sending via MIDI.
         :param value: int value to convert
