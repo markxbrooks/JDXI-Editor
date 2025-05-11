@@ -14,7 +14,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -135,7 +135,7 @@ class DigitalFilterSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
+        self.filter_adsr_widget.setStyleSheet(JDXiStyle.ADSR)
         env_layout.addWidget(self.filter_adsr_widget)
 
         # Envelope Depth

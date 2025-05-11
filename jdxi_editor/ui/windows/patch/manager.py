@@ -37,7 +37,7 @@ import logging
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
 
@@ -59,7 +59,7 @@ class PatchManager(QMainWindow):
         self.setMinimumSize(400, 200)
 
         # Apply dark theme styling
-        self.setStyleSheet(JDXIStyle.PATCH_MANAGER)
+        self.setStyleSheet(JDXiStyle.PATCH_MANAGER)
 
         # Create central widget and layout
         main_widget = QWidget()

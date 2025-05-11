@@ -6,7 +6,7 @@ from typing import Callable
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
@@ -81,7 +81,7 @@ class AnalogOscillatorSection(QWidget):
             AnalogOscWave.PULSE,
         ]:
             btn = AnalogWaveformButton(waveform)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
             # Set icons
             icon_name = (
@@ -177,7 +177,7 @@ class AnalogOscillatorSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.pitch_env_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
+        self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QHBoxLayout()

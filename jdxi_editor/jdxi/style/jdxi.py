@@ -82,7 +82,7 @@ from jdxi_editor.jdxi.style.factory import (
 )
 
 
-class JDXIStyle:
+class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
@@ -426,6 +426,14 @@ class JDXIStyle:
             border-radius: 10px;
         }
         """
+
+    CREDITS_LABEL_STYLE = """
+            /* QLabels */
+                QLabel {{
+                    color: 'black';
+                    background: #FFFFFF;
+            }}
+            """
 
     SLIDER = f"""
             QSlider::handle:horizontal{{

@@ -11,7 +11,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
@@ -104,7 +104,7 @@ class AmpSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
+        self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
 
         layout.addWidget(env_group)

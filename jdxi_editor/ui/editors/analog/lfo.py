@@ -9,7 +9,7 @@ from PySide6.QtCore import QSize
 import qtawesome as qta
 
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class AnalogLFOSection(QWidget):
@@ -63,7 +63,7 @@ class AnalogLFOSection(QWidget):
             btn.setCheckable(True)
             btn.setProperty("value", value)
             btn.setIcon(qta.icon(icon_name, color="#FFFFFF", icon_size=0.7))
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
             btn.setIconSize(QSize(20, 20))
             btn.setFixedSize(60, 30)
             btn.setToolTip(name)

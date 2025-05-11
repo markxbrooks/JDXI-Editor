@@ -31,11 +31,9 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
@@ -114,13 +112,10 @@ class SynthBase(QWidget):
 
     def _on_parameter_changed(self, param: AddressParameter, display_value: int):
         """Handle parameter value changes from UI controls."""
-        log_parameter("AddressParameter", param)
-        log_parameter("_on_parameter_changed display_value", display_value)
         try:
             # Convert display value to MIDI value
             if hasattr(param, "convert_to_midi"):
                 midi_value = param.convert_to_midi(display_value)
-                log_parameter("_on_parameter_changed midi_value", midi_value)
             else:
                 midi_value = (
                     param.convert_from_display(display_value)

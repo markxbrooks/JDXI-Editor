@@ -32,7 +32,7 @@ from PySide6.QtCore import Qt, QPointF
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen, QFont
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PitchEnvPlot(QWidget):
@@ -54,7 +54,7 @@ class PitchEnvPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        self.setStyleSheet(JDXIStyle.ADSR_PLOT)
+        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)

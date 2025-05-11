@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout
 from PySide6.QtWidgets import QHBoxLayout, QGridLayout
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.factory import (
     generate_sequencer_button_style,
     toggle_button_style,
@@ -75,7 +75,7 @@ def add_sequencer_container(
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
     sequencer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    sequencer_label.setStyleSheet(JDXIStyle.TRANSPARENT)
+    sequencer_label.setStyleSheet(JDXiStyle.TRANSPARENT)
     sequencer_layout = QHBoxLayout()
     # favorites_button_row, favorite_button = create_favorite_button_row()
     sequencer, sequencer_buttons = create_sequencer_buttons_row(
@@ -118,7 +118,7 @@ def add_favorite_button_container(central_widget):
     favorite_button.setFixedSize(30, 30)
     favorite_button.setCheckable(True)
     # Style the button with brighter hover/border_pressed/selected  states
-    favorite_button.setStyleSheet(JDXIStyle.BUTTON_ROUND)
+    favorite_button.setStyleSheet(JDXiStyle.BUTTON_ROUND)
     row.addLayout(favourite_button_column)
     favourite_button_column.addWidget(favourite_button_label)
     favourite_button_column.addWidget(favorite_button)

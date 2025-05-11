@@ -45,7 +45,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.vocal_effects.vocal import (
     VocalAutoPitchType,
     VocalOutputAssign,
@@ -78,7 +78,7 @@ class VocalFXEditor(BasicEditor):
             AddressOffsetProgramLMB.VOCAL_EFFECT,
             ZERO_BYTE,
         )
-        self.setStyleSheet(JDXIStyle.EDITOR + JDXIStyle.TABS)
+        self.setStyleSheet(JDXiStyle.EDITOR + JDXiStyle.TABS)
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -99,7 +99,7 @@ class VocalFXEditor(BasicEditor):
         # self.title_label = QLabel("Vocal Effects")
         self.title_label = DigitalTitle()
         self.title_label.setText("Vocal Effects")
-        self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
+        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
         container_layout.addLayout(title_layout)
@@ -247,7 +247,7 @@ class VocalFXEditor(BasicEditor):
         vocoder_layout.addLayout(hpf_row)
 
         layout.addWidget(vocoder_group)
-        vocoder_group.setStyleSheet(JDXIStyle.ADSR)
+        vocoder_group.setStyleSheet(JDXiStyle.ADSR)
         return vocal_effect_section
 
     def _create_mixer_section(self) -> QWidget:

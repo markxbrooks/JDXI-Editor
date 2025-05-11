@@ -73,7 +73,7 @@ from jdxi_editor.ui.editors.digital.utils import (
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 
 
@@ -142,7 +142,7 @@ class DigitalSynthEditor(SynthEditor):
         """set up user interface"""
         self.setMinimumSize(850, 300)
         self.resize(1030, 600)
-        self.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
+        self.setStyleSheet(JDXiStyle.TABS + JDXiStyle.EDITOR)
 
         # Main layout
         main_layout = QVBoxLayout()
@@ -159,7 +159,7 @@ class DigitalSynthEditor(SynthEditor):
 
         # Partials panel only
         self.partials_panel = PartialsPanel()
-        self.partials_panel.setStyleSheet(JDXIStyle.TABS)
+        self.partials_panel.setStyleSheet(JDXiStyle.TABS)
 
         for switch in self.partials_panel.switches.values():
             switch.stateChanged.connect(self._on_partial_state_changed)
@@ -186,7 +186,7 @@ class DigitalSynthEditor(SynthEditor):
         splitter.addWidget(top_widget)
         splitter.addWidget(scroll)
         splitter.setSizes([100, 600])  # give more room to bottom
-        splitter.setStyleSheet(JDXIStyle.SPLITTER)
+        splitter.setStyleSheet(JDXiStyle.SPLITTER)
         self.show()
 
     def _create_partial_tab_widget(
@@ -199,7 +199,7 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         self.partial_tab_widget = QTabWidget()
-        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS + JDXIStyle.EDITOR)
+        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS + JDXiStyle.EDITOR)
         self.partial_editors = {}
         # Create editor for each partial
         for i in range(1, 4):
@@ -595,13 +595,13 @@ class DigitalSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
         else:
             logging.warning("Waveform button not found for: %s", selected_waveform)
 

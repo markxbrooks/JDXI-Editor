@@ -47,7 +47,7 @@ from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
 
@@ -87,7 +87,7 @@ class PatternSequencer(SynthEditor):
         self.midi_file.tracks.append(self.midi_track)  # Add the track to the file
         self._setup_ui()
         self._init_midi_file()
-        self.setStyleSheet(JDXIStyle.EDITOR)
+        self.setStyleSheet(JDXiStyle.EDITOR)
 
     def _setup_ui(self):
         self.layout = QVBoxLayout()
@@ -111,16 +111,16 @@ class PatternSequencer(SynthEditor):
         file_layout = QHBoxLayout()
 
         self.load_button = QPushButton(
-            qta.icon("mdi.file-music-outline", color=JDXIStyle.FOREGROUND), "Load"
+            qta.icon("mdi.file-music-outline", color=JDXiStyle.FOREGROUND), "Load"
         )
         self.load_button.clicked.connect(self._load_pattern_dialog)
         self.save_button = QPushButton(
-            qta.icon("fa.save", color=JDXIStyle.FOREGROUND), "Save"
+            qta.icon("fa.save", color=JDXiStyle.FOREGROUND), "Save"
         )
         self.save_button.clicked.connect(self._save_pattern_dialog)
         # Add the Clear Learned Pattern button
         self.clear_learn_button = QPushButton(
-            qta.icon("ei.broom", color=JDXIStyle.FOREGROUND), "Clear"
+            qta.icon("ei.broom", color=JDXiStyle.FOREGROUND), "Clear"
         )
         self.clear_learn_button.clicked.connect(self._clear_learned_pattern)
         self.drum_selector = QComboBox()
@@ -138,11 +138,11 @@ class PatternSequencer(SynthEditor):
 
         # Add the Clear Learned Pattern button
         self.learn_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Start"
+            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Start"
         )
         self.learn_button.clicked.connect(self.on_learn_pattern_button_clicked)
         self.stop_learn_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop"
+            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.stop_learn_button.clicked.connect(
             self.on_stop_learn_pattern_button_clicked
@@ -163,7 +163,7 @@ class PatternSequencer(SynthEditor):
         self.tempo_spinbox.valueChanged.connect(self._on_tempo_changed)
 
         self.tap_tempo_button = QPushButton(
-            qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND), "Tap"
+            qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND), "Tap"
         )
         self.tap_tempo_button.clicked.connect(self._on_tap_tempo)
 
@@ -178,10 +178,10 @@ class PatternSequencer(SynthEditor):
         transport_layout = QHBoxLayout()
 
         self.start_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play"
+            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
         )
         self.stop_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop"
+            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.start_button.clicked.connect(self.play_pattern)
         self.stop_button.clicked.connect(self.stop_pattern)
@@ -205,16 +205,16 @@ class PatternSequencer(SynthEditor):
             # Create and add label
             icon_label = QLabel()
             icon_label.setPixmap(
-                qta.icon(icon_name, color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+                qta.icon(icon_name, color=JDXiStyle.FOREGROUND).pixmap(40, 40)
             )
 
             icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             header_layout.addWidget(icon_label)
             label = QLabel(label_text)
             if label_text == "Analog Synth":
-                color = JDXIStyle.ACCENT_ANALOG
+                color = JDXiStyle.ACCENT_ANALOG
             else:
-                color = JDXIStyle.ACCENT
+                color = JDXiStyle.ACCENT
             icon_label.setStyleSheet(f"color: {color}")
             label.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}")
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)

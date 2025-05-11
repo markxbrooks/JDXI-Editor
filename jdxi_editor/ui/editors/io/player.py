@@ -24,7 +24,7 @@ from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
 from jdxi_editor.ui.editors import SynthEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track import MidiTrackViewer
 
@@ -78,7 +78,7 @@ class MidiPlayer(SynthEditor):
 
         self.load_button = QPushButton("Load MIDI File")
         self.load_button = QPushButton(
-            qta.icon("mdi.midi-port", color=JDXIStyle.FOREGROUND), "Load MIDI File"
+            qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Load MIDI File"
         )
         self.load_button.clicked.connect(self.load_midi)
         layout.addWidget(self.load_button)
@@ -111,16 +111,16 @@ class MidiPlayer(SynthEditor):
         transport_group.setLayout(transport_layout)
         # self.play_button = QPushButton("Play")
         self.play_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play"
+            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
         )
         self.play_button.clicked.connect(self.start_playback)
         transport_layout.addWidget(self.play_button)
 
         self.stop_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop"
+            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.pause_button = QPushButton(
-            qta.icon("ri.pause-line", color=JDXIStyle.FOREGROUND), "Pause"
+            qta.icon("ri.pause-line", color=JDXiStyle.FOREGROUND), "Pause"
         )
         self.stop_button.clicked.connect(self.stop_playback)
         self.pause_button.clicked.connect(self.toggle_pause_playback)

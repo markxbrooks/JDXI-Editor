@@ -57,7 +57,6 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.address.sysex import VALUE_ON, VALUE_OFF, ZERO_BYTE
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
-from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
@@ -88,7 +87,7 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.ui.editors.io.player import MidiPlayer
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
 from jdxi_editor.ui.editors.io.preset import PresetEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
@@ -108,7 +107,7 @@ class JdxiInstrument(JdxiUi):
     def __init__(self):
         super().__init__()
         if platform.system() == "Windows":
-            self.setStyleSheet(JDXIStyle.TRANSPARENT + JDXIStyle.ADSR_DISABLED)
+            self.setStyleSheet(JDXiStyle.TRANSPARENT + JDXiStyle.ADSR_DISABLED)
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
@@ -256,9 +255,9 @@ class JdxiInstrument(JdxiUi):
         for synth_type, button in self.synth_buttons.items():
             is_selected = synth_type == self.current_synth_type
             button.setStyleSheet(
-                JDXIStyle.BUTTON_ROUND_SELECTED
+                JDXiStyle.BUTTON_ROUND_SELECTED
                 if not is_selected
-                else JDXIStyle.BUTTON_ROUND
+                else JDXiStyle.BUTTON_ROUND
             )
             button.setChecked(is_selected)
 

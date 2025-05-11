@@ -1,6 +1,7 @@
 """
 btk_dialog for about JD-XI Editor
 """
+
 import os
 from typing import Optional
 from PySide6.QtGui import QPixmap, Qt
@@ -15,17 +16,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QSettings, QRect
 
 from jdxi_editor.project import __version__, __program__
-
 from jdxi_editor.resources import resource_path
-from jdxi_editor.jdxi.style import JDXIStyle
-
-CREDITS_LABEL_STYLE = """
-        /* QLabels */
-            QLabel {{
-                color: 'black';
-                background: #FFFFFF;
-        }}
-        """
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class UiAboutDialog(QDialog):
@@ -42,10 +34,10 @@ class UiAboutDialog(QDialog):
         """
         self.resize(508, 300)
         self.setWindowTitle(f"about {__program__}")
-        self.setStyleSheet(JDXIStyle.SPLASH_SCREEN + CREDITS_LABEL_STYLE)
+        self.setStyleSheet(JDXiStyle.SPLASH_SCREEN + JDXiStyle.CREDITS_LABEL_STYLE)
         main_layout = QVBoxLayout(self)
         group_box_layout = QVBoxLayout(self)
-        group_box = QGroupBox("JDXI Editor")
+        group_box = QGroupBox("JDXi Editor")
         group_box_layout.addWidget(group_box)
         image_layout = QVBoxLayout(self)
         group_box.setLayout(image_layout)
@@ -86,13 +78,7 @@ class UiAboutDialog(QDialog):
             "Licensed under the <a style='color: blue' href='https://opensource.org/licenses/MIT'>MIT License</a>"
         )
         credits_label.setStyleSheet(
-            """
-                /* QLabels */
-                    QLabel {{
-                        color: 'black';
-                        background: #FFFFFF;
-                }}
-                """
+            JDXiStyle.CREDITS_LABEL_STYLE
         )
         credits_label.setOpenExternalLinks(True)
         credits_label.setAlignment(Qt.AlignCenter)

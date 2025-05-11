@@ -37,7 +37,6 @@ Example usage:
     To retrieve a list of all program and tone name requests:
     all_requests = PROGRAM_AND_TONE_NAME_REQUESTS
 """
-from __future__ import annotations
 
 from enum import Enum
 from typing import Union
@@ -52,15 +51,6 @@ def roland_checksum(data: str) -> str:
     byte_values = [int(x, 16) for x in data.split()]
     checksum = (128 - (sum(byte_values) % 128)) % 128
     return f"{checksum:02X}"
-
-
-def roland_checksum_from_bytes(data: list[int]) -> int:
-    """
-    roland_checksum_from_bytes
-    :param data: list[int]
-    :return: int
-    """
-    return (128 - (sum(data) % 128)) % 128
 
 
 def create_request(header: str, temp_area: Union[str, JDXISysExHex], part: str) -> str:

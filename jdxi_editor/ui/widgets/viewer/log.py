@@ -36,7 +36,7 @@ import logging
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit, QPushButton
 
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class LogViewer(QMainWindow):
@@ -46,7 +46,7 @@ class LogViewer(QMainWindow):
         self.setMinimumSize(980, 400)
 
         # Apply dark theme styling
-        self.setStyleSheet(JDXIStyle.LOG_VIEWER)
+        self.setStyleSheet(JDXiStyle.LOG_VIEWER)
 
         # Create central widget and layout
         main_widget = QWidget()

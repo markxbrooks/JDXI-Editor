@@ -46,7 +46,7 @@ from jdxi_editor.midi.data.piano.keyboard import (
     KEYBOARD_WHITE_NOTES,
     DRUM_LABELS,
 )
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.piano.key import PianoKey
 
 
@@ -87,7 +87,7 @@ class PianoKeyboard(QWidget):
         for text in DRUM_LABELS:
             label = QLabel(text)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            label.setStyleSheet(JDXIStyle.KEYBOARD_DRUM_LABELS)
+            label.setStyleSheet(JDXiStyle.KEYBOARD_DRUM_LABELS)
             labels_layout.addWidget(label)
 
         labels_layout.addStretch()

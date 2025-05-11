@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal
 
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PartialSwitch(QWidget):
@@ -64,7 +64,7 @@ class PartialSwitch(QWidget):
         layout.addWidget(self.select_check)
 
         # Style
-        self.setStyleSheet(JDXIStyle.PARTIAL_SWITCH)
+        self.setStyleSheet(JDXiStyle.PARTIAL_SWITCH)
 
     def _on_state_changed(self, _):
         """Handle checkbox state changes"""

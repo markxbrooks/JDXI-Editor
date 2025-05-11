@@ -25,7 +25,7 @@ from typing import Optional, Iterable
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
@@ -50,7 +50,7 @@ from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.message.channel import ChannelMessage
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.sysex.parse_utils import MIN_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.sysex.parse_utils import ONE_BYTE_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 # from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
@@ -238,7 +238,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending parameter: {ex}")
+            log_error(f"Error sending message: {ex}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -481,7 +481,7 @@ class MidiOutHandler(MidiIOController):
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
-                    if len(msg) >= MIN_SYSEX_DATA_LENGTH and msg[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and msg[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX:
+                    if len(msg) >= ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START] == START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX:
                         # Parse response
                         response = SysExMessage.from_bytes(bytes(msg))
                         # Extract parameter value

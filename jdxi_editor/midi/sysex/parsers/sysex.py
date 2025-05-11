@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.sysex.parse_utils import parse_sysex
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
@@ -50,7 +50,7 @@ class JDXiSysExParser:
         if not self._is_valid_sysex():
             raise ValueError("Invalid SysEx message")
 
-        if len(self.sysex_data) <= JDXISysExOffset.ADDRESS_LSB:
+        if len(self.sysex_data) <= JDXiSysExOffset.ADDRESS_LSB:
             raise ValueError("Invalid SysEx message: too short")
 
         if not self._verify_header():
@@ -79,12 +79,12 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-            self.sysex_data[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and self.sysex_data[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX
+                self.sysex_data[JDXiSysExOffset.SYSEX_START] == START_OF_SYSEX and self.sysex_data[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = self.sysex_data[JDXISysExOffset.ROLAND_ID:JDXISysExOffset.SYSEX_END]
+        data = self.sysex_data[JDXiSysExOffset.ROLAND_ID:JDXiSysExOffset.SYSEX_END]
         header_data = data[:len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)

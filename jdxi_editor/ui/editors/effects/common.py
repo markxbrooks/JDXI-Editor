@@ -50,7 +50,7 @@ from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffe
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
@@ -80,7 +80,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
-        self.title_label.setStyleSheet(JDXIStyle.INSTRUMENT_TITLE_LABEL)
+        self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
         self.address = RolandSysExAddress(
             AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
@@ -104,7 +104,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create address tab widget
         self.tabs = QTabWidget()
-        self.tabs.setStyleSheet(JDXIStyle.TABS)
+        self.tabs.setStyleSheet(JDXiStyle.TABS)
         main_layout.addWidget(self.tabs)
 
         # Add tabs

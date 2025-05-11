@@ -50,11 +50,13 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import CommandID
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
@@ -111,14 +113,19 @@ def parse_parameter(offset: int, parameter_type: AddressParameter) -> str:
 class MIDIDebugger(QMainWindow):
     # SysEx message structure constants
 
-    def __init__(self, midi_helper, parent=None):
+    def __init__(self, midi_helper: MidiIOHelper, parent: QWidget = None):
+        """
+        init method
+        :param midi_helper: MidiIOHelper
+        :param parent: main window
+        """
         super().__init__(parent)
         self.midi_helper = midi_helper
 
         # Set window properties
         self.setWindowTitle("MIDI Debugger")
         self.setMinimumSize(800, 600)
-        self.setStyleSheet(JDXIStyle.DEBUGGER)
+        self.setStyleSheet(JDXiStyle.DEBUGGER)
 
         # Create central widget
         central = QWidget()
@@ -231,28 +238,28 @@ class MIDIDebugger(QMainWindow):
             synth_tone = sysex_dict.get("SYNTH_TONE", "Unknown")
             param_name = sysex_dict.get("PARAM", "Unknown")
 
-            area_byte = message[8]
-            part_address = message[10]
-            param_address = message[11]
-            value = message[12]
-            checksum = message[13]
-            checksum_valid = validate_checksum(message[7:13], checksum)
+            address_msb = message[JDXiSysExOffset.ADDRESS_MSB]
+            address_umb = message[JDXiSysExOffset.ADDRESS_UMB]
+            address_lsb = message[JDXiSysExOffset.ADDRESS_LSB]
+            value = message[JDXiSysExOffset.VALUE]
+            checksum = message[JDXiSysExOffset.CHECKSUM]
+            checksum_valid = validate_checksum(message[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.CHECKSUM], checksum)
 
             lines = [
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
                 fmt_row("Byte", "Description", "Value", "Notes"),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
-                fmt_row(0, "Start of SysEx", hex(message[0])),
-                fmt_row(1, "Manufacturer ID", hex(message[1]), "Roland"),
-                fmt_row(2, "Device ID", hex(message[2])),
-                fmt_row("3-6", "Model ID", " ".join(hex(x) for x in message[3:7])),
+                fmt_row(0, "Start of SysEx", hex(message[JDXiSysExOffset.SYSEX_START])),
+                fmt_row(1, "Manufacturer ID", hex(message[JDXiSysExOffset.ROLAND_ID]), "Roland"),
+                fmt_row(2, "Device ID", hex(message[JDXiSysExOffset.DEVICE_ID])),
+                fmt_row("3-6", "Model ID", " ".join(hex(x) for x in message[JDXiSysExOffset.MODEL_ID_1:JDXiSysExOffset.COMMAND_ID])),
                 fmt_row(7, "Command ID", hex(command_byte), command_id),
-                fmt_row("8-9", "Synth Area", hex(area_byte), temporary_area),
-                fmt_row(10, "Synth Part", hex(part_address), synth_tone),
-                fmt_row(11, "Parameter Address Low", param_address, param_name),
+                fmt_row("8-9", "Synth Area", hex(address_msb), temporary_area),
+                fmt_row(10, "Synth Part", hex(address_umb), synth_tone),
+                fmt_row(11, "Parameter Address Low", address_lsb, param_name),
                 fmt_row(12, "Parameter Value", hex(value), f"{value} ({hex(value)})"),
                 fmt_row(13, "Checksum", hex(checksum), "Valid" if checksum_valid else "Invalid"),
-                fmt_row(14, "End of SysEx", hex(message[-1])),
+                fmt_row(14, "End of SysEx", hex(message[JDXiSysExOffset.SYSEX_END])),
                 f"|{'-' * 7}|{'-' * 30}|{'-' * 19}|{'-' * 32}|\n",
             ]
 

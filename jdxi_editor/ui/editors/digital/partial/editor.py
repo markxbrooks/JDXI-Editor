@@ -64,7 +64,7 @@ from jdxi_editor.ui.editors.digital.partial.lfo import DigitalLFOSection
 from jdxi_editor.ui.editors.digital.partial.mod_lfo import DigitalModLFOSection
 from jdxi_editor.ui.editors.digital.partial.oscillator import DigitalOscillatorSection
 from jdxi_editor.ui.editors.synth.partial import PartialEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class DigitalPartialEditor(PartialEditor):
@@ -215,13 +215,13 @@ class DigitalPartialEditor(PartialEditor):
         # Reset all buttons to default style
         for btn in self.oscillator_tab.wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
 
         # Apply active style to the selected waveform button
         selected_btn = self.oscillator_tab.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
         if not self.send_midi_parameter(

@@ -101,8 +101,8 @@ class SequencerSquare(QPushButton):
             self.settings.setValue(f'favorites/slot{self.slot_num}/channel', self.preset.channel)
         else:
             # Clear settings if no preset
-            self.settings.remove(f'favorites/slot{self.slot_num}')    
-    
+            self.settings.remove(f'favorites/slot{self.slot_num}')
+
     def _load_from_settings(self):
         # Load preset data from settings
         synth_type = self.settings.value(f'favorites/slot{self.slot_num}/synth_type', '')
@@ -112,7 +112,7 @@ class SequencerSquare(QPushButton):
             channel = self.settings.value(f'favorites/slot{self.slot_num}/channel', 0, type=int)
             # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
             self.preset = Preset(number=preset_num, name=preset_name, preset_type=synth_type)
-            
+
         def load_stored_preset(self):
         #""Load saved preset""
         if not self.preset:

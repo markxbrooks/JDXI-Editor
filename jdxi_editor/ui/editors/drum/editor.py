@@ -81,7 +81,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
@@ -160,13 +160,13 @@ class DrumCommonEditor(SynthEditor):
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
+        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         scroll.setWidget(self.partial_tab_widget)
         splitter.addWidget(scroll)
 
         splitter.setSizes([300, 300])
-        splitter.setStyleSheet(JDXIStyle.SPLITTER)
-        self.partial_tab_widget.setStyleSheet(JDXIStyle.TABS_DRUMS)
+        splitter.setStyleSheet(JDXiStyle.SPLITTER)
+        self.partial_tab_widget.setStyleSheet(JDXiStyle.TABS_DRUMS)
         self._setup_partial_editors()
 
         self.update_instrument_image()

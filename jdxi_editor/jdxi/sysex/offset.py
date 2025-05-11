@@ -22,7 +22,7 @@ class JDXIPitchBendOffset(IntEnum):
     END = -1
 
 
-class JDXISysExOffset(IntEnum):
+class JDXiSysExOffset(IntEnum):
     SYSEX_START = 0
     ROLAND_ID = 1
     DEVICE_ID = 2
@@ -37,6 +37,7 @@ class JDXISysExOffset(IntEnum):
     ADDRESS_LSB = 11
     TONE_NAME_START = 12
     TONE_NAME_END = 24
+    VALUE = -3
     CHECKSUM = -2
     SYSEX_END = -1
 

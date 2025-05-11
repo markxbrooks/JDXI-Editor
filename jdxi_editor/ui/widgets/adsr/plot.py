@@ -41,7 +41,7 @@ from PySide6.QtGui import (
     QMouseEvent,
 )
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class ADSRPlot(QWidget):
@@ -69,7 +69,7 @@ class ADSRPlot(QWidget):
         self.setMaximumHeight(height)
         self.setMaximumWidth(width)
         # Use dark gray background
-        self.setStyleSheet(JDXIStyle.ADSR_PLOT)
+        self.setStyleSheet(JDXiStyle.ADSR_PLOT)
         # Sample rate for converting times to samples
         self.sample_rate = 256
         self.setMinimumHeight(150)

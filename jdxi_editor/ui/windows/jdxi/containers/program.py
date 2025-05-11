@@ -5,7 +5,7 @@ Program container for instrument UI
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
 
 
@@ -25,7 +25,7 @@ def add_program_container(central_widget, create_program_buttons_row):
     program_label_layout.setSpacing(1)
     program_label = QLabel("Program")
     program_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    program_label.setStyleSheet(JDXIStyle.TRANSPARENT)
+    program_label.setStyleSheet(JDXiStyle.TRANSPARENT)
     program_label_layout.addWidget(program_label)
     program_container_layout.addLayout(program_label_layout)
     program_layout = QHBoxLayout()
@@ -44,11 +44,11 @@ def create_program_buttons_row():
 
     # create program up button
     program_up_button.setFixedSize(25, 25)
-    program_up_button.setStyleSheet(JDXIStyle.BUTTON_ROUND_SMALL)
+    program_up_button.setStyleSheet(JDXiStyle.BUTTON_ROUND_SMALL)
 
     # create program down button
     program_down_button.setFixedSize(25, 25)
-    program_down_button.setStyleSheet(JDXIStyle.BUTTON_ROUND_SMALL)
+    program_down_button.setStyleSheet(JDXiStyle.BUTTON_ROUND_SMALL)
 
     # create program layout
     program_layout = QHBoxLayout()
