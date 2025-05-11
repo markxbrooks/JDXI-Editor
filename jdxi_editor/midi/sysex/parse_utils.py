@@ -137,32 +137,31 @@ def get_partial_address(part_name: str) -> str:
     return "TONE_COMMON"
 
 
-def get_drum_tone(byte_value: int) -> str:
+def get_drum_tone(byte_value: int) -> tuple[str, int]:
     """
     Map byte value to corresponding synth tone.
     :param byte_value: int
     :return: str
     """
     try:
+        offset = 0
         drum_tone = DRUM_TONE_MAP.get(byte_value)
         if drum_tone is None:
             drum_tone = DRUM_TONE_MAP.get(byte_value - 1, "TONE_COMMON")
-        return drum_tone
+            offset = 1
+        return drum_tone, offset
     except Exception as ex:
         log_error(f"Error {ex} occurred getting drum type")
-        return "TONE_COMMON"
+        return "TONE_COMMON", 0
 
 
-
-
-
-def get_synth_tone(byte_value: int) -> str:
+def get_synth_tone(byte_value: int) -> tuple[str, int]:
     """
     Map byte value to corresponding synth tone.
     :param byte_value: int
     :return: str
     """
-    return DRUM_TONE_MAP.get(byte_value, "TONE_COMMON")
+    return DRUM_TONE_MAP.get(byte_value, "TONE_COMMON"), 0
 
 
 def extract_tone_name(data: bytes) -> str:
@@ -198,8 +197,10 @@ def parse_single_parameter(data: bytes, parameter_type: AddressParameter) -> Dic
     :param parameter_type: Type
     :return: Dict[str, int]
     """
+    _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS_LMB])
     address = data[JDXiSysExOffset.ADDRESS_LSB]
-    param = parameter_type.get_parameter_by_address(address)
+    index = address_to_index(offset, address)
+    param = parameter_type.get_parameter_by_address(index)
     if param:
         return {"PARAM": param.name}
     return {}
@@ -212,6 +213,21 @@ def safe_extract(data: bytes, start: int, end: int) -> str:
     return extract_hex(data, start, end) if len(data) >= end else "Unknown"
 
 
+def address_to_index(msb: int, lsb: int) -> int:
+    """
+    Convert a 2-byte address (MSB, LSB) to a flat integer index.
+
+    For example, MSB=0x01, LSB=0x15 → 0x0115 → 277.
+
+    :param msb: Most Significant Byte (0–255)
+    :param lsb: Least Significant Byte (0–255)
+    :return: Integer address index
+    """
+    if not (0 <= msb <= 0xFF and 0 <= lsb <= 0xFF):
+        raise ValueError("MSB and LSB must be in the range 0x00 to 0xFF.")
+    return (msb << 8) | lsb
+
+
 def initialize_parameters(data: bytes) -> Dict[str, str]:
     """
     Initialize parameters with essential fields.
@@ -221,7 +237,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     temporary_area = get_temporary_area(data) or "Unknown"
     tone_handlers = {AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name: get_drum_tone}
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
-    synth_tone = tone_handler(data[JDXiSysExOffset.ADDRESS_LMB]) if len(data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
+    synth_tone, offset = tone_handler(data[JDXiSysExOffset.ADDRESS_LMB]) if len(data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
     return {
         "JD_XI_HEADER": safe_extract(data, JDXiSysExOffset.SYSEX_START, JDXiSysExOffset.COMMAND_ID),
         "ADDRESS": safe_extract(data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS_LSB),
@@ -265,16 +281,16 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
     if temporary_area == TemporaryToneUMB.DRUM_KIT_PART.name:
         address_lmb = data[JDXiSysExOffset.ADDRESS_LMB]
-        synth_tone = get_drum_tone(address_lmb) if len(
+        synth_tone, offset = get_drum_tone(address_lmb) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-        log_parameter("address_lmb", address_lmb, silent=False)
-        log_parameter("synth_tone", synth_tone, silent=False)
+        log_parameter("address_lmb", address_lmb, silent=True)
+        log_parameter("synth_tone", synth_tone, silent=True)
     else:
-        synth_tone = get_synth_tone(data[
+        synth_tone, offset = get_synth_tone(data[
                                         JDXiSysExOffset.ADDRESS_LMB]) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-    log_parameter("temporary_area", temporary_area, silent=False)
-    log_parameter("synth_tone", synth_tone, silent=False)
+    log_parameter("temporary_area", temporary_area, silent=True)
+    log_parameter("synth_tone", synth_tone, silent=True)
     parsed_data = initialize_parameters(data)
     parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:
