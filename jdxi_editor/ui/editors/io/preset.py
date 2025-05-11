@@ -68,7 +68,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_preset_parameter_value,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PresetEditor(BasicEditor):
@@ -122,7 +122,7 @@ class PresetEditor(BasicEditor):
         layout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(layout)
-        self.setStyleSheet(JDXIStyle.EDITOR)
+        self.setStyleSheet(JDXiStyle.EDITOR)
 
         self.title_label = QLabel("Presets:")
         self.title_label.setStyleSheet(
@@ -183,7 +183,7 @@ class PresetEditor(BasicEditor):
 
         # Load button
         self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXIStyle.FOREGROUND),
+            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
             "Load Preset",
         )
         self.load_button.clicked.connect(self.load_preset_by_program_change)
@@ -195,7 +195,7 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
@@ -205,7 +205,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.digital_synth_1_current_label = QLabel("Current Tone:")
@@ -214,7 +214,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
@@ -222,7 +222,7 @@ class PresetEditor(BasicEditor):
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
@@ -232,7 +232,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.digital_synth_2_current_label = QLabel("Current Tone:")
@@ -241,7 +241,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;  
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
@@ -249,7 +249,7 @@ class PresetEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
 
@@ -259,7 +259,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.drum_kit_current_label = QLabel("Current Tone:")
@@ -268,14 +268,14 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
@@ -287,7 +287,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT_ANALOG};
+                color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
         self.analog_synth_current_label = QLabel("Current Tone:")
@@ -296,7 +296,7 @@ class PresetEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT_ANALOG};
+                color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
         self._populate_presets()

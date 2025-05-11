@@ -1,3 +1,3 @@
-from .jdxi import JDXIStyle
+from .jdxi import JDXiStyle
 
-all = [JDXIStyle]
+all = [JDXiStyle]

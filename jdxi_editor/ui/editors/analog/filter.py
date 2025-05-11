@@ -12,7 +12,7 @@ import qtawesome as qta
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -63,8 +63,8 @@ class AnalogFilterSection(QWidget):
             "mdi.waveform",
         ]:
             adsr_icon_label = QLabel()
-            icon_pixmap = qta.icon(icon, color="#666666").pixmap(JDXIStyle.ICON_PIXMAP_SIZE,
-                                                                 JDXIStyle.ICON_PIXMAP_SIZE)
+            icon_pixmap = qta.icon(icon, color="#666666").pixmap(JDXiStyle.ICON_PIXMAP_SIZE,
+                                                                 JDXiStyle.ICON_PIXMAP_SIZE)
             adsr_icon_label.setPixmap(icon_pixmap)
             adsr_icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             adsr_icon_row_layout.addWidget(adsr_icon_label)
@@ -110,7 +110,7 @@ class AnalogFilterSection(QWidget):
 
         layout.addWidget(self.filter_env_depth)
         layout.addWidget(self.filter_env_velocity_sens)
-        layout.addSpacing(JDXIStyle.SPACING)
+        layout.addSpacing(JDXiStyle.SPACING)
 
         # ADSR Widget
         self.filter_adsr_widget = ADSR(
@@ -121,7 +121,7 @@ class AnalogFilterSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.filter_adsr_widget.setStyleSheet(JDXIStyle.ADSR_ANALOG)
+        self.filter_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         env_group = QGroupBox("Envelope")
         env_group.setProperty("adsr", True)
         env_layout = QHBoxLayout()

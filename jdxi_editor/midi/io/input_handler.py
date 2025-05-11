@@ -27,20 +27,18 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset, JDXIIdentityOffset
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIIdentityOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REPLY, START_OF_SYSEX, \
     END_OF_SYSEX
-from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.log.json import log_json
 from jdxi_editor.midi.sysex.parse_utils import SYNTH_TYPE_MAP
 from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
-from jdxi_editor.midi.sysex.utils import get_parameter_from_address
 from jdxi_editor.jdxi.preset.button import JDXIPresetButton
 
 from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB

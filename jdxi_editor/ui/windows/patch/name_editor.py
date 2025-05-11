@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
 )
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PatchNameEditor(QDialog):
@@ -66,7 +66,7 @@ class PatchNameEditor(QDialog):
         layout.addLayout(button_layout)
         group.setLayout(layout)
         main_layout.addWidget(group)
-        self.setStyleSheet(JDXIStyle.EDITOR)
+        self.setStyleSheet(JDXiStyle.EDITOR)
 
     def get_name(self):
         """Get the edited patch name"""

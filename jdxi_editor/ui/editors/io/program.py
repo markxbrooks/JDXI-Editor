@@ -65,7 +65,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
 )
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class ProgramEditor(BasicEditor):
@@ -118,7 +118,7 @@ class ProgramEditor(BasicEditor):
         layout = QVBoxLayout()
         # self.setCentralWidget(center_widget)
         self.setLayout(layout)
-        self.setStyleSheet(JDXIStyle.EDITOR)
+        self.setStyleSheet(JDXiStyle.EDITOR)
 
         self.title_label = QLabel("Programs:")
         self.title_label.setStyleSheet(
@@ -172,7 +172,7 @@ class ProgramEditor(BasicEditor):
 
         # Load button
         self.load_button = QPushButton(
-            qta.icon("ph.folder-notch-open-fill", color=JDXIStyle.FOREGROUND),
+            qta.icon("ph.folder-notch-open-fill", color=JDXiStyle.FOREGROUND),
             "Load Program",
         )
         self.load_button.clicked.connect(self.load_program)
@@ -184,10 +184,10 @@ class ProgramEditor(BasicEditor):
         transport_layout = QHBoxLayout()
 
         self.start_button = QPushButton(
-            qta.icon("ri.play-line", color=JDXIStyle.FOREGROUND), "Play"
+            qta.icon("ri.play-line", color=JDXiStyle.FOREGROUND), "Play"
         )
         self.stop_button = QPushButton(
-            qta.icon("ri.stop-line", color=JDXIStyle.FOREGROUND), "Stop"
+            qta.icon("ri.stop-line", color=JDXiStyle.FOREGROUND), "Stop"
         )
         self.start_button.clicked.connect(self.start_playback)
         self.stop_button.clicked.connect(self.stop_playback)
@@ -202,7 +202,7 @@ class ProgramEditor(BasicEditor):
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.digital_synth_1_hlayout.addWidget(self.digital_synth_1_icon)
 
@@ -212,7 +212,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.digital_synth_1_current_synth = QLabel("Current Synth:")
@@ -221,14 +221,14 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.digital_synth_2_hlayout = QHBoxLayout()
 
         self.digital_synth_2_icon = QLabel()
         self.digital_synth_2_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
@@ -240,7 +240,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.digital_synth_2_current_synth = QLabel("Current Synth:")
@@ -249,7 +249,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;  
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
@@ -257,7 +257,7 @@ class ProgramEditor(BasicEditor):
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
-            qta.icon("fa5s.drum", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("fa5s.drum", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.drum_kit_hlayout.addWidget(self.drum_kit_icon)
 
@@ -267,7 +267,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.drum_kit_current_synth = QLabel("Current Synth:")
@@ -276,7 +276,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT};
+                color: {JDXiStyle.ACCENT};
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
@@ -284,7 +284,7 @@ class ProgramEditor(BasicEditor):
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
-            qta.icon("msc.piano", color=JDXIStyle.FOREGROUND).pixmap(40, 40)
+            qta.icon("msc.piano", color=JDXiStyle.FOREGROUND).pixmap(40, 40)
         )
         self.analog_synth_hlayout.addWidget(self.analog_synth_icon)
 
@@ -294,7 +294,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT_ANALOG};
+                color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
         self.analog_synth_current_synth = QLabel("Current Synth:")
@@ -303,7 +303,7 @@ class ProgramEditor(BasicEditor):
             f"""
                 font-size: 16px;
                 font-weight: bold;
-                color: {JDXIStyle.ACCENT_ANALOG};
+                color: {JDXiStyle.ACCENT_ANALOG};
             """
         )
         self.populate_programs()

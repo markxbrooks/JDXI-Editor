@@ -23,7 +23,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope
@@ -77,7 +77,7 @@ class DigitalOscillatorSection(QWidget):
 
         for wave, icon_base64 in wave_icons.items():
             btn = WaveformButton(wave)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
             btn.setFixedSize(60, 30)
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
@@ -194,7 +194,7 @@ class DigitalOscillatorSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.pitch_env_widget.setStyleSheet(JDXIStyle.ADSR)
+        self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR)
         pitch_env_layout.addWidget(self.pitch_env_widget)
         layout.addWidget(pitch_env_group)
 
@@ -208,13 +208,13 @@ class DigitalOscillatorSection(QWidget):
         # Reset all buttons to default style
         for btn in self.wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT)
 
         # Apply active style to the selected waveform button
         selected_btn = self.wave_buttons.get(waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ACTIVE)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ACTIVE)
 
         # Send MIDI message
         if not self.send_midi_parameter(

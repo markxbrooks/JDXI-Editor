@@ -52,7 +52,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_preset_parameter_value,
 )
 from jdxi_editor.ui.editors.synth.base import SynthBase
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.preset.combo_box import PresetComboBox
 
@@ -142,7 +142,7 @@ class SynthEditor(SynthBase):
         self.setWindowFlags(Qt.WindowType.Tool)
 
         # Apply common style
-        self.setStyleSheet(JDXIStyle.EDITOR)
+        self.setStyleSheet(JDXiStyle.EDITOR)
 
         # Add keyboard shortcuts
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
@@ -207,7 +207,7 @@ class SynthEditor(SynthBase):
         self.instrument_image_label = QLabel()
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         instrument_group_layout.addWidget(self.instrument_image_label)
-        self.instrument_image_group.setStyleSheet(JDXIStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
         self.instrument_image_group.setMinimumWidth(350)
 
     def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
@@ -227,9 +227,9 @@ class SynthEditor(SynthBase):
         instrument_title_group_layout.addWidget(self.instrument_selection_label)
         self.instrument_selection_combo = PresetComboBox(self.preset_list)
         if synth_type == "Analog":
-            self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX_ANALOG)
+            self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX_ANALOG)
         else:
-            self.instrument_selection_combo.setStyleSheet(JDXIStyle.COMBO_BOX)
+            self.instrument_selection_combo.setStyleSheet(JDXiStyle.COMBO_BOX)
         self.instrument_selection_combo.combo_box.setEditable(True)
         self.instrument_selection_combo.combo_box.currentIndexChanged.connect(
             self.update_instrument_image
@@ -484,15 +484,7 @@ class SynthEditor(SynthBase):
         )  # Resize to 250px height
         self.instrument_image_label.setPixmap(scaled_pixmap)
         self.instrument_image_label.setScaledContents(True)
-        self.instrument_image_label.setStyleSheet(
-            """
-            QLabel {
-                    height: 150px;
-                    background-color: transparent;
-                    border: none;
-                }
-            """
-        )
+        self.instrument_image_label.setStyleSheet(DXiStyle.INSTRUMENT_IMAGE_LABEL)
         return True
 
     def update_instrument_image(self):
@@ -533,96 +525,6 @@ class SynthEditor(SynthBase):
         if not image_loaded:
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
-
-    def send_analog_synth_parameter(
-        self, parameter: str, value: int, channel: int = 0
-    ) -> bool:
-        """
-        Send a MIDI Control Change or NRPN message for an Analog Synth parameter.
-
-        Args:
-            parameter: The name of the parameter to modify.
-            value: The parameter value (0-127).
-            channel: The MIDI channel (0-15).
-
-        Returns:
-            True if successful, False otherwise.
-        """
-
-        if parameter in self.cc_parameters:
-            # Send as a Control Change (CC) message
-            controller = self.cc_parameters[parameter]
-            return self.midi_helper.send_control_change(controller, value, channel)
-
-        elif parameter in self.nrpn_parameters:
-            # Send as an NRPN message
-            msb, lsb = self.nrpn_parameters[parameter]
-            return self.midi_helper.send_nrpn((msb << 7) | lsb, value, channel)
-
-        else:
-            log_message(f"Invalid Analog Synth parameter: {parameter}")
-            return False
-
-    def _handle_nrpn_message(self, nrpn_address: int, value: int, channel: int):
-        """Process incoming NRPN messages and update UI controls."""
-        log_message(
-            f"Received NRPN {nrpn_address} with value {value} on channel {channel}"
-        )
-
-        # Find matching parameter
-        msb = nrpn_address >> 7
-        lsb = nrpn_address & 0x7F
-        param_name = self.nrpn_map.get((msb, lsb))
-
-        if param_name:
-            # Update slider or control
-            param = AddressParameter.get_by_name(
-                param_name
-            )  # FIXME: make generic or subclass
-            if param:
-                self._update_slider(param, value)
-        else:
-            logging.warning(f"Unrecognized NRPN {nrpn_address}")
-
-    def _handle_control_change(self, channel, control, value) -> None:  # @@
-        """
-        Handle Control Change (CC) MIDI messages.
-
-        :param message: The MIDI Control Change message.
-        :param preset_data: Dictionary for preset data modifications.
-        """
-        try:
-            log_message(
-                f"Control change {control} detected on channel {channel}, value {value} "
-                f"requesting data update"
-            )
-            self.data_request()
-            log_message(
-                "Control Change - Channel: %d, Control: %d, Value: %d",
-                channel,
-                control,
-                value,
-            )
-            if control == 99:  # NRPN MSB
-                self.nrpn_msb = value
-            elif control == 98:  # NRPN LSB
-                self.nrpn_lsb = value
-            elif (
-                control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None
-            ):
-                # We have both MSB and LSB; reconstruct NRPN address
-                nrpn_address = (self.nrpn_msb << 7) | self.nrpn_lsb
-                self._handle_nrpn_message(nrpn_address, value, channel)
-
-                # Reset NRPN state
-                self.nrpn_msb = None
-                self.nrpn_lsb = None
-            if control == 0:
-                self.cc_msb_value = value
-            elif control == 32:
-                self.cc_lsb_value = value
-        except Exception as ex:
-            log_error(f"Error {ex} occurred handling control change")
 
     def _update_common_controls(self, filtered_data, successes, failures):
         pass

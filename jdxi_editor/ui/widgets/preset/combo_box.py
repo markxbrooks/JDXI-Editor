@@ -22,7 +22,7 @@ from PySide6.QtCore import Signal
 
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 
 
 class PresetComboBox(QWidget):
@@ -72,7 +72,7 @@ class PresetComboBox(QWidget):
         self.load_button.clicked.connect(self._on_load_clicked)
         layout.addWidget(self.load_button)
         self._populate_presets()
-        self.setStyleSheet(JDXIStyle.COMBO_BOX)
+        self.setStyleSheet(JDXiStyle.COMBO_BOX)
 
     def _on_load_clicked(self):
         """Handle load button click."""

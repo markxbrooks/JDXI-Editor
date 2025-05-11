@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QHBoxLayout, QLabel
 
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.wheel.mod import ModWheel
 from jdxi_editor.ui.widgets.wheel.pitch import PitchWheel
 
@@ -12,7 +12,7 @@ def build_wheel_label_row():
 
     for text in ["Pitch", "Mod"]:
         label = QLabel(text)
-        label.setStyleSheet(JDXIStyle.TRANSPARENT)
+        label.setStyleSheet(JDXiStyle.TRANSPARENT)
         label_layout.addWidget(label)
         label_layout.addStretch()
 

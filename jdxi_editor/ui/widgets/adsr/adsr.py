@@ -20,7 +20,6 @@ from PySide6.QtWidgets import QWidget, QGridLayout
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
-from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper

@@ -40,7 +40,7 @@ from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.resources import resource_path
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
@@ -200,8 +200,8 @@ def main():
         progress_bar.setFixedHeight(30)
         progress_bar.setFixedWidth(400)
         progress_bar.setAlignment(Qt.AlignCenter)
-        progress_bar.setStyleSheet(JDXIStyle.PROGRESS_BAR)
-        group_box.setStyleSheet(JDXIStyle.SPLASH_SCREEN)
+        progress_bar.setStyleSheet(JDXiStyle.PROGRESS_BAR)
+        group_box.setStyleSheet(JDXiStyle.SPLASH_SCREEN)
         progress_container = QHBoxLayout()
         progress_container.addStretch()
         progress_container.addWidget(progress_bar)

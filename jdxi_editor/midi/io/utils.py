@@ -6,7 +6,7 @@ from typing import List, Optional, Union, Callable
 
 import mido
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset, JDXIProgramChangeOffset, JDXIControlChangeOffset
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIProgramChangeOffset, JDXIControlChangeOffset
 #from black.lines import Callable
 
 from jdxi_editor.log.error import log_error
@@ -101,7 +101,7 @@ def convert_to_mido_message(
     status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
     # SysEx
     try:
-        if status_byte == START_OF_SYSEX and message_content[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX:
+        if status_byte == START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX:
             sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.MIDI_CHANNEL:JDXIProgramChangeOffset.END])
             if len(sysex_data) > 128:
                 nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
@@ -159,7 +159,7 @@ def handle_identity_request(message: mido.Message) -> dict:
         log_message(device_info.to_string)
     device_id = device_info.device_id
     manufacturer_id = device_info.manufacturer
-    version = message.data[JDXISysExOffset.ADDRESS_UMB:JDXISysExOffset.TONE_NAME_START]  #  Extract firmware version bytes
+    version = message.data[JDXiSysExOffset.ADDRESS_UMB:JDXiSysExOffset.TONE_NAME_START]  #  Extract firmware version bytes
 
     version_str = ".".join(str(byte) for byte in version)
     if device_id == ModelID.DEVICE_ID:

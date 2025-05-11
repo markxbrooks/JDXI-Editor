@@ -14,7 +14,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -61,7 +61,7 @@ class DigitalAmpSection(QWidget):
         ]:
             icon_label = QLabel()
             icon = qta.icon(icon, color="#666666")
-            pixmap = icon.pixmap(JDXIStyle.ICON_SIZE, JDXIStyle.ICON_SIZE)
+            pixmap = icon.pixmap(JDXiStyle.ICON_SIZE, JDXiStyle.ICON_SIZE)
             icon_label.setPixmap(pixmap)
             icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             icons_hlayout.addWidget(icon_label)
@@ -123,7 +123,7 @@ class DigitalAmpSection(QWidget):
             midi_helper=self.midi_helper,
             address=self.address,
         )
-        self.amp_env_adsr_widget.setStyleSheet(JDXIStyle.ADSR)
+        self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR)
         env_layout.addLayout(amp_env_adsr_vlayout)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)
         amp_env_adsr_vlayout.setStretchFactor(self.amp_env_adsr_widget, 5)

@@ -53,7 +53,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     get_program_name_by_id,
 )
 from jdxi_editor.ui.image.instrument import draw_instrument_pixmap
-from jdxi_editor.jdxi.style.jdxi import JDXIStyle
+from jdxi_editor.jdxi.style.jdxi import JDXiStyle
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.ui.widgets.piano.keyboard import PianoKeyboard
@@ -348,7 +348,7 @@ class JdxiUi(QMainWindow):
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
-        status_bar.setStyleSheet(JDXIStyle.TRANSPARENT)
+        status_bar.setStyleSheet(JDXiStyle.TRANSPARENT)
 
         midi_indicator_container = QWidget()
         midi_indicator_container.setLayout(self._build_status_layout())

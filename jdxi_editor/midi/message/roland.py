@@ -26,7 +26,7 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     ModelID,
@@ -41,7 +41,7 @@ from jdxi_editor.midi.data.address.sysex import (
     RolandID, LOW_7_BITS_MASK, FULL_BYTE_MASK,
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.sysex.parse_utils import MIN_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.sysex.parse_utils import ONE_BYTE_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
@@ -340,22 +340,22 @@ class JDXiSysEx(RolandSysEx):
         """Create message from received bytes"""
         if (
                 len(data)
-                < MIN_SYSEX_DATA_LENGTH  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
-                or data[JDXISysExOffset.SYSEX_START] != START_OF_SYSEX
-                or data[JDXISysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
-                or data[JDXISysExOffset.MODEL_ID_1:JDXISysExOffset.COMMAND_ID] != bytes([ModelID.MODEL_ID_1,
+                < ONE_BYTE_SYSEX_DATA_LENGTH  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+                or data[JDXiSysExOffset.SYSEX_START] != START_OF_SYSEX
+                or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
+                or data[JDXiSysExOffset.MODEL_ID_1:JDXiSysExOffset.COMMAND_ID] != bytes([ModelID.MODEL_ID_1,
                                                                                          ModelID.MODEL_ID_2,
                                                                                          ModelID.MODEL_ID_3,
                                                                                          ModelID.MODEL_ID_4])
         ):  # JD-Xi model ID
             raise ValueError("Invalid JD-Xi SysEx message")
 
-        device_id = data[JDXISysExOffset.DEVICE_ID]
-        command = data[JDXISysExOffset.COMMAND_ID]
-        address = list(data[JDXISysExOffset.ADDRESS_MSB:JDXISysExOffset.TONE_NAME_START])
+        device_id = data[JDXiSysExOffset.DEVICE_ID]
+        command = data[JDXiSysExOffset.COMMAND_ID]
+        address = list(data[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.TONE_NAME_START])
         message_data = list(
-            data[JDXISysExOffset.TONE_NAME_START:JDXISysExOffset.CHECKSUM])  # Everything between address and checksum
-        received_checksum = data[JDXISysExOffset.CHECKSUM]
+            data[JDXiSysExOffset.TONE_NAME_START:JDXiSysExOffset.CHECKSUM])  # Everything between address and checksum
+        received_checksum = data[JDXiSysExOffset.CHECKSUM]
 
         # Create message and verify checksum
         message = cls(

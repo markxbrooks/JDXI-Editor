@@ -1,32 +1,42 @@
- 
-def validate_sysex_message(message: List[int]) -> bool:
+from typing import List, Iterable
+
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.log.error import log_error
+from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.midi.data.address.address import CommandID, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, START_OF_SYSEX, LOW_7_BITS_MASK, MAX_EIGHT_BIT_VALUE
+from jdxi_editor.midi.sysex.parse_utils import ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH
+
+
+def validate_raw_sysex_message(message: List[int]) -> bool:
     """Validate JD-Xi SysEx message format"""
     try:
         # Check length
-        if len(message) not in [15, 18]:
+        if len(message) not in [ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH]:
             log_message(f"Invalid SysEx length: {len(message)}")
             return False
 
         # Check header
-        if message[:7] != [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E]:
+        if message[:JDXiSysExOffset.COMMAND_ID] != [START_OF_SYSEX] + JD_XI_HEADER_LIST:
             log_message("Invalid SysEx header")
             return False
 
         # Check DT1 command
-        if message[7] not in [0x12, 0x11]:
+        if message[JDXiSysExOffset.COMMAND_ID] not in [CommandID.DT1, CommandID.RQ1]:
             log_message("Invalid command byte")
             return False
 
         # Check end marker
-        if message[-1] != 0xF7:
+        if message[JDXiSysExOffset.SYSEX_END] != END_OF_SYSEX:
             log_message("Invalid SysEx end marker")
             return False
 
         # Verify checksum
-        data_sum = sum(message[8:-2]) & 0x7F  # Sum from area to value
-        checksum = (128 - data_sum) & 0x7F
-        if message[-2] != checksum:
-            log_message(f"Invalid checksum: expected {checksum}, got {message[-2]}")
+        data_sum = sum(message[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.CHECKSUM]) & LOW_7_BITS_MASK  # Sum from area to value
+        checksum = (128 - data_sum) & LOW_7_BITS_MASK
+        if message[JDXiSysExOffset.CHECKSUM] != checksum:
+            log_message(f"Invalid checksum: expected {checksum}, got {message[JDXiSysExOffset.CHECKSUM]}")
             return False
 
         return True
@@ -35,7 +45,8 @@ def validate_sysex_message(message: List[int]) -> bool:
         log_error(f"Error validating SysEx message: {str(ex)}")
         return False
 
-def validate_midi_message(message: Iterable[int]) -> bool:
+
+def validate_raw_midi_message(message: Iterable[int]) -> bool:
     """
     Validate a raw MIDI message.
 
@@ -52,7 +63,7 @@ def validate_midi_message(message: Iterable[int]) -> bool:
         return False
 
     for byte in message:
-        if not isinstance(byte, int) or not (0 <= byte <= 255):
+        if not isinstance(byte, int) or not (0 <= byte <= MAX_EIGHT_BIT_VALUE):
             log_parameter("Invalid MIDI value detected:", message)
             return False
 

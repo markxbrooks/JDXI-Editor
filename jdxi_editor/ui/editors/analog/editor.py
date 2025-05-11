@@ -81,7 +81,7 @@ from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXIStyle
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
@@ -160,7 +160,7 @@ class AnalogSynthEditor(SynthEditor):
         """Set up the Analog Synth Editor UI."""
         self.setMinimumSize(650, 600)
         self.resize(950, 600)
-        self.setStyleSheet(JDXIStyle.TABS_ANALOG + JDXIStyle.EDITOR_ANALOG)
+        self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
 
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
@@ -209,7 +209,7 @@ class AnalogSynthEditor(SynthEditor):
         splitter.addWidget(scroll)
         splitter.setSizes([300, 300])  # give more room to bottom
         # Splitter handle style
-        splitter.setStyleSheet(JDXIStyle.SPLITTER)
+        splitter.setStyleSheet(JDXiStyle.SPLITTER)
         self.show()
 
     def _create_sections(self):
@@ -320,13 +320,13 @@ class AnalogSynthEditor(SynthEditor):
 
             for btn in self.wave_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
+                btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
             # Apply active style to the selected waveform button
             selected_btn = self.wave_buttons.get(waveform)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
+                selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
             self._update_pw_controls_state(waveform)
 
     def _on_lfo_shape_changed(self, value: int):
@@ -343,13 +343,13 @@ class AnalogSynthEditor(SynthEditor):
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():
                 btn.setChecked(False)
-                btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
+                btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
             # Apply active style to the selected button
             selected_btn = self.lfo_shape_buttons.get(value)
             if selected_btn:
                 selected_btn.setChecked(True)
-                selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
+                selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
 
     def update_slider(
             self,
@@ -586,13 +586,13 @@ class AnalogSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in wave_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
         # Apply active style to the selected waveform button
         selected_btn = wave_buttons.get(selected_waveform)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
 
     def _update_lfo_shape_buttons(self, value: int):
         """
@@ -603,13 +603,13 @@ class AnalogSynthEditor(SynthEditor):
         # Reset all buttons to default style
         for btn in self.lfo_shape_buttons.values():
             btn.setChecked(False)
-            btn.setStyleSheet(JDXIStyle.BUTTON_RECT_ANALOG)
+            btn.setStyleSheet(JDXiStyle.BUTTON_RECT_ANALOG)
 
         # Apply active style to the selected button
         selected_btn = self.lfo_shape_buttons.get(value)
         if selected_btn:
             selected_btn.setChecked(True)
-            selected_btn.setStyleSheet(JDXIStyle.BUTTON_ANALOG_ACTIVE)
+            selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
         else:
             log_message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 

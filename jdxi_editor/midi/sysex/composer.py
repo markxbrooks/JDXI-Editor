@@ -5,7 +5,7 @@ JDXiSysExComposer
 
 from typing import Optional
 
-from jdxi_editor.jdxi.sysex.offset import JDXISysExOffset
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
@@ -14,6 +14,7 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEAD
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, LOW_7_BITS_MASK
 from jdxi_editor.midi.io.utils import increment_if_lsb_exceeds_7bit
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.sysex.validation import validate_raw_sysex_message, validate_raw_midi_message
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
@@ -54,7 +55,7 @@ class JDXiSysExComposer:
             else:
                 size = 1
             if size == 1:
-                data_bytes = [midi_value & LOW_7_BITS_MASK]  # Single byte format (0-127)
+                data_bytes = value  # [midi_value & LOW_7_BITS_MASK]  # Single byte format (0-127)
             elif size in [4, 5]:
                 data_bytes = split_16bit_value_to_nibbles(midi_value)  # Convert to nibbles
             else:
@@ -78,21 +79,26 @@ class JDXiSysExComposer:
             return self.sysex_message
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending parameter: {ex}")
+            log_error(f"Error sending message: {ex}")
             return None
 
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
-        message = self.sysex_message.to_bytes()
+        raw_message = self.sysex_message.to_message_list()
+        if not validate_raw_midi_message(raw_message):
+            raise ValueError("Invalid Midi message values detected")
+
+        if not validate_raw_sysex_message(raw_message):
+            raise ValueError("Invalid JD-Xi SysEx message detected")
         return (
-                message[JDXISysExOffset.SYSEX_START] == START_OF_SYSEX and
-                message[JDXISysExOffset.SYSEX_END] == END_OF_SYSEX
+                raw_message[JDXiSysExOffset.SYSEX_START] == START_OF_SYSEX and
+                raw_message[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:
         """Checks if the SysEx header matches the JD-Xi model ID."""
         message = self.sysex_message.to_bytes()
         # Remove the SysEx start (F0) and end (F7) bytes
-        data = message[JDXISysExOffset.ROLAND_ID:JDXISysExOffset.SYSEX_END]
+        data = message[JDXiSysExOffset.ROLAND_ID:JDXiSysExOffset.SYSEX_END]
         header_data = data[:len(JD_XI_HEADER_LIST)]
         return header_data == bytes(JD_XI_HEADER_LIST)
