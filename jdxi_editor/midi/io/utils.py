@@ -43,8 +43,8 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
     """
-    if not (0 <= lsb <= 255):
-        raise ValueError("LSB must be an 8-bit value (0–255).")
+    #if not (0 <= lsb <= 255):
+    #    raise ValueError("LSB must be an 8-bit value (0–255).")
     if not (0 <= msb <= 255):
         raise ValueError("MSB must be an 8-bit value (0–255).")
 

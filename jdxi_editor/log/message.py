@@ -3,6 +3,7 @@
 import logging
 
 from jdxi_editor.globals import logger, LOGGING
+from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 
 
@@ -16,15 +17,6 @@ def log_message(message: str, level: int = logging.INFO, stacklevel=2, silent=Fa
     :param silent: bool
     :return: None
     """
-
-    emoji = LEVEL_EMOJIS.get(level, "🔔")
-    midi_tag = "🎵" if "midi" in message or "sysex" in message else ""
-    jdxi_tag = "🎹" if "jdxi" in message or "jd-xi" in message else ""
-    qc_passed_tag = "📊" if "Rate" in message else "✅" if "update" in message or "uccess" in message or "passed" in message or "eceived" in message else ""
-    qc_failed_tag = "❌" if "ail" in message else ""
-
-    # Combine emoji tags, then append message
-    tags = f"{emoji}{jdxi_tag}{qc_passed_tag}{qc_failed_tag}{midi_tag}"
-    full_message = f"{tags} {message}".strip()
+    decorated_message = decorate_log_message(message, level)
     if LOGGING and not silent:
-        logger.log(level, full_message, stacklevel=stacklevel)
+        logger.log(level, decorated_message, stacklevel=stacklevel)

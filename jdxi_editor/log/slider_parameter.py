@@ -1,10 +1,11 @@
 """
 Log Slider Parameters
 """
+
 import logging
 
 from jdxi_editor.globals import logger, LOGGING
-from jdxi_editor.log.emoji import LEVEL_EMOJIS
+from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB, AddressOffsetDrumKitLMB,
 )
@@ -53,25 +54,8 @@ def log_slider_parameters(
             f"midi data: {value:<4} → Slider: {slider_value:.1f}"
         )
 
-        emoji = LEVEL_EMOJIS.get(level, "🔔")
-
-        # Add MIDI flair if message seems MIDI-related
-        midi_tag = "🎵" if "midi" in message.lower() or "sysex" in message.lower() else ""
-        qc_passed_tag = "✅" if "updat" in message.lower() or "success" in message.lower() else "❌"
-        message = f"{emoji}{qc_passed_tag}{midi_tag} {message}"
+        decorated_message = decorate_log_message(message, level)
         if LOGGING:
-            if level == logging.DEBUG:
-                logger.debug(message, stacklevel=2)
-            elif level == logging.INFO:
-                logger.info(message, stacklevel=2)
-            elif level == logging.WARNING:
-                logger.warning(message, stacklevel=2)
-            elif level == logging.ERROR:
-                logger.error(message, stacklevel=2)
-            elif level == logging.CRITICAL:
-                logger.critical(message, stacklevel=2)
-            else:
-                # fallback for non-standard levels
-                logger.log(message, stacklevel=2)
+            logger.log(level, decorated_message, stacklevel=2)
     except Exception as ex:
         logger.error(f"Error {ex} occurred logging parameter")

@@ -42,7 +42,6 @@ class JDXiSysExComposer:
         """
         self.address = address
         try:
-            self.address.lmb = increment_if_lsb_exceeds_7bit(self.address.lmb, param.value[0])
             address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, ZERO_BYTE)
             address = apply_address_offset(address, param)
             # Convert display value to MIDI value if needed
