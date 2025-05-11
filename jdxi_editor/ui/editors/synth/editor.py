@@ -484,7 +484,7 @@ class SynthEditor(SynthBase):
         )  # Resize to 250px height
         self.instrument_image_label.setPixmap(scaled_pixmap)
         self.instrument_image_label.setScaledContents(True)
-        self.instrument_image_label.setStyleSheet(DXiStyle.INSTRUMENT_IMAGE_LABEL)
+        self.instrument_image_label.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
         return True
 
     def update_instrument_image(self):
