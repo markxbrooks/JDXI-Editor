@@ -22,6 +22,7 @@ from typing import Dict
 
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
+from jdxi_editor.log.error import log_error
 from jdxi_editor.log.json import log_json
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
@@ -142,7 +143,17 @@ def get_drum_tone(byte_value: int) -> str:
     :param byte_value: int
     :return: str
     """
-    return DRUM_TONE_MAP.get(byte_value, "TONE_COMMON")
+    try:
+        drum_tone = DRUM_TONE_MAP.get(byte_value)
+        if drum_tone is None:
+            drum_tone = DRUM_TONE_MAP.get(byte_value - 1, "TONE_COMMON")
+        return drum_tone
+    except Exception as ex:
+        log_error(f"Error {ex} occurred getting drum type")
+        return "TONE_COMMON"
+
+
+
 
 
 def get_synth_tone(byte_value: int) -> str:
@@ -151,7 +162,7 @@ def get_synth_tone(byte_value: int) -> str:
     :param byte_value: int
     :return: str
     """
-    return SYNTH_TONE_MAP.get(byte_value, "TONE_COMMON")
+    return DRUM_TONE_MAP.get(byte_value, "TONE_COMMON")
 
 
 def extract_tone_name(data: bytes) -> str:
@@ -253,15 +264,17 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
 
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
     if temporary_area == TemporaryToneUMB.DRUM_KIT_PART.name:
-        synth_tone = get_drum_tone(data[
-                                        JDXiSysExOffset.ADDRESS_LMB]) if len(
+        address_lmb = data[JDXiSysExOffset.ADDRESS_LMB]
+        synth_tone = get_drum_tone(address_lmb) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
+        log_parameter("address_lmb", address_lmb, silent=False)
+        log_parameter("synth_tone", synth_tone, silent=False)
     else:
         synth_tone = get_synth_tone(data[
                                         JDXiSysExOffset.ADDRESS_LMB]) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-    log_parameter("temporary_area", temporary_area, silent=True)
-    log_parameter("synth_tone", synth_tone, silent=True)
+    log_parameter("temporary_area", temporary_area, silent=False)
+    log_parameter("synth_tone", synth_tone, silent=False)
     parsed_data = initialize_parameters(data)
     parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:

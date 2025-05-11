@@ -34,6 +34,7 @@ from enum import Enum
 from typing import Optional, Tuple, Type, Iterator, T
 
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE, FULL_BYTE_MASK
+from jdxi_editor.midi.sysex.utils import map_range
 
 
 class AddressParameter(Enum):
@@ -42,7 +43,7 @@ class AddressParameter(Enum):
     """
 
     def __init__(self, address: int, min_val: int, max_val: int):
-        self.CONVERSION_OFFSETS = []
+        self.CONVERSION_OFFSETS = {}
         self.address = address
         self.min_val = min_val
         self.max_val = max_val

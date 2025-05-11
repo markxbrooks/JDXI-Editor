@@ -71,29 +71,48 @@ class AddressParameterDrumPartial(AddressParameter):
             "WMT4_WAVE_PAN",
         ]
         self.CONVERSION_OFFSETS = {
+            # Partials
+            "PARTIAL_FINE_TUNE": 64,
+            "PARTIAL_PAN": 64,
+            "PARTIAL_ALTERNATE_PAN_DEPTH": 64,
+            # WMT1
+            "WMT1_WAVE_COARSE_TUNE": 64,
+            "WMT1_WAVE_FINE_TUNE": 64,
+            "WMT1_WAVE_PAN": 64,
+            # WMT2
+            "WMT2_WAVE_COARSE_TUNE": 64,
+            "WMT2_WAVE_FINE_TUNE": 64,
+            "WMT2_WAVE_PAN": 64,
+            # WMT3
+            "WMT3_WAVE_COARSE_TUNE": 64,
+            "WMT3_WAVE_FINE_TUNE": 64,
+            "WMT3_WAVE_PAN": 64,
+            # WMT4
+            "WMT4_WAVE_COARSE_TUNE": 64,
+            "WMT4_WAVE_FINE_TUNE": 64,
+            "WMT4_WAVE_PAN": 64,
+            # Pitch ENV
             "PITCH_ENV_DEPTH": 64,
-            "OSC_PITCH_ENV_DEPTH": 64,
-            "AMP_PAN": 64,
-            "FILTER_CUTOFF_KEYFOLLOW": "map_range",
-            "AMP_LEVEL_KEYFOLLOW": "map_range",
-            "OSC_PITCH": 64,
-            "FILTER_ENV_VELOCITY_SENSITIVITY": 64,
-            "FILTER_ENV_DEPTH": 64,
-            "FILTER_ENV_ATTACK_TIME": 64,
-            "FILTER_ENV_DECAY_TIME": 64,
-            "FILTER_ENV_SUSTAIN_LEVEL": 64,
-            "FILTER_ENV_RELEASE_TIME": 64,
-            "LFO_PITCH_DEPTH": 64,
-            "LFO_FILTER_DEPTH": 64,
-            "LFO_AMP_DEPTH": 64,
-            "LFO_PAN_DEPTH": 64,
-            "MOD_LFO_PITCH_DEPTH": 64,
-            "MOD_LFO_FILTER_DEPTH": 64,
-            "MOD_LFO_AMP_DEPTH": 64,
-            "MOD_LFO_PAN": 64,
-            "MOD_LFO_RATE_CTRL": 64,
-            "CUTOFF_AFTERTOUCH": 64,
-            "LEVEL_AFTERTOUCH": 64,
+            "PITCH_ENV_VELOCITY_SENS": 64,
+            "PITCH_ENV_TIME_1_VELOCITY_SENS": 64,
+            "PITCH_ENV_TIME_4_VELOCITY_SENS": 64,
+            "PITCH_ENV_LEVEL_0": 64,
+            "PITCH_ENV_LEVEL_1": 64,
+            "PITCH_ENV_LEVEL_2": 64,
+            "PITCH_ENV_LEVEL_3": 64,
+            "PITCH_ENV_LEVEL_4": 64,
+            # TVF
+            "TVF_CUTOFF_VELOCITY_SENS": 64,
+            "TVF_RESONANCE_VELOCITY_SENS": 64,
+            "TVF_ENV_DEPTH": 64,
+            "TVF_ENV_VELOCITY_SENS": 64,
+            "TVF_ENV_TIME_1_VELOCITY_SENS": 64,
+            "TVF_ENV_TIME_4_VELOCITY_SENS": 64,
+            # TVA
+            "TVA_LEVEL_VELOCITY_SENS": 64,
+            "TVA_ENV_TIME_1_VELOCITY_SENS": 64,
+            "TVA_ENV_TIME_4_VELOCITY_SENS": 64,
+            "RELATIVE_LEVEL": 64,
         }
 
     # Partial Name parameters

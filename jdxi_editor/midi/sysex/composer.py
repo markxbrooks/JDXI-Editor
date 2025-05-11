@@ -11,8 +11,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE, LOW_7_BITS_MASK
-from jdxi_editor.midi.io.utils import increment_if_lsb_exceeds_7bit
+from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.validation import validate_raw_sysex_message, validate_raw_midi_message
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
@@ -37,7 +36,7 @@ class JDXiSysExComposer:
         :param address: RolandSysExAddress
         :param param: AddressParameter
         :param value: int Parameter value
-        :param size: int Size of the value in bytes (1, 4, or 5).
+        :param size: int Size of the value in bytes (1 or 4).
         :return: RolandSysEx
         """
         self.address = address
@@ -54,8 +53,8 @@ class JDXiSysExComposer:
             else:
                 size = 1
             if size == 1:
-                data_bytes = value  # [midi_value & LOW_7_BITS_MASK]  # Single byte format (0-127)
-            elif size in [4, 5]:
+                data_bytes = value  # Single byte format (0-127)
+            elif size == 4:
                 data_bytes = split_16bit_value_to_nibbles(midi_value)  # Convert to nibbles
             else:
                 log_message(f"Unsupported parameter size: {size}")
