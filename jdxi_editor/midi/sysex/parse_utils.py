@@ -161,7 +161,7 @@ def get_synth_tone(byte_value: int) -> tuple[str, int]:
     :param byte_value: int
     :return: str
     """
-    return DRUM_TONE_MAP.get(byte_value, "TONE_COMMON"), 0
+    return SYNTH_TONE_MAP.get(byte_value, "TONE_COMMON"), 0
 
 
 def extract_tone_name(data: bytes) -> str:

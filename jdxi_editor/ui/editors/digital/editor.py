@@ -52,6 +52,7 @@ from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.digital.utils import get_digital_parameter_by_address
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
@@ -69,7 +70,7 @@ from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
 from jdxi_editor.ui.editors.digital.utils import (
     _is_valid_sysex_area,
-    log_synth_area_info, filter_sysex_keys,
+    log_synth_area_info, filter_sysex_keys, get_partial_number, get_area,
 )
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
@@ -280,6 +281,38 @@ class DigitalSynthEditor(SynthEditor):
             self.partials_panel.switches[partial].setState(enabled, selected)
             self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
         self.partial_tab_widget.setCurrentIndex(0)
+
+    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
+        """
+        Dispatch SysEx data to the appropriate area for processing.
+        :param json_sysex_data:
+        :return: None
+        """
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        if not sysex_data:
+            return
+        current_synth = get_area([self.address.msb, self.address.umb])
+        temporary_area = sysex_data.get("TEMPORARY_AREA")
+        synth_tone = sysex_data.get("SYNTH_TONE")
+        if not current_synth == temporary_area:
+            log_message(
+                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
+            )
+            return
+        log_header_message(
+            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
+        )
+
+        # Analog is simple so deal with the 1st
+        if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
+            self._update_sliders_from_sysex(json_sysex_data)
+        elif synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+            self._update_common_sliders_from_sysex(json_sysex_data)
+        else:  # Drums and Digital 1 & 2 are dealt with via partials
+            incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
+            filtered_data = filter_sysex_keys(sysex_data)
+            self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
+
 
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int

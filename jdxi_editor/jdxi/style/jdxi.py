@@ -125,7 +125,7 @@ class JDXiStyle:
 
     # Fonts
     FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
-    FONT_SIZE = "12px"
+    FONT_SIZE = "10px"
     GREY = "#CCCCCC"
     # Define button styles
     BUTTON_ROUND = generate_button_style(
