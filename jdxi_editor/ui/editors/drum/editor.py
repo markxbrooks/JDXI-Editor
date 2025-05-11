@@ -57,9 +57,7 @@ To use the `DrumEditor`, instantiate it with an optional `MIDIHelper` instance:
 
 """
 
-import logging
 from typing import Optional, Dict
-import json
 
 from PySide6.QtGui import QShortcut, QKeySequence
 from PySide6.QtWidgets import (

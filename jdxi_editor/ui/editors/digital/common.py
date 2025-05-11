@@ -2,10 +2,12 @@
 Common Section
 """
 
+from typing import Callable
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PySide6.QtCore import Qt
 import qtawesome as qta
-from typing import Callable
+
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 
 

@@ -45,7 +45,7 @@ from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
 
 
-class SimpleEditor(SynthEditor):
+class BasicEditor(SynthEditor):
     """Simple Editor Window with small instrument image"""
 
     def __init__(self, midi_helper: MidiIOHelper, parent=None):

@@ -65,7 +65,6 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
@@ -314,13 +313,9 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         if self.midi_helper:
-            sysex_message = RolandSysEx(
-                msb=self.address.msb,
-                umb=self.address.umb,
-                lmb=self.address.lmb,
-                lsb=AddressParameterAnalog.OSC_WAVEFORM.lsb,
-                value=waveform.midi_value,
-            )
+            sysex_message = self.sysex_composer.compose_message(address=self.address,
+                                                                param=AddressParameterAnalog.OSC_WAVEFORM,
+                                                                value=waveform.midi_value)
             self.midi_helper.send_midi_message(sysex_message)
 
             for btn in self.wave_buttons.values():
@@ -341,13 +336,9 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         if self.midi_helper:
-            sysex_message = RolandSysEx(
-                msb=self.address.msb,
-                umb=self.address.umb,
-                lmb=self.address.lmb,
-                lsb=AddressParameterAnalog.LFO_SHAPE.lsb,
-                value=value,
-            )
+            sysex_message = self.sysex_composer.compose_message(address=self.address,
+                                                                param=AddressParameterAnalog.LFO_SHAPE,
+                                                                value=value)
             self.midi_helper.send_midi_message(sysex_message)
             # Reset all buttons to default style
             for btn in self.lfo_shape_buttons.values():

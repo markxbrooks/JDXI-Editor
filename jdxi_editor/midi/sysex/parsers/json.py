@@ -14,7 +14,7 @@ log_message(f"Parsed Data: {parsed_data}")
 import json
 import os.path
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 from jdxi_editor.log.error import log_error
 
@@ -41,7 +41,7 @@ class JDXiJsonSysexParser:
         """
         self.sysex_data_json = json_sysex_data
 
-    def parse(self) -> dict:
+    def parse(self) -> Optional[Any]:
         """
         parse
         :return: Optional[str, None] JSON dict on success, None otherwise
@@ -53,11 +53,11 @@ class JDXiJsonSysexParser:
             log_error(f"Invalid JSON format: {ex}")
             return None
 
-    def parse_json(self, json_sysex_data: str):
+    def parse_json(self, json_sysex_data: str) -> dict:
         """
         parse bytes
         :param json_sysex_data: str
-        :return: None so far
+        :return: dict
         """
         self.sysex_data_json = json_sysex_data
         return self.parse()

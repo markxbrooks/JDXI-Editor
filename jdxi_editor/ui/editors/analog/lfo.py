@@ -1,6 +1,8 @@
 """
 Analog LFO Section
 """
+
+
 from typing import Callable
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtCore import QSize

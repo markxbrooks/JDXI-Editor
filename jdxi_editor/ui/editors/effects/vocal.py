@@ -44,7 +44,7 @@ from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgr
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
-from jdxi_editor.ui.editors.synth.simple import SimpleEditor
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.data.vocal_effects.vocal import (
     VocalAutoPitchType,
@@ -60,7 +60,7 @@ from jdxi_editor.midi.data.parameter.vocal_fx import AddressParameterVocalFX
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-class VocalFXEditor(SimpleEditor):
+class VocalFXEditor(BasicEditor):
     """Vocal Effects Window Class"""
 
     def __init__(
@@ -126,7 +126,11 @@ class VocalFXEditor(SimpleEditor):
         scroll.setWidget(container)
         main_layout.addWidget(scroll)
 
-    def _create_common_section(self):
+    def _create_common_section(self) -> QWidget:
+        """
+        _create_common_section
+        :return: QWidget
+        """
         common_section = QWidget()
         layout = QVBoxLayout()
         common_section.setLayout(layout)
@@ -174,7 +178,7 @@ class VocalFXEditor(SimpleEditor):
 
         return common_section
 
-    def _create_vocal_effect_section(self):
+    def _create_vocal_effect_section(self) -> QWidget:
         """Create general vocal effect controls section"""
         vocal_effect_section = QWidget()
         layout = QVBoxLayout()
@@ -246,8 +250,11 @@ class VocalFXEditor(SimpleEditor):
         vocoder_group.setStyleSheet(JDXIStyle.ADSR)
         return vocal_effect_section
 
-    def _create_mixer_section(self):
-        # group = QGroupBox("Mixer")
+    def _create_mixer_section(self) -> QWidget:
+        """
+        _create_mixer_section
+        :return: QWidget
+        """
         mixer_section = QWidget()
         layout = QVBoxLayout()
         mixer_section.setLayout(layout)
@@ -289,7 +296,10 @@ class VocalFXEditor(SimpleEditor):
         return mixer_section
 
     def _create_auto_pitch_section(self):
-        # group = QGroupBox("Auto Pitch")
+        """
+        _create_auto_pitch_section
+        :return: QWidget
+        """
         auto_pitch_section = QWidget()
         self.auto_pitch_group = auto_pitch_section  # Store reference
         layout = QVBoxLayout()

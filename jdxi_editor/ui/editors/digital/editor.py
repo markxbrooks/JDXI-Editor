@@ -353,7 +353,6 @@ class DigitalSynthEditor(SynthEditor):
         :param debug: bool
         :return: None
         """
-        log_header_message("Tone common and modify")
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalCommon.get_by_name(param_name)
             if not param:

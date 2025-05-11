@@ -40,7 +40,6 @@ from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io.delay import send_with_delay
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.jdxi.preset.utils import get_preset_values
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
@@ -50,21 +49,12 @@ from jdxi_editor.ui.editors.helpers.program import log_midi_info
 class JDXIPresetHelper(QObject):
     """Preset Loading Class"""
 
-    # This can't be a singleton since there is 1 for each synth
-    # _instance = None
     update_display = Signal(int, int, int)
     preset_changed = Signal(int, int)  # Signal emitted when preset changes
-
-    # def __new__(cls, *args, **kwargs):
-    #    if cls._instance is None:
-    #        cls._instance = super(PresetHelper, cls).__new__(cls)
-    #    return cls._instance
 
     def __init__(
         self, midi_helper, presets, channel=1, preset_type=JDXISynth.DIGITAL_1
     ):
-        # if hasattr(self, '_initialized') and self._initialized:
-        #    return
         super().__init__()
         self.presets = presets
         self.channel = channel
@@ -73,7 +63,6 @@ class JDXIPresetHelper(QObject):
         self.current_preset_zero_indexed = 0
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL
         self.midi_helper = midi_helper
-        self.sysex_message = RolandSysEx()
         self._initialized = True
 
     def get_current_preset(self):

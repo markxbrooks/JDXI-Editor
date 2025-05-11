@@ -63,12 +63,12 @@ from jdxi_editor.midi.data.parameter.arpeggio import AddressParameterArpeggio
 from jdxi_editor.midi.data.parameter.program.zone import AddressParameterProgramZone
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.ui.editors.synth.simple import SimpleEditor
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-class ArpeggioEditor(SimpleEditor):
+class ArpeggioEditor(BasicEditor):
     """Arpeggio Editor Window"""
 
     def __init__(

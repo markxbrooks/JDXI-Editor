@@ -748,11 +748,6 @@ class JdxiInstrument(JdxiUi):
                     sysex_message = self.sysex_composer.compose_message(address=address,
                                                                         param=AddressParameterProgramZone.ARPEGGIO_SWITCH,
                                                                         value=value)
-                    print(type(sysex_message))
-                    # sysex_message = RolandSysEx(
-                    #    sysex_address=address,
-                    #    value=value,
-                    # )
                     self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
             log_error("Error sending arp on/off", exception=ex)
