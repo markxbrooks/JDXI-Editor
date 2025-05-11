@@ -49,13 +49,13 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.ui.editors.synth.simple import SimpleEditor
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
-class EffectsCommonEditor(SimpleEditor):
+class EffectsCommonEditor(BasicEditor):
     """Effects Editor Window"""
 
     def __init__(

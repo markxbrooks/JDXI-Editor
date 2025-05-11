@@ -122,7 +122,7 @@ class MidiOutHandler(MidiIOController):
             filtered_data = {}
         try:
             log_message(
-                f"[MIDI QC passed] — Sending message: {formatted_message} {filtered_data}",
+                f"[MIDI QC passed] — [ Sending message: {formatted_message} ] {filtered_data}",
                 level=logging.INFO,
                 silent=False
             )
@@ -235,51 +235,6 @@ class MidiOutHandler(MidiIOController):
         """
         try:
             message = sysex_message.to_message_list()
-            return self.send_raw_message(message)
-
-        except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending parameter: {ex}")
-            return False
-
-    def send_parameter(
-        self,
-        msb: int,
-        umb: int,
-        lmb: int,
-        param: AddressParameter,
-        value: int,
-        size: int = 1,
-    ) -> bool:
-        """
-        Send address parameter change message.
-        :param msb: int Upper byte of the address.
-        :param umb: int Upper middle byte of the address.
-        :param lmb: int lower middle byte of the address.
-        :param param: AddressParameter
-        :param value: int Parameter value
-        :param size: int Size of the value in bytes (1, 4, or 5).
-        :return: True if successful, False otherwise.
-        """
-        log_message("send_parameter:")
-        log_parameter("msb", msb)
-        log_parameter("umb", umb)
-        log_parameter("lmb", lmb)
-        log_parameter("param", param)
-        log_parameter("value", value)
-        log_parameter("size", size)
-        try:
-            lmb = increment_if_lsb_exceeds_7bit(lmb, param)
-            address = RolandSysExAddress(msb, umb, lmb, 0x00)
-            address = apply_address_offset(address, param)
-            if size == 1:
-                data_bytes = [value & LOW_7_BITS_MASK]  # Single byte format (0-127)
-            elif size in [4, 5]:
-                data_bytes = split_16bit_value_to_nibbles(value)  # Convert to nibbles
-            else:
-                log_message(f"Unsupported parameter size: {size}")
-                return False
-            sysex_message = RolandSysEx()
-            message = sysex_message.construct_sysex(address, *data_bytes)
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:

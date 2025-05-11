@@ -2,11 +2,12 @@
     Digital Tone Modify Section
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from typing import Callable
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFormLayout
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
-from typing import Callable
+from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
 
 
 class DigitalToneModifySection(QWidget):
@@ -30,6 +31,7 @@ class DigitalToneModifySection(QWidget):
         self._create_parameter_switch = create_parameter_switch
         self.controls = controls
         self.init_ui()
+
 
     def init_ui(self):
         """
@@ -84,4 +86,62 @@ class DigitalToneModifySection(QWidget):
             ["OFF", "ON"],
         )
         layout.addWidget(chromatic_portamento)
+
+        # effect1_section = self._create_effect1_section()
+        # layout.addWidget(effect1_section)
         layout.addStretch()
+
+    def _create_effect1_section(self):
+        """Create Effect 1 section"""
+        widget = QWidget()
+        layout = QFormLayout()
+        widget.setLayout(layout)
+
+        # Create address combo box for EFX1 preset_type
+        self.efx1_type = self._create_parameter_combo_box(
+            AddressParameterEffect.EFX1_TYPE,
+            "Effect 1 Type",
+            ["Thru", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER"],
+            [0, 1, 2, 3, 4],
+        )
+        layout.addRow(self.efx1_type)
+
+        # Create sliders for EFX1 parameters
+        self.efx1_level = self._create_parameter_slider(
+            AddressParameterEffect.EFX1_LEVEL, "EFX1 Level (0-127)"
+        )
+        layout.addRow(self.efx1_level)
+
+        self.efx1_delay_send_level = self._create_parameter_slider(
+            AddressParameterEffect.EFX1_DELAY_SEND_LEVEL,
+            "EFX1 Delay Send Level (0-127)",
+        )
+        layout.addRow(self.efx1_delay_send_level)
+
+        self.efx1_reverb_send_level = self._create_parameter_slider(
+            AddressParameterEffect.EFX1_REVERB_SEND_LEVEL,
+            "EFX1 Reverb Send Level (0-127)",
+        )
+        layout.addRow(self.efx1_reverb_send_level)
+
+        self.efx1_output_assign = self._create_parameter_switch(
+            AddressParameterEffect.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"]
+        )
+        layout.addRow(self.efx1_output_assign)
+
+        self.efx1_parameter1_slider = self._create_parameter_slider(
+            AddressParameterEffect.EFX1_PARAM_1, "Parameter 1"
+        )
+        layout.addRow(self.efx1_parameter1_slider)
+
+        self.efx1_parameter2_slider = self._create_parameter_slider(
+            AddressParameterEffect.EFX1_PARAM_2, "Parameter 2"
+        )
+        layout.addRow(self.efx1_parameter2_slider)
+
+        self.efx1_parameter32_slider = self._create_parameter_slider(
+            AddressParameterEffect.EFX1_PARAM_32, "Parameter 32"
+        )
+        layout.addRow(self.efx1_parameter32_slider)
+
+        return widget

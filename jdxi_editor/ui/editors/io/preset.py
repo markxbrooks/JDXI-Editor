@@ -67,11 +67,11 @@ from jdxi_editor.ui.editors.helpers.program import (
     log_midi_info,
     get_preset_parameter_value,
 )
-from jdxi_editor.ui.editors.synth.simple import SimpleEditor
+from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXIStyle
 
 
-class PresetEditor(SimpleEditor):
+class PresetEditor(BasicEditor):
     """Program Editor Window"""
 
     program_changed = Signal(int, str, int)  # (channel, preset_name, program_number)

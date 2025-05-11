@@ -42,6 +42,7 @@ from jdxi_editor.jdxi.synth.type import JDXISynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number, log_synth_area_info
@@ -253,7 +254,7 @@ class SynthEditor(SynthBase):
 
             for param in self.controls:
                 controls_data[param.name] = param.value
-            log_message(controls_data)
+            log_message(f"{controls_data}")
             return controls_data
 
         except Exception as ex:
@@ -355,7 +356,7 @@ class SynthEditor(SynthBase):
         """
         raise NotImplementedError("should be over-ridden in a sub class with implementation")
 
-    def _parse_sysex_json(self, json_sysex_data: str) -> dict:
+    def _parse_sysex_json(self, json_sysex_data: str) -> Optional[dict]:
         """
         _parse_sysex_json
         :param json_sysex_data: str

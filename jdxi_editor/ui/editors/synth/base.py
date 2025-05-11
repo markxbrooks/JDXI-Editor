@@ -36,6 +36,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
 from jdxi_editor.ui.widgets.slider import Slider
 from jdxi_editor.ui.widgets.spin_box.spin_box import SpinBox
@@ -55,6 +56,7 @@ class SynthBase(QWidget):
         self.controls: Dict[AddressParameter, QWidget] = {}
         self._midi_helper = midi_helper
         self.midi_requests = []
+        self.sysex_composer = JDXiSysExComposer()
 
     @property
     def midi_helper(self) -> MidiIOHelper:
@@ -103,23 +105,7 @@ class SynthBase(QWidget):
         :return: bool True on success, False otherwise
         """
         try:
-            if hasattr(param, "get_nibbled_size"):
-                size = param.get_nibbled_size()
-            else:
-                size = 1
-            address = apply_address_offset(self.address, param)
-            log_parameter("base address:", self.address)
-            log_parameter("parameter offset to apply:", param)
-            log_parameter("  -->  final address", address)
-            log_parameter("parameter value:", value)
-            sysex_message = RolandSysEx(
-                msb=address.msb,
-                umb=address.umb,
-                lmb=address.lmb,
-                lsb=address.lsb,
-                value=value,
-                size=size,
-            )
+            sysex_message = self.sysex_composer.compose_message(address=self.address, param=param, value=value)
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:

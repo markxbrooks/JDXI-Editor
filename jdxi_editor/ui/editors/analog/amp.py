@@ -3,10 +3,13 @@ Amp section of the JD-Xi editor
 
 This section contains the controls for the amp section of the JD-Xi editor.
 """
+
+from typing import Callable
+
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
-from typing import Callable
+
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.jdxi.style import JDXIStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
