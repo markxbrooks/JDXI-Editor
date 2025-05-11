@@ -47,8 +47,8 @@ from jdxi_editor.jdxi.style import JDXiStyle
 class ADSRPlot(QWidget):
     def __init__(
         self,
-        width: int = 400,
-        height: int = 400,
+        width: int = 300,
+        height: int = 300,
         envelope: dict = None,
         parent: QWidget = None,
     ):

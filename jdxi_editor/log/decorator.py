@@ -2,7 +2,12 @@ from jdxi_editor.log.emoji import LEVEL_EMOJIS
 
 
 def get_qc_tag(msg: str) -> str:
-    msg = msg.lower()
+    """
+    get QC emoji etc
+    :param msg: str
+    :return: str
+    """
+    msg = f"{msg}".lower()
     if "success rate" in msg:
         return "📊"
     if "updat" in msg or "success" in msg or "passed" in msg:
@@ -13,7 +18,12 @@ def get_qc_tag(msg: str) -> str:
 
 
 def get_midi_tag(msg: str) -> str:
-    msg = msg.lower()
+    """
+    get Midi emoji etc
+    :param msg: str
+    :return: str
+    """
+    msg = f"{msg}".lower()
     if "jdxi" in msg or "jd-xi" in msg:
         return "🎹"
     if "midi" in msg or "sysex" in msg:

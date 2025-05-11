@@ -158,7 +158,7 @@ class AnalogSynthEditor(SynthEditor):
 
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
-        self.setMinimumSize(650, 600)
+        self.setMinimumSize(330, 600)
         self.resize(950, 600)
         self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
 
