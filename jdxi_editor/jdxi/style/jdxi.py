@@ -1027,7 +1027,7 @@ class JDXiStyle:
 
     DRUM_GROUP = """
                 QGroupBox {
-                width: 80px;
+                width: 50px;
                 height: 60;
             }
             """
