@@ -34,7 +34,6 @@ def setup_logging():
         file_handler.setFormatter(file_formatter)
 
         # Configure console logging
-        # console_handler = logging.StreamHandler(sys.stdout)
         console_handler = logging.StreamHandler(
             sys.__stdout__
         )  # Use sys.__stdout__ explicitly

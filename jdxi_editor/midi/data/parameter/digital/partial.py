@@ -42,6 +42,7 @@ from typing import Tuple, Optional
 
 from jdxi_editor.midi.data.parameter.digital.mapping import ENVELOPE_MAPPING
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from jdxi_editor.midi.sysex.utils import map_range
 
 
 class AddressParameterDigitalPartial(AddressParameter):
