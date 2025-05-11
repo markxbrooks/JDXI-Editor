@@ -17,6 +17,10 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.midi.data.address.sysex import LOW_7_BITS_MASK
 
 
+def map_range(value, in_min=-100, in_max=100, out_min=54, out_max=74):
+    return int(out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min))
+
+
 def calculate_checksum(data):
     """Calculate Roland checksum for parameter messages."""
     return (128 - (sum(data) & LOW_7_BITS_MASK)) & LOW_7_BITS_MASK

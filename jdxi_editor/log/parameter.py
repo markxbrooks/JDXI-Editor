@@ -4,6 +4,7 @@ import logging
 from typing import Any
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH, logger, LOGGING
+from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 
@@ -52,19 +53,11 @@ def log_parameter(
     padded_message = f"{message:<{LOG_PADDING_WIDTH}}"
     padded_type = f"{type_name:<12}"
 
-    # Emoji & MIDI context
-    emoji = LEVEL_EMOJIS.get(level, "🔔")
-    midi_tag = (
-        "🎵"
-        if any(word in message.lower() for word in ["midi", "sysex", "address"])
-        else ""
-    )
-
     # Compose final log message
-    final_message = (
-        f"{emoji}{midi_tag} {padded_message} {padded_type} {formatted_value}".rstrip()
+    formatted_message = (
+        f"{padded_message} {padded_type} {formatted_value}".rstrip()
     )
-
+    final_message = decorate_log_message(formatted_message, level)
     if LOGGING and not silent:
         # Dispatch to appropriate logging level
         logger.log(level, final_message, stacklevel=2)
