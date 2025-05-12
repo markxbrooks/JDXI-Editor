@@ -22,17 +22,17 @@ from jdxi_editor.ui.widgets.midi.slider.lfo import (
     LFORateSlider,
 )
 from jdxi_editor.ui.widgets.midi.slider.lfo.shape import LFOShapeSlider
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 def add_slider_container(central_widget, midi_helper):
     """ad slider container"""
     slider_container = QWidget(central_widget)
     slider_container.setGeometry(
-        JDXIDimensions.SLIDER_X,
-        JDXIDimensions.SLIDER_Y,
-        JDXIDimensions.SLIDER_CONTAINER_WIDTH,
-        JDXIDimensions.SLIDER_CONTAINER_HEIGHT,
+        JDXiDimensions.SLIDER_X,
+        JDXiDimensions.SLIDER_Y,
+        JDXiDimensions.SLIDER_CONTAINER_WIDTH,
+        JDXiDimensions.SLIDER_CONTAINER_HEIGHT,
     )
 
     main_layout = QVBoxLayout(slider_container)
@@ -44,7 +44,7 @@ def add_slider_container(central_widget, midi_helper):
     slider_row_layout.setContentsMargins(0, 0, 0, 0)
     slider_row_layout.setSpacing(3)
 
-    slider_height = JDXIDimensions.SLIDER_HEIGHT
+    slider_height = JDXiDimensions.SLIDER_HEIGHT
     slider_style = JDXiStyle.ADSR_DISABLED
 
     def create_slider_with_label(label_text, slider_widget):

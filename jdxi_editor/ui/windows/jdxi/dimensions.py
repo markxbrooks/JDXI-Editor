@@ -9,7 +9,7 @@ Class to store dimensions of a Roland JDXi instrument
 """
 
 
-class JDXIDimensions:
+class JDXiDimensions:
     """
     A class to store dimensions for the JD-Xi editor UI.
     """

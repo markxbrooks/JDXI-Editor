@@ -57,7 +57,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
@@ -65,7 +65,7 @@ from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
     midi_value_to_fraction,
@@ -74,6 +74,7 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.ui.editors.analog.amp import AmpSection
+from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
@@ -91,7 +92,7 @@ class AnalogSynthEditor(SynthEditor):
     def __init__(
             self,
             midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional[JDXIPresetHelper] = None,
+            preset_helper: Optional[JDXiPresetHelper] = None,
             parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
@@ -117,7 +118,7 @@ class AnalogSynthEditor(SynthEditor):
         self.main_window = parent
 
         self._init_parameter_mappings()
-        self._init_synth_data(JDXISynth.ANALOG)
+        self._init_synth_data(JDXiSynth.ANALOG)
         self.setup_ui()
 
         if self.midi_helper:
@@ -258,6 +259,13 @@ class AnalogSynthEditor(SynthEditor):
         self.tab_widget.addTab(
             self.lfo_section, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
         )
+        self.common_section = AnalogCommonSection(
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self._create_parameter_combo_box,
+            self.controls,
+        )
+        self.tab_widget.addTab(self.common_section, "Common")
 
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
@@ -542,23 +550,6 @@ class AnalogSynthEditor(SynthEditor):
             else:
                 failures.append(param_name)
         log_debug_info(sysex_data, successes, failures)
-
-    def update_switch(
-            self, switch: Switch, value: int, successes: list = None, failures: list = None
-    ) -> None:
-        """
-        Update switch state and log success/failure.
-        :param switch: QWidget representing the switch
-        :param value: int value to set
-        :param successes: list of successful parameters
-        :param failures: list of failed parameters
-        :return: None
-        """
-        if isinstance(switch, Switch):
-            switch.setValue(value)
-            successes.append(switch.objectName())
-        else:
-            failures.append(switch.objectName())
 
     def _update_waveform_buttons(self, value: int):
         """

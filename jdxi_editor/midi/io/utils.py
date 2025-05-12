@@ -163,7 +163,7 @@ def handle_identity_request(message: mido.Message) -> dict:
 
     version_str = ".".join(str(byte) for byte in version)
     if device_id == ModelID.DEVICE_ID:
-        device_name = "JD-XI"
+        device_name = "JD-Xi"
     else:
         device_name = "Unknown"
     if manufacturer_id[0] == RolandID.ROLAND_ID:

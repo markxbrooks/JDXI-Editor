@@ -8,7 +8,7 @@ from jdxi_editor.jdxi.style.factory import (
     toggle_button_style,
 )
 from jdxi_editor.ui.widgets.button.sequencer import SequencerSquare
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 def create_sequencer_buttons_row(midi_helper, on_context_menu, on_save_favorite):
@@ -22,8 +22,8 @@ def create_sequencer_buttons_row(midi_helper, on_context_menu, on_save_favorite)
         QRect(
             1,
             1,
-            JDXIDimensions.SEQUENCER_GRID_WIDTH,
-            JDXIDimensions.SEQUENCER_GRID_HEIGHT,
+            JDXiDimensions.SEQUENCER_GRID_WIDTH,
+            JDXiDimensions.SEQUENCER_GRID_HEIGHT,
         )
     )
     grid.setHorizontalSpacing(3)
@@ -31,7 +31,7 @@ def create_sequencer_buttons_row(midi_helper, on_context_menu, on_save_favorite)
     for i in range(16):
         button = SequencerSquare(i, midi_helper)
         button.setFixedSize(
-            JDXIDimensions.SEQUENCER_SQUARE_SIZE, JDXIDimensions.SEQUENCER_SQUARE_SIZE
+            JDXiDimensions.SEQUENCER_SQUARE_SIZE, JDXiDimensions.SEQUENCER_SQUARE_SIZE
         )
         button.setCheckable(True)
         button.setChecked(False)
@@ -67,10 +67,10 @@ def add_sequencer_container(
     # Beginning of sequencer section
     sequencer_container = QWidget(central_widget)
     sequencer_container.setGeometry(
-        JDXIDimensions.SEQUENCER_CONTAINER_X,
-        JDXIDimensions.SEQUENCER_CONTAINER_Y,
-        JDXIDimensions.SEQUENCER_CONTAINER_WIDTH,
-        JDXIDimensions.SEQUENCER_CONTAINER_HEIGHT,
+        JDXiDimensions.SEQUENCER_CONTAINER_X,
+        JDXiDimensions.SEQUENCER_CONTAINER_Y,
+        JDXiDimensions.SEQUENCER_CONTAINER_WIDTH,
+        JDXiDimensions.SEQUENCER_CONTAINER_HEIGHT,
     )
     sequencer_container_layout = QHBoxLayout(sequencer_container)
     sequencer_label = QLabel("Sequencer")
@@ -93,8 +93,8 @@ def add_favorite_button_container(central_widget):
     """Create a circular button to set and unset favorites"""
     favourites_button_container = QWidget(central_widget)
     favourites_button_container.setGeometry(
-        JDXIDimensions.SEQUENCER_CONTAINER_X - 50,
-        JDXIDimensions.SEQUENCER_CONTAINER_Y,
+        JDXiDimensions.SEQUENCER_CONTAINER_X - 50,
+        JDXiDimensions.SEQUENCER_CONTAINER_Y,
         100,
         200,
     )

@@ -37,7 +37,7 @@ class UiAboutDialog(QDialog):
         self.setStyleSheet(JDXiStyle.SPLASH_SCREEN + JDXiStyle.CREDITS_LABEL_STYLE)
         main_layout = QVBoxLayout(self)
         group_box_layout = QVBoxLayout(self)
-        group_box = QGroupBox("JDXi Editor")
+        group_box = QGroupBox("JD-Xi Editor")
         group_box_layout.addWidget(group_box)
         image_layout = QVBoxLayout(self)
         group_box.setLayout(image_layout)

@@ -5,7 +5,7 @@ Midi Synth Config
 from dataclasses import dataclass
 from typing import List
 
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 
 
 @dataclass
@@ -18,4 +18,4 @@ class MidiSynthConfig:
     midi_channel: int
     presets: List[str]
     preset_list: List[str]
-    preset_type: JDXISynth
+    preset_type: JDXiSynth

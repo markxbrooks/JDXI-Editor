@@ -37,7 +37,7 @@ from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScr
 from typing import Callable
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumOutputSection(QWidget):
@@ -62,7 +62,7 @@ class DrumOutputSection(QWidget):
         layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXIDimensions.SCROLL_AREA_HEIGHT)
+        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
         scroll_area.setWidgetResizable(True)  # Important for resizing behavior
         layout.addWidget(scroll_area)
 

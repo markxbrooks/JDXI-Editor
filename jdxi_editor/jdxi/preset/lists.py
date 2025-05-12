@@ -1,7 +1,7 @@
 from typing import Tuple
 
 
-class JDXIPresets:
+class JDXiPresets:
     ANALOG_ENUMERATED = [
         "001: Toxic Bass 1",
         "002: Sub Bass 1",

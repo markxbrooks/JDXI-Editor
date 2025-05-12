@@ -22,7 +22,7 @@ import qtawesome as qta
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
@@ -49,7 +49,7 @@ class MidiPlayer(SynthEditor):
         self.preset_helper = (
             preset_helper
             if preset_helper
-            else JDXIPresetHelper(
+            else JDXiPresetHelper(
                 self.midi_helper,
                 presets=DIGITAL_PRESET_LIST,
                 channel=MidiChannel.DIGITAL1,

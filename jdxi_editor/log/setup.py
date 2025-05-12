@@ -50,7 +50,7 @@ def setup_logging():
 
         logger = logging.getLogger("jdxi_editor")
         logger.info("Logging setup complete")
-        logger.info("JDXi Editor starting up...")
+        logger.info("JD-Xi Editor starting up...")
         logger.debug(f"Log file: {log_file}")
         return logger
 

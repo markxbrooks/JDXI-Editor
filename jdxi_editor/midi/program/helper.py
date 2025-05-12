@@ -50,7 +50,7 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.midi.io import MidiIOHelper
 
 
-class JDXIProgramHelper(QObject):
+class JDXiProgramHelper(QObject):
     """Preset Loading Class"""
 
     program_changed = Signal(
@@ -60,7 +60,7 @@ class JDXIProgramHelper(QObject):
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super(JDXIProgramHelper, cls).__new__(cls)
+            cls._instance = super(JDXiProgramHelper, cls).__new__(cls)
         return cls._instance
 
     def __init__(self, midi_helper: Optional[MidiIOHelper], channel: int):

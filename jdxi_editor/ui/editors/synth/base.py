@@ -26,7 +26,7 @@ import mido
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
@@ -205,7 +205,7 @@ class SynthBase(QWidget):
         self.controls[param] = switch
         return switch
 
-    def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
+    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_1,
                          partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data

@@ -109,7 +109,7 @@ def main():
         layout.setSpacing(10)
 
         # Title
-        group_box = QGroupBox("JDXI-Editor")
+        group_box = QGroupBox("JD-Xi Editor")
         group_box.setAlignment(Qt.AlignHCenter)
         group_box.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
         preferred_fonts = ["Myriad Pro", "Segoe UI", "Arial"]

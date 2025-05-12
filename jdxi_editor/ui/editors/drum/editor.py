@@ -78,13 +78,13 @@ from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.widgets.dialog.progress import ProgressDialog
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 
 
 class DrumCommonEditor(SynthEditor):
@@ -93,7 +93,7 @@ class DrumCommonEditor(SynthEditor):
     def __init__(
             self,
             midi_helper: Optional[MidiIOHelper] = None,
-            preset_helper: Optional[JDXIPresetHelper] = None,
+            preset_helper: Optional[JDXiPresetHelper] = None,
             parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper, parent)
@@ -101,7 +101,7 @@ class DrumCommonEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.midi_helper = midi_helper
         self.partial_number = 0
-        self._init_synth_data(synth_type=JDXISynth.DRUM, partial_number=0)
+        self._init_synth_data(synth_type=JDXiSynth.DRUM, partial_number=0)
         self.sysex_current_data = None
         self.sysex_previous_data = None
         self.partial_mapping = DRUM_PARTIAL_MAP

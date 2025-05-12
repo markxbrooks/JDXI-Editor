@@ -43,7 +43,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors.io.data.options import DIGITAL_OPTIONS, DRUM_OPTIONS
 
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
@@ -57,14 +57,14 @@ class PatternSequencer(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper],
-        preset_helper: Optional[JDXIPresetHelper],
+        preset_helper: Optional[JDXiPresetHelper],
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         """
         Initialize the PatternSequencer
         :param midi_helper: Optional[MidiIOHelper]
-        :param preset_helper: Optional[JDXIPresetHelper]
+        :param preset_helper: Optional[JDXiPresetHelper]
         :param parent: Optional[QWidget]
         """
         self.muted_channels = []
