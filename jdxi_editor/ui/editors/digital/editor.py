@@ -313,7 +313,6 @@ class DigitalSynthEditor(SynthEditor):
             filtered_data = filter_sysex_keys(sysex_data)
             self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
 
-
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int
     ) -> None:
@@ -523,7 +522,6 @@ class DigitalSynthEditor(SynthEditor):
         value: int,
         successes: list,
         failures: list,
-        debug: bool = False,
     ) -> None:
         """
         Update the partial selection switches based on parameter and value.
@@ -531,7 +529,6 @@ class DigitalSynthEditor(SynthEditor):
         :param value: int
         :param successes: list
         :param failures: list
-        :param debug: bool
         :return: None
         """
         param_name = param.name
