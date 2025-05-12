@@ -22,7 +22,6 @@ class JDXiSysExComposer:
 
     def __init__(self):
         self.address = None
-        self.offset = None
         self.sysex_message = None
 
     def compose_message(
