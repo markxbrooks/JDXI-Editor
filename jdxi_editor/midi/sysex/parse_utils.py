@@ -56,8 +56,10 @@ SYNTH_TYPE_MAP = {
 TEMPORARY_AREA_MAP = {
     (AreaMSB.TEMPORARY_PROGRAM, TemporaryToneUMB.COMMON): AreaMSB.TEMPORARY_PROGRAM.name,
     (AreaMSB.TEMPORARY_TONE, TemporaryToneUMB.ANALOG_PART): TemporaryToneUMB.ANALOG_PART.name,
-    (AreaMSB.TEMPORARY_TONE, TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-    (AreaMSB.TEMPORARY_TONE, TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+    (AreaMSB.TEMPORARY_TONE,
+     TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+    (AreaMSB.TEMPORARY_TONE,
+     TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
     (AreaMSB.TEMPORARY_TONE, TemporaryToneUMB.DRUM_KIT_PART): TemporaryToneUMB.DRUM_KIT_PART.name,
 }
 
@@ -197,9 +199,12 @@ def parse_single_parameter(data: bytes, parameter_type: AddressParameter) -> Dic
     :param parameter_type: Type
     :return: Dict[str, int]
     """
-    _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS_LMB])
-    address = data[JDXiSysExOffset.ADDRESS_LSB]
-    index = address_to_index(offset, address)
+    if isinstance(parameter_type, AddressParameterDrumPartial):
+        _, offset = get_drum_tone(data[JDXiSysExOffset.ADDRESS_LMB])
+        address = data[JDXiSysExOffset.ADDRESS_LSB]
+        index = address_to_index(offset, address)
+    else:
+        index = data[JDXiSysExOffset.ADDRESS_LSB]
     param = parameter_type.get_parameter_by_address(index)
     if param:
         return {"PARAM": param.name}
@@ -237,7 +242,8 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     temporary_area = get_temporary_area(data) or "Unknown"
     tone_handlers = {AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name: get_drum_tone}
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
-    synth_tone, offset = tone_handler(data[JDXiSysExOffset.ADDRESS_LMB]) if len(data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
+    synth_tone, offset = tone_handler(data[JDXiSysExOffset.ADDRESS_LMB]) if len(
+        data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
     return {
         "JD_XI_HEADER": safe_extract(data, JDXiSysExOffset.SYSEX_START, JDXiSysExOffset.COMMAND_ID),
         "ADDRESS": safe_extract(data, JDXiSysExOffset.COMMAND_ID, JDXiSysExOffset.ADDRESS_LSB),
@@ -287,7 +293,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         log_parameter("synth_tone", synth_tone, silent=True)
     else:
         synth_tone, offset = get_synth_tone(data[
-                                        JDXiSysExOffset.ADDRESS_LMB]) if len(
+                                                JDXiSysExOffset.ADDRESS_LMB]) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
     log_parameter("temporary_area", temporary_area, silent=True)
     log_parameter("synth_tone", synth_tone, silent=True)
