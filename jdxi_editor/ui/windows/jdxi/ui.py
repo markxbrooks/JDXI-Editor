@@ -44,8 +44,8 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.manager import JDXIPresetManager
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.preset.manager import JDXiPresetManager
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.helpers.program import (
@@ -75,7 +75,7 @@ from jdxi_editor.ui.windows.jdxi.containers import (
     create_program_buttons_row,
     create_parts_container,
 )
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class JdxiUi(QMainWindow):
@@ -99,14 +99,14 @@ class JdxiUi(QMainWindow):
         self.current_program_number = int(self.current_program_id[1:])
         self.current_program_name = get_program_name_by_id(self.current_program_id)
         # Set up presets
-        self.preset_manager = JDXIPresetManager()
+        self.preset_manager = JDXiPresetManager()
         # Initialize synth preset_type
-        self.current_synth_type = JDXISynth.DIGITAL_1
+        self.current_synth_type = JDXiSynth.DIGITAL_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.setWindowTitle("JD-Xi Editor")
-        self.setMinimumSize(JDXIDimensions.WIDTH, JDXIDimensions.HEIGHT)
+        self.setMinimumSize(JDXiDimensions.WIDTH, JDXiDimensions.HEIGHT)
 
         # Initialize MIDI helper
         self.midi_helper = MidiIOHelper()
@@ -174,10 +174,10 @@ class JdxiUi(QMainWindow):
             on_select_synth=self._select_synth,
         )
         self.synth_buttons = {
-            JDXISynth.DIGITAL_1: self.part_buttons["digital1"],
-            JDXISynth.DIGITAL_2: self.part_buttons["digital2"],
-            JDXISynth.ANALOG: self.part_buttons["analog"],
-            JDXISynth.DRUM: self.part_buttons["drums"],
+            JDXiSynth.DIGITAL_1: self.part_buttons["digital1"],
+            JDXiSynth.DIGITAL_2: self.part_buttons["digital2"],
+            JDXiSynth.ANALOG: self.part_buttons["analog"],
+            JDXiSynth.DRUM: self.part_buttons["drums"],
         }
         self.arp_button = self.part_buttons["arp"]
         self.octave_down, self.octave_up = add_octave_buttons(
@@ -386,7 +386,7 @@ class JdxiUi(QMainWindow):
         synth_data = create_synth_data(self.current_synth_type)
         if not synth_data:
             logging.warning("MIDI_SLEEP_TIME. Defaulting to DIGITAL_1.")
-            synth_data = self.synth_data_map[JDXISynth.DIGITAL_1]
+            synth_data = self.synth_data_map[JDXiSynth.DIGITAL_1]
 
         self.preset_manager.current_preset_name = (
             self.preset_manager.get_preset_name_by_type(self.current_synth_type)

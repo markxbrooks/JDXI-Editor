@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QButtonGroup
 
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 from jdxi_editor.ui.windows.jdxi.helpers.button_row import create_button_row
 
 
@@ -19,10 +19,10 @@ def create_parts_container(
     """Create the Parts Select container widget"""
     parts_container = QWidget(parent_widget)
     parts_container.setGeometry(
-        JDXIDimensions.PARTS_X,
-        JDXIDimensions.PARTS_Y,
-        JDXIDimensions.PARTS_WIDTH,
-        JDXIDimensions.PARTS_HEIGHT,
+        JDXiDimensions.PARTS_X,
+        JDXiDimensions.PARTS_Y,
+        JDXiDimensions.PARTS_WIDTH,
+        JDXiDimensions.PARTS_HEIGHT,
     )
     parts_layout = QVBoxLayout(parts_container)
     parts_layout.setSpacing(3)
@@ -39,10 +39,10 @@ def create_parts_container(
     arp_row, arp_button = create_button_row("Arpeggiator", on_open_arp)
 
     # Connect buttons to synth selector
-    analog_button.clicked.connect(lambda: on_select_synth(JDXISynth.ANALOG))
-    digital1_button.clicked.connect(lambda: on_select_synth(JDXISynth.DIGITAL_1))
-    digital2_button.clicked.connect(lambda: on_select_synth(JDXISynth.DIGITAL_2))
-    drums_button.clicked.connect(lambda: on_select_synth(JDXISynth.DRUM))
+    analog_button.clicked.connect(lambda: on_select_synth(JDXiSynth.ANALOG))
+    digital1_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DIGITAL_1))
+    digital2_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DIGITAL_2))
+    drums_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DRUM))
 
     # Button group ensures one active selection
     button_group = QButtonGroup()

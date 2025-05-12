@@ -2,8 +2,8 @@
 Synth Factory
 """
 
-from jdxi_editor.jdxi.preset.lists import JDXIPresets
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.preset.lists import JDXiPresets
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetProgramLMB,
@@ -19,20 +19,20 @@ from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 
 
-def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISynthData:
+def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISynthData:
     """
     Factory function to create synth data based on the synth type and partial number.
     :param synth_type: str
     :param partial_number: int
     :return: JDXISynthData
     """
-    if synth_type == JDXISynth.DRUM:
+    if synth_type == JDXiSynth.DRUM:
         address_lmb = DRUM_GROUP_MAP.get(partial_number)
         return DrumSynthData(
             midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
             midi_channel=MidiChannel.DRUM,
-            presets=JDXIPresets.DRUM_ENUMERATED,
-            preset_list=JDXIPresets.DRUM_KIT_LIST,
+            presets=JDXiPresets.DRUM_ENUMERATED,
+            preset_list=JDXiPresets.DRUM_KIT_LIST,
             preset_type=synth_type,
             instrument_icon_folder="drum_kits",
             instrument_default_image="drums.png",
@@ -43,16 +43,16 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             lmb=address_lmb,
             partial_number=partial_number,
         )
-    elif synth_type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
+    elif synth_type in [JDXiSynth.DIGITAL_1, JDXiSynth.DIGITAL_2]:
         address_lmb = AddressOffsetSuperNATURALLMB.digital_partial_offset(
             partial_number
         )
-        if synth_type == JDXISynth.DIGITAL_1:
+        if synth_type == JDXiSynth.DIGITAL_1:
             digital_partial_address_umb = (
                 AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
             )
             synth_number = 1
-        elif synth_type == JDXISynth.DIGITAL_2:  # JDXISynth.DIGITAL_2
+        elif synth_type == JDXiSynth.DIGITAL_2:  # JDXISynth.DIGITAL_2
             synth_number = 2
             digital_partial_address_umb = (
                 AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA
@@ -69,8 +69,8 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             midi_channel=MidiChannel.DIGITAL2
             if synth_number == 2
             else MidiChannel.DIGITAL1,
-            presets=JDXIPresets.DIGITAL_ENUMERATED,
-            preset_list=JDXIPresets.DIGITAL_LIST,
+            presets=JDXiPresets.DIGITAL_ENUMERATED,
+            preset_list=JDXiPresets.DIGITAL_LIST,
             preset_type=synth_type,
             instrument_icon_folder="digital_synths",
             instrument_default_image="jdxi_vector.png",
@@ -82,12 +82,12 @@ def create_synth_data(synth_type: JDXISynth, partial_number: int = 0) -> JDXISyn
             synth_number=synth_number,
             partial_number=partial_number,
         )
-    elif synth_type == JDXISynth.ANALOG:
+    elif synth_type == JDXiSynth.ANALOG:
         return AnalogSynthData(
             midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
             midi_channel=MidiChannel.ANALOG,
-            presets=JDXIPresets.ANALOG_ENUMERATED,
-            preset_list=JDXIPresets.ANALOG_LIST,
+            presets=JDXiPresets.ANALOG_ENUMERATED,
+            preset_list=JDXiPresets.ANALOG_LIST,
             preset_type=synth_type,
             instrument_icon_folder="analog_synths",
             instrument_default_image="analog.png",

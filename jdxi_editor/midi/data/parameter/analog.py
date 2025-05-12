@@ -111,8 +111,8 @@ class AddressParameterAnalog(AddressParameter):
     PORTAMENTO_TIME = (0x32, 0, 127)
     LEGATO_SWITCH = (0x33, 0, 1)
     OCTAVE_SHIFT = (0x34, 61, 67)
-    PITCH_BEND_RANGE_UP = (0x35, 0, 24)
-    PITCH_BEND_RANGE_DOWN = (0x36, 0, 24)
+    PITCH_BEND_UP = (0x35, 0, 24)
+    PITCH_BEND_DOWN = (0x36, 0, 24)
 
     # LFO Modulation Control
     LFO_PITCH_MODULATION_CONTROL = (0x38, 1, 127, -63, 63)

@@ -43,7 +43,7 @@ from jdxi_editor.midi.data.address.address import (
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.vocal_effects.vocal import (
@@ -66,7 +66,7 @@ class VocalFXEditor(BasicEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: JDXIPresetHelper = None,
+        preset_helper: JDXiPresetHelper = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)

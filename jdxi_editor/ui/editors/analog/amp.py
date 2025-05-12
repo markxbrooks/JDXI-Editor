@@ -76,6 +76,13 @@ class AmpSection(QWidget):
         layout.addWidget(self.amp_level)
         layout.addWidget(self.amp_level_keyfollow)
 
+        layout.addWidget(
+            self._create_parameter_slider(
+                AddressParameterAnalog.AMP_LEVEL_VELOCITY_SENSITIVITY,
+                "Velocity Sensitivity",
+            )
+        )
+
         # Add spacing
         layout.addSpacing(10)
 

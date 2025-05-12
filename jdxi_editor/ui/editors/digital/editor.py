@@ -43,7 +43,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShortcut, QKeySequence
 
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
@@ -56,7 +56,7 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.digital.utils import get_digital_parameter_by_address
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
@@ -86,7 +86,7 @@ class DigitalSynthEditor(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: JDXIPresetHelper = None,
+        preset_helper: JDXiPresetHelper = None,
         synth_number: int = 1,
         parent: QWidget = None,
     ):
@@ -97,7 +97,7 @@ class DigitalSynthEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
             parent.digital_1_preset_helper
-            if self.preset_type == JDXISynth.DIGITAL_1
+            if self.preset_type == JDXiSynth.DIGITAL_1
             else parent.digital_2_preset_helper
         )
         self.main_window = parent
@@ -105,7 +105,7 @@ class DigitalSynthEditor(SynthEditor):
             Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
             QWidget,
         ] = {}
-        synth_map = {1: JDXISynth.DIGITAL_1, 2: JDXISynth.DIGITAL_2}
+        synth_map = {1: JDXiSynth.DIGITAL_1, 2: JDXiSynth.DIGITAL_2}
         if synth_number not in synth_map:
             raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
         self.synth_number = synth_number
@@ -468,7 +468,7 @@ class DigitalSynthEditor(SynthEditor):
             return
         if spinbox:
             spinbox.setValue(new_value)
-            synth_data = create_synth_data(JDXISynth.DIGITAL_1, partial_no)
+            synth_data = create_synth_data(JDXiSynth.DIGITAL_1, partial_no)
             log_slider_parameters(
                 self.address.umb, synth_data.lmb, param, midi_value, new_value
             )
@@ -644,7 +644,7 @@ class DigitalSynth2Editor(DigitalSynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
-        preset_helper: JDXIPresetHelper = None,
+        preset_helper: JDXiPresetHelper = None,
         synth_number: int = 2,
         parent: QWidget = None,
     ):

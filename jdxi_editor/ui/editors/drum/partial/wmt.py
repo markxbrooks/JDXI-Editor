@@ -51,7 +51,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.drum.data import rm_waves
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DrumWMTSection(QWidget):
@@ -90,7 +90,7 @@ class DrumWMTSection(QWidget):
         layout = QVBoxLayout(self)
 
         scroll_area = QScrollArea()
-        scroll_area.setMinimumHeight(JDXIDimensions.SCROLL_AREA_HEIGHT)
+        scroll_area.setMinimumHeight(JDXiDimensions.SCROLL_AREA_HEIGHT)
         scroll_area.setWidgetResizable(True)  # Important for resizing behavior
         layout.addWidget(scroll_area)
 

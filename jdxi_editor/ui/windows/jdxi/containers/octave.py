@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 def add_octave_buttons(widget, send_octave):
@@ -12,10 +12,10 @@ def add_octave_buttons(widget, send_octave):
 
     # Apply the height offset to the Y position
     octave_buttons_container.setGeometry(
-        JDXIDimensions.OCTAVE_X,
-        JDXIDimensions.OCTAVE_Y,  # Move up by offset_y (now 25% instead of 20%)
-        JDXIDimensions.OCTAVE_WIDTH,
-        JDXIDimensions.OCTAVE_HEIGHT,
+        JDXiDimensions.OCTAVE_X,
+        JDXiDimensions.OCTAVE_Y,  # Move up by offset_y (now 25% instead of 20%)
+        JDXiDimensions.OCTAVE_WIDTH,
+        JDXiDimensions.OCTAVE_HEIGHT,
     )
 
     octave_layout = QVBoxLayout(octave_buttons_container)

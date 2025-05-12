@@ -56,7 +56,7 @@ from jdxi_editor.midi.data.parameter.digital.partial import (
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DIGITAL_PARTIAL_NAMES
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.ui.editors.digital.partial.amp import DigitalAmpSection
 from jdxi_editor.ui.editors.digital.partial.filter import DigitalFilterSection
@@ -102,11 +102,11 @@ class DigitalPartialEditor(PartialEditor):
         self.partial_number = partial_number
         if synth_number == 1:
             self.synth_data = create_synth_data(
-                JDXISynth.DIGITAL_1, partial_number=partial_number
+                JDXiSynth.DIGITAL_1, partial_number=partial_number
             )
         elif synth_number == 2:
             self.synth_data = create_synth_data(
-                JDXISynth.DIGITAL_2, partial_number=partial_number
+                JDXiSynth.DIGITAL_2, partial_number=partial_number
             )
         self.address = self.synth_data.address  # Shortcut for convenience
         log_parameter("Initializing partial:", self.synth_data.address)

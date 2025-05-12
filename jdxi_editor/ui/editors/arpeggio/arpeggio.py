@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, ZERO_BYTE
 from jdxi_editor.midi.data.arpeggio.arpeggio import ArpeggioSwitch
 from jdxi_editor.midi.data.arpeggio.arpeggio import (
@@ -74,7 +74,7 @@ class ArpeggioEditor(BasicEditor):
     def __init__(
         self,
         midi_helper: MidiIOHelper,
-        preset_helper: Optional[JDXIPresetHelper] = None,
+        preset_helper: Optional[JDXiPresetHelper] = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)

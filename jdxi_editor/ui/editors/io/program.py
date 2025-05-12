@@ -57,7 +57,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
@@ -77,7 +77,7 @@ class ProgramEditor(BasicEditor):
         self,
         midi_helper: Optional[MidiIOHelper] = None,
         parent: Optional[QWidget] = None,
-        preset_helper: JDXIPresetHelper = None,
+        preset_helper: JDXiPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
         """

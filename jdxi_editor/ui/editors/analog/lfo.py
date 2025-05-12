@@ -78,6 +78,9 @@ class AnalogLFOSection(QWidget):
         self.lfo_rate = self._create_parameter_slider(
             AddressParameterAnalog.LFO_RATE, "Rate"
         )
+        self.lfo_rate_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_RATE_MODULATION_CONTROL, "Rate Modulation"
+        )
         self.lfo_fade = self._create_parameter_slider(
             AddressParameterAnalog.LFO_FADE_TIME, "Fade Time"
         )
@@ -99,13 +102,21 @@ class AnalogLFOSection(QWidget):
         self.lfo_pitch = self._create_parameter_slider(
             AddressParameterAnalog.LFO_PITCH_DEPTH, "Pitch Depth"
         )
+        self.lfo_pitch_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_PITCH_MODULATION_CONTROL, "Pitch Modulation"
+        )
         self.lfo_filter = self._create_parameter_slider(
             AddressParameterAnalog.LFO_FILTER_DEPTH, "Filter Depth"
+        )
+        self.lfo_filter_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_FILTER_MODULATION_CONTROL, "Filter Modulation"
         )
         self.lfo_amp = self._create_parameter_slider(
             AddressParameterAnalog.LFO_AMP_DEPTH, "Amp Depth"
         )
-
+        self.lfo_amp_modulation = self._create_parameter_slider(
+            AddressParameterAnalog.LFO_AMP_MODULATION_CONTROL, "AMP Modulation"
+        )
         # Key Trigger switch
         self.key_trigger_switch = self._create_parameter_switch(
             AddressParameterAnalog.LFO_KEY_TRIGGER, "Key Trigger", ["OFF", "ON"]
@@ -113,10 +124,14 @@ class AnalogLFOSection(QWidget):
 
         # Add all controls to layout
         layout.addWidget(self.lfo_rate)
+        layout.addWidget(self.lfo_rate_modulation)
         layout.addWidget(self.lfo_fade)
         layout.addLayout(sync_row)
         layout.addWidget(self.lfo_pitch)
+        layout.addWidget(self.lfo_pitch_modulation)
         layout.addWidget(self.lfo_filter)
+        layout.addWidget(self.lfo_filter_modulation)
         layout.addWidget(self.lfo_amp)
+        layout.addWidget(self.lfo_amp_modulation)
         layout.addWidget(self.key_trigger_switch)
         layout.addStretch()

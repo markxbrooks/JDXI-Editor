@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 
 
 @dataclass
-class JDXIPresetButton:
+class JDXiPresetButton:
     """
     A class representing a preset button in the JDXi editor.
 
@@ -18,7 +18,7 @@ class JDXIPresetButton:
         name: The name of the preset button.
     """
 
-    type: str = JDXISynth.DIGITAL_1  # Adjust the type as needed
+    type: str = JDXiSynth.DIGITAL_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0
     channel: int = MidiChannel.DIGITAL1

@@ -40,12 +40,12 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
     get_preset_list_number_by_name,
 )
-from jdxi_editor.ui.windows.jdxi.dimensions import JDXIDimensions
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class DigitalDisplayBase(QWidget):
@@ -127,7 +127,7 @@ class DigitalTitle(DigitalDisplayBase):
     ):
         super().__init__(digital_font_family, parent)
         self.setMinimumSize(
-            JDXIDimensions.DIGITAL_TITLE_WIDTH, JDXIDimensions.DIGITAL_TITLE_HEIGHT
+            JDXiDimensions.DIGITAL_TITLE_WIDTH, JDXiDimensions.DIGITAL_TITLE_HEIGHT
         )
         self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
@@ -182,7 +182,7 @@ class DigitalDisplay(DigitalDisplayBase):
         self.margin = 10  # Default margin for display elements
 
         self.setMinimumSize(
-            JDXIDimensions.DISPLAY_WIDTH, JDXIDimensions.DISPLAY_HEIGHT
+            JDXiDimensions.DISPLAY_WIDTH, JDXiDimensions.DISPLAY_HEIGHT
         )  # Set size matching display
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
@@ -331,19 +331,19 @@ class DigitalDisplay(DigitalDisplayBase):
         :param drums_tone_name: str
         :param analog_tone_name: str
         """
-        if synth_type == JDXISynth.DIGITAL_1:
+        if synth_type == JDXiSynth.DIGITAL_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
             active_synth = "D1"
-        elif synth_type == JDXISynth.DIGITAL_2:
+        elif synth_type == JDXiSynth.DIGITAL_2:
             tone_name = digital2_tone_name
             active_synth = "D2"
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
-        elif synth_type == JDXISynth.DRUM:
+        elif synth_type == JDXiSynth.DRUM:
             tone_name = drums_tone_name
             active_synth = "DR"
             tone_number = get_preset_list_number_by_name(tone_name, DRUM_KIT_LIST)
-        elif synth_type == JDXISynth.ANALOG:
+        elif synth_type == JDXiSynth.ANALOG:
             tone_name = analog_tone_name
             active_synth = "AN"
             tone_number = get_preset_list_number_by_name(tone_name, ANALOG_PRESET_LIST)

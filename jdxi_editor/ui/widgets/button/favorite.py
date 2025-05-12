@@ -9,10 +9,10 @@ import logging
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
-from jdxi_editor.jdxi.preset.button import JDXIPresetButton
-from jdxi_editor.jdxi.synth.type import JDXISynth
-from jdxi_editor.jdxi.preset.data import JDXIPresetData
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.preset.button import JDXiPresetButton
+from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.jdxi.preset.data import JDXiPresetData
 
 
 class FavoriteButton(QPushButton):
@@ -52,7 +52,7 @@ class FavoriteButton(QPushButton):
         :param channel: int
         """
         # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-        self.preset = JDXIPresetButton(
+        self.preset = JDXiPresetButton(
             number=preset_num, name=preset_name, type=synth_type
         )
         self._update_style()
@@ -64,7 +64,7 @@ class FavoriteButton(QPushButton):
         if not self.preset:
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
-        preset_data = JDXIPresetButton(
+        preset_data = JDXiPresetButton(
             type=self.preset.type,  # Ensure this is address valid preset_type
             number=self.preset.tone_number + 1,  # Convert to 1-based index
         )
@@ -78,12 +78,12 @@ class FavoriteButton(QPushButton):
         # Update the display
         log_message(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
 
-    def load_preset(self, preset_data: JDXIPresetData):
+    def load_preset(self, preset_data: JDXiPresetData):
         """Load preset data into synth"""
         try:
             if self.midi_helper:
                 # Use PresetLoader for consistent preset loading
-                self.preset_helper = JDXIPresetHelper(self.midi_helper)
+                self.preset_helper = JDXiPresetHelper(self.midi_helper)
                 self.preset_helper.load_preset(
                     preset_data,
                 )
@@ -127,7 +127,7 @@ class FavoriteButton(QPushButton):
             # channel = self.settings.value(
             #    f"favorites/slot{self.slot_num}/channel", 0, type=int
             # )
-            self.preset = JDXIPresetButton(
+            self.preset = JDXiPresetButton(
                 number=preset_num, name=preset_name, type=synth_type
             )
 
@@ -141,11 +141,11 @@ class FavoriteButton(QPushButton):
         """Update button appearance"""
         if self.preset:
             # Get color based on synth preset_type
-            if self.preset.type == JDXISynth.ANALOG:
+            if self.preset.type == JDXiSynth.ANALOG:
                 color = "#00A3F0"  # Analog blue
-            elif self.preset.type in [JDXISynth.DIGITAL_1, JDXISynth.DIGITAL_2]:
+            elif self.preset.type in [JDXiSynth.DIGITAL_1, JDXiSynth.DIGITAL_2]:
                 color = "#FF0000"  # Red for both digital synths
-            elif self.preset.type == JDXISynth.DRUM:
+            elif self.preset.type == JDXiSynth.DRUM:
                 color = "#00FF00"  # Green for drums
             else:
                 color = "#666666"  # Gray for unknown types

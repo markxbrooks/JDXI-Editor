@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
@@ -61,7 +61,7 @@ class EffectsCommonEditor(BasicEditor):
     def __init__(
         self,
         midi_helper: MidiIOHelper,
-        preset_helper: JDXIPresetHelper = None,
+        preset_helper: JDXiPresetHelper = None,
         parent=None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)

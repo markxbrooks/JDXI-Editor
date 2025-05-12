@@ -37,11 +37,11 @@ from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressO
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.jdxi.preset.lists import JDXIPresets
-from jdxi_editor.jdxi.synth.type import JDXISynth
+from jdxi_editor.jdxi.preset.lists import JDXiPresets
+from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXIPresetHelper
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
@@ -160,16 +160,16 @@ class SynthEditor(SynthBase):
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            self.preset_loader = JDXIPresetHelper(self.midi_helper, JDXIPresets.DIGITAL_ENUMERATED)
+            self.preset_loader = JDXiPresetHelper(self.midi_helper, JDXiPresets.DIGITAL_ENUMERATED)
             # Initialize preset handlers dynamically
             preset_configs = [
-                (JDXISynth.DIGITAL_1, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
-                (JDXISynth.DIGITAL_2, JDXIPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-                (JDXISynth.ANALOG, JDXIPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-                (JDXISynth.DRUM, JDXIPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
+                (JDXiSynth.DIGITAL_1, JDXiPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
+                (JDXiSynth.DIGITAL_2, JDXiPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
+                (JDXiSynth.ANALOG, JDXiPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+                (JDXiSynth.DRUM, JDXiPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
             ]
             self.preset_helpers = {
-                synth_type: JDXIPresetHelper(
+                synth_type: JDXiPresetHelper(
                     self.midi_helper, presets, channel=channel, preset_type=synth_type
                 )
                 for synth_type, presets, channel in preset_configs
@@ -179,7 +179,7 @@ class SynthEditor(SynthBase):
             log_message("MIDI helper not initialized")
         self.json_parser = JDXiJsonSysexParser()
 
-    def _init_synth_data(self, synth_type: JDXISynth = JDXISynth.DIGITAL_1,
+    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_1,
                          partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -268,7 +268,7 @@ class SynthEditor(SynthBase):
             logging.warning(
                 f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
-            return self.preset_helpers[JDXISynth.DIGITAL_1]  # Safe fallback
+            return self.preset_helpers[JDXiSynth.DIGITAL_1]  # Safe fallback
         return handler
 
     def _on_parameter_received(self, address, value):
