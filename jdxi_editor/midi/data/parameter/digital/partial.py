@@ -83,6 +83,8 @@ class AddressParameterDigitalPartial(AddressParameter):
             "MOD_LFO_AMP_DEPTH",
             "MOD_LFO_PAN",
             "MOD_LFO_RATE_CTRL",
+            "CUTOFF_AFTERTOUCH",
+            "LEVEL_AFTERTOUCH",
         ]
         # Centralized conversion offsets
         self.CONVERSION_OFFSETS = {

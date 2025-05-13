@@ -139,6 +139,11 @@ class DigitalAmpSection(QWidget):
         )
         controls_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "AT Sens"
+                AddressParameterDigitalPartial.LEVEL_AFTERTOUCH, "After-touch Sensitivity"
+            )
+        )
+        controls_layout.addWidget(
+            self._create_parameter_slider(
+                AddressParameterDigitalPartial.CUTOFF_AFTERTOUCH, "After-touch Cutoff"
             )
         )
