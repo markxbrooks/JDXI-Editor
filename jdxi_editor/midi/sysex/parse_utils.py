@@ -32,6 +32,7 @@ from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMS
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
+from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
@@ -66,8 +67,8 @@ TEMPORARY_AREA_MAP = {
 PARAMETER_PART_MAP = {
     (AreaMSB.TEMPORARY_PROGRAM.name, SuperNATURALLMB.TONE_COMMON.name): AddressParameterProgramCommon,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-     SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterEffect,
+     SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalCommon,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterDigitalModify,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
      SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
@@ -76,7 +77,7 @@ PARAMETER_PART_MAP = {
      SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
      SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalCommon,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterEffect,
+    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterDigitalModify,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
      SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
@@ -289,14 +290,14 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
         address_lmb = data[JDXiSysExOffset.ADDRESS_LMB]
         synth_tone, offset = get_drum_tone(address_lmb) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-        log_parameter("address_lmb", address_lmb, silent=False)
-        log_parameter("synth_tone", synth_tone, silent=False)
+        log_parameter("address_lmb", address_lmb, silent=True)
+        log_parameter("synth_tone", synth_tone, silent=True)
     else:
         synth_tone, offset = get_synth_tone(data[
                                                 JDXiSysExOffset.ADDRESS_LMB]) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-    log_parameter("temporary_area", temporary_area, silent=False)
-    log_parameter("synth_tone", synth_tone, silent=False)
+    log_parameter("temporary_area", temporary_area, silent=True)
+    log_parameter("synth_tone", synth_tone, silent=True)
     parsed_data = initialize_parameters(data)
     parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:

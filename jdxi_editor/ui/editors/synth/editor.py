@@ -159,7 +159,7 @@ class SynthEditor(SynthBase):
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
-            self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
+            # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
             self.preset_loader = JDXiPresetHelper(self.midi_helper, JDXiPresets.DIGITAL_ENUMERATED)
             # Initialize preset handlers dynamically
             preset_configs = [
@@ -319,7 +319,11 @@ class SynthEditor(SynthBase):
         synth_tone = sysex_data.get("SYNTH_TONE")
         filtered_data = filter_sysex_keys(sysex_data)
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            self._update_common_controls(filtered_data, successes, failures)
+            log_parameter("synth_tone", synth_tone, silent=True)
+            try:
+                self._update_common_controls(filtered_data, successes, failures)
+            except Exception as ex:
+                log_error(f"Error {ex} occurred updating common controls")
         log_debug_info(filtered_data, successes, failures)
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:

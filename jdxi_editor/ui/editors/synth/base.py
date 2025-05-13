@@ -241,18 +241,18 @@ class SynthBase(QWidget):
         :return: None
         """
         slider = self.controls.get(param)
-        log_parameter("Updating slider for", param)
         if slider:
             if hasattr(param, "convert_from_midi"):
                 slider_value = param.convert_from_midi(midi_value)
             else:
                 slider_value = midi_value
-            log_message(f"Updating {param.name}: MIDI {midi_value} -> Slider {slider_value:1f}")
+            log_slider_parameters(
+                self.address.umb, self.address.lmb, param, midi_value, slider_value
+            )
             slider.blockSignals(True)
             slider.setValue(midi_value)
             slider.blockSignals(False)
             successes.append(param.name)
-            log_parameter(f"Updated {midi_value} for", param)
         else:
             failures.append(param.name)
 

@@ -83,7 +83,7 @@ def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
     :return: name of the parameter or "Unknown" if not found
     """
     enum_member = enum_cls.get_parameter_by_address(byte_value)
-    name = enum_member.name if enum_member else f"Unknown ({hex(byte_value)})"
+    name = enum_member.name if enum_member else f"COMMON ({hex(byte_value)})"
     return name
 
 

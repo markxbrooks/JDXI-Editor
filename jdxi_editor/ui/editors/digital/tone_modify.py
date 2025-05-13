@@ -32,7 +32,6 @@ class DigitalToneModifySection(QWidget):
         self.controls = controls
         self.init_ui()
 
-
     def init_ui(self):
         """
         Initialize the UI for the DigitalToneModifySection
