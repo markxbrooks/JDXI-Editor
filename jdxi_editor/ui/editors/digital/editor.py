@@ -435,8 +435,9 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         for control in self.controls:
-            log_parameter("control", control)
+            log_parameter("control", control, silent=True)
         sysex_data.pop("SYNTH_TONE")
+        sysex_data.pop("TONE_CATEGORY")
         for param_name, param_value in sysex_data.items():
             log_parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = AddressParameterDigitalCommon.get_by_name(param_name)
@@ -484,7 +485,7 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         for control in self.controls:
-            log_parameter("control", control)
+            log_parameter("control", control, silent=True)
         sysex_data.pop("SYNTH_TONE")
         for param_name, param_value in sysex_data.items():
             log_parameter(f"{param_name} {param_value}", param_value, silent=True)
@@ -493,6 +494,8 @@ class DigitalSynthEditor(SynthEditor):
                 log_parameter(f"param not found: {param_name} ", param_value, silent=True)
                 failures.append(param_name)
                 continue
+            elif "SWITCH" in param_name:
+                self._update_switch(param, param_value, successes, failures)
             else:
                 log_parameter(f"found {param_name}", param_name, silent=True)
                 self._update_slider(param, param_value, successes, failures)

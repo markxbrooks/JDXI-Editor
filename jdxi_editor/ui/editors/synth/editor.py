@@ -313,24 +313,30 @@ class SynthEditor(SynthBase):
         :param json_sysex_data: str
         :return: None
         """
-        successes, failures = [], []
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        log_synth_area_info(sysex_data)
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        sysex_data = filter_sysex_keys(sysex_data)
-        log_parameter("synth_tone", synth_tone, silent=True)
-        if synth_tone == "TONE_COMMON":
-            try:
-                self._update_common_controls(sysex_data, successes, failures)
-                log_debug_info(successes, failures)
-            except Exception as ex:
-                log_error(f"Error {ex} occurred updating common controls")
-        elif synth_tone == "TONE_MODIFY":
-            try:
-                self._update_modify_controls(sysex_data, successes, failures)
-                log_debug_info(successes, failures)
-            except Exception as ex:
-                log_error(f"Error {ex} occurred updating common controls")
+        try:
+            successes, failures = [], []
+            sysex_data = self._parse_sysex_json(json_sysex_data)
+            log_synth_area_info(sysex_data)
+            synth_tone = sysex_data.get("SYNTH_TONE")
+            sysex_data = filter_sysex_keys(sysex_data)
+            if synth_tone is None:
+                log_error("Missing SYNTH_TONE in SysEx data; cannot dispatch")
+                return
+            elif synth_tone == "TONE_COMMON":
+                log_parameter("synth_tone", synth_tone, silent=True)
+                try:
+                    self._update_common_controls(sysex_data, successes, failures)
+                    log_debug_info(successes, failures)
+                except Exception as ex:
+                    log_error(f"Error {ex} occurred updating common controls")
+            elif synth_tone == "TONE_MODIFY":
+                try:
+                    self._update_modify_controls(sysex_data, successes, failures)
+                    log_debug_info(successes, failures)
+                except Exception as ex:
+                    log_error(f"Error {ex} occurred updating common controls")
+        except Exception as ex:
+            log_error(f"Exception in _dispatch_sysex_to_area: {ex}")
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
         """
