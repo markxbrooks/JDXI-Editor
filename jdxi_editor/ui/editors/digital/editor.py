@@ -296,17 +296,14 @@ class DigitalSynthEditor(SynthEditor):
         )
 
         # Analog is simple so deal with the 1st
-        successes, failures = [], []
         if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            pass
+            # pass
             self._update_common_sliders_from_sysex(json_sysex_data)
         elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
             self._update_sliders_from_sysex(json_sysex_data)
         else:  # Drums and Digital 1 & 2 are dealt with via partials
             incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
             sysex_data = filter_sysex_keys(sysex_data)
-            if incoming_data_partial_no == 0:
-                self._update_common_controls(sysex_data)
             self._apply_partial_ui_updates(incoming_data_partial_no, sysex_data)
 
     def _handle_special_params(
@@ -336,7 +333,7 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         successes, failures = [], []
-
+        sysex_data = filter_sysex_keys(sysex_data)
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalPartial.get_by_name(param_name)
             if not param:
@@ -356,7 +353,7 @@ class DigitalSynthEditor(SynthEditor):
                     partial_no, param, param_value, successes, failures
                 )
 
-        log_debug_info(sysex_data, successes, failures)
+        log_debug_info(successes, failures)
 
     def _update_filter_state(self, partial_no: int, value: int) -> None:
         """
@@ -367,7 +364,7 @@ class DigitalSynthEditor(SynthEditor):
         """
         self.partial_editors[partial_no].update_filter_controls_state(value)
 
-    def _update_common_controls(
+    def _update_common_controls_old(
         self,
         sysex_data: Dict,
         successes: list = None,
@@ -422,6 +419,83 @@ class DigitalSynthEditor(SynthEditor):
                     self._update_slider(param, param_value, successes, failures)
             except Exception as ex:
                 log_error(f"Error {ex} occurred")
+
+    def _update_common_controls(
+        self,
+        sysex_data: Dict,
+        successes: list = None,
+        failures: list = None,
+    ):
+        """
+        Update the UI components for tone common and modify parameters.
+        :param sysex_data: Dictionary containing SysEx data
+        :param successes: List of successful parameters
+        :param failures: List of failed parameters
+        :param debug: bool
+        :return: None
+        """
+        for control in self.controls:
+            log_parameter("control", control)
+        sysex_data.pop("SYNTH_TONE")
+        for param_name, param_value in sysex_data.items():
+            log_parameter(f"{param_name} {param_value}", param_value, silent=True)
+            param = AddressParameterDigitalCommon.get_by_name(param_name)
+            if not param:
+                log_parameter(f"param not found: {param_name} ", param_value, silent=True)
+                failures.append(param_name)
+                continue
+            log_parameter(f"found {param_name}", param_name, silent=True)
+            try:
+                if param.name in [
+                    "PARTIAL1_SWITCH",
+                    "PARTIAL2_SWITCH",
+                    "PARTIAL3_SWITCH",
+                ]:
+                    self._update_partial_selection_switch(
+                        param, param_value, successes, failures
+                    )
+                if param.name in [
+                    "PARTIAL1_SELECT",
+                    "PARTIAL2_SELECT",
+                    "PARTIAL3_SELECT",
+                ]:
+                    self._update_partial_selected_state(
+                        param, param_value, successes, failures
+                    )
+                elif "SWITCH" in param_name:
+                    self._update_switch(param, param_value, successes, failures)
+                else:
+                    self._update_slider(param, param_value, successes, failures)
+            except Exception as ex:
+                log_error(f"Error {ex} occurred")
+
+    def _update_modify_controls(
+        self,
+        sysex_data: Dict,
+        successes: list = None,
+        failures: list = None,
+    ):
+        """
+        Update the UI components for tone common and modify parameters.
+        :param sysex_data: Dictionary containing SysEx data
+        :param successes: List of successful parameters
+        :param failures: List of failed parameters
+        :param debug: bool
+        :return: None
+        """
+        for control in self.controls:
+            log_parameter("control", control)
+        sysex_data.pop("SYNTH_TONE")
+        for param_name, param_value in sysex_data.items():
+            log_parameter(f"{param_name} {param_value}", param_value, silent=True)
+            param = AddressParameterDigitalModify.get_by_name(param_name)
+            if not param:
+                log_parameter(f"param not found: {param_name} ", param_value, silent=True)
+                failures.append(param_name)
+                continue
+            else:
+                log_parameter(f"found {param_name}", param_name, silent=True)
+                self._update_slider(param, param_value, successes, failures)
 
     def _update_partial_adsr_widgets(
         self, partial_no: int,
