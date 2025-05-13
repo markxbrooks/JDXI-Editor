@@ -549,7 +549,7 @@ class AnalogSynthEditor(SynthEditor):
                 successes.append(param_name)
             else:
                 failures.append(param_name)
-        log_debug_info(sysex_data, successes, failures)
+        log_debug_info(successes, failures)
 
     def _update_waveform_buttons(self, value: int):
         """

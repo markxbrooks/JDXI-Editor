@@ -317,14 +317,20 @@ class SynthEditor(SynthBase):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         log_synth_area_info(sysex_data)
         synth_tone = sysex_data.get("SYNTH_TONE")
-        filtered_data = filter_sysex_keys(sysex_data)
-        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            log_parameter("synth_tone", synth_tone, silent=True)
+        sysex_data = filter_sysex_keys(sysex_data)
+        log_parameter("synth_tone", synth_tone, silent=True)
+        if synth_tone == "TONE_COMMON":
             try:
-                self._update_common_controls(filtered_data, successes, failures)
+                self._update_common_controls(sysex_data, successes, failures)
+                log_debug_info(successes, failures)
             except Exception as ex:
                 log_error(f"Error {ex} occurred updating common controls")
-        log_debug_info(filtered_data, successes, failures)
+        elif synth_tone == "TONE_MODIFY":
+            try:
+                self._update_modify_controls(sysex_data, successes, failures)
+                log_debug_info(successes, failures)
+            except Exception as ex:
+                log_error(f"Error {ex} occurred updating common controls")
 
     def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
         """
@@ -531,4 +537,7 @@ class SynthEditor(SynthBase):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
     def _update_common_controls(self, filtered_data, successes, failures):
+        pass
+
+    def _update_modify_controls(self, filtered_data, successes, failures):
         pass

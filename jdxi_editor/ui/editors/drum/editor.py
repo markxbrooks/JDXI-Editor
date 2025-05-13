@@ -243,7 +243,7 @@ class DrumCommonEditor(SynthEditor):
             else:
                 failures.append(param_name)
 
-        log_debug_info(sysex_data, successes, failures)
+        log_debug_info(successes, failures)
 
     def _update_common_controls(
         self,
@@ -270,4 +270,4 @@ class DrumCommonEditor(SynthEditor):
             except Exception as ex:
                 log_error(f"Error {ex} occurred")
 
-        log_debug_info(sysex_data, successes, failures)
+        log_debug_info(successes, failures)
