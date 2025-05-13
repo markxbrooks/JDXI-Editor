@@ -530,7 +530,7 @@ class DigitalSynthEditor(SynthEditor):
             ].amp_tab.amp_env_adsr_widget.decay_control,
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].amp_tab.amp_env_adsr_widget.release_control,
+            ].amp_tab.amp_env_adsr_widget.sustain_control,
             AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].amp_tab.amp_env_adsr_widget.release_control,
@@ -542,7 +542,7 @@ class DigitalSynthEditor(SynthEditor):
             ].filter_tab.filter_adsr_widget.decay_control,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL: self.partial_editors[
                 partial_no
-            ].filter_tab.filter_adsr_widget.release_control,
+            ].filter_tab.filter_adsr_widget.sustain_control,
             AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME: self.partial_editors[
                 partial_no
             ].filter_tab.filter_adsr_widget.release_control,

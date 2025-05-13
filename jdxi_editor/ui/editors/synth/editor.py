@@ -294,12 +294,19 @@ class SynthEditor(SynthBase):
         log_header_message(
             f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
         )
-
+        sysex_data = self._parse_sysex_json(json_sysex_data)
+        sysex_data = filter_sysex_keys(sysex_data)
+        successes, failures = [], []
         # Analog is simple so deal with the 1st
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
             self._update_sliders_from_sysex(json_sysex_data)
-        elif synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
             self._update_common_sliders_from_sysex(json_sysex_data)
+        elif synth_tone == "TONE_COMMON":
+            self._update_common_controls(sysex_data, successes, failures)
+            log_debug_info(successes, failures)
+        elif synth_tone == "TONE_MODIFY":
+            self._update_modify_controls(sysex_data, successes, failures)
+            log_debug_info(successes, failures)
         else:  # Drums and Digital 1 & 2 are dealt with via partials
             incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
             filtered_data = filter_sysex_keys(sysex_data)

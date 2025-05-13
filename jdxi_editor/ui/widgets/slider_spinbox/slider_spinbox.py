@@ -109,7 +109,9 @@ class AdsrSliderSpinbox(QWidget):
     def convert_to_envelope(self, value: float):
         param_type = self.param.get_envelope_param_type()
         if param_type == "sustain_level":
-            return value / 127
+            converted_value = value / 127
+            print(f"convert_to_envelope param type: {param_type} value {value} -> env {converted_value}")
+            return converted_value
         if param_type == "peak_level":
             return value / 127
         elif param_type in ["attack_time", "decay_time", "release_time"]:
@@ -123,7 +125,9 @@ class AdsrSliderSpinbox(QWidget):
         if param_type in ["peak_level"]:
             return int(value * 127)
         if param_type in ["sustain_level"]:
-            return int(value * 127)
+            converted_value = int(value * 127)
+            print(f"convert_from_envelope param type: {param_type} value {value} -> Slider {converted_value}")
+            return converted_value
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return ms_to_midi_value(value)
         else:
@@ -131,15 +135,15 @@ class AdsrSliderSpinbox(QWidget):
 
     def _slider_changed(self, value: int):
         self.spinbox.blockSignals(True)
-        self.spinbox.setValue(int(self.convert_to_envelope(value)))
+        self.spinbox.setValue(self.convert_to_envelope(value))
         self.spinbox.blockSignals(False)
         self.envelopeChanged.emit(
             {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
         )
 
-    def _spinbox_changed(self, value: int):
+    def _spinbox_changed(self, value: float):
         self.slider.blockSignals(True)
-        self.slider.setValue(int(self.convert_from_envelope(int(value))))
+        self.slider.setValue(self.convert_from_envelope(value))
         self.slider.blockSignals(False)
         self.envelopeChanged.emit({self.param.get_envelope_param_type(): value})
 
