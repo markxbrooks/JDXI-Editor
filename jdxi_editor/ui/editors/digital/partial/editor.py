@@ -170,7 +170,10 @@ class DigitalPartialEditor(PartialEditor):
             self.amp_tab, qta.icon("mdi.amplifier", color="#666666"), "Amp"
         )
         self.lfo_tab = DigitalLFOSection(
-            self._create_parameter_slider, self._create_parameter_switch, self.controls
+            self._create_parameter_slider,
+            self._create_parameter_switch,
+            self._create_parameter_combo_box,
+            self.controls
         )
         self.tab_widget.addTab(
             self.lfo_tab, qta.icon("mdi.sine-wave", color="#666666"), "LFO"

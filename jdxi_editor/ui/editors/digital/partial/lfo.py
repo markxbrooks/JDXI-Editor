@@ -19,6 +19,7 @@ class DigitalLFOSection(QWidget):
         self,
         create_parameter_slider: Callable,
         create_parameter_switch: Callable,
+        create_parameter_combo_box: Callable,
         controls: dict,
     ):
         super().__init__()
@@ -30,6 +31,7 @@ class DigitalLFOSection(QWidget):
         """
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
+        self._create_parameter_combo_box = create_parameter_combo_box
         self.controls = controls
         self.setup_ui()
 
@@ -70,6 +72,12 @@ class DigitalLFOSection(QWidget):
             ["OFF", "ON"],
         )
         top_row.addWidget(self.lfo_tempo_sync_switch)
+        self.lfo_sync_note = self._create_parameter_combo_box(
+            AddressParameterDigitalPartial.LFO_TEMPO_SYNC_NOTE,
+            "Sync Note",
+            options=["1/1", "1/2", "1/4", "1/8", "1/16"],
+        )
+        top_row.addWidget(self.lfo_sync_note)
         layout.addLayout(top_row)
 
         # Rate and fade controls

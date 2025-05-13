@@ -47,31 +47,23 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
-from jdxi_editor.log.footer import log_footer_message
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
-from jdxi_editor.midi.data.digital.utils import get_digital_parameter_by_address
+from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
-
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
-)
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
-from jdxi_editor.ui.editors.digital.utils import (
-    _is_valid_sysex_area,
-    log_synth_area_info, filter_sysex_keys, get_partial_number, get_area,
-)
+from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number, get_area
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -304,14 +296,18 @@ class DigitalSynthEditor(SynthEditor):
         )
 
         # Analog is simple so deal with the 1st
-        if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
-            self._update_sliders_from_sysex(json_sysex_data)
-        elif synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+        successes, failures = [], []
+        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
+            pass
             self._update_common_sliders_from_sysex(json_sysex_data)
+        elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
+            self._update_sliders_from_sysex(json_sysex_data)
         else:  # Drums and Digital 1 & 2 are dealt with via partials
             incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
-            filtered_data = filter_sysex_keys(sysex_data)
-            self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
+            sysex_data = filter_sysex_keys(sysex_data)
+            if incoming_data_partial_no == 0:
+                self._update_common_controls(sysex_data)
+            self._apply_partial_ui_updates(incoming_data_partial_no, sysex_data)
 
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int
@@ -385,12 +381,24 @@ class DigitalSynthEditor(SynthEditor):
         :param debug: bool
         :return: None
         """
+
         for param_name, param_value in sysex_data.items():
-            param = AddressParameterDigitalCommon.get_by_name(param_name)
+            if param_name in ['ATTACK_TIME_INTERVAL_SENS',
+                              'RELEASE_TIME_INTERVAL_SENS',
+                              'PORTAMENTO_TIME_INTERVAL_SENS',
+                              'ENVELOPE_LOOP_MODE',
+                              'ENVELOPE_LOOP_SYNC_NOTE',
+                              'CHROMATIC_PORTAMENTO']:
+                parameter_cls = AddressParameterDigitalModify
+            else:
+                parameter_cls = AddressParameterDigitalCommon
+            log_parameter(f"{param_name} {param_value}", param_value, silent=True)
+            param = parameter_cls.get_by_name(param_name)
             if not param:
+                log_parameter(f"param not found: {param_name} ", param_value, silent=True)
                 failures.append(param_name)
                 continue
-
+            log_parameter(f"found {param_name}", param_name, silent=True)
             try:
                 if param.name in [
                     "PARTIAL1_SWITCH",
@@ -408,7 +416,7 @@ class DigitalSynthEditor(SynthEditor):
                     self._update_partial_selected_state(
                         param, param_value, successes, failures
                     )
-                elif "SWITCH" or "SHIFT" in param_name:
+                elif "SWITCH" in param_name:
                     self._update_switch(param, param_value, successes, failures)
                 else:
                     self._update_slider(param, param_value, successes, failures)
@@ -539,13 +547,13 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        log_parameter(f"Updating switch for: {param_name}, checkbox:", check_box)
+        log_parameter(f"Updating switch for: {param_name}, checkbox:", check_box, silent=True)
         if check_box:
             check_box.blockSignals(True)
             check_box.setState(bool(value), False)
             check_box.blockSignals(False)
             successes.append(param.name)
-            log_message(f"Updated: {param.name:50} {value}")
+            # log_message(f"Updated: {param.name:50} {value}")
         else:
             failures.append(param.name)
 
@@ -574,14 +582,12 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        log_parameter("param_name", param_name)
-        log_parameter("checkbox", check_box)
         if check_box:
             check_box.blockSignals(True)
             check_box.setSelected(bool(value))
             check_box.blockSignals(False)
             successes.append(param.name)
-            log_message(f"Updated: {param.name:50} {value}")
+            # log_message(f"Updated: {param.name:50} {value}")
         else:
             failures.append(param.name)
 
