@@ -39,9 +39,10 @@ class JDXiSysExComposer:
         :return: RolandSysEx
         """
         self.address = address
+        print(address)
         try:
             address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, ZERO_BYTE)
-            address = apply_address_offset(address, param)
+            address = apply_address_offset(self.address, param)
             # Convert display value to MIDI value if needed
             if hasattr(param, "convert_to_midi"):
                 midi_value = param.convert_to_midi(value)
@@ -62,7 +63,7 @@ class JDXiSysExComposer:
                 msb=address.msb,
                 umb=address.umb,
                 lmb=address.lmb,
-                lsb=param.lsb,
+                lsb=address.lsb,
                 value=data_bytes,
             )
             self.sysex_message = sysex_message

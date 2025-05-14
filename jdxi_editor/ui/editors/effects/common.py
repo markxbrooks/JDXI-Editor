@@ -46,9 +46,11 @@ from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
     AddressOffsetSystemUMB,
 )
-from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
+from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect2, \
+    AddressParameterDelay, AddressParameterEffect1
 from jdxi_editor.midi.data.parameter.effects.common import AddressParameterEffectCommon
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -65,10 +67,11 @@ class EffectsCommonEditor(BasicEditor):
         parent=None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.delay_params = None
         self.efx2_additional_params = [
-            AddressParameterEffect.EFX2_PARAM_1,
-            AddressParameterEffect.EFX2_PARAM_2,
-            AddressParameterEffect.EFX2_PARAM_32,
+            AddressParameterEffect2.EFX2_PARAM_1,
+            AddressParameterEffect2.EFX2_PARAM_2,
+            AddressParameterEffect2.EFX2_PARAM_32,
         ]
         self.preset_helper = preset_helper
         self.default_image = "effects.png"
@@ -81,12 +84,7 @@ class EffectsCommonEditor(BasicEditor):
         # self.title_label = QLabel("Effects")
         self.title_label = DigitalTitle("Effects")
         self.title_label.setStyleSheet(JDXiStyle.INSTRUMENT_TITLE_LABEL)
-        self.address = RolandSysExAddress(
-            AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
-            AddressOffsetSystemUMB.COMMON,
-            AddressOffsetProgramLMB.TONE_COMMON,
-            ZERO_BYTE,
-        )
+
         main_layout.addLayout(upper_layout)
         upper_layout.addWidget(self.title_label)
 
@@ -99,7 +97,7 @@ class EffectsCommonEditor(BasicEditor):
 
         self.setLayout(main_layout)
         self.controls: Dict[
-            Union[AddressParameterEffect, AddressParameterEffectCommon], QWidget
+            Union[AddressParameterReverb, AddressParameterEffectCommon], QWidget
         ] = {}
 
         # Create address tab widget
@@ -112,6 +110,13 @@ class EffectsCommonEditor(BasicEditor):
         self.tabs.addTab(self._create_effect2_section(), "Effect 2")
         self.tabs.addTab(self._create_delay_tab(), "Delay")
         self.tabs.addTab(self._create_reverb_section(), "Reverb")
+        self.address = RolandSysExAddress(
+            AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
+            AddressOffsetSystemUMB.COMMON,
+            AddressOffsetProgramLMB.TONE_COMMON,
+            ZERO_BYTE,
+        )
+        self.sysex_composer = JDXiSysExComposer()
 
     def _update_efx2_parameters(self, effect_type: int):
         """Show/hide parameters based on effect preset_type"""
@@ -163,7 +168,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create address combo box for EFX1 preset_type
         self.efx1_type = self._create_parameter_combo_box(
-            AddressParameterEffect.EFX1_TYPE,
+            AddressParameterEffect1.EFX1_TYPE,
             "Effect 1 Type",
             ["Thru", "DISTORTION", "FUZZ", "COMPRESSOR", "BIT CRUSHER"],
             [0, 1, 2, 3, 4],
@@ -172,39 +177,39 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create sliders for EFX1 parameters
         self.efx1_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_LEVEL, "EFX1 Level (0-127)"
+            AddressParameterEffect1.EFX1_LEVEL, "EFX1 Level (0-127)"
         )
         layout.addRow(self.efx1_level)
 
         self.efx1_delay_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_DELAY_SEND_LEVEL,
+            AddressParameterEffect1.EFX1_DELAY_SEND_LEVEL,
             "EFX1 Delay Send Level (0-127)",
         )
         layout.addRow(self.efx1_delay_send_level)
 
         self.efx1_reverb_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_REVERB_SEND_LEVEL,
+            AddressParameterEffect1.EFX1_REVERB_SEND_LEVEL,
             "EFX1 Reverb Send Level (0-127)",
         )
         layout.addRow(self.efx1_reverb_send_level)
 
         self.efx1_output_assign = self._create_parameter_switch(
-            AddressParameterEffect.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"]
+            AddressParameterEffect1.EFX1_OUTPUT_ASSIGN, "Output Assign", ["DIR", "EFX2"]
         )
         layout.addRow(self.efx1_output_assign)
 
         self.efx1_parameter1_slider = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_PARAM_1, "Parameter 1"
+            AddressParameterEffect1.EFX1_PARAM_1, "Parameter 1"
         )
         layout.addRow(self.efx1_parameter1_slider)
 
         self.efx1_parameter2_slider = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_PARAM_2, "Parameter 2"
+            AddressParameterEffect1.EFX1_PARAM_2, "Parameter 2"
         )
         layout.addRow(self.efx1_parameter2_slider)
 
         self.efx1_parameter32_slider = self._create_parameter_slider(
-            AddressParameterEffect.EFX1_PARAM_32, "Parameter 32"
+            AddressParameterEffect1.EFX1_PARAM_32, "Parameter 32"
         )
         layout.addRow(self.efx1_parameter32_slider)
 
@@ -218,7 +223,7 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create address combo box for EFX2 preset_type
         self.efx2_type = self._create_parameter_combo_box(
-            AddressParameterEffect.EFX2_TYPE,
+            AddressParameterEffect2.EFX2_TYPE,
             "Effect Type",
             ["OFF", "FLANGER", "PHASER", "RING MOD", "SLICER"],
             [0, 5, 6, 7, 8],
@@ -227,34 +232,34 @@ class EffectsCommonEditor(BasicEditor):
 
         # Create sliders for EFX2 parameters
         self.efx2_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_LEVEL, "EFX2 Level (0-127)"
+            AddressParameterEffect2.EFX2_LEVEL, "EFX2 Level (0-127)"
         )
         layout.addRow(self.efx2_level)
 
         self.efx2_delay_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_DELAY_SEND_LEVEL,
+            AddressParameterEffect2.EFX2_DELAY_SEND_LEVEL,
             "EFX2 Delay Send Level (0-127)",
         )
         layout.addRow(self.efx2_delay_send_level)
 
         self.efx2_reverb_send_level = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_REVERB_SEND_LEVEL,
+            AddressParameterEffect2.EFX2_REVERB_SEND_LEVEL,
             "EFX2 Reverb Send Level (0-127)",
         )
         layout.addRow(self.efx2_reverb_send_level)
 
         self.efx2_parameter1_slider = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_PARAM_1, "Parameter 1"
+            AddressParameterEffect2.EFX2_PARAM_1, "Parameter 1"
         )
         layout.addRow(self.efx1_parameter2_slider)
 
         self.efx2_parameter2_slider = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_PARAM_2, "Parameter 2"
+            AddressParameterEffect2.EFX2_PARAM_2, "Parameter 2"
         )
         layout.addRow(self.efx2_parameter2_slider)
 
         self.efx2_parameter32_slider = self._create_parameter_slider(
-            AddressParameterEffect.EFX2_PARAM_32, "Parameter 32"
+            AddressParameterEffect2.EFX2_PARAM_32, "Parameter 32"
         )
         layout.addRow(self.efx2_parameter32_slider)
 
@@ -265,30 +270,29 @@ class EffectsCommonEditor(BasicEditor):
         widget = QWidget()
         layout = QFormLayout()
         widget.setLayout(layout)
-
         # Create address combo box for Delay Type
         delay_level_slider = self._create_parameter_slider(
-            AddressParameterEffect.DELAY_LEVEL, "Delay Level"
+            AddressParameterDelay.DELAY_LEVEL, "Delay Level"
         )
         layout.addRow(delay_level_slider)
 
         delay_reverb_send_level_slider = self._create_parameter_slider(
-            AddressParameterEffect.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
+            AddressParameterDelay.DELAY_REVERB_SEND_LEVEL, "Delay to Reverb Send Level"
         )
         layout.addRow(delay_reverb_send_level_slider)
 
         delay_parameter1_slider = self._create_parameter_slider(
-            AddressParameterEffect.DELAY_PARAM_1, "Delay Time (ms)"
+            AddressParameterDelay.DELAY_PARAM_1, "Delay Time (ms)"
         )
         layout.addRow(delay_parameter1_slider)
 
         delay_parameter2_slider = self._create_parameter_slider(
-            AddressParameterEffect.DELAY_PARAM_2, "Delay Tap Time (ms)"
+            AddressParameterDelay.DELAY_PARAM_2, "Delay Tap Time (ms)"
         )
         layout.addRow(delay_parameter2_slider)
 
         delay_parameter24_slider = self._create_parameter_slider(
-            AddressParameterEffect.DELAY_PARAM_24, "Feedback (%)"
+            AddressParameterDelay.DELAY_PARAM_24, "Feedback (%)"
         )
         layout.addRow(delay_parameter24_slider)
         return widget
@@ -299,54 +303,66 @@ class EffectsCommonEditor(BasicEditor):
         layout = QFormLayout()
         widget.setLayout(layout)
         reverb_level_slider = self._create_parameter_slider(
-            AddressParameterEffect.REVERB_LEVEL, "Level (0-127)"
+            AddressParameterReverb.REVERB_LEVEL, "Level (0-127)"
         )
         layout.addRow(reverb_level_slider)
         reverb_parameter1_slider = self._create_parameter_slider(
-            AddressParameterEffect.REVERB_PARAM_1, "Parameter 1"
+            AddressParameterReverb.REVERB_PARAM_1, "Parameter 1"
         )
         layout.addRow(reverb_parameter1_slider)
         reverb_parameter2_slider = self._create_parameter_slider(
-            AddressParameterEffect.REVERB_PARAM_2, "Parameter 2"
+            AddressParameterReverb.REVERB_PARAM_2, "Parameter 2"
         )
         layout.addRow(reverb_parameter2_slider)
         reverb_parameter24_slider = self._create_parameter_slider(
-            AddressParameterEffect.REVERB_PARAM_24, "Parameter 24"
+            AddressParameterReverb.REVERB_PARAM_24, "Parameter 24"
         )
         layout.addRow(reverb_parameter24_slider)
         return widget
 
-    def _on_parameter_changed(self, param: AddressParameterEffect, display_value: int):
-        """Handle parameter value changes from UI controls"""
+    def _on_parameter_changed(self, param: AddressParameter, display_value: int):
+        """Handle parameter value changes from UI controls."""
         try:
-            # Convert display value to MIDI value if needed
+            # Convert display value to MIDI value
             if hasattr(param, "convert_to_midi"):
                 midi_value = param.convert_to_midi(display_value)
             else:
-                midi_value = param.validate_value(display_value)
-            log_message(
-                f"parameter: {param} display {display_value} midi value {midi_value}"
-            )
-            # Ensure we get address valid common parameter
-            common_param = AddressParameterEffect.get_common_param_by_name(param.name)
-            midi_value = param.convert_to_midi(display_value)
-            if common_param is None:
-                log_message(f"Unknown common parameter preset_type for: {param.name}")
-                return False
-            try:
-                # Send MIDI message
-                sysex_message = RolandSysEx(
-                    msb=self.address.msb,
-                    umb=self.address.umb,
-                    lmb=common_param.address,
-                    lsb=param.address,
-                    value=midi_value,
+                midi_value = (
+                    param.convert_from_display(display_value)
+                    if hasattr(param, "convert_from_display")
+                    else param.validate_value(display_value)
                 )
-                return self.midi_helper.send_midi_message(sysex_message)
-            except Exception as ex:
-                log_error(f"MIDI error setting {param}: {str(ex)}")
-                return False
-
+            # Send MIDI message
+            if not self.send_midi_parameter(param, midi_value):
+                log_message(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            log_error(f"Error handling parameter {param.name}: {str(ex)}")
+            log_error(f"Error handling parameter {param.name}: {ex}")
+
+    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
+        """
+        Send MIDI parameter with error handling
+        :param param: AddressParameter
+        :param value: int value
+        :return: bool True on success, False otherwise
+        """
+        offset = None
+        try:
+            if isinstance(param, AddressParameterEffect1):
+                offset = (0, 2, 0)
+            elif isinstance(param, AddressParameterEffect2):
+                offset = (0, 4, 0)
+            elif isinstance(param, AddressParameterDelay):
+                offset = (0, 6, 0)
+            elif isinstance(param, AddressParameterReverb):
+                offset = (0, 8, 0)
+            target_address = self.address.add_offset(offset)
+            sysex_message = self.sysex_composer.compose_message(
+                address=target_address,
+                param=param,
+                value=value
+            )
+            result = self._midi_helper.send_midi_message(sysex_message)
+            return bool(result)
+        except Exception as ex:
+            log_error(f"MIDI error setting {param.name}: {ex}")
             return False

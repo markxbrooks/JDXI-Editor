@@ -209,6 +209,8 @@ class RolandSysExAddress:
         """
         return hash(self.to_bytes())
 
+    def copy(self):
+        return RolandSysExAddress(self.msb, self.umb, self.lsb, self.lsb)
 
 # ==========================
 # JD-Xi SysEx Header

@@ -23,6 +23,7 @@ IGNORED_KEYS = {
 }
 SYNTH_PARTIAL_MAP = {
     "TONE_COMMON": 0,
+    "TONE_MODIFY": 0,
     "PARTIAL_1": 1,
     "PARTIAL_2": 2,
     "PARTIAL_3": 3,

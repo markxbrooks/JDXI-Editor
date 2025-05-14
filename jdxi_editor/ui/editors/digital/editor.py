@@ -274,38 +274,6 @@ class DigitalSynthEditor(SynthEditor):
             self.partial_tab_widget.setTabEnabled(partial.value - 1, enabled)
         self.partial_tab_widget.setCurrentIndex(0)
 
-    def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
-        """
-        Dispatch SysEx data to the appropriate area for processing.
-        :param json_sysex_data:
-        :return: None
-        """
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data:
-            return
-        current_synth = get_area([self.address.msb, self.address.umb])
-        temporary_area = sysex_data.get("TEMPORARY_AREA")
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        if not current_synth == temporary_area:
-            log_message(
-                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
-            )
-            return
-        log_header_message(
-            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
-        )
-
-        # Analog is simple so deal with the 1st
-        if synth_tone in ["TONE_COMMON", "TONE_MODIFY"]:
-            # pass
-            self._update_common_sliders_from_sysex(json_sysex_data)
-        elif temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
-            self._update_sliders_from_sysex(json_sysex_data)
-        else:  # Drums and Digital 1 & 2 are dealt with via partials
-            incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
-            sysex_data = filter_sysex_keys(sysex_data)
-            self._apply_partial_ui_updates(incoming_data_partial_no, sysex_data)
-
     def _handle_special_params(
         self, partial_no: int, param: AddressParameter, value: int
     ) -> None:
@@ -325,15 +293,19 @@ class DigitalSynthEditor(SynthEditor):
             self._update_filter_state(partial_no, value)
             log_parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
-    def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
+    def _update_partial_controls(self,
+                                 partial_no: int,
+                                 sysex_data: dict,
+                                 successes: list,
+                                 failures: list) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
         :param partial_no: int
         :param sysex_data: dict
+        :param successes: list
+        :param failures: list
         :return: None
         """
-        successes, failures = [], []
-        sysex_data = filter_sysex_keys(sysex_data)
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDigitalPartial.get_by_name(param_name)
             if not param:
@@ -364,74 +336,19 @@ class DigitalSynthEditor(SynthEditor):
         """
         self.partial_editors[partial_no].update_filter_controls_state(value)
 
-    def _update_common_controls_old(
-        self,
-        sysex_data: Dict,
-        successes: list = None,
-        failures: list = None,
-    ):
-        """
-        Update the UI components for tone common and modify parameters.
-        :param sysex_data: Dictionary containing SysEx data
-        :param successes: List of successful parameters
-        :param failures: List of failed parameters
-        :param debug: bool
-        :return: None
-        """
-
-        for param_name, param_value in sysex_data.items():
-            if param_name in ['ATTACK_TIME_INTERVAL_SENS',
-                              'RELEASE_TIME_INTERVAL_SENS',
-                              'PORTAMENTO_TIME_INTERVAL_SENS',
-                              'ENVELOPE_LOOP_MODE',
-                              'ENVELOPE_LOOP_SYNC_NOTE',
-                              'CHROMATIC_PORTAMENTO']:
-                parameter_cls = AddressParameterDigitalModify
-            else:
-                parameter_cls = AddressParameterDigitalCommon
-            log_parameter(f"{param_name} {param_value}", param_value, silent=True)
-            param = parameter_cls.get_by_name(param_name)
-            if not param:
-                log_parameter(f"param not found: {param_name} ", param_value, silent=True)
-                failures.append(param_name)
-                continue
-            log_parameter(f"found {param_name}", param_name, silent=True)
-            try:
-                if param.name in [
-                    "PARTIAL1_SWITCH",
-                    "PARTIAL2_SWITCH",
-                    "PARTIAL3_SWITCH",
-                ]:
-                    self._update_partial_selection_switch(
-                        param, param_value, successes, failures
-                    )
-                if param.name in [
-                    "PARTIAL1_SELECT",
-                    "PARTIAL2_SELECT",
-                    "PARTIAL3_SELECT",
-                ]:
-                    self._update_partial_selected_state(
-                        param, param_value, successes, failures
-                    )
-                elif "SWITCH" in param_name:
-                    self._update_switch(param, param_value, successes, failures)
-                else:
-                    self._update_slider(param, param_value, successes, failures)
-            except Exception as ex:
-                log_error(f"Error {ex} occurred")
-
     def _update_common_controls(
         self,
+        partial_number: int,
         sysex_data: Dict,
         successes: list = None,
         failures: list = None,
     ):
         """
         Update the UI components for tone common and modify parameters.
+        :param partial_number: int partial number
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
         :param failures: List of failed parameters
-        :param debug: bool
         :return: None
         """
         for control in self.controls:
@@ -472,16 +389,17 @@ class DigitalSynthEditor(SynthEditor):
 
     def _update_modify_controls(
         self,
-        sysex_data: Dict,
+        partial_number: int,
+        sysex_data: dict,
         successes: list = None,
         failures: list = None,
     ):
         """
         Update the UI components for tone common and modify parameters.
-        :param sysex_data: Dictionary containing SysEx data
-        :param successes: List of successful parameters
-        :param failures: List of failed parameters
-        :param debug: bool
+        :param partial_number: int partial number
+        :param sysex_data: dict Dictionary containing SysEx data
+        :param successes: list List of successful parameters
+        :param failures: list List of failed parameters
         :return: None
         """
         for control in self.controls:

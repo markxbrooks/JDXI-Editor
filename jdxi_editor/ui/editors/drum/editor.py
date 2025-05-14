@@ -227,14 +227,15 @@ class DrumCommonEditor(SynthEditor):
         except IndexError:
             log_message(f"Invalid partial index: {index}")
 
-    def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
+    def _update_partial_controls(self, partial_no: int, sysex_data: dict, successes: list, failures: list) -> None:
         """
         apply partial ui updates
-        :param partial_no:
-        :param sysex_data:
+        :param partial_no: int
+        :param sysex_data: dict
+        :param successes: list
+        :param failures: list
         :return:
         """
-        failures, successes = [], []
 
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDrumPartial.get_by_name(param_name)
@@ -243,16 +244,16 @@ class DrumCommonEditor(SynthEditor):
             else:
                 failures.append(param_name)
 
-        log_debug_info(successes, failures)
-
     def _update_common_controls(
         self,
+        partial: int,
         sysex_data: Dict,
         successes: list = None,
         failures: list = None,
     ):
         """
         Update the UI components for tone common and modify parameters.
+        :param partial: int
         :param sysex_data: Dictionary containing SysEx data
         :param successes: List of successful parameters
         :param failures: List of failed parameters

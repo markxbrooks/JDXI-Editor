@@ -23,6 +23,7 @@ import threading
 from typing import Dict, Optional
 
 import mido
+from PIL.ImageChops import offset
 from PySide6.QtWidgets import QWidget
 
 from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -31,6 +32,8 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect1, AddressParameterDelay, \
+    AddressParameterReverb, AddressParameterEffect2
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
@@ -103,7 +106,26 @@ class SynthBase(QWidget):
         :return: bool True on success, False otherwise
         """
         try:
-            sysex_message = self.sysex_composer.compose_message(address=self.address, param=param, value=value)
+            sysex_message = self.sysex_composer.compose_message(
+                address=self.address,
+                param=param,
+                value=value
+            )
+            result = self._midi_helper.send_midi_message(sysex_message)
+            return bool(result)
+        except Exception as ex:
+            log_error(f"MIDI error setting {param.name}: {ex}")
+            return False
+
+    def send_midi_parameter_old(self, param: AddressParameter, value: int) -> bool:
+        """
+        Send MIDI parameter with error handling
+        :param param: AddressParameter
+        :param value: int value
+        :return: bool True on success, False otherwise
+        """
+        try:
+            sysex_message = self.sysex_composer.compose_message(address=target_address, param=param, value=value)
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
