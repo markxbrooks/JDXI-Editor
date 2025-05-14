@@ -49,6 +49,16 @@ class DigitalControlChange:
             2: 13,  # Partial 2
             3: 13,  # Partial 3
         },
+        "Hold1": {
+            1: 64,  # NRPN LSB for Partial 1
+            2: 64,  # Partial 2
+            3: 64,  # Partial 3
+        },
+        "Resonance -/+": {
+            1: 71,  # NRPN LSB for Partial 1
+            2: 71,  # Partial 2
+            3: 71,  # Partial 3
+        },
     }
 
     NRPN = {

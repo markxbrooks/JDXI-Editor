@@ -37,9 +37,10 @@ from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigi
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect
+from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect2
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
+from jdxi_editor.midi.data.parameter.vocal_fx import AddressParameterVocalFX
 from jdxi_editor.midi.data.partials.partials import DRUM_TONE_MAP, SYNTH_TONE_MAP
 
 ONE_BYTE_SYSEX_DATA_LENGTH = 15
@@ -65,7 +66,10 @@ TEMPORARY_AREA_MAP = {
 }
 
 PARAMETER_PART_MAP = {
-    (AreaMSB.TEMPORARY_PROGRAM.name, SuperNATURALLMB.TONE_COMMON.name): AddressParameterProgramCommon,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.TONE_COMMON.name): AddressParameterProgramCommon,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.VOCAL_EFFECT.name): AddressParameterVocalFX,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_1.name): AddressParameterReverb,
+    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_2.name): AddressParameterEffect2,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
      SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalCommon,
     (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterDigitalModify,

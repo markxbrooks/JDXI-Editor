@@ -33,8 +33,10 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, \
+    AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.control_change.base import ControlChange
+from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
 
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.jdxi.preset.lists import JDXiPresets
@@ -127,17 +129,6 @@ class SynthEditor(SynthBase):
         log_parameter("---> Using MIDI helper:", midi_helper)
         # midi message bytes
         # To be over-ridden by subclasses
-        self.address_msb = None
-        """ One of:
-            PROGRAM_AREA, 
-            ANALOG_SYNTH_AREA, 
-            DIGITAL_SYNTH_1_AREA, 
-            DIGITAL_SYNTH_2_AREA, 
-            ANALOG_SYNTH_AREA, 
-            DRUM_KIT_AREA
-        """
-        self.address_umb = None
-        self.address_lmb = None
         # Set window flags for address tool window
         self.setWindowFlags(Qt.WindowType.Tool)
 
@@ -271,9 +262,6 @@ class SynthEditor(SynthBase):
             return self.preset_helpers[JDXiSynth.DIGITAL_1]  # Safe fallback
         return handler
 
-    def _on_parameter_received(self, address, value):
-        raise NotImplementedError("Should be implemented by subclass")
-
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
         """
         Dispatch SysEx data to the appropriate area for processing.
@@ -283,97 +271,53 @@ class SynthEditor(SynthBase):
         sysex_data = self._parse_sysex_json(json_sysex_data)
         if not sysex_data:
             return
+
         current_synth = get_area([self.address.msb, self.address.umb])
         temporary_area = sysex_data.get("TEMPORARY_AREA")
         synth_tone = sysex_data.get("SYNTH_TONE")
-        if not current_synth == temporary_area:
+
+        if current_synth != temporary_area:
             log_message(
                 f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
             )
             return
+
         log_header_message(
             f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
         )
-        sysex_data = self._parse_sysex_json(json_sysex_data)
+
         sysex_data = filter_sysex_keys(sysex_data)
+
         successes, failures = [], []
-        # Analog is simple so deal with the 1st
+
+        if temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name:
+            partial_map = DRUM_PARTIAL_MAP
+        else:
+            partial_map = SYNTH_PARTIAL_MAP
+
+        partial_number = get_partial_number(synth_tone, partial_map=partial_map)
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
-            self._update_sliders_from_sysex(json_sysex_data)
-            self._update_common_sliders_from_sysex(json_sysex_data)
-        elif synth_tone == "TONE_COMMON":
-            self._update_common_controls(sysex_data, successes, failures)
-            log_debug_info(successes, failures)
-        elif synth_tone == "TONE_MODIFY":
-            self._update_modify_controls(sysex_data, successes, failures)
-            log_debug_info(successes, failures)
+            self._update_partial_controls(partial_number, sysex_data, successes, failures)
+        if synth_tone == AddressOffsetSuperNATURALLMB.TONE_COMMON.name:
+            self._update_common_controls(partial_number, sysex_data, successes, failures)
+        elif synth_tone == AddressOffsetSuperNATURALLMB.TONE_MODIFY.name:
+            self._update_modify_controls(partial_number, sysex_data, successes, failures)
         else:  # Drums and Digital 1 & 2 are dealt with via partials
-            incoming_data_partial_no = get_partial_number(synth_tone, self.partial_map)
-            filtered_data = filter_sysex_keys(sysex_data)
-            self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
+            self._update_partial_controls(partial_number, sysex_data, successes, failures)
 
-    def _update_common_sliders_from_sysex(
-        self, json_sysex_data: str
-    ) -> None:
-        """
-        Update sliders and combo boxes based on parsed SysEx data.
-        :param json_sysex_data: str
-        :return: None
-        """
-        try:
-            successes, failures = [], []
-            sysex_data = self._parse_sysex_json(json_sysex_data)
-            log_synth_area_info(sysex_data)
-            synth_tone = sysex_data.get("SYNTH_TONE")
-            sysex_data = filter_sysex_keys(sysex_data)
-            if synth_tone is None:
-                log_error("Missing SYNTH_TONE in SysEx data; cannot dispatch")
-                return
-            elif synth_tone == "TONE_COMMON":
-                log_parameter("synth_tone", synth_tone, silent=True)
-                try:
-                    self._update_common_controls(sysex_data, successes, failures)
-                    log_debug_info(successes, failures)
-                except Exception as ex:
-                    log_error(f"Error {ex} occurred updating common controls")
-            elif synth_tone == "TONE_MODIFY":
-                try:
-                    self._update_modify_controls(sysex_data, successes, failures)
-                    log_debug_info(successes, failures)
-                except Exception as ex:
-                    log_error(f"Error {ex} occurred updating common controls")
-        except Exception as ex:
-            log_error(f"Exception in _dispatch_sysex_to_area: {ex}")
+        log_debug_info(successes, failures)
 
-    def _update_sliders_from_sysex(self, json_sysex_data: str) -> None:
-        """
-        Update sliders and combo boxes based on parsed SysEx data.
-        :param json_sysex_data: str
-        :return: None
-        """
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        if not sysex_data:
-            return
-        current_synth = get_area([self.address.msb, self.address.umb])
-        temporary_area = sysex_data.get("TEMPORARY_AREA")
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        if not current_synth == temporary_area:
-            log_message(
-                f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
-            )
-            return
-        log_header_message(
-            f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
-        )
-        incoming_data_partial_no = get_partial_number(synth_tone)
-        filtered_data = filter_sysex_keys(sysex_data)
-        self._apply_partial_ui_updates(incoming_data_partial_no, filtered_data)
-
-    def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
+    def _update_partial_controls(self,
+                                 partial_no: int,
+                                 sysex_data: dict,
+                                 successes: list,
+                                 failures: list) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
         :param partial_no: int
         :param sysex_data: dict
+        :param successes: list
+        :param failures: list
         :return: None
         By default has no partials, so subclass to implement partial updates
         """
@@ -549,8 +493,8 @@ class SynthEditor(SynthBase):
             if not self.load_and_set_image(default_image_path):
                 self.instrument_image_label.clear()  # Clear label if default image is also missing
 
-    def _update_common_controls(self, filtered_data, successes, failures):
+    def _update_common_controls(self, partial_number: int, filtered_data, successes, failures):
         pass
 
-    def _update_modify_controls(self, filtered_data, successes, failures):
+    def _update_modify_controls(self, partial_number: int, filtered_data, successes, failures):
         pass

@@ -453,26 +453,18 @@ class AnalogSynthEditor(SynthEditor):
         else:
             failures.append(parameter.name)
 
-    def _update_sliders_from_sysex(self, json_sysex_data: str):
+    def _update_partial_controls(self,
+                                 partial_no: int,
+                                 sysex_data: dict,
+                                 successes: list,
+                                 failures: list) -> None:
         """
         Update sliders and combo boxes based on parsed SysEx data.
-        :param json_sysex_data: str JSON SysEx data
+        :param sysex_data: dict SysEx data
+        :param successes: list SysEx data
+        :param failures: list SysEx data
         :return: None
         """
-        sysex_data = self._parse_sysex_json(json_sysex_data)
-        log_message(f"sysex_data: {sysex_data}", silent=True)
-        if not sysex_data:
-            return
-        temp_area = sysex_data.get("TEMPORARY_AREA")
-        log_parameter("temp_area", temp_area, silent=True)
-        synth_tone = sysex_data.get("SYNTH_TONE")
-        log_parameter("temp_area", temp_area, silent=True)
-
-        if temp_area != TemporaryToneUMB.ANALOG_PART.name or synth_tone != ProgramLMB.TONE_COMMON.name:
-            return
-        log_header_message(
-            f"Updating {temp_area} {synth_tone} UI components from SysEx data"
-        )
 
         # Compare with previous data and log changes
         if self.previous_json_data:
@@ -480,10 +472,6 @@ class AnalogSynthEditor(SynthEditor):
 
         # Store the current data for future comparison
         self.previous_json_data = sysex_data
-
-        sysex_data = filter_sysex_keys(sysex_data)
-
-        failures, successes = [], []
 
         for param_name, param_value in sysex_data.items():
             param = AddressParameterAnalog.get_by_name(param_name)
@@ -549,7 +537,6 @@ class AnalogSynthEditor(SynthEditor):
                 successes.append(param_name)
             else:
                 failures.append(param_name)
-        log_debug_info(successes, failures)
 
     def _update_waveform_buttons(self, value: int):
         """
