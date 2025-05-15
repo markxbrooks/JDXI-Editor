@@ -50,6 +50,12 @@ input_data = """
 10 00 00
 """
 
+18 00 00 00 -> Temporary Program
+19 00 00 00 -> Temporary Tone (Digital Synth Part 1)
+01 00 00 -> Temporary SuperNATURAL Synth Tone
+19 20 00 00 -> Temporary Tone (Digital Synth Part 2)
+10 00 00 -> Temporary Drum Kit
+
 # Lexing and mapping
 tokens = lex_addresses(input_data)
 mapped = map_tokens(tokens, "Temporary Tone")
