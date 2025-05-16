@@ -33,7 +33,9 @@ print(offset)  # Output: (0x00, 0x01, 0x23)
 from enum import Enum
 from typing import Optional, Tuple, Type, Iterator, T
 
-from jdxi_editor.midi.data.address.sysex import ZERO_BYTE, FULL_BYTE_MASK
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
+from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
+from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.sysex.utils import map_range
 
 
@@ -152,7 +154,7 @@ class AddressParameter(Enum):
         :param partial_number: int
         :return: int default area to be subclassed
         """
-        return ZERO_BYTE, ZERO_BYTE
+        return JDXiMidiConstant.ZERO_BYTE, JDXiMidiConstant.ZERO_BYTE
     
     def convert_value(self, value: int, reverse: bool = False) -> int:
         """
@@ -242,9 +244,9 @@ class AddressParameter(Enum):
         :return: tuple[int, int, int] A 3-byte offset.
         """
         value = self.address
-        umb = ZERO_BYTE  # Default Upper Middle Byte
-        lmb = (value >> 8) & FULL_BYTE_MASK  # Extract LMB
-        lsb = value & FULL_BYTE_MASK  # Extract LSB
+        umb = JDXiMidiConstant.ZERO_BYTE  # Default Upper Middle Byte
+        lmb = (value >> 8) & JDXiBitMask.FULL_BYTE  # Extract LMB
+        lsb = value & JDXiBitMask.FULL_BYTE  # Extract LSB
         return umb, lmb, lsb
 
     @property

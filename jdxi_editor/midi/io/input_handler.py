@@ -27,12 +27,11 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIIdentityOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REPLY, START_OF_SYSEX, \
-    END_OF_SYSEX
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.log.json import log_json
@@ -244,12 +243,12 @@ class MidiInHandler(MidiIOController):
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
             mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2 - 1 # account for lack of status byte
-            if message.data[mido_sub_id_byte_offset] == SUB_ID_2_IDENTITY_REPLY:
+            if message.data[mido_sub_id_byte_offset] == JDXiMidiConstant.SUB_ID_2_IDENTITY_REPLY:
                 handle_identity_request(message)
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            sysex_message_bytes = bytes([START_OF_SYSEX]) + bytes(message.data) + bytes([END_OF_SYSEX])
+            sysex_message_bytes = bytes([JDXiMidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes([JDXiMidiConstant.END_OF_SYSEX])
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 filtered_data = {

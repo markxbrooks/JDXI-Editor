@@ -362,7 +362,7 @@ class AnalogSynthEditor(SynthEditor):
     def update_slider(
             self,
             param: AddressParameterAnalog,
-            value: int,
+            midi_value: int,
             successes: list = None,
             failures: list = None,
     ) -> None:
@@ -371,18 +371,18 @@ class AnalogSynthEditor(SynthEditor):
         :param param: AddressParameterAnalog value
         :param failures: list of failed parameters
         :param successes: list of successful parameters
-        :param value: int value
+        :param midi_value: int value
         :return: None
         """
         slider = self.controls.get(param)
         if slider:
-            slider_value = param.convert_from_midi(value)
+            slider_value = param.convert_from_midi(midi_value)
             slider.blockSignals(True)
             slider.setValue(slider_value)
             slider.blockSignals(False)
             successes.append(param.name)
             log_slider_parameters(
-                self.address.umb, self.address.lmb, param, value, slider_value
+                self.address, param, midi_value, slider_value
             )
         else:
             failures.append(param.name)
@@ -402,7 +402,7 @@ class AnalogSynthEditor(SynthEditor):
         :param successes: list of successful parameters
         :return: None
         """
-        new_value = (
+        slider_value = (
             midi_value_to_fraction(midi_value)
             if param
                in [
@@ -414,10 +414,10 @@ class AnalogSynthEditor(SynthEditor):
 
         if param in self.adsr_mapping:
             control = self.adsr_mapping[param]
-            control.setValue(new_value)
+            control.setValue(slider_value)
             successes.append(param.name)
             log_slider_parameters(
-                self.address.umb, self.address.lmb, param, midi_value, new_value
+                self.address, param, midi_value, slider_value
             )
         else:
             failures.append(param.name)

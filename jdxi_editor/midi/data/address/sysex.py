@@ -4,7 +4,6 @@ Collected SysEx constants
 
 from enum import unique, IntEnum
 
-
 """Miscellaneous"""
 START_OF_SYSEX = 0xF0
 END_OF_SYSEX = 0xF7

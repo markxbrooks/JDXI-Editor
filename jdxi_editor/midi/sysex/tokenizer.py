@@ -3,7 +3,7 @@ import re
 # Define token patterns
 TOKEN_PATTERNS = {
     "AREA": r"TEMPORARY_(DIGITAL_SYNTH_\d|ANALOG|DRUM_KIT)_AREA",
-    "COMMON": r"COMMON|TONE_COMMON|TONE_MODIFY|PARTIAL_\d",
+    "COMMON": r"COMMON|COMMON|MODIFY|PARTIAL_\d",
 }
 
 # Lexer function
@@ -26,6 +26,6 @@ def generate_mapping(input_string):
     return None
 
 # Example input
-# input_data = "TEMPORARY_DIGITAL_SYNTH_1_AREA TONE_COMMON"
+# input_data = "TEMPORARY_DIGITAL_SYNTH_1_AREA COMMON"
 # mapping = generate_mapping(input_data)
 # print(mapping)

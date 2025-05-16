@@ -35,6 +35,7 @@ from jdxi_editor.midi.data.address.sysex import (
     SUB_ID_1_GENERAL_INFORMATION,
     SUB_ID_2_IDENTITY_REQUEST,
 )
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.midi.message.midi import MidiMessage
 
 
@@ -49,4 +50,9 @@ class IdentityRequestMessage(MidiMessage):
         Convert to list of bytes for sending
         :return: list
         """
-        return [START_OF_SYSEX, ID_NUMBER, DEVICE_ID, SUB_ID_1_GENERAL_INFORMATION, SUB_ID_2_IDENTITY_REQUEST, END_OF_SYSEX]
+        return [JDXiMidiConstant.START_OF_SYSEX,
+                JDXiMidiConstant.ID_NUMBER,
+                JDXiMidiConstant.DEVICE_ID,
+                JDXiMidiConstant.SUB_ID_1_GENERAL_INFORMATION,
+                JDXiMidiConstant.SUB_ID_2_IDENTITY_REQUEST,
+                JDXiMidiConstant.END_OF_SYSEX]

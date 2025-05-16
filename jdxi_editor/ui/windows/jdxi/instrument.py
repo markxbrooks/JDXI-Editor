@@ -53,7 +53,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetAnalogLMB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSystemUMB,
-    RolandSysExAddress,
+    RolandSysExAddress, AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.address.sysex import VALUE_ON, VALUE_OFF, ZERO_BYTE
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
@@ -685,7 +685,7 @@ class JdxiInstrument(JdxiUi):
                 address1 = RolandSysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                    lmb=AddressOffsetAnalogLMB.PART_DIGITAL_SYNTH_1,
+                    lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46,
                 )
                 address2 = RolandSysExAddress(
@@ -732,11 +732,11 @@ class JdxiInstrument(JdxiUi):
                 log_message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
-                    AddressOffsetAnalogLMB.CONTROLLER,
-                    AddressOffsetAnalogLMB.PART_DIGITAL_SYNTH_1,
-                    AddressOffsetAnalogLMB.PART_DIGITAL_SYNTH_2,
-                    AddressOffsetAnalogLMB.PART_ANALOG,
-                    AddressOffsetAnalogLMB.ZONE_DRUM,
+                    AddressOffsetProgramLMB.CONTROLLER,
+                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2,
+                    AddressOffsetProgramLMB.PART_ANALOG,
+                    AddressOffsetProgramLMB.ZONE_DRUM,
                 ]:
                     address = RolandSysExAddress(
                         msb=AddressMemoryAreaMSB.TEMPORARY_PROGRAM,

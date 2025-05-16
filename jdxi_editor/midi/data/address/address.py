@@ -31,6 +31,7 @@ from __future__ import annotations
 from enum import unique, IntEnum
 from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 
+from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
@@ -73,9 +74,9 @@ class Address(SysExByte):
         base = self.value
         if isinstance(address_offset, int):
             offset_bytes = [
-                (address_offset >> 16) & 0xFF,
-                (address_offset >> 8) & 0xFF,
-                address_offset & 0xFF,
+                (address_offset >> 16) & JDXiBitMask.FULL_BYTE,
+                (address_offset >> 8) & JDXiBitMask.FULL_BYTE,
+                address_offset & JDXiBitMask.FULL_BYTE,
             ]
         elif isinstance(address_offset, tuple) and len(address_offset) == 3:
             offset_bytes = list(address_offset)
@@ -164,15 +165,15 @@ class RolandSysExAddress:
         :return: RolandSysExAddress The RolandSysExAddress object
         """
         if isinstance(offset, int):
-            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & 0x7F, offset & 0x7F]
+            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & JDXiBitMask.LOW_7_BITS, offset & JDXiBitMask.LOW_7_BITS]
         elif isinstance(offset, tuple) and len(offset) == 3:
             offset_bytes = list(offset)
         else:
             raise ValueError("Offset must be an int or a 3-byte tuple")
 
-        new_umb = (self.umb + offset_bytes[0]) & 0x7F
-        new_lmb = (self.lmb + offset_bytes[1]) & 0x7F
-        new_lsb = (self.lsb + offset_bytes[2]) & 0x7F
+        new_umb = (self.umb + offset_bytes[0]) & JDXiBitMask.LOW_7_BITS
+        new_lmb = (self.lmb + offset_bytes[1]) & JDXiBitMask.LOW_7_BITS
+        new_lsb = (self.lsb + offset_bytes[2]) & JDXiBitMask.LOW_7_BITS
         return RolandSysExAddress(self.msb, new_umb, new_lmb, new_lsb)
 
     def __repr__(self):
@@ -329,11 +330,11 @@ class AddressOffsetSuperNATURALLMB(Address):
     Address Offset SuperNATURAL LMB
     """
 
-    TONE_COMMON = 0x00
+    COMMON = 0x00
     PARTIAL_1 = 0x20
     PARTIAL_2 = 0x21
     PARTIAL_3 = 0x22
-    TONE_MODIFY = 0x50
+    MODIFY = 0x50
 
     @classmethod
     def message_position(cls):

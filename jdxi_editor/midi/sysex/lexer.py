@@ -58,11 +58,11 @@ TEST_PARAMETER_ADDRESS_MAP = {
     },
     "SuperNATURAL Synth Tone": {
         "3-byte-offsets": {
-            "00 00 00": AddressOffsetSuperNATURALLMB.TONE_COMMON.name,  # "SuperNATURAL Synth Tone Common",
+            "00 00 00": AddressOffsetSuperNATURALLMB.COMMON.name,  # "SuperNATURAL Synth Tone Common",
             "00 20 00": AddressOffsetSuperNATURALLMB.PARTIAL_1.name,  # "SuperNATURAL Synth Tone Partial (1)",
             "00 21 00": AddressOffsetSuperNATURALLMB.PARTIAL_2.name,  # "SuperNATURAL Synth Tone Partial (2)",
             "00 22 00": AddressOffsetSuperNATURALLMB.PARTIAL_3.name,  # "SuperNATURAL Synth Tone Partial (3)",
-            "00 50 00": AddressOffsetSuperNATURALLMB.TONE_MODIFY.name  # "SuperNATURAL Synth Tone Modify"
+            "00 50 00": AddressOffsetSuperNATURALLMB.MODIFY.name  # "SuperNATURAL Synth Tone Modify"
         }
     },
     "Analog Synth Tone": {

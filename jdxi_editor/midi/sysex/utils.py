@@ -13,20 +13,31 @@ Functions:
 
 """
 
+
+from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
 from jdxi_editor.log.error import log_error
-from jdxi_editor.midi.data.address.sysex import LOW_7_BITS_MASK
 
 
-def map_range(value, in_min=-100, in_max=100, out_min=54, out_max=74):
+def map_range(value: int, in_min: int = -100, in_max: int =100, out_min: int =54, out_max: int =74) -> int:
+    """
+    Map range
+    Convert value to range
+    :param value: int, float
+    :param in_min: int
+    :param in_max: int
+    :param out_min: int
+    :param out_max: int
+    :return: int
+    """
     return int(out_min + (value - in_min) * (out_max - out_min) / (in_max - in_min))
 
 
-def calculate_checksum(data):
+def calculate_checksum(data: tuple):
     """Calculate Roland checksum for parameter messages."""
-    return (128 - (sum(data) & LOW_7_BITS_MASK)) & LOW_7_BITS_MASK
+    return (128 - (sum(data) & JDXiBitMask.LOW_7_BITS)) & JDXiBitMask.LOW_7_BITS
 
 
-def bytes_to_hex(byte_list, prefix="F0"):
+def bytes_to_hex(byte_list: list, prefix: str = "F0"):
     """
     Convert a list of byte values to a space-separated hex string.
 
