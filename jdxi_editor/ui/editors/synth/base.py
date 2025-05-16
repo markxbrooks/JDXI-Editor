@@ -269,7 +269,7 @@ class SynthBase(QWidget):
             else:
                 slider_value = midi_value
             log_slider_parameters(
-                self.address.umb, self.address.lmb, param, midi_value, slider_value
+                self.address, param, midi_value, slider_value
             )
             slider.blockSignals(True)
             slider.setValue(midi_value)
@@ -335,9 +335,10 @@ class SynthBase(QWidget):
             failures.append(param.name)
             return
         synth_data = create_synth_data(self.synth_data.preset_type, partial_no)
+        self.address.lmb = synth_data.lmb
         slider_value = param.convert_from_midi(value)
         log_slider_parameters(
-            self.address.umb, synth_data.lmb, param, value, slider_value
+            self.address, param, value, slider_value
         )
         slider.blockSignals(True)
         slider.setValue(slider_value)

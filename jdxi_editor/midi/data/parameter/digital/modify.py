@@ -99,4 +99,4 @@ class AddressParameterDigitalModify(AddressParameter):
         return value
 
     def get_address_for_partial(self, partial_number: int = 0):
-        return AddressOffsetSuperNATURALLMB.TONE_MODIFY, 0x00
+        return AddressOffsetSuperNATURALLMB.MODIFY, 0x00

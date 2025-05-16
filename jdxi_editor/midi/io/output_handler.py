@@ -25,6 +25,8 @@ from typing import Optional, Iterable
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
+from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.parameter import log_parameter
@@ -32,7 +34,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     CommandID, AddressMemoryAreaMSB, ModelID,
 )
-from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX, LOW_7_BITS_MASK
+from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
@@ -301,10 +303,10 @@ class MidiOutHandler(MidiIOController):
             return False
 
         # Split into MSB/LSB
-        rpn_msb = (parameter >> 7) & LOW_7_BITS_MASK
-        rpn_lsb = parameter & LOW_7_BITS_MASK
-        value_msb = (value >> 7) & LOW_7_BITS_MASK
-        value_lsb = value & LOW_7_BITS_MASK
+        rpn_msb = (parameter >> 7) & JDXiBitMask.LOW_7_BITS
+        rpn_lsb = parameter & JDXiBitMask.LOW_7_BITS
+        value_msb = (value >> 7) & JDXiBitMask.LOW_7_BITS
+        value_lsb = value & JDXiBitMask.LOW_7_BITS
 
         success = (
             self.send_control_change(101, rpn_msb, channel)
@@ -351,13 +353,13 @@ class MidiOutHandler(MidiIOController):
             )
             return False
 
-        nrpn_msb = (parameter >> 7) & LOW_7_BITS_MASK
-        nrpn_lsb = parameter & LOW_7_BITS_MASK
+        nrpn_msb = (parameter >> 7) & JDXiBitMask.LOW_7_BITS
+        nrpn_lsb = parameter & JDXiBitMask.LOW_7_BITS
         if use_14bit:
-            value_msb = (value >> 7) & LOW_7_BITS_MASK
-            value_lsb = value & LOW_7_BITS_MASK
+            value_msb = (value >> 7) & JDXiBitMask.LOW_7_BITS
+            value_lsb = value & JDXiBitMask.LOW_7_BITS
         else:
-            value_msb = value & LOW_7_BITS_MASK
+            value_msb = value & JDXiBitMask.LOW_7_BITS
             value_lsb = 0  # Optional; not sent anyway
 
         ok = True
@@ -471,7 +473,7 @@ class MidiOutHandler(MidiIOController):
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
-                    if len(msg) >= ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START] == START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX:
+                    if len(msg) >= ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START] == JDXiMidiConstant.START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX:
                         # Parse response
                         response = SysExMessage.from_bytes(bytes(msg))
                         # Extract parameter value

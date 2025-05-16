@@ -30,7 +30,7 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB 
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.map.drum_tone import DRUM_TONE_MAP
-from jdxi_editor.midi.map.synth_tone import SYNTH_TONE_MAP
+from jdxi_editor.midi.map.synth_tone import SYNTH_TONE_MAP, JDXiMapSynthTone
 from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.map.parameter_address import PARAMETER_ADDRESS_NAME_MAP
 from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
@@ -84,7 +84,7 @@ def get_partial_address(part_name: str) -> str:
     for key, value in SYNTH_TONE_MAP.items():
         if value == part_name:
             return key
-    return "TONE_COMMON"
+    return "COMMON"
 
 
 def get_drum_tone(byte_value: int) -> tuple[str, int]:
@@ -97,12 +97,12 @@ def get_drum_tone(byte_value: int) -> tuple[str, int]:
         offset = 0
         drum_tone = DRUM_TONE_MAP.get(byte_value)
         if drum_tone is None:
-            drum_tone = DRUM_TONE_MAP.get(byte_value - 1, "TONE_COMMON")
+            drum_tone = DRUM_TONE_MAP.get(byte_value - 1, "COMMON")
             offset = 1
         return drum_tone, offset
     except Exception as ex:
         log_error(f"Error {ex} occurred getting drum type")
-        return "TONE_COMMON", 0
+        return "COMMON", 0
 
 
 def get_synth_tone(byte_value: int) -> tuple[str, int]:
@@ -111,7 +111,7 @@ def get_synth_tone(byte_value: int) -> tuple[str, int]:
     :param byte_value: int
     :return: str
     """
-    return SYNTH_TONE_MAP.get(byte_value, "TONE_COMMON"), 0
+    return JDXiMapSynthTone.MAP.get(byte_value, "COMMON"), 0
 
 
 def extract_tone_name(data: bytes) -> str:

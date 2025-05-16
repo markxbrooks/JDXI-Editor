@@ -6,13 +6,14 @@ from typing import List, Optional, Union, Callable
 
 import mido
 
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIProgramChangeOffset, JDXIControlChangeOffset
-#from black.lines import Callable
 
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import ModelID
-from jdxi_editor.midi.data.address.sysex import RolandID, LOW_7_BITS_MASK, LOW_4_BITS_MASK, START_OF_SYSEX, END_OF_SYSEX
+from jdxi_editor.midi.data.address.sysex import RolandID
+from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
 
 from jdxi_editor.midi.sysex.device import DeviceInfo
 
@@ -48,7 +49,7 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     if not (0 <= msb <= 255):
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
-    if lsb > LOW_7_BITS_MASK:  # 127
+    if lsb > JDXiBitMask.LOW_7_BITS:  # 127
         msb += 1
 
     return msb
@@ -65,8 +66,8 @@ def nibble_data(data: list[int]) -> list[int]:
     nibbled_data = []
     for byte in data:
         if byte > 127:
-            high_nibble = (byte >> 4) & LOW_4_BITS_MASK
-            low_nibble = byte & LOW_4_BITS_MASK
+            high_nibble = (byte >> 4) & JDXiBitMask.LOW_4_BITS
+            low_nibble = byte & JDXiBitMask.LOW_4_BITS
             # Combine nibbles into valid data bytes (0-127)
             nibbled_data.append(high_nibble)
             nibbled_data.append(low_nibble)
@@ -101,7 +102,7 @@ def convert_to_mido_message(
     status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
     # SysEx
     try:
-        if status_byte == START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX:
+        if status_byte == JDXiMidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == JDXiMidiConstant.END_OF_SYSEX:
             sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.MIDI_CHANNEL:JDXIProgramChangeOffset.END])
             if len(sysex_data) > 128:
                 nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
@@ -112,7 +113,7 @@ def convert_to_mido_message(
     # Program Change
     try:
         if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
-            channel = status_byte & LOW_4_BITS_MASK
+            channel = status_byte & JDXiBitMask.LOW_4_BITS
             program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
             return mido.Message("program_change", channel=channel, program=program)
     except Exception as ex:
@@ -120,7 +121,7 @@ def convert_to_mido_message(
     # Control Change
     try:
         if 0xB0 <= status_byte <= 0xBF and len(message_content) >= 3:
-            channel = status_byte & LOW_4_BITS_MASK
+            channel = status_byte & JDXiBitMask.LOW_4_BITS
             control = message_content[JDXIControlChangeOffset.CONTROL]
             value = message_content[JDXIControlChangeOffset.VALUE]
             return mido.Message(
@@ -142,7 +143,7 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
 
     message_byte_list = bytes(
-        [START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [END_OF_SYSEX]
+        [JDXiMidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [JDXiMidiConstant.END_OF_SYSEX]
     )
     return message_byte_list
 

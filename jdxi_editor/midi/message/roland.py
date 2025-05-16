@@ -26,6 +26,7 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
@@ -38,7 +39,7 @@ from jdxi_editor.midi.data.address.sysex import (
     START_OF_SYSEX,
     END_OF_SYSEX,
     ZERO_BYTE,
-    RolandID, LOW_7_BITS_MASK, FULL_BYTE_MASK,
+    RolandID
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH
@@ -89,7 +90,7 @@ class RolandSysExMessage(SysExMessage):
         :return: list
         """
         msg = (
-                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                [JDXiMidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
                 + list(self.model_id)
                 + [self.command]
                 + [self.address.msb]
@@ -309,7 +310,7 @@ class JDXiSysEx(RolandSysEx):
         # Validate address
         if len(self.address) != 4:
             raise ValueError("Address must be 4 bytes")
-        if not all(ZERO_BYTE <= x <= FULL_BYTE_MASK for x in self.address):
+        if not all(ZERO_BYTE <= x <= JDXiBitMask.FULL_BYTE for x in self.address):
             raise ValueError(
                 f"Invalid address bytes: {[f'{x:02X}' for x in self.address]}"
             )
@@ -333,7 +334,7 @@ class JDXiSysEx(RolandSysEx):
         """Calculate Roland checksum for the message"""
         # Checksum = 128 - (sum of address and data bytes % 128)
         checksum = sum(self.address) + sum(self.data)
-        return (128 - (checksum % 128)) & LOW_7_BITS_MASK
+        return (128 - (checksum % 128)) & JDXiBitMask.LOW_7_BITS
 
     @classmethod
     def from_bytes(cls, data: bytes):

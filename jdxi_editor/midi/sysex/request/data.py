@@ -22,8 +22,8 @@ IGNORED_KEYS = {
     "JD_XI_HEADER", "ADDRESS", "TONE_NAME",
 }
 SYNTH_PARTIAL_MAP = {
-    "TONE_COMMON": 0,
-    "TONE_MODIFY": 0,
+    "COMMON": 0,
+    "MODIFY": 0,
     "PARTIAL_1": 1,
     "PARTIAL_2": 2,
     "PARTIAL_3": 3,

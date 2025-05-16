@@ -298,9 +298,9 @@ class SynthEditor(SynthBase):
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
         if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
             self._update_partial_controls(partial_number, sysex_data, successes, failures)
-        if synth_tone == AddressOffsetSuperNATURALLMB.TONE_COMMON.name:
+        if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
             self._update_common_controls(partial_number, sysex_data, successes, failures)
-        elif synth_tone == AddressOffsetSuperNATURALLMB.TONE_MODIFY.name:
+        elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
             self._update_modify_controls(partial_number, sysex_data, successes, failures)
         else:  # Drums and Digital 1 & 2 are dealt with via partials
             self._update_partial_controls(partial_number, sysex_data, successes, failures)

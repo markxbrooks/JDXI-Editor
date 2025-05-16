@@ -56,11 +56,11 @@ TEST_PARAMETER_ADDRESS_MAP = {
     },
     "SuperNATURAL Synth Tone": {
         "3-byte-offsets": {
-            "00 00 00": AddressOffsetSuperNATURALLMB.TONE_COMMON.name,
+            "00 00 00": AddressOffsetSuperNATURALLMB.COMMON.name,
             "00 20 00": AddressOffsetSuperNATURALLMB.PARTIAL_1.name,
             "00 21 00": AddressOffsetSuperNATURALLMB.PARTIAL_2.name,
             "00 22 00": AddressOffsetSuperNATURALLMB.PARTIAL_3.name,
-            "00 50 00": AddressOffsetSuperNATURALLMB.TONE_MODIFY.name,
+            "00 50 00": AddressOffsetSuperNATURALLMB.MODIFY.name,
         }
     },
     "Analog Synth Tone": {
@@ -136,7 +136,7 @@ def map_tokens_all(tokens):
 
 if __name__ == "__main__":
     input_data = """
-    19 01 20` 00
+    19 01 20 00
     19 01 20 00
     00 22 00
     00 03 00

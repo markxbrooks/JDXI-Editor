@@ -1,5 +1,5 @@
 DRUM_TONE_MAP = {
-    0x00: "TONE_COMMON",
+    0x00: "COMMON",
     0x2E: "BD1",
     0x30: "RIM",
     0x32: "BD2",

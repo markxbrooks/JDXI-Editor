@@ -436,7 +436,7 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
-        new_value = (
+        control_value = (
             midi_value_to_fraction(midi_value) if use_fraction else midi_value_to_ms(midi_value)
         )
         self.adsr_map = {
@@ -470,17 +470,18 @@ class DigitalSynthEditor(SynthEditor):
             failures.append(param.name)
             return
         if spinbox:
-            spinbox.setValue(new_value)
+            spinbox.setValue(control_value)
             synth_data = create_synth_data(JDXiSynth.DIGITAL_1, partial_no)
+            self.address.lmb = synth_data.lmb
             log_slider_parameters(
-                self.address.umb, synth_data.lmb, param, midi_value, new_value
+                self.address, param, midi_value, control_value
             )
             successes.append(param.name)
 
     def _update_partial_pitch_env_widgets(
         self, partial_no: int,
             param: AddressParameterDigitalPartial,
-            value: int,
+            midi_value: int,
             successes: list = None,
             failures: list = None,
     ):
@@ -488,7 +489,7 @@ class DigitalSynthEditor(SynthEditor):
         Update the Pitch Env widget for a specific partial based on the parameter and value.
         :param partial_no: int Partial number
         :param param: AddressParameter address
-        :param value: int value
+        :param midi_value: int value
         :param successes: list = None,
         :param failures: list = None,
         :return: None
@@ -497,9 +498,9 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
         }
         new_value = (
-            midi_value_to_fraction(value)
+            midi_value_to_fraction(midi_value)
             if use_fraction
-            else midi_value_to_ms(value, 10, 5000)
+            else midi_value_to_ms(midi_value, 10, 5000)
         )
         self.pitch_env_map = {
             AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME: self.partial_editors[
@@ -548,7 +549,6 @@ class DigitalSynthEditor(SynthEditor):
             check_box.setState(bool(value), False)
             check_box.blockSignals(False)
             successes.append(param.name)
-            # log_message(f"Updated: {param.name:50} {value}")
         else:
             failures.append(param.name)
 
@@ -558,7 +558,6 @@ class DigitalSynthEditor(SynthEditor):
         value: int,
         successes: list,
         failures: list,
-        debug: bool = False,
     ) -> None:
         """
         Update the partial selected state based on parameter and value.
