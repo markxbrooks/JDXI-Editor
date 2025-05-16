@@ -6,7 +6,7 @@ from jdxi_editor.jdxi.preset.lists import JDXiPresets
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetProgramLMB,
+    AddressOffsetAnalogLMB,
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSuperNATURALLMB,
@@ -95,6 +95,6 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISyn
             display_prefix="AN",
             msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            lmb=AddressOffsetProgramLMB.TONE_COMMON,
+            lmb=AddressOffsetAnalogLMB.COMMON,
         )
     raise ValueError(f"Error occurred setting up {synth_type}")

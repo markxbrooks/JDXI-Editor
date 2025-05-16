@@ -17,7 +17,7 @@ Key Features:
 from typing import Callable
 from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScrollArea
 
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -45,7 +45,7 @@ class DrumCommonSection(QWidget):
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self.midi_helper = midi_helper
-        self.address_lmb = AddressOffsetProgramLMB.TONE_COMMON
+        self.address_lmb = AddressOffsetAnalogLMB.COMMON
         self.setup_ui()
 
     def setup_ui(self):

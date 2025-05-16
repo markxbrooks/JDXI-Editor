@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressMemoryAreaMSB,
-    AddressOffsetProgramLMB,
+    AddressOffsetAnalogLMB,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -33,7 +33,7 @@ class DelayMessage(RolandSysEx):
 
     command: int = CommandID.DT1
     msb: int = AddressMemoryAreaMSB.PROGRAM  # 0x18: Program area
-    umb: int = AddressOffsetProgramLMB.DELAY  # 0x06: Delay section
+    umb: int = AddressOffsetAnalogLMB.DELAY  # 0x06: Delay section
     lmb: int = ZERO_BYTE
     lsb: int = ZERO_BYTE
     value: int = ZERO_BYTE

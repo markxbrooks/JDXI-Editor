@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io import MidiIOHelper
@@ -59,7 +59,7 @@ class DrumPartialEditor(PartialEditor):
         self.midi_helper = midi_helper
         self.partial_number = partial_number  # This is now the numerical index
         self.partial_name = partial_name  # This is now the numerical index
-        self.partial_address_default = AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL
+        self.partial_address_default = AddressOffsetAnalogLMB.DRUM_DEFAULT_PARTIAL
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
         self._init_synth_data(synth_type=JDXiSynth.DRUM, partial_number=self.partial_number)
