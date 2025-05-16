@@ -29,31 +29,21 @@ from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.address.address import (
-    CommandID,
-    AddressMemoryAreaMSB,
-    RolandSysExAddress, ModelID,
+    CommandID, AddressMemoryAreaMSB, ModelID,
 )
 from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX, LOW_7_BITS_MASK
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.parsers.util import COMMON_IGNORED_KEYS, OUTBOUND_MESSAGE_IGNORED_KEYS
+from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
-from jdxi_editor.midi.io.utils import (
-    format_midi_message_to_hex_string,
-    increment_if_lsb_exceeds_7bit,
-)
+from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 from jdxi_editor.midi.message.midi import MidiMessage
 from jdxi_editor.midi.message.program_change import ProgramChangeMessage
 from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.message.channel import ChannelMessage
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.sysex.parse_utils import ONE_BYTE_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
-from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
-# from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 
 
 def validate_midi_message(message: Iterable[int]) -> bool:

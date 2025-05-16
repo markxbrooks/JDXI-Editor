@@ -20,7 +20,6 @@ from __future__ import annotations
 import logging
 from typing import Dict
 
-from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.json import log_json
@@ -28,70 +27,14 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB, \
     AddressOffsetTemporaryToneUMB
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
-from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB as SuperNATURALLMB
-from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB as ProgramLMB
-from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect2
-from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.parameter.vocal_fx import AddressParameterVocalFX
-from jdxi_editor.midi.data.partials.partials import DRUM_TONE_MAP, SYNTH_TONE_MAP
-
-ONE_BYTE_SYSEX_DATA_LENGTH = 15
-
-FOUR_BYTE_SYSEX_DATA_LENGTH = 18
-
-SYNTH_TYPE_MAP = {
-    AreaMSB.TEMPORARY_PROGRAM.name: JDXiSynth.PROGRAM,
-    TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name: JDXiSynth.DIGITAL_1,
-    TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name: JDXiSynth.DIGITAL_2,
-    TemporaryToneUMB.ANALOG_PART.name: JDXiSynth.ANALOG,
-    TemporaryToneUMB.DRUM_KIT_PART.name: JDXiSynth.DRUM,
-}
-
-TEMPORARY_AREA_MAP = {
-    (AreaMSB.TEMPORARY_PROGRAM, TemporaryToneUMB.COMMON): AreaMSB.TEMPORARY_PROGRAM.name,
-    (AreaMSB.TEMPORARY_TONE, TemporaryToneUMB.ANALOG_PART): TemporaryToneUMB.ANALOG_PART.name,
-    (AreaMSB.TEMPORARY_TONE,
-     TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-    (AreaMSB.TEMPORARY_TONE,
-     TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA): TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
-    (AreaMSB.TEMPORARY_TONE, TemporaryToneUMB.DRUM_KIT_PART): TemporaryToneUMB.DRUM_KIT_PART.name,
-}
-
-PARAMETER_PART_MAP = {
-    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.COMMON.name): AddressParameterProgramCommon,
-    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.VOCAL_EFFECT.name): AddressParameterVocalFX,
-    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_1.name): AddressParameterReverb,
-    (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_2.name): AddressParameterEffect2,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-     SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalCommon,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterDigitalModify,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-     SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-     SuperNATURALLMB.PARTIAL_2.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-     SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
-     SuperNATURALLMB.TONE_COMMON.name): AddressParameterDigitalCommon,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.TONE_MODIFY.name): AddressParameterDigitalModify,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
-     SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
-     SuperNATURALLMB.PARTIAL_2.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
-     SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.ANALOG_PART.name, ProgramLMB.COMMON.name): AddressParameterAnalog,
-    (TemporaryToneUMB.DRUM_KIT_PART.name, ProgramLMB.COMMON.name): AddressParameterDrumCommon,  # Default to Drums
-    # since there are 36 partials
-}
+from jdxi_editor.midi.map.drum_tone import DRUM_TONE_MAP
+from jdxi_editor.midi.map.synth_tone import SYNTH_TONE_MAP
+from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.map.parameter_address import PARAMETER_ADDRESS_NAME_MAP
+from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
+from jdxi_editor.midi.map import JDXiMapParameterAddress, JDXiMapSynthType, JDXiMapTemporaryArea
 
 
 def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
@@ -127,7 +70,7 @@ def get_temporary_area(data: bytes) -> str:
     """
     temp_area_bytes = data[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.ADDRESS_LMB]
     return (
-        TEMPORARY_AREA_MAP.get(tuple(temp_area_bytes), "Unknown") if len(
+        JDXiMapTemporaryArea.MAP.get(tuple(temp_area_bytes), "Unknown") if len(
             data) >= JDXiSysExOffset.ADDRESS_LSB else "Unknown"
     )
 
@@ -303,7 +246,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     log_parameter("temporary_area", temporary_area, silent=True)
     log_parameter("synth_tone", synth_tone, silent=True)
     parsed_data = initialize_parameters(data)
-    parameter_cls = PARAMETER_PART_MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
+    parameter_cls = JDXiMapParameterAddress.MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:
         log_message(f"No parameter mapping found for ({temporary_area}, {synth_tone})", level=logging.WARNING)
         return _return_minimal_metadata(data)

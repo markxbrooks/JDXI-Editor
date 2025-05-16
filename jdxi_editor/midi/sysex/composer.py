@@ -39,7 +39,6 @@ class JDXiSysExComposer:
         :return: RolandSysEx
         """
         self.address = address
-        print(address)
         try:
             address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, ZERO_BYTE)
             address = apply_address_offset(self.address, param)

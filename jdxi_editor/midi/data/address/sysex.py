@@ -1,5 +1,9 @@
+"""
+Collected SysEx constants
+"""
+
 from enum import unique, IntEnum
-from typing import TypeVar
+
 
 """Miscellaneous"""
 START_OF_SYSEX = 0xF0
@@ -23,8 +27,6 @@ FULL_BYTE_MASK = 0xFF  # Full 8 bits — masks a whole byte
 HIGH_4_BITS_MASK = 0xF0  # High nibble mask
 WORD_MASK = 0xFFFF  # Word mask (16 bits, 2 bytes)
 MAX_EIGHT_BIT_VALUE = 255  # maximum values held by eight bits
-
-DIGITAL_PARTIAL_MAP = {i: 0x1F + i for i in range(1, 4)}  # 1: 0x20, 2: 0x21, 3: 0x22
 
 
 @unique

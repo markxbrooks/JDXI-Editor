@@ -11,7 +11,7 @@ from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
     AddressMemoryAreaMSB,
 )
-from jdxi_editor.midi.sysex.parse_utils import TEMPORARY_AREA_MAP
+from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS, SYNTH_PARTIAL_MAP
 
 

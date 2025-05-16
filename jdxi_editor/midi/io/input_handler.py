@@ -36,7 +36,7 @@ from jdxi_editor.midi.data.address.sysex import SUB_ID_2_IDENTITY_REPLY, START_O
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.log.json import log_json
-from jdxi_editor.midi.sysex.parse_utils import SYNTH_TYPE_MAP
+from jdxi_editor.midi.map.synth_type import SYNTH_TYPE_MAP
 from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.jdxi.preset.button import JDXiPresetButton
