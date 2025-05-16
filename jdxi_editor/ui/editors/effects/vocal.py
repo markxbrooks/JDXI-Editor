@@ -38,7 +38,7 @@ from jdxi_editor.midi.data.address.address import (
     ZERO_BYTE,
     AddressMemoryAreaMSB,
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetProgramLMB,
+    AddressOffsetAnalogLMB,
 )
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -75,7 +75,7 @@ class VocalFXEditor(BasicEditor):
         self.address = RolandSysExAddress(
             AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
             AddressOffsetTemporaryToneUMB.COMMON,
-            AddressOffsetProgramLMB.VOCAL_EFFECT,
+            AddressOffsetAnalogLMB.VOCAL_EFFECT,
             ZERO_BYTE,
         )
         self.setStyleSheet(JDXiStyle.EDITOR + JDXiStyle.TABS)

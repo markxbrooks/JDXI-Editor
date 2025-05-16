@@ -71,7 +71,7 @@ from jdxi_editor.midi.utils.conversions import (
     midi_value_to_fraction,
 )
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB as ProgramLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB as ProgramLMB
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection

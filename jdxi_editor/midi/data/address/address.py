@@ -269,8 +269,6 @@ class AddressMemoryAreaMSB(Address):
     SETUP = 0x02
     TEMPORARY_PROGRAM = 0x18
     TEMPORARY_TONE = 0x19
-    DRUM = 0x72
-    EFFECTS_AREA = 0x16
 
     @classmethod
     def message_position(cls):
@@ -302,6 +300,7 @@ class AddressOffsetSystemUMB(Address):
     """
 
     COMMON = 0x00
+    CONTROLLER = 0x03
 
     @classmethod
     def message_position(cls):
@@ -348,12 +347,19 @@ class AddressOffsetSuperNATURALLMB(Address):
         return base_address
 
 
+class AddressOffsetAnalogLMB(Address):
+    """
+    Analog Synth Tone
+    """
+    COMMON = 0x00
+
+
 class AddressOffsetProgramLMB(Address):
     """
     Address Offset Program LMB
     """
 
-    TONE_COMMON = 0x00
+    COMMON = 0x00
     VOCAL_EFFECT = 0x01
     EFFECT_1 = 0x02
     EFFECT_2 = 0x04

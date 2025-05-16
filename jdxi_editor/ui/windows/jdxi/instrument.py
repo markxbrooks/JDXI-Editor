@@ -50,7 +50,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
-    AddressOffsetProgramLMB,
+    AddressOffsetAnalogLMB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSystemUMB,
     RolandSysExAddress,
@@ -662,7 +662,7 @@ class JdxiInstrument(JdxiUi):
             address = RolandSysExAddress(
                 msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                 umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                lmb=AddressOffsetProgramLMB.TONE_COMMON,
+                lmb=AddressOffsetAnalogLMB.COMMON,
                 lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.lsb,
             )
             sysex_message = RolandSysEx(
@@ -685,7 +685,7 @@ class JdxiInstrument(JdxiUi):
                 address1 = RolandSysExAddress(
                     msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
                     umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                    lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
+                    lmb=AddressOffsetAnalogLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46,
                 )
                 address2 = RolandSysExAddress(
@@ -732,11 +732,11 @@ class JdxiInstrument(JdxiUi):
                 log_message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
-                    AddressOffsetProgramLMB.CONTROLLER,
-                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
-                    AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_2,
-                    AddressOffsetProgramLMB.PART_ANALOG,
-                    AddressOffsetProgramLMB.ZONE_DRUM,
+                    AddressOffsetAnalogLMB.CONTROLLER,
+                    AddressOffsetAnalogLMB.PART_DIGITAL_SYNTH_1,
+                    AddressOffsetAnalogLMB.PART_DIGITAL_SYNTH_2,
+                    AddressOffsetAnalogLMB.PART_ANALOG,
+                    AddressOffsetAnalogLMB.ZONE_DRUM,
                 ]:
                     address = RolandSysExAddress(
                         msb=AddressMemoryAreaMSB.TEMPORARY_PROGRAM,

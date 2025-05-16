@@ -41,7 +41,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
-    AddressOffsetProgramLMB,
+    AddressOffsetAnalogLMB,
     RolandSysExAddress,
     ZERO_BYTE,
     AddressOffsetSystemUMB,
@@ -113,7 +113,7 @@ class EffectsCommonEditor(BasicEditor):
         self.address = RolandSysExAddress(
             AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
-            AddressOffsetProgramLMB.TONE_COMMON,
+            AddressOffsetAnalogLMB.COMMON,
             ZERO_BYTE,
         )
         self.sysex_composer = JDXiSysExComposer()
