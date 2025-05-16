@@ -41,7 +41,7 @@ from jdxi_editor.midi.data.address.sysex import (
     RolandID, LOW_7_BITS_MASK, FULL_BYTE_MASK,
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.sysex.parse_utils import ONE_BYTE_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 

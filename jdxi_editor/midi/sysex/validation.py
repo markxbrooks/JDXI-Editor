@@ -6,7 +6,7 @@ from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import CommandID, JD_XI_HEADER_LIST
 from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, START_OF_SYSEX, LOW_7_BITS_MASK, MAX_EIGHT_BIT_VALUE
-from jdxi_editor.midi.sysex.parse_utils import ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH
+from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH
 
 
 def validate_raw_sysex_message(message: List[int]) -> bool:
