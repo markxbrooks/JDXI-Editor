@@ -52,6 +52,7 @@ from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.message import log_message
+from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import CommandID
 
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -231,7 +232,7 @@ class MIDIDebugger(QMainWindow):
 
         try:
             sysex_dict = self.sysex_parser.parse_bytes(bytes(message))
-            log_message(str(sysex_dict))
+            log_parameter("sysex_dict", sysex_dict)
 
             command_id, command_byte = parse_sysex_message(message, CommandID)
             temporary_area = sysex_dict.get("TEMPORARY_AREA", "Unknown")

@@ -26,12 +26,16 @@ import mido
 from PIL.ImageChops import offset
 from PySide6.QtWidgets import QWidget
 
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
+from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect1, AddressParameterDelay, \
     AddressParameterReverb, AddressParameterEffect2
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -106,6 +110,10 @@ class SynthBase(QWidget):
         :return: bool True on success, False otherwise
         """
         try:
+            if isinstance(param, AddressParameterDigitalCommon):
+                self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
+            if isinstance(param, AddressParameterDigitalModify):
+                self.address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
             sysex_message = self.sysex_composer.compose_message(
                 address=self.address,
                 param=param,

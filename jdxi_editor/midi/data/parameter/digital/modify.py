@@ -41,10 +41,10 @@ class AddressParameterDigitalModify(AddressParameter):
         self.min_val = min_val
         self.max_val = max_val
 
-    ATTACK_TIME_INTERVAL_SENS = (0x00, 0, 127)
-    RELEASE_TIME_INTERVAL_SENS = (0x01, 0, 127)
-    PORTAMENTO_TIME_INTERVAL_SENS = (0x02, 0, 127)
-    ENVELOPE_LOOP_MODE = (0x03, 0, 2)
+    ATTACK_TIME_INTERVAL_SENS = (0x01, 0, 127)
+    RELEASE_TIME_INTERVAL_SENS = (0x02, 0, 127)
+    PORTAMENTO_TIME_INTERVAL_SENS = (0x03, 0, 127)
+    ENVELOPE_LOOP_MODE = (0x04, 0, 2)
     ENVELOPE_LOOP_SYNC_NOTE = (0x05, 0, 19)
     CHROMATIC_PORTAMENTO = (0x06, 0, 1)
 
