@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
@@ -43,7 +44,6 @@ from jdxi_editor.midi.data.address.address import (
     AddressMemoryAreaMSB,
     AddressOffsetAnalogLMB,
     RolandSysExAddress,
-    ZERO_BYTE,
     AddressOffsetSystemUMB,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect2, \
@@ -114,7 +114,7 @@ class EffectsCommonEditor(BasicEditor):
             AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
             AddressOffsetAnalogLMB.COMMON,
-            ZERO_BYTE,
+            JDXiMidiConstant.ZERO_BYTE,
         )
         self.sysex_composer = JDXiSysExComposer()
 

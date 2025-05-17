@@ -47,11 +47,8 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.log.error import log_error
-from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -63,7 +60,6 @@ from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigi
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
-from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys, get_partial_number, get_area
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
 from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -214,7 +210,7 @@ class DigitalSynthEditor(SynthEditor):
             self._create_parameter_switch,
             self.controls,
         )
-        self.partial_tab_widget.addTab(self.tone_modify_section, "Tone Modify")
+        self.partial_tab_widget.addTab(self.tone_modify_section, "Misc")
         container_layout.addWidget(self.partial_tab_widget)
 
     def _on_partial_state_changed(

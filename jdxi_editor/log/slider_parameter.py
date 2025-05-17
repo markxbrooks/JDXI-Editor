@@ -9,6 +9,7 @@ from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB, AddressOffsetAnalogLMB, AddressOffsetDrumKitLMB, RolandSysExAddress,
+    AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -36,12 +37,15 @@ def log_slider_parameters(
         part_lmb = f"0x{int(address.lmb):02X}"
         synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
         if synth_name_umb == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name:
-            address_offset = AddressOffsetDrumKitLMB
+            address_offset_cls = AddressOffsetDrumKitLMB
+        elif synth_name_umb in [AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+                                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name]:
+            address_offset_cls = AddressOffsetSuperNATURALLMB
         else:
-            address_offset = AddressOffsetAnalogLMB
+            address_offset_cls = AddressOffsetProgramLMB
         if part_lmb != f"{ZERO_BYTE}":
             part_name_lmb = parse_sysex_byte(
-                int(part_lmb, 16), address_offset
+                int(part_lmb, 16), address_offset_cls
             )
         else:
             part_name_lmb = "COMMON"
