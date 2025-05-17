@@ -156,14 +156,12 @@ class MidiOutHandler(MidiIOController):
         """
         Send a MIDI Channel Message.
 
-        Args:
-            status (int): Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).
-            data1 (Optional[int]): First data byte, typically a note or controller number.
-            data2 (Optional[int]): Second data byte, typically velocity or value.
-            channel (int): MIDI channel (1-based, range 1-16).
+        :param status: int Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).
+        :param data1: Optional[int]): First data byte, typically a note or controller number.
+        :param data2: Optional[int]): Second data byte, typically velocity or value.
+        :param channel: int MIDI channel (1-based, range 1-16).
 
-        Raises:
-            ValueError: If the channel is out of range (1-16).
+        :raises: ValueError If the channel is out of range (1-16).
         """
         if not 1 <= channel <= 16:
             raise ValueError(f"Invalid MIDI channel: {channel}. Must be 1-16.")
@@ -400,15 +398,15 @@ class MidiOutHandler(MidiIOController):
             log.parameter("bank_msb", bank_msb)
             log.parameter("bank_lsb", bank_lsb)
             log.parameter("program", program)
-            log_message(
+            log.message(
                 f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
             )
             self.send_control_change(0, bank_msb, channel)
-            log_message(
+            log.message(
                 f"-------#2 send_control_change controller=32, bank_lsb={bank_lsb}, channel: {channel} --------"
             )
             self.send_control_change(32, bank_lsb, channel)
-            log_message(
+            log.message(
                 f"-------#3 send_program_change program: {program} channel: {channel} --------"
             )
             self.send_program_change(program, channel)
@@ -432,145 +430,3 @@ class MidiOutHandler(MidiIOController):
 
         except Exception as ex:
             log.error(f"Error sending identity request: {str(ex)}")
-
-    def get_parameter(self, msb: int, umb: int, lmb: int, param: int) -> Optional[int]:
-        """
-        Request a parameter value from the JD-Xi.
-        :param msb: Most significant byte of the address.
-        :param umb: Upper middle byte of the address.
-        :param lmb: Lower middle byte of the address.
-        :param param: Address parameter to request.
-        :return: Nonne
-        """
-        log.message("Requesting parameter")
-        log.parameter("msb", msb)
-        log.parameter("umb", umb)
-        log.parameter("lmb", lmb)
-        log.parameter("param", param)
-
-        if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
-            log.message("MIDI ports not open")
-            return None
-
-        try:
-            # Construct SysEx request using SysExMessage
-            request = SysExMessage(
-                manufacturer_id=[RolandID.ROLAND_ID],
-                device_id=RolandID.DEVICE_ID,
-                model_id=[ModelID.MODEL_ID_1, ModelID.MODEL_ID_2, ModelID.MODEL_ID_3, ModelID.MODEL_ID_4],  # Example model ID
-                command=CommandID.RQ1,  # RQ1 (Request Data) command for Roland
-                address=[msb, umb, lmb, param],  # Address of parameter
-                data=[],  # No payload for request
-            )
-
-            self.midi_out.send_message(request.to_bytes())
-
-            # Wait for response with a timeout of 100ms.
-            start_time = time.time()
-            while time.time() - start_time < 0.1:
-                message = self.midi_in.get_message()
-                if message:
-                    msg, _ = message
-                    if (len(msg) >= MidiConstant.ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START]
-                            == MidiConstant.START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END]
-                            == MidiConstant.END_OF_SYSEX):
-                        # Parse response
-                        response = SysExMessage.from_bytes(bytes(msg))
-                        # Extract parameter value
-                        return response.data[0] if response.data else None
-
-                time.sleep(0.001)
-
-            log.warning("Timeout waiting for parameter response")
-            raise TimeoutError
-
-        except (TimeoutError, OSError, IOError) as ex:
-            log.error(f"Error getting parameter: {ex}")
-            return None
-
-    def save_patch(self, file_path: str) -> bool:
-        """
-        Save the current patch to a file in JD-Xi format.
-        :param file_path: str Path to the file where the patch will be saved.
-        :return: bool True if successful, False otherwise.
-        """
-        try:
-            # Ensure file has .jdx extension
-            if not file_path.endswith(".jdx"):
-                file_path += ".jdx"
-
-            # Collect patch data
-            patch_data = {
-                "version": "1.0",
-                "name": "Untitled Patch",  # TODO: Get actual patch name
-                "type": "JD-Xi Patch",
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-                "parameters": {
-                    "digital": self._get_digital_parameters(),
-                    "analog": self._get_analog_parameters(),
-                    "drums": self._get_drum_parameters(),
-                    "effects": self._get_effects_parameters(),
-                },
-            }
-
-            # Save to file
-            with open(file_path, "w") as f:
-                json.dump(patch_data, f, indent=2)
-
-            log.message(f"Patch saved to {file_path}")
-            return True
-        except Exception as ex:
-            log.error(f"Error saving patch: {str(ex)}")
-            return False
-
-    def _get_digital_parameters(self):
-        """Get digital parameters"""
-        parameters = {}
-        for area in AddressStartMSB.DIGITAL_L:
-            for part in range(0x00, 0x03):
-                for group in range(0x00, 0x03):
-                    for param in range(0x00, 0x03):
-                        value = self.get_parameter(area, part, group, param)
-                        parameters[
-                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
-                        ] = value
-        return parameters
-
-    def _get_analog_parameters(self):
-        """Get analog parameters"""
-        parameters = {}
-        for area in range(0x00, 0x03):
-            for part in range(0x00, 0x03):
-                for group in range(0x00, 0x03):
-                    for param in range(0x00, 0x03):
-                        value = self.get_parameter(area, part, group, param)
-                        parameters[
-                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
-                        ] = value
-        return parameters
-
-    def _get_drum_parameters(self):
-        """Get drum parameters"""
-        parameters = {}
-        for area in range(0x00, 0x03):
-            for part in range(0x00, 0x03):
-                for group in range(0x00, 0x03):
-                    for param in range(0x00, 0x03):
-                        value = self.get_parameter(area, part, group, param)
-                        parameters[
-                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
-                        ] = value
-        return parameters
-
-    def _get_effects_parameters(self):
-        """Get effects parameters"""
-        parameters = {}
-        for area in range(0x00, 0x03):
-            for part in range(0x00, 0x03):
-                for group in range(0x00, 0x03):
-                    for param in range(0x00, 0x03):
-                        value = self.get_parameter(area, part, group, param)
-                        parameters[
-                            f"{area:02X}{part:02X}{group:02X}{param:02X}"
-                        ] = value
-        return parameters

@@ -244,7 +244,7 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     parsed_data = initialize_parameters(data)
     parameter_cls = JDXiMapParameterAddress.MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:
-        log_message(f"No parameter mapping found for ({temporary_area}, {synth_tone})", level=logging.WARNING)
+        log.message(f"No parameter mapping found for ({temporary_area}, {synth_tone})", level=logging.WARNING)
         return _return_minimal_metadata(data)
     else:
         if len(data) < FOUR_BYTE_SYSEX_DATA_LENGTH:
