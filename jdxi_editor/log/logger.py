@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Optional, Any
 
-from jdxi_editor.globals import LOG_PADDING_WIDTH, logger, LOGGING
+from jdxi_editor.globals import LOG_PADDING_WIDTH, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
 
 
@@ -24,6 +24,7 @@ class Logger:
         exception: Optional[Exception] = None,
         level: int = logging.ERROR,
         stacklevel: int = 2,
+        silent: bool = False
     ) -> None:
         """
         Log an error message, optionally with an exception.
@@ -31,8 +32,7 @@ class Logger:
         if exception:
             message = f"{message}: {exception}"
         full_message = decorate_log_message(message, level)
-        if LOGGING:
-            logger.log(level, full_message, stacklevel=stacklevel)
+        Logger.message(full_message, stacklevel=stacklevel, silent=silent)
 
     @staticmethod
     def warning(
@@ -40,6 +40,7 @@ class Logger:
         exception: Optional[Exception] = None,
         level: int = logging.WARNING,
         stacklevel: int = 2,
+        silent: bool = False
     ) -> None:
         """
         Log an error message, optionally with an exception.
@@ -47,8 +48,7 @@ class Logger:
         if exception:
             message = f"{message}: {exception}"
         full_message = decorate_log_message(message, level)
-        if LOGGING:
-            logger.log(level, full_message, stacklevel=stacklevel)
+        Logger.message(full_message, stacklevel=stacklevel, silent=silent)
 
     @staticmethod
     def json(data: Any, silent: bool = False) -> None:
@@ -81,9 +81,9 @@ class Logger:
         """
         Log a plain message with optional formatting.
         """
-        decorated_message = decorate_log_message(message, level)
+        full_message = decorate_log_message(message, level)
         if LOGGING and not silent:
-            logger.log(level, decorated_message, stacklevel=stacklevel)
+            logging.log(level, full_message, stacklevel=stacklevel)
 
     @staticmethod
     def parameter(
@@ -92,6 +92,7 @@ class Logger:
         float_precision: int = 2,
         max_length: int = 300,
         level: int = logging.INFO,
+        stacklevel: int =2,
         silent: bool = False
     ) -> None:
         """
@@ -123,9 +124,7 @@ class Logger:
         padded_message = f"{message:<{LOG_PADDING_WIDTH}}"
         padded_type = f"{type_name:<12}"
         final_message = decorate_log_message(f"{padded_message} {padded_type} {formatted_value}".rstrip(), level)
-
-        if LOGGING and not silent:
-            logger.log(level, final_message, stacklevel=2)
+        Logger.message(final_message, silent=silent, stacklevel=stacklevel)
 
     @staticmethod
     def header_message(message: str, level: int = logging.INFO, silent: bool = False) -> None:
