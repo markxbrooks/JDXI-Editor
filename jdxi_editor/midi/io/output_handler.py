@@ -442,14 +442,14 @@ class MidiOutHandler(MidiIOController):
         :param param: Address parameter to request.
         :return: Nonne
         """
-        log_message("Requesting parameter")
+        log.message("Requesting parameter")
         log.parameter("msb", msb)
         log.parameter("umb", umb)
         log.parameter("lmb", lmb)
         log.parameter("param", param)
 
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
-            log_message("MIDI ports not open")
+            log.message("MIDI ports not open")
             return None
 
         try:
@@ -471,7 +471,7 @@ class MidiOutHandler(MidiIOController):
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
-                    if (len(msg) >= ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START]
+                    if (len(msg) >= MidiConstant.ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START]
                             == MidiConstant.START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END]
                             == MidiConstant.END_OF_SYSEX):
                         # Parse response
@@ -481,7 +481,7 @@ class MidiOutHandler(MidiIOController):
 
                 time.sleep(0.001)
 
-            logging.warning("Timeout waiting for parameter response")
+            log.warning("Timeout waiting for parameter response")
             raise TimeoutError
 
         except (TimeoutError, OSError, IOError) as ex:
@@ -517,7 +517,7 @@ class MidiOutHandler(MidiIOController):
             with open(file_path, "w") as f:
                 json.dump(patch_data, f, indent=2)
 
-            log_message(f"Patch saved to {file_path}")
+            log.message(f"Patch saved to {file_path}")
             return True
         except Exception as ex:
             log.error(f"Error saving patch: {str(ex)}")

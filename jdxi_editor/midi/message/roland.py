@@ -26,6 +26,7 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
+
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
@@ -62,8 +63,8 @@ class RolandSysExMessage(SysExMessage):
     )
     command: int = CommandID.DT1
 
-    address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
-    value: Union[int, List[int]] = ZERO_BYTE
+    sysex_address: RolandSysExAddress = field(default_factory=RolandSysExAddress)
+    value: Union[int, List[int]] = MidiConstant.ZERO_BYTE
     size: int = 1
 
     # These attributes should not be set in `__init__`
@@ -75,8 +76,8 @@ class RolandSysExMessage(SysExMessage):
 
     def __post_init__(self):
         """Initialize data and resolve address bytes."""
-        self.address_bytes = (
-            self.address.to_list()
+        self.address = (
+            self.sysex_address.to_list()
         )  # Assuming this method returns [msb, umb, lmb, lsb]
 
         if isinstance(self.value, int) and self.size == 4:
@@ -93,10 +94,10 @@ class RolandSysExMessage(SysExMessage):
                 [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
                 + list(self.model_id)
                 + [self.command]
-                + [self.address.msb]
-                + [self.address.umb]
-                + [self.address.lmb]
-                + [self.address.lsb]
+                + [self.sysex_address.msb]
+                + [self.sysex_address.umb]
+                + [self.sysex_address.lmb]
+                + [self.sysex_address.lsb]
                 + self.data
         )
         msg.append(self.calculate_checksum())
@@ -105,7 +106,7 @@ class RolandSysExMessage(SysExMessage):
 
 
 @dataclass
-class RolandSysExOld(SysExMessage):
+class RolandSysEx(SysExMessage):
     """Specialized class for Roland JD-Xi SysEx messages."""
 
     manufacturer_id: int = RolandID.ROLAND_ID
@@ -120,11 +121,11 @@ class RolandSysExOld(SysExMessage):
     )
     command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
     sysex_address: Optional[RolandSysExAddress] = None
-    msb: int = ZERO_BYTE
-    umb: int = ZERO_BYTE
-    lmb: int = ZERO_BYTE
-    lsb: int = ZERO_BYTE
-    value: Union[int, list[int]] = 0x00
+    msb: int = MidiConstant.ZERO_BYTE
+    umb: int = MidiConstant.ZERO_BYTE
+    lmb: int = MidiConstant.ZERO_BYTE
+    lsb: int = MidiConstant.ZERO_BYTE
+    value: Union[int, list[int]] = MidiConstant.ZERO_BYTE
     size: int = 1
 
     # These attributes should not be set in `__init__`
@@ -149,43 +150,6 @@ class RolandSysExOld(SysExMessage):
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
 
-from dataclasses import dataclass, field
-from typing import Optional, Union
-
-@dataclass
-class RolandSysEx(SysExMessage):
-    """Specialized class for Roland JD-Xi SysEx messages."""
-
-    manufacturer_id: int = RolandID.ROLAND_ID
-    device_id: int = RolandID.DEVICE_ID
-    model_id: list[int] = field(
-        default_factory=lambda: [
-            ModelID.MODEL_ID_1,
-            ModelID.MODEL_ID_2,
-            ModelID.MODEL_ID_3,
-            ModelID.MODEL_ID_4,
-        ]
-    )
-    command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
-    sysex_address: RolandSysExAddress  # Make sysex_address required
-    value: Union[int, list[int]] = 0x00
-    size: int = 1
-
-    # These attributes should not be set in `__init__`
-    synth_type: int = field(init=False, default=None)
-    part: int = field(init=False, default=None)
-
-    dt1_command: int = CommandID.DT1  # Write command
-    rq1_command: int = CommandID.RQ1  # Read command
-
-    def __post_init__(self):
-        """Initialize address and data."""
-        # Initialize msb, umb, lmb, lsb based on the sysex_address
-        self.msb = self.sysex_address.msb
-        self.umb = self.sysex_address.umb
-        self.lmb = self.sysex_address.lmb
-        self.lsb = self.sysex_address.lsb
-
     def from_sysex_address(self, sysex_address: RolandSysExAddress):
         """from_sysex_address
         :param sysex_address: RolandSysExAddress
@@ -202,7 +166,7 @@ class RolandSysEx(SysExMessage):
         :return: list
         """
         msg = (
-                [START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
                 + list(self.model_id)
                 + [self.command]
                 + self.address
