@@ -261,7 +261,7 @@ class CommandID(SysExByte):
 
 
 @unique
-class AddressMemoryAreaMSB(Address):
+class AddressStartMSB(Address):
     """
     Memory and Program Areas
     """
@@ -283,8 +283,8 @@ class AddressOffsetTemporaryToneUMB(Address):
     Address Offset Temporary Tone UMB
     """
 
-    TEMPORARY_DIGITAL_SYNTH_1_AREA = 0x01
-    TEMPORARY_DIGITAL_SYNTH_2_AREA = 0x21
+    DIGITAL_SYNTH_PART_1 = 0x01
+    DIGITAL_SYNTH_PART_2 = 0x21
     ANALOG_PART = 0x42
     DRUM_KIT_PART = 0x70
     COMMON = 0x00
@@ -301,7 +301,6 @@ class AddressOffsetSystemUMB(Address):
     """
 
     COMMON = 0x00
-    CONTROLLER = 0x03
 
     @classmethod
     def message_position(cls):

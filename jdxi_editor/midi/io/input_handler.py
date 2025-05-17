@@ -40,7 +40,7 @@ from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.jdxi.preset.button import JDXiPresetButton
 
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB
+from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 
 
 class MidiInHandler(MidiIOController):

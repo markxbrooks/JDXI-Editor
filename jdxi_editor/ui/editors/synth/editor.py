@@ -33,7 +33,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.header import log_header_message
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetTemporaryToneUMB, \
+from jdxi_editor.midi.data.address.address import AddressStartMSB, AddressOffsetTemporaryToneUMB, \
     AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP

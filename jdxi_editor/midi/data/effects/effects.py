@@ -6,8 +6,8 @@ from enum import Enum
 from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressMemoryAreaMSB,
-    AddressOffsetAnalogLMB,
+    AddressStartMSB,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.address.sysex import JDXiBitMask.LOW_7_BITS, ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -272,9 +272,9 @@ class Effect1Message(RolandSysEx):
     """Program Effect 1 parameter message"""
 
     command: int = CommandID.DT1
-    area: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    area: int = AddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
     section: int = 0x02  # 0x02: Effect 1 section
-    group: int = AddressOffsetAnalogLMB.COMMON  # Always 0x00
+    group: int = AddressOffsetProgramLMB.COMMON  # Always 0x00
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value
 
@@ -342,7 +342,7 @@ class Effect2Message(RolandSysEx):
     """Program Effect 2 parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    msb: int = AddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
     umb: int = 0x04  # 0x04: Effect 2 section
     lmb: int = 0x00  # Always 0x00
     lsb: int = 0x00  # Parameter number

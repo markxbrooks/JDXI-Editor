@@ -40,7 +40,7 @@ Usage example:
 
 from typing import Optional
 
-from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
@@ -183,4 +183,4 @@ class AddressParameterDigitalCommon(AddressParameter):
         return AddressParameterDigitalCommon.__members__.get(param_name, None)
 
     def get_address_for_partial(self, partial_number: int = 0):
-        return AddressOffsetAnalogLMB.COMMON, 0x00
+        return AddressOffsetProgramLMB.COMMON, 0x00

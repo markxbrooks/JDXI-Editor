@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB as AreaMSB, \
+from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB, \
     AddressOffsetProgramLMB as ProgramLMB, AddressOffsetTemporaryToneUMB as TemporaryToneUMB, \
     AddressOffsetSuperNATURALLMB as SuperNATURALLMB
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
@@ -17,23 +17,23 @@ PARAMETER_ADDRESS_NAME_MAP = {
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.VOCAL_EFFECT.name): AddressParameterVocalFX,
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_1.name): AddressParameterReverb,
     (AreaMSB.TEMPORARY_PROGRAM.name, ProgramLMB.EFFECT_2.name): AddressParameterEffect2,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
      SuperNATURALLMB.COMMON.name): AddressParameterDigitalCommon,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name, SuperNATURALLMB.MODIFY.name): AddressParameterDigitalModify,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_1.name, SuperNATURALLMB.MODIFY.name): AddressParameterDigitalModify,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
      SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
      SuperNATURALLMB.PARTIAL_2.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
      SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,
      SuperNATURALLMB.COMMON.name): AddressParameterDigitalCommon,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name, SuperNATURALLMB.MODIFY.name): AddressParameterDigitalModify,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_2.name, SuperNATURALLMB.MODIFY.name): AddressParameterDigitalModify,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,
      SuperNATURALLMB.PARTIAL_1.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,
      SuperNATURALLMB.PARTIAL_2.name): AddressParameterDigitalPartial,
-    (TemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+    (TemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,
      SuperNATURALLMB.PARTIAL_3.name): AddressParameterDigitalPartial,
     (TemporaryToneUMB.ANALOG_PART.name, ProgramLMB.COMMON.name): AddressParameterAnalog,
     (TemporaryToneUMB.DRUM_KIT_PART.name, ProgramLMB.COMMON.name): AddressParameterDrumCommon,  # Default to Drums

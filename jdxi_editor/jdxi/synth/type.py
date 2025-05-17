@@ -29,8 +29,8 @@ class JDXiSynth:
         """Get MIDI area code for preset preset_type"""
         area_codes = {
             JDXiSynth.ANALOG: AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            JDXiSynth.DIGITAL_1: AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            JDXiSynth.DIGITAL_2: AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA,
+            JDXiSynth.DIGITAL_1: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1,
+            JDXiSynth.DIGITAL_2: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2,
             JDXiSynth.DRUM: AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
             JDXiSynth.VOCAL_FX: AddressOffsetTemporaryToneUMB.COMMON,
             JDXiSynth.PROGRAM: AddressOffsetTemporaryToneUMB.COMMON,

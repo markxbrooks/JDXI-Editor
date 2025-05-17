@@ -36,7 +36,7 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressOffsetAnalogLMB,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
@@ -52,7 +52,7 @@ class SysexParameter(Enum):
     DT1_COMMAND_12 = ("Data Set 1", CommandID.DT1)
     RQ1_COMMAND_11 = ("Data Request 1", CommandID.RQ1)
 
-    PROGRAM_COMMON = ("PROGRAM_COMMON", AddressOffsetAnalogLMB.COMMON)
+    PROGRAM_COMMON = ("PROGRAM_COMMON", AddressOffsetProgramLMB.COMMON)
 
     def __new__(cls, *args):
         if len(args) == 1:

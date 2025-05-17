@@ -49,8 +49,8 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.midi.data.address.address import (
-    AddressMemoryAreaMSB,
-    AddressOffsetAnalogLMB,
+    AddressStartMSB,
+    AddressOffsetProgramLMB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSystemUMB,
     RolandSysExAddress, AddressOffsetProgramLMB,
@@ -660,9 +660,9 @@ class JdxiInstrument(JdxiUi):
                 f"Sending octave change SysEx, new octave: {self.current_octave} (value: {hex(octave_value)})"
             )
             address = RolandSysExAddress(
-                msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-                lmb=AddressOffsetAnalogLMB.COMMON,
+                msb=AddressStartMSB.TEMPORARY_TONE,
+                umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1,
+                lmb=AddressOffsetProgramLMB.COMMON,
                 lsb=AddressParameterDigitalCommon.OCTAVE_SHIFT.lsb,
             )
             sysex_message = RolandSysEx(
@@ -683,13 +683,13 @@ class JdxiInstrument(JdxiUi):
                 # Value: 0 = OFF, 1 = ON
                 value = 0x01 if state else 0x00
                 address1 = RolandSysExAddress(
-                    msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-                    umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
+                    msb=AddressStartMSB.TEMPORARY_TONE,
+                    umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1,
                     lmb=AddressOffsetProgramLMB.PART_DIGITAL_SYNTH_1,
                     lsb=0x46,
                 )
                 address2 = RolandSysExAddress(
-                    msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+                    msb=AddressStartMSB.TEMPORARY_TONE,
                     umb=0x01,
                     lmb=0x00,
                     lsb=0x14,
@@ -739,7 +739,7 @@ class JdxiInstrument(JdxiUi):
                     AddressOffsetProgramLMB.ZONE_DRUM,
                 ]:
                     address = RolandSysExAddress(
-                        msb=AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
+                        msb=AddressStartMSB.TEMPORARY_PROGRAM,
                         umb=AddressOffsetSystemUMB.COMMON,
                         lmb=zone,
                         lsb=ZERO_BYTE,

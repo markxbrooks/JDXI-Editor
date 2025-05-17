@@ -18,9 +18,9 @@ from dataclasses import dataclass
 from jdxi_editor.midi.data import AddressParameterEffect
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressMemoryAreaMSB,
-    AddressOffsetSystemUMB,
-    AddressOffsetAnalogLMB,
+    AddressStartMSB,
+    AddressOffsetSystemLMB,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
@@ -31,9 +31,9 @@ class ReverbMessage(RolandSysEx):
     """Program Reverb parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressMemoryAreaMSB.TEMPORARY_PROGRAM  # 0x18: Program area
-    umb: int = AddressOffsetSystemUMB.COMMON  # 0x00: Common section
-    lmb: int = AddressOffsetAnalogLMB.EFFECT_1  # Effect 1 = 0x02
+    msb: int = AddressStartMSB.TEMPORARY_PROGRAM  # 0x18: Program area
+    umb: int = AddressOffsetSystemLMB.COMMON  # 0x00: Common section
+    lmb: int = AddressOffsetProgramLMB.EFFECT_1  # Effect 1 = 0x02
     lsb: int = AddressParameterEffect.REVERB_LEVEL  # Parameter number 0x03
     value: int = 0x00  # Parameter value
 

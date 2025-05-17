@@ -6,7 +6,7 @@ from jdxi_editor.jdxi.preset.lists import JDXiPresets
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.address.address import (
-    AddressMemoryAreaMSB,
+    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB,
 )
@@ -37,7 +37,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISyn
             instrument_default_image="drums.png",
             window_title="Drum Kit",
             display_prefix="DR",
-            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            msb=AddressStartMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
             lmb=address_lmb,
             partial_number=partial_number,
@@ -48,17 +48,17 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISyn
         )
         if synth_type == JDXiSynth.DIGITAL_1:
             digital_partial_address_umb = (
-                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+                AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1
             )
             synth_number = 1
         elif synth_type == JDXiSynth.DIGITAL_2:  # JDXISynth.DIGITAL_2
             synth_number = 2
             digital_partial_address_umb = (
-                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA
+                AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2
             )
         else:  # Default case
             digital_partial_address_umb = (
-                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+                AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1
             )
             synth_number = 1
         return DigitalSynthData(
@@ -75,7 +75,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISyn
             instrument_default_image="jdxi_vector.png",
             window_title=f"Digital Synth {synth_number}",
             display_prefix=f"D{synth_number}",
-            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            msb=AddressStartMSB.TEMPORARY_TONE,
             umb=digital_partial_address_umb,
             lmb=address_lmb,
             synth_number=synth_number,
@@ -92,7 +92,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISyn
             instrument_default_image="analog.png",
             window_title="Analog Synth",
             display_prefix="AN",
-            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
+            msb=AddressStartMSB.TEMPORARY_TONE,
             umb=AddressOffsetTemporaryToneUMB.ANALOG_PART,
             lmb=AddressOffsetProgramLMB.COMMON,
         )

@@ -41,10 +41,9 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
-    AddressMemoryAreaMSB,
-    AddressOffsetAnalogLMB,
+    AddressStartMSB,
     RolandSysExAddress,
-    AddressOffsetSystemUMB,
+    AddressOffsetSystemUMB, AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect2, \
     AddressParameterDelay, AddressParameterEffect1
@@ -111,9 +110,9 @@ class EffectsCommonEditor(BasicEditor):
         self.tabs.addTab(self._create_delay_tab(), "Delay")
         self.tabs.addTab(self._create_reverb_section(), "Reverb")
         self.address = RolandSysExAddress(
-            AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
+            AddressStartMSB.TEMPORARY_PROGRAM,
             AddressOffsetSystemUMB.COMMON,
-            AddressOffsetAnalogLMB.COMMON,
+            AddressOffsetProgramLMB.COMMON,
             JDXiMidiConstant.ZERO_BYTE,
         )
         self.sysex_composer = JDXiSysExComposer()

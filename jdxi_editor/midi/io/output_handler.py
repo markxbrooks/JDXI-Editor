@@ -32,7 +32,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
-    CommandID, AddressMemoryAreaMSB, ModelID,
+    CommandID, AddressStartMSB, ModelID,
 )
 from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
@@ -526,7 +526,7 @@ class MidiOutHandler(MidiIOController):
     def _get_digital_parameters(self):
         """Get digital parameters"""
         parameters = {}
-        for area in AddressMemoryAreaMSB.DIGITAL_L:
+        for area in AddressStartMSB.DIGITAL_L:
             for part in range(0x00, 0x03):
                 for group in range(0x00, 0x03):
                     for param in range(0x00, 0x03):

@@ -8,7 +8,7 @@ from typing import Union
 from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
 from jdxi_editor.midi.data.address.address import (
-    AddressOffsetTemporaryToneUMB, AddressOffsetAnalogLMB, AddressOffsetDrumKitLMB, RolandSysExAddress,
+    AddressOffsetTemporaryToneUMB, AddressOffsetDrumKitLMB, RolandSysExAddress,
     AddressOffsetProgramLMB, AddressOffsetSuperNATURALLMB,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
@@ -38,8 +38,8 @@ def log_slider_parameters(
         synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
         if synth_name_umb == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name:
             address_offset_cls = AddressOffsetDrumKitLMB
-        elif synth_name_umb in [AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-                                AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name]:
+        elif synth_name_umb in [AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
+                                AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2.name]:
             address_offset_cls = AddressOffsetSuperNATURALLMB
         else:
             address_offset_cls = AddressOffsetProgramLMB

@@ -26,7 +26,7 @@ Dependencies
 - `jdxi_manager.ui.editors.drum_partial.DrumPartialEditor` for managing individual drum partials.
 - `jdxi_manager.ui.style.Style` for UI styling.
 - `jdxi_manager.ui.editors.base.SynthEditor` as the base class for the editor.
-- `jdxi_manager.midi.data.constants.sysex.TEMPORARY_DIGITAL_SYNTH_1_AREA` for SysEx address handling.
+- `jdxi_manager.midi.data.constants.sysex.DIGITAL_SYNTH_PART_1` for SysEx address handling.
 - `jdxi_manager.ui.widgets.preset.combo_box.PresetComboBox` for preset selection.
 
 Features

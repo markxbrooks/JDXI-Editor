@@ -31,7 +31,7 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressMemoryAreaMSB,
+    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSuperNATURALLMB,
 )
@@ -46,9 +46,9 @@ class DigitalToneMessage(RolandSysEx):
     """
 
     command: int = CommandID.DT1
-    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE
+    msb: int = AddressStartMSB.TEMPORARY_TONE
     umb: int = (
-        AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA
+        AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1
     )  # Digital Tone 1
     lmb: int = (
         AddressOffsetSuperNATURALLMB.PARTIAL_1

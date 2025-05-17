@@ -36,9 +36,9 @@ from PySide6.QtCore import Qt
 from jdxi_editor.midi.data.address.address import (
     RolandSysExAddress,
     ZERO_BYTE,
-    AddressMemoryAreaMSB,
+    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
-    AddressOffsetAnalogLMB, AddressOffsetProgramLMB,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -73,7 +73,7 @@ class VocalFXEditor(BasicEditor):
         self.setWindowTitle("Vocal FX")
         self.preset_helper = preset_helper
         self.address = RolandSysExAddress(
-            AddressMemoryAreaMSB.TEMPORARY_PROGRAM,
+            AddressStartMSB.TEMPORARY_PROGRAM,
             AddressOffsetTemporaryToneUMB.COMMON,
             AddressOffsetProgramLMB.VOCAL_EFFECT,
             ZERO_BYTE,

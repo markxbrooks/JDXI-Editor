@@ -70,20 +70,16 @@ from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
     midi_value_to_fraction,
 )
-from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB
-from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB as ProgramLMB
 from jdxi_editor.midi.data.analog.oscillator import AnalogOscWave
 from jdxi_editor.ui.editors.analog.amp import AmpSection
 from jdxi_editor.ui.editors.analog.common import AnalogCommonSection
 from jdxi_editor.ui.editors.analog.filter import AnalogFilterSection
 from jdxi_editor.ui.editors.analog.lfo import AnalogLFOSection
 from jdxi_editor.ui.editors.analog.oscillator import AnalogOscillatorSection
-from jdxi_editor.ui.editors.digital.utils import filter_sysex_keys
 from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.widgets.switch.switch import Switch
 
 
 class AnalogSynthEditor(SynthEditor):

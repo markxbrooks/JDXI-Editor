@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.address import AddressOffsetAnalogLMB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io import MidiIOHelper
