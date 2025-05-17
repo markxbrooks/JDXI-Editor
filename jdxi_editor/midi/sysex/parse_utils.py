@@ -66,7 +66,7 @@ def get_temporary_area(data: bytes) -> str:
     """
     Map address bytes to corresponding temporary area.
     :param data: bytes SysEx message data
-    :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_PART, TEMPORARY_DIGITAL_SYNTH_1_AREA ...
+    :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_PART, DIGITAL_SYNTH_PART_1 ...
     """
     temp_area_bytes = data[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.ADDRESS_LMB]
     return (

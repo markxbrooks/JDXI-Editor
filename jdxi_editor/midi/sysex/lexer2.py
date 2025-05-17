@@ -1,7 +1,8 @@
 import re
 
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetSystemUMB, \
-    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB, AddressOffsetTemporaryToneUMB, AddressOffsetAnalogLMB
+from jdxi_editor.midi.data.address.address import AddressStartMSB, AddressOffsetSystemUMB, \
+    AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB, AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB, \
+    AddressOffsetSystemLMB
 
 # Simplified token matchers
 TOKENS = {
@@ -13,24 +14,24 @@ TOKENS = {
 TEST_PARAMETER_ADDRESS_MAP = {
     "System": {
         "4-byte-addresses": {
-            "01 00 00 00": AddressMemoryAreaMSB.SETUP.name,
-            "02 00 00 00": AddressMemoryAreaMSB.SYSTEM.name,
+            "01 00 00 00": AddressStartMSB.SETUP.name,
+            "02 00 00 00": AddressStartMSB.SYSTEM.name,
         },
         "3-byte-offsets": {
             "00 00 00": AddressOffsetSystemUMB.COMMON.name,
-            "00 03 00": AddressOffsetSystemUMB.CONTROLLER.name,
+            "00 03 00": AddressOffsetSystemLMB.CONTROLLER.name,
         }
     },
     "Temporary Tone": {
         "4-byte-addresses": {
-            "18 00 00 00": AddressMemoryAreaMSB.TEMPORARY_PROGRAM.name,
-            "19 00 00 00": AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
-            "19 20 00 00": AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_2_AREA.name,
+            "18 00 00 00": AddressStartMSB.TEMPORARY_PROGRAM.name,
+            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
+            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,
             "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_PART.name,
             "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name,
         },
         "3-byte-offsets": {
-            "01 00 00": AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA.name,
+            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
             "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_PART.name,
             "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name,
         }
@@ -65,7 +66,7 @@ TEST_PARAMETER_ADDRESS_MAP = {
     },
     "Analog Synth Tone": {
         "3-byte-offsets": {
-            "00 00 00": AddressOffsetAnalogLMB.COMMON.name,
+            "00 00 00": AddressOffsetProgramLMB.COMMON.name,
         }
     }
 }

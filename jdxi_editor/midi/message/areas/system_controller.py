@@ -28,7 +28,7 @@ from dataclasses import dataclass
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetSystemLMB,
     CommandID,
-    AddressMemoryAreaMSB,
+    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
@@ -40,7 +40,7 @@ class SystemControllerMessage(RolandSysEx):
     """System Controller parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressMemoryAreaMSB.SETUP  # 0x02: Setup area
+    msb: int = AddressStartMSB.SETUP  # 0x02: Setup area
     umb: int = AddressOffsetTemporaryToneUMB.COMMON  # 0x03: Controller section
     lmb: int = AddressOffsetSystemLMB.CONTROLLER  # Always 0x00
     lsb: int = ZERO_BYTE  # Parameter number

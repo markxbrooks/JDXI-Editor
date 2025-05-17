@@ -27,8 +27,8 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressMemoryAreaMSB,
-    AddressOffsetAnalogLMB,
+    AddressStartMSB,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -39,8 +39,8 @@ class SystemCommonMessage(RolandSysEx):
     """System Common parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressMemoryAreaMSB.SYSTEM  # 0x02: System area
-    umb: int = AddressOffsetAnalogLMB.COMMON  # 0x00: Common section
+    msb: int = AddressStartMSB.SYSTEM  # 0x02: System area
+    umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
     lmb: int = ZERO_BYTE  # Always 0x00
     lsb: int = ZERO_BYTE  # Parameter number
     value: int = ZERO_BYTE  # Parameter value

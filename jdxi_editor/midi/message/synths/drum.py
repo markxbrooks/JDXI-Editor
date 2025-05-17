@@ -22,7 +22,7 @@ from dataclasses import dataclass
 
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressMemoryAreaMSB,
+    AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
 )
 from jdxi_editor.midi.message.roland import RolandSysEx
@@ -33,7 +33,7 @@ class DrumKitMessage(RolandSysEx):
     """Drum Kit parameter message"""
 
     command: int = CommandID.DT1
-    msb: int = AddressMemoryAreaMSB.TEMPORARY_TONE  # Temporary area
+    msb: int = AddressStartMSB.TEMPORARY_TONE  # Temporary area
     umb: int = AddressOffsetTemporaryToneUMB.DRUM_KIT_PART  # Drum Kit
     lmb: int = 0x00  # Section (Common or Pad offset)
     lsb: int = 0x00  # Parameter number

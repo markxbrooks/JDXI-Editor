@@ -5,8 +5,8 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.midi.data.address.address import (
     AddressOffsetTemporaryToneUMB,
-    AddressMemoryAreaMSB,
-    AddressOffsetAnalogLMB,
+    AddressStartMSB,
+    AddressOffsetProgramLMB,
 )
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
@@ -106,17 +106,17 @@ def get_partial_state(midi_helper, partial: DigitalPartial) -> Tuple[bool, bool]
     try:
         # Get switch state
         switch_value = midi_helper.get_parameter(
-            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            lmb=AddressOffsetAnalogLMB.COMMON,
+            msb=AddressStartMSB.TEMPORARY_TONE,
+            umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1,
+            lmb=AddressOffsetProgramLMB.COMMON,
             param=partial.switch_param.address,
         )
 
         # Get select state
         select_value = midi_helper.get_parameter(
-            msb=AddressMemoryAreaMSB.TEMPORARY_TONE,
-            umb=AddressOffsetTemporaryToneUMB.TEMPORARY_DIGITAL_SYNTH_1_AREA,
-            lmb=AddressOffsetAnalogLMB.COMMON,
+            msb=AddressStartMSB.TEMPORARY_TONE,
+            umb=AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1,
+            lmb=AddressOffsetProgramLMB.COMMON,
             param=partial.select_param.address,
         )
 

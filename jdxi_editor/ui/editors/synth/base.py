@@ -33,7 +33,7 @@ from jdxi_editor.log.error import log_error
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.parameter import log_parameter
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import AddressMemoryAreaMSB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import AddressStartMSB, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect1, AddressParameterDelay, \
