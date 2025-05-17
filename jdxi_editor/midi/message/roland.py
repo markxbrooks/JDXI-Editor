@@ -105,7 +105,7 @@ class RolandSysExMessage(SysExMessage):
 
 
 @dataclass
-class RolandSysEx(SysExMessage):
+class RolandSysExOld(SysExMessage):
     """Specialized class for Roland JD-Xi SysEx messages."""
 
     manufacturer_id: int = RolandID.ROLAND_ID
@@ -148,6 +148,43 @@ class RolandSysEx(SysExMessage):
             self.data = split_16bit_value_to_nibbles(self.value)
         else:
             self.data = [self.value] if isinstance(self.value, int) else self.value
+
+from dataclasses import dataclass, field
+from typing import Optional, Union
+
+@dataclass
+class RolandSysEx(SysExMessage):
+    """Specialized class for Roland JD-Xi SysEx messages."""
+
+    manufacturer_id: int = RolandID.ROLAND_ID
+    device_id: int = RolandID.DEVICE_ID
+    model_id: list[int] = field(
+        default_factory=lambda: [
+            ModelID.MODEL_ID_1,
+            ModelID.MODEL_ID_2,
+            ModelID.MODEL_ID_3,
+            ModelID.MODEL_ID_4,
+        ]
+    )
+    command: int = CommandID.DT1  # Default to Data Set 1 (DT1)
+    sysex_address: RolandSysExAddress  # Make sysex_address required
+    value: Union[int, list[int]] = 0x00
+    size: int = 1
+
+    # These attributes should not be set in `__init__`
+    synth_type: int = field(init=False, default=None)
+    part: int = field(init=False, default=None)
+
+    dt1_command: int = CommandID.DT1  # Write command
+    rq1_command: int = CommandID.RQ1  # Read command
+
+    def __post_init__(self):
+        """Initialize address and data."""
+        # Initialize msb, umb, lmb, lsb based on the sysex_address
+        self.msb = self.sysex_address.msb
+        self.umb = self.sysex_address.umb
+        self.lmb = self.sysex_address.lmb
+        self.lsb = self.sysex_address.lsb
 
     def from_sysex_address(self, sysex_address: RolandSysExAddress):
         """from_sysex_address
