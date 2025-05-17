@@ -25,12 +25,12 @@ msg = SystemCommonMessage(param=SystemCommon.RX_PROGRAM_CHANGE.value, value=1)  
 
 from dataclasses import dataclass
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressStartMSB,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -41,9 +41,9 @@ class SystemCommonMessage(RolandSysEx):
     command: int = CommandID.DT1
     msb: int = AddressStartMSB.SYSTEM  # 0x02: System area
     umb: int = AddressOffsetProgramLMB.COMMON  # 0x00: Common section
-    lmb: int = ZERO_BYTE  # Always 0x00
-    lsb: int = ZERO_BYTE  # Parameter number
-    value: int = ZERO_BYTE  # Parameter value
+    lmb: int = MidiConstant.ZERO_BYTE  # Always 0x00
+    lsb: int = MidiConstant.ZERO_BYTE  # Parameter number
+    value: int = MidiConstant.ZERO_BYTE  # Parameter value
 
     def __post_init__(self):
         super().__post_init__()  # Set address and data from RolandSysEx

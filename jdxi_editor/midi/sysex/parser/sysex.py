@@ -47,8 +47,8 @@ class JDXiSysExParser:
         parse
         :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ....
         """
-        if not self._is_valid_sysex():
-            raise ValueError("Invalid SysEx message")
+        # if not self._is_valid_sysex():
+        #    raise ValueError("Invalid SysEx message")
 
         if len(self.sysex_data) <= JDXiSysExOffset.ADDRESS_LSB:
             raise ValueError("Invalid SysEx message: too short")
@@ -79,8 +79,7 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-                self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX
-                and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.START_OF_SYSEX
+                self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:

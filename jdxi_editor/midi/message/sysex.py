@@ -34,11 +34,12 @@ from enum import Enum
 from typing import List
 from dataclasses import dataclass
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.data.address.address import (
     CommandID,
-    AddressOffsetProgramLMB,
+    AddressOffsetProgramLMB, RolandID,
 )
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 from jdxi_editor.midi.message.midi import MidiMessage
 
@@ -81,14 +82,14 @@ class SysexParameter(Enum):
 class SysExMessage(MidiMessage):
     """Base class for MIDI System Exclusive (SysEx) messages."""
 
-    start_of_sysex: int = START_OF_SYSEX  # Start of SysEx
-    manufacturer_id: int = 0x41  # Manufacturer ID (e.g., [0x41] for Roland)
-    device_id: int = 0x10  # Default device ID
-    model_id: List[int] = None  # Model ID (4 bytes)
-    command: int = 0x00  # SysEx command (DT1, RQ1, etc.)
-    address: List[int] = None  # Address (4 bytes)
-    data: List[int] = None  # Data payload
-    end_of_sysex: int = END_OF_SYSEX  # End of SysEx
+    start_of_sysex: int = MidiConstant.START_OF_SYSEX  # Start of SysEx
+    manufacturer_id: int = RolandID.ROLAND_ID  # Manufacturer ID (e.g., [0x41] for Roland)
+    device_id: int = RolandID.DEVICE_ID  # Default device ID
+    model_id: list[int] = None  # Model ID (4 bytes)
+    command: int = CommandID.DT1  # SysEx command (DT1, RQ1, etc.)
+    address: list[int] = None  # Address (4 bytes)
+    data: list[int] = None  # Data payload
+    end_of_sysex: int = MidiConstant.END_OF_SYSEX  # End of SysEx
 
     def __post_init__(self):
         """Ensure proper initialization of address, model_id, and data fields."""
@@ -127,7 +128,7 @@ class SysExMessage(MidiMessage):
         """Parse a received SysEx message into an instance."""
         if len(data) < 12:
             raise ValueError(f"Invalid SysEx message: too short ({len(data)} bytes)")
-        if data[0] != 0xF0 or data[-1] != 0xF7:
+        if data[JDXiSysExOffset.SYSEX_START] != MidiConstant.START_OF_SYSEX or data[JDXiSysExOffset.SYSEX_END] != MidiConstant.END_OF_SYSEX:
             raise ValueError("Invalid SysEx message: missing start or end bytes")
 
         [data[1]]

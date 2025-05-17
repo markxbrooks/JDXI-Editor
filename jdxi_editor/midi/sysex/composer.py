@@ -39,7 +39,6 @@ class JDXiSysExComposer:
         """
         self.address = address
         try:
-            address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, MidiConstant.ZERO_BYTE)
             address = apply_address_offset(self.address, param)
             # Convert display value to MIDI value if needed
             if hasattr(param, "convert_to_midi"):
@@ -58,11 +57,8 @@ class JDXiSysExComposer:
                 log.message(f"Unsupported parameter size: {size}")
                 return None
             sysex_message = RolandSysEx(
-                msb=address.msb,
-                umb=address.umb,
-                lmb=address.lmb,
-                lsb=address.lsb,
-                value=data_bytes,
+                sysex_address=address,
+                value=data_bytes
             )
             self.sysex_message = sysex_message
 

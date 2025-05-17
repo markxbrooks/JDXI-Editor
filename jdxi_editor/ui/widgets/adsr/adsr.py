@@ -22,7 +22,8 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
+from jdxi_editor.midi.message.roland import RolandSysEx, RolandSysExMessage
+from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
     ms_to_midi_value,
@@ -48,6 +49,7 @@ class ADSR(QWidget):
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
+        self.sysex_composer = JDXiSysExComposer()
         """
         Initialize the ADSR widget
         :param attack_param: AddressParameter
@@ -228,7 +230,7 @@ class ADSR(QWidget):
                 midi_value = param.validate_value(value)
             # 3) Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
-                logging.warning(f"Failed to send parameter {param.name}")
+                log.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
             log.error(f"Error updating parameter: {ex}")
         # 4) Update plot
@@ -272,13 +274,16 @@ class ADSR(QWidget):
             return False
 
         try:
+            """
             sysex_message = RolandSysEx(
                 msb=self.address.msb,
                 umb=self.address.umb,
                 lmb=self.address.lmb,
                 lsb=param.address,
                 value=value,
-            )
+            )"""
+            # self.address.lsb = param.address
+            sysex_message = self.sysex_composer.compose_message(self.address, param, value)
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
             log.error(f"MIDI error setting {param}: {str(ex)}")
