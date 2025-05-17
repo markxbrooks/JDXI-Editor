@@ -25,7 +25,7 @@ Example Usage
     values = [10, 50, 100]
 
     combo = ComboBox("Select Level:", options, values)
-    combo.valueChanged.connect(lambda v: log_message(f"Selected Value: {v}"))
+    combo.valueChanged.connect(lambda v: log.message(f"Selected Value: {v}"))
 
     combo.show()
     app.exec()

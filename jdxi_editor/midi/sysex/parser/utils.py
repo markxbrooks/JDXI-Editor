@@ -21,10 +21,8 @@ import logging
 from typing import Dict
 
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.log.error import log_error
 from jdxi_editor.log.json import log_json
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB as TemporaryToneUMB, \
     AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
@@ -32,9 +30,7 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.map.drum_tone import DRUM_TONE_MAP
 from jdxi_editor.midi.map.synth_tone import SYNTH_TONE_MAP, JDXiMapSynthTone
 from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH, FOUR_BYTE_SYSEX_DATA_LENGTH
-from jdxi_editor.midi.map.parameter_address import PARAMETER_ADDRESS_NAME_MAP
-from jdxi_editor.midi.map.temporary_area import TEMPORARY_AREA_MAP
-from jdxi_editor.midi.map import JDXiMapParameterAddress, JDXiMapSynthType, JDXiMapTemporaryArea
+from jdxi_editor.midi.map import JDXiMapParameterAddress, JDXiMapTemporaryArea
 
 
 def get_byte_offset_by_tone_name(data: bytes, index: int, offset: int = 12, default: int = 0) -> int:
@@ -66,7 +62,7 @@ def get_temporary_area(data: bytes) -> str:
     """
     Map address bytes to corresponding temporary area.
     :param data: bytes SysEx message data
-    :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_PART, DIGITAL_SYNTH_PART_1 ...
+    :return: str Temporary Area: TEMPORARY_PROGRAM, ANALOG_SYNTH, DIGITAL_SYNTH_1 ...
     """
     temp_area_bytes = data[JDXiSysExOffset.ADDRESS_MSB:JDXiSysExOffset.ADDRESS_LMB]
     return (
@@ -101,7 +97,7 @@ def get_drum_tone(byte_value: int) -> tuple[str, int]:
             offset = 1
         return drum_tone, offset
     except Exception as ex:
-        log_error(f"Error {ex} occurred getting drum type")
+        log.error(f"Error {ex} occurred getting drum type")
         return "COMMON", 0
 
 
@@ -188,7 +184,7 @@ def initialize_parameters(data: bytes) -> Dict[str, str]:
     :return: Dict[str, str]
     """
     temporary_area = get_temporary_area(data) or "Unknown"
-    tone_handlers = {AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name: get_drum_tone}
+    tone_handlers = {AddressOffsetTemporaryToneUMB.DRUM_KIT.name: get_drum_tone}
     tone_handler = tone_handlers.get(temporary_area, get_synth_tone)
     synth_tone, offset = tone_handler(data[JDXiSysExOffset.ADDRESS_LMB]) if len(
         data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
@@ -226,25 +222,25 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
     :param data: bytes SysEx message data
     :return: Dict[str, str]
     """
-    log_parameter("data", data, silent=True)
+    log.parameter("data", data, silent=True)
 
     if len(data) < ONE_BYTE_SYSEX_DATA_LENGTH:
-        log_message("Insufficient data length for parsing.", level=logging.WARNING)
+        log.message("Insufficient data length for parsing.", level=logging.WARNING)
         return _return_minimal_metadata(data)
 
     temporary_area = get_temporary_area(data) or "UNKNOWN_AREA"
-    if temporary_area == TemporaryToneUMB.DRUM_KIT_PART.name:
+    if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
         address_lmb = data[JDXiSysExOffset.ADDRESS_LMB]
         synth_tone, offset = get_drum_tone(address_lmb) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-        log_parameter("address_lmb", address_lmb, silent=True)
-        log_parameter("synth_tone", synth_tone, silent=True)
+        log.parameter("address_lmb", address_lmb, silent=True)
+        log.parameter("synth_tone", synth_tone, silent=True)
     else:
         synth_tone, offset = get_synth_tone(data[
                                                 JDXiSysExOffset.ADDRESS_LMB]) if len(
             data) > JDXiSysExOffset.ADDRESS_LMB else "Unknown"
-    log_parameter("temporary_area", temporary_area, silent=True)
-    log_parameter("synth_tone", synth_tone, silent=True)
+    log.parameter("temporary_area", temporary_area, silent=True)
+    log.parameter("synth_tone", synth_tone, silent=True)
     parsed_data = initialize_parameters(data)
     parameter_cls = JDXiMapParameterAddress.MAP.get((temporary_area, synth_tone), AddressParameterDrumPartial)
     if parameter_cls is None:

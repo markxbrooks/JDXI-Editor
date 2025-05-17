@@ -16,13 +16,11 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
 from typing import Dict, Optional
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.ui.widgets.pitch.envelope_plot import PitchEnvPlot
 from jdxi_editor.ui.widgets.pitch.slider_spinbox import PitchEnvSliderSpinbox
@@ -221,9 +219,9 @@ class PitchEnvelope(QWidget):
             else:
                 midi_value = param.validate_value(value)
             if not self.send_midi_parameter(param, midi_value):
-                log_parameter("Failed to send parameter", param)
+                log.parameter("Failed to send parameter", param)
         except ValueError as ex:
-            log_error(f"Error updating parameter: {ex}")
+            log.error(f"Error updating parameter: {ex}")
 
     def _on_parameter_changed(self, param: AddressParameter, value: int) -> None:
         """
@@ -260,14 +258,14 @@ class PitchEnvelope(QWidget):
         log_envelope
         :return: None
         """
-        log_message(f"{self.envelope}")
+        log.message(f"{self.envelope}")
 
     def update_envelope_from_controls(self) -> None:
         """Update envelope values from slider controls"""
         try:
             for param, slider in self.controls.items():
                 envelope_param_type = param.get_envelope_param_type()
-                log_message(f"envelope_param_type = {envelope_param_type}")
+                log.message(f"envelope_param_type = {envelope_param_type}")
                 if envelope_param_type == "sustain_level":
                     self.envelope["sustain_level"] = slider.value() / 127
                 elif envelope_param_type == "peak_level":
@@ -277,9 +275,9 @@ class PitchEnvelope(QWidget):
                     self.envelope[envelope_param_type] = midi_value_to_ms(
                         slider.value()
                     )
-            log_message(f"{self.envelope}")
+            log.message(f"{self.envelope}")
         except Exception as ex:
-            log_error(f"Error updating envelope from controls: {ex}")
+            log.error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self) -> None:
@@ -297,7 +295,7 @@ class PitchEnvelope(QWidget):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log_error(f"Error updating controls from envelope: {ex}")
+            log.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
@@ -308,7 +306,7 @@ class PitchEnvelope(QWidget):
         :return: bool True on success, false otherwise
         """
         if not self.midi_helper:
-            log_message("No MIDI helper available - parameter change ignored")
+            log.message("No MIDI helper available - parameter change ignored")
             return False
         address = apply_address_offset(self.address, param)
 
@@ -322,5 +320,5 @@ class PitchEnvelope(QWidget):
             )
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
-            log_error(f"MIDI error setting {param}: {str(ex)}")
+            log.error(f"MIDI error setting {param}: {str(ex)}")
             return False

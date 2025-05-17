@@ -5,13 +5,12 @@ JDXiSysExComposer
 
 from typing import Optional
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX, ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.validation import validate_raw_sysex_message, validate_raw_midi_message
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
@@ -40,7 +39,7 @@ class JDXiSysExComposer:
         """
         self.address = address
         try:
-            address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, ZERO_BYTE)
+            address = RolandSysExAddress(self.address.msb, self.address.umb, self.address.lmb, MidiConstant.ZERO_BYTE)
             address = apply_address_offset(self.address, param)
             # Convert display value to MIDI value if needed
             if hasattr(param, "convert_to_midi"):
@@ -56,7 +55,7 @@ class JDXiSysExComposer:
             elif size == 4:
                 data_bytes = split_16bit_value_to_nibbles(midi_value)  # Convert to nibbles
             else:
-                log_message(f"Unsupported parameter size: {size}")
+                log.message(f"Unsupported parameter size: {size}")
                 return None
             sysex_message = RolandSysEx(
                 msb=address.msb,
@@ -76,7 +75,7 @@ class JDXiSysExComposer:
             return self.sysex_message
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending message: {ex}")
+            log.error(f"Error sending message: {ex}")
             return None
 
     def _is_valid_sysex(self) -> bool:
@@ -88,8 +87,8 @@ class JDXiSysExComposer:
         if not validate_raw_sysex_message(raw_message):
             raise ValueError("Invalid JD-Xi SysEx message detected")
         return (
-                raw_message[JDXiSysExOffset.SYSEX_START] == START_OF_SYSEX and
-                raw_message[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX
+                raw_message[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX and
+                raw_message[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:

@@ -6,9 +6,8 @@ from PySide6.QtWidgets import QPushButton, QWidget
 from PySide6.QtCore import Signal, QSettings
 import logging
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.button import JDXiPresetButton
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -57,7 +56,7 @@ class FavoriteButton(QPushButton):
         )
         self._update_style()
         # self._save_to_settings()
-        log_message(f"Saved preset to favorite {self.slot_num}: {preset_name}")
+        log.message(f"Saved preset to favorite {self.slot_num}: {preset_name}")
 
     def load_preset_from_favourites(self):
         """Load saved preset"""
@@ -76,7 +75,7 @@ class FavoriteButton(QPushButton):
         # self.settings.setValue('last_preset/channel', self.preset.channel)
         # self.settings.setValue('last_preset/preset_name', self.preset.preset_name)
         # Update the display
-        log_message(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
+        log.message(f"Loading favorite {self.slot_num}: {self.preset.tone_name}")
 
     def load_preset(self, preset_data: JDXiPresetData):
         """Load preset data into synth"""
@@ -91,7 +90,7 @@ class FavoriteButton(QPushButton):
                 self.last_preset = preset_data
                 # self.settings.setValue("last_preset", preset_data)
         except Exception as ex:
-            log_error(f"Error loading preset: {ex}")
+            log.error(f"Error loading preset: {ex}")
 
     def _save_to_settings(self):
         """Save preset data to settings"""
@@ -141,11 +140,11 @@ class FavoriteButton(QPushButton):
         """Update button appearance"""
         if self.preset:
             # Get color based on synth preset_type
-            if self.preset.type == JDXiSynth.ANALOG:
+            if self.preset.type == JDXiSynth.ANALOG_SYNTH:
                 color = "#00A3F0"  # Analog blue
-            elif self.preset.type in [JDXiSynth.DIGITAL_1, JDXiSynth.DIGITAL_2]:
+            elif self.preset.type in [JDXiSynth.DIGITAL_SYNTH_1, JDXiSynth.DIGITAL_SYNTH_2]:
                 color = "#FF0000"  # Red for both digital synths
-            elif self.preset.type == JDXiSynth.DRUM:
+            elif self.preset.type == JDXiSynth.DRUM_KIT:
                 color = "#00FF00"  # Green for drums
             else:
                 color = "#666666"  # Gray for unknown types

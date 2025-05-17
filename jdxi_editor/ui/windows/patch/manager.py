@@ -34,9 +34,8 @@ from PySide6.QtWidgets import (
 )
 import logging
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
@@ -108,7 +107,7 @@ class PatchManager(QMainWindow):
             if file_path:
                 self.path_input.setText(file_path)
         except Exception as ex:
-            log_error(f"Error browsing for file: {str(ex)}")
+            log.error(f"Error browsing for file: {str(ex)}")
 
     def _handle_action(self):
         """Handle save/load action"""
@@ -119,19 +118,19 @@ class PatchManager(QMainWindow):
                 return
 
             if self.midi_helper is None:
-                log_message("MIDI helper not initialized.")
+                log.message("MIDI helper not initialized.")
                 return
 
             if self.save_mode:
                 save_all_controls_to_single_file(self.editors, file_path)
-                log_message(f"Patch saved to {file_path}")
+                log.message(f"Patch saved to {file_path}")
             else:
                 self.midi_helper.load_patch(file_path)
-                log_message(f"Patch loaded from {file_path}")
+                log.message(f"Patch loaded from {file_path}")
 
             self.close()
 
         except Exception as ex:
-            log_message(
+            log.message(
                 f"Error {'saving' if self.save_mode else 'loading'} patch: {str(ex)}"
             )

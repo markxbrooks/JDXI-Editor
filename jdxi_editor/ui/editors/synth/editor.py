@@ -23,29 +23,21 @@ import json
 import re
 import os
 import logging
-from typing import Optional, Any
+from typing import Optional
 from PySide6.QtGui import QPixmap, QKeySequence, QShortcut
 from PySide6.QtWidgets import QWidget, QGroupBox, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, Signal
 
-from jdxi_editor.log.debug_info import log_debug_info
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.midi.data.address.address import AddressStartMSB, AddressOffsetTemporaryToneUMB, \
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB, \
     AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.control_change.base import ControlChange
 from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
-
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.jdxi.preset.lists import JDXiPresets
+from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.midi.sysex.parsers.json import JDXiJsonSysexParser
+from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
 from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number, log_synth_area_info
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
@@ -76,15 +68,15 @@ def log_changes(previous_data, current_data):
     ]
 
     if changes:
-        # log_message("Changes detected:")
+        # log.message("Changes detected:")
         for key, prev, curr in changes:
             pass
-            # log_message(
+            # log.message(
             #     f"\n===> Changed Parameter: {key}, Previous: {prev}, Current: {curr}"
             # )
     else:
         pass
-        #log_message("No changes detected.")
+        #log.message("No changes detected.")
 
 
 class SynthEditor(SynthBase):
@@ -125,8 +117,8 @@ class SynthEditor(SynthBase):
         self.midi_helper.update_tone_name.connect(
             lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
         self.midi_helper.midi_program_changed.connect(self.data_request)
-        log_parameter("Initialized:", self.__class__.__name__)
-        log_parameter("---> Using MIDI helper:", midi_helper)
+        log.parameter("Initialized:", self.__class__.__name__)
+        log.parameter("---> Using MIDI helper:", midi_helper)
         # midi message bytes
         # To be over-ridden by subclasses
         # Set window flags for address tool window
@@ -151,13 +143,14 @@ class SynthEditor(SynthBase):
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_control_changed.connect(self._handle_control_change)
             # self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            self.preset_loader = JDXiPresetHelper(self.midi_helper, JDXiPresets.DIGITAL_ENUMERATED)
+            from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+            self.preset_loader = JDXiPresetHelper(self.midi_helper, JDXiPresetToneList.DIGITAL_ENUMERATED)
             # Initialize preset handlers dynamically
             preset_configs = [
-                (JDXiSynth.DIGITAL_1, JDXiPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
-                (JDXiSynth.DIGITAL_2, JDXiPresets.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-                (JDXiSynth.ANALOG, JDXiPresets.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-                (JDXiSynth.DRUM, JDXiPresets.DRUM_ENUMERATED, MidiChannel.DRUM),
+                (JDXiSynth.DIGITAL_SYNTH_1, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
+                (JDXiSynth.DIGITAL_SYNTH_2, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
+                (JDXiSynth.ANALOG_SYNTH, JDXiPresetToneList.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+                (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM),
             ]
             self.preset_helpers = {
                 synth_type: JDXiPresetHelper(
@@ -165,12 +158,12 @@ class SynthEditor(SynthBase):
                 )
                 for synth_type, presets, channel in preset_configs
             }
-            log_message("MIDI helper initialized")
+            log.message("MIDI helper initialized")
         else:
-            log_message("MIDI helper not initialized")
+            log.message("MIDI helper not initialized")
         self.json_parser = JDXiJsonSysexParser()
 
-    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_1,
+    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
                          partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -245,11 +238,11 @@ class SynthEditor(SynthBase):
 
             for param in self.controls:
                 controls_data[param.name] = param.value
-            log_message(f"{controls_data}")
+            log.message(f"{controls_data}")
             return controls_data
 
         except Exception as ex:
-            log_message(f"Failed to get controls: {ex}")
+            log.message(f"Failed to get controls: {ex}")
             return {}
 
     def _get_preset_helper_for_current_synth(self):
@@ -259,7 +252,7 @@ class SynthEditor(SynthBase):
             logging.warning(
                 f"Unknown synth preset_type: {self.preset_type}, defaulting to digital_1"
             )
-            return self.preset_helpers[JDXiSynth.DIGITAL_1]  # Safe fallback
+            return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback
         return handler
 
     def _dispatch_sysex_to_area(self, json_sysex_data: str) -> None:
@@ -277,12 +270,12 @@ class SynthEditor(SynthBase):
         synth_tone = sysex_data.get("SYNTH_TONE")
 
         if current_synth != temporary_area:
-            log_message(
+            log.message(
                 f"temp_area: {temporary_area} is not current_synth: {current_synth}, Skipping update"
             )
             return
 
-        log_header_message(
+        log.header_message(
             f"Updating UI components from SysEx data for \t{temporary_area} \t{synth_tone}"
         )
 
@@ -290,13 +283,13 @@ class SynthEditor(SynthBase):
 
         successes, failures = [], []
 
-        if temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name:
+        if temporary_area == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
             partial_map = DRUM_PARTIAL_MAP
         else:
             partial_map = SYNTH_PARTIAL_MAP
 
         partial_number = get_partial_number(synth_tone, partial_map=partial_map)
-        if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_PART.name:
+        if temporary_area == AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name:
             self._update_partial_controls(partial_number, sysex_data, successes, failures)
         if synth_tone == AddressOffsetSuperNATURALLMB.COMMON.name:
             self._update_common_controls(partial_number, sysex_data, successes, failures)
@@ -305,7 +298,7 @@ class SynthEditor(SynthBase):
         else:  # Drums and Digital 1 & 2 are dealt with via partials
             self._update_partial_controls(partial_number, sysex_data, successes, failures)
 
-        log_debug_info(successes, failures)
+        log.debug_info(successes, failures)
 
     def _update_partial_controls(self,
                                  partial_no: int,
@@ -336,7 +329,7 @@ class SynthEditor(SynthBase):
             log_changes(self.sysex_previous_data, data)
             return data
         except json.JSONDecodeError as ex:
-            log_message(f"Invalid JSON format: {ex}")
+            log.message(f"Invalid JSON format: {ex}")
             return None
 
     def set_instrument_title_label(self, name: str, synth_type: str):
@@ -352,7 +345,7 @@ class SynthEditor(SynthBase):
 
     def update_combo_box_index(self, preset_number):
         """Updates the QComboBox to reflect the loaded preset."""
-        log_message(f"Updating combo to preset {preset_number}")
+        log.message(f"Updating combo to preset {preset_number}")
         self.instrument_selection_combo.combo_box.setCurrentIndex(preset_number)
 
     def update_instrument_title(self):
@@ -361,7 +354,7 @@ class SynthEditor(SynthBase):
         :return:
         """
         selected_synth_text = self.instrument_selection_combo.combo_box.currentText()
-        log_message(f"selected_synth_text: {selected_synth_text}")
+        log.message(f"selected_synth_text: {selected_synth_text}")
         self.instrument_title_label.setText(selected_synth_text)
 
     def update_instrument_preset(self, text):
@@ -373,7 +366,7 @@ class SynthEditor(SynthBase):
                 synth_matches.group(1).lower().replace("&", "_").split("_")[0]
             )
             one_based_preset_index = int(selected_synth_padded_number)
-            log_message(f"preset_index: {one_based_preset_index}")
+            log.message(f"preset_index: {one_based_preset_index}")
             self.load_preset(one_based_preset_index - 1)  # use 0-based index
 
     def load_preset(self, preset_index):
@@ -381,9 +374,9 @@ class SynthEditor(SynthBase):
         preset_name = (
             self.instrument_selection_combo.combo_box.currentText()
         )  # Get the selected preset name
-        log_message(f"combo box preset_name : {preset_name}")
+        log.message(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
-        log_message(f"combo box program_number : {program_number}")
+        log.message(f"combo box program_number : {program_number}")
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -391,11 +384,11 @@ class SynthEditor(SynthBase):
         pc = get_preset_parameter_value("pc", program_number, self.preset_list)
 
         if None in [msb, lsb, pc]:
-            log_message(
+            log.message(
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
-        log_message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
+        log.message(f"retrieved msb, lsb, pc : {msb}, {lsb}, {pc}")
         log_midi_info(msb, lsb, pc)
         # Send bank select and program change
         self.midi_helper.send_bank_select_and_program_change(
@@ -408,14 +401,14 @@ class SynthEditor(SynthBase):
 
     def _handle_program_change(self, channel: int, program: int):
         """Handle program change messages by requesting updated data"""
-        log_message(
+        log.message(
             f"Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request()
 
     def _handle_control_change(self, channel: int, control: int, value: int):
         """Handle program change messages by requesting updated data"""
-        log_message(
+        log.message(
             f"Control change {channel} {control} detected on channel {channel} with value {value}, "
             f"requesting data update"
         )
@@ -462,7 +455,7 @@ class SynthEditor(SynthBase):
         selected_instrument_text = (
             self.instrument_selection_combo.combo_box.currentText()
         )
-        log_parameter("Selected instrument text:", selected_instrument_text)
+        log.parameter("Selected instrument text:", selected_instrument_text)
         # Try to extract synth name from the selected text
         image_loaded = False
         if instrument_matches := re.search(
@@ -471,11 +464,11 @@ class SynthEditor(SynthBase):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
-            log_parameter(f"selected instrument name:", selected_instrument_name)
+            log.parameter(f"selected instrument name:", selected_instrument_name)
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
-            log_parameter("Selected instrument type:", selected_instrument_type)
+            log.parameter("Selected instrument type:", selected_instrument_type)
             specific_image_path = resource_path(os.path.join(
                 "resources",
                 self.instrument_icon_folder,

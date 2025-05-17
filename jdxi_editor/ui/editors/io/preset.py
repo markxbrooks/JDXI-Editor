@@ -33,7 +33,7 @@ Dependencies:
 - PySide6.QtCore
 - MIDIHelper for MIDI message handling
 - PresetHandler for managing program presets
-- PROGRAM_LIST for predefined program data
+- JDXiProgramList.PROGRAM_LIST for predefined program data
 
 """
 
@@ -52,13 +52,13 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Signal, Qt
 import qtawesome as qta
 
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
+from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
@@ -307,16 +307,16 @@ class PresetEditor(BasicEditor):
     def on_preset_type_changed(self, index: int) -> None:
         """Handle preset type selection change."""
         preset_type = self.digital_preset_type_combo.currentText()
-        log_message(f"preset_type: {preset_type}")
+        log.message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
             self.midi_channel = MidiChannel.DIGITAL1
             self.preset_list = DIGITAL_PRESET_LIST
         elif preset_type == "Digital Synth 2":
             self.midi_channel = MidiChannel.DIGITAL2
-            self.preset_list = DIGITAL_PRESET_LIST
+            self.preset_list = JDXiPresetToneList.DIGITAL_TONE_PC
         elif preset_type == "Drums":
             self.midi_channel = MidiChannel.DRUM
-            self.preset_list = DRUM_KIT_LIST
+            self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
             self.midi_channel = MidiChannel.ANALOG
             self.preset_list = ANALOG_PRESET_LIST
@@ -348,10 +348,10 @@ class PresetEditor(BasicEditor):
         :param preset_index: int
         """
         preset_name = self.preset_combo_box.currentText()
-        log_message("=======load_preset_by_program_change=======")
-        log_parameter("combo box preset_name", preset_name)
+        log.message("=======load_preset_by_program_change=======")
+        log.parameter("combo box preset_name", preset_name)
         program_number = preset_name[:3]
-        log_parameter("combo box program_number", program_number)
+        log.parameter("combo box program_number", program_number)
 
         # Get MSB, LSB, PC values from the preset using get_preset_parameter_value
         msb = get_preset_parameter_value("msb", program_number, self.preset_list)
@@ -359,15 +359,15 @@ class PresetEditor(BasicEditor):
         pc = get_preset_parameter_value("pc", program_number, self.preset_list)
 
         if None in [msb, lsb, pc]:
-            log_message(
+            log.message(
                 f"Could not retrieve preset parameters for program {program_number}"
             )
             return
 
-        log_message("retrieved msb, lsb, pc :")
-        log_parameter("combo box msb", msb)
-        log_parameter("combo box lsb", lsb)
-        log_parameter("combo box pc", pc)
+        log.message("retrieved msb, lsb, pc :")
+        log.parameter("combo box msb", msb)
+        log.parameter("combo box lsb", lsb)
+        log.parameter("combo box pc", pc)
         log_midi_info(msb, lsb, pc)
 
         # Send bank select and program change
@@ -400,7 +400,7 @@ class PresetEditor(BasicEditor):
         # self.update_category_combo_box_categories()
 
         selected_category = self.category_combo_box.currentText()
-        log_message(f"Selected Category: {selected_category}")
+        log.message(f"Selected Category: {selected_category}")
 
         self.preset_combo_box.clear()
         self.presets.clear()
@@ -466,16 +466,16 @@ class PresetEditor(BasicEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        log_parameter("combo box bank_letter", bank_letter)
-        log_parameter("combo box bank_number", bank_number)
+        log.parameter("combo box bank_letter", bank_letter)
+        log.parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log_message("calculated msb, lsb, pc :")
-        log_parameter("combo box msb", msb)
-        log_parameter("combo box lsb", lsb)
-        log_parameter("combo box pc", pc)
+        log.message("calculated msb, lsb, pc :")
+        log.parameter("combo box msb", msb)
+        log.parameter("combo box lsb", lsb)
+        log.parameter("combo box pc", pc)
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(
             self.midi_channel, msb, lsb, pc
@@ -492,7 +492,7 @@ class PresetEditor(BasicEditor):
             self.drum_kit_current_label.setText(program_details["drum"])
             self.analog_synth_current_label.setText(program_details["analog"])
         except KeyError:
-            log_message(f"Program details missing required keys: {program_details}")
+            log.message(f"Program details missing required keys: {program_details}")
             self.digital_synth_1_current_label.setText("Unknown")
             self.digital_synth_2_current_label.setText("Unknown")
             self.drum_kit_current_label.setText("Unknown")

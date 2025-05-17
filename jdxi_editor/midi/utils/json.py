@@ -1,6 +1,6 @@
 from typing import Dict
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 
 
 def log_changes(previous_data: Dict, current_data: Dict) -> None:
@@ -30,15 +30,15 @@ def log_changes(previous_data: Dict, current_data: Dict) -> None:
 
     # If there are changes, log them
     if changes:
-        log_message("Parameter changes detected:")
+        log.message("Parameter changes detected:")
         for change in changes:
             diff_str = (
                 f" (Δ: {change['difference']})"
                 if change["difference"] is not None
                 else ""
             )
-            log_message(
+            log.message(
                 f"  {change['parameter']}: {change['previous']} → {change['current']}{diff_str}"
             )
     else:
-        log_message("No parameter changes detected")
+        log.message("No parameter changes detected")

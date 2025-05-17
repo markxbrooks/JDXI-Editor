@@ -39,10 +39,10 @@ def create_parts_container(
     arp_row, arp_button = create_button_row("Arpeggiator", on_open_arp)
 
     # Connect buttons to synth selector
-    analog_button.clicked.connect(lambda: on_select_synth(JDXiSynth.ANALOG))
-    digital1_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DIGITAL_1))
-    digital2_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DIGITAL_2))
-    drums_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DRUM))
+    analog_button.clicked.connect(lambda: on_select_synth(JDXiSynth.ANALOG_SYNTH))
+    digital1_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DIGITAL_SYNTH_1))
+    digital2_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DIGITAL_SYNTH_2))
+    drums_button.clicked.connect(lambda: on_select_synth(JDXiSynth.DRUM_KIT))
 
     # Button group ensures one active selection
     button_group = QButtonGroup()

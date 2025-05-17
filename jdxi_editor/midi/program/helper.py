@@ -34,9 +34,7 @@ from typing import Optional
 
 from PySide6.QtCore import Signal, QObject
 
-from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.program.utils import (
     get_previous_program_bank_and_number,
@@ -47,7 +45,7 @@ from jdxi_editor.ui.editors.helpers.program import (
     calculate_midi_values,
     get_program_by_bank_and_number,
 )
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class JDXiProgramHelper(QObject):
@@ -116,14 +114,14 @@ class JDXiProgramHelper(QObject):
         self.current_program_number = program_number
         self.program_changed.emit(bank_letter, program_number)
         msb, lsb, pc = calculate_midi_values(bank_letter, program_number)
-        log_header_message(f"loading program {bank_letter} {program_number}")
-        log_message("calculated msb, lsb, pc :")
-        log_parameter("msb", msb)
-        log_parameter("lsb", lsb)
-        log_parameter("pc", pc)
+        log.header_message(f"loading program {bank_letter} {program_number}")
+        log.message("calculated msb, lsb, pc :")
+        log.parameter("msb", msb)
+        log.parameter("lsb", lsb)
+        log.parameter("pc", pc)
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
         program_details = get_program_by_bank_and_number(bank_letter, program_number)
-        log_message(program_details)
+        log.message(program_details)
         self.data_request()
 
     def data_request(self) -> None:

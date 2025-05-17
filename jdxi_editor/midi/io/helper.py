@@ -20,9 +20,7 @@ Dependencies:
 
 import logging
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.input_handler import MidiInHandler
 from jdxi_editor.midi.io.output_handler import MidiOutHandler
 from jdxi_editor.ui.windows.jdxi.helpers.port import find_jdxi_port
@@ -62,7 +60,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 json_string = file_handle.read()
                 self.midi_sysex_json.emit(json_string)
         except Exception as ex:
-            log_error(f"Error reading or emitting sysex JSON: {ex}")
+            log.error(f"Error reading or emitting sysex JSON: {ex}")
 
     def load_sysx_patch(self, file_path: str):
         """
@@ -76,18 +74,18 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
                 sysex_data = file.read()
 
             if not sysex_data.startswith(b"\xF0") or not sysex_data.endswith(b"\xF7"):
-                log_message("Invalid SysEx file format")
+                log.message("Invalid SysEx file format")
                 return
         except Exception as ex:
-            log_error(f"Error {ex} occurred opening file")
+            log.error(f"Error {ex} occurred opening file")
 
         self.midi_messages.append(sysex_data)
         try:
-            log_message(f"attempting to send message: {sysex_data}")
+            log.message(f"attempting to send message: {sysex_data}")
             sysex_list = list(sysex_data)
             self.send_raw_message(sysex_list)
         except Exception as ex:
-            log_error(f"Error {ex} sending sysex list")
+            log.error(f"Error {ex} sending sysex list")
 
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """
@@ -105,7 +103,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             return True
 
         except Exception as ex:
-            log_error(f"Error setting MIDI ports: {str(ex)}")
+            log.error(f"Error setting MIDI ports: {str(ex)}")
             return False
 
     def connect_port_names(self, in_port: str, out_port: str):
@@ -119,19 +117,19 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         try:
             # Ensure both ports are found
             if not in_port or not out_port:
-                log_message("JD-Xi MIDI auto-connect failed", level=logging.WARNING)
-                log_parameter("MIDI in_port", in_port)
-                log_parameter("MIDI out_port", out_port)
+                log.message("JD-Xi MIDI auto-connect failed", level=logging.WARNING)
+                log.parameter("MIDI in_port", in_port)
+                log.parameter("MIDI out_port", out_port)
                 return False
             self.set_midi_ports(in_port, out_port)
             # Verify connection
-            log_parameter("Successfully connected to JD-Xi MIDI:", in_port)
-            log_parameter("Successfully connected to JD-Xi MIDI", out_port)
+            log.parameter("Successfully connected to JD-Xi MIDI:", in_port)
+            log.parameter("Successfully connected to JD-Xi MIDI", out_port)
             self.identify_device()
             return True
 
         except Exception as ex:
-            log_error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            log.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
             return False
 
     def reconnect_port_names(self, in_port: str, out_port: str):
@@ -148,7 +146,7 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             self.open_output_port(out_port)
             self.reopen_input_port_name(in_port)
         except Exception as ex:
-            log_error(f"Error {ex} occurred reconnecting ports")
+            log.error(f"Error {ex} occurred reconnecting ports")
 
     def auto_connect_jdxi(self):
         """
@@ -164,5 +162,5 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
             # self.identify_device()
             return True
         except Exception as ex:
-            log_error(f"Error auto-connecting to JD-Xi: {str(ex)}")
+            log.error(f"Error auto-connecting to JD-Xi: {str(ex)}")
             return False

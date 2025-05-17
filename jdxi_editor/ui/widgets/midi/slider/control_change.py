@@ -14,7 +14,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 """
 
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.slider import Slider
 
@@ -84,7 +84,7 @@ class ControlChangeSlider(Slider):
         :param value: int
         """
         self.setStyleSheet(JDXiStyle.ADSR_DISABLED)
-        log_message(f"filter value: {value} for cutoff slider")
+        log.message(f"filter value: {value} for cutoff slider")
 
         if self.min_value <= value <= self.max_value:
             self.current_value = value
@@ -94,7 +94,7 @@ class ControlChangeSlider(Slider):
         self.update_style(value)
 
         for partial in [1, 2, 3]:
-            log_message(self.nrpn_map)
+            log.message(self.nrpn_map)
             cc_number = self.nrpn_map.get(partial)
             if cc_number is None:
                 raise ValueError("Invalid partial number")

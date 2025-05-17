@@ -26,15 +26,12 @@ Example Usage:
         print("Connected to JD-Xi:", midi_conn.device_version)
 """
 
-import logging
 from typing import Iterable, Optional
 
 import rtmidi
 from PySide6.QtWidgets import QMainWindow
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.sysex.device import DeviceInfo
 from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
 
@@ -76,7 +73,7 @@ class MIDIConnection:
         self._midi_in = midi_in
         self._midi_out = midi_out
         self._main_window = main_window
-        log_message("MIDI Connection singleton initialized")
+        log.message("MIDI Connection singleton initialized")
 
     def send_message(self, message: Iterable[int]):
         """Send MIDI message and trigger indicator"""
@@ -88,18 +85,18 @@ class MIDIConnection:
                     self._main_window, "midi_out_indicator"
                 ):
                     self._main_window.midi_out_indicator.blink()
-                log_parameter("Sent MIDI message", message)
+                log.parameter("Sent MIDI message", message)
             else:
-                logging.warning("No MIDI output port available")
+                log.warning("No MIDI output port available")
 
         except Exception as ex:
-            log_error(f"Error sending MIDI message: {str(ex)}")
+            log.error(f"Error sending MIDI message: {str(ex)}")
 
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
-        log_message(f"sending identity request message: {request}")
+        log.message(f"sending identity request message: {request}")
 
     @property
     def is_connected(self) -> bool:

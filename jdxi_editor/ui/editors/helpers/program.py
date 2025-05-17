@@ -45,26 +45,26 @@ import logging
 import re
 from typing import Optional, Dict, Union, Any, List
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
-from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
+from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 
 
 def get_program_index_by_id(program_id: str) -> Optional[int]:
     """Retrieve the index of a program by its ID from PROGRAM_LIST."""
-    log_message(f"Getting program index for {program_id}")
-    for index, program in enumerate(PROGRAM_LIST):
+    log.message(f"Getting program index for {program_id}")
+    for index, program in enumerate(JDXiProgramList.PROGRAM_LIST):
         if program["id"] == program_id:
-            log_message(f"Index for {program_id} is {index - 1}")
+            log.message(f"Index for {program_id} is {index - 1}")
             return index - 1  # Convert to 0-based index
-    log_message(f"Program with ID {program_id} not found.", level=logging.WARNING)
+    log.message(f"Program with ID {program_id} not found.", level=logging.WARNING)
     return None
 
 
 def get_program_by_id(program_id: str) -> Optional[Dict[str, str]]:
     """Retrieve a program by its ID from PROGRAM_LIST."""
     return next(
-        (program for program in PROGRAM_LIST if program["id"] == program_id), None
+        (program for program in JDXiProgramList.PROGRAM_LIST if program["id"] == program_id), None
     )
 
 
@@ -74,17 +74,17 @@ def get_program_by_bank_and_number(
     """Retrieve a program by its bank letter and number."""
     program_id = f"{bank}{program_number:02d}"
     return next(
-        (program for program in PROGRAM_LIST if program["id"] == program_id), None
+        (program for program in JDXiProgramList.PROGRAM_LIST if program["id"] == program_id), None
     )
 
 
 def get_program_id_by_name(name: str) -> Optional[str]:
     """Retrieve a program's ID from PROGRAM_LIST by matching its name as a substring."""
-    log_message(f"Searching for program name: {name}")
+    log.message(f"Searching for program name: {name}")
 
-    for program in PROGRAM_LIST:
+    for program in JDXiProgramList.PROGRAM_LIST:
         if name in program["name"]:  # Check if 'name' is a substring
-            # log_message(f"{program}")
+            # log.message(f"{program}")
             return program["id"]
 
     logging.warning(f"Program named '{name}' not found.")
@@ -92,8 +92,8 @@ def get_program_id_by_name(name: str) -> Optional[str]:
 
 
 def get_program_number_by_name(program_name: str) -> Optional[str]:
-    """Retrieve a program's number (without bank letter) by its name from PROGRAM_LIST."""
-    program = next((p for p in PROGRAM_LIST if p["name"] == program_name), None)
+    """Retrieve a program's number (without bank letter) by its name from JDXiProgramList.PROGRAM_LIST."""
+    program = next((p for p in JDXiProgramList.PROGRAM_LIST if p["name"] == program_name), None)
     return int(program["id"][1:]) if program else None
 
 
@@ -113,16 +113,16 @@ def get_preset_list_number_by_name(
 
 
 def get_program_name_by_id(program_id: str) -> Optional[str]:
-    """Retrieve a program name by its ID from PROGRAM_LIST."""
+    """Retrieve a program name by its ID from JDXiProgramList.PROGRAM_LIST."""
     program = next(
-        (program for program in PROGRAM_LIST if program["id"] == program_id), None
+        (program for program in JDXiProgramList.PROGRAM_LIST if program["id"] == program_id), None
     )
     return program["name"] if program else None
 
 
 def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str]:
     """Retrieve a specific parameter value from a program by its ID."""
-    program = next((p for p in PROGRAM_LIST if p["id"] == program_id), None)
+    program = next((p for p in JDXiProgramList.PROGRAM_LIST if p["id"] == program_id), None)
     return program.get(parameter) if program else None
 
 
@@ -164,7 +164,7 @@ def calculate_midi_values(bank: str, program_number: int):
 
     # Ensure PC is within range
     if not 0 <= pc <= 127:
-        log_message(f"Invalid Program Change value: {pc}")
+        log.message(f"Invalid Program Change value: {pc}")
         raise ValueError(f"Program Change value {pc} is out of range")
 
     return msb, lsb, pc - 1
@@ -179,23 +179,23 @@ def calculate_index(bank, program_number: int):
 
 def log_midi_info(msb: int, lsb: int, pc: int):
     """Log MIDI information in a consistent format."""
-    log_message(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
+    log.message(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
 
 
 def log_program_info(program_name, program_id=None, program_details=None):
     """Helper function to log program info."""
-    log_message(f"load_program: program_name: {program_name}")
+    log.message(f"load_program: program_name: {program_name}")
     if program_id:
-        log_message(f"load_program: program_id: {program_id}")
+        log.message(f"load_program: program_id: {program_id}")
     if program_details:
-        log_message(f"load_program: program_details: {program_details}")
+        log.message(f"load_program: program_details: {program_details}")
 
 
 def get_msb_lsb_pc(program_number: int):
     """Get MSB, LSB, and PC based on bank and program number."""
     msb, lsb, pc = (
-        PROGRAM_LIST[program_number]["msb"],  # Tone Bank Select MSB (CC# 0)
-        PROGRAM_LIST[program_number]["lsb"],  # Tone Bank Select LSB (CC# 32)
-        PROGRAM_LIST[program_number]["pc"],  # Tone Program Number (PC)
+        JDXiProgramList.PROGRAM_LIST[program_number]["msb"],  # Tone Bank Select MSB (CC# 0)
+        JDXiProgramList.PROGRAM_LIST[program_number]["lsb"],  # Tone Bank Select LSB (CC# 32)
+        JDXiProgramList.PROGRAM_LIST[program_number]["pc"],  # Tone Program Number (PC)
     )
     return int(msb), int(lsb), int(pc)

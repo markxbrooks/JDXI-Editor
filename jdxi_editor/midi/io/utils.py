@@ -6,14 +6,13 @@ from typing import List, Optional, Union, Callable
 
 import mido
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIProgramChangeOffset, JDXIControlChangeOffset
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
-from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 
 from jdxi_editor.midi.sysex.device import DeviceInfo
 
@@ -49,7 +48,7 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     if not (0 <= msb <= 255):
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
-    if lsb > JDXiBitMask.LOW_7_BITS:  # 127
+    if lsb > BitMask.LOW_7_BITS:  # 127
         msb += 1
 
     return msb
@@ -66,8 +65,8 @@ def nibble_data(data: list[int]) -> list[int]:
     nibbled_data = []
     for byte in data:
         if byte > 127:
-            high_nibble = (byte >> 4) & JDXiBitMask.LOW_4_BITS
-            low_nibble = byte & JDXiBitMask.LOW_4_BITS
+            high_nibble = (byte >> 4) & BitMask.LOW_4_BITS
+            low_nibble = byte & BitMask.LOW_4_BITS
             # Combine nibbles into valid data bytes (0-127)
             nibbled_data.append(high_nibble)
             nibbled_data.append(low_nibble)
@@ -85,7 +84,7 @@ def rtmidi_to_mido(byte_message: bytes) -> Union[bool, mido.Message]:
     try:
         return mido.Message.from_bytes(byte_message)
     except ValueError as err:
-        log_error(f"Failed to convert rtmidi message: {err}")
+        log.error(f"Failed to convert rtmidi message: {err}")
         return False
 
 
@@ -102,35 +101,35 @@ def convert_to_mido_message(
     status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
     # SysEx
     try:
-        if status_byte == JDXiMidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == JDXiMidiConstant.END_OF_SYSEX:
+        if status_byte == MidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.START_OF_SYSEX:
             sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.MIDI_CHANNEL:JDXIProgramChangeOffset.END])
             if len(sysex_data) > 128:
                 nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
             return mido.Message("sysex", data=sysex_data)
     except Exception as ex:
-        log_error(f"Error {ex} occurred")
+        log.error(f"Error {ex} occurred")
     # Program Change
     try:
         if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
-            channel = status_byte & JDXiBitMask.LOW_4_BITS
+            channel = status_byte & BitMask.LOW_4_BITS
             program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
             return mido.Message("program_change", channel=channel, program=program)
     except Exception as ex:
-        log_error(f"Error {ex} occurred")
+        log.error(f"Error {ex} occurred")
     # Control Change
     try:
         if 0xB0 <= status_byte <= 0xBF and len(message_content) >= 3:
-            channel = status_byte & JDXiBitMask.LOW_4_BITS
+            channel = status_byte & BitMask.LOW_4_BITS
             control = message_content[JDXIControlChangeOffset.CONTROL]
             value = message_content[JDXIControlChangeOffset.VALUE]
             return mido.Message(
                 "control_change", channel=channel, control=control, value=value
             )
     except Exception as ex:
-        log_error(f"Error {ex} occurred")
+        log.error(f"Error {ex} occurred")
 
-    log_message(f"Unhandled MIDI message: {message_content}")
+    log.message(f"Unhandled MIDI message: {message_content}")
     return None
 
 
@@ -143,7 +142,7 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
 
     message_byte_list = bytes(
-        [JDXiMidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [JDXiMidiConstant.END_OF_SYSEX]
+        [MidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [MidiConstant.START_OF_SYSEX]
     )
     return message_byte_list
 
@@ -157,7 +156,7 @@ def handle_identity_request(message: mido.Message) -> dict:
     byte_list = mido_message_data_to_byte_list(message)
     device_info = DeviceInfo.from_identity_reply(byte_list)
     if device_info:
-        log_message(device_info.to_string)
+        log.message(device_info.to_string)
     device_id = device_info.device_id
     manufacturer_id = device_info.manufacturer
     version = message.data[JDXiSysExOffset.ADDRESS_UMB:JDXiSysExOffset.TONE_NAME_START]  #  Extract firmware version bytes
@@ -171,9 +170,9 @@ def handle_identity_request(message: mido.Message) -> dict:
         manufacturer_name = "Roland"
     else:
         manufacturer_name = "Unknown"
-    log_message(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
-    log_message(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
-    log_message(f"🔄 Firmware Version: \t{version_str}")
+    log.message(f"🏭 Manufacturer ID: \t{manufacturer_id}  \t{manufacturer_name}")
+    log.message(f"🎹 Device ID: \t\t\t{hex(device_id)} \t{device_name}")
+    log.message(f"🔄 Firmware Version: \t{version_str}")
     return {
         "device_id": device_id,
         "manufacturer_id": manufacturer_id,

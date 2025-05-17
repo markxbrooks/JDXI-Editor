@@ -14,7 +14,7 @@ def send_nrpn(self, channel, msb, lsb, value):
 
 import threading
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
@@ -100,7 +100,7 @@ class NRPNSlider(Slider):
 
         :param value: int
         """
-        log_message(f"{self.label} value changed to {value}")
+        log.message(f"{self.label} value changed to {value}")
 
         if not self.min_value <= value <= self.max_value:
             raise ValueError("Value out of range.")

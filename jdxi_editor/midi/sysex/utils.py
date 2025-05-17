@@ -14,8 +14,8 @@ Functions:
 """
 
 
-from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
-from jdxi_editor.log.error import log_error
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
+from jdxi_editor.log.logger import Logger as log
 
 
 def map_range(value: int, in_min: int = -100, in_max: int =100, out_min: int =54, out_max: int =74) -> int:
@@ -34,7 +34,7 @@ def map_range(value: int, in_min: int = -100, in_max: int =100, out_min: int =54
 
 def calculate_checksum(data: tuple):
     """Calculate Roland checksum for parameter messages."""
-    return (128 - (sum(data) & JDXiBitMask.LOW_7_BITS)) & JDXiBitMask.LOW_7_BITS
+    return (128 - (sum(data) & BitMask.LOW_7_BITS)) & BitMask.LOW_7_BITS
 
 
 def bytes_to_hex(byte_list: list, prefix: str = "F0"):
@@ -48,9 +48,9 @@ def bytes_to_hex(byte_list: list, prefix: str = "F0"):
     try:
         return f"{prefix} " + " ".join(f"{int(byte):02X}" for byte in byte_list)
     except ValueError as ex:
-        log_error(f"Error {ex} occurred formatting hex")
+        log.error(f"Error {ex} occurred formatting hex")
     except Exception as ex:
-        log_error(f"Error {ex} occurred formatting hex")
+        log.error(f"Error {ex} occurred formatting hex")
 
 
 def int_to_hex(value: int) -> str:

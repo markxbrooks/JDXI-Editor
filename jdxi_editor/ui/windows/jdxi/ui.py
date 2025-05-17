@@ -39,8 +39,7 @@ from PySide6.QtGui import (
 )
 import qtawesome as qta
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -101,7 +100,7 @@ class JdxiUi(QMainWindow):
         # Set up presets
         self.preset_manager = JDXiPresetManager()
         # Initialize synth preset_type
-        self.current_synth_type = JDXiSynth.DIGITAL_1
+        self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
@@ -174,10 +173,10 @@ class JdxiUi(QMainWindow):
             on_select_synth=self._select_synth,
         )
         self.synth_buttons = {
-            JDXiSynth.DIGITAL_1: self.part_buttons["digital1"],
-            JDXiSynth.DIGITAL_2: self.part_buttons["digital2"],
-            JDXiSynth.ANALOG: self.part_buttons["analog"],
-            JDXiSynth.DRUM: self.part_buttons["drums"],
+            JDXiSynth.DIGITAL_SYNTH_1: self.part_buttons["digital1"],
+            JDXiSynth.DIGITAL_SYNTH_2: self.part_buttons["digital2"],
+            JDXiSynth.ANALOG_SYNTH: self.part_buttons["analog"],
+            JDXiSynth.DRUM_KIT: self.part_buttons["drums"],
         }
         self.arp_button = self.part_buttons["arp"]
         self.octave_down, self.octave_up = add_octave_buttons(
@@ -386,7 +385,7 @@ class JdxiUi(QMainWindow):
         synth_data = create_synth_data(self.current_synth_type)
         if not synth_data:
             logging.warning("MIDI_SLEEP_TIME. Defaulting to DIGITAL_1.")
-            synth_data = self.synth_data_map[JDXiSynth.DIGITAL_1]
+            synth_data = self.synth_data_map[JDXiSynth.DIGITAL_SYNTH_1]
 
         self.preset_manager.current_preset_name = (
             self.preset_manager.get_preset_name_by_type(self.current_synth_type)
@@ -412,28 +411,28 @@ class JdxiUi(QMainWindow):
         font_name = "JdLCD.ttf"
         font_path = resource_path(os.path.join("resources", "fonts", font_name))
         if os.path.exists(font_path):
-            log_message("Success: found font file, loading...")
-            log_message(f"font_name: \t{font_name}")
-            log_message(f"font_path: \t{font_path}")
+            log.message("Success: found font file, loading...")
+            log.message(f"font_name: \t{font_name}")
+            log.message(f"font_path: \t{font_path}")
             try:
                 font_id = QFontDatabase.addApplicationFont(font_path)
                 if font_id < 0:
-                    log_error(f"Error loading {font_name} font", level=logging.WARNING)
+                    log.error(f"Error loading {font_name} font", level=logging.WARNING)
                 font_families = QFontDatabase.applicationFontFamilies(font_id)
                 if font_families:
                     self.digital_font_family = font_families[0]
-                    log_message(
+                    log.message(
                         f"Successfully loaded font family: \t{self.digital_font_family}",
                     )
                 else:
-                    log_message(
+                    log.message(
                         "No font families found after loading font",
                         level=logging.WARNING,
                     )
             except Exception as ex:
-                log_error(f"Error loading {font_name} font from {font_path}: {ex}")
+                log.error(f"Error loading {font_name} font from {font_path}: {ex}")
         else:
-            log_message(f"File not found: {font_path}")
+            log.message(f"File not found: {font_path}")
 
     def update_preset_display(self, preset_number: int, preset_name: str):
         """Update the current preset display"""
@@ -445,7 +444,7 @@ class JdxiUi(QMainWindow):
         self, preset_number: int, preset_name: str, channel: int
     ):
         """Update the display with the new preset information."""
-        log_message(
+        log.message(
             f"Updating display preset: # {preset_number}, name: {preset_name}, channel: {channel}"
         )
         self.current_preset_index = preset_number
@@ -466,12 +465,12 @@ class JdxiUi(QMainWindow):
             if hasattr(self, "piano_keyboard"):
                 self.piano_keyboard.set_midi_channel(channel)
 
-            log_message(
+            log.message(
                 f"Updated display: {preset_number:03d}:{preset_name} (channel {channel})"
             )
 
         except Exception as ex:
-            log_error(f"Error updating display: {ex}")
+            log.error(f"Error updating display: {ex}")
 
     def show_error(self, title: str, message: str):
         """Show error message dialog

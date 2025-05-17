@@ -31,7 +31,7 @@ from __future__ import annotations
 from enum import unique, IntEnum
 from typing import Optional, Type, Union, Tuple, Any, TypeVar, List
 
-from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.midi.data.address.sysex import ZERO_BYTE
 from jdxi_editor.midi.data.address.sysex_byte import SysExByte
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_ADDRESS_MAP
@@ -74,9 +74,9 @@ class Address(SysExByte):
         base = self.value
         if isinstance(address_offset, int):
             offset_bytes = [
-                (address_offset >> 16) & JDXiBitMask.FULL_BYTE,
-                (address_offset >> 8) & JDXiBitMask.FULL_BYTE,
-                address_offset & JDXiBitMask.FULL_BYTE,
+                (address_offset >> 16) & BitMask.FULL_BYTE,
+                (address_offset >> 8) & BitMask.FULL_BYTE,
+                address_offset & BitMask.FULL_BYTE,
             ]
         elif isinstance(address_offset, tuple) and len(address_offset) == 3:
             offset_bytes = list(address_offset)
@@ -165,15 +165,15 @@ class RolandSysExAddress:
         :return: RolandSysExAddress The RolandSysExAddress object
         """
         if isinstance(offset, int):
-            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & JDXiBitMask.LOW_7_BITS, offset & JDXiBitMask.LOW_7_BITS]
+            offset_bytes = [(offset >> 16) & 0x7F, (offset >> 8) & BitMask.LOW_7_BITS, offset & BitMask.LOW_7_BITS]
         elif isinstance(offset, tuple) and len(offset) == 3:
             offset_bytes = list(offset)
         else:
             raise ValueError("Offset must be an int or a 3-byte tuple")
 
-        new_umb = (self.umb + offset_bytes[0]) & JDXiBitMask.LOW_7_BITS
-        new_lmb = (self.lmb + offset_bytes[1]) & JDXiBitMask.LOW_7_BITS
-        new_lsb = (self.lsb + offset_bytes[2]) & JDXiBitMask.LOW_7_BITS
+        new_umb = (self.umb + offset_bytes[0]) & BitMask.LOW_7_BITS
+        new_lmb = (self.lmb + offset_bytes[1]) & BitMask.LOW_7_BITS
+        new_lsb = (self.lsb + offset_bytes[2]) & BitMask.LOW_7_BITS
         return RolandSysExAddress(self.msb, new_umb, new_lmb, new_lsb)
 
     def __repr__(self):
@@ -283,10 +283,10 @@ class AddressOffsetTemporaryToneUMB(Address):
     Address Offset Temporary Tone UMB
     """
 
-    DIGITAL_SYNTH_PART_1 = 0x01
-    DIGITAL_SYNTH_PART_2 = 0x21
-    ANALOG_PART = 0x42
-    DRUM_KIT_PART = 0x70
+    DIGITAL_SYNTH_1 = 0x01  # Avoiding "Part" because of Partials
+    DIGITAL_SYNTH_2 = 0x21
+    ANALOG_SYNTH = 0x42
+    DRUM_KIT = 0x70
     COMMON = 0x00
 
     @classmethod

@@ -1,5 +1,5 @@
-class JDXiBitMask:
-    """JD-Xi bit masks"""
+class BitMask:
+    """Bit masks"""
     LOW_1_BIT = 0x01  # Mask for only the lowest (1st) bit
     LOW_2_BITS = 0x03  # Mask for lowest 2 bits (0b00000011)
     LOW_4_BITS = 0x0F  # Mask for lowest 4 bits (a nibble)

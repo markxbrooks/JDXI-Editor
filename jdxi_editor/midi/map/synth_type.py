@@ -6,10 +6,10 @@ from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB, \
 
 SYNTH_TYPE_MAP = {
     AreaMSB.TEMPORARY_PROGRAM.name: JDXiSynth.PROGRAM,
-    TemporaryToneUMB.DIGITAL_SYNTH_PART_1.name: JDXiSynth.DIGITAL_1,
-    TemporaryToneUMB.DIGITAL_SYNTH_PART_2.name: JDXiSynth.DIGITAL_2,
-    TemporaryToneUMB.ANALOG_PART.name: JDXiSynth.ANALOG,
-    TemporaryToneUMB.DRUM_KIT_PART.name: JDXiSynth.DRUM,
+    TemporaryToneUMB.DIGITAL_SYNTH_1.name: JDXiSynth.DIGITAL_SYNTH_1,
+    TemporaryToneUMB.DIGITAL_SYNTH_2.name: JDXiSynth.DIGITAL_SYNTH_2,
+    TemporaryToneUMB.ANALOG_SYNTH.name: JDXiSynth.ANALOG_SYNTH,
+    TemporaryToneUMB.DRUM_KIT.name: JDXiSynth.DRUM_KIT,
 }
 
 

@@ -726,3 +726,7 @@ DRUM_PARTIAL_MAP = {
     "OTH1": 25,
     "OTH2": 26,
 }
+
+
+class JDXiMapPartialDrum:
+    MAP = DRUM_PARTIAL_MAP

@@ -1,6 +1,7 @@
 Control Changes for reference:
+==============================
 
-SuperNATURAL Synth Tone
+*SuperNATURAL Synth Tone
 +-----------------+---------+---------------------------+---------+
 | Parameter       | Partial | Controller Number         | Value   |
 +-----------------+---------+---------------------------+---------+
@@ -15,22 +16,23 @@ SuperNATURAL Synth Tone
 | LFO Amp Depth   | 1 - 3   | NRPN MSB:0, LSB:21 - 23   | 0 - 127 |
 +-----------------+---------+---------------------------+---------+
 
-Analog Synth Tone
-+-----------------+---------------------------+---------+
-| Parameter       | Controller Number         | Value   |
-+-----------------+---------------------------+---------+
-| Cutoff          | 102                       | 0 - 127 |
-| Resonance       | 105                       | 0 - 127 |
-| Level           | 117                       | 0 - 127 |
-| Envelope        | NRPN MSB:0, LSB:124       | 0 - 127 |
-| LFO Shape       | NRPN MSB:0, LSB:3         | 0 - 5   |
-| LFO Rate        | 16                        | 0 - 127 |
-| LFO Pitch Depth | NRPN MSB:0, LSB:15        | 0 - 127 |
-| LFO Filter Depth| NRPN MSB:0, LSB:18        | 0 - 127 |
-| LFO Amp Depth   | NRPN MSB:0, LSB:21        | 0 - 127 |
-| Pulse Width     | NRPN MSB:0, LSB:37        | 0 - 127 |
-+-----------------+---------------------------+---------+
-Drum Kit
+*Analog Synth Tone
++-----------------+------------------------------------+---------+
+| Parameter       | Controller Number                  | Value   |
++-----------------+------------------------------------+---------+
+| Cutoff          | 102                                | 0 - 127 |
+| Resonance       | 105                                | 0 - 127 |
+| Level           | 117                                | 0 - 127 |
+| Envelope        | NRPN MSB:0, LSB:124                | 0 - 127 |
+| LFO Shape       | NRPN MSB:0, LSB:3                  | 0 - 5   |
+| LFO Rate        | 16                                 | 0 - 127 |
+| LFO Pitch Depth | NRPN MSB:0, LSB:15                 | 0 - 127 |
+| LFO Filter Depth| NRPN MSB:0, LSB:18                 | 0 - 127 |
+| LFO Amp Depth   | NRPN MSB:0, LSB:21                 | 0 - 127 |
+| Pulse Width     | NRPN MSB:0, LSB:37                 | 0 - 127 |
++-----------------+------------------------------------+---------+
+
+*Drum Kit
 +----------------+---------+---------------------------+---------+
 | Parameter      | Note    | Controller Number         | Value   |
 +----------------+---------+---------------------------+---------+
@@ -39,16 +41,17 @@ Drum Kit
 | Level          | 36 - 72 | NRPN MSB:64, LSB:Note     | 0 - 127 |
 | Envelope       | 36 - 72 | NRPN MSB:119, LSB:Note    | 0 - 127 |
 +----------------+---------+---------------------------+---------+
-Effects
-+----------------+---------------------------+---------+
-| Parameter      | Controller Number         | Value   |
-+----------------+---------------------------+---------+
-| Effect 1       | 14                        | 0 - 127 |
-| Effect 2       | 15                        | 0 - 127 |
-| Delay          | 13                        | 0 - 127 |
-| Reverb         | 12                        | 0 - 127 |
-| Vocoder (Level)| 83                        | 0 - 127 |
-+----------------+---------------------------+---------+
+
+* Effects
++----------------+-------------------------------------+---------+
+| Parameter      | Controller Number                   | Value   |
++----------------+-------------------------------------+---------+
+| Effect 1       | 14                                  | 0 - 127 |
+| Effect 2       | 15                                  | 0 - 127 |
+| Delay          | 13                                  | 0 - 127 |
+| Reverb         | 12                                  | 0 - 127 |
+| Vocoder (Level)| 83                                  | 0 - 127 |
++----------------+-------------------------------------+---------+
 
 
 

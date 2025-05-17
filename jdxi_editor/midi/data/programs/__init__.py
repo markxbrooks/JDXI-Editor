@@ -1,3 +1,3 @@
-from .programs import PROGRAM_LIST
+from .programs import JDXiProgramList
 
-all = [PROGRAM_LIST]
+all = [JDXiProgramList]

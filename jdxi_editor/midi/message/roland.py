@@ -26,9 +26,9 @@ print("Parsed Value:", parsed_message.value)
 from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     ModelID,
     CommandID,
@@ -90,7 +90,7 @@ class RolandSysExMessage(SysExMessage):
         :return: list
         """
         msg = (
-                [JDXiMidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
+                [MidiConstant.START_OF_SYSEX, self.manufacturer_id, self.device_id]
                 + list(self.model_id)
                 + [self.command]
                 + [self.address.msb]
@@ -185,7 +185,7 @@ class RolandSysEx(SysExMessage):
         :param request: bool is this a request?
         :return: None
         """
-        log_message(f"address: {address} data_bytes: {data_bytes} request: {request}")
+        log.message(f"address: {address} data_bytes: {data_bytes} request: {request}")
 
         # Convert address and data_bytes from hex strings to integers if needed
         address = [int(a, 16) if isinstance(a, str) else a for a in address]

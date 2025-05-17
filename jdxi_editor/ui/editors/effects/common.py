@@ -38,8 +38,7 @@ from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     RolandSysExAddress,
@@ -333,9 +332,9 @@ class EffectsCommonEditor(BasicEditor):
                 )
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
-                log_message(f"Failed to send parameter {param.name}")
+                log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            log_error(f"Error handling parameter {param.name}: {ex}")
+            log.error(f"Error handling parameter {param.name}: {ex}")
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
@@ -363,5 +362,5 @@ class EffectsCommonEditor(BasicEditor):
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
-            log_error(f"MIDI error setting {param.name}: {ex}")
+            log.error(f"MIDI error setting {param.name}: {ex}")
             return False

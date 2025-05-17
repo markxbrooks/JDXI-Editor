@@ -45,14 +45,12 @@ from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.log.debug_info import log_debug_info
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
@@ -85,7 +83,7 @@ class DigitalSynthEditor(SynthEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper or (
             parent.digital_1_preset_helper
-            if self.preset_type == JDXiSynth.DIGITAL_1
+            if self.preset_type == JDXiSynth.DIGITAL_SYNTH_1
             else parent.digital_2_preset_helper
         )
         self.main_window = parent
@@ -93,7 +91,7 @@ class DigitalSynthEditor(SynthEditor):
             Union[AddressParameterDigitalPartial, AddressParameterDigitalCommon],
             QWidget,
         ] = {}
-        synth_map = {1: JDXiSynth.DIGITAL_1, 2: JDXiSynth.DIGITAL_2}
+        synth_map = {1: JDXiSynth.DIGITAL_SYNTH_1, 2: JDXiSynth.DIGITAL_SYNTH_2}
         if synth_number not in synth_map:
             raise ValueError(f"Invalid synth_number: {synth_number}. Must be 1 or 2.")
         self.synth_number = synth_number
@@ -244,9 +242,9 @@ class DigitalSynthEditor(SynthEditor):
         :return: True if successful, False otherwise
         """
         try:
-            log_parameter("Setting partial:", partial.switch_param)
-            log_parameter("Partial state enabled (Yes/No):", enabled)
-            log_parameter("Partial selected (Yes/No):", selected)
+            log.parameter("Setting partial:", partial.switch_param)
+            log.parameter("Partial state enabled (Yes/No):", enabled)
+            log.parameter("Partial selected (Yes/No):", selected)
             self.send_midi_parameter(
                 param=partial.switch_param, value=1 if enabled else 0
             )
@@ -255,7 +253,7 @@ class DigitalSynthEditor(SynthEditor):
             )
             return True
         except Exception as ex:
-            log_error(f"Error setting partial {partial.name} state: {str(ex)}")
+            log.error(f"Error setting partial {partial.name} state: {str(ex)}")
             return False
 
     def _initialize_partial_states(self):
@@ -282,12 +280,12 @@ class DigitalSynthEditor(SynthEditor):
         """
         if param == AddressParameterDigitalPartial.OSC_WAVE:
             self._update_waveform_buttons(partial_no, value)
-            log_parameter("Updated waveform buttons for OSC_WAVE", value)
+            log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
             self.partial_editors[partial_no].filter_tab.filter_mode_switch.setValue(value)
             self._update_filter_state(partial_no, value)
-            log_parameter("Updated filter state for FILTER_MODE_SWITCH", value)
+            log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
     def _update_partial_controls(self,
                                  partial_no: int,
@@ -321,7 +319,7 @@ class DigitalSynthEditor(SynthEditor):
                     partial_no, param, param_value, successes, failures
                 )
 
-        log_debug_info(successes, failures)
+        log.debug_info(successes, failures)
 
     def _update_filter_state(self, partial_no: int, value: int) -> None:
         """
@@ -348,17 +346,17 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         for control in self.controls:
-            log_parameter("control", control, silent=True)
+            log.parameter("control", control, silent=True)
         sysex_data.pop("SYNTH_TONE")
         sysex_data.pop("TONE_CATEGORY")
         for param_name, param_value in sysex_data.items():
-            log_parameter(f"{param_name} {param_value}", param_value, silent=True)
+            log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = AddressParameterDigitalCommon.get_by_name(param_name)
             if not param:
-                log_parameter(f"param not found: {param_name} ", param_value, silent=True)
+                log.parameter(f"param not found: {param_name} ", param_value, silent=True)
                 failures.append(param_name)
                 continue
-            log_parameter(f"found {param_name}", param_name, silent=True)
+            log.parameter(f"found {param_name}", param_name, silent=True)
             try:
                 if param.name in [
                     "PARTIAL1_SWITCH",
@@ -381,7 +379,7 @@ class DigitalSynthEditor(SynthEditor):
                 else:
                     self._update_slider(param, param_value, successes, failures)
             except Exception as ex:
-                log_error(f"Error {ex} occurred")
+                log.error(f"Error {ex} occurred")
 
     def _update_modify_controls(
         self,
@@ -399,19 +397,19 @@ class DigitalSynthEditor(SynthEditor):
         :return: None
         """
         for control in self.controls:
-            log_parameter("control", control, silent=True)
+            log.parameter("control", control, silent=True)
         sysex_data.pop("SYNTH_TONE")
         for param_name, param_value in sysex_data.items():
-            log_parameter(f"{param_name} {param_value}", param_value, silent=True)
+            log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = AddressParameterDigitalModify.get_by_name(param_name)
             if not param:
-                log_parameter(f"param not found: {param_name} ", param_value, silent=True)
+                log.parameter(f"param not found: {param_name} ", param_value, silent=True)
                 failures.append(param_name)
                 continue
             elif "SWITCH" in param_name:
                 self._update_switch(param, param_value, successes, failures)
             else:
-                log_parameter(f"found {param_name}", param_name, silent=True)
+                log.parameter(f"found {param_name}", param_name, silent=True)
                 self._update_slider(param, param_value, successes, failures)
 
     def _update_partial_adsr_widgets(
@@ -467,7 +465,7 @@ class DigitalSynthEditor(SynthEditor):
             return
         if spinbox:
             spinbox.setValue(control_value)
-            synth_data = create_synth_data(JDXiSynth.DIGITAL_1, partial_no)
+            synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1, partial_no)
             self.address.lmb = synth_data.lmb
             log_slider_parameters(
                 self.address, param, midi_value, control_value
@@ -539,7 +537,7 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        log_parameter(f"Updating switch for: {param_name}, checkbox:", check_box, silent=True)
+        log.parameter(f"Updating switch for: {param_name}, checkbox:", check_box, silent=True)
         if check_box:
             check_box.blockSignals(True)
             check_box.setState(bool(value), False)
@@ -577,7 +575,7 @@ class DigitalSynthEditor(SynthEditor):
             check_box.setSelected(bool(value))
             check_box.blockSignals(False)
             successes.append(param.name)
-            # log_message(f"Updated: {param.name:50} {value}")
+            # log.message(f"Updated: {param.name:50} {value}")
         else:
             failures.append(param.name)
 
@@ -588,7 +586,7 @@ class DigitalSynthEditor(SynthEditor):
         :param value: int
         :return:
         """
-        log_parameter(f"Updating waveform buttons for partial {partial_number}", value)
+        log.parameter(f"Updating waveform buttons for partial {partial_number}", value)
         if partial_number is None:
             return
 
@@ -609,7 +607,7 @@ class DigitalSynthEditor(SynthEditor):
             logging.warning("Unknown waveform value: %s", value)
             return
 
-        log_parameter(f"Waveform value {value} found, selecting", selected_waveform)
+        log.parameter(f"Waveform value {value} found, selecting", selected_waveform)
 
         # Retrieve waveform buttons for the given partial
         if partial_number not in self.partial_editors:

@@ -7,7 +7,7 @@ sysex_data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x7E, 0x7F, 0x06, 0x01, 
 
 parser = JDXiSysExParser(sysex_data)
 parsed_data = parser.parse()
-log_message(f"Parsed Data: {parsed_data}")
+log.message(f"Parsed Data: {parsed_data}")
 
 """
 
@@ -16,10 +16,10 @@ import os
 from pathlib import Path
 from typing import Optional
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.midi.sysex.parse_utils import parse_sysex
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.sysex import START_OF_SYSEX, END_OF_SYSEX
+from jdxi_editor.midi.sysex.parser.utils import parse_sysex
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
 
 
@@ -56,7 +56,7 @@ class JDXiSysExParser:
         if not self._verify_header():
             raise ValueError("Invalid JD-Xi header")
         else:
-            log_message("Correct JD-Xi header found", silent=True)
+            log.message("Correct JD-Xi header found", silent=True)
 
         self.sysex_dict = parse_sysex(self.sysex_data)
         json_log_file = (
@@ -79,7 +79,8 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-                self.sysex_data[JDXiSysExOffset.SYSEX_START] == START_OF_SYSEX and self.sysex_data[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX
+                self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX
+                and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.START_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:

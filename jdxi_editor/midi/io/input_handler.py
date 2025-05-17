@@ -27,16 +27,13 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
-from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset, JDXIIdentityOffset
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant, MidiConstant
+from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import handle_identity_request
-from jdxi_editor.log.json import log_json
-from jdxi_editor.midi.map.synth_type import SYNTH_TYPE_MAP
-from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
+from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
+from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
 from jdxi_editor.jdxi.preset.button import JDXiPresetButton
 
@@ -89,7 +86,7 @@ class MidiInHandler(MidiIOController):
             for message in p:
                 self._handle_midi_message(message)
         except Exception as ex:
-            log_error(f"Error {ex} occurred")
+            log.error(f"Error {ex} occurred")
 
     def reopen_input_port_name(self, in_port: str) -> bool:
         """Reopen the current MIDI input port and reattach the callback.
@@ -98,7 +95,7 @@ class MidiInHandler(MidiIOController):
         """
         try:
             if self.input_port_number is None:
-                log_message("No MIDI input port to reopen", level=logging.WARNING)
+                log.warning("No MIDI input port to reopen")
                 return False
 
             # Close current input port if it's open
@@ -111,16 +108,13 @@ class MidiInHandler(MidiIOController):
             # Reset callback
             if hasattr(self, "midi_callback"):
                 self.midi_in.set_callback(self.midi_callback)
-                log_message(f"Callback reattached to MIDI input port {in_port}")
+                log.message(f"Callback reattached to MIDI input port {in_port}")
             else:
-                log_message(
-                    "No handle_midi_input() method found for callback.",
-                    level=logging.WARNING,
-                )
+                log.warning("No handle_midi_input() method found for callback.")
             return True
 
         except Exception as ex:
-            log_error(f"Failed to reopen MIDI input port: {ex}")
+            log.error(f"Failed to reopen MIDI input port: {ex}")
             return False
 
     def register_callback(self, callback: Callable) -> None:
@@ -141,7 +135,7 @@ class MidiInHandler(MidiIOController):
         try:
             self.midi_in.set_callback(callback)
         except Exception as ex:
-            log_message(
+            log.message(
                 f"Error {ex} occurred calling self.midi_in.set_callback(callback)"
             )
 
@@ -161,10 +155,10 @@ class MidiInHandler(MidiIOController):
             if handler:
                 handler(message, preset_data)
             else:
-                log_message(f"Unhandled MIDI message type: {message.type}")
+                log.message(f"Unhandled MIDI message type: {message.type}")
             self.midi_message_incoming.emit(message)
         except Exception as ex:
-            log_error(f"Error {ex} occurred")
+            log.error(f"Error {ex} occurred")
 
     def _handle_note_change(self, message: Any, preset_data: dict) -> None:
         """
@@ -173,7 +167,7 @@ class MidiInHandler(MidiIOController):
         :param message: The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
-        log_message(f"MIDI message note change: {message.type} as {message}")
+        log.message(f"MIDI message note change: {message.type} as {message}")
 
     def _handle_clock(self, message: Any, preset_data: dict) -> None:
         """
@@ -201,10 +195,10 @@ class MidiInHandler(MidiIOController):
         address = parsed_data.get("ADDRESS")
         tone_name = parsed_data.get("TONE_NAME")
         temporary_area = parsed_data.get("TEMPORARY_AREA")
-        log_parameter("ADDRESS", address, silent=True)
-        log_parameter("TEMPORARY_AREA", temporary_area, silent=True)
-        log_parameter("TONE_NAME", tone_name, silent=True)
-        log_parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"), silent=True)
+        log.parameter("ADDRESS", address, silent=True)
+        log.parameter("TEMPORARY_AREA", temporary_area, silent=True)
+        log.parameter("TONE_NAME", tone_name, silent=True)
+        log.parameter("SYNTH_TONE", parsed_data.get("SYNTH_TONE"), silent=True)
 
         if address in valid_addresses and tone_name:
             if address == "12180000":
@@ -215,19 +209,19 @@ class MidiInHandler(MidiIOController):
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
         if area == AreaMSB.TEMPORARY_PROGRAM.name:
-            log_message(f"Emitting tone name: {tone_name} to {area}")
+            log.message(f"Emitting tone name: {tone_name} to {area}")
             self.update_program_name.emit(tone_name)
 
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
         """Emits the appropriate Qt signal for a given tone name."""
-        synth_type = SYNTH_TYPE_MAP.get(area)
+        synth_type = JDXiMapSynthType.MAP.get(area)
         if synth_type:
-            log_message(
+            log.message(
                 f"Emitting tone name: {tone_name} to {area} (synth type: {synth_type})"
             )
             self.update_tone_name.emit(tone_name, synth_type)
         else:
-            logging.warning(f"Unknown area: {area}. Cannot emit tone name.")
+            log.message(f"Unknown area: {area}. Cannot emit tone name.", level=logging.WARNING)
 
     def _handle_sysex_message(self, message: Any, preset_data: dict) -> None:
         """
@@ -248,7 +242,7 @@ class MidiInHandler(MidiIOController):
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            sysex_message_bytes = bytes([JDXiMidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes([JDXiMidiConstant.END_OF_SYSEX])
+            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes([MidiConstant.START_OF_SYSEX])
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 filtered_data = {
@@ -256,22 +250,21 @@ class MidiInHandler(MidiIOController):
                 }
             except Exception as ex:
                 filtered_data = {}
-            log_message(
+            log.message(
                 f"[MIDI SysEx received]: {hex_string} {filtered_data}",
-                level=logging.INFO,
                 silent=False
             )
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
-                log_parameter("Parsed data", parsed_data, silent=True)
+                log.parameter("Parsed data", parsed_data, silent=True)
                 self._emit_program_or_tone_name(parsed_data)
                 self.midi_sysex_json.emit(json.dumps(parsed_data))
-                log_json(parsed_data, silent=True)
+                log.json(parsed_data, silent=True)
             except Exception as parse_ex:
-                log_error(f"Failed to parse JD-Xi tone data: {parse_ex}")
+                log.error(f"Failed to parse JD-Xi tone data: {parse_ex}")
 
         except Exception as ex:
-            log_error(f"Unexpected error {ex} while handling SysEx message")
+            log.error(f"Unexpected error {ex} while handling SysEx message")
 
     def _handle_control_change(self, message: Any, preset_data: dict) -> None:  # @@
         """
@@ -283,7 +276,7 @@ class MidiInHandler(MidiIOController):
         channel = message.channel + 1
         control = message.control
         value = message.value
-        log_message(
+        log.message(
             f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
         )
         self.midi_control_changed.emit(channel, control, value)
@@ -316,6 +309,6 @@ class MidiInHandler(MidiIOController):
         """
         channel = message.channel + 1
         program_number = message.program
-        log_message(f"Program Change - Channel: {channel}, Program: {program_number}")
+        log.message(f"Program Change - Channel: {channel}, Program: {program_number}")
 
         self.midi_program_changed.emit(channel, program_number)

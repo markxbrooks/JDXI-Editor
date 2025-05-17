@@ -40,7 +40,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.piano.keyboard import (
     KEYBOARD_BLACK_NOTES,
     KEYBOARD_WHITE_NOTES,
@@ -174,4 +174,4 @@ class PianoKeyboard(QWidget):
         :param channel: int
         """
         self.current_channel = channel
-        log_message(f"Piano keyboard set to channel {channel}")
+        log.message(f"Piano keyboard set to channel {channel}")

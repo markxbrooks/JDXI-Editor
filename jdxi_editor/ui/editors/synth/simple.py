@@ -41,7 +41,7 @@ import os
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors import SynthEditor
 
 

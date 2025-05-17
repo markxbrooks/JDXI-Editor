@@ -25,16 +25,14 @@ from typing import Optional, Iterable
 from PySide6.QtCore import Signal
 from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
-from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
+from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     CommandID, AddressStartMSB, ModelID,
 )
-from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID, START_OF_SYSEX
+from jdxi_editor.midi.data.address.sysex import END_OF_SYSEX, RolandID
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
@@ -45,7 +43,7 @@ from jdxi_editor.midi.message.control_change import ControlChangeMessage
 from jdxi_editor.midi.message.channel import ChannelMessage
 from jdxi_editor.midi.message.sysex import SysExMessage
 from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH
-from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
+from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 
 
 def validate_midi_message(message: Iterable[int]) -> bool:
@@ -61,12 +59,12 @@ def validate_midi_message(message: Iterable[int]) -> bool:
     :rtype: bool
     """
     if not message:
-        log_message("MIDI message is empty.")
+        log.message("MIDI message is empty.")
         return False
 
     for byte in message:
         if not isinstance(byte, int) or not (0 <= byte <= 255):
-            log_parameter("Invalid MIDI value detected:", message)
+            log.parameter("Invalid MIDI value detected:", message)
             return False
 
     return True
@@ -97,13 +95,13 @@ class MidiOutHandler(MidiIOController):
         """
 
         if not validate_midi_message(message):
-            log_message("MIDI message validation failed.")
+            log.message("MIDI message validation failed.")
             return False
 
         formatted_message = format_midi_message_to_hex_string(message)
 
         if not self.midi_out.is_port_open():
-            log_message("MIDI output port is not open.")
+            log.message("MIDI output port is not open.")
             return False
         try:
             parsed_data = self.sysex_parser.parse_bytes(bytes(message))
@@ -113,7 +111,7 @@ class MidiOutHandler(MidiIOController):
         except Exception as ex:
             filtered_data = {}
         try:
-            log_message(
+            log.message(
                 f"[MIDI QC passed] — [ Sending message: {formatted_message} ] {filtered_data}",
                 level=logging.INFO,
                 silent=False
@@ -122,7 +120,7 @@ class MidiOutHandler(MidiIOController):
             self.midi_message_outgoing.emit(message)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending message: {ex}")
+            log.error(f"Error sending message: {ex}")
             return False
 
     def send_note_on(
@@ -183,10 +181,10 @@ class MidiOutHandler(MidiIOController):
         :param channel: int midi channel (0-15).
         :return: bool True if successful, False otherwise.
         """
-        log_message("========Sending bank select==========")
-        log_parameter("MSB", msb)
-        log_parameter("LSB", lsb)
-        log_parameter("channel", channel)
+        log.message("========Sending bank select==========")
+        log.parameter("MSB", msb)
+        log.parameter("LSB", lsb)
+        log.parameter("channel", channel)
         try:
             # Bank Select MSB (CC#0)
             self.send_raw_message([0xB0 + channel, 0x00, msb])
@@ -194,7 +192,7 @@ class MidiOutHandler(MidiIOController):
             self.send_raw_message([0xB0 + channel, 0x20, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending bank select: {ex}")
+            log.error(f"Error sending bank select: {ex}")
             return False
 
     def send_identity_request(self) -> bool:
@@ -204,18 +202,18 @@ class MidiOutHandler(MidiIOController):
         Returns:
             True if the message was sent successfully, False otherwise.
         """
-        log_message("=========Sending identity request========")
+        log.message("=========Sending identity request========")
         try:
             identity_request_message = IdentityRequestMessage()
             identity_request_bytes_list = identity_request_message.to_message_list()
-            log_message(
+            log.message(
                 f"sending identity request message: "
                 f"{type(identity_request_bytes_list)} {identity_request_bytes_list}"
             )
             self.send_raw_message(identity_request_bytes_list)
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending identity request: {ex}")
+            log.error(f"Error sending identity request: {ex}")
             return False
 
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
@@ -230,7 +228,7 @@ class MidiOutHandler(MidiIOController):
             return self.send_raw_message(message)
 
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending message: {ex}")
+            log.error(f"Error sending message: {ex}")
             return False
 
     def send_program_change(self, program: int, channel: int = 0) -> bool:
@@ -240,9 +238,9 @@ class MidiOutHandler(MidiIOController):
         :param channel: int MIDI channel (0-15).
         :return: True if successful, False otherwise.
         """
-        log_message("=====Sending program change====")
-        log_parameter("program", program)
-        log_parameter("channel", channel)
+        log.message("=====Sending program change====")
+        log.parameter("program", program)
+        log.parameter("channel", channel)
         try:
             program_change_message = ProgramChangeMessage(
                 channel=channel, program=program
@@ -250,7 +248,7 @@ class MidiOutHandler(MidiIOController):
             message = program_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_error(f"Error sending program change: {ex}")
+            log.error(f"Error sending program change: {ex}")
             return False
 
     def send_control_change(
@@ -264,25 +262,25 @@ class MidiOutHandler(MidiIOController):
         :param channel: int MIDI channel (0–15).
         :return: True if successful, False otherwise.
         """
-        log_message("=====Sending control change====")
-        log_parameter("controller", controller)
-        log_parameter("value", value)
-        log_parameter("channel", channel)
+        log.message("=====Sending control change====")
+        log.parameter("controller", controller)
+        log.parameter("value", value)
+        log.parameter("channel", channel)
         if not 0 <= channel <= 15:
-            log_message(f"Invalid MIDI channel: {channel}. Must be 0-15.")
+            log.message(f"Invalid MIDI channel: {channel}. Must be 0-15.")
             return False
         if not 0 <= controller <= 127:
-            log_message(f"Invalid controller number: {controller}. Must be 0-127.")
+            log.message(f"Invalid controller number: {controller}. Must be 0-127.")
             return False
         if not 0 <= value <= 127:
-            log_message(f"Invalid controller value: {value}. Must be 0-127.")
+            log.message(f"Invalid controller value: {value}. Must be 0-127.")
             return False
         try:
             control_change_message = ControlChangeMessage(channel, controller, value)
             message = control_change_message.to_message_list()
             return self.send_raw_message(message)
         except (ValueError, TypeError, OSError, IOError) as ex:
-            log_message(f"send_control_change: Error sending control change: {ex}")
+            log.message(f"send_control_change: Error sending control change: {ex}")
             return False
 
     def send_rpn(self, parameter: int, value: int, channel: int = 0) -> bool:
@@ -294,19 +292,19 @@ class MidiOutHandler(MidiIOController):
         :param channel: int MIDI channel (0–15).
         :return: True if messages sent successfully, False otherwise.
         """
-        log_message("========sending rpn=========")
+        log.message("========sending rpn=========")
         if not 0 <= parameter <= 16383:
-            log_message(f"Invalid RPN parameter: {parameter}. Must be 0–16383.")
+            log.message(f"Invalid RPN parameter: {parameter}. Must be 0–16383.")
             return False
         if not 0 <= value <= 16383:
-            log_message(f"Invalid RPN value: {value}. Must be 0–16383.")
+            log.message(f"Invalid RPN value: {value}. Must be 0–16383.")
             return False
 
         # Split into MSB/LSB
-        rpn_msb = (parameter >> 7) & JDXiBitMask.LOW_7_BITS
-        rpn_lsb = parameter & JDXiBitMask.LOW_7_BITS
-        value_msb = (value >> 7) & JDXiBitMask.LOW_7_BITS
-        value_lsb = value & JDXiBitMask.LOW_7_BITS
+        rpn_msb = (parameter >> 7) & BitMask.LOW_7_BITS
+        rpn_lsb = parameter & BitMask.LOW_7_BITS
+        value_msb = (value >> 7) & BitMask.LOW_7_BITS
+        value_lsb = value & BitMask.LOW_7_BITS
 
         success = (
             self.send_control_change(101, rpn_msb, channel)
@@ -318,12 +316,12 @@ class MidiOutHandler(MidiIOController):
         )
 
         if success:
-            log_message("Success: Sent RPN")
-            log_parameter("Param", parameter)
-            log_parameter("Value", value)
-            log_parameter("Channel", channel)
+            log.message("Success: Sent RPN")
+            log.parameter("Param", parameter)
+            log.parameter("Value", value)
+            log.parameter("Channel", channel)
         else:
-            log_message("Failed to send RPN messages.")
+            log.message("Failed to send RPN messages.")
 
         return success
 
@@ -339,27 +337,27 @@ class MidiOutHandler(MidiIOController):
         :param use_14bit: bool If True, send both MSB and LSB for value (14-bit). If False, send only MSB (7-bit).
         :return: True if all messages were sent successfully, False otherwise.
         """
-        log_message("========sending nrpn=========")
-        log_parameter("parameter", parameter)
-        log_parameter("value", value)
-        log_parameter("channel", channel)
-        log_parameter("use_14bit", use_14bit)
+        log.message("========sending nrpn=========")
+        log.parameter("parameter", parameter)
+        log.parameter("value", value)
+        log.parameter("channel", channel)
+        log.parameter("use_14bit", use_14bit)
         if not 0 <= parameter <= 16383:
-            log_message(f"Invalid NRPN parameter: {parameter}. Must be 0–16383.")
+            log.message(f"Invalid NRPN parameter: {parameter}. Must be 0–16383.")
             return False
         if not 0 <= value <= (16383 if use_14bit else 127):
-            log_message(
+            log.message(
                 f"Invalid NRPN value: {value}. Must be 0–{16383 if use_14bit else 127}."
             )
             return False
 
-        nrpn_msb = (parameter >> 7) & JDXiBitMask.LOW_7_BITS
-        nrpn_lsb = parameter & JDXiBitMask.LOW_7_BITS
+        nrpn_msb = (parameter >> 7) & BitMask.LOW_7_BITS
+        nrpn_lsb = parameter & BitMask.LOW_7_BITS
         if use_14bit:
-            value_msb = (value >> 7) & JDXiBitMask.LOW_7_BITS
-            value_lsb = value & JDXiBitMask.LOW_7_BITS
+            value_msb = (value >> 7) & BitMask.LOW_7_BITS
+            value_lsb = value & BitMask.LOW_7_BITS
         else:
-            value_msb = value & JDXiBitMask.LOW_7_BITS
+            value_msb = value & BitMask.LOW_7_BITS
             value_lsb = 0  # Optional; not sent anyway
 
         ok = True
@@ -374,12 +372,12 @@ class MidiOutHandler(MidiIOController):
         ok &= self.send_control_change(98, 127, channel)  # NRPN LSB null
 
         if ok:
-            log_message("Sent NRPN:")
-            log_parameter("parameter", parameter)
-            log_parameter("value", value)
-            log_parameter("channel", channel)
+            log.message("Sent NRPN:")
+            log.parameter("parameter", parameter)
+            log.parameter("value", value)
+            log.parameter("channel", channel)
         else:
-            log_message("Failed to send NRPN messages.")
+            log.message("Failed to send NRPN messages.")
         return ok
 
     def send_bank_select_and_program_change(
@@ -397,11 +395,11 @@ class MidiOutHandler(MidiIOController):
             True if all messages are sent successfully, False otherwise.
         """
         try:
-            log_message("========send_bank_select_and_program_change=========")
-            log_parameter("channel", channel)
-            log_parameter("bank_msb", bank_msb)
-            log_parameter("bank_lsb", bank_lsb)
-            log_parameter("program", program)
+            log.message("========send_bank_select_and_program_change=========")
+            log.parameter("channel", channel)
+            log.parameter("bank_msb", bank_msb)
+            log.parameter("bank_lsb", bank_lsb)
+            log.parameter("program", program)
             log_message(
                 f"-------#1 send_control_change controller=0, bank_msb={bank_msb}, channel: {channel} --------"
             )
@@ -416,24 +414,24 @@ class MidiOutHandler(MidiIOController):
             self.send_program_change(program, channel)
             return True
         except Exception as ex:
-            log_error(f"Error {ex} occurred sending bank and program change message")
+            log.error(f"Error {ex} occurred sending bank and program change message")
             return False
 
     def identify_device(self) -> bool:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
-        log_parameter("sending identity request message:", request)
+        log.parameter("sending identity request message:", request)
 
     def send_message(self, message: MidiMessage):
         """unpack the message list and send it"""
         try:
             raw_message = message.to_message_list()
             self.send_raw_message(raw_message)
-            log_parameter("Sent MIDI message:", raw_message)
+            log.parameter("Sent MIDI message:", raw_message)
 
         except Exception as ex:
-            log_error(f"Error sending identity request: {str(ex)}")
+            log.error(f"Error sending identity request: {str(ex)}")
 
     def get_parameter(self, msb: int, umb: int, lmb: int, param: int) -> Optional[int]:
         """
@@ -445,10 +443,10 @@ class MidiOutHandler(MidiIOController):
         :return: Nonne
         """
         log_message("Requesting parameter")
-        log_parameter("msb", msb)
-        log_parameter("umb", umb)
-        log_parameter("lmb", lmb)
-        log_parameter("param", param)
+        log.parameter("msb", msb)
+        log.parameter("umb", umb)
+        log.parameter("lmb", lmb)
+        log.parameter("param", param)
 
         if not self.midi_out.is_port_open() or not self.midi_in.is_port_open():
             log_message("MIDI ports not open")
@@ -473,7 +471,9 @@ class MidiOutHandler(MidiIOController):
                 message = self.midi_in.get_message()
                 if message:
                     msg, _ = message
-                    if len(msg) >= ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START] == JDXiMidiConstant.START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END] == END_OF_SYSEX:
+                    if (len(msg) >= ONE_BYTE_SYSEX_DATA_LENGTH and msg[JDXiSysExOffset.SYSEX_START]
+                            == MidiConstant.START_OF_SYSEX and msg[JDXiSysExOffset.SYSEX_END]
+                            == MidiConstant.END_OF_SYSEX):
                         # Parse response
                         response = SysExMessage.from_bytes(bytes(msg))
                         # Extract parameter value
@@ -485,7 +485,7 @@ class MidiOutHandler(MidiIOController):
             raise TimeoutError
 
         except (TimeoutError, OSError, IOError) as ex:
-            log_error(f"Error getting parameter: {ex}")
+            log.error(f"Error getting parameter: {ex}")
             return None
 
     def save_patch(self, file_path: str) -> bool:
@@ -520,7 +520,7 @@ class MidiOutHandler(MidiIOController):
             log_message(f"Patch saved to {file_path}")
             return True
         except Exception as ex:
-            log_error(f"Error saving patch: {str(ex)}")
+            log.error(f"Error saving patch: {str(ex)}")
             return False
 
     def _get_digital_parameters(self):

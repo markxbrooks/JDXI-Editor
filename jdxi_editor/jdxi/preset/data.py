@@ -29,7 +29,7 @@ Example usage:
 
 
 from dataclasses import dataclass
-from jdxi_editor.jdxi.preset.lists import JDXiPresets
+from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 
 
@@ -51,23 +51,23 @@ class JDXiPresetData:
         :param preset_number: The preset number
         :return: A JDXIPresetData instance with preset list and MIDI values
         """
-        if synth_type == JDXiSynth.ANALOG:
-            presets = JDXiPresets.ANALOG
+        if synth_type == JDXiSynth.ANALOG_SYNTH:
+            presets = JDXiPresetToneList.ANALOG
             bank_msb = 0
             bank_lsb = preset_number // 7
             program = preset_number % 7
-        elif synth_type == JDXiSynth.DIGITAL_1:
-            presets = JDXiPresets.DIGITAL_ENUMERATED
+        elif synth_type == JDXiSynth.DIGITAL_SYNTH_1:
+            presets = JDXiPresetToneList.DIGITAL_ENUMERATED
             bank_msb = 1
             bank_lsb = preset_number // 16
             program = preset_number % 16
-        elif synth_type == JDXiSynth.DIGITAL_2:
-            presets = JDXiPresets.DIGITAL_ENUMERATED
+        elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
+            presets = JDXiPresetToneList.DIGITAL_ENUMERATED
             bank_msb = 2
             bank_lsb = preset_number // 16
             program = preset_number % 16
         else:  # Drums
-            presets = JDXiPresets.DRUM_ENUMERATED
+            presets = JDXiPresetToneList.DRUM_ENUMERATED
             bank_msb = 3
             bank_lsb = preset_number // 16
             program = preset_number % 16
@@ -89,23 +89,23 @@ class JDXIPresetDataOld:
         :param preset_number: The preset number
         :return: A dictionary with presets, bank_msb, bank_lsb, and program
         """
-        if synth_type == JDXiSynth.ANALOG:
-            presets = JDXiPresets.ANALOG
+        if synth_type == JDXiSynth.ANALOG_SYNTH:
+            presets = JDXiPresetToneList.ANALOG
             bank_msb = 0
             bank_lsb = preset_number // 7
             program = preset_number % 7
-        elif synth_type == JDXiSynth.DIGITAL_1:
-            presets = JDXiPresets.DIGITAL_ENUMERATED
+        elif synth_type == JDXiSynth.DIGITAL_SYNTH_1:
+            presets = JDXiPresetToneList.DIGITAL_ENUMERATED
             bank_msb = 1
             bank_lsb = preset_number // 16
             program = preset_number % 16
-        elif synth_type == JDXiSynth.DIGITAL_2:
-            presets = JDXiPresets.DIGITAL_ENUMERATED
+        elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
+            presets = JDXiPresetToneList.DIGITAL_ENUMERATED
             bank_msb = 2
             bank_lsb = preset_number // 16
             program = preset_number % 16
         else:  # Drums
-            presets = JDXiPresets.DRUM_ENUMERATED
+            presets = JDXiPresetToneList.DRUM_ENUMERATED
             bank_msb = 3
             bank_lsb = preset_number // 16
             program = preset_number % 16

@@ -30,12 +30,10 @@ from PySide6.QtWidgets import (
 )
 
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.synth.factory import create_synth_data
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, AddressOffsetProgramLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.editors.drum.partial.output import DrumOutputSection
 from jdxi_editor.ui.editors.drum.partial.pitch import DrumPitchSection
 from jdxi_editor.ui.editors.drum.partial.pitch_env import DrumPitchEnvSection
@@ -62,7 +60,7 @@ class DrumPartialEditor(PartialEditor):
         self.partial_address_default = AddressOffsetProgramLMB.DRUM_DEFAULT_PARTIAL
         self.partial_address_map = DRUM_GROUP_MAP
         self.preset_helper = None
-        self._init_synth_data(synth_type=JDXiSynth.DRUM, partial_number=self.partial_number)
+        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT, partial_number=self.partial_number)
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
 

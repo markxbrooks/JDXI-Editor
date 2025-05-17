@@ -25,15 +25,15 @@ TEST_PARAMETER_ADDRESS_MAP = {
     "Temporary Tone": {
         "4-byte-addresses": {
             "18 00 00 00": AddressStartMSB.TEMPORARY_PROGRAM.name,
-            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
-            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,
-            "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_PART.name,
-            "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name,
+            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
+            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,
+            "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,
+            "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,
         },
         "3-byte-offsets": {
-            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
-            "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_PART.name,
-            "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name,
+            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
+            "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,
+            "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,
         }
     },
     "Program": {

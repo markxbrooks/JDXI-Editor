@@ -27,15 +27,15 @@ TEST_PARAMETER_ADDRESS_MAP = {
     "Temporary Tone": {
         "4-byte-addresses": {
             "18 00 00 00": AddressStartMSB.TEMPORARY_PROGRAM.name,  # Temporary Program
-            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,  # "Temporary Tone (Digital Synth Part 1)",
-            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2.name,  # "Temporary Tone (Digital Synth Part 2)",
-            "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_PART.name,  # "Temporary Tone (Analog Synth Part)",
-            "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name,  # "Temporary Tone (Drums Part)"
+            "19 00 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary Tone (Digital Synth Part 1)",
+            "19 20 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name,  # "Temporary Tone (Digital Synth Part 2)",
+            "19 40 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  # "Temporary Tone (Analog Synth Part)",
+            "19 60 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  # "Temporary Tone (Drums Part)"
         },
         "3-byte-offsets": {
-            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,  # "Temporary SuperNATURAL Synth Tone",
-            "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_PART.name,  #  "Temporary Analog Synth T one",
-            "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name,  #  "Temporary Drum Kit"
+            "01 00 00": AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,  # "Temporary SuperNATURAL Synth Tone",
+            "02 00 00": AddressOffsetTemporaryToneUMB.ANALOG_SYNTH.name,  #  "Temporary Analog Synth T one",
+            "10 00 00": AddressOffsetTemporaryToneUMB.DRUM_KIT.name,  #  "Temporary Drum Kit"
         }
     },
     "Program": {
@@ -122,7 +122,7 @@ def map_tokens_all(tokens):
 if __name__ == "__main__":
     """
     Expected output:
-    19 20 00 00 -> DIGITAL_SYNTH_PART_2 [Temporary Tone] PARTIAL_1 [synth tone]
+    19 20 00 00 -> DIGITAL_SYNTH_2 [Temporary Tone] PARTIAL_1 [synth tone]
     """
 
     # Example input data

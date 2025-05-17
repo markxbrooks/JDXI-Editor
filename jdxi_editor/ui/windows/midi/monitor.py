@@ -8,14 +8,14 @@ Attributes:
     log_view (QTextEdit): A text edit widget used to display the MIDI message log.
 
 Methods:
-    log_message(message, direction="→"): Logs a MIDI message with a timestamp. Optionally, the direction (input or output) of the message can be specified.
+    log.message(message, direction="→"): Logs a MIDI message with a timestamp. Optionally, the direction (input or output) of the message can be specified.
     clear_log(): Clears the message log view.
 """
 from typing import Optional
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
 
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class MIDIMessageMonitor(QMainWindow):
@@ -50,7 +50,7 @@ class MIDIMessageMonitor(QMainWindow):
         self.midi_helper.midi_message_outgoing.connect(self.process_outgoing_message)
 
     def process_incoming_message(self, message):
-        self.log_message(message, direction="←")
+        self.log.message(message, direction="←")
 
     def process_outgoing_message(self, message):
         self.log_message(message)
