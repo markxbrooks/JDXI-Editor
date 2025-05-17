@@ -34,7 +34,7 @@ class DrumKitMessage(RolandSysEx):
 
     command: int = CommandID.DT1
     msb: int = AddressStartMSB.TEMPORARY_TONE  # Temporary area
-    umb: int = AddressOffsetTemporaryToneUMB.DRUM_KIT_PART  # Drum Kit
+    umb: int = AddressOffsetTemporaryToneUMB.DRUM_KIT  # Drum Kit
     lmb: int = 0x00  # Section (Common or Pad offset)
     lsb: int = 0x00  # Parameter number
     value: int = 0x00  # Parameter value

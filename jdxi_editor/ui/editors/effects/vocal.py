@@ -42,7 +42,7 @@ from jdxi_editor.midi.data.address.address import (
 )
 from jdxi_editor.midi.data.parameter.program.common import AddressParameterProgramCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle

@@ -26,8 +26,8 @@ Usage Example:
 --------------
 >>> viewer = LogViewer()
 >>> viewer.show()
->>> log_message("This is an info message.")
->>> log_message("This is an error message.")
+>>> log.message("This is an info message.")
+>>> log.message("This is an error message.")
 
 """
 

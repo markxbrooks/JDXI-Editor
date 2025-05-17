@@ -10,7 +10,7 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope

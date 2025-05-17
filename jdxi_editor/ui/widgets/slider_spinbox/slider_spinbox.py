@@ -3,7 +3,7 @@ from typing import Callable
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
 
-from jdxi_editor.log.error import log_error
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 
@@ -117,7 +117,7 @@ class AdsrSliderSpinbox(QWidget):
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return midi_value_to_ms(int(value))
         else:
-            log_error(f"Unknown envelope parameter type: {param_type}")
+            log.error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
 
     def convert_from_envelope(self, value: float):
@@ -126,7 +126,8 @@ class AdsrSliderSpinbox(QWidget):
             return int(value * 127)
         if param_type in ["sustain_level"]:
             converted_value = int(value * 127)
-            print(f"convert_from_envelope param type: {param_type} value {value} -> Slider {converted_value}")
+            log.message(f"convert_from_envelope param type: "
+                        f"{param_type} value {value} -> Slider {converted_value}", silent=True)
             return converted_value
         elif param_type in ["attack_time", "decay_time", "release_time"]:
             return ms_to_midi_value(value)

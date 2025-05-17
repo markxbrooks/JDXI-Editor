@@ -17,21 +17,21 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 class JDXiSynth:
     """Synth types and their MIDI area codes"""
 
-    PROGRAM = "Program"
-    ANALOG = "Analog Synth"
-    DIGITAL_1 = "Digital Synth 1"  # Main digital synth
-    DIGITAL_2 = "Digital Synth 2"  # Second digital synth
-    DRUM = "Drums"
-    VOCAL_FX = "Vocal Effects"
+    PROGRAM = "PROGRAM"
+    ANALOG_SYNTH = "ANALOG_SYNTH"
+    DIGITAL_SYNTH_1 = "DIGITAL_SYNTH_1"  # Main digital synth
+    DIGITAL_SYNTH_2 = "DIGITAL_SYNTH_2"  # Second digital synth
+    DRUM_KIT = "DRUM_KIT"
+    VOCAL_FX = "VOCAL_FX"
 
     @staticmethod
     def get_area_code(synth_type: str) -> int:
         """Get MIDI area code for preset preset_type"""
         area_codes = {
-            JDXiSynth.ANALOG: AddressOffsetTemporaryToneUMB.ANALOG_PART,
-            JDXiSynth.DIGITAL_1: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1,
-            JDXiSynth.DIGITAL_2: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2,
-            JDXiSynth.DRUM: AddressOffsetTemporaryToneUMB.DRUM_KIT_PART,
+            JDXiSynth.ANALOG_SYNTH: AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,
+            JDXiSynth.DIGITAL_SYNTH_1: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1,
+            JDXiSynth.DIGITAL_SYNTH_2: AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2,
+            JDXiSynth.DRUM_KIT: AddressOffsetTemporaryToneUMB.DRUM_KIT,
             JDXiSynth.VOCAL_FX: AddressOffsetTemporaryToneUMB.COMMON,
             JDXiSynth.PROGRAM: AddressOffsetTemporaryToneUMB.COMMON,
         }

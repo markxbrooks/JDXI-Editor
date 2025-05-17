@@ -18,11 +18,10 @@ from typing import Dict, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import (
     midi_value_to_ms,
@@ -231,7 +230,7 @@ class ADSR(QWidget):
             if not self.send_midi_parameter(param, midi_value):
                 logging.warning(f"Failed to send parameter {param.name}")
         except ValueError as ex:
-            log_error(f"Error updating parameter: {ex}")
+            log.error(f"Error updating parameter: {ex}")
         # 4) Update plot
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
@@ -248,7 +247,7 @@ class ADSR(QWidget):
                         slider.value()
                     )
         except Exception as ex:
-            log_error(f"Error updating envelope from controls: {ex}")
+            log.error(f"Error updating envelope from controls: {ex}")
         self.plot.set_values(self.envelope)
 
     def update_controls_from_envelope(self):
@@ -263,13 +262,13 @@ class ADSR(QWidget):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            log_error(f"Error updating controls from envelope: {ex}")
+            log.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
 
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """Send MIDI parameter with error handling"""
         if not self.midi_helper:
-            log_message("No MIDI helper available - parameter change ignored")
+            log.message("No MIDI helper available - parameter change ignored")
             return False
 
         try:
@@ -282,5 +281,5 @@ class ADSR(QWidget):
             )
             return self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
-            log_error(f"MIDI error setting {param}: {str(ex)}")
+            log.error(f"MIDI error setting {param}: {str(ex)}")
             return False

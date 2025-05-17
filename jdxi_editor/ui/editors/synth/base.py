@@ -23,23 +23,17 @@ import threading
 from typing import Dict, Optional
 
 import mido
-from PIL.ImageChops import offset
 from PySide6.QtWidgets import QWidget
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
-from jdxi_editor.midi.data.address.address import AddressStartMSB, AddressOffsetSuperNATURALLMB
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
-from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterEffect1, AddressParameterDelay, \
-    AddressParameterReverb, AddressParameterEffect2
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.widgets.combo_box.combo_box import ComboBox
@@ -74,7 +68,7 @@ class SynthBase(QWidget):
     def send_raw_message(self, message: bytes) -> bool:
         """Send address SysEx message using the MIDI helper"""
         if not self._midi_helper:
-            log_message("MIDI helper not initialized")
+            log.message("MIDI helper not initialized")
             return False
         return self._midi_helper.send_raw_message(message)
 
@@ -97,7 +91,7 @@ class SynthBase(QWidget):
         :return: None
         """
         if not message.type == "clock":
-            log_message(f"MIDI message: {message}")
+            log.message(f"MIDI message: {message}")
             self.blockSignals(True)
             self.data_request()
             self.blockSignals(False)
@@ -122,7 +116,7 @@ class SynthBase(QWidget):
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
-            log_error(f"MIDI error setting {param.name}: {ex}")
+            log.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
     def send_midi_parameter_old(self, param: AddressParameter, value: int) -> bool:
@@ -137,7 +131,7 @@ class SynthBase(QWidget):
             result = self._midi_helper.send_midi_message(sysex_message)
             return bool(result)
         except Exception as ex:
-            log_error(f"MIDI error setting {param.name}: {ex}")
+            log.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
     def _on_parameter_changed(self, param: AddressParameter, display_value: int):
@@ -154,9 +148,9 @@ class SynthBase(QWidget):
                 )
             # Send MIDI message
             if not self.send_midi_parameter(param, midi_value):
-                log_message(f"Failed to send parameter {param.name}")
+                log.message(f"Failed to send parameter {param.name}")
         except Exception as ex:
-            log_error(f"Error handling parameter {param.name}: {ex}")
+            log.error(f"Error handling parameter {param.name}: {ex}")
 
     def _create_parameter_slider(
         self,
@@ -235,7 +229,7 @@ class SynthBase(QWidget):
         self.controls[param] = switch
         return switch
 
-    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_1,
+    def _init_synth_data(self, synth_type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1,
                          partial_number: Optional[int] = 0):
         """Initialize synth-specific data."""
         from jdxi_editor.jdxi.synth.factory import create_synth_data
@@ -313,11 +307,11 @@ class SynthBase(QWidget):
                 switch.setValue(midi_value)
                 switch.blockSignals(False)
                 successes.append(param.name)
-                log_parameter(f"Updated {midi_value} for", param)
+                log.parameter(f"Updated {midi_value} for", param)
             else:
                 failures.append(param.name)
         except Exception as ex:
-            log_error(f"Error {ex} occurred setting switch {param.name} to {midi_value}")
+            log.error(f"Error {ex} occurred setting switch {param.name} to {midi_value}")
             failures.append(param.name)
 
     def _update_partial_slider(

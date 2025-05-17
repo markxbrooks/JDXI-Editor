@@ -33,7 +33,7 @@ Dependencies:
 - PySide6.QtCore
 - MIDIHelper for MIDI message handling
 - PresetHandler for managing program presets
-- PROGRAM_LIST for predefined program data
+- JDXiProgramList.PROGRAM_LIST for predefined program data
 
 """
 
@@ -52,11 +52,10 @@ from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
 import qtawesome as qta
 
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.programs.programs import PROGRAM_LIST
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 from jdxi_editor.midi.channel.channel import MidiChannel
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
@@ -155,7 +154,7 @@ class ProgramEditor(BasicEditor):
         # Genre selection combo box
         self.genre_combo_box = QComboBox()
         self.genre_combo_box.addItem("No Genre Selected")
-        genres = set(program["genre"] for program in PROGRAM_LIST)
+        genres = set(program["genre"] for program in JDXiProgramList.PROGRAM_LIST)
         self.genre_combo_box.addItems(sorted(genres))
         self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
         layout.addWidget(self.genre_combo_box)
@@ -324,15 +323,15 @@ class ProgramEditor(BasicEditor):
         selected_bank = self.bank_combo_box.currentText()
         selected_genre = self.genre_combo_box.currentText()
 
-        log_parameter("selected bank", selected_bank)
-        log_parameter("selected genre", selected_genre)
+        log.parameter("selected bank", selected_bank)
+        log.parameter("selected genre", selected_genre)
 
         self.program_number_combo_box.clear()
         self.programs.clear()
 
         filtered_list = [  # Filter programs based on bank and genre
             program
-            for program in PROGRAM_LIST
+            for program in JDXiProgramList.PROGRAM_LIST
             if (selected_bank in ["No Bank Selected", program["id"][0]])
             and (selected_genre in ["No Genre Selected", program["genre"]])
         ]
@@ -403,16 +402,16 @@ class ProgramEditor(BasicEditor):
         program_id = program_name[:3]
         bank_letter = program_name[0]
         bank_number = int(program_name[1:3])
-        log_parameter("combo box bank_letter", bank_letter)
-        log_parameter("combo box bank_number", bank_number)
+        log.parameter("combo box bank_letter", bank_letter)
+        log.parameter("combo box bank_number", bank_number)
         if bank_letter in ["A", "B", "C", "D"]:
             program_details = get_program_by_id(program_id)
             self.update_current_synths(program_details)
         msb, lsb, pc = calculate_midi_values(bank_letter, bank_number)
-        log_message("calculated msb, lsb, pc :")
-        log_parameter("msb", msb)
-        log_parameter("lsb", lsb)
-        log_parameter("pc", pc)
+        log.message("calculated msb, lsb, pc :")
+        log.parameter("msb", msb)
+        log.parameter("lsb", lsb)
+        log.parameter("pc", pc)
         log_midi_info(msb, lsb, pc)
         self.midi_helper.send_bank_select_and_program_change(self.channel, msb, lsb, pc)
         self.data_request()
@@ -427,7 +426,7 @@ class ProgramEditor(BasicEditor):
             self.drum_kit_current_synth.setText(program_details["drum"])
             self.analog_synth_current_synth.setText(program_details["analog"])
         except KeyError:
-            log_message(f"Program details missing required keys: {program_details}")
+            log.message(f"Program details missing required keys: {program_details}")
             self.digital_synth_1_current_synth.setText("Unknown")
             self.digital_synth_2_current_synth.setText("Unknown")
             self.drum_kit_current_synth.setText("Unknown")

@@ -51,14 +51,13 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import CommandID
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.io import MidiIOHelper
-from jdxi_editor.midi.sysex.parsers.sysex import JDXiSysExParser
+from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
 from typing import Protocol, TypeVar, Optional
@@ -232,7 +231,7 @@ class MIDIDebugger(QMainWindow):
 
         try:
             sysex_dict = self.sysex_parser.parse_bytes(bytes(message))
-            log_parameter("sysex_dict", sysex_dict)
+            log.parameter("sysex_dict", sysex_dict)
 
             command_id, command_byte = parse_sysex_message(message, CommandID)
             temporary_area = sysex_dict.get("TEMPORARY_AREA", "Unknown")
@@ -319,7 +318,7 @@ class MIDIDebugger(QMainWindow):
             else:
                 self.log_response(f"Failed to send: {hex_str}")
 
-            log_message(f"Sent SysEx: {hex_str}")
+            log.message(f"Sent SysEx: {hex_str}")
 
         except ValueError as ex:
             self.log_response(f"Error parsing message: {match}\n{str(ex)}")

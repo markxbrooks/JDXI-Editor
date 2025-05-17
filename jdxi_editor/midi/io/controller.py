@@ -29,8 +29,7 @@ from typing import Optional, List, Tuple
 import rtmidi
 from PySide6.QtCore import QObject
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 
 
 class MidiIOController(QObject):
@@ -134,20 +133,20 @@ class MidiIOController(QObject):
                         port_index = i
                         break
                 else:
-                    log_error(f"MIDI input port not found: {port_name_or_index}")
+                    log.error(f"MIDI input port not found: {port_name_or_index}")
                     return False
 
             if not isinstance(port_index, int) or not (0 <= port_index < len(ports)):
-                log_parameter("Invalid MIDI input port index:", port_index)
+                log.parameter("Invalid MIDI input port index:", port_index)
                 return False
 
             self.midi_in.open_port(port_index)
             self.input_port_number = port_index
-            log_parameter("Opened MIDI input port:", ports[port_index])
+            log.parameter("Opened MIDI input port:", ports[port_index])
             return True
 
         except Exception as ex:
-            log_error(f"Error opening MIDI input port: {str(ex)}")
+            log.error(f"Error opening MIDI input port: {str(ex)}")
             return False
 
     def open_output_port(self, port_name_or_index: str) -> bool:
@@ -171,7 +170,7 @@ class MidiIOController(QObject):
                     port_index = port_name_or_index
 
             if port_index is None:
-                log_error(f"Invalid or missing MIDI output port: {port_name_or_index}")
+                log.error(f"Invalid or missing MIDI output port: {port_name_or_index}")
                 return False
 
             # Safely close if already open
@@ -182,11 +181,11 @@ class MidiIOController(QObject):
             self.midi_out = rtmidi.MidiOut()  # <- reinitialize
             self.midi_out.open_port(port_index)
             self.output_port_number = port_index
-            log_parameter("Opened MIDI output port:", ports[port_index])
+            log.parameter("Opened MIDI output port:", ports[port_index])
             return True
 
         except Exception as ex:
-            log_error(f"Error opening MIDI output port: {str(ex)}")
+            log.error(f"Error opening MIDI output port: {str(ex)}")
             return False
 
     def close_ports(self):
@@ -242,5 +241,5 @@ class MidiIOController(QObject):
             return input_success and output_success
 
         except Exception as ex:
-            log_error(f"Error opening MIDI ports: {str(ex)}")
+            log.error(f"Error opening MIDI ports: {str(ex)}")
             return False

@@ -8,8 +8,7 @@ as input, and it combines the controls into a single JSON object before saving i
 import json
 
 
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
 
@@ -35,6 +34,6 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
         # Save the combined data to a single JSON file
         with open(file_path, "w") as file_name:
             json.dump(combined_data, file_name, indent=4)
-        log_message(f"All controls saved successfully to {file_path}")
+        log.message(f"All controls saved successfully to {file_path}")
     except Exception as ex:
-        log_error(f"Error saving all controls: {ex}")
+        log.error(f"Error saving all controls: {ex}")

@@ -3750,3 +3750,7 @@ PROGRAM_LIST = [
         "pc": "128",
     },
 ]
+
+
+class JDXiProgramList:
+    PROGRAM_LIST = PROGRAM_LIST

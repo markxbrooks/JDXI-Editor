@@ -11,7 +11,7 @@ import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 

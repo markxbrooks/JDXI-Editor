@@ -1,6 +1,7 @@
 """
 Analog presets
 """
+
 ANALOG_PRESET_LIST = [
     {
         "id": "001",

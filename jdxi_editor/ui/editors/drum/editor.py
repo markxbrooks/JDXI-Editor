@@ -26,7 +26,7 @@ Dependencies
 - `jdxi_manager.ui.editors.drum_partial.DrumPartialEditor` for managing individual drum partials.
 - `jdxi_manager.ui.style.Style` for UI styling.
 - `jdxi_manager.ui.editors.base.SynthEditor` as the base class for the editor.
-- `jdxi_manager.midi.data.constants.sysex.DIGITAL_SYNTH_PART_1` for SysEx address handling.
+- `jdxi_manager.midi.data.constants.sysex.DIGITAL_SYNTH_1` for SysEx address handling.
 - `jdxi_manager.ui.widgets.preset.combo_box.PresetComboBox` for preset selection.
 
 Features
@@ -70,14 +70,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from jdxi_editor.log.debug_info import log_debug_info
-from jdxi_editor.log.error import log_error
-from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.message import log_message
-from jdxi_editor.midi.data.drum.data import DRUM_PARTIAL_MAP
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
-from jdxi_editor.midi.io import MidiIOHelper
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.ui.editors.drum.common import DrumCommonSection
 from jdxi_editor.ui.editors.drum.partial.editor import DrumPartialEditor
@@ -101,10 +98,10 @@ class DrumCommonEditor(SynthEditor):
         self.preset_helper = preset_helper
         self.midi_helper = midi_helper
         self.partial_number = 0
-        self._init_synth_data(synth_type=JDXiSynth.DRUM, partial_number=0)
+        self._init_synth_data(synth_type=JDXiSynth.DRUM_KIT, partial_number=0)
         self.sysex_current_data = None
         self.sysex_previous_data = None
-        self.partial_mapping = DRUM_PARTIAL_MAP
+        self.partial_mapping = JDXiMapPartialDrum.MAP
         # UI Elements
         self.main_window = parent
         self.partial_editors = {}
@@ -113,7 +110,6 @@ class DrumCommonEditor(SynthEditor):
         self.controls: Dict[AddressParameterDrumPartial, QWidget] = {}
         self.setup_ui()
         self.update_instrument_image()
-        self.partial_map = DRUM_PARTIAL_MAP
         # Setup signal handlers
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
@@ -181,7 +177,7 @@ class DrumCommonEditor(SynthEditor):
         :param channel: int
         :param program: int
         """
-        log_message(
+        log.message(
             f"Program change {program} detected on channel {channel}, requesting data update"
         )
         self.data_request(channel, program)
@@ -223,9 +219,9 @@ class DrumCommonEditor(SynthEditor):
         try:
             partial_name = list(self.partial_editors.keys())[index]
             self.partial_number = index
-            log_message(f"Updated to partial {partial_name} (index {index})")
+            log.message(f"Updated to partial {partial_name} (index {index})")
         except IndexError:
-            log_message(f"Invalid partial index: {index}")
+            log.message(f"Invalid partial index: {index}")
 
     def _update_partial_controls(self, partial_no: int, sysex_data: dict, successes: list, failures: list) -> None:
         """
@@ -259,16 +255,16 @@ class DrumCommonEditor(SynthEditor):
         :param failures: List of failed parameters
         :return: None
         """
-        log_header_message("Tone common")
+        log.header_message("Tone common")
         for param_name, param_value in sysex_data.items():
             param = AddressParameterDrumCommon.get_by_name(param_name)
-            log_message(f"Tone common: param_name: {param} {param_value}")
+            log.message(f"Tone common: param_name: {param} {param_value}")
             try:
                 if param:
                     self._update_slider(param, param_value)
                 else:
                     failures.append(param_name)
             except Exception as ex:
-                log_error(f"Error {ex} occurred")
+                log.error(f"Error {ex} occurred")
 
-        log_debug_info(successes, failures)
+        log.debug_info(successes, failures)

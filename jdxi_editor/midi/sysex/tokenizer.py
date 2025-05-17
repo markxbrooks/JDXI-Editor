@@ -26,6 +26,6 @@ def generate_mapping(input_string):
     return None
 
 # Example input
-# input_data = "DIGITAL_SYNTH_PART_1 COMMON"
+# input_data = "DIGITAL_SYNTH_1 COMMON"
 # mapping = generate_mapping(input_data)
 # print(mapping)

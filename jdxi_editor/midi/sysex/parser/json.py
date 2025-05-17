@@ -7,7 +7,7 @@ json_data = [0xF0, 0x41, 0x10, 0x00, 0x00, 0x00, 0x0E, 0x7E, 0x7F, 0x06, 0x01, 0
 
 parser = JDXiSysExParser(json_data)
 parsed_data = parser.parse()
-log_message(f"Parsed Data: {parsed_data}")
+log.message(f"Parsed Data: {parsed_data}")
 
 """
 
@@ -16,7 +16,7 @@ import os.path
 from pathlib import Path
 from typing import Optional, Any
 
-from jdxi_editor.log.error import log_error
+from jdxi_editor.log.logger import Logger as log
 
 
 class JDXiJsonSysexParser:
@@ -50,7 +50,7 @@ class JDXiJsonSysexParser:
             sysex_dict = json.loads(self.sysex_data_json)
             return sysex_dict
         except json.JSONDecodeError as ex:
-            log_error(f"Invalid JSON format: {ex}")
+            log.error(f"Invalid JSON format: {ex}")
             return None
 
     def parse_json(self, json_sysex_data: str) -> dict:

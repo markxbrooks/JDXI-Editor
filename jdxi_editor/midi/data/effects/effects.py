@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from jdxi_editor.jdxi.sysex.bitmask import JDXiBitMask
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressStartMSB,
@@ -291,10 +291,10 @@ class Effect1Message(RolandSysEx):
             # Convert -20000/+20000 to 12768-52768
             value = self.value + 32768
             self.data = [
-                (value >> 24) & JDXiBitMask.LOW_4_BITS,  # High nibble
-                (value >> 16) & JDXiBitMask.LOW_4_BITS,
-                (value >> 8) & JDXiBitMask.LOW_4_BITS,
-                value & JDXiBitMask.LOW_4_BITS,  # Low nibble
+                (value >> 24) & BitMask.LOW_4_BITS,  # High nibble
+                (value >> 16) & BitMask.LOW_4_BITS,
+                (value >> 8) & BitMask.LOW_4_BITS,
+                value & BitMask.LOW_4_BITS,  # Low nibble
             ]
         else:
             self.data = [self.value]
@@ -362,10 +362,10 @@ class Effect2Message(RolandSysEx):
             # Convert -20000/+20000 to 12768-52768
             value = self.value + 32768
             self.data = [
-                (value >> 24) & JDXiBitMask.LOW_4_BITS,  # High nibble
-                (value >> 16) & JDXiBitMask.LOW_4_BITS,
-                (value >> 8) & JDXiBitMask.LOW_4_BITS,
-                value & JDXiBitMask.LOW_4_BITS,  # Low nibble
+                (value >> 24) & BitMask.LOW_4_BITS,  # High nibble
+                (value >> 16) & BitMask.LOW_4_BITS,
+                (value >> 8) & BitMask.LOW_4_BITS,
+                value & BitMask.LOW_4_BITS,  # Low nibble
             ]
         else:
             self.data = [self.value]

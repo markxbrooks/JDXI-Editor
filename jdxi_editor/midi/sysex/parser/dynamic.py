@@ -9,7 +9,7 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
         temporary_area = get_temporary_area(data)
 
         # Handle drum tones dynamically
-        if temporary_area == TemporaryToneUMB.DRUM_KIT_PART.name:
+        if temporary_area == TemporaryToneUMB.DRUM_KIT.name:
             address_lmb = data[JDXiSysExOffset.ADDRESS_LMB]
             synth_tone, offset = get_drum_tone(address_lmb)
         else:
@@ -22,9 +22,9 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
         )
 
         # Log the mappings for debugging
-        log_parameter("temporary_area", temporary_area)
-        log_parameter("synth_tone", synth_tone)
-        log_parameter("parameter_cls", parameter_cls.__name__ if parameter_cls else "None")
+        log.parameter("temporary_area", temporary_area)
+        log.parameter("synth_tone", synth_tone)
+        log.parameter("parameter_cls", parameter_cls.__name__ if parameter_cls else "None")
 
         return {
             "TEMPORARY_AREA": temporary_area,
@@ -32,7 +32,7 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
             "PARAMETER_CLASS": parameter_cls.__name__ if parameter_cls else "Unknown"
         }
     except Exception as ex:
-        log_error(f"Error resolving mappings: {ex}")
+        log.error(f"Error resolving mappings: {ex}")
         return {"TEMPORARY_AREA": "Error", "SYNTH_TONE": "Error", "PARAMETER_CLASS": "Error"}
 
 
@@ -44,10 +44,10 @@ def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
     :return: Dict[str, str]
     """
     # Log the raw data
-    log_parameter("data", data, silent=True)
+    log.parameter("data", data, silent=True)
 
     if len(data) < ONE_BYTE_SYSEX_DATA_LENGTH:
-        log_message("Insufficient data length for parsing.", level=logging.WARNING)
+        log.message("Insufficient data length for parsing.", level=logging.WARNING)
         return _return_minimal_metadata(data)
 
     # Use dynamic map resolver

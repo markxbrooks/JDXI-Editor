@@ -20,8 +20,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal
 
-from jdxi_editor.log.parameter import log_parameter
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
@@ -77,10 +76,10 @@ class PresetComboBox(QWidget):
     def _on_load_clicked(self):
         """Handle load button click."""
         preset_name = self.combo_box.currentText()
-        log_message(f"combo box preset_name : {preset_name}")
+        log.message(f"combo box preset_name : {preset_name}")
         program_number = preset_name[:3]
         self.preset_loaded.emit(int(program_number))
-        log_message(f"combo box program_number : {program_number}")
+        log.message(f"combo box program_number : {program_number}")
 
     def _filter_presets(self, search_text: str):
         """
@@ -143,7 +142,7 @@ class PresetComboBox(QWidget):
         """Populate the program list with available presets."""
 
         selected_category = self.category_combo_box.currentText()
-        log_parameter("Selected Category:", selected_category)
+        log.parameter("Selected Category:", selected_category)
 
         self.combo_box.clear()
         self.presets.clear()

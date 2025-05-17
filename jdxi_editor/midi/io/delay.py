@@ -1,6 +1,6 @@
 import time
 
-from jdxi_editor.log.error import log_error
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.sleep import MIDI_SLEEP_TIME
 
 
@@ -12,6 +12,6 @@ def send_with_delay(midi_helper, midi_requests: list):
             time.sleep(MIDI_SLEEP_TIME)  # Blocking delay in a separate thread
         except Exception as ex:
             if midi_request:
-                log_error(f"Error {ex} occurred sending message {midi_request}")
+                log.error(f"Error {ex} occurred sending message {midi_request}")
             else:
-                log_error(f"Error {ex} occurred sending message")
+                log.error(f"Error {ex} occurred sending message")

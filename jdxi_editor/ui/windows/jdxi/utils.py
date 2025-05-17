@@ -6,12 +6,12 @@ and manage MIDI input/output ports."""
 
 from PySide6.QtWidgets import QMessageBox
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 
 
 def show_message_box(title, text, icon=QMessageBox.Critical):
     """Helper method to display a QMessageBox."""
-    log_message(text)
+    log.message(text)
     msg_box = QMessageBox()
     msg_box.setIcon(icon)
     msg_box.setWindowTitle(title)

@@ -13,7 +13,7 @@ from typing import Optional
 from rtmidi.midiconstants import TIMING_CLOCK, SONG_CONTINUE, SONG_START, SONG_STOP
 from rtmidi.midiutil import open_midiinput
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 
 
 class MIDIClockReceiver:
@@ -51,10 +51,10 @@ class MIDIClockReceiver:
 
         elif msg[0] in (SONG_CONTINUE, SONG_START):
             self.running = True
-            log_message("START/CONTINUE received.")
+            log.message("START/CONTINUE received.")
         elif msg[0] == SONG_STOP:
             self.running = False
-            log_message("STOP received.")
+            log.message("STOP received.")
 
 
 def main(args=None):
@@ -79,15 +79,15 @@ def main(args=None):
     m_in.ignore_types(timing=False)
 
     try:
-        log_message("Waiting for clock sync...")
+        log.message("Waiting for clock sync...")
         while True:
             time.sleep(1)
 
             if clock.running:
                 if clock.sync:
-                    log_message("%.2f bpm" % clock.bpm)
+                    log.message("%.2f bpm" % clock.bpm)
                 else:
-                    log_message("%.2f bpm (no sync)" % clock.bpm)
+                    log.message("%.2f bpm (no sync)" % clock.bpm)
 
     except KeyboardInterrupt:
         pass

@@ -34,7 +34,7 @@ import threading
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
@@ -53,7 +53,7 @@ class JDXiPresetHelper(QObject):
     preset_changed = Signal(int, int)  # Signal emitted when preset changes
 
     def __init__(
-        self, midi_helper, presets, channel=1, preset_type=JDXiSynth.DIGITAL_1
+        self, midi_helper, presets, channel=1, preset_type=JDXiSynth.DIGITAL_SYNTH_1
     ):
         super().__init__()
         self.presets = presets
@@ -78,21 +78,21 @@ class JDXiPresetHelper(QObject):
         return self.presets
 
     def load_preset_by_program_change(
-        self, preset_index, synth_type=JDXiSynth.DIGITAL_1
+        self, preset_index, synth_type=JDXiSynth.DIGITAL_SYNTH_1
     ):
         """Load a preset using program change."""
-        log_message(f"Preset index: {preset_index}")
+        log.message(f"Preset index: {preset_index}")
         preset_list_map = {
-            JDXiSynth.DIGITAL_1: DIGITAL_PRESET_LIST,
-            JDXiSynth.DIGITAL_2: DIGITAL_PRESET_LIST,
-            JDXiSynth.ANALOG: ANALOG_PRESET_LIST,
-            JDXiSynth.DRUM: DRUM_KIT_LIST,
+            JDXiSynth.DIGITAL_SYNTH_1: DIGITAL_PRESET_LIST,
+            JDXiSynth.DIGITAL_SYNTH_2: DIGITAL_PRESET_LIST,
+            JDXiSynth.ANALOG_SYNTH: ANALOG_PRESET_LIST,
+            JDXiSynth.DRUM_KIT: DRUM_KIT_LIST,
         }
         channel_map = {
-            JDXiSynth.DIGITAL_1: MidiChannel.DIGITAL1,
-            JDXiSynth.DIGITAL_2: MidiChannel.DIGITAL2,
-            JDXiSynth.ANALOG: MidiChannel.ANALOG,
-            JDXiSynth.DRUM: MidiChannel.DRUM,
+            JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL1,
+            JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL2,
+            JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG,
+            JDXiSynth.DRUM_KIT: MidiChannel.DRUM,
         }
         preset_list = preset_list_map.get(synth_type, DIGITAL_PRESET_LIST)
         channel = channel_map.get(synth_type, MidiChannel.DIGITAL1)
@@ -109,7 +109,7 @@ class JDXiPresetHelper(QObject):
         :param preset_data: JDXIPresetData
         :return: None
         """
-        log_message(f"Loading preset: {preset_data}")
+        log.message(f"Loading preset: {preset_data}")
         program_number, channel = preset_data.number, preset_data.channel
 
         # Select the correct preset list based on the channel
@@ -148,7 +148,7 @@ class JDXiPresetHelper(QObject):
         log_midi_info(msb, lsb, pc)
 
         if pc is None:
-            log_message("Program Change value is None, aborting.")
+            log.message("Program Change value is None, aborting.")
             return
 
         # Convert 1-based PC to 0-based

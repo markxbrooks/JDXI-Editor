@@ -1,8 +1,6 @@
 import json
 from typing import Dict
 
-from jdxi_editor.log.message import log_message
-
 
 def log_json(data: Dict, silent: bool = False) -> None:
     """

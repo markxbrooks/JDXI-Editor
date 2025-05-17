@@ -36,10 +36,10 @@ def log_slider_parameters(
         synth_umb = f"0x{int(address.umb):02X}"
         part_lmb = f"0x{int(address.lmb):02X}"
         synth_name_umb = parse_sysex_byte(int(synth_umb, 16), AddressOffsetTemporaryToneUMB)
-        if synth_name_umb == AddressOffsetTemporaryToneUMB.DRUM_KIT_PART.name:
+        if synth_name_umb == AddressOffsetTemporaryToneUMB.DRUM_KIT.name:
             address_offset_cls = AddressOffsetDrumKitLMB
-        elif synth_name_umb in [AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_1.name,
-                                AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_PART_2.name]:
+        elif synth_name_umb in [AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_1.name,
+                                AddressOffsetTemporaryToneUMB.DIGITAL_SYNTH_2.name]:
             address_offset_cls = AddressOffsetSuperNATURALLMB
         else:
             address_offset_cls = AddressOffsetProgramLMB

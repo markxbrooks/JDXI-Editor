@@ -1,6 +1,6 @@
 """ scan MIDI ports for JD-Xi """
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 
 
 def find_jdxi_port(port_list: list):
@@ -8,7 +8,7 @@ def find_jdxi_port(port_list: list):
     jdxi_names = ["jd-xi", "jdxi", "roland jd-xi"]
     for port in port_list:
         if any(name in port.lower() for name in jdxi_names):
-            log_message(f"Auto-detected JD-Xi: {port}")
+            log.message(f"Auto-detected JD-Xi: {port}")
             return port
 
     return None

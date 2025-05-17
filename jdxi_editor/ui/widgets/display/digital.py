@@ -36,7 +36,7 @@ from PySide6.QtCore import QRect
 from PySide6.QtWidgets import QWidget, QSizePolicy
 from PySide6.QtGui import QPainter, QLinearGradient, QColor, QPen, QFont, QPaintEvent
 
-from jdxi_editor.log.message import log_message
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST
 from jdxi_editor.midi.data.programs.drum import DRUM_KIT_LIST
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
@@ -331,26 +331,26 @@ class DigitalDisplay(DigitalDisplayBase):
         :param drums_tone_name: str
         :param analog_tone_name: str
         """
-        if synth_type == JDXiSynth.DIGITAL_1:
+        if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
             tone_name = digital1_tone_name
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
             active_synth = "D1"
-        elif synth_type == JDXiSynth.DIGITAL_2:
+        elif synth_type == JDXiSynth.DIGITAL_SYNTH_2:
             tone_name = digital2_tone_name
             active_synth = "D2"
             tone_number = get_preset_list_number_by_name(tone_name, DIGITAL_PRESET_LIST)
-        elif synth_type == JDXiSynth.DRUM:
+        elif synth_type == JDXiSynth.DRUM_KIT:
             tone_name = drums_tone_name
             active_synth = "DR"
             tone_number = get_preset_list_number_by_name(tone_name, DRUM_KIT_LIST)
-        elif synth_type == JDXiSynth.ANALOG:
+        elif synth_type == JDXiSynth.ANALOG_SYNTH:
             tone_name = analog_tone_name
             active_synth = "AN"
             tone_number = get_preset_list_number_by_name(tone_name, ANALOG_PRESET_LIST)
         else:
             active_synth = "D1"
-        log_message(f"current tone number: {tone_number}")
-        log_message(f"current tone name: {tone_name}")
+        log.message(f"current tone number: {tone_number}")
+        log.message(f"current tone name: {tone_name}")
         self.repaint_display(
             current_octave=self.current_octave,
             tone_number=tone_number,

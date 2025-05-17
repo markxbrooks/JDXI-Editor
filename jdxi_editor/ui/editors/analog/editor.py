@@ -58,10 +58,7 @@ from PySide6.QtGui import QShortcut, QKeySequence
 import qtawesome as qta
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.log.debug_info import log_debug_info
-from jdxi_editor.log.header import log_header_message
-from jdxi_editor.log.message import log_message
-from jdxi_editor.log.parameter import log_parameter
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
@@ -114,15 +111,15 @@ class AnalogSynthEditor(SynthEditor):
         self.main_window = parent
 
         self._init_parameter_mappings()
-        self._init_synth_data(JDXiSynth.ANALOG)
+        self._init_synth_data(JDXiSynth.ANALOG_SYNTH)
         self.setup_ui()
 
         if self.midi_helper:
             self.midi_helper.midi_program_changed.connect(self._handle_program_change)
             self.midi_helper.midi_sysex_json.connect(self._dispatch_sysex_to_area)
-            log_message("MIDI signals connected")
+            log.message("MIDI signals connected")
         else:
-            log_message("MIDI signals not connected")
+            log.message("MIDI signals not connected")
 
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
@@ -549,10 +546,10 @@ class AnalogSynthEditor(SynthEditor):
         selected_waveform = waveform_map.get(value)
 
         if selected_waveform is None:
-            log_message(f"Unknown waveform value: {value}", level=logging.WARNING)
+            log.message(f"Unknown waveform value: {value}", level=logging.WARNING)
             return
 
-        log_message(f"Waveform value {value} found, selecting {selected_waveform}")
+        log.message(f"Waveform value {value} found, selecting {selected_waveform}")
 
         # Retrieve waveform buttons for the given partial
         wave_buttons = self.wave_buttons
@@ -585,7 +582,7 @@ class AnalogSynthEditor(SynthEditor):
             selected_btn.setChecked(True)
             selected_btn.setStyleSheet(JDXiStyle.BUTTON_ANALOG_ACTIVE)
         else:
-            log_message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
+            log.message(f"Unknown LFO shape value: {value}", level=logging.WARNING)
 
     def _update_pw_controls_state(self, waveform: AnalogOscWave):
         """
@@ -594,7 +591,7 @@ class AnalogSynthEditor(SynthEditor):
         :return: None
         """
         pw_enabled = waveform == AnalogOscWave.PULSE
-        log_message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
+        log.message(f"Waveform: {waveform} Pulse Width enabled: {pw_enabled}")
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH].setEnabled(pw_enabled)
         self.controls[AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH].setEnabled(
             pw_enabled

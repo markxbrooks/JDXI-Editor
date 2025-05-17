@@ -1,7 +1,6 @@
 from typing import Dict, Optional
 from PySide6.QtCore import QObject
 
-from jdxi_editor.log.debug_info import log_debug_info
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 
 
@@ -99,9 +98,9 @@ class PartialController(QObject):
         :return: True if successful, False otherwise
         """
         try:
-            log_parameter("Setting partial:", partial.switch_param)
-            log_parameter("Partial state enabled (Yes/No):", enabled)
-            log_parameter("Partial selected (Yes/No):", selected)
+            log.parameter("Setting partial:", partial.switch_param)
+            log.parameter("Partial state enabled (Yes/No):", enabled)
+            log.parameter("Partial selected (Yes/No):", selected)
             self.send_midi_parameter(
                 param=partial.switch_param, value=1 if enabled else 0
             )
@@ -110,7 +109,7 @@ class PartialController(QObject):
             )
             return True
         except Exception as ex:
-            log_error(f"Error setting partial {partial.name} state: {str(ex)}")
+            log.error(f"Error setting partial {partial.name} state: {str(ex)}")
             return False
 
     def _initialize_partial_states(self):
@@ -138,12 +137,12 @@ class PartialController(QObject):
         """
         if param == AddressParameterDigitalPartial.OSC_WAVE:
             self._update_waveform_buttons(partial_no, value)
-            log_parameter("Updated waveform buttons for OSC_WAVE", value)
+            log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
             self.partial_editors[partial_no].filter_mode_switch.setValue(value)
             self._update_filter_state(partial_no, value)
-            log_parameter("Updated filter state for FILTER_MODE_SWITCH", value)
+            log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
     def _apply_partial_ui_updates(self, partial_no: int, sysex_data: dict) -> None:
         """
@@ -186,7 +185,7 @@ class PartialController(QObject):
                     partial_no, param, param_value, successes, failures
                 )
 
-        log_debug_info(successes, failures)
+        log.debug_info(successes, failures)
 
     def _update_waveform_buttons(self, partial_no, param_value):
         pass
