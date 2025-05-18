@@ -2,7 +2,8 @@
 utility functions 
 
 """
-from typing import List, Optional, Union, Callable
+
+from typing import List, Optional, Union, Iterable
 
 import mido
 
@@ -13,38 +14,25 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import ModelID
 from jdxi_editor.midi.data.address.sysex import RolandID
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
-
 from jdxi_editor.midi.sysex.device import DeviceInfo
 
 
-def format_midi_message_to_hex_string(message):
-    """hexlify message"""
-    formatted_message = " ".join([hex(x)[2:].upper().zfill(2) for x in message])
-    return formatted_message
-
-
-def construct_address(area, group, param, part):
-    """Address construction
-    :param area: int
-    :param group: int
-    :param param: int
-    :param part: int
-    :return: list
+def format_midi_message_to_hex_string(message:  Iterable[int]) -> str:
     """
-    address = [area, part, group & 0xFF, param & 0xFF]
-    return address
+    Convert a list of MIDI byte values to a space-separated hex string.
+    :param message: Iterable[int]
+    :return: str A string like "F0 41 10 00 00 00 0E ... F7"
+    """
+    return " ".join([hex(x)[2:].upper().zfill(2) for x in message])
 
 
 def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     """
     Increments the MSB if the LSB exceeds 7-bit maximum (127).
-
     :param msb: Most significant byte (int)
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
     """
-    #if not (0 <= lsb <= 255):
-    #    raise ValueError("LSB must be an 8-bit value (0–255).")
     if not (0 <= msb <= 255):
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
@@ -58,7 +46,6 @@ def nibble_data(data: list[int]) -> list[int]:
     """
     Ensures all values in the data list are 7-bit safe (0–127).
     Bytes > 127 are split into two 4-bit nibbles.
-
     :param data: List of integer byte values (0–255)
     :return: List of 7-bit-safe integers (0–127)
     """

@@ -7,7 +7,8 @@ class MidiConstant :
     VALUE_OFF = 0x00
     NOTE_ON = 0x90
     NOTE_OFF = 0x80
-    MAX_EIGHT_BIT_VALUE = 255  # maximum values held by eight bits
+    MAX_VALUE = 0x7F  # maximum MIDI value of 7 bits without the status bit
+    MAX_EIGHT_BIT_VALUE = 255  # maximum value held by eight bits
     ONE_BYTE_SYSEX_DATA_LENGTH = 15
     FOUR_BYTE_SYSEX_DATA_LENGTH = 18
 
