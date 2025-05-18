@@ -87,7 +87,7 @@ def get_program_id_by_name(name: str) -> Optional[str]:
         if name in program["name"]:  # Check if 'name' is a substring
             return program["id"]
 
-    logging.warning(f"Program named '{name}' not found.")
+    log.warning(f"Program named '{name}' not found.")
     return None
 
 

@@ -128,6 +128,12 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
         ]
 
+        def __str__(self):
+            return f"{self.__class__.__name__} {self.preset_type}"
+
+        def __repr__(self):
+            return f"{self.__class__.__name__} {self.preset_type}"
+
     def setup_ui(self):
         """set up user interface"""
         self.setMinimumSize(850, 300)
