@@ -256,26 +256,26 @@ def parse_sysex(data: bytes) -> Dict[str, str]:
 
 
 def update_data_with_parsed_parameters(data: bytes,
-                                       parameter: AddressParameter,
+                                       parameter_cls: AddressParameter,
                                        parsed_data: dict):
     """
     Update parsed_data with parsed parameters
     :param data: bytes SysEx message data
-    :param parameter: AddressParameter
+    :param parameter_cls: AddressParameter
     :param parsed_data: dict
     :return: None Parsed_data is updated in place
     """
-    parsed_data.update(parse_parameters(data, parameter))
+    parsed_data.update(parse_parameters(data, parameter_cls))
 
 
 def update_short_data_with_parsed_parameters(data: bytes,
-                                             parameter: AddressParameter,
+                                             parameter_cls: AddressParameter,
                                              parsed_data: dict):
     """
     Update parsed_data with parsed parameters
     :param data: bytes SysEx message data
-    :param parameter: AddressParameter
+    :param parameter_cls: AddressParameter
     :param parsed_data: dict
     :return: None Parsed_data is updated in place
     """
-    parsed_data.update(parse_single_parameter(data, parameter))
+    parsed_data.update(parse_single_parameter(data, parameter_cls))
