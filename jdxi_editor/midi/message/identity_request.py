@@ -46,4 +46,4 @@ class IdentityRequestMessage(MidiMessage):
                 JDXiMidiConstant.DEVICE_ID,
                 JDXiMidiConstant.SUB_ID_1_GENERAL_INFORMATION,
                 JDXiMidiConstant.SUB_ID_2_IDENTITY_REQUEST,
-                MidiConstant.START_OF_SYSEX]
+                MidiConstant.END_OF_SYSEX]

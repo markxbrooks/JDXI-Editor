@@ -101,7 +101,7 @@ def convert_to_mido_message(
     status_byte = message_content[JDXIProgramChangeOffset.STATUS_BYTE]
     # SysEx
     try:
-        if status_byte == MidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.START_OF_SYSEX:
+        if status_byte == MidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX:
             sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.MIDI_CHANNEL:JDXIProgramChangeOffset.END])
             if len(sysex_data) > 128:
                 nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
@@ -142,7 +142,7 @@ def mido_message_data_to_byte_list(message: mido.Message) -> bytes:
     hex_string = " ".join(f"{byte:02X}" for byte in message.data)
 
     message_byte_list = bytes(
-        [MidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [MidiConstant.START_OF_SYSEX]
+        [MidiConstant.START_OF_SYSEX] + [int(byte, 16) for byte in hex_string.split()] + [MidiConstant.END_OF_SYSEX]
     )
     return message_byte_list
 

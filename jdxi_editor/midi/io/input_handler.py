@@ -242,7 +242,7 @@ class MidiInHandler(MidiIOController):
                 return
 
             hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes([MidiConstant.START_OF_SYSEX])
+            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes([MidiConstant.END_OF_SYSEX])
             try:
                 parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
                 filtered_data = {
