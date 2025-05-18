@@ -3,11 +3,10 @@
 """
 
 from typing import Callable
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFormLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
 from jdxi_editor.midi.data.lfo.lfo import LFOSyncNote
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
-from jdxi_editor.midi.data.parameter.effects.effects import AddressParameterReverb, AddressParameterEffect1
 
 
 class DigitalToneModifySection(QWidget):

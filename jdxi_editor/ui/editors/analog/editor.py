@@ -57,7 +57,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QShortcut, QKeySequence
 import qtawesome as qta
 
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
@@ -77,6 +77,7 @@ from jdxi_editor.ui.editors.synth.editor import SynthEditor, log_changes
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 
 
 class AnalogSynthEditor(SynthEditor):

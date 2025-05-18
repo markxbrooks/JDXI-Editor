@@ -47,6 +47,7 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -54,7 +55,9 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.midi.data.parameter.digital.partial import (
+    AddressParameterDigitalPartial,
+)
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
 from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
 from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
@@ -110,20 +113,20 @@ class DigitalSynthEditor(SynthEditor):
         self.data_request()
         self.show()
         self.adsr_parameters = [
-                AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
-                AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
-                AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
-            ]
+            AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
+            AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
+            AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
+            AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
+            AddressParameterDigitalPartial.FILTER_ENV_ATTACK_TIME,
+            AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
+            AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
+            AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+        ]
         self.pitch_env_parameters = [
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
-            ]
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
+            AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
+        ]
 
     def setup_ui(self):
         """set up user interface"""
@@ -283,15 +286,15 @@ class DigitalSynthEditor(SynthEditor):
             log.parameter("Updated waveform buttons for OSC_WAVE", value)
 
         elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
-            self.partial_editors[partial_no].filter_tab.filter_mode_switch.setValue(value)
+            self.partial_editors[partial_no].filter_tab.filter_mode_switch.setValue(
+                value
+            )
             self._update_filter_state(partial_no, value)
             log.parameter("Updated filter state for FILTER_MODE_SWITCH", value)
 
-    def _update_partial_controls(self,
-                                 partial_no: int,
-                                 sysex_data: dict,
-                                 successes: list,
-                                 failures: list) -> None:
+    def _update_partial_controls(
+        self, partial_no: int, sysex_data: dict, successes: list, failures: list
+    ) -> None:
         """
         Apply updates to the UI components based on the received SysEx data.
         :param partial_no: int
@@ -311,9 +314,13 @@ class DigitalSynthEditor(SynthEditor):
             elif param == AddressParameterDigitalPartial.FILTER_MODE_SWITCH:
                 self._update_filter_state(partial_no, value=param_value)
             elif param in self.adsr_parameters:
-                self._update_partial_adsr_widgets(partial_no, param, param_value, successes, failures)
+                self._update_partial_adsr_widgets(
+                    partial_no, param, param_value, successes, failures
+                )
             elif param in self.pitch_env_parameters:
-                self._update_partial_pitch_env_widgets(partial_no, param, param_value, successes, failures)
+                self._update_partial_pitch_env_widgets(
+                    partial_no, param, param_value, successes, failures
+                )
             else:
                 self._update_partial_slider(
                     partial_no, param, param_value, successes, failures
@@ -336,7 +343,7 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data: Dict,
         successes: list = None,
         failures: list = None,
-    ):
+    ) -> None:
         """
         Update the UI components for tone common and modify parameters.
         :param partial_number: int partial number
@@ -353,7 +360,9 @@ class DigitalSynthEditor(SynthEditor):
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = AddressParameterDigitalCommon.get_by_name(param_name)
             if not param:
-                log.parameter(f"param not found: {param_name} ", param_value, silent=True)
+                log.parameter(
+                    f"param not found: {param_name} ", param_value, silent=True
+                )
                 failures.append(param_name)
                 continue
             log.parameter(f"found {param_name}", param_name, silent=True)
@@ -387,7 +396,7 @@ class DigitalSynthEditor(SynthEditor):
         sysex_data: dict,
         successes: list = None,
         failures: list = None,
-    ):
+    ) -> None:
         """
         Update the UI components for tone common and modify parameters.
         :param partial_number: int partial number
@@ -403,21 +412,25 @@ class DigitalSynthEditor(SynthEditor):
             log.parameter(f"{param_name} {param_value}", param_value, silent=True)
             param = AddressParameterDigitalModify.get_by_name(param_name)
             if not param:
-                log.parameter(f"param not found: {param_name} ", param_value, silent=True)
+                log.parameter(
+                    f"param not found: {param_name} ", param_value, silent=True
+                )
                 failures.append(param_name)
                 continue
             elif "SWITCH" in param_name:
                 self._update_switch(param, param_value, successes, failures)
             else:
                 log.parameter(f"found {param_name}", param_name, silent=True)
+                self.address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
                 self._update_slider(param, param_value, successes, failures)
 
     def _update_partial_adsr_widgets(
-        self, partial_no: int,
-            param: AddressParameterDigitalPartial,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: AddressParameterDigitalPartial,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the ADSR widget for a specific partial based on the parameter and value.
@@ -431,7 +444,9 @@ class DigitalSynthEditor(SynthEditor):
             AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
         }
         control_value = (
-            midi_value_to_fraction(midi_value) if use_fraction else midi_value_to_ms(midi_value)
+            midi_value_to_fraction(midi_value)
+            if use_fraction
+            else midi_value_to_ms(midi_value)
         )
         self.adsr_map = {
             AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME: self.partial_editors[
@@ -467,17 +482,16 @@ class DigitalSynthEditor(SynthEditor):
             spinbox.setValue(control_value)
             synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1, partial_no)
             self.address.lmb = synth_data.lmb
-            log_slider_parameters(
-                self.address, param, midi_value, control_value
-            )
+            log_slider_parameters(self.address, param, midi_value, control_value)
             successes.append(param.name)
 
     def _update_partial_pitch_env_widgets(
-        self, partial_no: int,
-            param: AddressParameterDigitalPartial,
-            midi_value: int,
-            successes: list = None,
-            failures: list = None,
+        self,
+        partial_no: int,
+        param: AddressParameterDigitalPartial,
+        midi_value: int,
+        successes: list = None,
+        failures: list = None,
     ):
         """
         Update the Pitch Env widget for a specific partial based on the parameter and value.
@@ -537,7 +551,9 @@ class DigitalSynthEditor(SynthEditor):
         }
         partial_number = partial_switch_map.get(param_name)
         check_box = self.partials_panel.switches.get(partial_number)
-        log.parameter(f"Updating switch for: {param_name}, checkbox:", check_box, silent=True)
+        log.parameter(
+            f"Updating switch for: {param_name}, checkbox:", check_box, silent=True
+        )
         if check_box:
             check_box.blockSignals(True)
             check_box.setState(bool(value), False)

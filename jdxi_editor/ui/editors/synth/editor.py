@@ -39,12 +39,12 @@ from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.json import JDXiJsonSysexParser
 from jdxi_editor.resources import resource_path
-from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number, log_synth_area_info
+from jdxi_editor.ui.editors.digital.utils import get_area, filter_sysex_keys, get_partial_number
 from jdxi_editor.midi.sysex.request.data import SYNTH_PARTIAL_MAP
 from jdxi_editor.ui.editors.helpers.program import (
-    log_midi_info,
     get_preset_parameter_value,
 )
+from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.base import SynthBase
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.display.digital import DigitalTitle
@@ -227,7 +227,7 @@ class SynthEditor(SynthBase):
         self.instrument_selection_combo.preset_loaded.connect(self.load_preset)
         instrument_title_group_layout.addWidget(self.instrument_selection_combo)
         return instrument_preset_group
-        
+
     def get_controls_as_dict(self):
         """
         Get the current values of self.controls as a dictionary.
@@ -464,7 +464,7 @@ class SynthEditor(SynthBase):
             selected_instrument_name = (
                 instrument_matches.group(2).lower().replace("&", "_").split("_")[0]
             )
-            log.parameter(f"selected instrument name:", selected_instrument_name)
+            log.parameter("selected instrument name:", selected_instrument_name)
             selected_instrument_type = (
                 instrument_matches.group(3).lower().replace("&", "_").split("_")[0]
             )
