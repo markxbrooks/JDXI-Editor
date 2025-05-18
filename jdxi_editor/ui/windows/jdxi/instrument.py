@@ -37,6 +37,7 @@ Methods:
 import logging
 import platform
 import threading
+from functools import partial
 from typing import Union, Optional
 
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
@@ -242,13 +243,14 @@ class JdxiInstrument(JdxiUi):
         """
         self.data_request()
 
-    def add_editor(self, editor: SynthEditor):
+    def add_editor(self, editor: SynthEditor) -> None:
         """
         add editor
         :param editor: SynthEditor
-        :return:
+        :return: None
         """
         self.editors.append(editor)
+        log.message(f"Editor added. Now {self.editors} available")
 
     def set_preset_name_by_type(self, tone_name: str, synth_type: str) -> None:
         """
@@ -562,6 +564,9 @@ class JdxiInstrument(JdxiUi):
                 editor.preset_helper.update_display.connect(
                     self.update_display_callback
                 )
+            if hasattr(editor, "partial_editors"):
+                for i, partial_item in enumerate(editor.partial_editors):
+                    self.add_editor(partial_item)
 
         except Exception as ex:
             log.error(f"Error showing {title} editor", exception=ex)

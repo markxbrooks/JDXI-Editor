@@ -24,6 +24,9 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
     try:
         combined_data = {"JD_XI_HEADER": "f041100000000e"}
         for editor in editors:
+            if not hasattr(editor, "address") or not hasattr(editor, "get_controls_as_dict"):
+                log.warning(f"Skipping invalid editor: {editor}")
+                continue
             combined_data["ADDRESS"] = str(editor.address)
             combined_data["TEMPORARY_AREA"] = parse_sysex_byte(
                 editor.address.umb, AddressOffsetTemporaryToneUMB
