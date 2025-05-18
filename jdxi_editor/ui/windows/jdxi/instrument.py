@@ -565,7 +565,7 @@ class JdxiInstrument(JdxiUi):
                     self.update_display_callback
                 )
             if hasattr(editor, "partial_editors"):
-                for i, partial_item in enumerate(editor.partial_editors):
+                for i, partial_item in enumerate(editor.partial_editors.values()):
                     self.add_editor(partial_item)
 
         except Exception as ex:

@@ -24,8 +24,13 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
     try:
         combined_data = {"JD_XI_HEADER": "f041100000000e"}
         for editor in editors:
-            if not hasattr(editor, "address") or not hasattr(editor, "get_controls_as_dict"):
-                log.warning(f"Skipping invalid editor: {editor}")
+            print(type(editor))
+            log.message(f"processing editor: {editor}")
+            if not hasattr(editor, "address"):
+                log.warning(f"Skipping invalid editor: {editor}, has no address")
+                continue
+            if not hasattr(editor, "get_controls_as_dict"):
+                log.warning(f"Skipping invalid editor: {editor}, has no get_controls_as_dict method")
                 continue
             combined_data["ADDRESS"] = str(editor.address)
             combined_data["TEMPORARY_AREA"] = parse_sysex_byte(

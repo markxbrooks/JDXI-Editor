@@ -74,7 +74,8 @@ class MidiInHandler(MidiIOController):
         self.sysex_parser = JDXiSysExParser()
 
     def midi_callback(self, message: list[Any], data: Any) -> None:
-        """callback for rtmidi
+        """
+        callback for rtmidi
         mido doesn't have callbacks, so we convert
         :param message: list[Any]
         :param data: Any
@@ -117,19 +118,9 @@ class MidiInHandler(MidiIOController):
             log.error(f"Failed to reopen MIDI input port: {ex}")
             return False
 
-    def register_callback(self, callback: Callable) -> None:
-        """
-        Register address callback function for MIDI messages.
-
-        :param callback: A callable that handles MIDI messages.
-        """
-        if callback not in self.callbacks:
-            self.callbacks.append(callback)
-
     def set_callback(self, callback: Callable) -> None:
         """
         Set address callback for MIDI messages.
-
         :param callback: The callback function to be set.
         """
         try:
@@ -140,7 +131,11 @@ class MidiInHandler(MidiIOController):
             )
 
     def _handle_midi_message(self, message: Any) -> None:
-        """Routes MIDI messages to appropriate handlers."""
+        """
+        Routes MIDI messages to appropriate handlers
+        :param message: Any
+        :return: None
+        """
         try:
             preset_data = JDXiPresetButtonData()
             message_handlers = {
@@ -160,25 +155,114 @@ class MidiInHandler(MidiIOController):
         except Exception as ex:
             log.error(f"Error {ex} occurred")
 
-    def _handle_note_change(self, message: Any, preset_data: dict) -> None:
+    def _handle_note_change(self, message: mido.Message, preset_data: dict) -> None:
         """
         Handle Note On and Note Off MIDI messages.
-
-        :param message: The MIDI message.
+        :param message: Any The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
         log.message(f"MIDI message note change: {message.type} as {message}")
 
-    def _handle_clock(self, message: Any, preset_data: dict) -> None:
+    def _handle_clock(self, message: mido.Message, preset_data: dict) -> None:
         """
         Handle MIDI Clock messages quietly.
 
-        :param message: The MIDI message.
+        :param message: mido.Message The MIDI message.
         :param preset_data: Dictionary for preset data modifications.
         """
         # Suppress clock message output
         if message.type == "clock":
             return
+
+    def _handle_sysex_message(self, message: mido.Message, preset_data: dict) -> None:
+        """
+        Handle SysEx MIDI messages from the Roland JD-Xi.
+
+        Processes SysEx data, attempts to parse tone data, and extracts command
+        and parameter information for further processing.
+
+        :param message: mido.Message The MIDI SysEx message.
+        :param preset_data: Dictionary for preset data modifications.
+        """
+        try:
+            if not (message.type == "sysex" and len(message.data) > 6):
+                return
+            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2 - 1  # account for lack of status byte
+            if message.data[mido_sub_id_byte_offset] == JDXiMidiConstant.SUB_ID_2_IDENTITY_REPLY:
+                handle_identity_request(message)
+                return
+
+            hex_string = " ".join(f"{byte:02X}" for byte in message.data)
+            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes(
+                [MidiConstant.END_OF_SYSEX])
+            try:
+                parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
+                filtered_data = {
+                    k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
+                }
+            except Exception as ex:
+                filtered_data = {}
+            log.message(
+                f"[MIDI SysEx received]: {hex_string} {filtered_data}",
+                silent=False
+            )
+            try:
+                parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
+                log.parameter("Parsed data", parsed_data, silent=True)
+                self._emit_program_or_tone_name(parsed_data)
+                self.midi_sysex_json.emit(json.dumps(parsed_data))
+                log.json(parsed_data, silent=True)
+            except Exception as parse_ex:
+                log.error(f"Failed to parse JD-Xi tone data: {parse_ex}")
+
+        except Exception as ex:
+            log.error(f"Unexpected error {ex} while handling SysEx message")
+
+    def _handle_control_change(self, message: mido.Message, preset_data: dict) -> None:  # @@
+        """
+        Handle Control Change (CC) MIDI messages.
+        :param message: mido.Message The MIDI Control Change message.
+        :param preset_data: Dictionary for preset data modifications.
+        """
+        channel = message.channel + 1
+        control = message.control
+        value = message.value
+        log.message(
+            f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
+        )
+        self.midi_control_changed.emit(channel, control, value)
+        if control == 99:  # NRPN MSB
+            self.nrpn_msb = value
+        elif control == 98:  # NRPN LSB
+            self.nrpn_lsb = value
+        elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
+            # We have both MSB and LSB; reconstruct NRPN address
+            (self.nrpn_msb << 7) | self.nrpn_lsb
+            # self._handle_nrpn_message(nrpn_address, value, channel)
+
+            # Reset NRPN state
+            self.nrpn_msb = None
+            self.nrpn_lsb = None
+        if control == 0:
+            self.cc_msb_value = value
+        elif control == 32:
+            self.cc_lsb_value = value
+
+    def _handle_program_change(self, message: mido.Message, preset_data: dict) -> None:
+        """
+        Handle Program Change (PC) MIDI messages.
+
+        Processes program changes and maps them to preset changes based on
+        CC values.
+
+        :param message: mido.Message The MIDI Program Change message.
+        :param preset_data: Dictionary for preset data modifications.
+        """
+        channel = message.channel + 1
+        program_number = message.program
+        log.message(f"Program Change - Channel: {channel}, Program: {program_number}")
+
+        self.midi_program_changed.emit(channel, program_number)
 
     def _emit_program_or_tone_name(self, parsed_data: dict) -> None:
         """Emits the appropriate Qt signal for the extracted tone name.
@@ -207,13 +291,23 @@ class MidiInHandler(MidiIOController):
                 self._emit_tone_name_signal(temporary_area, tone_name)
 
     def _emit_program_name_signal(self, area: str, tone_name: str) -> None:
-        """Emits the appropriate Qt signal for a given tone name."""
+        """
+        Emits the appropriate Qt signal for a given tone name
+        :param area: str
+        :param tone_name: str
+        :return: None
+        """
         if area == AreaMSB.TEMPORARY_PROGRAM.name:
             log.message(f"Emitting tone name: {tone_name} to {area}")
             self.update_program_name.emit(tone_name)
 
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
-        """Emits the appropriate Qt signal for a given tone name."""
+        """
+        Emits the appropriate Qt signal for a given tone name
+        :param area: str
+        :param tone_name: str
+        :return: None
+        """
         synth_type = JDXiMapSynthType.MAP.get(area)
         if synth_type:
             log.message(
@@ -222,93 +316,3 @@ class MidiInHandler(MidiIOController):
             self.update_tone_name.emit(tone_name, synth_type)
         else:
             log.message(f"Unknown area: {area}. Cannot emit tone name.", level=logging.WARNING)
-
-    def _handle_sysex_message(self, message: Any, preset_data: dict) -> None:
-        """
-        Handle SysEx MIDI messages from the Roland JD-Xi.
-
-        Processes SysEx data, attempts to parse tone data, and extracts command
-        and parameter information for further processing.
-
-        :param message: The MIDI SysEx message.
-        :param preset_data: Dictionary for preset data modifications.
-        """
-        try:
-            if not (message.type == "sysex" and len(message.data) > 6):
-                return
-            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2 - 1 # account for lack of status byte
-            if message.data[mido_sub_id_byte_offset] == JDXiMidiConstant.SUB_ID_2_IDENTITY_REPLY:
-                handle_identity_request(message)
-                return
-
-            hex_string = " ".join(f"{byte:02X}" for byte in message.data)
-            sysex_message_bytes = bytes([MidiConstant.START_OF_SYSEX]) + bytes(message.data) + bytes([MidiConstant.END_OF_SYSEX])
-            try:
-                parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
-                filtered_data = {
-                    k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
-                }
-            except Exception as ex:
-                filtered_data = {}
-            log.message(
-                f"[MIDI SysEx received]: {hex_string} {filtered_data}",
-                silent=False
-            )
-            try:
-                parsed_data = self.sysex_parser.parse_bytes(sysex_message_bytes)
-                log.parameter("Parsed data", parsed_data, silent=True)
-                self._emit_program_or_tone_name(parsed_data)
-                self.midi_sysex_json.emit(json.dumps(parsed_data))
-                log.json(parsed_data, silent=True)
-            except Exception as parse_ex:
-                log.error(f"Failed to parse JD-Xi tone data: {parse_ex}")
-
-        except Exception as ex:
-            log.error(f"Unexpected error {ex} while handling SysEx message")
-
-    def _handle_control_change(self, message: Any, preset_data: dict) -> None:  # @@
-        """
-        Handle Control Change (CC) MIDI messages.
-
-        :param message: The MIDI Control Change message.
-        :param preset_data: Dictionary for preset data modifications.
-        """
-        channel = message.channel + 1
-        control = message.control
-        value = message.value
-        log.message(
-            f"Control Change - Channel: {channel}, Control: {control}, Value: {value}"
-        )
-        self.midi_control_changed.emit(channel, control, value)
-        if control == 99:  # NRPN MSB
-            self.nrpn_msb = value
-        elif control == 98:  # NRPN LSB
-            self.nrpn_lsb = value
-        elif control == 6 and self.nrpn_msb is not None and self.nrpn_lsb is not None:
-            # We have both MSB and LSB; reconstruct NRPN address
-            (self.nrpn_msb << 7) | self.nrpn_lsb
-            # self._handle_nrpn_message(nrpn_address, value, channel)
-
-            # Reset NRPN state
-            self.nrpn_msb = None
-            self.nrpn_lsb = None
-        if control == 0:
-            self.cc_msb_value = value
-        elif control == 32:
-            self.cc_lsb_value = value
-
-    def _handle_program_change(self, message: Any, preset_data: dict) -> None:
-        """
-        Handle Program Change (PC) MIDI messages.
-
-        Processes program changes and maps them to preset changes based on
-        CC values.
-
-        :param message: The MIDI Program Change message.
-        :param preset_data: Dictionary for preset data modifications.
-        """
-        channel = message.channel + 1
-        program_number = message.program
-        log.message(f"Program Change - Channel: {channel}, Program: {program_number}")
-
-        self.midi_program_changed.emit(channel, program_number)

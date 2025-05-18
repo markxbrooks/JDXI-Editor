@@ -45,25 +45,22 @@ from PySide6.QtGui import QShortcut, QKeySequence
 
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.synth.factory import create_synth_data
+from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.midi.data.parameter.digital.modify import AddressParameterDigitalModify
-from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
-from jdxi_editor.midi.data.digital.partial import DigitalPartial
-from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
-from jdxi_editor.midi.data.parameter.digital.partial import (
+from jdxi_editor.midi.data.digital import DigitalOscWave, DigitalPartial
+from jdxi_editor.midi.data.parameter import AddressParameter
+from jdxi_editor.midi.data.parameter.digital import (
+    AddressParameterDigitalCommon,
     AddressParameterDigitalPartial,
+    AddressParameterDigitalModify
 )
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, midi_value_to_fraction
-from jdxi_editor.ui.editors.digital.common import DigitalCommonSection
-from jdxi_editor.ui.editors.digital.tone_modify import DigitalToneModifySection
+from jdxi_editor.ui.editors.digital import DigitalCommonSection, DigitalToneModifySection, DigitalPartialEditor
 from jdxi_editor.ui.editors.synth.editor import SynthEditor
-from jdxi_editor.ui.editors.digital.partial.editor import DigitalPartialEditor
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.panel.partial import PartialsPanel
 
 

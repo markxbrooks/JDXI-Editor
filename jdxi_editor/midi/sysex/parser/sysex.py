@@ -14,7 +14,7 @@ log.message(f"Parsed Data: {parsed_data}")
 import json
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, TextIO
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
@@ -34,21 +34,21 @@ class JDXiSysExParser:
         if not os.path.exists(self.log_folder):
             self.log_folder.mkdir(parents=True, exist_ok=True)
 
-    def from_bytes(self, sysex_data: bytes):
+    def from_bytes(self, sysex_data: bytes) -> None:
         """
-        from bytes
+        from_bytes
         :param sysex_data: bytes
-        :return:
+        :return: None
         """
         self.sysex_data = sysex_data
 
     def parse(self):
         """
         parse
-        :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ....
+        :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ...}
         """
-        # if not self._is_valid_sysex():
-        #    raise ValueError("Invalid SysEx message")
+        if not self._is_valid_sysex():
+            raise ValueError("Invalid SysEx message")
 
         if len(self.sysex_data) <= JDXiSysExOffset.ADDRESS_LSB:
             raise ValueError("Invalid SysEx message: too short")
@@ -63,15 +63,15 @@ class JDXiSysExParser:
                 self.log_folder
                 / f"jdxi_tone_data_{self.sysex_dict['ADDRESS']}.json"
         )
-        with open(json_log_file, "w", encoding="utf-8") as file_handle:
+        with open(json_log_file, "w", encoding="utf-8") as file_handle:  # type: TextIO
             json.dump(self.sysex_dict, file_handle, ensure_ascii=False, indent=2)
         return self.sysex_dict
 
     def parse_bytes(self, sysex_data: bytes):
         """
-        parse bytes
+        parse_bytes
         :param sysex_data: bytes
-        :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ....
+        :return: dict sysex dictionary {"JD_XI_HEADER": "f041100000000e", "ADDRESS": "12190150", ...}
         """
         self.sysex_data = sysex_data
         return self.parse()
@@ -79,7 +79,8 @@ class JDXiSysExParser:
     def _is_valid_sysex(self) -> bool:
         """Checks if the SysEx message starts and ends with the correct bytes."""
         return (
-                self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
+                self.sysex_data[JDXiSysExOffset.SYSEX_START] == MidiConstant.START_OF_SYSEX
+                and self.sysex_data[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX
         )
 
     def _verify_header(self) -> bool:

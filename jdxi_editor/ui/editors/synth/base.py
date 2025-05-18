@@ -119,6 +119,23 @@ class SynthBase(QWidget):
             log.error(f"MIDI error setting {param.name}: {ex}")
             return False
 
+    def get_controls_as_dict(self):
+        """
+        Get the current values of self.controls as a dictionary.
+        :returns: dict A dictionary of control parameter names and their values.
+        """
+        try:
+            controls_data = {}
+
+            for param in self.controls:
+                controls_data[param.name] = param.value
+            log.message(f"{controls_data}")
+            return controls_data
+
+        except Exception as ex:
+            log.message(f"Failed to get controls: {ex}")
+            return {}
+
     def send_midi_parameter_old(self, param: AddressParameter, value: int) -> bool:
         """
         Send MIDI parameter with error handling
@@ -248,6 +265,7 @@ class SynthBase(QWidget):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
+        print("address:", self.address)
             
     def _update_slider(
         self,

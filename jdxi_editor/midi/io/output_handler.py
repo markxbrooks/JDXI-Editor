@@ -21,43 +21,21 @@ import logging
 from typing import Optional, Iterable
 
 from PySide6.QtCore import Signal
-from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parsers.util import OUTBOUND_MESSAGE_IGNORED_KEYS
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
-from jdxi_editor.midi.message.identity_request import IdentityRequestMessage
-from jdxi_editor.midi.message.midi import MidiMessage
-from jdxi_editor.midi.message.program_change import ProgramChangeMessage
-from jdxi_editor.midi.message.control_change import ControlChangeMessage
-from jdxi_editor.midi.message.channel import ChannelMessage
+from jdxi_editor.midi.message import (
+    IdentityRequestMessage,
+    MidiMessage,
+    ProgramChangeMessage,
+    ControlChangeMessage,
+    ChannelMessage)
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
-
-
-def validate_midi_message(message: Iterable[int]) -> bool:
-    """
-    Validate a raw MIDI message.
-
-    This function checks that the message is non-empty and all values are
-    within the valid MIDI byte range (0–255).
-
-    :param message: A MIDI message represented as a list of integers or a bytes object.
-    :type message: Iterable[int], can be a list, bytes, tuple, set
-    :return: True if the message is valid, False otherwise.
-    :rtype: bool
-    """
-    if not message:
-        log.message("MIDI message is empty.")
-        return False
-
-    for byte in message:
-        if not isinstance(byte, int) or not (0 <= byte <= 255):
-            log.parameter("Invalid MIDI value detected:", message)
-            return False
-
-    return True
+from jdxi_editor.midi.sysex.validation import validate_midi_message
 
 
 class MidiOutHandler(MidiIOController):
@@ -74,10 +52,8 @@ class MidiOutHandler(MidiIOController):
     def send_raw_message(self, message: Iterable[int]) -> bool:
         """
         Send a validated raw MIDI message through the output port.
-
         This method logs the message, checks the validity using `validate_midi_message`,
         and attempts to send it via the MIDI output port.
-
         :param message: A MIDI message represented as a list of integers or a bytes object.
         :type message: Union[bytes, List[int]]
         :return: True if the message was successfully sent, False otherwise.
@@ -113,44 +89,41 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending message: {ex}")
             return False
 
-    def send_note_on(
-        self, note: int = 60, velocity: int = 127, channel: int = 1
-    ) -> None:
+    def send_note_on(self,
+                     note: int = 60,
+                     velocity: int = 127,
+                     channel: int = 1) -> None:
         """
         Send 'Note On' message to the specified MIDI channel.
-
         :param note: int MIDI note number (0–127), default is 60 (Middle C).
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
         """
-        self.send_channel_message(NOTE_ON, note, velocity, channel)
+        self.send_channel_message(MidiConstant.NOTE_ON, note, velocity, channel)
 
-    def send_note_off(
-        self, note: int = 60, velocity: int = 0, channel: int = 1
-    ) -> None:
+    def send_note_off(self,
+                      note: int = 60,
+                      velocity: int = 0,
+                      channel: int = 1) -> None:
         """
         Send address 'Note Off' message
         :param note: int MIDI note number (0–127), default is 60 (Middle C).
         :param velocity: int Note velocity (0–127), default is 127.
         :param channel: int MIDI channel (1–16), default is 1.
         """
-        self.send_channel_message(NOTE_OFF, note, velocity, channel)
+        self.send_channel_message(MidiConstant.NOTE_OFF, note, velocity, channel)
 
-    def send_channel_message(
-        self,
-        status: int,
-        data1: Optional[int] = None,
-        data2: Optional[int] = None,
-        channel: int = 1,
-    ) -> None:
+    def send_channel_message(self,
+                             status: int,
+                             data1: Optional[int] = None,
+                             data2: Optional[int] = None,
+                             channel: int = 1) -> None:
         """
         Send a MIDI Channel Message.
-
         :param status: int Status byte (e.g., NOTE_ON, NOTE_OFF, CONTROL_CHANGE).
         :param data1: Optional[int]): First data byte, typically a note or controller number.
         :param data2: Optional[int]): Second data byte, typically velocity or value.
         :param channel: int MIDI channel (1-based, range 1-16).
-
         :raises: ValueError If the channel is out of range (1-16).
         """
         if not 1 <= channel <= 16:
@@ -186,9 +159,7 @@ class MidiOutHandler(MidiIOController):
     def send_identity_request(self) -> bool:
         """
         Send identity request message (Universal System Exclusive).
-
-        Returns:
-            True if the message was sent successfully, False otherwise.
+        :return: bool True if the message was sent successfully, False otherwise.
         """
         log.message("=========Sending identity request========")
         try:
@@ -207,7 +178,6 @@ class MidiOutHandler(MidiIOController):
     def send_midi_message(self, sysex_message: MidiMessage) -> bool:
         """
         Send SysEx parameter change message using a MidiMessage.
-
         :param sysex_message: MidiMessage instance to be converted and sent.
         :return: True if the message was successfully sent, False otherwise.
         """
@@ -239,16 +209,16 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending program change: {ex}")
             return False
 
-    def send_control_change(
-        self, controller: int, value: int, channel: int = 0
-    ) -> bool:
+    def send_control_change(self,
+                            controller: int,
+                            value: int,
+                            channel: int = 0) -> bool:
         """
         Send address control change message.
-
         :param controller: int Controller number (0–127).
         :param value: int Controller value (0–127).
         :param channel: int MIDI channel (0–15).
-        :return: True if successful, False otherwise.
+        :return: bool True if successful, False otherwise.
         """
         log.message("=====Sending control change====")
         log.parameter("controller", controller)
@@ -274,7 +244,6 @@ class MidiOutHandler(MidiIOController):
     def send_rpn(self, parameter: int, value: int, channel: int = 0) -> bool:
         """
         Send a Registered Parameter Number (RPN) message via MIDI Control Change.
-
         :param parameter: int RPN parameter number (0–16383).
         :param value: int Parameter value (0–16383).
         :param channel: int MIDI channel (0–15).
@@ -318,7 +287,6 @@ class MidiOutHandler(MidiIOController):
     ) -> bool:
         """
         Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.
-
         :param parameter: int NRPN parameter number (0–16383).
         :param value: int Parameter value (0–16383 for 14-bit, 0–127 for 7-bit).
         :param channel: int MIDI channel (0–15).
@@ -373,14 +341,11 @@ class MidiOutHandler(MidiIOController):
     ) -> bool:
         """
         Sends Bank Select and Program Change messages.
-
-        Args:
-            channel: MIDI channel (1-16).
-            bank_msb: Bank MSB value.
-            bank_lsb: Bank LSB value.
-            program: Program number.
-        Returns:
-            True if all messages are sent successfully, False otherwise.
+        :param channel: int MIDI channel (1-16).
+        :param bank_msb: int Bank MSB value.
+        :param bank_lsb: int Bank LSB value.
+        :param program: int Program number.
+        :return: bool True if all messages are sent successfully, False otherwise.
         """
         try:
             log.message("========send_bank_select_and_program_change=========")
@@ -405,18 +370,21 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error {ex} occurred sending bank and program change message")
             return False
 
-    def identify_device(self) -> bool:
+    def identify_device(self) -> None:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
         log.parameter("sending identity request message:", request)
 
-    def send_message(self, message: MidiMessage):
-        """unpack the message list and send it"""
+    def send_message(self, message: MidiMessage) -> None:
+        """
+        unpack the message list and send it
+        :param message: MidiMessage
+        :return: None
+        """
         try:
             raw_message = message.to_message_list()
             self.send_raw_message(raw_message)
             log.parameter("Sent MIDI message:", raw_message)
-
         except Exception as ex:
             log.error(f"Error sending identity request: {str(ex)}")
