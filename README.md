@@ -22,7 +22,7 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 
 
 ### MacOS
-There is a new build for MacOS Sequoia. See the [releases page:] (https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.4)
+There is a new build for MacOS Sequoia. See the [releases page:](https://github.com/markxbrooks/JDXI-Editor/releases/tag/v0.0.4)
 
 ### Windows 
 There are no packaged builds yet for Windows, but one is coming soon!
