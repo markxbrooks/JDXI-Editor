@@ -33,6 +33,7 @@ import threading
 
 from PySide6.QtCore import Signal, QObject
 
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -43,7 +44,7 @@ from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.preset.utils import get_preset_values
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
-from jdxi_editor.ui.editors.helpers.program import log_midi_info
+from jdxi_editor.log.midi_info import log_midi_info
 
 
 class JDXiPresetHelper(QObject):
@@ -103,7 +104,7 @@ class JDXiPresetHelper(QObject):
 
         self.send_program_change(channel, msb, lsb, pc)
 
-    def load_preset(self, preset_data: JDXiPresetData):
+    def load_preset(self, preset_data: JDXiPresetButtonData):
         """
         Load the preset based on the provided data
         :param preset_data: JDXIPresetData

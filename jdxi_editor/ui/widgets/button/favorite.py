@@ -9,7 +9,7 @@ import logging
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-from jdxi_editor.jdxi.preset.button import JDXiPresetButton
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
 
@@ -51,7 +51,7 @@ class FavoriteButton(QPushButton):
         :param channel: int
         """
         # self.preset = PresetFavorite(synth_type, preset_num, preset_name, channel)
-        self.preset = JDXiPresetButton(
+        self.preset = JDXiPresetButtonData(
             number=preset_num, name=preset_name, type=synth_type
         )
         self._update_style()
@@ -63,7 +63,7 @@ class FavoriteButton(QPushButton):
         if not self.preset:
             logging.warning(f"No preset saved in favorite slot {self.slot_num}")
             return
-        preset_data = JDXiPresetButton(
+        preset_data = JDXiPresetButtonData(
             type=self.preset.type,  # Ensure this is address valid preset_type
             number=self.preset.tone_number + 1,  # Convert to 1-based index
         )
@@ -126,7 +126,7 @@ class FavoriteButton(QPushButton):
             # channel = self.settings.value(
             #    f"favorites/slot{self.slot_num}/channel", 0, type=int
             # )
-            self.preset = JDXiPresetButton(
+            self.preset = JDXiPresetButtonData(
                 number=preset_num, name=preset_name, type=synth_type
             )
 

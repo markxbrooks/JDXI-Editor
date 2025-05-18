@@ -12,7 +12,6 @@ The widget supports both analog and digital synth parameters and provides visual
 through an animated envelope curve.
 """
 
-import logging
 from typing import Dict, Optional
 
 from PySide6.QtCore import Signal
@@ -22,12 +21,8 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx, RolandSysExMessage
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.midi.utils.conversions import (
-    midi_value_to_ms,
-    ms_to_midi_value,
-)
+from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
 from jdxi_editor.ui.widgets.slider.slider import Slider

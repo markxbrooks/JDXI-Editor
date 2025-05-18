@@ -31,8 +31,7 @@ class Logger:
         """
         if exception:
             message = f"{message}: {exception}"
-        full_message = decorate_log_message(message, level)
-        Logger.message(full_message, stacklevel=stacklevel, silent=silent)
+        Logger.message(message, stacklevel=stacklevel, silent=silent, level=level)
 
     @staticmethod
     def warning(
@@ -47,8 +46,7 @@ class Logger:
         """
         if exception:
             message = f"{message}: {exception}"
-        full_message = decorate_log_message(message, level)
-        Logger.message(full_message, stacklevel=stacklevel, silent=silent)
+        Logger.message(message, stacklevel=stacklevel, silent=silent, level=level)
 
     @staticmethod
     def json(data: Any, silent: bool = False) -> None:
@@ -123,8 +121,8 @@ class Logger:
 
         padded_message = f"{message:<{LOG_PADDING_WIDTH}}"
         padded_type = f"{type_name:<12}"
-        final_message = decorate_log_message(f"{padded_message} {padded_type} {formatted_value}".rstrip(), level)
-        Logger.message(final_message, silent=silent, stacklevel=stacklevel)
+        final_message = f"{padded_message} {padded_type} {formatted_value}".rstrip()
+        Logger.message(final_message, silent=silent, stacklevel=stacklevel, level=level)
 
     @staticmethod
     def header_message(message: str, level: int = logging.INFO, silent: bool = False) -> None:

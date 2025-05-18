@@ -35,7 +35,7 @@ from jdxi_editor.midi.io.utils import handle_identity_request
 from jdxi_editor.midi.map.synth_type import JDXiMapSynthType
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.midi.sysex.request.data import IGNORED_KEYS
-from jdxi_editor.jdxi.preset.button import JDXiPresetButton
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 
 from jdxi_editor.midi.data.address.address import AddressStartMSB as AreaMSB
 
@@ -142,7 +142,7 @@ class MidiInHandler(MidiIOController):
     def _handle_midi_message(self, message: Any) -> None:
         """Routes MIDI messages to appropriate handlers."""
         try:
-            preset_data = JDXiPresetButton()
+            preset_data = JDXiPresetButtonData()
             message_handlers = {
                 "sysex": self._handle_sysex_message,
                 "control_change": self._handle_control_change,

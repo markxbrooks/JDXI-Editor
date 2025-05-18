@@ -1,7 +1,10 @@
 from typing import Dict, Optional
 from PySide6.QtCore import QObject
 
+from jdxi_editor.midi.data.digital.partial import DigitalPartial
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
+from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
 class PartialController(QObject):

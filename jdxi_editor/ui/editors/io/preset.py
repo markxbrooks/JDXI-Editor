@@ -64,9 +64,9 @@ from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_by_id,
     calculate_midi_values,
-    log_midi_info,
     get_preset_parameter_value,
 )
+from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 

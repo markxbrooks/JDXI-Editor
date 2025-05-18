@@ -37,22 +37,22 @@ Methods:
 import logging
 import platform
 import threading
-from typing import Union
+from typing import Union, Optional
 
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 
 from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
-from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
     AddressOffsetTemporaryToneUMB,
     AddressOffsetSystemUMB,
-    RolandSysExAddress, AddressOffsetProgramLMB,
+    RolandSysExAddress,
+    AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.address.sysex import VALUE_ON, VALUE_OFF, ZERO_BYTE
 from jdxi_editor.midi.data.control_change.sustain import ControlChangeSustain
 from jdxi_editor.midi.data.parameter.digital.common import AddressParameterDigitalCommon
 from jdxi_editor.midi.channel.channel import MidiChannel
@@ -61,7 +61,7 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.jdxi.preset.button import JDXiPresetButton
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
@@ -109,8 +109,8 @@ class JdxiInstrument(JdxiUi):
         # Try to auto-connect to JD-Xi
         self.midi_helper.auto_connect_jdxi()
         if (
-                not self.midi_helper.current_in_port
-                or not self.midi_helper.current_out_port
+            not self.midi_helper.current_in_port
+            or not self.midi_helper.current_out_port
         ):
             self._show_midi_config()
         self.midi_in_indicator.set_state(self.midi_helper.is_input_open)
@@ -125,16 +125,30 @@ class JdxiInstrument(JdxiUi):
         self._set_callbacks()
         self._init_preset_helpers()
         self.show()
+        self.data_request()
 
     def _init_preset_helpers(self):
         """Initialize preset helpers dynamically"""
         preset_configs = [
-            (JDXiSynth.DIGITAL_SYNTH_1, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
-            (JDXiSynth.DIGITAL_SYNTH_2, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-            (JDXiSynth.ANALOG_SYNTH, JDXiPresetToneList.ANALOG_ENUMERATED, MidiChannel.ANALOG),
+            (
+                JDXiSynth.DIGITAL_SYNTH_1,
+                JDXiPresetToneList.DIGITAL_ENUMERATED,
+                MidiChannel.DIGITAL1,
+            ),
+            (
+                JDXiSynth.DIGITAL_SYNTH_2,
+                JDXiPresetToneList.DIGITAL_ENUMERATED,
+                MidiChannel.DIGITAL2,
+            ),
+            (
+                JDXiSynth.ANALOG_SYNTH,
+                JDXiPresetToneList.ANALOG_ENUMERATED,
+                MidiChannel.ANALOG,
+            ),
             (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM),
         ]
         from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+
         self.preset_helpers = {
             synth_type: JDXiPresetHelper(
                 self.midi_helper, presets, channel=channel, preset_type=synth_type
@@ -146,7 +160,6 @@ class JdxiInstrument(JdxiUi):
 
     def _set_callbacks(self):
         """Set up signal-slot connections for various UI elements."""
-        # set up event handling - maybe move to a function
         self.key_hold_button.clicked.connect(self._midi_send_arp_key_hold)
         self.arpeggiator_button.clicked.connect(self._midi_send_arp_on_off)
         self.digital_display.mousePressEvent = self._show_program_editor
@@ -165,8 +178,12 @@ class JdxiInstrument(JdxiUi):
         self.refresh_shortcut = QShortcut(QKeySequence.StandardKey.Refresh, self)
         self.refresh_shortcut.activated.connect(self.data_request)
 
-    def closeEvent(self, event: QCloseEvent):
-        """Handle window close event"""
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """
+        Handle window close event
+        :param event: QCloseEvent
+        :return: None
+        """
         try:
             self.midi_helper.close_ports()
             self._save_settings()
@@ -175,17 +192,32 @@ class JdxiInstrument(JdxiUi):
             log.error(f"Error during close event: {str(ex)}")
             event.ignore()
 
-    def mousePressEvent(self, event: QMouseEvent):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        """
+        mousePressEvent
+        :param event: mousePressEvent
+        :return: None
+        """
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = event.globalPos()
 
-    def mouseMoveEvent(self, event: QMouseEvent):
+    def mouseMoveEvent(self, event: QMouseEvent) :
+        """
+        mouseMoveEvent
+        :param event: QMouseEvent
+        :return: None
+        """
         if self.old_pos is not None:
             delta = event.globalPos() - self.old_pos
             self.move(self.x() + delta.x(), self.y() + delta.y())
             self.old_pos = event.globalPos()
 
-    def mouseReleaseEvent(self, event: QMouseEvent):
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """
+        mouseReleaseEvent
+        :param event: QMouseEvent
+        :return: None
+        """
         if event.button() == Qt.MouseButton.LeftButton:
             self.old_pos = None
 
@@ -201,22 +233,40 @@ class JdxiInstrument(JdxiUi):
             ),
         ).start()
 
-    def _handle_program_change(self, bank_letter: str, program_number: int):
-        """perform data request"""
+    def _handle_program_change(self, bank_letter: str, program_number: int) -> None:
+        """
+        perform data request
+        :param bank_letter: str
+        :param program_number: int
+        :return: None
+        """
         self.data_request()
 
     def add_editor(self, editor: SynthEditor):
+        """
+        add editor
+        :param editor: SynthEditor
+        :return:
+        """
         self.editors.append(editor)
 
-    def set_preset_name_by_type(self, tone_name: str, synth_type: str):
-        """set preset name by type"""
+    def set_preset_name_by_type(self, tone_name: str, synth_type: str) -> None:
+        """
+        set preset name by type
+        :param tone_name: str
+        :param synth_type: str
+        :return: None
+        """
         if synth_type == JDXiSynth.PROGRAM:
             pass
         self.preset_manager.set_preset_name_by_type(synth_type, tone_name)
         self._update_display()
 
     def _get_preset_helper_for_current_synth(self) -> JDXiPresetHelper:
-        """Return the appropriate preset helper based on the current synth preset_type."""
+        """
+        Return the appropriate preset helper based on the current synth preset_type
+        :return: JDXiPresetHelper
+        """
         helper = self.preset_helpers.get(self.current_synth_type)
         if helper is None:
             logging.warning(
@@ -226,7 +276,11 @@ class JdxiInstrument(JdxiUi):
         return helper
 
     def set_current_program_name(self, program_name: str):
-        """program name"""
+        """
+        program name
+        :param program_name: str
+        :return:
+        """
         self.current_program_name = program_name
         self.current_program_id = get_program_id_by_name(program_name)
         if not self.current_program_id:
@@ -236,13 +290,22 @@ class JdxiInstrument(JdxiUi):
         self._update_display()
 
     def set_current_program_number(self, channel: int, program_number: int) -> None:
-        """program number"""
+        """
+        program number
+        :param channel: int
+        :param program_number: int
+        :return: None
+        """
         self.current_program_number = program_number + 1
         self.data_request()
         self._update_display()
 
-    def _select_synth(self, synth_type: JDXiSynth):
-        """Select address synth and update button styles."""
+    def _select_synth(self, synth_type: JDXiSynth) -> None:
+        """
+        Select address synth and update button styles
+        :param synth_type: JDXiSynth
+        :return: None
+        """
         log.parameter("Selected synth:", synth_type)
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
@@ -261,7 +324,11 @@ class JdxiInstrument(JdxiUi):
             button.setChecked(is_selected)
 
     def _program_update(self, index_change: int) -> None:
-        """Update the program by incrementing or decrementing its index."""
+        """
+        Update the program by incrementing or decrementing its index
+        :param index_change: int
+        :return: None
+        """
         new_program_number = self.current_program_number + index_change
         if new_program_number < 1:
             show_message_box("First program", "Already at the first program.")
@@ -282,7 +349,11 @@ class JdxiInstrument(JdxiUi):
         self._program_update(1)
 
     def _preset_update(self, index_change: int) -> None:
-        """Update the preset by incrementing or decrementing its index."""
+        """
+        Update the preset by incrementing or decrementing its index
+        :param index_change: int
+        :return: None
+        """
         presets = self.preset_manager.get_presets_for_synth(
             synth=self.current_synth_type
         )
@@ -308,7 +379,10 @@ class JdxiInstrument(JdxiUi):
         )
 
     def _preset_previous(self) -> None:
-        """Decrement the tone index and update the display."""
+        """
+        Decrement the tone index and update the display
+        :return: None
+        """
         self._preset_update(-1)
 
     def _preset_next(self) -> None:
@@ -316,9 +390,15 @@ class JdxiInstrument(JdxiUi):
         self._preset_update(1)
 
     def update_display_callback(
-            self, synth_type: JDXiSynth, preset_index: int, channel: int
-    ):
-        """Update the display for the given synth preset_type and preset index."""
+        self, synth_type: JDXiSynth, preset_index: int, channel: int
+    ) -> None:
+        """
+        Update the display for the given synth preset_type and preset index
+        :param synth_type: JDXiSynth
+        :param preset_index: int
+        :param channel: int
+        :return: None
+        """
         log.message(
             f"update_display_callback: synth_type: {synth_type} preset_index: {preset_index}, channel: {channel}",
         )
@@ -330,7 +410,11 @@ class JdxiInstrument(JdxiUi):
         )
 
     def _toggle_illuminate_sequencer_lightshow(self, enabled: bool) -> None:
-        """Toggle the sequencer lightshow on or off."""
+        """
+        Toggle the sequencer lightshow on or off
+        :param enabled: bool
+        :return: None
+        """
         if not enabled:
             if hasattr(self, "lightshow_timer") and self.lightshow_timer.isActive():
                 self.lightshow_timer.stop()
@@ -361,7 +445,12 @@ class JdxiInstrument(JdxiUi):
 
         self.lightshow_timer.start(500)  # Every 500 ms
 
-    def show_editor(self, editor_type: str):
+    def show_editor(self, editor_type: str) -> None:
+        """
+        Show editor of given type
+        :param editor_type: str
+        :return: None
+        """
         self.editor_registry = {
             "vocal_fx": (
                 "Vocal Effects",
@@ -414,7 +503,14 @@ class JdxiInstrument(JdxiUi):
 
         self._show_editor(title, editor_class, **kwargs)
 
-    def _show_editor(self, title: str, editor_class, **kwargs):
+    def _show_editor(self, title: str, editor_class, **kwargs) -> None:
+        """
+        _show editor
+        :param title: str
+        :param editor_class: class
+        :param kwargs: Any
+        :return: None
+        """
         try:
             instance_attr = f"{editor_class.__name__.lower()}_instance"
             existing_editor = getattr(self, instance_attr, None)
@@ -426,19 +522,19 @@ class JdxiInstrument(JdxiUi):
             preset_helper = (
                 self._get_preset_helper_for_current_synth()
                 if editor_class
-                   in [
-                       ArpeggioEditor,
-                       DigitalSynthEditor,
-                       DigitalSynth2Editor,
-                       AnalogSynthEditor,
-                       DrumCommonEditor,
-                       PatternSequencer,
-                       ProgramEditor,
-                       PresetEditor,
-                       MidiPlayer,
-                       VocalFXEditor,
-                       EffectsCommonEditor,
-                   ]
+                in [
+                    ArpeggioEditor,
+                    DigitalSynthEditor,
+                    DigitalSynth2Editor,
+                    AnalogSynthEditor,
+                    DrumCommonEditor,
+                    PatternSequencer,
+                    ProgramEditor,
+                    PresetEditor,
+                    MidiPlayer,
+                    VocalFXEditor,
+                    EffectsCommonEditor,
+                ]
                 else None
             )
 
@@ -552,9 +648,13 @@ class JdxiInstrument(JdxiUi):
             log.error("Error saving patch", exception=ex)
 
     def load_button_preset(self, button: SequencerSquare) -> None:
-        """load preset dat stored on the button"""
+        """
+        load preset data stored on the button
+        :param button: SequencerSquare
+        :return: None
+        """
         preset = button.preset
-        preset_data = JDXiPresetButton(
+        preset_data = JDXiPresetButtonData(
             type=preset.type,  # Ensure this is address valid preset_type
             number=preset.number,  # Convert to 1-based index
         )
@@ -562,16 +662,16 @@ class JdxiInstrument(JdxiUi):
         preset_helper = self._get_preset_helper_for_current_synth()
         preset_helper.load_preset(preset_data)
 
-    def _generate_button_preset(self) -> JDXiPresetButton:
+    def _generate_button_preset(self) -> Optional[JDXiPresetButtonData]:
         """
-        :return: ButtonPreset
-
         Generate a ButtonPreset object based on the current preset.
+
+        :return: Optional[JDXiPresetButtonData]
         """
 
         try:
             # Update the current preset index or details here
-            button_preset = JDXiPresetButton(
+            button_preset = JDXiPresetButtonData(
                 number=self.preset_manager.current_preset_number,
                 name=self.preset_manager.current_preset_name,
                 type=self.current_synth_type,
@@ -593,22 +693,27 @@ class JdxiInstrument(JdxiUi):
             synth_type = self.settings.value(
                 "last_preset/synth_type", JDXiSynth.DIGITAL_SYNTH_1
             )
-            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
+            preset_number = self.settings.value("last_preset/preset_num", 0, type=int)
 
             # Get preset name - adjust index to be 0-based
             if synth_type == JDXiSynth.ANALOG_SYNTH:
-                return JDXiPresetToneList.ANALOG[preset_num - 1]  # Convert 1-based to 0-based
+                return JDXiPresetToneList.ANALOG[
+                    preset_number - 1
+                ]  # Convert 1-based to 0-based
             if synth_type == JDXiSynth.DIGITAL_SYNTH_1:
-                return JDXiPresetToneList.DIGITAL_ENUMERATED[preset_num - 1]
+                return JDXiPresetToneList.DIGITAL_ENUMERATED[preset_number - 1]
             if synth_type == JDXiSynth.DIGITAL_SYNTH_2:
-                return JDXiPresetToneList.DIGITAL_ENUMERATED[preset_num - 1]
+                return JDXiPresetToneList.DIGITAL_ENUMERATED[preset_number - 1]
             else:
-                return JDXiPresetToneList.DRUM_ENUMERATED[preset_num - 1]
+                return JDXiPresetToneList.DRUM_ENUMERATED[preset_number - 1]
         except IndexError:
             return "INIT PATCH"
 
     def _get_current_preset_type(self) -> JDXiSynth:
-        """Get the preset_type of the currently selected preset"""
+        """
+        Get the preset_type of the currently selected preset
+        :return: JDXiSynth
+        """
         return self.current_synth_type
         # return self.settings.value("last_preset/synth_type", PresetType.ANALOG)
 
@@ -622,9 +727,14 @@ class JdxiInstrument(JdxiUi):
         )
 
     def _midi_init_ports(
-            self, in_port: MidiIOController, out_port: MidiIOController
+        self, in_port: MidiIOController, out_port: MidiIOController
     ) -> None:
-        """Set MIDI input and output ports."""
+        """
+        Set MIDI input and output ports
+        :param in_port:
+        :param out_port:
+        :return: None
+        """
         try:
             self.midi_helper.midi_in = MidiIOHelper.open_input(in_port, self)
             self.midi_helper.midi_out = MidiIOHelper.open_output(out_port, self)
@@ -646,7 +756,11 @@ class JdxiInstrument(JdxiUi):
         self.midi_out_indicator.blink()
 
     def _midi_send_octave(self, direction: int) -> Union[None, bool]:
-        """Send octave change MIDI message"""
+        """
+        Send octave change MIDI message
+        :param direction: int
+        :return: Union[None, bool]
+        """
         if self.midi_helper:
             # Update octave tracking
             self.current_octave = max(-3, min(3, self.current_octave + direction))
@@ -707,7 +821,7 @@ class JdxiInstrument(JdxiUi):
                     ControlChangeSustain.PORTAMENTO,  # Portamento (on/off)
                     ControlChangeSustain.SOSTENUTO,  # Sostenuto – CC66
                     ControlChangeSustain.SOFT_PEDAL,  # Soft Pedal (Una Corda) – CC67
-                    ControlChangeSustain.LEGATO,  # Legato footswitch
+                    ControlChangeSustain.LEGATO,  # Legato foot switch
                     ControlChangeSustain.HOLD2,
                 ]  # Hold-2
                 # cc_list = [68]
@@ -727,7 +841,9 @@ class JdxiInstrument(JdxiUi):
         """
         try:
             if self.midi_helper:
-                value = VALUE_ON if state else VALUE_OFF  # 1 = ON, 0 = OFF
+                value = (
+                    MidiConstant.VALUE_ON if state else MidiConstant.VALUE_OFF
+                )  # 1 = ON, 0 = OFF
                 log.message(f"Sent arpeggiator on/off: {'ON' if state else 'OFF'}")
                 # send arp on to all zones
                 for zone in [
@@ -741,11 +857,13 @@ class JdxiInstrument(JdxiUi):
                         msb=AddressStartMSB.TEMPORARY_PROGRAM,
                         umb=AddressOffsetSystemUMB.COMMON,
                         lmb=zone,
-                        lsb=ZERO_BYTE,
+                        lsb=MidiConstant.ZERO_BYTE,
                     )
-                    sysex_message = self.sysex_composer.compose_message(address=address,
-                                                                        param=AddressParameterProgramZone.ARPEGGIO_SWITCH,
-                                                                        value=value)
+                    sysex_message = self.sysex_composer.compose_message(
+                        address=address,
+                        param=AddressParameterProgramZone.ARPEGGIO_SWITCH,
+                        value=value,
+                    )
                     self.midi_helper.send_midi_message(sysex_message)
         except Exception as ex:
             log.error("Error sending arp on/off", exception=ex)
@@ -758,7 +876,7 @@ class JdxiInstrument(JdxiUi):
         """
         if self.midi_helper:
             # self.channel is 0-indexed, so add 1 to match MIDI channel in log file
-            msg = [NOTE_ON + self.channel, note_num, 100]
+            msg = [MidiConstant.NOTE_ON + self.channel, note_num, 100]
             self.midi_helper.send_raw_message(msg)
             log.message(f"Sent Note On: {note_num} on channel {self.channel + 1}")
 
@@ -772,7 +890,7 @@ class JdxiInstrument(JdxiUi):
             # Calculate the correct status byte for note_off:
             # 0x80 is the base for note_off messages. Subtract 1 if self.channel is 1-indexed.
             if not self.midi_key_hold_latched:
-                status = NOTE_OFF + self.channel
+                status = MidiConstant.NOTE_OFF + self.channel
                 msg = [status, note_num, 0]
                 self.midi_helper.send_raw_message(msg)
                 log.message(f"Sent Note Off: {note_num} on channel {self.channel + 1}")
@@ -784,21 +902,31 @@ class JdxiInstrument(JdxiUi):
             synth_type = self.settings.value(
                 "last_preset/synth_type", JDXiSynth.DIGITAL_SYNTH_1
             )
-            preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
-            channel = self.settings.value("last_preset/channel", 0, type=int)
+            preset_number = int(
+                self.settings.value("last_preset/preset_num", 0, type=int)
+            )
+            channel = int(self.settings.value("last_preset/channel", 0, type=int))
 
             # Define mappings for synth types
             synth_mappings = {
                 JDXiSynth.ANALOG_SYNTH: (JDXiPresetToneList.ANALOG, 0, 7),
-                JDXiSynth.DIGITAL_SYNTH_1: (JDXiPresetToneList.DIGITAL_ENUMERATED, 1, 16),
-                JDXiSynth.DIGITAL_SYNTH_2: (JDXiPresetToneList.DIGITAL_ENUMERATED, 2, 16),
+                JDXiSynth.DIGITAL_SYNTH_1: (
+                    JDXiPresetToneList.DIGITAL_ENUMERATED,
+                    1,
+                    16,
+                ),
+                JDXiSynth.DIGITAL_SYNTH_2: (
+                    JDXiPresetToneList.DIGITAL_ENUMERATED,
+                    2,
+                    16,
+                ),
                 JDXiSynth.DRUM_KIT: (JDXiPresetToneList.DRUM_ENUMERATED, 3, 16),
             }
 
             # Get preset list and MIDI parameters based on synth type
             presets, bank_msb, lsb_divisor = synth_mappings.get(synth_type, ([], 0, 1))
-            bank_lsb = preset_num // lsb_divisor
-            program = preset_num % lsb_divisor
+            bank_lsb = preset_number // lsb_divisor
+            program = preset_number % lsb_divisor
 
             # Send MIDI messages to load preset
             if hasattr(self, "midi_helper") and self.midi_helper:
@@ -806,8 +934,8 @@ class JdxiInstrument(JdxiUi):
                 self.midi_helper.send_program_change(program, channel)
 
                 # Update display and channel
-                preset_name = presets[preset_num - 1]  # Adjust index to be 0-based
-                self._update_display_preset(preset_num, preset_name, channel)
+                preset_name = presets[preset_number - 1]  # Adjust index to be 0-based
+                self._update_display_preset(preset_number, preset_name, channel)
 
                 log.message(f"Loaded last preset: {preset_name} on channel {channel}")
 
@@ -834,7 +962,7 @@ class JdxiInstrument(JdxiUi):
             log.error("Error saving last preset", exception=ex)
 
     def _show_favorite_context_menu(
-            self, pos, button: Union[FavoriteButton, SequencerSquare]
+        self, pos, button: Union[FavoriteButton, SequencerSquare]
     ):
         """Show context menu for favorite button"""
         menu = QMenu()
@@ -859,7 +987,9 @@ class JdxiInstrument(JdxiUi):
         """
         if hasattr(self, "current_preset_number"):
             # Get current preset info from settings
-            synth_type = self.settings.value("last_preset/synth_type", JDXiSynth.ANALOG_SYNTH)
+            synth_type = self.settings.value(
+                "last_preset/synth_type", JDXiSynth.ANALOG_SYNTH
+            )
             preset_num = self.settings.value("last_preset/preset_num", 0, type=int)
             channel = self.settings.value("last_preset/channel", 0, type=int)
             try:
@@ -874,7 +1004,9 @@ class JdxiInstrument(JdxiUi):
                 )
 
                 # Update display to show the saved preset
-                self._update_display_preset(preset_num, preset_name, channel)
+                self._update_display_preset(
+                    int(preset_num), str(preset_name), int(channel)
+                )
 
             except Exception as ex:
                 log.error("Error saving to favorite", ex)
@@ -909,7 +1041,9 @@ class JdxiInstrument(JdxiUi):
                     synth_type, preset_num, preset_name, channel
                 )
 
-    def _save_favorite(self, button: Union[FavoriteButton, SequencerSquare], index: int) -> None:
+    def _save_favorite(
+        self, button: Union[FavoriteButton, SequencerSquare], index: int
+    ) -> None:
         """
         Save the current preset as an address favorite and prevent toggling off
         :param button: button: Union[FavoriteButton, SequencerSquare]

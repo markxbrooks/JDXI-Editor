@@ -930,7 +930,7 @@ class PatternSequencer(SynthEditor):
         """Update displayed buttons based on the selected drum option."""
         self.drum_selector.currentText()
 
-        """ 
+        """
         for option, layout in self.drum_row_layouts.items():
             is_visible = option == selected_option
 

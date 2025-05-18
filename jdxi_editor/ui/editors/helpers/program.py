@@ -46,6 +46,7 @@ import re
 from typing import Optional, Dict, Union, Any, List
 
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.midi.data.programs.digital import DIGITAL_PRESET_LIST
 from jdxi_editor.midi.data.programs.programs import JDXiProgramList
 
@@ -84,7 +85,6 @@ def get_program_id_by_name(name: str) -> Optional[str]:
 
     for program in JDXiProgramList.PROGRAM_LIST:
         if name in program["name"]:  # Check if 'name' is a substring
-            # log.message(f"{program}")
             return program["id"]
 
     logging.warning(f"Program named '{name}' not found.")
@@ -92,7 +92,11 @@ def get_program_id_by_name(name: str) -> Optional[str]:
 
 
 def get_program_number_by_name(program_name: str) -> Optional[str]:
-    """Retrieve a program's number (without bank letter) by its name from JDXiProgramList.PROGRAM_LIST."""
+    """
+    Retrieve a program's number (without bank letter) by its name from JDXiProgramList.PROGRAM_LIST
+    :param program_name: str
+    :return: str
+    """
     program = next((p for p in JDXiProgramList.PROGRAM_LIST if p["name"] == program_name), None)
     return int(program["id"][1:]) if program else None
 
@@ -100,7 +104,12 @@ def get_program_number_by_name(program_name: str) -> Optional[str]:
 def get_preset_list_number_by_name(
     preset_name: str, preset_list: List[Dict[str, str]]
 ) -> Optional[int]:
-    """Retrieve a program's number (without bank letter) by its name using regex search."""
+    """
+    Retrieve a program's number (without bank letter) by its name using regex search
+    :param preset_name: str
+    :param preset_list: list
+    :return: int preset id
+    """
     preset = next(
         (
             p
@@ -113,7 +122,11 @@ def get_preset_list_number_by_name(
 
 
 def get_program_name_by_id(program_id: str) -> Optional[str]:
-    """Retrieve a program name by its ID from JDXiProgramList.PROGRAM_LIST."""
+    """
+    Retrieve a program name by its ID from JDXiProgramList.PROGRAM_LIST
+    :param program_id: int
+    :return: str
+    """
     program = next(
         (program for program in JDXiProgramList.PROGRAM_LIST if program["id"] == program_id), None
     )
@@ -121,16 +134,27 @@ def get_program_name_by_id(program_id: str) -> Optional[str]:
 
 
 def get_program_parameter_value(parameter: str, program_id: str) -> Optional[str]:
-    """Retrieve a specific parameter value from a program by its ID."""
+    """
+    Retrieve a specific parameter value from a program by its ID
+    :param parameter: str
+    :param program_id: str
+    :return:
+    """
     program = next((p for p in JDXiProgramList.PROGRAM_LIST if p["id"] == program_id), None)
     return program.get(parameter) if program else None
 
 
 def get_preset_parameter_value(
-    parameter: str, id: str, preset_list=DIGITAL_PRESET_LIST
+    parameter: str, id: str, preset_list: list = DIGITAL_PRESET_LIST
 ) -> Union[Optional[int], Any]:
-    """Retrieve a specific parameter value from a program by its ID."""
-    if type(id) == int:
+    """
+    Retrieve a specific parameter value from a program by its ID.
+    :param parameter: str
+    :param id: int
+    :param preset_list: list List of presets
+    :return: Union[Optional[int], Any]
+    """
+    if isinstance(id, int):
         id = f"{id:03d}"
     preset = next((p for p in preset_list if p["id"] == id), None)
     if not preset:
@@ -141,8 +165,13 @@ def get_preset_parameter_value(
     return preset.get(parameter)
 
 
-def calculate_midi_values(bank: str, program_number: int):
-    """Calculate MSB, LSB, and PC based on bank and program number."""
+def calculate_midi_values(bank: str, program_number: int) -> tuple[int, int, int]:
+    """
+    Calculate MSB, LSB, and PC based on bank and program number
+    :param bank: str
+    :param program_number: int
+    :return: tuple[int, int, int] msb lsb pc
+    """
     if bank in ["A", "B"]:
         msb = 85
         lsb = 64
@@ -170,29 +199,24 @@ def calculate_midi_values(bank: str, program_number: int):
     return msb, lsb, pc - 1
 
 
-def calculate_index(bank, program_number: int):
-    """Calculate the index based on bank and program number."""
+def calculate_index(bank: str, program_number: int) -> int:
+    """
+    Calculate the index based on bank and program number
+    :param bank: str
+    :param program_number:
+    :return: int
+    """
     bank_offset = (ord(bank) - ord("A")) * 64
     program_index = program_number - 1
     return bank_offset + program_index
 
 
-def log_midi_info(msb: int, lsb: int, pc: int):
-    """Log MIDI information in a consistent format."""
-    log.message(f"msb: {msb}, lsb: {lsb}, pc: {pc}")
-
-
-def log_program_info(program_name, program_id=None, program_details=None):
-    """Helper function to log program info."""
-    log.message(f"load_program: program_name: {program_name}")
-    if program_id:
-        log.message(f"load_program: program_id: {program_id}")
-    if program_details:
-        log.message(f"load_program: program_details: {program_details}")
-
-
-def get_msb_lsb_pc(program_number: int):
-    """Get MSB, LSB, and PC based on bank and program number."""
+def get_msb_lsb_pc(program_number: int) -> tuple[int, int, int]:
+    """
+    Get MSB, LSB, and PC based on bank and program number
+    :param program_number: int
+    :return: tuple[int, int, int] msb, lsb, pc
+    """
     msb, lsb, pc = (
         JDXiProgramList.PROGRAM_LIST[program_number]["msb"],  # Tone Bank Select MSB (CC# 0)
         JDXiProgramList.PROGRAM_LIST[program_number]["lsb"],  # Tone Bank Select LSB (CC# 32)
