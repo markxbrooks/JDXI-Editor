@@ -13,8 +13,8 @@ Classes:
 
 Dependencies:
     - PySide6.QtCore.Signal for Qt signal support.
-    - jdxi_manager.midi.input_handler.MIDIInHandler for handling incoming MIDI messages.
-    - jdxi_manager.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
+    - jdxi_editor.midi.input_handler.MIDIInHandler for handling incoming MIDI messages.
+    - jdxi_editor.midi.output_handler.MIDIOutHandler for handling outgoing MIDI messages.
 
 """
 

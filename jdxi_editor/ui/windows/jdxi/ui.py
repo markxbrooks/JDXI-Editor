@@ -20,6 +20,7 @@ Methods:
 
 import os
 import logging
+import platform
 import re
 from typing import Union
 
@@ -410,6 +411,9 @@ class JdxiUi(QMainWindow):
 
         font_name = "JdLCD.ttf"
         font_path = resource_path(os.path.join("resources", "fonts", font_name))
+        if not os.path.exists(font_path):
+            font_path = resource_path(font_name)
+        log.message(f"font_path: {font_path}")
         if os.path.exists(font_path):
             log.message("Success: found font file, loading...")
             log.message(f"font_name: \t{font_name}")

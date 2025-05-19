@@ -286,3 +286,5 @@ class MidiPlayer(SynthEditor):
         self.event_index = 0
         self.paused_time = None
         self.paused = False
+
+
