@@ -85,6 +85,7 @@ $ python -m jdxi_editor.main
 - JD-Xi-style LCD Display
 - Digital Synth Parts 1 & 2 (including 3 partials per part)
 - Analog Synth Editor
+- Drum Part Editor 🥁
 - Effects: Reverb, Delay, Vocoder
 - Arpeggiator Editor
 
@@ -92,8 +93,7 @@ $ python -m jdxi_editor.main
 
 ## 🧩 Coming Soon
 
-- Drum Part Editor 🥁
-- Pattern Sequencer (if feasible)
+- Pattern Sequencer (one measure is implemented)
 
 ---
 
