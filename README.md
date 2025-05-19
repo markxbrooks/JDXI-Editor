@@ -96,7 +96,7 @@ $ python -m jdxi_editor.main
 ## 🧩 Coming Soon
 
 - Pattern Sequencer (one measure is implemented)
-- PW Display widget is soreley needed
+- PW Display widget is sorely needed
 
 ---
 
