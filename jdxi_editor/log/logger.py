@@ -38,7 +38,7 @@ class Logger:
         message: str,
         exception: Optional[Exception] = None,
         level: int = logging.WARNING,
-        stacklevel: int = 2,
+        stacklevel: int = 3,
         silent: bool = False
     ) -> None:
         """
@@ -57,7 +57,7 @@ class Logger:
             try:
                 data = json.loads(data)
             except json.JSONDecodeError:
-                Logger.message("Invalid JSON string provided.", level=logging.WARNING)
+                Logger.message("Invalid JSON string provided.", level=logging.WARNING, stacklevel=3)
                 return
 
         try:
@@ -67,7 +67,7 @@ class Logger:
             return
 
         if not silent:
-            Logger.message(compact_json, stacklevel=2)
+            Logger.message(compact_json, stacklevel=3)
 
     @staticmethod
     def message(
@@ -90,7 +90,7 @@ class Logger:
         float_precision: int = 2,
         max_length: int = 300,
         level: int = logging.INFO,
-        stacklevel: int =2,
+        stacklevel: int = 3,
         silent: bool = False
     ) -> None:
         """
@@ -125,7 +125,7 @@ class Logger:
         Logger.message(final_message, silent=silent, stacklevel=stacklevel, level=level)
 
     @staticmethod
-    def header_message(message: str, level: int = logging.INFO, silent: bool = False) -> None:
+    def header_message(message: str, level: int = logging.INFO, silent: bool = False, stacklevel: int = 3) -> None:
         """
         Logs a visually distinct header message with separator lines and emojis.
 
@@ -133,7 +133,6 @@ class Logger:
         :param message: The message to log.
         :param level: Logging level (default: logging.INFO).
         """
-        stacklevel = 3
         full_separator = f"{'=' * 142}"
         separator = f"{'=' * 100}"
 
@@ -142,7 +141,7 @@ class Logger:
         Logger.message(separator, level=level, stacklevel=stacklevel, silent=silent)
 
     @staticmethod
-    def debug_info(successes: list, failures: list) -> None:
+    def debug_info(successes: list, failures: list, stacklevel=3) -> None:
         """
         Logs debug information about the parsed SysEx data.
 
@@ -158,7 +157,7 @@ class Logger:
         total = len(successes) + len(failures)
         success_rate = (len(successes) / total * 100) if total else 0.0
 
-        Logger.message(f"Successes ({len(successes)}): {successes}", stacklevel=3)
-        Logger.message(f"Failures ({len(failures)}): {failures}", stacklevel=3)
-        Logger.message(f"Success Rate: {success_rate:.1f}%", stacklevel=3)
+        Logger.message(f"Successes ({len(successes)}): {successes}", stacklevel=stacklevel)
+        Logger.message(f"Failures ({len(failures)}): {failures}", stacklevel=stacklevel)
+        Logger.message(f"Success Rate: {success_rate:.1f}%", stacklevel=stacklevel)
         Logger.message("=" * 100, stacklevel=3)

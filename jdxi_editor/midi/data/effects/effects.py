@@ -3,13 +3,13 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.midi.data.address.address import (
     CommandID,
     AddressStartMSB,
     AddressOffsetProgramLMB,
 )
-from jdxi_editor.midi.data.address.sysex import JDXiBitMask.LOW_7_BITS, ZERO_BYTE
 from jdxi_editor.midi.message.roland import RolandSysEx
 
 
@@ -327,7 +327,7 @@ class Effect2(Enum):
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
         """Convert raw value to display value"""
-        if param == ZERO_BYTE:  # Effect preset_type
+        if param == MidiConstant.ZERO_BYTE:  # Effect preset_type
             if value == 0:
                 return "OFF"
             types = ["OFF", "PHASER", "FLANGER", "DELAY", "CHORUS"]
