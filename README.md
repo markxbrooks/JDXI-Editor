@@ -83,6 +83,8 @@ $ python -m jdxi_editor.main
 - Preset selection with search
 - Octave shifting
 - JD-Xi-style LCD Display
+- ADSR displays
+- Pitch ENV displays
 - Digital Synth Parts 1 & 2 (including 3 partials per part)
 - Analog Synth Editor
 - Drum Part Editor 🥁
@@ -94,6 +96,7 @@ $ python -m jdxi_editor.main
 ## 🧩 Coming Soon
 
 - Pattern Sequencer (one measure is implemented)
+- PW Display widget is soreley needed
 
 ---
 
