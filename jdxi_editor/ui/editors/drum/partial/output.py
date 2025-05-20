@@ -45,7 +45,7 @@ class DrumOutputSection(QWidget):
 
     def __init__(
         self,
-        controls: dict,
+        controls: dict[AddressParameterDrumPartial, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,

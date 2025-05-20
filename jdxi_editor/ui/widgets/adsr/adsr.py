@@ -41,6 +41,7 @@ class ADSR(QWidget):
         peak_param: Optional[AddressParameter] = None,
         midi_helper: Optional[MidiIOHelper] = None,
         address: Optional[RolandSysExAddress] = None,
+        controls: Dict[AddressParameter, QWidget] = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
@@ -59,7 +60,10 @@ class ADSR(QWidget):
         """
         self.address = address
         self.midi_helper = midi_helper
-        self.controls: Dict[AddressParameter, Slider] = {}
+        if controls:
+            self.controls = controls
+        else:
+            self.controls = {}
         self.envelope = {
             "attack_time": 300,
             "decay_time": 800,

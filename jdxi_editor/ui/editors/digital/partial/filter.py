@@ -133,6 +133,7 @@ class DigitalFilterSection(QWidget):
             sustain_param=AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
+            controls=self.controls,
             address=self.address,
         )
         self.filter_adsr_widget.setStyleSheet(JDXiStyle.ADSR)

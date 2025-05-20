@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupB
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
+from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
@@ -24,6 +25,7 @@ class AmpSection(QWidget):
         self,
         midi_helper: MidiIOHelper,
         address: RolandSysExAddress,
+        controls: dict[AddressParameter, QWidget],
         create_parameter_slider: Callable,
         generate_waveform_icon: Callable,
         base64_to_pixmap: Callable,
@@ -39,6 +41,7 @@ class AmpSection(QWidget):
         """
         self.midi_helper = midi_helper
         self.address = address
+        self.controls = controls
         self._create_parameter_slider = create_parameter_slider
         self.generate_waveform_icon = generate_waveform_icon
         self.base64_to_pixmap = base64_to_pixmap
@@ -110,6 +113,7 @@ class AmpSection(QWidget):
             release_param=AddressParameterAnalog.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
             address=self.address,
+            controls=self.controls
         )
         self.amp_env_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
         amp_env_adsr_vlayout.addWidget(self.amp_env_adsr_widget)

@@ -210,12 +210,13 @@ class AnalogSynthEditor(SynthEditor):
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""
         self.oscillator_section = AnalogOscillatorSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._on_waveform_selected,
-            self.wave_buttons,
-            self.midi_helper,
-            self.address,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            waveform_selected_callback=self._on_waveform_selected,
+            wave_buttons=self.wave_buttons,
+            midi_helper=self.midi_helper,
+            controls=self.controls,
+            address=self.address,
         )
         self.tab_widget.addTab(
             self.oscillator_section,
@@ -223,41 +224,43 @@ class AnalogSynthEditor(SynthEditor):
             "Oscillator",
         )
         self.filter_section = AnalogFilterSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._on_filter_mode_changed,
-            self.send_control_change,
-            self.midi_helper,
-            self.synth_data.address,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            on_filter_mode_changed=self._on_filter_mode_changed,
+            send_control_change=self.send_control_change,
+            midi_helper=self.midi_helper,
+            controls=self.controls,
+            address=self.synth_data.address,
         )
         self.tab_widget.addTab(
             self.filter_section, qta.icon("ri.filter-3-fill", color="#666666"), "Filter"
         )
         self.amp_section = AmpSection(
-            self.midi_helper,
-            self.synth_data.address,
-            self._create_parameter_slider,
-            generate_waveform_icon,
-            base64_to_pixmap,
+            midi_helper=self.midi_helper,
+            address=self.synth_data.address,
+            create_parameter_slider=self._create_parameter_slider,
+            generate_waveform_icon=generate_waveform_icon,
+            base64_to_pixmap=base64_to_pixmap,
+            controls=self.controls
         )
         self.tab_widget.addTab(
             self.amp_section, qta.icon("mdi.amplifier", color="#666666"), "Amp"
         )
         self.lfo_section = AnalogLFOSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._create_parameter_combo_box,
-            self._on_lfo_shape_changed,
-            self.lfo_shape_buttons,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            on_lfo_shape_changed=self._on_lfo_shape_changed,
+            lfo_shape_buttons=self.lfo_shape_buttons,
         )
         self.tab_widget.addTab(
             self.lfo_section, qta.icon("mdi.sine-wave", color="#666666"), "LFO"
         )
         self.common_section = AnalogCommonSection(
-            self._create_parameter_slider,
-            self._create_parameter_switch,
-            self._create_parameter_combo_box,
-            self.controls,
+            create_parameter_slider=self._create_parameter_slider,
+            create_parameter_switch=self._create_parameter_switch,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            controls=self.controls,
         )
         self.tab_widget.addTab(self.common_section, "Common")
 

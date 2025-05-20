@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscWave
+from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
@@ -27,6 +28,7 @@ class AnalogOscillatorSection(QWidget):
         waveform_selected_callback: Callable,
         wave_buttons: dict,
         midi_helper: MidiIOHelper,
+        controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
         super().__init__()
@@ -46,6 +48,7 @@ class AnalogOscillatorSection(QWidget):
         self.wave_buttons = wave_buttons
         self.midi_helper = midi_helper
         self.address = address
+        self.controls = controls
         self.init_ui()
 
     def init_ui(self):
