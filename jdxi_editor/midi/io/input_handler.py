@@ -27,7 +27,7 @@ import mido
 from typing import Any, Callable, List, Optional
 from PySide6.QtCore import Signal
 
-from jdxi_editor.jdxi.midi.constant import JDXiMidiConstant, MidiConstant
+from jdxi_editor.jdxi.midi.constant import JDXiConstant, MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.controller import MidiIOController
@@ -188,7 +188,7 @@ class MidiInHandler(MidiIOController):
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
             mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2 - 1  # account for lack of status byte
-            if message.data[mido_sub_id_byte_offset] == JDXiMidiConstant.SUB_ID_2_IDENTITY_REPLY:
+            if message.data[mido_sub_id_byte_offset] == JDXiConstant.SUB_ID_2_IDENTITY_REPLY:
                 handle_identity_request(message)
                 return
 

@@ -32,13 +32,31 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
             if not hasattr(editor, "get_controls_as_dict"):
                 log.warning(f"Skipping invalid editor: {editor}, has no get_controls_as_dict method")
                 continue
-            combined_data["ADDRESS"] = str(editor.address)
+            
+            # Convert address to hex string without spaces
+            address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
+
+            synth_tone_byte = address_hex[4:6]
+            combined_data["ADDRESS"] = address_hex
+            
             combined_data["TEMPORARY_AREA"] = parse_sysex_byte(
                 editor.address.umb, AddressOffsetTemporaryToneUMB
             )
+            synth_tone_map = {
+                "20": "PARTIAL_1",
+                "21": "PARTIAL_2",
+                "22": "PARTIAL_3",
+            }
+            combined_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "UNKNOWN_SYNTH_TONE")
+            # Get the raw control values instead of the full control data
             other_data = editor.get_controls_as_dict()
             for k, v in other_data.items():
-                combined_data[k] = v
+                # If the value is a list/array, take just the first value (the actual control value)
+                if isinstance(v, (list, tuple)) and len(v) > 0:
+                    combined_data[k] = v[0]
+                else:
+                    combined_data[k] = v
+                    
         # Save the combined data to a single JSON file
         with open(file_path, "w") as file_name:
             json.dump(combined_data, file_name, indent=4)

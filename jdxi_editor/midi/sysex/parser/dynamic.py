@@ -1,3 +1,15 @@
+"""
+Dynamic Parameter Map resolver
+"""
+
+from typing import Dict
+
+from jdxi_editor.jdxi.midi.constant import JDXiConstant
+from jdxi_editor.midi.sysex.parser.utils import update_short_data_with_parsed_parameters, \
+    update_data_with_parsed_parameters, _return_minimal_metadata, initialize_parameters
+from jdxi_editor.log.logger import Logger as log
+
+
 def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
     """
     Dynamically resolve mappings for SysEx data.
@@ -36,7 +48,6 @@ def dynamic_map_resolver(data: bytes) -> Dict[str, str]:
         return {"TEMPORARY_AREA": "Error", "SYNTH_TONE": "Error", "PARAMETER_CLASS": "Error"}
 
 
-# Example usage in parse_sysex
 def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
     """
     Parse SysEx data using dynamic mapping.
@@ -46,8 +57,8 @@ def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
     # Log the raw data
     log.parameter("data", data, silent=True)
 
-    if len(data) < ONE_BYTE_SYSEX_DATA_LENGTH:
-        log.message("Insufficient data length for parsing.", level=logging.WARNING)
+    if len(data) < JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA:
+        log.warning("Insufficient data length for parsing.")
         return _return_minimal_metadata(data)
 
     # Use dynamic map resolver
@@ -62,11 +73,11 @@ def parse_sysex_with_dynamic_mapping(data: bytes) -> Dict[str, str]:
 
     # Update parsed data with parameters
     if parameter_cls:
-        if len(data) < FOUR_BYTE_SYSEX_DATA_LENGTH:
+        if len(data) < JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA:
             update_short_data_with_parsed_parameters(data, parameter_cls, parsed_data)
         else:
             update_data_with_parsed_parameters(data, parameter_cls, parsed_data)
 
     # Log the parsed data
-    log_json(parsed_data, silent=True)
+    log.json(parsed_data, silent=True)
     return parsed_data

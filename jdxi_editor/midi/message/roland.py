@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from typing import List, Union, Optional
 
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
@@ -43,7 +43,6 @@ from jdxi_editor.midi.data.address.sysex import (
     RolandID
 )
 from jdxi_editor.midi.message.sysex import SysExMessage
-from jdxi_editor.midi.data.sysex.length import ONE_BYTE_SYSEX_DATA_LENGTH
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
 
 
@@ -342,7 +341,7 @@ class JDXiSysEx(RolandSysEx):
         """Create message from received bytes"""
         if (
                 len(data)
-                < ONE_BYTE_SYSEX_DATA_LENGTH  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
+                < JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA  # Minimum length: F0 + ID + dev + model(4) + cmd + addr(4) + sum + F7
                 or data[JDXiSysExOffset.SYSEX_START] != START_OF_SYSEX
                 or data[JDXiSysExOffset.ROLAND_ID] != ModelID.ROLAND_ID  # Roland ID
                 or data[JDXiSysExOffset.MODEL_ID_1:JDXiSysExOffset.COMMAND_ID] != bytes([ModelID.MODEL_ID_1,

@@ -23,6 +23,7 @@ Usage Example:
 from dataclasses import dataclass
 from typing import List
 
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.midi.data.control_change.drum import DrumKitCC
 
 
@@ -64,8 +65,8 @@ class ControlChangeMessage(MidiMessage):
         )  # Ensures correct channel encoding
         return [
             status_byte,
-            self.data1 & 0x7F,
-            self.data2 & 0x7F,
+            self.data1 & BitMask.LOW_7_BITS,
+            self.data2 & BitMask.LOW_7_BITS,
         ]  # Proper MIDI CC message
 
 
@@ -121,7 +122,7 @@ class DigitalToneCCMessage:
         elif len(data) == 9:
             # NRPN message
             return cls(
-                channel=data[0] & 0x0F,
+                channel=data[0] & BitMask.LOW_4_BITS,
                 cc=data[5],  # NRPN parameter number
                 value=data[8],  # NRPN value
                 is_nrpn=True,

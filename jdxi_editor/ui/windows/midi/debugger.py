@@ -78,8 +78,8 @@ class EnumWithAddress(Protocol):
 def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
     """
     Get the name of a SysEx byte value using a given enum class.
-    :param byte_value:
-    :param enum_cls:
+    :param byte_value: int
+    :param enum_cls: EnumWithAddress
     :return: name of the parameter or "Unknown" if not found
     """
     enum_member = enum_cls.get_parameter_by_address(byte_value)
@@ -90,8 +90,8 @@ def parse_sysex_byte(byte_value: int, enum_cls: EnumWithAddress) -> str:
 def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str, int]:
     """
     Parse a SysEx message and return the name and byte value of the specified parameter.
-    :param message:
-    :param enum_cls:
+    :param message: str
+    :param enum_cls: EnumWithAddress
     :return: Tuple containing the name and byte value
     """
     byte_value = int(message[enum_cls.message_position()])

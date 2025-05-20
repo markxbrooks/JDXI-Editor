@@ -24,7 +24,6 @@ Methods:
     get_settings() : Returns a dictionary containing the selected MIDI input and output ports.
 
 """
-import logging
 
 from PySide6.QtWidgets import (
     QDialog,
@@ -139,17 +138,13 @@ class MIDIConfigDialog(QDialog):
         self.midi_helper.close_ports()
         input_port_text = self.get_input_port()
         output_port_text = self.get_output_port()
-        log.message(
-            f"Reconnecting to: Midi In:\t'{input_port_text}'", level=logging.INFO
-        )
-        log.message(
-            f"Reconnecting to: Midi Out:\t'{output_port_text}'", level=logging.INFO
-        )
+        log.message(f"Reconnecting to: Midi In:\t'{input_port_text}'")
+        log.message(f"Reconnecting to: Midi Out:\t'{output_port_text}'")
         success = self.midi_helper.reconnect_port_names(
             input_port_text, output_port_text
         )
         if not success:
-            log.message("Failed to reopen both MIDI ports", level=logging.WARNING)
+            log.warning("Failed to reopen both MIDI ports")
 
     def get_input_port(self) -> str:
         """Get selected input port name

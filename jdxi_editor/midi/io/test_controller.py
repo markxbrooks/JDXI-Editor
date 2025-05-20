@@ -13,6 +13,8 @@ midiout.close_port()
 
 import rtmidi
 
+from jdxi_editor.jdxi.sysex.bitmask import BitMask
+
 
 class MidiTestController:
     def __init__(self, port_name=None):
@@ -34,7 +36,7 @@ class MidiTestController:
         self.midiout.close_port()
 
     def send_cc(self, channel, control, value):
-        status = 0xB0 | (channel & 0x0F)
+        status = 0xB0 | (channel & BitMask.LOW_4_BITS)
         self.midiout.send_message([status, control, value])
 
     def send_value(self, channel, msb, lsb=None):

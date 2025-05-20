@@ -316,6 +316,14 @@ class JDXiStyle:
                 }
         """
 
+    MIDI_MESSAGE_MONITOR = """
+            QTextEdit {
+                font-family: monospace;
+                background-color: #1E1E1E;
+                color: #FFFFFF;
+            }
+        """
+
     SPLASH_SCREEN = generate_editor_style(
         ACCENT,
         ACCENT_HOVER,

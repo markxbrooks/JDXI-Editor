@@ -15,10 +15,12 @@ from typing import Optional
 
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTextEdit
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 
 class MIDIMessageMonitor(QMainWindow):
+    """ MIDIMessageMonitor """
     def __init__(
         self, midi_helper: MidiIOHelper = None, parent: Optional[QWidget] = None
     ):
@@ -35,28 +37,35 @@ class MIDIMessageMonitor(QMainWindow):
         self.log_view = QTextEdit()
         self.log_view.setReadOnly(True)
         self.log_view.setLineWrapMode(QTextEdit.NoWrap)
-        self.log_view.setStyleSheet(
-            """
-            QTextEdit {
-                font-family: monospace;
-                background-color: #1E1E1E;
-                color: #FFFFFF;
-            }
-        """
-        )
+        self.log_view.setStyleSheet(JDXiStyle.MIDI_MESSAGE_MONITOR)
         layout.addWidget(self.log_view)
         self.midi_helper = midi_helper
         self.midi_helper.midi_message_incoming.connect(self.process_incoming_message)
         self.midi_helper.midi_message_outgoing.connect(self.process_outgoing_message)
 
-    def process_incoming_message(self, message):
-        self.log.message(message, direction="←")
+    def process_incoming_message(self, message: str) -> None:
+        """
+        process_incoming_message
+        :param message: str
+        :return: None
+        """
+        self.log_message(message, direction="←")
 
-    def process_outgoing_message(self, message):
+    def process_outgoing_message(self, message: str) -> None:
+        """
+        process_outgoing_message
+        :param message: str
+        :return: None
+        """
         self.log_message(message)
 
-    def log_message(self, message, direction="→"):
-        """Log address MIDI message with timestamp and hex formatting if possible."""
+    def log_message(self, message: str, direction="→"):
+        """
+        Log address MIDI message with timestamp and hex formatting if possible
+        :param message: str
+        :param direction: str
+        :return: None
+        """
         from datetime import datetime
 
         timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]

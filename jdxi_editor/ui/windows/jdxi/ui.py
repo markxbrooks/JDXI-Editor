@@ -78,8 +78,8 @@ from jdxi_editor.ui.windows.jdxi.containers import (
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class JdxiUi(QMainWindow):
-    """JDXI UI setup, with little or no actual functionality, which is super-classed"""
+class JDXiUi(QMainWindow):
+    """JD-Xi UI setup, with as little as possible functionality, which is to be super-classed"""
 
     def __init__(self):
         super().__init__()
