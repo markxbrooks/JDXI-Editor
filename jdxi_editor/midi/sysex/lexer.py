@@ -3,7 +3,6 @@ import re
 from jdxi_editor.midi.data.address.address import AddressStartMSB, \
     AddressOffsetSuperNATURALLMB, AddressOffsetProgramLMB, AddressOffsetTemporaryToneUMB, AddressOffsetProgramLMB, \
     AddressOffsetSystemLMB
-from jdxi_editor.midi.data.address.address_map import PARAMETER_ADDRESS_MAP
 
 # Define token patterns
 TOKENS = {

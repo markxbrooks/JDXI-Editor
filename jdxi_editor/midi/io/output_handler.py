@@ -74,7 +74,7 @@ class MidiOutHandler(MidiIOController):
             filtered_data = {
                 k: v for k, v in parsed_data.items() if k not in OUTBOUND_MESSAGE_IGNORED_KEYS
             }
-        except Exception as ex:
+        except Exception:
             filtered_data = {}
         try:
             log.message(

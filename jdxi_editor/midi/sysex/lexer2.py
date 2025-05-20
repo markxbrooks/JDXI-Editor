@@ -107,7 +107,7 @@ def map_tokens_all(tokens):
         matched = False
 
         if token_type == "4-byte-addresses":
-            msb = token_value.split()[0]
+            token_value.split()[0]
             offset = ' '.join(token_value.split()[1:])
 
             for area_name, entry in TEST_PARAMETER_ADDRESS_MAP.items():

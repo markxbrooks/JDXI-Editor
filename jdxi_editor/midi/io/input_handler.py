@@ -200,7 +200,7 @@ class MidiInHandler(MidiIOController):
                 filtered_data = {
                     k: v for k, v in parsed_data.items() if k not in IGNORED_KEYS
                 }
-            except Exception as ex:
+            except Exception:
                 filtered_data = {}
             log.message(
                 f"[MIDI SysEx received]: {hex_string} {filtered_data}",

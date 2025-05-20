@@ -5,7 +5,6 @@ from typing import Any
 
 from jdxi_editor.globals import LOG_PADDING_WIDTH, logger, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
-from jdxi_editor.log.emoji import LEVEL_EMOJIS
 from jdxi_editor.midi.io.utils import format_midi_message_to_hex_string
 
 

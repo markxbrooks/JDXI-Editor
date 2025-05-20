@@ -37,7 +37,6 @@ Methods:
 import logging
 import platform
 import threading
-from functools import partial
 from typing import Union, Optional
 
 from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent

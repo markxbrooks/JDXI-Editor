@@ -34,7 +34,6 @@ import threading
 from PySide6.QtCore import Signal, QObject
 
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.preset.data import JDXiPresetData
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.channel.channel import MidiChannel
 from jdxi_editor.midi.data.programs.analog import ANALOG_PRESET_LIST

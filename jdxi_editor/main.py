@@ -21,7 +21,6 @@ Functions:
 
 
 import os
-import platform
 import sys
 import logging
 from pathlib import Path
@@ -35,7 +34,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QGroupBox,
 )
-from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
+from PySide6.QtGui import QIcon, QPixmap, Qt, QFont, QFontInfo
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.setup import setup_logging

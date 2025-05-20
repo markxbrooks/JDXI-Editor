@@ -20,7 +20,6 @@ Methods:
 
 import os
 import logging
-import platform
 import re
 from typing import Union
 
