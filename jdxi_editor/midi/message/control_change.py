@@ -23,6 +23,7 @@ Usage Example:
 from dataclasses import dataclass
 from typing import List
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.midi.data.control_change.drum import DrumKitCC
 
@@ -41,7 +42,7 @@ class ControlChangeMessage(MidiMessage):
     controller: int
     value: int
     status: int = field(
-        init=False, default=0xB0
+        init=False, default=MidiConstant.CONTROL_CHANGE
     )  # Prevents status from being a required argument
 
     def __post_init__(self):
@@ -88,7 +89,7 @@ class DigitalToneCCMessage:
             # Standard CC message
             return bytes(
                 [
-                    0xB0 | self.channel,  # Control Change status
+                    MidiConstant.CONTROL_CHANGE | self.channel,  # Control Change status
                     self.cc,  # CC number
                     self.value,  # Value
                 ]

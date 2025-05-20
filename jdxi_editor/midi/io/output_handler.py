@@ -148,9 +148,10 @@ class MidiOutHandler(MidiIOController):
         log.parameter("channel", channel)
         try:
             # Bank Select MSB (CC#0)
-            self.send_raw_message([0xB0 + channel, 0x00, msb])
+            status = MidiConstant.CONTROL_CHANGE | (channel & BitMask.LOW_4_BITS)
+            self.send_raw_message([status, MidiConstant.BANK_SELECT_MSB, msb])
             # Bank Select LSB (CC#32)
-            self.send_raw_message([0xB0 + channel, 0x20, lsb])
+            self.send_raw_message([status, MidiConstant.BANK_SELECT_LSB, lsb])
             return True
         except (ValueError, TypeError, OSError, IOError) as ex:
             log.error(f"Error sending bank select: {ex}")
@@ -214,7 +215,7 @@ class MidiOutHandler(MidiIOController):
                             value: int,
                             channel: int = 0) -> bool:
         """
-        Send address control change message.
+        Send control change message.
         :param controller: int Controller number (0–127).
         :param value: int Controller value (0–127).
         :param channel: int MIDI channel (0–15).

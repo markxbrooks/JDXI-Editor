@@ -27,6 +27,8 @@ class MidiConstant:
     PROGRAM_CHANGE = 0xC0
     CHANNEL_AFTERTOUCH = 0xD0
     PITCH_BEND = 0xE0
+    BANK_SELECT_MSB = 0x00
+    BANK_SELECT_LSB = 0x20
 
     # Utility
     MIDI_CHANNEL_MASK = BitMask.LOW_4_BITS  # Useful when masking/combining channel and status
