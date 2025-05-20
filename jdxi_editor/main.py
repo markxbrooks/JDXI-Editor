@@ -42,7 +42,7 @@ from jdxi_editor.log.setup import setup_logging
 from jdxi_editor.project import __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.ui.windows.jdxi.instrument import JdxiInstrument
+from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
 
 os.environ["QT_LOGGING_RULES"] = "qt.qpa.fonts=false"
 
@@ -180,7 +180,7 @@ def main():
 
         splash.close()
 
-        window = JdxiInstrument()
+        window = JDXiInstrument()
         window.show()
         # Start event loop
         return app.exec()

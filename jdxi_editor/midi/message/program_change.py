@@ -24,6 +24,7 @@ Usage Example:
 
 from dataclasses import dataclass
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.message.channel import ChannelMessage
 
 
@@ -31,7 +32,7 @@ from jdxi_editor.midi.message.channel import ChannelMessage
 class ProgramChangeMessage(ChannelMessage):
     """MIDI Program Change message"""
 
-    status: int = 0xC0  # Program Change status byte
+    status: int = MidiConstant.PROGRAM_CHANGE  # Program Change status byte
     program: int = 0
 
     def __post_init__(self):

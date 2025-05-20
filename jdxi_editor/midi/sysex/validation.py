@@ -1,6 +1,6 @@
 from typing import List, Iterable
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
@@ -11,7 +11,7 @@ def validate_raw_sysex_message(message: List[int]) -> bool:
     """Validate JD-Xi SysEx message format"""
     try:
         # Check length
-        if len(message) not in [MidiConstant.ONE_BYTE_SYSEX_DATA_LENGTH, MidiConstant.FOUR_BYTE_SYSEX_DATA_LENGTH]:
+        if len(message) not in [JDXiConstant.SYSEX_LENGTH_ONE_BYTE_DATA, JDXiConstant.SYSEX_LENGTH_FOUR_BYTE_DATA]:
             log.message(f"Invalid SysEx length: {len(message)}")
             return False
 

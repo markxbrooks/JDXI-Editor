@@ -31,7 +31,7 @@ print(offset)  # Output: (0x00, 0x01, 0x23)
 """
 
 from enum import Enum
-from typing import Optional, Tuple, Type, Iterator, T
+from typing import Optional, Tuple, Type, T
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.bitmask import BitMask

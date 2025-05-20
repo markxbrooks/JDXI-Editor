@@ -93,7 +93,7 @@ from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
 from jdxi_editor.ui.windows.midi.debugger import MIDIDebugger
 from jdxi_editor.ui.windows.midi.monitor import MIDIMessageMonitor
 from jdxi_editor.ui.windows.patch.manager import PatchManager
-from jdxi_editor.ui.windows.jdxi.ui import JdxiUi
+from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
@@ -102,7 +102,10 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 
 
-class JdxiInstrument(JdxiUi):
+class JDXiInstrument(JDXiUi):
+    """
+    class JDXiInstrument
+    """
     def __init__(self):
         super().__init__()
         if platform.system() == "Windows":
