@@ -1,3 +1,17 @@
+"""
+# Create an NRPNMessage
+nrpn = NRPNMessage(channel=1, parameter_number=300, value=127)
+print(nrpn)  # Output: NRPNMessage(channel=1, parameter_number=300, value=127)
+
+# Convert to MIDI bytes
+midi_bytes = nrpn.to_bytes()
+print(midi_bytes)  # Output: b'\xb1c\x01\xb1b,\xb1\x06\x7f'
+
+# Parse from MIDI bytes
+parsed_nrpn = NRPNMessage.from_bytes(midi_bytes)
+print(parsed_nrpn)  # Output: NRPNMessage(channel=1, parameter_number=300, value=127)
+"""
+
 @dataclass
 class ControlChangeMessage(MidiMessage):
     """MIDI Control Change message"""
