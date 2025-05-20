@@ -44,13 +44,17 @@ class PitchEnvelope(QWidget):
         decay_param: AddressParameter,
         depth_param: AddressParameter,
         midi_helper: Optional[MidiIOHelper] = None,
+        controls: dict[AddressParameter, QWidget] = None,
         address: Optional[RolandSysExAddress] = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         self.address = address
         self.midi_helper = midi_helper
-        self.controls: Dict[AddressParameter, Slider] = {}
+        if controls:
+            self.controls = controls
+        else:
+            self.controls = {}
         self.envelope = {
             "attack_time": 300,
             "decay_time": 800,
