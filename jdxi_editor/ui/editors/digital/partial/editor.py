@@ -74,6 +74,7 @@ class DigitalPartialEditor(PartialEditor):
         midi_helper: Optional[MidiIOHelper] = None,
         synth_number: int = 1,
         partial_number: int = 1,
+        preset_type: JDXiSynth = None,
         parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
@@ -83,6 +84,7 @@ class DigitalPartialEditor(PartialEditor):
         :param midi_helper: MidiIOHelper
         :param synth_number: int
         :param partial_number: int
+        :param preset_type: JDXiSynth
         :param parent: QWidget
         """
         self.partial_address_default = AddressOffsetSuperNATURALLMB.PARTIAL_1
@@ -99,6 +101,7 @@ class DigitalPartialEditor(PartialEditor):
         ]
         self.midi_helper = midi_helper
         self.partial_number = partial_number
+        self.preset_type = preset_type
         if synth_number == 1:
             self._init_synth_data(synth_type=JDXiSynth.DIGITAL_SYNTH_1, partial_number=self.partial_number)
         elif synth_number == 2:
@@ -185,6 +188,12 @@ class DigitalPartialEditor(PartialEditor):
         # Add container to scroll area
         main_layout.addWidget(container)
         self.updating_from_spinbox = False
+
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
 
     def update_filter_controls_state(self, mode: int):
         """

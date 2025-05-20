@@ -197,7 +197,7 @@ class DigitalSynthEditor(SynthEditor):
         # Create editor for each partial
         for i in range(1, 4):
             editor = DigitalPartialEditor(
-                midi_helper, self.synth_number, i, parent=self
+                midi_helper, self.synth_number, i, preset_type=self.preset_type, parent=self
             )
             self.partial_editors[i] = editor
             self.partial_tab_widget.addTab(editor, f"Partial {i}")
