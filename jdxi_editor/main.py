@@ -34,11 +34,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QGroupBox,
 )
-from PySide6.QtGui import QIcon, QPixmap, Qt, QFont, QFontInfo
+from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.setup import setup_logging
-from jdxi_editor.project import __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
@@ -56,8 +55,8 @@ def main():
 
         # Set application metadata
         app.setApplicationName("JD-Xi Editor")
-        app.setApplicationVersion(__version__)
-        app.setOrganizationName("mabinc")
+        app.setApplicationVersion("0.30")
+        app.setOrganizationName("jdxieditor")
         app.setOrganizationDomain("com.mabinc")
         app.setStyleSheet(
             """
@@ -72,36 +71,29 @@ def main():
 
         # Set application icon
         icon_locations = [
-            Path(__file__).parent / "resources" / "jdxi_icon.png",
+            Path(__file__).parent / "resources" / "jdxi_icon.png",  # Package location
             Path(__file__).parent.parent
             / "resources"
             / "jdxi_icon.png",  # Development location
         ]
-        resources_icon_location = resource_path("jdxi_icon.png")
+
         icon_found = False
-        if not getattr(sys, 'frozen', False):  # py2app sets this
-            for icon_path in icon_locations:
-                if icon_path.exists():
-                    app.setWindowIcon(QIcon(str(icon_path)))
-                    log_message(f"Loaded icon from {icon_path}")
-                    icon_found = True
-                    break
-                elif os.path.exists(resources_icon_location):
-                    app.setWindowIcon(QIcon(str(resources_icon_location)))
-        elif os.path.exists(resources_icon_location):
-            app.setWindowIcon(QIcon(str(resources_icon_location)))
+        for icon_path in icon_locations:
+            if icon_path.exists():
+                app.setWindowIcon(QIcon(str(icon_path)))
+                log_message(f"Loaded icon from {icon_path}")
+                icon_found = True
+                break
 
         if not icon_found:
             logging.warning(
                 f"Icon not found in any of: {[str(p) for p in icon_locations]}"
             )
             # Create address fallback icon
-            resources_icon_location = resource_path("jdxi_icon.png")
-            icon = QIcon(resources_icon_location)
-            app.setWindowIcon(QIcon(str(resources_icon_location)))
-            # pixmap = QPixmap(128, 128)
-            # # pixmap.fill(QColor("#2897B7"))  # Use the app's theme color
-            # icon.addPixmap(pixmap)
+            icon = QIcon()
+            pixmap = QPixmap(128, 128)
+            pixmap.fill(QColor("#2897B7"))  # Use the app's theme color
+            icon.addPixmap(pixmap)
             app.setWindowIcon(icon)
             log_message("Using fallback icon")
 

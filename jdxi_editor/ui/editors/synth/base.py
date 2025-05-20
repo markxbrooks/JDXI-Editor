@@ -47,7 +47,7 @@ class SynthBase(QWidget):
 
     def __init__(self, midi_helper, parent=None):
         super().__init__(parent)
-        self.partial_editors = []
+        self.partial_editors = {}
         self.sysex_data = None
         self.address = None
         self.partial_number = None

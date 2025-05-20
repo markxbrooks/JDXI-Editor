@@ -245,14 +245,14 @@ class JDXiInstrument(JDXiUi):
         """
         self.data_request()
 
-    def add_editor(self, editor: SynthEditor) -> None:
+    def register_editor(self, editor: SynthEditor) -> None:
         """
-        add editor
+        register editor
         :param editor: SynthEditor
         :return: None
         """
         self.editors.append(editor)
-        log.message(f"Editor added. Now {self.editors} available")
+        log.message(f"Editor {editor} registered. Now {self.editors} registered")
 
     def set_preset_name_by_type(self, tone_name: str, synth_type: str) -> None:
         """
@@ -561,14 +561,14 @@ class JDXiInstrument(JDXiUi):
             editor.raise_()
 
             setattr(self, instance_attr, editor)
-            self.add_editor(editor)
+            self.register_editor(editor)
             if hasattr(editor, "preset_helper"):
                 editor.preset_helper.update_display.connect(
                     self.update_display_callback
                 )
             if hasattr(editor, "partial_editors"):
                 for i, partial_item in enumerate(editor.partial_editors.values()):
-                    self.add_editor(partial_item)
+                    self.register_editor(partial_item)
 
         except Exception as ex:
             log.error(f"Error showing {title} editor", exception=ex)
