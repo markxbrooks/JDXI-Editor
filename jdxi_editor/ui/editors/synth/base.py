@@ -265,7 +265,6 @@ class SynthBase(QWidget):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
-        print("address:", self.address)
             
     def _update_slider(
         self,

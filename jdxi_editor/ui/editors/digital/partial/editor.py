@@ -49,7 +49,6 @@ from PySide6.QtWidgets import (
 from jdxi_editor.globals import logger
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
-from jdxi_editor.jdxi.synth.factory import create_synth_data
 from jdxi_editor.midi.data.parameter.digital.partial import (
     AddressParameterDigitalPartial,
 )

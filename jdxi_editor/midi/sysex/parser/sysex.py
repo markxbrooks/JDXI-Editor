@@ -14,7 +14,7 @@ log.message(f"Parsed Data: {parsed_data}")
 import json
 import os
 from pathlib import Path
-from typing import Optional, TextIO
+from typing import Optional
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset

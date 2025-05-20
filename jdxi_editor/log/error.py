@@ -4,7 +4,6 @@ from typing import Optional
 
 from jdxi_editor.globals import logger, LOGGING
 from jdxi_editor.log.decorator import decorate_log_message
-from jdxi_editor.log.emoji import LEVEL_EMOJIS
 
 
 def log_error(

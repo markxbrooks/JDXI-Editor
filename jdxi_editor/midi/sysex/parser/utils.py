@@ -27,7 +27,8 @@ from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB 
     AddressOffsetTemporaryToneUMB
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.map import JDXiMapParameterAddress
+from jdxi_editor.midi.map.parameter_address import JDXiMapParameterAddress
+# from jdxi_editor.midi.map import JDXiMapParameterAddress
 from jdxi_editor.midi.sysex.parser.tone_mapper import get_temporary_area, get_drum_tone, get_synth_tone
 
 UNKNOWN = "Unknown"
