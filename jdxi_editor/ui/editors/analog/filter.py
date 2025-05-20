@@ -10,6 +10,7 @@ from PySide6.QtCore import Qt
 import qtawesome as qta
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
+from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
@@ -26,6 +27,7 @@ class AnalogFilterSection(QWidget):
         on_filter_mode_changed: Callable,
         send_control_change: Callable,
         midi_helper: MidiIOHelper,
+        controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
         super().__init__()
@@ -35,7 +37,8 @@ class AnalogFilterSection(QWidget):
         :param create_parameter_switch: Callable
         :param on_filter_mode_changed: Callable
         :param send_control_change: Callable
-        :param midi_helper: MidiIOHelper
+        :param midi_helper: MidiIOHelper Midi Helper
+        :param controls: dict[AddressParameter, QWidget] controls to add to
         :param address: RolandSysExAddress
         """
         self.filter_resonance = None
@@ -45,6 +48,7 @@ class AnalogFilterSection(QWidget):
         self.send_control_change = send_control_change
         self.midi_helper = midi_helper
         self.address = address
+        self.controls = controls
         self.init_ui()
 
     def init_ui(self):
@@ -119,6 +123,7 @@ class AnalogFilterSection(QWidget):
             sustain_param=AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
+            controls=self.controls,
             address=self.address,
         )
         self.filter_adsr_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)

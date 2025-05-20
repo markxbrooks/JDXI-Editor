@@ -45,7 +45,7 @@ class DrumTVASection(QWidget):
 
     def __init__(
         self,
-        controls: dict[str, QWidget],
+        controls: dict[AddressParameterDrumPartial, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,

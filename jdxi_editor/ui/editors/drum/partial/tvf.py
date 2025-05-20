@@ -45,7 +45,7 @@ class DrumTVFSection(QWidget):
 
     def __init__(
         self,
-        controls: dict[str, QWidget],
+        controls: dict[AddressParameterDrumPartial, QWidget],
         create_parameter_combo_box: Callable,
         create_parameter_slider: Callable,
         midi_helper: MidiIOHelper,
@@ -59,6 +59,7 @@ class DrumTVFSection(QWidget):
         :param midi_helper: MidiIOHelper
         """
         self.controls = controls
+        self.midi_helper = midi_helper
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_combo_box = create_parameter_combo_box
         self.setup_ui()
