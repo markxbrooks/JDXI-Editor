@@ -12,98 +12,72 @@ parsed_nrpn = NRPNMessage.from_bytes(midi_bytes)
 print(parsed_nrpn)  # Output: NRPNMessage(channel=1, parameter_number=300, value=127)
 """
 
-@dataclass
-class ControlChangeMessage(MidiMessage):
-    """MIDI Control Change message"""
 
-    channel: int
-    controller: int
-    value: int
-    status: int = field(
-        init=False, default=MidiConstant.CONTROL_CHANGE
-    )  # Prevents status from being a required argument
+@dataclass
+class NRPNMessage:
+    """MIDI Non-Registered Parameter Number (NRPN) Control Change message"""
+
+    channel: int  # MIDI channel (0-15)
+    parameter_number: int  # NRPN parameter number (0-16383)
+    value: int  # NRPN value (0-127)
 
     def __post_init__(self):
-        if not (0 <= self.controller <= 127):
+        if not (0 <= self.channel <= 15):
+            raise ValueError(f"Channel {self.channel} out of range (0-15).")
+        if not (0 <= self.parameter_number <= 16383):
             raise ValueError(
-                f"Controller number {self.controller} out of range (0-127)."
+                f"Parameter number {self.parameter_number} out of range (0-16383)."
             )
         if not (0 <= self.value <= 127):
-            raise ValueError(f"Control value {self.value} out of range (0-127).")
+            raise ValueError(f"Value {self.value} out of range (0-127).")
 
-        self.data1 = self.controller  # Controller number
-        self.data2 = self.value  # Control value
+    @property
+    def msb(self) -> int:
+        """Get the most significant 7 bits of the parameter number."""
+        return (self.parameter_number >> 7) & 0x7F
 
-    def to_message_list(self) -> List[int]:
-        """
-        Convert Control Change message to a list of bytes for sending
-        :return: list
-        """
-        status_byte = self.status | (
-            self.channel & 0x0F
-        )  # Ensures correct channel encoding
-        return [
-            status_byte,
-            self.data1 & BitMask.LOW_7_BITS,
-            self.data2 & BitMask.LOW_7_BITS,
-        ]  # Proper MIDI CC message
-
-
-@dataclass
-class DigitalToneCCMessage:
-    """SuperNATURAL Synth Tone Control Change message"""
-
-    channel: int = 0  # MIDI channel (0-15)
-    cc: int = 0  # CC number
-    value: int = 0  # CC value (0-127)
-    is_nrpn: bool = False  # Whether this is an NRPN message
+    @property
+    def lsb(self) -> int:
+        """Get the least significant 7 bits of the parameter number."""
+        return self.parameter_number & 0x7F
 
     def to_bytes(self) -> bytes:
         """
-        Convert to MIDI message bytes
+        Convert the NRPN message to a sequence of MIDI bytes.
         :return: bytes
         """
-        if not self.is_nrpn:
-            # Standard CC message
-            return bytes(
-                [
-                    MidiConstant.CONTROL_CHANGE | self.channel,  # Control Change status
-                    self.cc,  # CC number
-                    self.value,  # Value
-                ]
-            )
-        else:
-            # NRPN message sequence
-            return bytes(
-                [
-                    0xB0 | self.channel,  # CC for NRPN MSB
-                    0x63,  # NRPN MSB (99)
-                    0x00,  # MSB value = 0
-                    0xB0 | self.channel,  # CC for NRPN LSB
-                    0x62,  # NRPN LSB (98)
-                    self.cc,  # LSB value = parameter
-                    0xB0 | self.channel,  # CC for Data Entry
-                    0x06,  # Data Entry MSB
-                    self.value,  # Value
-                ]
-            )
+        return bytes(
+            [
+                0xB0 | self.channel,  # CC for NRPN MSB
+                0x63,  # NRPN MSB (99)
+                self.msb,  # MSB value
+                0xB0 | self.channel,  # CC for NRPN LSB
+                0x62,  # NRPN LSB (98)
+                self.lsb,  # LSB value
+                0xB0 | self.channel,  # CC for Data Entry
+                0x06,  # Data Entry MSB
+                self.value,  # Value
+            ]
+        )
 
     @classmethod
     def from_bytes(cls, data: bytes):
         """
-        Create message from MIDI bytes
+        Create an NRPNMessage instance from MIDI bytes.
         :param data: bytes
-        :return: ControlChangeMessage
+        :return: NRPNMessage
         """
-        if len(data) == 3:
-            # Standard CC message
-            return cls(channel=data[0] & 0x0F, cc=data[1], value=data[2], is_nrpn=False)
-        elif len(data) == 9:
-            # NRPN message
-            return cls(
-                channel=data[0] & BitMask.LOW_4_BITS,
-                cc=data[5],  # NRPN parameter number
-                value=data[8],  # NRPN value
-                is_nrpn=True,
-            )
-        raise ValueError("Invalid CC message length")
+        if len(data) == 9 and data[1] == 0x63 and data[4] == 0x62:
+            channel = data[0] & 0x0F
+            msb = data[2]
+            lsb = data[5]
+            parameter_number = (msb << 7) | lsb
+            value = data[8]
+            return cls(channel=channel, parameter_number=parameter_number, value=value)
+        raise ValueError("Invalid NRPN message format or length")
+
+    def __str__(self):
+        return (
+            f"NRPNMessage(channel={self.channel}, "
+            f"parameter_number={self.parameter_number}, value={self.value})"
+        )
