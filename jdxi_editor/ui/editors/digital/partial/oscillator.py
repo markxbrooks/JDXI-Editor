@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
+from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import (
     AddressParameterDigitalPartial,
 )
@@ -40,7 +41,7 @@ class DigitalOscillatorSection(QWidget):
         send_midi_parameter: Callable,
         partial_number: int,
         midi_helper: MidiIOHelper,
-        controls: list[QWidget],
+        controls: dict[AddressParameter, QWidget],
         address: RolandSysExAddress,
     ):
         super().__init__()
@@ -192,6 +193,7 @@ class DigitalOscillatorSection(QWidget):
             decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
+            controls=self.controls,
             address=self.address,
         )
         self.pitch_env_widget.setStyleSheet(JDXiStyle.ADSR)
