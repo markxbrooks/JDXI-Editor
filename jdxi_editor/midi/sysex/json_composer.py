@@ -68,7 +68,7 @@ class JDXiJSONComposer:
                 else:
                     editor_data[k] = v
                 # Convert combined_data to JSON string
-                self.json_string = json.dumps(editor_data, indent=4)
+                self.json_string = editor_data # json.dumps(editor_data, indent=4)
             return self.json_string
 
         except (ValueError, TypeError, OSError, IOError) as ex:
@@ -95,9 +95,11 @@ class JDXiJSONComposer:
         :return: None
         """
         self.compose_message(editor)
+        address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
         json_temp_file = (
                 self.temp_folder
-                / f"jdxi_tone_data_{self.address}.json"
+
+                / f"jdxi_tone_data_{address_hex}.json"
         )
         self.save_json(str(json_temp_file))
         log.message(f"JSON saved successfully to {json_temp_file}")
