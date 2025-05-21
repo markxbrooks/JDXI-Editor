@@ -37,6 +37,7 @@ import logging
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
 
@@ -86,6 +87,7 @@ class PatchManager(QMainWindow):
 
         # Set central widget
         self.setCentralWidget(main_widget)
+        self.json_composer = JDXiJSONComposer()
 
     def _browse_file(self):
         """Open file dialog for selecting patch file"""
@@ -122,6 +124,16 @@ class PatchManager(QMainWindow):
                 return
 
             if self.save_mode:
+                for editor in self.editors:
+                    if not hasattr(editor, "address"):
+                        log.warning(f"Skipping invalid editor: {editor}, has no address")
+                        continue
+                    if not hasattr(editor, "get_controls_as_dict"):
+                        log.warning(
+                            f"Skipping invalid editor: {editor}, has no get_controls_as_dict method"
+                        )
+                        continue
+                    self.json_composer.process_editor(editor)
                 save_all_controls_to_single_file(self.editors, file_path)
                 log.message(f"Patch saved to {file_path}")
             else:

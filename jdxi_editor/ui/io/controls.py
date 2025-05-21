@@ -24,8 +24,7 @@ def save_all_controls_to_single_file(editors: list, file_path: str) -> None:
     try:
         combined_data = {"JD_XI_HEADER": "f041100000000e"}
         for editor in editors:
-            print(type(editor))
-            log.message(f"processing editor: {editor}")
+            log.message(f"processing editor: {editor} {editor.__class__.__name__}")
             if not hasattr(editor, "address"):
                 log.warning(f"Skipping invalid editor: {editor}, has no address")
                 continue
