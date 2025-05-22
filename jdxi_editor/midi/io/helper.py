@@ -19,6 +19,7 @@ Dependencies:
 """
 
 import logging
+import zipfile
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.input_handler import MidiInHandler
@@ -55,6 +56,21 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         :param file_path: str
         :return: None
         """
+        if file_path.endswith(".jsz"):
+            log.message("Loading JSZ file")
+            try:
+                with zipfile.ZipFile(file_path, "r") as zip_ref:
+                    for json_file in zip_ref.namelist():
+                        log.message(f"File in zip: {json_file}")
+                        if json_file.endswith(".json"):
+                            log.message(f"Loading JSON file: {json_file}")
+                            # Read the JSON file from the zip archive
+                            with zip_ref.open(json_file) as json_file_handle:
+                                json_string = json_file_handle.read().decode("utf-8")
+                                self.midi_sysex_json.emit(json_string)
+            except Exception as ex:
+                log.error(f"Error reading or emitting sysex JSON: {ex}")
+            return
         try:
             with open(file_path, "r", encoding="utf-8") as file_handle:
                 json_string = file_handle.read()
