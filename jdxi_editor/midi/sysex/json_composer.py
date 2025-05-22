@@ -31,7 +31,7 @@ class JDXiJSONComposer:
         editor: SynthEditor,
     ) -> Optional[str]:
         """
-        :param editor: SynthEditor
+        :param editor: SynthEditor Editor instance to process
         :return: str JSON SysEx message
         """
         if editor:
@@ -88,17 +88,19 @@ class JDXiJSONComposer:
         except Exception as ex:
             log.error(f"Error saving JSON: {ex}")
 
-    def process_editor(self, editor: SynthEditor) -> None:
+    def process_editor(self, editor: SynthEditor, temp_folder: Path) -> None:
         """
         Process the editor and save the JSON
-        :param editor: SynthEditor
+        :param editor: SynthEditor Editor instance to process
+        :param temp_folder: str Temporary folder to save the JSON
         :return: None
         """
+        if temp_folder:
+            self.temp_folder = temp_folder
         self.compose_message(editor)
         address_hex = ''.join([f"{x:02x}" for x in editor.address.to_bytes()])
         json_temp_file = (
                 self.temp_folder
-
                 / f"jdxi_tone_data_{address_hex}.json"
         )
         self.save_json(str(json_temp_file))

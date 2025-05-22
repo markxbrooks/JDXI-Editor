@@ -20,7 +20,11 @@ Dependencies:
 - jdxi_editor.ui.style.Style
 
 """
-
+import os
+import random
+import zipfile
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 from PySide6.QtWidgets import (
@@ -39,6 +43,16 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
+
+
+def zip_directory(folder_path, zip_path):
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                # Arcname ensures the directory structure is preserved
+                arcname = os.path.relpath(file_path, start=folder_path)
+                zipf.write(file_path, arcname)
 
 
 class PatchManager(QMainWindow):
@@ -97,14 +111,14 @@ class PatchManager(QMainWindow):
                     self,
                     "Save Patch File",
                     "",
-                    "Patch Files (*.syx);(*.json);All Files (*.*)",
+                    "Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)",
                 )
             else:
                 file_path, _ = QFileDialog.getOpenFileName(
                     self,
                     "Load Patch File",
                     "",
-                    "Patch Files (*.syx);(*.json);All Files (*.*)",
+                    "Patch Files (*.jsz);(*.syx);(*.json);All Files (*.*)",
                 )
             if file_path:
                 self.path_input.setText(file_path)
@@ -122,7 +136,12 @@ class PatchManager(QMainWindow):
             if self.midi_helper is None:
                 log.message("MIDI helper not initialized.")
                 return
-
+            random_int = random.randint(0, 10_000)
+            today = datetime.today()
+            date_str = today.strftime("%Y-%m-%d")
+            temp_folder = Path.home() / ".jdxi_editor" / "temp" / f"{date_str}_{random_int}/"
+            if not temp_folder.exists():
+                temp_folder.mkdir(parents=True, exist_ok=True)
             if self.save_mode:
                 for editor in self.editors:
                     if not hasattr(editor, "address"):
@@ -133,8 +152,15 @@ class PatchManager(QMainWindow):
                             f"Skipping invalid editor: {editor}, has no get_controls_as_dict method"
                         )
                         continue
-                    self.json_composer.process_editor(editor)
-                save_all_controls_to_single_file(self.editors, file_path)
+                    self.json_composer.process_editor(editor, temp_folder)
+                # zip up contents of temp folder
+                temporary_files = list(temp_folder.glob("*.json"))
+                if len(temporary_files) == 0:
+                    log.warning("No temporary files found to zip.")
+                    return
+                log.message(f"Zipping {len(temporary_files)} temporary files.")
+                zip_directory(temp_folder, file_path)
+
                 log.message(f"Patch saved to {file_path}")
             else:
                 self.midi_helper.load_patch(file_path)
