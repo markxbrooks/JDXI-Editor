@@ -459,6 +459,31 @@ class MidiTrackViewer(QWidget):
             self.scroll_content.layout().addLayout(self.channel_controls_layout)
 
         # Create a selector and button for each track
+        
+        for i, track in enumerate(midi_file.tracks):
+            hlayout = QHBoxLayout()
+        
+            # Add QLabel for track number and channel
+            hlayout.addWidget(QLabel(f"Track {i+1} Channel:"))
+        
+            # Add QSpinBox for selecting the MIDI channel
+            spin = QSpinBox()
+            spin.setRange(0, 15)
+            spin.setValue(get_first_channel(track))
+            hlayout.addWidget(spin)
+        
+            # Add QPushButton for applying the changes
+            btn = QPushButton("Apply")
+            btn.clicked.connect(lambda _, tr=i, sp=spin: self.tracks.change_track_channel(tr, sp.value()))
+            hlayout.addWidget(btn)
+        
+            # Add the MidiTrackWidget to the layout
+            midi_track_widget = MidiTrackWidget(track)  # Assuming MidiTrackWidget takes a track as an argument
+            hlayout.addWidget(midi_track_widget)
+        
+            # Add the layout to the parent container (e.g., a QVBoxLayout or a QWidget)
+            self.parent_layout.addLayout(hlayout)  # Replace `self.parent_layout` with the actual parent layout or widget
+        """
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
 
@@ -474,3 +499,4 @@ class MidiTrackViewer(QWidget):
             hlayout.addWidget(btn)
 
             self.channel_controls_layout.addLayout(hlayout)
+            """
