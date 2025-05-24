@@ -101,6 +101,109 @@ class TimeRulerWidget(QWidget):
 
 
 class MidiTrackWidget(QWidget):
+    def __init__(self, track: mido.MidiTrack, total_length: float, parent: QWidget = None):
+        super().__init__(parent)
+        self.track = track
+        self.total_length = total_length
+        self.setMinimumHeight(100)  # Adjust as needed
+        self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
+        self.muted_channels = set()  # Set of muted channels
+
+        if track:
+            self.set_track(track, total_length)
+
+    def set_track(self, track: mido.MidiTrack, total_length: float) -> None:
+        """Set the track data for this widget."""
+        self.track = track
+        self.track_data = None
+
+        if not track:
+            return
+
+        abs_time = 0
+        rects = []
+        channels = set()
+        note_count = 0
+        program_changes = []
+
+        for msg in track:
+            abs_time += msg.time
+            if hasattr(msg, "channel"):
+                channels.add(msg.channel)
+            if msg.type == "note_on" and msg.velocity > 0:
+                note_count += 1
+                norm_time = abs_time / total_length if total_length else 0
+                # Store both time and channel for each note
+                rects.append(
+                    (norm_time, msg.channel if hasattr(msg, "channel") else 0)
+                )
+            if msg.type == "program_change":
+                program_changes.append(msg.program)
+
+        label = f"Track | {track.name if track.name else 'Unnamed'} | Notes: {note_count}"
+        if channels:
+            label += f" | Channel(s): {', '.join(map(str, sorted(channels)))}"
+        if program_changes:
+            label += f" | Prog: {', '.join(map(str, program_changes))}"
+
+        self.track_data = {"rects": rects, "label": label, "channels": channels}
+        self.update()
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Paint the MIDI track widget."""
+        if not self.track_data:
+            return
+
+        painter = QPainter(self)
+        try:
+            painter.setRenderHint(QPainter.Antialiasing)
+            track_height = self.height()
+            widget_width = self.width()
+
+            font = painter.font()
+            font.setPointSize(8)
+            painter.setFont(font)
+
+            data = self.track_data
+            y = 0  # Single track, no need for different y positions
+            rects = data["rects"]
+            label = data["label"]
+            channels = data["channels"]
+
+            # Check if this track is muted
+            muted = any(channel in self.muted_channels for channel in channels)
+
+            # Draw background from start to end of track notes
+            if rects:
+                times = [t[0] for t in rects]
+                start_x = min(times) * widget_width
+                end_x = max(times) * widget_width
+                track_rect = QRectF(start_x, y, end_x - start_x, int(track_height))
+                painter.setBrush(
+                    QColor(50, 50, 50, 100) if muted else QColor(255, 255, 255, 50)
+                )  # Subtle background
+                painter.setPen(Qt.NoPen)
+                painter.drawRect(track_rect)
+
+            # Draw notes
+            painter.setPen(Qt.NoPen)
+            for norm_time, channel in rects:
+                color = (
+                    QColor(150, 150, 150) if muted else QColor(100, 100, 255, 150)
+                )  # Grey out muted tracks
+                painter.setBrush(color)
+                x = norm_time * widget_width
+                rect = QRectF(x, y, 4, int(track_height))
+                painter.drawRect(rect)
+
+            # Draw label
+            painter.setPen(QColor(200, 200, 200))
+            painter.drawText(5, int(y + 15), label)
+        finally:
+            painter.end()
+            
+
+class MidiTrackWidgetOld(QWidget):
     def __init__(self, midi_file: mido.MidiFile = None, parent: QWidget = None):
         super().__init__(parent)
         self.midi_file = None
