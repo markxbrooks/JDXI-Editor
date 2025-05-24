@@ -581,7 +581,11 @@ class MidiTrackViewer(QWidget):
             hlayout.addWidget(btn)
         
             # Add the MidiTrackWidget to the layout
-            midi_track_widget = MidiTrackWidget(track)  # Assuming MidiTrackWidget takes a track as an argument
+            
+            # Add the MidiTrackWidget for the specific track
+            midi_track_widget = MidiTrackWidget(track=track, total_length=midi_file.length)
+            midi_track_widget.setMinimumHeight(200)  # Adjust the height as needed
+            # midi_track_widget = MidiTrackWidget(track)  # Assuming MidiTrackWidget takes a track as an argument
             hlayout.addWidget(midi_track_widget)
         
             # Add the layout to the parent container (e.g., a QVBoxLayout or a QWidget)
