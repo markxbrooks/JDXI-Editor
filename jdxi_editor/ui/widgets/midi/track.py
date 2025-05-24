@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QSlider,
     QLabel,
     QHBoxLayout,
-    QPushButton,
+    QPushButton, QSpinBox,
 )
 from PySide6.QtGui import QPainter, QColor, QPen, QPaintEvent
 from PySide6.QtCore import Qt, QRectF
@@ -166,6 +166,49 @@ class MidiTrackWidget(QWidget):
         # with open("midi_track_data.json", "w") as f:
         #    json.dump(json_safe_data, f, indent=2)
 
+    def change_track_channel(self, track_index: int, new_channel: int) -> None:
+        if not (0 <= new_channel <= 15):
+            raise ValueError("MIDI channel must be between 0 and 15")
+        if not (0 <= track_index < len(self.midi_file.tracks)):
+            raise IndexError("Invalid track index")
+
+        track = self.midi_file.tracks[track_index]
+        for msg in track:
+            if msg.type in [
+                "note_on", "note_off", "control_change", "program_change",
+                "pitchwheel", "aftertouch", "polytouch"
+            ]:
+                msg.channel = new_channel
+
+        # Force reset by creating a new MidiFile with modified tracks
+        new_midi = mido.MidiFile()
+        new_midi.ticks_per_beat = self.midi_file.ticks_per_beat
+        for t in self.midi_file.tracks:
+            new_midi.tracks.append(mido.MidiTrack(t))  # Shallow copy is okay here
+
+        self.set_midi_file(new_midi)
+
+    def change_track_channel_old(self, track_index: int, new_channel: int) -> None:
+        """
+        Change the MIDI channel for all messages in a given track that support a channel.
+
+        :param track_index: Index of the track to modify
+        :param new_channel: New MIDI channel (0–15)
+        """
+        if not (0 <= new_channel <= 15):
+            raise ValueError("MIDI channel must be between 0 and 15")
+        if not (0 <= track_index < len(self.midi_file.tracks)):
+            raise IndexError("Invalid track index")
+
+        track = self.midi_file.tracks[track_index]
+
+        for msg in track:
+            if msg.type in ["note_on", "note_off", "control_change", "program_change", "pitchwheel", "aftertouch",
+                            "polytouch"]:
+                msg.channel = new_channel
+
+        self.set_midi_file(self.midi_file)  # Refresh track data
+
     def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
         """Toggle the mute state for a channel.
 
@@ -288,6 +331,18 @@ class MidiTrackWidget(QWidget):
             painter.end()
 
 
+def get_first_channel(track) -> int:
+    """
+    Get the first channel from a MIDI track.
+    :param track: mido.MidiTrack
+    :return: int
+    """
+    for msg in track:
+        if msg.type in {"note_on", "note_off", "control_change", "program_change"} and hasattr(msg, "channel"):
+            return msg.channel
+    return 0  # default fallback
+
+
 class MidiTrackViewer(QWidget):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
@@ -354,9 +409,9 @@ class MidiTrackViewer(QWidget):
     def update_track_zoom(self, width):
         self.scroll_content.setFixedWidth(width * 80)
 
-    def set_midi_file(self, midi_file):
-        self.ruler.set_midi_file(midi_file)
-        self.tracks.set_midi_file(midi_file)
+    #def set_midi_file(self, midi_file):
+    #    self.ruler.set_midi_file(midi_file)
+    #    self.tracks.set_midi_file(midi_file)
 
     def toggle_channel_mute(self, channel, is_muted):
         """Add or remove the channel from muted set."""
@@ -382,3 +437,40 @@ class MidiTrackViewer(QWidget):
             self.send_midi_message(msg)  # Your MIDI playback logic
 
         self.event_index += 1
+
+    def set_midi_file(self, midi_file: mido.MidiFile) -> None:
+        """
+        Set the MIDI file for the widget and create channel controls.
+        :param midi_file:
+        :return: None
+        """
+        self.ruler.set_midi_file(midi_file)
+        self.tracks.set_midi_file(midi_file)
+
+        # Clear existing selectors if reloading
+        if hasattr(self, "channel_controls_layout"):
+            for i in reversed(range(self.channel_controls_layout.count())):
+                item = self.channel_controls_layout.itemAt(i)
+                if item.widget():
+                    item.widget().deleteLater()
+
+        else:
+            self.channel_controls_layout = QVBoxLayout()
+            self.scroll_content.layout().addLayout(self.channel_controls_layout)
+
+        # Create a selector and button for each track
+        for i, track in enumerate(midi_file.tracks):
+            hlayout = QHBoxLayout()
+
+            hlayout.addWidget(QLabel(f"Track {i+1} Channel:"))
+
+            spin = QSpinBox()
+            spin.setRange(0, 15)
+            spin.setValue(get_first_channel(track))
+            hlayout.addWidget(spin)
+
+            btn = QPushButton("Apply")
+            btn.clicked.connect(lambda _, tr=i, sp=spin: self.tracks.change_track_channel(tr, sp.value()))
+            hlayout.addWidget(btn)
+
+            self.channel_controls_layout.addLayout(hlayout)
