@@ -584,14 +584,13 @@ class MidiTrackViewer(QWidget):
             hlayout.addWidget(QLabel(f"Track {i+1} Channel:"))
         
             # Add QSpinBox for selecting the MIDI channel
-            spin = QSpinBox()
-            spin.setRange(0, 15)
-            spin.setValue(get_first_channel(track))
+            spin = MidiSpinBox()
+            spin.setValue(get_first_channel(track) + 1)  # Offset for display
             hlayout.addWidget(spin)
         
             # Add QPushButton for applying the changes
             btn = QPushButton("Apply")
-            btn.clicked.connect(lambda _, tr=i, sp=spin: self.tracks.change_track_channel(tr, sp.value()))
+            btn.clicked.connect(lambda _, tr=i, sp=spin: self.tracks.change_track_channel(tr, sp.value()))  # Send internal value (0–15)
             hlayout.addWidget(btn)
         
             # Add the MidiTrackWidget to the layout
