@@ -16,6 +16,7 @@ from jdxi_editor.jdxi.synth.drum import DrumSynthData
 from jdxi_editor.jdxi.synth.data import JDXISynthData
 from jdxi_editor.midi.data.parameter.drum.addresses import DRUM_GROUP_MAP
 from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
+from jdxi_editor.log.logger import Logger as log
 
 
 def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISynthData:
@@ -96,4 +97,5 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISyn
             umb=AddressOffsetTemporaryToneUMB.ANALOG_SYNTH,
             lmb=AddressOffsetProgramLMB.COMMON,
         )
-    raise ValueError(f"Error occurred setting up {synth_type}")
+    else:
+        log.warning(f"synth type: {synth_type} not implemented")

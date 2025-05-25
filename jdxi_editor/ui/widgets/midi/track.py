@@ -446,6 +446,18 @@ class MidiTrackViewer(QWidget):
         else:
             self.muted_channels.discard(track)
 
+    def play_next_event(self):
+        """Override or add the logic to handle muted channels."""
+        if self.event_index >= len(self.midi_events):
+            return
+
+        tick, msg = self.midi_events[self.event_index]
+
+        if hasattr(msg, "channel") and (msg.channel + 1) in self.muted_channels:
+            return  # Skip muted channel
+        else:
+            self.send_midi_message(msg)  # Your MIDI playback logic
+
         self.event_index += 1
         
     def mute_track(self, track_index: int) -> None:
@@ -541,18 +553,17 @@ class MidiTrackViewer(QWidget):
             # Add QSpinBox for selecting the MIDI channel
             spin = MidiSpinBox()
             spin.setValue(get_first_channel(track) + MidiConstant.CHANNEL_BINARY_TO_DISPLAY)  # Offset for display
-            spin.setFixedWidth(50)
+            spin.setFixedWidth(30)
             hlayout.addWidget(spin)
         
             # Add QPushButton for applying the changes
             apply_button = QPushButton("Apply")
-            apply_button.setFixedWidth(50)
+            apply_button.setFixedWidth(30)
             apply_button.clicked.connect(self.make_apply_slot(i, spin))
-            # apply_button.clicked.connect(lambda _, tr=i, sp=spin: self.change_track_channel(tr, sp.value() -  MidiConstant.CHANNEL_DISPLAY_TO_BINARY))  # Send internal value (0–15)
             hlayout.addWidget(apply_button)
 
             mute_button = QPushButton("Mute")
-            mute_button.setFixedWidth(50)
+            mute_button.setFixedWidth(30)
             mute_button.setCheckable(True)
             mute_button.clicked.connect(lambda _, tr=i: self.mute_track(tr))  # Send internal value (0–15)
             mute_button.toggled.connect(
