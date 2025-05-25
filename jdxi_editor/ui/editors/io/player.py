@@ -71,32 +71,52 @@ class MidiFileEditor(SynthEditor):
         """
         Initialize the UI for the MidiPlayer
         """
-        layout = QVBoxLayout()
-
+        hlayout = QHBoxLayout()
         self.file_label = DigitalTitle("No file loaded")
-        layout.addWidget(self.file_label)
+        hlayout.addWidget(self.file_label)
 
-        self.load_button = QPushButton("Load MIDI File")
+        vlayout = QVBoxLayout()
+        hlayout.addLayout(vlayout)
+
+        # file load / save selection
+        file_layout = QHBoxLayout()
+        vlayout.addLayout(file_layout)
         self.load_button = QPushButton(
             qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Load MIDI File"
         )
         self.load_button.clicked.connect(self.load_midi)
-        layout.addWidget(self.load_button)
+        file_layout.addWidget(self.load_button)
 
+        self.save_button = QPushButton("Save MIDI File")
+        self.save_button = QPushButton(
+            qta.icon("mdi.midi-port", color=JDXiStyle.FOREGROUND), "Save MIDI File"
+        )
+        self.save_button.clicked.connect(self.save_midi)
+        file_layout.addWidget(self.save_button)
+
+        # midi port selection
+        midi_port_layout = QHBoxLayout()
+        vlayout.addLayout(midi_port_layout)
+        midi_port_layout.addWidget(QLabel("Midi Port"))
         self.port_select = QComboBox()
         self.port_select.addItems(mido.get_output_names())
-        layout.addWidget(self.port_select)
+        midi_port_layout.addWidget(self.port_select)
 
+        # tempo selection
+        tempo_layout = QHBoxLayout()
+        vlayout.addLayout(tempo_layout)
         self.tempo_spin = QDoubleSpinBox()
         self.tempo_spin.setRange(20, 300)
         self.tempo_spin.setValue(120)
         self.tempo_spin.setSuffix(" BPM")
-        layout.addWidget(QLabel("Tempo"))
-        layout.addWidget(self.tempo_spin)
+        tempo_layout.addWidget(QLabel("Tempo"))
+        tempo_layout.addWidget(self.tempo_spin)
 
         self.position_slider = QSlider(Qt.Horizontal)
         self.position_slider.setEnabled(False)
         self.position_slider.sliderReleased.connect(self.scrub_position)
+        layout = QVBoxLayout()
+        layout.addLayout(hlayout)
         layout.addWidget(QLabel("Playback Position"))
         layout.addWidget(self.position_slider)
 
@@ -139,6 +159,17 @@ class MidiFileEditor(SynthEditor):
         secs = int(seconds) % 60
         return f"{mins}:{secs:02}"
 
+    def save_midi(self):
+        """
+        Save a MIDI file
+        """
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save MIDI File", "", "MIDI Files (*.mid)"
+        )
+        if file_path:
+            self.midi_track_viewer.midi_file.save(file_path)
+            self.file_label.setText(f"Saved: {Path(file_path).name}")
+
     def load_midi(self):
         """
         Load a MIDI file
@@ -164,16 +195,16 @@ class MidiFileEditor(SynthEditor):
             self.tempo_spin.setValue(round(bpm))
 
             events = []
-            for track in self.midi_file.tracks:
+            for track_index, track in enumerate(self.midi_file.tracks):
                 abs_time = 0
                 for msg in track:
                     abs_time += msg.time
-                    events.append((abs_time, msg))
+                    events.append((abs_time, msg, track_index))
 
             self.midi_events = sorted(events, key=lambda x: x[0])
 
             # Compute total duration in seconds
-            self.total_ticks = max(t for t, _ in self.midi_events)
+            self.total_ticks = max(t for t, _, _ in self.midi_events)
             tempo = bpm2tempo(self.tempo_spin.value())
             self.tick_duration = tempo / 1_000_000 / self.ticks_per_beat
             self.duration_seconds = self.total_ticks * self.tick_duration
@@ -207,7 +238,7 @@ class MidiFileEditor(SynthEditor):
         if self.event_index >= len(self.midi_events):
             self.stop_playback()
             return
-        tick, msg = self.midi_events[self.event_index]
+        tick, msg , track = self.midi_events[self.event_index]
         now = time.time()
         elapsed_time = now - self.start_time
         self.position_slider.setValue(int(elapsed_time))
@@ -216,7 +247,7 @@ class MidiFileEditor(SynthEditor):
         )
 
         while self.event_index < len(self.midi_events):
-            tick_time, msg = self.midi_events[self.event_index]
+            tick_time, msg, track = self.midi_events[self.event_index]
             scheduled_time = tick_time * self.tick_duration
 
             if elapsed_time >= scheduled_time:
@@ -242,7 +273,7 @@ class MidiFileEditor(SynthEditor):
 
         # Find the correct event index based on new time
         new_tick = new_seconds / self.tick_duration
-        for i, (tick, _) in enumerate(self.midi_events):
+        for i, (tick, _, _) in enumerate(self.midi_events):
             if tick >= new_tick:
                 self.event_index = i
                 break

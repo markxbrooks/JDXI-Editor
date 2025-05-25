@@ -12,6 +12,7 @@ from PySide6.QtGui import QPainter, QColor, QPen, QPaintEvent
 from PySide6.QtCore import Qt, QRectF
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 
 RAINBOW_COLORS = [
@@ -105,6 +106,7 @@ class TimeRulerWidget(QWidget):
         super().__init__(parent)
         self.midi_file = midi_file
         self.setMinimumHeight(20)
+        self.setMaximumHeight(JDXiStyle.MAX_RULER_HEIGHT)
 
     def set_midi_file(self, midi_file: mido.MidiFile) -> None:
         self.midi_file = midi_file
@@ -137,14 +139,36 @@ class TimeRulerWidget(QWidget):
                 painter.drawText(x + 2, height - 4, f"{second}s")
 
 
+def generate_track_colors(n):
+    """Generate visually distinct colors for up to n tracks."""
+    import colorsys
+    return [
+        QColor.fromHsvF(i / max(1, n), 0.7, 0.9)  # HSV for distinct hues
+        for i in range(n)
+    ]
+
+
 class MidiTrackWidget(QWidget):
-    def __init__(self, track: mido.MidiTrack, total_length: float, parent: QWidget = None):
+    def __init__(self,
+                 track: mido.MidiTrack,
+                 track_number: int,
+                 total_length: float,
+                 parent: QWidget = None):
+        """
+        Initialize the MidiTrackWidget.
+        :param track: mido.MidiTrack the mido track data
+        :param track_number: int The track number
+        :param total_length: float The total length of the longest of the tracks in seconds
+        :param parent: QWidget Parent widget
+        """
         super().__init__(parent)
         self.note_width = 400
         self.track = track
+        self.track_number = track_number
+        self.color = generate_track_colors(track_number)
         self.muted = False
         self.total_length = total_length
-        self.setMinimumHeight(50)  # Adjust as needed
+        self.setMinimumHeight(JDXiStyle.TRACK_HEIGHT_MINIMUM)  # Adjust as needed
         self.track_data = None  # Dict: {rects: [...], label: str, channels: set}
         self.muted_channels = set()  # Set of muted channels
 
@@ -224,13 +248,16 @@ class MidiTrackWidget(QWidget):
             if rects:
                 try:
                     times = [t[0] for t in rects]
-                    start_x = min(times) * widget_width
-                    end_x = max(times) * widget_width
+                    max_time = max(times)  # Use the last time in the list
+                    scale = widget_width / max_time
+                    start_x = min(times) * scale
+                    end_x = max(times) * scale
+                    # Adjust the end_x to ensure it doesn't go beyond the widget width
                     if end_x - start_x < self.note_width:
                         end_x = start_x + self.note_width
                     track_rect = QRectF(start_x, y, end_x - start_x, int(track_height))
                     channel = get_first_channel(self.track)
-                    bg_color = CHANNEL_COLORS.get(int(channel), QColor(100, 100, 255, 150))
+                    bg_color = generate_track_colors(16)[int(self.track_number) % 16]
                     if muted:
                         bg_color.setAlpha(50)
                     painter.setBrush(bg_color)
@@ -376,7 +403,7 @@ class MidiTrackViewer(QWidget):
         scroll_layout.setSpacing(0)
         scroll_layout.setContentsMargins(0, 0, 0, 0)
         scroll_layout.addWidget(self.ruler)
-        # scroll_layout.addWidget(self.tracks)
+
 
         # Add Mute Buttons for channels 1-16
         self.mute_buttons = {}
@@ -545,7 +572,7 @@ class MidiTrackViewer(QWidget):
         # Create each track widget and add it to the layout
         for i, track in enumerate(midi_file.tracks):
             hlayout = QHBoxLayout()
-        
+
             # Add QLabel for track number and channel
             label = QLabel(f"Track {i+1} Channel:")
             label.setFixedWidth(100)
@@ -572,7 +599,8 @@ class MidiTrackViewer(QWidget):
             hlayout.addWidget(mute_button)
 
             # Add the MidiTrackWidget for the specific track
-            self.midi_track_widgets[i] = MidiTrackWidget(track=track, total_length=midi_file.length)  # Initialize the dictionary
+            self.midi_track_widgets[i] = MidiTrackWidget(track=track, track_number=i, total_length=midi_file.length)  # Initialize the dictionary
             hlayout.addWidget(self.midi_track_widgets[i])
             self.setStyleSheet("QLabel { width: 100px; }")  # Set background color for the layout
             self.channel_controls_layout.addLayout(hlayout)
+            self.channel_controls_layout.addStretch()

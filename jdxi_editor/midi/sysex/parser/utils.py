@@ -124,7 +124,7 @@ def address_to_index(msb: int, lsb: int) -> int:
     :param lsb: int Least Significant Byte (0–255)
     :return: int address index
     """
-    if not (0 <= msb <= MidiConstant.MAX_EIGHT_BIT_VALUE and 0 <= lsb <= MidiConstant.MAX_EIGHT_BIT_VALUE):
+    if not (0 <= msb <= MidiConstant.VALUE_MAX_EIGHT_BIT and 0 <= lsb <= MidiConstant.VALUE_MAX_EIGHT_BIT):
         raise ValueError("MSB and LSB must be in the range 0x00 to 0xFF.")
     return (msb << 8) | lsb
 

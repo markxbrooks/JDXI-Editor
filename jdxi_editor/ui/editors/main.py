@@ -54,7 +54,7 @@ class MainEditor(QMainWindow):
         self.editor_tab_widget.setStyleSheet(JDXiStyle.TABS_MAIN_EDITOR)
         self.setStyleSheet(JDXiStyle.EDITOR)
         self.setWindowTitle(f"{__program__} - {__version__}")
-        self.init_ui()
+        # self.init_ui()
 
     def init_ui(self) -> None:
         """
@@ -79,43 +79,8 @@ class MainEditor(QMainWindow):
         :param editor_type: str
         :return: None
         """
-        self.editor_registry = {
-            "vocal_fx": (
-                "Vocal Effects",
-                VocalFXEditor,
-                JDXiSynth.VOCAL_FX,
-                MidiChannel.VOCAL,
-            ),
-            "digital1": (
-                "Digital Synth 1",
-                DigitalSynthEditor,
-                JDXiSynth.DIGITAL_SYNTH_1,
-                MidiChannel.DIGITAL1,
-                {"synth_number": 1},
-            ),
-            "digital2": (
-                "Digital Synth 2",
-                DigitalSynth2Editor,
-                JDXiSynth.DIGITAL_SYNTH_2,
-                MidiChannel.DIGITAL2,
-                {"synth_number": 2},
-            ),
-            "analog": (
-                "Analog Synth",
-                AnalogSynthEditor,
-                JDXiSynth.ANALOG_SYNTH,
-                MidiChannel.ANALOG,
-            ),
-            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM),
-            "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
-            "effects": ("Effects", EffectsCommonEditor, None, None),
-            "pattern": ("Pattern", PatternSequenceEditor, None, None),
-            "preset": ("Preset", PresetEditor, None, None),
-            "program": ("Program", ProgramEditor, None, None),
-            "midi_file": ("MIDI File", MidiFileEditor, None, None),
-        }
 
-        config = self.editor_registry.get(editor_type)
+        config = self.jdxi_main_window.editor_registry.get(editor_type)
         if not config:
             log.warning(f"Unknown editor type: {editor_type}")
             return
@@ -140,8 +105,11 @@ class MainEditor(QMainWindow):
         :return: None
         """
         try:
-            instance_attr = f"{editor_class.__name__.lower()}_instance"
-            existing_editor = getattr(self, instance_attr, None)
+            existing_editor = self.jdxi_main_window.get_existing_editor(editor_class)
+            print(self.jdxi_main_window.editors)
+            log.parameter("Existing editor", existing_editor)
+            # instance_attr = f"{editor_class.__name__.lower()}_instance"
+            # existing_editor = getattr(self.jdxi_main_window, instance_attr, None)
 
             if existing_editor:
                 index = self.editor_tab_widget.indexOf(existing_editor)
