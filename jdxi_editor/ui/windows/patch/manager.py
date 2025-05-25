@@ -42,6 +42,9 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
+from jdxi_editor.ui.editors import ProgramEditor
+from jdxi_editor.ui.editors.io.player import MidiFileEditor
+from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
 
 
@@ -144,6 +147,13 @@ class PatchManager(QMainWindow):
                 temp_folder.mkdir(parents=True, exist_ok=True)
             if self.save_mode:
                 for editor in self.editors:
+                    log.parameter("Editor", editor)
+                    if isinstance(editor, PatternSequenceEditor):
+                        continue
+                    if isinstance(editor, ProgramEditor):
+                        continue
+                    if isinstance(editor, MidiFileEditor):
+                        continue
                     if not hasattr(editor, "address"):
                         log.warning(f"Skipping invalid editor: {editor}, has no address")
                         continue
@@ -169,6 +179,6 @@ class PatchManager(QMainWindow):
             self.close()
 
         except Exception as ex:
-            log.message(
+            log.error(
                 f"Error {'saving' if self.save_mode else 'loading'} patch: {str(ex)}"
             )

@@ -16,8 +16,8 @@ class MidiConstant:
     ZERO_BYTE = 0x00
     VALUE_ON = 0x01
     VALUE_OFF = 0x00
-    MAX_VALUE = 0x7F  # 7-bit maximum value (standard MIDI data byte)
-    MAX_EIGHT_BIT_VALUE = 0xFF  # 8-bit max for comparison
+    VALUE_MAX_SEVEN_BIT = 0x7F  # 7-bit maximum value (standard MIDI data byte)
+    VALUE_MAX_EIGHT_BIT = 0xFF  # 8-bit max for comparison
 
     # Channel voice messages (base values)
     NOTE_OFF = 0x80

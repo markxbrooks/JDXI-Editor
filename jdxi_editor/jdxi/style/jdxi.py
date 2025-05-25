@@ -122,6 +122,9 @@ class JDXiStyle:
     ICON_SIZE = 20
     TAB_BUTTON_RECT_RADIUS = 6
 
+    MAX_RULER_HEIGHT = 200  # Maximum height for the ruler in the midi player
+    TRACK_HEIGHT_MINIMUM = 40  # Minimum height for the tracks in the midi player
+
     FONT_RED = "#d51e35"  # Base red
 
     # Fonts

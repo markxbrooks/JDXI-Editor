@@ -24,6 +24,9 @@ import os
 import sys
 import logging
 from pathlib import Path
+import cProfile
+import pstats
+import io
 
 from PySide6.QtWidgets import (
     QApplication,
@@ -183,7 +186,20 @@ def main():
 
 if __name__ == "__main__":
     try:
-        sys.exit(main())
+        profiler = cProfile.Profile()
+        profiler.enable()
+
+        exit_code = main()
+
+        profiler.disable()
+        s = io.StringIO()
+        sortby = 'cumtime'  # or 'tottime'
+        ps = pstats.Stats(profiler, stream=s).sort_stats(sortby)
+        ps.print_stats(50)  # Top 50 entries
+
+        print(s.getvalue())
+
+        sys.exit(exit_code)
     except Exception as ex:
         print(f"Application crashed: {str(ex)}")  # Fallback if logging fails
         logging.exception("Application crashed")

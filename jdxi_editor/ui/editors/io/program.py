@@ -65,6 +65,7 @@ from jdxi_editor.ui.editors.helpers.program import (
 from jdxi_editor.log.midi_info import log_midi_info
 from jdxi_editor.ui.editors.synth.simple import BasicEditor
 from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 
 
 class ProgramEditor(BasicEditor):
@@ -79,6 +80,7 @@ class ProgramEditor(BasicEditor):
         preset_helper: JDXiPresetHelper = None,
     ):
         super().__init__(midi_helper=midi_helper, parent=parent)
+        self.file_label = None
         """
         Initialize the ProgramEditor
         :param midi_helper: Optional[MidiIOHelper]
@@ -126,9 +128,14 @@ class ProgramEditor(BasicEditor):
                 font-weight: bold;
             """
         )
+
         title_layout = QHBoxLayout()
         title_layout.addWidget(self.title_label)
         layout.addLayout(title_layout)
+
+        self.file_label = DigitalTitle("No file loaded")
+        layout.addWidget(self.file_label)
+
         # Image display
         self.image_label = QLabel()
         self.image_label.setAlignment(

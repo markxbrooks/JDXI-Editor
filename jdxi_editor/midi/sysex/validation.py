@@ -61,7 +61,7 @@ def validate_raw_midi_message(message: Iterable[int]) -> bool:
         return False
 
     for byte in message:
-        if not isinstance(byte, int) or not (0 <= byte <= MidiConstant.MAX_EIGHT_BIT_VALUE):
+        if not isinstance(byte, int) or not (0 <= byte <= MidiConstant.VALUE_MAX_EIGHT_BIT):
             log.parameter("Invalid MIDI value detected:", message)
             return False
 
