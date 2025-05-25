@@ -73,7 +73,7 @@ class Logger:
     def message(
         message: str,
         level: int = logging.INFO,
-        stacklevel: int = 2,
+        stacklevel: int = 3,
         silent: bool = False
     ) -> None:
         """

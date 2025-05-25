@@ -35,10 +35,15 @@ These functions help ensure a cohesive and visually distinct UI experience, part
 other interactive applications.
 
 """
+import platform
 
 from PySide6.QtWidgets import QPushButton
 
-FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
+# FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
+if platform.system() == "Windows":
+    FONT_FAMILY = "Segoe UI"
+elif platform.system() == "Darwin":
+    FONT_FAMILY = "Myriad Pro"
 
 
 def generate_polyend_sequencer_button_style(
@@ -215,6 +220,16 @@ def generate_editor_style(
 ) -> str:
     """
     Generate editor style dynamically.
+    :param font_weight: str The font weight
+    :param slider_neon_gradient_stop: str The gradient stop color for the slider handle
+    :param slider_neon: str The neon color for the slider handle
+    :param slider_groove: str The groove color for the slider
+    :param font_family: str The font family
+    :param font_size: str The font size
+    :param padding: str The padding for the group box
+    :param button_padding: str The padding for the button
+    :param slider_handle: str The color of the slider handle
+    :param slider_handle_border: str The color of the slider handle border
     :param accent: str The accent color
     :param accent_hover: str The accent hover color
     :param background: str The background color

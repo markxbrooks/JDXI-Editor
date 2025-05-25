@@ -35,6 +35,8 @@ class MidiConstant:
 
     PITCH_BEND_RANGE = 16383  # 14-bit maximum (0x3FFF)
     PITCH_BEND_CENTER = 8192  # Center position of the pitch wheel
+    CHANNEL_BINARY_TO_DISPLAY = 1  # Convert binary to display value
+    CHANNEL_DISPLAY_TO_BINARY = -1  # Convert display to binary value
 
 
 class JDXiConstant:
