@@ -170,6 +170,9 @@ def generate_tab_style(
 ):
     """
     Generate address tab style dynamically.
+    :param selected_border:
+    :param selected_bg:
+    :param hover_border:
     :param font_family: str The font family
     :param margin: str The margin for the tab
     :param padding: str The padding for the tab

@@ -344,6 +344,11 @@ class JDXiUi(QMainWindow):
         about_help_action.triggered.connect(self._show_about_help)
         self.help_menu.addAction(about_help_action)
 
+        # Add Main Editor window action
+        main_editor_action = QAction("Main Editor", self)
+        main_editor_action.triggered.connect(self._show_main_editor)
+        self.help_menu.addAction(main_editor_action)
+
     def _create_status_bar(self):
         """Create status bar with MIDI indicators"""
         status_bar = self.statusBar()
@@ -509,6 +514,9 @@ class JDXiUi(QMainWindow):
         raise NotImplementedError("to be implemented in subclass")
 
     def _show_midi_debugger(self):
+        raise NotImplementedError("Should be implemented in subclass")
+
+    def _show_main_editor(self):
         raise NotImplementedError("Should be implemented in subclass")
 
     def _show_about_help(self):

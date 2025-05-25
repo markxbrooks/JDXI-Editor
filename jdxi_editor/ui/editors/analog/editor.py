@@ -205,7 +205,7 @@ class AnalogSynthEditor(SynthEditor):
         splitter.setSizes([300, 300])  # give more room to bottom
         # Splitter handle style
         splitter.setStyleSheet(JDXiStyle.SPLITTER)
-        self.show()
+        # self.show()
 
     def _create_sections(self):
         """Create the sections for the Analog Synth Editor."""

@@ -75,7 +75,8 @@ class UiAboutDialog(QDialog):
             "&bull; <a style='color: blue' href='https://www.music.mcgill.ca/~gary/rtmidi/'>RtMidi</a> – Low-level MIDI communication<br>"
             "&bull; <a style='color: blue' href='https://www.qt.io/'>Qt</a> – Cross-platform application framework<br>"
             "Source code available on <a style='color: blue' href='https://github.com/markxbrooks/jdxi-editor'>GitHub</a><br>"
-            "Licensed under the <a style='color: blue' href='https://opensource.org/licenses/MIT'>MIT License</a>"
+            "Licensed under the <a style='color: blue' href='https://opensource.org/licenses/MIT'>MIT License</a><br>"
+            "'Roland' and 'JD-Xi' are Trademarks of the Roland Corporation <br> in the United States and/or other countries<br>"
         )
         credits_label.setStyleSheet(
             JDXiStyle.CREDITS_LABEL_STYLE

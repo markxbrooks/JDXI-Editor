@@ -108,7 +108,7 @@ class DigitalSynthEditor(SynthEditor):
         self.refresh_shortcut.activated.connect(self.data_request)
         # Request data from the synth for initialization of state and show the editor
         self.data_request()
-        self.show()
+        # self.show()
         self.adsr_parameters = [
             AddressParameterDigitalPartial.AMP_ENV_ATTACK_TIME,
             AddressParameterDigitalPartial.AMP_ENV_DECAY_TIME,
@@ -180,7 +180,7 @@ class DigitalSynthEditor(SynthEditor):
         splitter.addWidget(scroll)
         splitter.setSizes([100, 600])  # give more room to bottom
         splitter.setStyleSheet(JDXiStyle.SPLITTER)
-        self.show()
+        # self.show()
 
     def _create_partial_tab_widget(
         self, container_layout: QVBoxLayout, midi_helper: MidiIOHelper

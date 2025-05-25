@@ -127,11 +127,18 @@ class JDXiStyle:
     # Fonts
     if platform.system() == "Windows":
         FONT_FAMILY = "Segoe UI"
+        FONT_SIZE = "10px"
+        FONT_SIZE_SPLASH_SCREEN = "14px"
     elif platform.system() == "Darwin":
         FONT_FAMILY = "Myriad Pro"
+        FONT_SIZE = "11px"
+        FONT_SIZE_SPLASH_SCREEN = "14px"
     else:
         FONT_FAMILY = "Arial, sans-serif"
-    FONT_SIZE = "10px"
+        FONT_SIZE_SPLASH_SCREEN = "36px"
+    FONT_SIZE_MAIN_TABS = "14px"
+    FONT_WEIGHT_BOLD = "bold"
+    FONT_WEIGHT_NORMAL = "normal"
     GREY = "#CCCCCC"
     # Define button styles
     BUTTON_ROUND = generate_button_style(
@@ -264,6 +271,18 @@ class JDXiStyle:
         selected_border="#ff6666",
     )
 
+    TABS_MAIN_EDITOR = generate_tab_style(
+        bg=BACKGROUND,
+        border=BACKGROUND_PRESSED,
+        radius=TAB_BUTTON_RECT_RADIUS,
+        text_color="white",
+        hover_bg=BUTTON_BACKGROUND,
+        hover_border="#ff9999",
+        selected_bg=BUTTON_BACKGROUND,
+        selected_border="#ff6666",
+        font_size=FONT_SIZE_MAIN_TABS,
+    )
+
     EDITOR = generate_editor_style(
         accent=ACCENT,
         accent_hover=ACCENT_HOVER,
@@ -336,7 +355,7 @@ class JDXiStyle:
         background=BACKGROUND,
         foreground=FOREGROUND,
         font_family=FONT_FAMILY,
-        font_size="36",
+        font_size=FONT_SIZE_SPLASH_SCREEN,
         padding=PADDING,
         button_padding=BUTTON_PADDING,
         slider_handle=SLIDER_HANDLE,
@@ -344,7 +363,7 @@ class JDXiStyle:
         slider_groove=SLIDER_GROOVE,
         slider_neon=SLIDER_NEON,
         slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
-        font_weight="bold",
+        font_weight=FONT_WEIGHT_BOLD,
     )
 
     EDITOR_ANALOG = generate_editor_style(

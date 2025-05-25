@@ -81,8 +81,9 @@ from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
 )
-from jdxi_editor.ui.editors.io.player import MidiPlayer
-from jdxi_editor.ui.editors.pattern.pattern import PatternSequencer
+from jdxi_editor.ui.editors.io.player import MidiFileEditor
+from jdxi_editor.ui.editors.main import MainEditor
+from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.editors.io.preset import PresetEditor
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
@@ -128,7 +129,9 @@ class JDXiInstrument(JDXiUi):
         self._set_callbacks()
         self._init_preset_helpers()
         self.show()
+        self.main_editor = None
         self.data_request()
+        self._show_main_editor()
 
     def _init_preset_helpers(self):
         """Initialize preset helpers dynamically"""
@@ -266,7 +269,7 @@ class JDXiInstrument(JDXiUi):
         self.preset_manager.set_preset_name_by_type(synth_type, tone_name)
         self._update_display()
 
-    def _get_preset_helper_for_current_synth(self) -> JDXiPresetHelper:
+    def get_preset_helper_for_current_synth(self) -> JDXiPresetHelper:
         """
         Return the appropriate preset helper based on the current synth preset_type
         :return: JDXiPresetHelper
@@ -313,7 +316,7 @@ class JDXiInstrument(JDXiUi):
         log.parameter("Selected synth:", synth_type)
         self.current_synth_type = synth_type
         self._update_synth_button_styles()
-        self.preset_helper = self._get_preset_helper_for_current_synth()
+        self.preset_helper = self.get_preset_helper_for_current_synth()
         self.preset_helper.preset_changed.connect(self.midi_helper.send_program_change)
 
     def _update_synth_button_styles(self):
@@ -372,7 +375,7 @@ class JDXiInstrument(JDXiUi):
             return
 
         self.current_preset_index = new_preset_index
-        preset_helper = self._get_preset_helper_for_current_synth()
+        preset_helper = self.get_preset_helper_for_current_synth()
         self._update_display_preset(
             self.current_preset_index,
             presets[self.current_preset_index],
@@ -485,10 +488,122 @@ class JDXiInstrument(JDXiUi):
             "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM),
             "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
             "effects": ("Effects", EffectsCommonEditor, None, None),
-            "pattern": ("Pattern", PatternSequencer, None, None),
+            "pattern": ("Pattern", PatternSequenceEditor, None, None),
             "preset": ("Preset", PresetEditor, None, None),
             "program": ("Program", ProgramEditor, None, None),
-            "midi_file": ("MIDI File", MidiPlayer, None, None),
+            "midi_file": ("MIDI File", MidiFileEditor, None, None),
+        }
+
+        config = self.editor_registry.get(editor_type)
+        if not config:
+            logging.warning(f"Unknown editor type: {editor_type}")
+            return
+
+        title, editor_class, synth_type, midi_channel, kwargs = (
+            (*config, {}) if len(config) == 4 else config
+        )
+
+        if synth_type:
+            self.current_synth_type = synth_type
+        if midi_channel:
+            self.channel = midi_channel
+
+        self._show_editor_tab(title, editor_class, **kwargs)
+
+    def _show_editor_tab(self, title: str, editor_class, **kwargs) -> None:
+        try:
+            instance_attr = f"{editor_class.__name__.lower()}_instance"
+            existing_editor = getattr(self, instance_attr, None)
+
+            if existing_editor:
+                index = self.main_editor.editor_tab_widget.indexOf(existing_editor)
+                if index != -1:
+                    self.main_editor.editor_tab_widget.setCurrentIndex(index)
+                    return
+
+            preset_helper = (
+                self.get_preset_helper_for_current_synth()
+                if editor_class in {
+                    ArpeggioEditor, DigitalSynthEditor, DigitalSynth2Editor,
+                    AnalogSynthEditor, DrumCommonEditor, PatternSequenceEditor,
+                    ProgramEditor, PresetEditor, MidiFileEditor,
+                    VocalFXEditor, EffectsCommonEditor,
+                }
+                else None
+            )
+
+            editor = (
+                editor_class(
+                    midi_helper=self.midi_helper,
+                    preset_helper=preset_helper,
+                    parent=self,
+                    **kwargs,
+                )
+                if preset_helper
+                else editor_class(
+                    midi_out=self.midi_helper.midi_out,
+                    parent=self,
+                    **kwargs,
+                )
+            )
+            editor.setWindowTitle(title)
+
+            self.main_editor.editor_tab_widget.addTab(editor, title)
+            self.main_editor.editor_tab_widget.setCurrentWidget(editor)
+
+            setattr(self, instance_attr, editor)
+            self.register_editor(editor)
+
+            if hasattr(editor, "preset_helper"):
+                editor.preset_helper.update_display.connect(self.update_display_callback)
+
+            if hasattr(editor, "partial_editors"):
+                for partial in editor.partial_editors.values():
+                    self.register_editor(partial)
+
+        except Exception as ex:
+            log.error(f"Error showing {title} editor", exception=ex)
+
+    def show_editor_old(self, editor_type: str) -> None:
+        """
+        Show editor of given type
+        :param editor_type: str
+        :return: None
+        """
+        self.editor_registry = {
+            "vocal_fx": (
+                "Vocal Effects",
+                VocalFXEditor,
+                JDXiSynth.VOCAL_FX,
+                MidiChannel.VOCAL,
+            ),
+            "digital1": (
+                "Digital Synth 1",
+                DigitalSynthEditor,
+                JDXiSynth.DIGITAL_SYNTH_1,
+                MidiChannel.DIGITAL1,
+                {"synth_number": 1},
+            ),
+            "digital2": (
+                "Digital Synth 2",
+                DigitalSynth2Editor,
+                JDXiSynth.DIGITAL_SYNTH_2,
+                MidiChannel.DIGITAL2,
+                {"synth_number": 2},
+            ),
+            "analog": (
+                "Analog Synth",
+                AnalogSynthEditor,
+                JDXiSynth.ANALOG_SYNTH,
+                MidiChannel.ANALOG,
+            ),
+            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM),
+            "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
+            "effects": ("Effects", EffectsCommonEditor, None, None),
+            "pattern": ("Pattern", PatternSequenceEditor, None, None),
+            "preset": ("Preset", PresetEditor, None, None),
+            "program": ("Program", ProgramEditor, None, None),
+            "midi_file": ("MIDI File", MidiFileEditor, None, None),
         }
 
         config = self.editor_registry.get(editor_type)
@@ -524,7 +639,7 @@ class JDXiInstrument(JDXiUi):
                 return
 
             preset_helper = (
-                self._get_preset_helper_for_current_synth()
+                self.get_preset_helper_for_current_synth()
                 if editor_class
                 in [
                     ArpeggioEditor,
@@ -532,10 +647,10 @@ class JDXiInstrument(JDXiUi):
                     DigitalSynth2Editor,
                     AnalogSynthEditor,
                     DrumCommonEditor,
-                    PatternSequencer,
+                    PatternSequenceEditor,
                     ProgramEditor,
                     PresetEditor,
-                    MidiPlayer,
+                    MidiFileEditor,
                     VocalFXEditor,
                     EffectsCommonEditor,
                 ]
@@ -628,6 +743,16 @@ class JDXiInstrument(JDXiUi):
         about_dialog.setAttribute(Qt.WA_DeleteOnClose)
         about_dialog.exec()
 
+    def _show_main_editor(self) -> None:
+        """
+        _show_about_help
+        :return:
+        """
+        if not self.main_editor:
+            self.main_editor = MainEditor(self)
+        self.main_editor.show()
+        self.main_editor.raise_()
+
     def _patch_load(self) -> None:
         """Show load patch dialog"""
         try:
@@ -666,7 +791,7 @@ class JDXiInstrument(JDXiUi):
             number=preset.number,  # Convert to 1-based index
         )
         self.current_synth_type = preset.type
-        preset_helper = self._get_preset_helper_for_current_synth()
+        preset_helper = self.get_preset_helper_for_current_synth()
         preset_helper.load_preset(preset_data)
 
     def _generate_button_preset(self) -> Optional[JDXiPresetButtonData]:

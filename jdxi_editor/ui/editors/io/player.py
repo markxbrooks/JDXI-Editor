@@ -29,7 +29,7 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track import MidiTrackViewer
 
 
-class MidiPlayer(SynthEditor):
+class MidiFileEditor(SynthEditor):
     def __init__(
         self,
         midi_helper: Optional[MidiIOHelper] = None,
@@ -103,8 +103,8 @@ class MidiPlayer(SynthEditor):
         self.position_label = QLabel("0:00 / 0:00")
         layout.addWidget(self.position_label)
 
-        self.midi_track_widget = MidiTrackViewer()
-        layout.addWidget(self.midi_track_widget)
+        self.midi_track_viewer = MidiTrackViewer()
+        layout.addWidget(self.midi_track_viewer)
 
         transport_group = QGroupBox("Transport")
         transport_layout = QVBoxLayout()
@@ -149,7 +149,7 @@ class MidiPlayer(SynthEditor):
         if file_path:
             self.midi_file = MidiFile(file_path)
             self.file_label.setText(f"Loaded: {Path(file_path).name}")
-            self.midi_track_widget.set_midi_file(self.midi_file)
+            self.midi_track_viewer.set_midi_file(self.midi_file)
 
             self.ticks_per_beat = self.midi_file.ticks_per_beat
             self.tempo = 500000  # default 120 BPM
@@ -223,7 +223,7 @@ class MidiPlayer(SynthEditor):
                 if not msg.is_meta:
                     if (
                         hasattr(msg, "channel")
-                        and (msg.channel + 1) in self.midi_track_widget.muted_channels
+                        and (msg.channel + 1) in self.midi_track_viewer.muted_channels
                     ):
                         if msg.type == "note_on" and msg.velocity > 0:
                             pass  # Skip muted channel but allow note off
@@ -293,6 +293,6 @@ if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    player = MidiPlayer()
+    player = MidiFileEditor()
     player.show()
     sys.exit(app.exec())
