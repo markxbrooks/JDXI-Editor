@@ -39,11 +39,12 @@ import platform
 
 from PySide6.QtWidgets import QPushButton
 
-# FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
 if platform.system() == "Windows":
     FONT_FAMILY = "Segoe UI"
 elif platform.system() == "Darwin":
     FONT_FAMILY = "Myriad Pro"
+else:
+    FONT_FAMILY = "Arial, sans-serif"
 
 
 def generate_polyend_sequencer_button_style(
@@ -61,6 +62,7 @@ def generate_polyend_sequencer_button_style(
 
     return f"""
         QPushButton {{
+            font-family: {FONT_FAMILY};
             background-color: {base_color};
             border: 2px solid {border_color};
             border-radius: 5px;
@@ -111,12 +113,18 @@ def generate_button_style(
     border_pressed: str,
     background_pressed: str = "#666666",
     button_border_width: int = 4,
-    font_family: str = "Myriad Pro, Arial, sans-serif",
+    font_family: str = FONT_FAMILY,
     font_size: str = "12px",
     button_padding: int = 4,
 ) -> str:
     """
     Generate address button style dynamically.
+    :param border_pressed: str The border color when pressed
+    :param background_pressed: str The background color when pressed
+    :param button_border_width: int The border width of the button
+    :param button_padding: int The padding of the button
+    :param font_size: str The font size
+    :param font_family: str The font family
     :param bg: str The background color
     :param border: str The border color
     :param radius: int The radius of the button
@@ -125,6 +133,7 @@ def generate_button_style(
     """
     return f"""
             QPushButton {{
+                font-family: {FONT_FAMILY};
                 background-color: {bg};
                 border: {button_border_width}px solid {border};
                 border-radius: {radius}px;
@@ -161,6 +170,10 @@ def generate_tab_style(
 ):
     """
     Generate address tab style dynamically.
+    :param font_family: str The font family
+    :param margin: str The margin for the tab
+    :param padding: str The padding for the tab
+    :param font_size: str The font size
     :param bg: str The background color
     :param border: str The border color
     :param radius: int The radius of the tab
@@ -169,6 +182,7 @@ def generate_tab_style(
     """
     return f"""
             QTabBar::tab {{
+                font-family: {FONT_FAMILY};
                 background: {bg};
                 color: {text_color};
                 padding: {padding};
@@ -180,6 +194,7 @@ def generate_tab_style(
             }}
 
             QTabBar::tab:selected {{
+                font-family: {FONT_FAMILY};
                 background: {selected_bg};
                 color: {text_color};
                 border: 2px solid {selected_border};
@@ -195,6 +210,7 @@ def generate_tab_style(
             }}
 
             QTabWidget::pane {{
+                font-family: {FONT_FAMILY};
                 border: 1px solid {selected_border};
             }}
         """
@@ -209,8 +225,8 @@ def generate_editor_style(
     foreground: str,
     font_family: str,
     font_size: str,
-    padding: str,
-    button_padding: str,
+    padding: int,
+    button_padding: int,
     slider_handle: str,
     slider_handle_border: str,
     slider_groove: str,
@@ -226,8 +242,8 @@ def generate_editor_style(
     :param slider_groove: str The groove color for the slider
     :param font_family: str The font family
     :param font_size: str The font size
-    :param padding: str The padding for the group box
-    :param button_padding: str The padding for the button
+    :param padding: int The padding for the group box
+    :param button_padding: int The padding for the button
     :param slider_handle: str The color of the slider handle
     :param slider_handle_border: str The color of the slider handle border
     :param accent: str The accent color
@@ -238,6 +254,7 @@ def generate_editor_style(
     """
     return f"""
         QWidget {{
+            font-family: {FONT_FAMILY};
             background-color: {background};
             color: {foreground};
             font-family: "{font_family}";
@@ -246,6 +263,7 @@ def generate_editor_style(
         }}
 
         QGroupBox {{
+            font-family: {font_family};
             border: 1px solid {accent};
             border-radius: 3px;
             margin-top: 1px;
@@ -276,6 +294,7 @@ def generate_editor_style(
         }}
 
         QPushButton {{
+            font-family: {font_family};
             background-color: {background};
             border: 1px solid {accent};
             border-radius: 3px;
@@ -289,6 +308,7 @@ def generate_editor_style(
         }}
 
         QComboBox, QScrollBar {{
+            font-family: {font_family};
             background-color: {background};
             border: 1px solid {accent};
             border-radius: 3px;
@@ -377,6 +397,7 @@ def generate_editor_style(
         /* QLabels */
         QLabel {{
             color: #FFFFFF;
+            font-family: {FONT_FAMILY};
         }}
         QSlider::horizontal {{
             margin-left: 5px;

@@ -74,6 +74,7 @@ Attributes:
         JDXI_PARTS_SELECT: Style for part selection elements.
 
 """
+import platform
 
 from jdxi_editor.jdxi.style.factory import (
     generate_button_style,
@@ -124,7 +125,12 @@ class JDXiStyle:
     FONT_RED = "#d51e35"  # Base red
 
     # Fonts
-    FONT_FAMILY = "Myriad Pro, Segoe UI, Arial, sans-serif"
+    if platform.system() == "Windows":
+        FONT_FAMILY = "Segoe UI"
+    elif platform.system() == "Darwin":
+        FONT_FAMILY = "Myriad Pro"
+    else:
+        FONT_FAMILY = "Arial, sans-serif"
     FONT_SIZE = "10px"
     GREY = "#CCCCCC"
     # Define button styles
@@ -259,19 +265,19 @@ class JDXiStyle:
     )
 
     EDITOR = generate_editor_style(
-        ACCENT,
-        ACCENT_HOVER,
-        BACKGROUND,
-        FOREGROUND,
-        FONT_FAMILY,
-        FONT_SIZE,
-        PADDING,
-        BUTTON_PADDING,
-        SLIDER_HANDLE,
-        SLIDER_HANDLE_BORDER,
-        SLIDER_GROOVE,
-        SLIDER_NEON,
-        SLIDER_NEON_GRADIENT_STOP,
+        accent=ACCENT,
+        accent_hover=ACCENT_HOVER,
+        background=BACKGROUND,
+        foreground=FOREGROUND,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE,
+        padding=PADDING,
+        button_padding=BUTTON_PADDING,
+        slider_handle=SLIDER_HANDLE,
+        slider_handle_border=SLIDER_HANDLE_BORDER,
+        slider_groove=SLIDER_GROOVE,
+        slider_neon=SLIDER_NEON,
+        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
     )
 
     LOG_VIEWER = """
@@ -325,36 +331,36 @@ class JDXiStyle:
         """
 
     SPLASH_SCREEN = generate_editor_style(
-        ACCENT,
-        ACCENT_HOVER,
-        BACKGROUND,
-        FOREGROUND,
-        "Segoe UI",
-        36,
-        PADDING,
-        BUTTON_PADDING,
-        SLIDER_HANDLE,
-        SLIDER_HANDLE_BORDER,
-        SLIDER_GROOVE,
-        SLIDER_NEON,
-        SLIDER_NEON_GRADIENT_STOP,
-        "bold",
+        accent=ACCENT,
+        accent_hover=ACCENT_HOVER,
+        background=BACKGROUND,
+        foreground=FOREGROUND,
+        font_family=FONT_FAMILY,
+        font_size="36",
+        padding=PADDING,
+        button_padding=BUTTON_PADDING,
+        slider_handle=SLIDER_HANDLE,
+        slider_handle_border=SLIDER_HANDLE_BORDER,
+        slider_groove=SLIDER_GROOVE,
+        slider_neon=SLIDER_NEON,
+        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
+        font_weight="bold",
     )
 
     EDITOR_ANALOG = generate_editor_style(
-        ACCENT_ANALOG,
-        ACCENT_ANALOG_HOVER,
-        BACKGROUND,
-        FOREGROUND,
-        FONT_FAMILY,
-        FONT_SIZE,
-        PADDING,
-        BUTTON_PADDING,
-        SLIDER_HANDLE,
-        SLIDER_HANDLE_BORDER,
-        SLIDER_GROOVE,
-        SLIDER_NEON_ANALOG,
-        SLIDER_NEON_GRADIENT_STOP_ANALOG,
+        accent=ACCENT_ANALOG,
+        accent_hover=ACCENT_ANALOG_HOVER,
+        background=BACKGROUND,
+        foreground=FOREGROUND,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE,
+        padding=PADDING,
+        button_padding=BUTTON_PADDING,
+        slider_handle=SLIDER_HANDLE,
+        slider_handle_border=SLIDER_HANDLE_BORDER,
+        slider_groove=SLIDER_GROOVE,
+        slider_neon=SLIDER_NEON_ANALOG,
+        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP_ANALOG,
     )
 
     SPLITTER = """
@@ -375,6 +381,7 @@ class JDXiStyle:
                 background-color: black;
             }}
             QWidget {{
+                font-family: {FONT_FAMILY};
                 margin: 0px;
                 padding: 0px;
                 background-color: black;
@@ -435,9 +442,10 @@ class JDXiStyle:
         }
         """
 
-    CREDITS_LABEL_STYLE = """
+    CREDITS_LABEL_STYLE = f"""
             /* QLabels */
                 QLabel {{
+                    font-family: {FONT_FAMILY};
                     color: 'black';
                     background: #FFFFFF;
             }}
@@ -623,18 +631,19 @@ class JDXiStyle:
         }}
     """
 
-    ADSR_ANALOG = """
+    ADSR_ANALOG = f"""
         /* Groove (Track) */
-        QSlider::groove:vertical {
+        QSlider::groove:vertical {{
+            font-family: {FONT_FAMILY};
             background: #111; /* Dark background */
             width: 6px;
             border-radius: 3px;
             border-radius: 3px;
             border-radius: 3px;
-        }
+        }}
 
         /* Handle (Knob) */
-        QSlider::handle:vertical {
+        QSlider::handle:vertical {{
             background: black;
             border: 2px solid #1a1aff; /* Neon blue border */
             width: 10px;  /* More rectangular */
@@ -644,51 +653,51 @@ class JDXiStyle:
             margin-top: 2px;
             border-radius: 5px;
             padding: 1px;
-        }
+        }}
 
         /* Glowing effect when moving */
-        QSlider::sub-page:vertical {
+        QSlider::sub-page:vertical {{
             background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
                          stop:0 #000066, stop:1 #1a1aff);
             border-radius: 3px;
-        }
+        }}
         /* Handle (Knob) */
-        QSlider::handle:vertical:disabled {
+        QSlider::handle:vertical:disabled {{
             background: black;
             border: 2px solid #333333; /* grey border */
             width: 10px;  /* More rectangular */
             height: 10px;  
             margin: -10px;
             border-radius: 5px;
-        }
+        }}
         /* greyed out groove */
-        QSlider::sub-page:vertical:disabled {
+        QSlider::sub-page:vertical:disabled {{
             background: #333333;
             border-radius: 3px;
-        }
+        }}
 
         /* Unfilled portion */
-        QSlider::add-page:vertical {
+        QSlider::add-page:vertical {{
             background: #222;
             border-radius: 3px;
-        }
+        }}
 
         /* Tick Marks (Small dashes on both sides) */
-        QSlider::tick-mark {
+        QSlider::tick-mark {{
             background: #1a1aff;
             width: 4px;
             height: 2px;
             border-radius: 1px;
             margin-left: 2px;
             margin-right: 2px;
-        }
+        }}
 
         /* Handle Hover Effect */
-        QSlider::handle:vertical:hover {
+        QSlider::handle:vertical:hover {{
             border: 2px solid #3333ff;
-        }
+        }}
         /* Spin Box */
-        QSpinBox, QDoubleSpinBox {
+        QSpinBox, QDoubleSpinBox {{
             background-color: #222;
             border: 1px solid #00A0E9;
             border-radius: 3px;
@@ -696,16 +705,17 @@ class JDXiStyle:
             margin: -2px;
             width: 40px;
             color: #00A0E9;
-        }
+        }}
         /* QLabels */
-        QLabel {
+        QLabel {{
             color: #00A0E9;
-        }
+        }}
     """
 
     ADSR = f"""
         /* Groove (Track) */
         QSlider::groove:vertical {{
+            font-family: {FONT_FAMILY};
             background: #111; /* Dark background */
             width: 6px;
             border-radius: 3px;
@@ -752,6 +762,7 @@ class JDXiStyle:
 
         /* Unfilled portion */
         QSlider::add-page:vertical {{
+            font-family: {FONT_FAMILY};
             background: #222;
             border-radius: 3px;
         }}
@@ -792,6 +803,12 @@ class JDXiStyle:
     """
 
     ADSR_DISABLED = f"""
+            QSlider {{
+                font-family: {FONT_FAMILY};
+            }}
+            QLabel {{
+                font-family: {FONT_FAMILY};
+            }}
             /* Groove (Track) */
             QSlider::groove:vertical {{
                 background: #111; /* Dark background */
@@ -827,6 +844,7 @@ class JDXiStyle:
 
             /* Glowing effect when moving */
             QSlider::sub-page:vertical {{
+                font-family: {FONT_FAMILY};
                 background: #333333;
                 border-radius: 3px;
             }}
@@ -878,6 +896,7 @@ class JDXiStyle:
 
     COMBO_BOX = f"""
     QComboBox {{
+        font-family: {FONT_FAMILY};
         background-color: {BACKGROUND};
         border: 1px solid {ACCENT};
         border-radius: 3px;
@@ -915,6 +934,7 @@ class JDXiStyle:
 
     COMBO_BOX_ANALOG = f"""
         QComboBox {{
+            font-family: {FONT_FAMILY};
             background-color: {BACKGROUND};
             border: 1px solid {ACCENT_ANALOG};
             border-radius: 3px;
@@ -985,13 +1005,14 @@ class JDXiStyle:
                 }
             """
 
-    INSTRUMENT_TITLE_LABEL = """
+    INSTRUMENT_TITLE_LABEL = f"""
+            font-family: {FONT_FAMILY};
             color: #FFBB33;
             font-size: 16px;
             font-weight: bold;
             font-family: "Consolas";
 
-            QGroupBox {
+            QGroupBox {{
                 height: 60;
                 border: 2px solid black;
                 border-radius: 5px;
@@ -1004,11 +1025,12 @@ class JDXiStyle:
                     stop: 0.7 #331111,
                     stop: 1 #321212
                 );
-            }
+            }}
             """
 
     INSTRUMENT_IMAGE_LABEL = f"""        
         QGroupBox {{
+            font-family: {FONT_FAMILY};
             height: 60;
             width: 80px;
             background-color: #000000;
@@ -1033,16 +1055,18 @@ class JDXiStyle:
                 font-weight: bold;
             """
 
-    DRUM_GROUP = """
-                QGroupBox {
+    DRUM_GROUP = f"""
+                QGroupBox {{
+                font-family: {FONT_FAMILY};
                 width: 50px;
                 height: 60;
-            }
+            }}
             """
 
     PATCH_MANAGER = f"""
             QMainWindow {{
                 background-color: #2E2E2E;
+                font-family: {FONT_FAMILY};
             }}
             QWidget {{
                 background-color: #2E2E2E;
@@ -1105,6 +1129,7 @@ class JDXiStyle:
 
     PARTIALS_PANEL = f"""  
         QGroupBox {{
+            font-family: {FONT_FAMILY};
             color: {GREY};
             height: 60;
             font-size: 12px;
