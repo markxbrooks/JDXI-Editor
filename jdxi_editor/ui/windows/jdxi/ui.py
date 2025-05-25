@@ -386,11 +386,12 @@ class JDXiUi(QMainWindow):
 
     def _update_display(self):
         """Update the display with the current preset information"""
-        # synth_data = self.synth_data_map.get(self.current_synth_type)
+        if not self.current_synth_type:
+            logging.warning("No Synth type, defaulting to DIGITAL_1.")
+            self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
         synth_data = create_synth_data(self.current_synth_type)
         if not synth_data:
-            logging.warning("MIDI_SLEEP_TIME. Defaulting to DIGITAL_1.")
-            synth_data = self.synth_data_map[JDXiSynth.DIGITAL_SYNTH_1]
+            synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1)
 
         self.preset_manager.current_preset_name = (
             self.preset_manager.get_preset_name_by_type(self.current_synth_type)

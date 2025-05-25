@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QDoubleSpinBox,
     QSlider,
-    QGroupBox,
+    QGroupBox, QHBoxLayout,
 )
 import qtawesome as qta
 
@@ -107,7 +107,7 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(self.midi_track_viewer)
 
         transport_group = QGroupBox("Transport")
-        transport_layout = QVBoxLayout()
+        transport_layout = QHBoxLayout()
         transport_group.setLayout(transport_layout)
         # self.play_button = QPushButton("Play")
         self.play_button = QPushButton(
