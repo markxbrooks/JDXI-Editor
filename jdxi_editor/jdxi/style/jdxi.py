@@ -87,7 +87,7 @@ class JDXiStyle:
 
     # Colors
     TITLE_TEXT = "#FFFFFF"
-    BACKGROUND = "#000000"  # """"#1A1A1A"
+    BACKGROUND = "#000000"  # 1A1A1A"
     BACKGROUND_PRESSED = "#666666"
     BUTTON_BACKGROUND = "#222222"
     BUTTON_BACKGROUND_PRESSED = "#333333"
@@ -303,7 +303,7 @@ class JDXiStyle:
                 background-color: #4D4D4D;
                 border: 1px solid #FF3333;
             }
-            QPushButton:border_pressed {
+            QPushButton:pressed {
                 background-color: #2D2D2D;
             }
         """
@@ -1070,7 +1070,7 @@ class JDXiStyle:
                          stop:0 #660000, stop:1 #ff1a1a);
                 border: 1px solid #FF3333;
             }}
-            QPushButton:border_pressed {{
+            QPushButton:pressed {{
                 background-color: {BORDER_PRESSED};
             }}
             QLabel {{
@@ -1161,7 +1161,7 @@ class JDXiStyle:
                          stop:0 #660000, stop:1 #ff1a1a);
                 border: 1px solid #FF3333;
             }}
-            QPushButton:border_pressed {{
+            QPushButton:pressed {{
                 background-color: {BACKGROUND_PRESSED};
             }}
         """
