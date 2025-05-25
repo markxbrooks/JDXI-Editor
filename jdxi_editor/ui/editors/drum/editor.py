@@ -119,7 +119,7 @@ class DrumCommonEditor(SynthEditor):
         self.refresh_shortcut.activated.connect(self.data_request)
         # Request initial state data & show the editor
         self.data_request()
-        self.show()
+        # self.show()
 
     def setup_ui(self):
         main_layout = QVBoxLayout(self)

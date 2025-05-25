@@ -446,18 +446,6 @@ class MidiTrackViewer(QWidget):
         else:
             self.muted_channels.discard(track)
 
-    def play_next_event(self):
-        """Override or add the logic to handle muted channels."""
-        if self.event_index >= len(self.midi_events):
-            return
-
-        tick, msg = self.midi_events[self.event_index]
-
-        if hasattr(msg, "channel") and (msg.channel + 1) in self.muted_channels:
-            return  # Skip muted channel
-        else:
-            self.send_midi_message(msg)  # Your MIDI playback logic
-
         self.event_index += 1
         
     def mute_track(self, track_index: int) -> None:
@@ -483,12 +471,6 @@ class MidiTrackViewer(QWidget):
             raise ValueError("MIDI channel must be between 0 and 15")
         if not (0 <= track_index < len(self.midi_file.tracks)):
             raise IndexError("Invalid track index")
-
-        """def get_first_channel(track):
-            for msg in track:
-                if msg.type in mido.channels:
-                    return msg.channel
-            return None  # or raise, or default"""
 
         old_channel = get_first_channel(self.midi_file.tracks[track_index])
         log.message(f"Changing track {track_index} channel from {old_channel} to {new_channel}")

@@ -49,7 +49,7 @@ from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.pattern.measure import PatternMeasure
 
 
-class PatternSequencer(SynthEditor):
+class PatternSequenceEditor(SynthEditor):
     """Pattern Sequencer with MIDI Integration using mido"""
 
     def __init__(
@@ -250,6 +250,7 @@ class PatternSequencer(SynthEditor):
             row_layout.addLayout(button_row_layout)
             self.layout.addLayout(row_layout)
             self.setLayout(self.layout)
+            self.layout.addStretch()
 
     def ui_generate_button_row(self, row_index: int, visible: bool = False):
         """generate sequencer button row"""
