@@ -99,6 +99,7 @@ class AnalogOscillatorSection(QWidget):
             btn.setFixedSize(60, 30)
             btn.waveform_selected.connect(self._on_waveform_selected)
             self.wave_buttons[waveform] = btn
+            self.controls[AddressParameterAnalog.OSC_WAVEFORM] = btn
             wave_layout.addWidget(btn)
 
         return wave_layout

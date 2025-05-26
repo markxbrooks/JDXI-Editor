@@ -240,6 +240,200 @@ class JDXiStyle:
         button_padding=BUTTON_PADDING,
     )
 
+    CREDITS_LABEL_STYLE = f"""
+            /* QLabels */
+                QLabel {{
+                    font-family: {FONT_FAMILY};
+                    color: 'black';
+                    background: #FFFFFF;
+            }}
+            """
+
+    EDITOR = generate_editor_style(
+        accent=ACCENT,
+        accent_hover=ACCENT_HOVER,
+        background=BACKGROUND,
+        foreground=FOREGROUND,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE,
+        padding=PADDING,
+        button_padding=BUTTON_PADDING,
+        slider_handle=SLIDER_HANDLE,
+        slider_handle_border=SLIDER_HANDLE_BORDER,
+        slider_groove=SLIDER_GROOVE,
+        slider_neon=SLIDER_NEON,
+        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
+    )
+
+    EDITOR_ANALOG = generate_editor_style(
+        accent=ACCENT_ANALOG,
+        accent_hover=ACCENT_ANALOG_HOVER,
+        background=BACKGROUND,
+        foreground=FOREGROUND,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE,
+        padding=PADDING,
+        button_padding=BUTTON_PADDING,
+        slider_handle=SLIDER_HANDLE,
+        slider_handle_border=SLIDER_HANDLE_BORDER,
+        slider_groove=SLIDER_GROOVE,
+        slider_neon=SLIDER_NEON_ANALOG,
+        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP_ANALOG,
+    )
+
+    EDITOR_TITLE_LABEL = """
+                font-size: 16px;
+                font-weight: bold;
+            """
+
+    INSTRUMENT = f"""
+            QMainWindow {{
+                background-color: black;
+            }}
+            QWidget {{
+                font-family: {FONT_FAMILY};
+                margin: 0px;
+                padding: 0px;
+                background-color: black;
+                color: white;
+            }}
+            QMenuBar {{
+                background-color: black;
+                color: white;
+            }}
+            QMenuBar::item:selected {{
+                background-color: #333333;
+            }}
+            QMenu {{
+                background-color: black;
+                color: white;
+            }}
+            QMenu::item:selected {{
+                background-color: #333333;
+            }}
+            QGroupBox {{
+                font-family: {FONT_FAMILY};
+                border: none;
+                border-top: 1px solid #333333;
+                margin: 1px;
+                padding: 1px;
+            }}
+            QGroupBox::title {{
+                font-family: {FONT_FAMILY};
+                subcontrol-origin: margin;
+                subcontrol-position: top center;
+                padding: 0 1px;
+                background-color: black;
+            }}
+            QLabel {{
+                background-color: transparent;
+                color: white;
+            }}
+            QStatusBar {{
+                background-color: black;
+                color: "{ACCENT}";
+            }}
+            QSlider {{
+                margin-bottom: 2px;
+                margin-top: 2px;
+            }}
+        """
+
+    INSTRUMENT_IMAGE_LABEL = """
+            QLabel {
+                    height: 150px;
+                    background-color: transparent;
+                    border: none;
+                }
+        """
+
+    LOG_VIEWER = """
+            QMainWindow {
+                background-color: #2E2E2E;
+            }
+            QWidget {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+                font-family: 'Myriad Pro';
+            }
+            QTextEdit {
+                background-color: #1A1A1A;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px;
+                font-family: 'Consolas';
+            }
+            QPushButton {
+                background-color: #3D3D3D;
+                color: #FFFFFF;
+                border: 1px solid #FF0000;
+                border-radius: 3px;
+                padding: 5px 15px;
+                font-family: 'Myriad Pro';
+            }
+            QPushButton:hover {
+                background-color: #4D4D4D;
+                border: 1px solid #FF3333;
+            }
+            QPushButton:pressed {
+                background-color: #2D2D2D;
+            }
+        """
+
+    MIDI_MESSAGE_MONITOR = """
+            QTextEdit {
+                font-family: monospace;
+                background-color: #1E1E1E;
+                color: #FFFFFF;
+            }
+        """
+
+    PROGRESS_BAR = """
+        QProgressBar {
+            background-color: #333;
+            color: white;
+            border: 2px solid #444;
+            border-radius: 10px;
+            text-align: center;
+        }
+        QProgressBar::chunk {
+            background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
+                             stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 10px;
+        }
+        """
+
+    SPLASH_SCREEN = generate_editor_style(
+        accent=ACCENT,
+        accent_hover=ACCENT_HOVER,
+        background=BACKGROUND,
+        foreground=FOREGROUND,
+        font_family=FONT_FAMILY,
+        font_size=FONT_SIZE_SPLASH_SCREEN,
+        padding=PADDING,
+        button_padding=BUTTON_PADDING,
+        slider_handle=SLIDER_HANDLE,
+        slider_handle_border=SLIDER_HANDLE_BORDER,
+        slider_groove=SLIDER_GROOVE,
+        slider_neon=SLIDER_NEON,
+        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
+        font_weight=FONT_WEIGHT_BOLD,
+    )
+
+    SPLITTER = """
+                 QSplitter::handle {
+                     background-color: #444;
+                     border: 1px solid #666;
+                 }
+                 QSplitter::handle:vertical {
+                     height: 6px;
+                 }
+                 QSplitter::handle:horizontal {
+                     width: 6px;
+                 }
+             """
+
     # Define Tab styles using get_tab_style function
     TABS = generate_tab_style(
         bg=BACKGROUND,
@@ -284,194 +478,8 @@ class JDXiStyle:
         selected_bg=BUTTON_BACKGROUND,
         selected_border="#ff6666",
         font_size=FONT_SIZE_MAIN_TABS,
+        font_family=FONT_FAMILY
     )
-
-    EDITOR = generate_editor_style(
-        accent=ACCENT,
-        accent_hover=ACCENT_HOVER,
-        background=BACKGROUND,
-        foreground=FOREGROUND,
-        font_family=FONT_FAMILY,
-        font_size=FONT_SIZE,
-        padding=PADDING,
-        button_padding=BUTTON_PADDING,
-        slider_handle=SLIDER_HANDLE,
-        slider_handle_border=SLIDER_HANDLE_BORDER,
-        slider_groove=SLIDER_GROOVE,
-        slider_neon=SLIDER_NEON,
-        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
-    )
-
-    LOG_VIEWER = """
-            QMainWindow {
-                background-color: #2E2E2E;
-            }
-            QWidget {
-                background-color: #2E2E2E;
-                color: #FFFFFF;
-                font-family: 'Myriad Pro';
-            }
-            QTextEdit {
-                background-color: #1A1A1A;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px;
-                font-family: 'Consolas';
-            }
-            QPushButton {
-                background-color: #3D3D3D;
-                color: #FFFFFF;
-                border: 1px solid #FF0000;
-                border-radius: 3px;
-                padding: 5px 15px;
-                font-family: 'Myriad Pro';
-            }
-            QPushButton:hover {
-                background-color: #4D4D4D;
-                border: 1px solid #FF3333;
-            }
-            QPushButton:pressed {
-                background-color: #2D2D2D;
-            }
-        """
-
-    INSTRUMENT_IMAGE_LABEL = """
-            QLabel {
-                    height: 150px;
-                    background-color: transparent;
-                    border: none;
-                }
-        """
-
-    MIDI_MESSAGE_MONITOR = """
-            QTextEdit {
-                font-family: monospace;
-                background-color: #1E1E1E;
-                color: #FFFFFF;
-            }
-        """
-
-    SPLASH_SCREEN = generate_editor_style(
-        accent=ACCENT,
-        accent_hover=ACCENT_HOVER,
-        background=BACKGROUND,
-        foreground=FOREGROUND,
-        font_family=FONT_FAMILY,
-        font_size=FONT_SIZE_SPLASH_SCREEN,
-        padding=PADDING,
-        button_padding=BUTTON_PADDING,
-        slider_handle=SLIDER_HANDLE,
-        slider_handle_border=SLIDER_HANDLE_BORDER,
-        slider_groove=SLIDER_GROOVE,
-        slider_neon=SLIDER_NEON,
-        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP,
-        font_weight=FONT_WEIGHT_BOLD,
-    )
-
-    EDITOR_ANALOG = generate_editor_style(
-        accent=ACCENT_ANALOG,
-        accent_hover=ACCENT_ANALOG_HOVER,
-        background=BACKGROUND,
-        foreground=FOREGROUND,
-        font_family=FONT_FAMILY,
-        font_size=FONT_SIZE,
-        padding=PADDING,
-        button_padding=BUTTON_PADDING,
-        slider_handle=SLIDER_HANDLE,
-        slider_handle_border=SLIDER_HANDLE_BORDER,
-        slider_groove=SLIDER_GROOVE,
-        slider_neon=SLIDER_NEON_ANALOG,
-        slider_neon_gradient_stop=SLIDER_NEON_GRADIENT_STOP_ANALOG,
-    )
-
-    SPLITTER = """
-                 QSplitter::handle {
-                     background-color: #444;
-                     border: 1px solid #666;
-                 }
-                 QSplitter::handle:vertical {
-                     height: 6px;
-                 }
-                 QSplitter::handle:horizontal {
-                     width: 6px;
-                 }
-             """
-
-    INSTRUMENT = f"""
-            QMainWindow {{
-                background-color: black;
-            }}
-            QWidget {{
-                font-family: {FONT_FAMILY};
-                margin: 0px;
-                padding: 0px;
-                background-color: black;
-                color: white;
-            }}
-            QMenuBar {{
-                background-color: black;
-                color: white;
-            }}
-            QMenuBar::item:selected {{
-                background-color: #333333;
-            }}
-            QMenu {{
-                background-color: black;
-                color: white;
-            }}
-            QMenu::item:selected {{
-                background-color: #333333;
-            }}
-            QGroupBox {{
-                border: none;
-                border-top: 1px solid #333333;
-                margin: 1px;
-                padding: 1px;
-            }}
-            QGroupBox::title {{
-                subcontrol-origin: margin;
-                subcontrol-position: top center;
-                padding: 0 1px;
-                background-color: black;
-            }}
-            QLabel {{
-                background-color: transparent;
-                color: white;
-            }}
-            QStatusBar {{
-                background-color: black;
-                color: "{ACCENT}";
-            }}
-            QSlider {{
-                margin-bottom: 2px;
-                margin-top: 2px;
-            }}
-        """
-
-    PROGRESS_BAR = """
-        QProgressBar {
-            background-color: #333;
-            color: white;
-            border: 2px solid #444;
-            border-radius: 10px;
-            text-align: center;
-        }
-        QProgressBar::chunk {
-            background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0, 
-                             stop:0 #660000, stop:1 #ff1a1a);
-            border-radius: 10px;
-        }
-        """
-
-    CREDITS_LABEL_STYLE = f"""
-            /* QLabels */
-                QLabel {{
-                    font-family: {FONT_FAMILY};
-                    color: 'black';
-                    background: #FFFFFF;
-            }}
-            """
 
     SLIDER = f"""
             QSlider::handle:horizontal{{

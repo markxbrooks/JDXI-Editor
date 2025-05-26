@@ -59,6 +59,7 @@ class JDXiJSONComposer:
                 "22": "PARTIAL_3",
             }
             editor_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "UNKNOWN_SYNTH_TONE")
+            # editor_data["SYNTH_TONE"] = synth_tone_map.get(synth_tone_byte, "COMMON")
             # Get the raw control values instead of the full control data
             other_data = editor.get_controls_as_dict()
             for k, v in other_data.items():

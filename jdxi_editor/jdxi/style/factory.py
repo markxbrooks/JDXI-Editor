@@ -211,9 +211,10 @@ def generate_tab_style(
                 font-family: "{font_family}";
                 font-size: {font_size};
             }}
-
-            QTabWidget::pane {{
+            QTabWidget {{
                 font-family: {FONT_FAMILY};
+            }}
+            QTabWidget::pane {{
                 border: 1px solid {selected_border};
             }}
         """

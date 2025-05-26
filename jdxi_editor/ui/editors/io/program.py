@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QGroupBox,
+    QGroupBox, QFormLayout,
 )
 from PySide6.QtCore import Signal, Qt
 from rtmidi.midiconstants import SONG_START, SONG_STOP
@@ -116,36 +116,46 @@ class ProgramEditor(BasicEditor):
         self.setWindowTitle("Program Editor")
         self.setMinimumSize(400, 400)
         # center_widget = QWidget()
-        layout = QVBoxLayout()
+        main_vlayout = QVBoxLayout()
+        title_hlayout = QHBoxLayout()
+
+        self.title_left_group = QGroupBox()
+        title_left_vlayout = QVBoxLayout()
+        self.title_left_group.setLayout(title_left_vlayout)
+        self.title_label = QLabel("Programs:")
+        title_left_vlayout.addWidget(self.title_label)
+        title_hlayout.addWidget(self.title_left_group)
+
+        title_right_vlayout = QVBoxLayout()
+        title_hlayout.addLayout(title_right_vlayout)
+
+        main_vlayout.addLayout(title_hlayout)
         # self.setCentralWidget(center_widget)
-        self.setLayout(layout)
+        self.setLayout(main_vlayout)
         self.setStyleSheet(JDXiStyle.EDITOR)
 
-        self.title_label = QLabel("Programs:")
-        self.title_label.setStyleSheet(
-            """
-                font-size: 16px;
-                font-weight: bold;
-            """
-        )
-
-        title_layout = QHBoxLayout()
-        title_layout.addWidget(self.title_label)
-        layout.addLayout(title_layout)
+        self.title_label.setStyleSheet(JDXiStyle.EDITOR_TITLE_LABEL)
+        self.midi_helper.update_tone_name.connect(
+            lambda title, synth_type: self.set_instrument_title_label(title, synth_type))
 
         self.file_label = DigitalTitle("No file loaded")
-        layout.addWidget(self.file_label)
+        title_left_vlayout.addWidget(self.file_label)
+        title_left_vlayout.addStretch()
 
         # Image display
+        self.title_group = QGroupBox()
+        title_image_layout = QFormLayout()
+        self.title_group.setLayout(title_image_layout)
         self.image_label = QLabel()
         self.image_label.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
+            Qt.AlignmentFlag.AlignVCenter
         )  # Center align the image
-        title_layout.addWidget(self.image_label)
+        title_image_layout.addWidget(self.image_label)
+        title_right_vlayout.addWidget(self.title_group)
         self.update_instrument_image()
 
         self.program_label = QLabel("Program")
-        layout.addWidget(self.program_label)
+        main_vlayout.addWidget(self.program_label)
 
         # Program number selection combo box
         self.program_number_combo_box = QComboBox()
@@ -153,10 +163,10 @@ class ProgramEditor(BasicEditor):
         self.program_number_combo_box.currentIndexChanged.connect(
             self.on_program_number_changed
         )
-        layout.addWidget(self.program_number_combo_box)
+        main_vlayout.addWidget(self.program_number_combo_box)
 
         self.genre_label = QLabel("Genre")
-        layout.addWidget(self.genre_label)
+        main_vlayout.addWidget(self.genre_label)
 
         # Genre selection combo box
         self.genre_combo_box = QComboBox()
@@ -164,17 +174,17 @@ class ProgramEditor(BasicEditor):
         genres = set(program["genre"] for program in JDXiProgramList.PROGRAM_LIST)
         self.genre_combo_box.addItems(sorted(genres))
         self.genre_combo_box.currentIndexChanged.connect(self.on_genre_changed)
-        layout.addWidget(self.genre_combo_box)
+        main_vlayout.addWidget(self.genre_combo_box)
 
         self.bank_label = QLabel("Bank")
-        layout.addWidget(self.bank_label)
+        main_vlayout.addWidget(self.bank_label)
 
         # Bank selection combo box
         self.bank_combo_box = QComboBox()
         self.bank_combo_box.addItem("No Bank Selected")
         self.bank_combo_box.addItems(["A", "B", "C", "D", "E", "F", "G", "H"])
         self.bank_combo_box.currentIndexChanged.connect(self.on_bank_changed)
-        layout.addWidget(self.bank_combo_box)
+        main_vlayout.addWidget(self.bank_combo_box)
 
         # Load button
         self.load_button = QPushButton(
@@ -182,8 +192,8 @@ class ProgramEditor(BasicEditor):
             "Load Program",
         )
         self.load_button.clicked.connect(self.load_program)
-        layout.addWidget(self.load_button)
-        self.setLayout(layout)
+        main_vlayout.addWidget(self.load_button)
+        self.setLayout(title_hlayout)
 
         # Transport controls area
         transport_group = QGroupBox("Transport")
@@ -201,10 +211,10 @@ class ProgramEditor(BasicEditor):
         transport_layout.addWidget(self.start_button)
         transport_layout.addWidget(self.stop_button)
         transport_group.setLayout(transport_layout)
-        layout.addWidget(transport_group)
+        # left_layout.addWidget(transport_group) # I guess we need to send the MIDI clock also for midi sart to work
 
         self.digital_synth_1_hlayout = QHBoxLayout()
-        layout.addLayout(self.digital_synth_1_hlayout)
+        main_vlayout.addLayout(self.digital_synth_1_hlayout)
 
         self.digital_synth_1_icon = QLabel()
         self.digital_synth_1_icon.setPixmap(
@@ -238,7 +248,7 @@ class ProgramEditor(BasicEditor):
         )
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_icon)
 
-        layout.addLayout(self.digital_synth_2_hlayout)
+        main_vlayout.addLayout(self.digital_synth_2_hlayout)
 
         self.digital_synth_2_title = QLabel("Digital Synth 2")
         self.digital_synth_2_hlayout.addWidget(self.digital_synth_2_title)
@@ -259,7 +269,7 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.drum_kit_hlayout = QHBoxLayout()
-        layout.addLayout(self.drum_kit_hlayout)
+        main_vlayout.addLayout(self.drum_kit_hlayout)
 
         self.drum_kit_icon = QLabel()
         self.drum_kit_icon.setPixmap(
@@ -286,7 +296,7 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.analog_synth_hlayout = QHBoxLayout()
-        layout.addLayout(self.analog_synth_hlayout)
+        main_vlayout.addLayout(self.analog_synth_hlayout)
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(

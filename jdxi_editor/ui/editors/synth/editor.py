@@ -302,6 +302,10 @@ class SynthEditor(SynthBase):
         elif synth_tone == AddressOffsetSuperNATURALLMB.MODIFY.name:
             self._update_modify_controls(partial_number, sysex_data, successes, failures)
         else:  # Drums and Digital 1 & 2 are dealt with via partials
+            if partial_number is None:
+                log.error(f"Unknown partial number for synth_tone: {synth_tone}")
+                return
+            log.parameter("partial_number", partial_number)
             self._update_partial_controls(partial_number, sysex_data, successes, failures)
 
         log.debug_info(successes, failures)
