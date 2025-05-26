@@ -34,3 +34,6 @@ class WaveformButton(QPushButton):
         """Handle button click"""
         if self.isChecked():
             self.waveform_selected.emit(self.waveform)
+
+    #def setValue(self, value): @@@
+    #    """ sets a value for the button"""

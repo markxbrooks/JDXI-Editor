@@ -90,7 +90,7 @@ class Logger:
         float_precision: int = 2,
         max_length: int = 300,
         level: int = logging.INFO,
-        stacklevel: int = 3,
+        stacklevel: int = 4,
         silent: bool = False
     ) -> None:
         """
@@ -129,6 +129,7 @@ class Logger:
         """
         Logs a visually distinct header message with separator lines and emojis.
 
+        :param stacklevel:
         :param silent: bool whether or not to write to the log
         :param message: The message to log.
         :param level: Logging level (default: logging.INFO).

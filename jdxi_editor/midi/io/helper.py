@@ -78,6 +78,12 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
         except Exception as ex:
             log.error(f"Error reading or emitting sysex JSON: {ex}")
 
+    def __str__(self):
+        return f"{self.__class__.__name__}"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}"
+
     def load_sysx_patch(self, file_path: str):
         """
         Load the SysEx patch from a file and emit it.

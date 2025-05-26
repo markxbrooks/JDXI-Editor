@@ -44,7 +44,7 @@ from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
 from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
     AddressStartMSB,
@@ -97,9 +97,6 @@ from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
-
-# Homeless value
-CENTER_OCTAVE_VALUE = 0x40  # for octave up/down buttons
 
 
 class JDXiInstrument(JDXiUi):
@@ -291,13 +288,15 @@ class JDXiInstrument(JDXiUi):
         :return: None
         """
         self.editors.append(editor)
-        log.message(f"Editor {editor} registered. Now {self.editors} registered")
+        log.message(f"Editor {str(editor)} registered")
+        for i, registered_editor in enumerate(self.editors):
+            log.message(f"Registered Editor {i} {str(registered_editor)}")
 
     def set_preset_name_by_type(self, tone_name: str, synth_type: str) -> None:
         """
         set preset name by type
-        :param tone_name: str
-        :param synth_type: str
+        :param tone_name: str Tone name
+        :param synth_type: str Synth type
         :return: None
         """
         if synth_type == JDXiSynth.PROGRAM:
@@ -318,11 +317,11 @@ class JDXiInstrument(JDXiUi):
             return self.preset_helpers[JDXiSynth.DIGITAL_SYNTH_1]  # Safe fallback
         return helper
 
-    def set_current_program_name(self, program_name: str):
+    def set_current_program_name(self, program_name: str) -> None:
         """
         program name
         :param program_name: str
-        :return:
+        :return: None
         """
         self.current_program_name = program_name
         self.current_program_id = get_program_id_by_name(program_name)
@@ -335,8 +334,8 @@ class JDXiInstrument(JDXiUi):
     def set_current_program_number(self, channel: int, program_number: int) -> None:
         """
         program number
-        :param channel: int
-        :param program_number: int
+        :param channel: int midi channel (discarded)
+        :param program_number: int Program number
         :return: None
         """
         self.current_program_number = program_number + 1
@@ -508,7 +507,7 @@ class JDXiInstrument(JDXiUi):
     def show_editor(self, editor_type: str) -> None:
         """
         Show editor of given type
-        :param editor_type: str
+        :param editor_type: str Editor type
         :return: None
         """
 
@@ -540,11 +539,16 @@ class JDXiInstrument(JDXiUi):
         return existing_editor
 
     def _show_editor_tab(self, title: str, editor_class, **kwargs) -> None:
+        """
+        _show_editor_tab
+        :param title: str Title of the tab
+        :param editor_class: cls Class of the Editor
+        :param kwargs:
+        :return: None
+        """
         try:
             instance_attr = f"{editor_class.__name__.lower()}_instance"
-            log.parameter("instance_attr", instance_attr)
             existing_editor = getattr(self, instance_attr, None)
-            log.parameter("existing_editor", existing_editor)
 
             if existing_editor:
                 index = self.main_editor.editor_tab_widget.indexOf(existing_editor)
@@ -886,7 +890,7 @@ class JDXiInstrument(JDXiUi):
         self.octave_up.setChecked(self.current_octave > 0)
         self._update_display()
         log.message(
-            f"Updated octave to: {self.current_octave} (value: {hex(CENTER_OCTAVE_VALUE + self.current_octave)})"
+            f"Updated octave to: {self.current_octave} (value: {hex(JDXiConstant.CENTER_OCTAVE_VALUE + self.current_octave)})"
         )
 
     def _midi_init_ports(

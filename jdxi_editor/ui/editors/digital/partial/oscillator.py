@@ -83,6 +83,7 @@ class DigitalOscillatorSection(QWidget):
             btn.setIcon(QIcon(base64_to_pixmap(icon_base64)))
             btn.clicked.connect(lambda checked, w=wave: self._on_waveform_selected(w))
             self.wave_buttons[wave] = btn
+            self.controls[AddressParameterDigitalPartial.OSC_WAVE] = btn
             wave_layout.addWidget(btn)
 
         top_row.addLayout(wave_layout)

@@ -320,7 +320,7 @@ class AnalogSynthEditor(SynthEditor):
         if self.midi_helper:
             sysex_message = self.sysex_composer.compose_message(address=self.address,
                                                                 param=AddressParameterAnalog.OSC_WAVEFORM,
-                                                                value=waveform.midi_value)
+                                                                value=waveform.value)
             self.midi_helper.send_midi_message(sysex_message)
 
             for btn in self.wave_buttons.values():
@@ -529,6 +529,8 @@ class AnalogSynthEditor(SynthEditor):
                     self.update_pitch_env_widget(
                         param, param_value, successes, failures
                     )
+                elif param == AddressParameterAnalog.OSC_WAVEFORM:
+                    self._update_waveform_buttons(param_value)
                 else:
                     self.update_slider(param, param_value, successes, failures)
                 successes.append(param_name)

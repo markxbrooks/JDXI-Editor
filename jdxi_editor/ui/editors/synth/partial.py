@@ -50,3 +50,9 @@ class PartialEditor(SynthBase):
         self.preset_helper = None
         # Store parameter controls for easy access
         self.controls: Dict[AddressParameter, QWidget] = {}
+
+    def __str__(self):
+        return f"{self.__class__.__name__} partial {self.partial_number}"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} partial {self.partial_number}"

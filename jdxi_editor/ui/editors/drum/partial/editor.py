@@ -128,3 +128,4 @@ class DrumPartialEditor(PartialEditor):
         grid_layout.addWidget(tva_group, 1, 1)
 
         main_layout.addWidget(scroll_area)
+
