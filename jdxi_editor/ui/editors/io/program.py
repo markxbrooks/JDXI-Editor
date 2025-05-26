@@ -110,6 +110,7 @@ class ProgramEditor(BasicEditor):
         self.preset_type = None
         self.programs = {}  # Maps program names to numbers
         self.setup_ui()
+        self.midi_helper.update_program_name.connect(self.set_current_program_name)
 
     def setup_ui(self):
         """set up ui elements"""
@@ -297,6 +298,7 @@ class ProgramEditor(BasicEditor):
         )
         self.analog_synth_hlayout = QHBoxLayout()
         main_vlayout.addLayout(self.analog_synth_hlayout)
+        main_vlayout.addStretch()
 
         self.analog_synth_icon = QLabel()
         self.analog_synth_icon.setPixmap(
@@ -323,6 +325,18 @@ class ProgramEditor(BasicEditor):
             """
         )
         self.populate_programs()
+
+    def set_current_program_name(self, program_name: str, synth_type: str = None) -> None:
+        """
+        Set the current program name in the file label
+        :param program_name: str
+        :param synth_type: str (optional), discarded for now
+        :return: None
+        """
+        if self.file_label:
+            self.file_label.setText(program_name)
+        else:
+            log.message("File label not initialized.")
 
     def start_playback(self):
         """Start playback of the MIDI file."""

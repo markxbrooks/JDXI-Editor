@@ -1,6 +1,7 @@
 """
 Synth Factory
 """
+from typing import Union
 
 from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -19,7 +20,8 @@ from jdxi_editor.midi.sysex.request.midi_requests import MidiRequests
 from jdxi_editor.log.logger import Logger as log
 
 
-def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> JDXISynthData:
+def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
+    AnalogSynthData, DrumSynthData, DigitalSynthData, None]:
     """
     Factory function to create synth data based on the synth type and partial number.
     :param synth_type: str

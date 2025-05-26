@@ -298,7 +298,7 @@ class MidiInHandler(MidiIOController):
         :return: None
         """
         if area == AreaMSB.TEMPORARY_PROGRAM.name:
-            log.message(f"Emitting tone name: {tone_name} to {area}")
+            log.message(f"Emitting program name: {tone_name} to {area}")
             self.update_program_name.emit(tone_name)
 
     def _emit_tone_name_signal(self, area: str, tone_name: str) -> None:
