@@ -18,7 +18,6 @@ Classes:
 - SynthControlBase: A base widget for controlling synth parameters via MIDI.
 """
 
-
 import threading
 from typing import Dict, Optional
 
@@ -45,7 +44,14 @@ from jdxi_editor.ui.widgets.switch.switch import Switch
 class SynthBase(QWidget):
     """base class for all synth editors"""
 
-    def __init__(self, midi_helper, parent=None):
+    def __init__(self,
+                 midi_helper: Optional[MidiIOHelper] = None,
+                 parent: QWidget = None):
+        """
+        Initialize the SynthBase editor with MIDI helper and parent widget.
+        :param midi_helper: Optional[MidiIOHelper] instance for MIDI communication
+        :param parent: QWidget Parent widget for this editor
+        """
         super().__init__(parent)
         self.partial_editors = {}
         self.sysex_data = None
@@ -63,10 +69,20 @@ class SynthBase(QWidget):
 
     @midi_helper.setter
     def midi_helper(self, helper: MidiIOHelper) -> None:
+        """
+        Set the MIDI helper for sending and receiving MIDI messages.
+        :param helper: MidiIOHelper instance to use for MIDI communication
+        :return: None
+        """
         self._midi_helper = helper
 
-    def send_raw_message(self, message: bytes) -> bool:
-        """Send address SysEx message using the MIDI helper"""
+    def send_raw_message(self,
+                         message: bytes) -> bool:
+        """
+        Send a raw MIDI message using the MIDI helper.
+        :param message: bytes MIDI message to send
+        :return: bool True on success, False otherwise
+        """
         if not self._midi_helper:
             log.message("MIDI helper not initialized")
             return False
@@ -75,6 +91,8 @@ class SynthBase(QWidget):
     def data_request(self, channel=None, program=None):
         """
         Request the current value of the NRPN parameter from the device.
+        :param channel: int MIDI channel to send the request on (discarded)
+        :param program: int Program number to request data for (discarded)
         """
         threading.Thread(
             target=send_with_delay,
@@ -87,7 +105,7 @@ class SynthBase(QWidget):
     def _on_midi_message_received(self, message: mido.Message) -> None:
         """
         Handle incoming MIDI messages
-        :param message: mido.Message
+        :param message: mido.Message MIDI message received
         :return: None
         """
         if not message.type == "clock":
@@ -99,8 +117,8 @@ class SynthBase(QWidget):
     def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
         """
         Send MIDI parameter with error handling
-        :param param: AddressParameter
-        :param value: int value
+        :param param: AddressParameter the parameter to send
+        :param value: int value to send
         :return: bool True on success, False otherwise
         """
         try:
@@ -126,33 +144,23 @@ class SynthBase(QWidget):
         """
         try:
             controls_data = {}
-
             for param in self.controls:
                 controls_data[param.name] = param.value
             log.message(f"{controls_data}")
             return controls_data
-
         except Exception as ex:
             log.message(f"Failed to get controls: {ex}")
             return {}
 
-    def send_midi_parameter_old(self, param: AddressParameter, value: int) -> bool:
+    def _on_parameter_changed(self,
+                              param: AddressParameter,
+                              display_value: int) -> None:
         """
-        Send MIDI parameter with error handling
-        :param param: AddressParameter
-        :param value: int value
-        :return: bool True on success, False otherwise
+        Handle parameter change event, convert display value to MIDI value,
+        :param param: AddressParameter Parameter that was changed
+        :param display_value: int Display value from the UI control
+        :return: None
         """
-        try:
-            sysex_message = self.sysex_composer.compose_message(address=target_address, param=param, value=value)
-            result = self._midi_helper.send_midi_message(sysex_message)
-            return bool(result)
-        except Exception as ex:
-            log.error(f"MIDI error setting {param.name}: {ex}")
-            return False
-
-    def _on_parameter_changed(self, param: AddressParameter, display_value: int):
-        """Handle parameter value changes from UI controls."""
         try:
             # Convert display value to MIDI value
             if hasattr(param, "convert_to_midi"):
@@ -170,13 +178,19 @@ class SynthBase(QWidget):
             log.error(f"Error handling parameter {param.name}: {ex}")
 
     def _create_parameter_slider(
-        self,
-        param: AddressParameter,
-        label: str,
-        vertical=False,
-        show_value_label=True,
-    ) -> Slider:
-        """Create a slider for a synth parameter with proper display conversion."""
+            self,
+            param: AddressParameter,
+            label: str,
+            vertical: bool = False,
+            show_value_label: bool = True) -> Slider:
+        """
+        Create a slider for an address parameter with proper display conversion.
+        :param param: AddressParameter Parameter to create slider for
+        :param label: str label for the slider
+        :param vertical: bool whether the slider is vertical
+        :param show_value_label: str whether to show the value label
+        :return: Slider
+        """
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
@@ -197,50 +211,64 @@ class SynthBase(QWidget):
             slider.setCenterMark(0)
             slider.setTickPosition(Slider.TickPosition.TicksBothSides)
             slider.setTickInterval((display_max - display_min) // 4)
-
         slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = slider
         return slider
 
     def _create_parameter_combo_box(
-        self,
-        param: AddressParameter,
-        label: str = None,
-        options: list = None,
-        values: list = None,
-        show_label=True,
-    ) -> ComboBox:
-        """Create a combo box for a parameter with proper display conversion"""
+            self,
+            param: AddressParameter,
+            label: str = None,
+            options: list = None,
+            values: list = None,
+            show_label: bool = True) -> ComboBox:
+        """
+        Create a combo box for an address parameter with options and values.
+        :param param: AddressParameter
+        :param label: str label for the combo box
+        :param options: list of options to display in the combo box
+        :param values: list of values corresponding to the options
+        :param show_label: bool whether to show the label
+        :return: ComboBox
+        """
         combo_box = ComboBox(label, options, values, show_label=show_label)
         combo_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = combo_box
         return combo_box
 
     def _create_parameter_spin_box(
-        self, param: AddressParameter, label: str = None
-    ) -> SpinBox:
-        """Create address spin box for address parameter with proper display conversion"""
+            self,
+            param: AddressParameter,
+            label: str = None) -> SpinBox:
+        """
+        Create address spin box for address parameter with proper display conversion
+        :param param: AddressParameter Parameter to create spin box for
+        :param label: str label for the spin box
+        :return: SpinBox
+        """
         if hasattr(param, "get_display_value"):
             display_min, display_max = param.get_display_value()
         else:
             display_min, display_max = param.min_val, param.max_val
-
         spin_box = SpinBox(label, display_min, display_max)
-
         # Connect value changed signal
         spin_box.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-
         # Store control reference
         self.controls[param] = spin_box
         return spin_box
 
     def _create_parameter_switch(
-        self,
-        param: AddressParameter,
-        label: str,
-        values: list[str],
-    ) -> Switch:
-        """Create address switch for address parameter with proper display conversion"""
+            self,
+            param: AddressParameter,
+            label: str,
+            values: list[str]) -> Switch:
+        """
+        Create a switch for an address parameter with specified label and values.
+        :param param: AddressParameter Parameter to create switch for
+        :param label: str label for the switch
+        :param values: list of values for the switch
+        :return: Switch
+        """
         switch = Switch(label, values)
         switch.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
         self.controls[param] = switch
@@ -252,7 +280,6 @@ class SynthBase(QWidget):
         from jdxi_editor.jdxi.synth.factory import create_synth_data
         self.synth_data = create_synth_data(synth_type,
                                             partial_number=partial_number)
-
         # Dynamically assign attributes
         for attr in [
             "address",
@@ -265,14 +292,13 @@ class SynthBase(QWidget):
             "midi_channel",
         ]:
             setattr(self, attr, getattr(self.synth_data, attr))
-            
+
     def _update_slider(
-        self,
-        param: AddressParameter,
-        midi_value: int,
-        successes: list = None,
-        failures: list = None
-    ) -> None:
+            self,
+            param: AddressParameter,
+            midi_value: int,
+            successes: list = None,
+            failures: list = None) -> None:
         """
         Update slider based on parameter and value.
         :param param: AddressParameter
@@ -298,12 +324,11 @@ class SynthBase(QWidget):
             failures.append(param.name)
 
     def _update_switch(
-        self,
-        param: AddressParameter,
-        midi_value: int,
-        successes: list = None,
-        failures: list = None,
-        debug: bool = False,
+            self,
+            param: AddressParameter,
+            midi_value: int,
+            successes: list = None,
+            failures: list = None,
     ) -> None:
         """
         Update switch based on parameter and value.
@@ -311,7 +336,6 @@ class SynthBase(QWidget):
         :param midi_value: int value
         :param successes: list
         :param failures: list
-        :param debug: bool
         :return: None
         """
         if not midi_value:
@@ -332,19 +356,20 @@ class SynthBase(QWidget):
             failures.append(param.name)
 
     def _update_partial_slider(
-        self,
-        partial_no: int,
-        param: AddressParameter,
-        value: int,
-        successes: list = None,
-        failures: list = None,
+            self,
+            partial_no: int,
+            param: AddressParameter,
+            value: int,
+            successes: list = None,
+            failures: list = None,
     ) -> None:
         """
         Update the slider for a specific partial based on the parameter and value.
         :param partial_no: int
         :param param: AddressParameter
         :param value: int
-        :param successes: list
+        :param successes: list list of successful updates
+        :param failures: list list of failed updates
         :return: None
         """
         if not value:
