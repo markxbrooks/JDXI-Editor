@@ -148,7 +148,7 @@ class PatternSequenceEditor(SynthEditor):
         learn_layout.addWidget(self.learn_button)
         learn_layout.addWidget(self.stop_learn_button)
         learn_group.setLayout(learn_layout)
-        control_panel.addWidget(learn_group)
+        # control_panel.addWidget(learn_group)
 
         # Tempo control area
         tempo_group = QGroupBox("Tempo")

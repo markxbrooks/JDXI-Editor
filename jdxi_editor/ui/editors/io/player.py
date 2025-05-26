@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import Optional
 from mido import MidiFile, open_output, tempo2bpm, bpm2tempo
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, QObject, Signal, Slot, QThread
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QPushButton,
@@ -29,6 +29,32 @@ from jdxi_editor.ui.widgets.display.digital import DigitalTitle
 from jdxi_editor.ui.widgets.midi.track import MidiTrackViewer
 
 
+class PlaybackWorker(QObject):
+    finished = Signal()
+    result_ready = Signal(object)
+
+    @Slot()
+    def do_work(self):
+        # Do the processing here
+        result = self.process_next_event()
+        self.result_ready.emit(result)
+
+    def process_next_event(self):
+        # Your actual MIDI playback or heavy logic
+        return "some result"
+
+
+def format_time(seconds: float) -> str:
+    """
+    Format a time in seconds to a string
+    :param seconds: float
+    :return: str
+    """
+    mins = int(seconds) // 60
+    secs = int(seconds) % 60
+    return f"{mins}:{secs:02}"
+
+
 class MidiFileEditor(SynthEditor):
     def __init__(
         self,
@@ -37,6 +63,9 @@ class MidiFileEditor(SynthEditor):
         preset_helper=None,
     ):
         super().__init__()
+        self.event_index = None
+        self.worker = None
+        self.worker_thread = None
         """
         Initialize the MidiPlayer
         :param midi_helper: Optional[MidiIOHelper]
@@ -66,6 +95,22 @@ class MidiFileEditor(SynthEditor):
         self.start_time = None
         self.duration_seconds = 0
         self.paused = False
+        
+    def setup_worker(self):
+        """
+        Setup the worker for playback
+        """
+        self.worker = PlaybackWorker()
+        self.worker_thread = QThread()
+        self.worker.moveToThread(self.worker_thread)
+
+        self.worker.result_ready.connect(self.handle_result)
+        self.worker_thread.start()
+
+        # Setup QTimer in the main thread
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.worker.do_work)
+        self.timer.start(10)  # or whatever interval you want
 
     def init_ui(self):
         """
@@ -149,16 +194,6 @@ class MidiFileEditor(SynthEditor):
         layout.addWidget(transport_group)
         self.setLayout(layout)
 
-    def format_time(self, seconds: float) -> str:
-        """
-        Format a time in seconds to a string
-        :param seconds: float
-        :return: str
-        """
-        mins = int(seconds) // 60
-        secs = int(seconds) % 60
-        return f"{mins}:{secs:02}"
-
     def save_midi(self):
         """
         Save a MIDI file
@@ -212,7 +247,7 @@ class MidiFileEditor(SynthEditor):
             self.position_slider.setEnabled(True)
             self.position_slider.setRange(0, int(self.duration_seconds))
             self.position_label.setText(
-                f"0:00 / {self.format_time(self.duration_seconds)}"
+                f"0:00 / {format_time(self.duration_seconds)}"
             )
 
     def start_playback(self):
@@ -238,12 +273,12 @@ class MidiFileEditor(SynthEditor):
         if self.event_index >= len(self.midi_events):
             self.stop_playback()
             return
-        tick, msg , track = self.midi_events[self.event_index]
+        # tick, msg , track = self.midi_events[self.event_index]
         now = time.time()
         elapsed_time = now - self.start_time
         self.position_slider.setValue(int(elapsed_time))
         self.position_label.setText(
-            f"{self.format_time(elapsed_time)} / {self.format_time(self.duration_seconds)}"
+            f"{format_time(elapsed_time)} / {format_time(self.duration_seconds)}"
         )
 
         while self.event_index < len(self.midi_events):
@@ -312,11 +347,15 @@ class MidiFileEditor(SynthEditor):
         self.timer.stop()
         if self.midi_port:
             self.midi_port.close()
+            self.midi_port = None
+
         self.position_slider.setValue(0)
-        self.position_label.setText(f"0:00 / {self.format_time(self.duration_seconds)}")
+        self.position_label.setText(f"0:00 / {format_time(self.duration_seconds)}")
         self.event_index = 0
+        self.start_time = None
         self.paused_time = None
         self.paused = False
+
 
 
 if __name__ == "__main__":

@@ -390,7 +390,7 @@ class MidiTrackViewer(QWidget):
         self.muted_tracks = set()  # To track muted tracks
 
         # To track muted channels
-        self.muted_channels = set()
+        self.muted_channels: set[int] = set()
 
         # Main layout
         main_layout = QVBoxLayout(self)
@@ -416,6 +416,9 @@ class MidiTrackViewer(QWidget):
             btn.setFixedWidth(30)
             btn.toggled.connect(
                 lambda checked, c=ch: self.toggle_channel_mute(c, checked)
+            )
+            btn.setStyleSheet(
+                "QPushButton:checked { background-color: #cc0000; color: white; }"
             )
             self.mute_buttons[ch] = btn
             mute_layout.addWidget(btn)
@@ -451,27 +454,52 @@ class MidiTrackViewer(QWidget):
     #    self.ruler.set_midi_file(midi_file)
     #    self.tracks.set_midi_file(midi_file)
 
-    def toggle_channel_mute(self, channel, is_muted):
-        """Add or remove the channel from muted set."""
-        log.message(
-            f"Toggling mute for channel {channel}: {'Muted' if is_muted else 'Unmuted'}"
-        )
+    def toggle_channel_mute(self, channel: int, is_muted: bool) -> None:
+        """
+        Toggle mute state for a specific MIDI channel.
+        :param channel: int MIDI channel (1-16)
+        :param is_muted: bool is the channel muted?
+        :return: None
+        """
         if is_muted:
             self.muted_channels.add(channel)
-            # self.tracks.toggle_channel_mute(channel, True)
         else:
             self.muted_channels.discard(channel)
 
-    def toggle_track_mute(self, track, is_muted):
-        """Add or remove the channel from muted set."""
-        log.message(
-            f"Toggling mute for track {track}: {'Muted' if is_muted else 'Unmuted'}"
-        )
+        # Notify all track widgets
+        for widget in self.midi_track_widgets.values():
+            widget.update_muted_channels(self.muted_channels)
+
+    def toggle_track_mute(self, track: int, is_muted: bool) -> None:
+        """
+        Toggle mute state for a specific track.
+
+        :param track: int - Track index (0-based)
+        :param is_muted: bool - True to mute, False to unmute
+        """
+        log.message(f"Toggling mute for track {track}: {'Muted' if is_muted else 'Unmuted'}")
+
         if is_muted:
             self.muted_channels.add(track)
-            # self.tracks.toggle_channel_mute(channel, True)
         else:
             self.muted_channels.discard(track)
+
+        # Optional: Immediately apply mute state (e.g., for live playback)
+        self.apply_mute_state(track)
+
+    def apply_mute_state(self, track: int) -> None:
+        if track in self.muted_channels:
+            self.silence_track(track)
+        else:
+            self.unsilence_track(track)
+
+    def silence_track(self, track: int) -> None:
+        # Stop sending note-on messages or send all-notes-off
+        self.midi_out.send_control_change(123, 0, channel=track)
+
+    def unsilence_track(self, track: int) -> None:
+        # Resume normal playback (nothing needed unless you pre-buffer notes)
+        pass
 
     def play_next_event(self):
         """Override or add the logic to handle muted channels."""

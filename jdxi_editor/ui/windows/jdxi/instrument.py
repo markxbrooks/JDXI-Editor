@@ -118,7 +118,7 @@ class JDXiInstrument(JDXiUi):
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         self.sysex_composer = JDXiSysExComposer()
         self.program_helper = JDXiProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
-        self.settings = QSettings("jdxi_manager2", "settings")
+        self.settings = QSettings("mabsoft", "jdxi_editor")
         self._load_settings()
         self._toggle_illuminate_sequencer_lightshow(True)
         self._load_saved_favorites()
