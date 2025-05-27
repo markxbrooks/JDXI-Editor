@@ -30,18 +30,20 @@ from jdxi_editor.ui.widgets.midi.track import MidiTrackViewer
 
 
 class PlaybackWorker(QObject):
-    finished = Signal()
-    result_ready = Signal(object)
+    result_ready = Signal()  # e.g., to notify when a frame is processed
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.editor = None  # Reference to MidiFileEditor
+
+    def set_editor(self, editor):
+        self.editor = editor
 
     @Slot()
     def do_work(self):
-        # Do the processing here
-        result = self.process_next_event()
-        self.result_ready.emit(result)
-
-    def process_next_event(self):
-        # Your actual MIDI playback or heavy logic
-        return "some result"
+        if self.editor:
+            self.editor.play_next_event()
+            self.result_ready.emit()
 
 
 def format_time(seconds: float) -> str:
@@ -95,22 +97,31 @@ class MidiFileEditor(SynthEditor):
         self.start_time = None
         self.duration_seconds = 0
         self.paused = False
-        
+
     def setup_worker(self):
         """
-        Setup the worker for playback
+        Setup the worker and thread for threaded playback using QTimer
         """
+        # Clean up any previous worker/thread
+        if self.worker_thread:
+            self.worker_thread.quit()
+            self.worker_thread.wait()
+            self.worker_thread.deleteLater()
+            self.worker = None
+
         self.worker = PlaybackWorker()
+        self.worker.set_editor(self)
+
         self.worker_thread = QThread()
         self.worker.moveToThread(self.worker_thread)
+        self.worker.result_ready.connect(self.handle_result)  # optional for UI update
 
-        self.worker.result_ready.connect(self.handle_result)
-        self.worker_thread.start()
-
-        # Setup QTimer in the main thread
+        # QTimer lives in the main thread, but calls worker.do_work()
         self.timer = QTimer(self)
+        self.timer.setInterval(10)
         self.timer.timeout.connect(self.worker.do_work)
-        self.timer.start(10)  # or whatever interval you want
+
+        self.worker_thread.start()
 
     def init_ui(self):
         """
@@ -237,7 +248,7 @@ class MidiFileEditor(SynthEditor):
                     events.append((abs_time, msg, track_index))
 
             self.midi_events = sorted(events, key=lambda x: x[0])
-
+            self.setup_worker()
             # Compute total duration in seconds
             self.total_ticks = max(t for t, _, _ in self.midi_events)
             tempo = bpm2tempo(self.tempo_spin.value())
@@ -264,7 +275,11 @@ class MidiFileEditor(SynthEditor):
         self.midi_port = open_output(port_name)
         self.start_time = time.time()
         self.event_index = 0
-        self.timer.start(10)  # check every 10ms
+
+        if not self.worker_thread or not self.worker:
+            self.setup_worker()
+
+        self.timer.start()
 
     def play_next_event(self):
         """
@@ -301,61 +316,75 @@ class MidiFileEditor(SynthEditor):
 
     def scrub_position(self):
         """
-        Scrub to a new position in the file
-        """
-        new_seconds = self.position_slider.value()
-        self.start_time = time.time() - new_seconds
-
-        # Find the correct event index based on new time
-        new_tick = new_seconds / self.tick_duration
-        for i, (tick, _, _) in enumerate(self.midi_events):
-            if tick >= new_tick:
-                self.event_index = i
-                break
-
-    def toggle_pause_playback(self):
-        """
-        Pause/restart file playback
+        Scrub to a new position in the file using the slider.
+        Resets start time and event index to match new slider position.
         """
         if not self.midi_file or not self.midi_events:
             return
 
-        port_name = self.port_select.currentText()
-        if not port_name:
-            return
+        target_time = self.position_slider.value()
+        self.start_time = time.time() - target_time
+        self.event_index = 0
 
-        if not self.timer.isActive():
-            self.midi_port = open_output(port_name)
-            if self.paused_time:
-                # Adjust start_time to resume correctly
-                paused_duration = time.time() - self.paused_time
-                self.start_time += paused_duration
-                self.paused_time = None
-            else:
-                self.start_time = time.time()
-            self.timer.start(10)
-            self.paused = False
-        else:
-            self.timer.stop()
-            self.paused_time = time.time()
-            self.paused = True
+        # Find the first event index that should be played after this point
+        for i, (tick, _, _) in enumerate(self.midi_events):
+            if tick * self.tick_duration >= target_time:
+                self.event_index = i
+                break
+
+        # Stop all notes to avoid hanging
+        if self.midi_port:
+            for ch in range(16):
+                for note in range(128):
+                    self.midi_port.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
 
     def stop_playback(self):
         """
-        Stop playback of the MIDI file
+        Stop the playback and reset everything.
         """
         self.timer.stop()
+
         if self.midi_port:
+            for ch in range(16):
+                for note in range(128):
+                    self.midi_port.send(mido.Message("note_off", note=note, velocity=0, channel=ch))
             self.midi_port.close()
             self.midi_port = None
 
+        self.event_index = 0
         self.position_slider.setValue(0)
         self.position_label.setText(f"0:00 / {format_time(self.duration_seconds)}")
-        self.event_index = 0
-        self.start_time = None
-        self.paused_time = None
-        self.paused = False
 
+    def toggle_pause_playback(self):
+        if not self.midi_file or not self.timer.isActive():
+            return
+
+        if self.paused:
+            # Resume
+            self.start_time = time.time() - self.paused_time
+            self.timer.start(10)
+            self.paused = False
+            self.pause_button.setText("Pause")
+        else:
+            # Pause
+            self.paused_time = time.time() - self.start_time
+            self.timer.stop()
+            self.paused = True
+            self.pause_button.setText("Resume")
+
+    def handle_result(self, result=None):
+        """
+        Handle the result from the worker.
+        This can be used to update the UI or perform further actions.
+        :param result: The result from the worker
+        """
+        pass
+        # For now, just print the result
+        # print(f"Worker result: {result}")
+        # self.position_slider.setEnabled(False)
+        # self.position_slider.setValue(0)
+        # self.position_label.setText("0:00 / 0:00")
+        # self.midi_track_viewer.clear_tracks()
 
 
 if __name__ == "__main__":
