@@ -84,7 +84,7 @@ class JDXiPresetManager:
 
     def set_preset_name_by_type(self, preset_type: str, preset_name: str):
         """
-        Set the tone name for a specific tone type.
+        Set the preset name for a specific tone type.
         :param preset_type: str The type of preset
         :param preset_name: str The name of the preset
         """

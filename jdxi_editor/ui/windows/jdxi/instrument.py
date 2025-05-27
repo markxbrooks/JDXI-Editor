@@ -165,6 +165,8 @@ class JDXiInstrument(JDXiUi):
         self.data_request()
         self._show_main_editor()
         self.init_main_editor()
+        # Initialize the current preset and synth type
+        self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
 
     def _init_preset_helpers(self):
         """Initialize preset helpers dynamically"""
@@ -208,7 +210,7 @@ class JDXiInstrument(JDXiUi):
         self.midi_helper.midi_message_incoming.connect(self._midi_blink_input)
         self.midi_helper.midi_message_outgoing.connect(self._midi_blink_output)
         self.midi_helper.update_tone_name.connect(
-            lambda tone_name, synth_type: self.set_preset_name_by_type(
+            lambda tone_name, synth_type: self.set_tone_name_by_type(
                 tone_name, synth_type
             ),
         )
@@ -292,9 +294,9 @@ class JDXiInstrument(JDXiUi):
         for i, registered_editor in enumerate(self.editors):
             log.message(f"Registered Editor {i} {str(registered_editor)}")
 
-    def set_preset_name_by_type(self, tone_name: str, synth_type: str) -> None:
+    def set_tone_name_by_type(self, tone_name: str, synth_type: str) -> None:
         """
-        set preset name by type
+        set tone name by type
         :param tone_name: str Tone name
         :param synth_type: str Synth type
         :return: None
@@ -399,6 +401,11 @@ class JDXiInstrument(JDXiUi):
         presets = self.preset_manager.get_presets_for_synth(
             synth=self.current_synth_type
         )
+
+        if not presets:
+            show_message_box("No presets", "No presets available for this synth type.")
+            return
+        log.parameter(f"Presets for current synth: {self.current_synth_type}", presets)
         max_index = len(presets) - 1
         new_preset_index = self.current_preset_index + index_change
 

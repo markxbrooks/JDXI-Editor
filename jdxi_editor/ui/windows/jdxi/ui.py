@@ -389,27 +389,37 @@ class JDXiUi(QMainWindow):
         if not self.current_synth_type:
             logging.warning("No Synth type, defaulting to DIGITAL_1.")
             self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
-        synth_data = create_synth_data(self.current_synth_type)
-        if not synth_data:
-            synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1)
+        try:
+            synth_data = create_synth_data(self.current_synth_type)
+            log.message(
+                f"Creating synth data for type: {self.current_synth_type}"
+            )
+            if not synth_data:
+                synth_data = create_synth_data(JDXiSynth.DIGITAL_SYNTH_1)
 
-        self.preset_manager.current_preset_name = (
-            self.preset_manager.get_preset_name_by_type(self.current_synth_type)
-        )
-        # Update preset number
-        self.preset_manager.current_preset_number = get_preset_list_number_by_name(
-            self.preset_manager.current_preset_name, synth_data.preset_list
-        )
+            self.preset_manager.current_preset_name = (
+                self.preset_manager.get_preset_name_by_type(self.current_synth_type)
+            )
+            log.message(f"Current preset name: {self.preset_manager.current_preset_name}")
+            # Update preset number
+            self.preset_manager.current_preset_number = get_preset_list_number_by_name(
+                self.preset_manager.current_preset_name, synth_data.preset_list
+            )
+            log.message(
+                f"Current preset number: {self.preset_manager.current_preset_number}"
+            )
 
-        self.digital_display.repaint_display(
-            current_octave=self.current_octave,
-            tone_number=self.preset_manager.current_preset_number,
-            tone_name=self.preset_manager.get_preset_name_by_type(
-                self.current_synth_type
-            ),
-            program_name=self.current_program_name,
-            active_synth=synth_data.display_prefix,
-        )
+            self.digital_display.repaint_display(
+                current_octave=self.current_octave,
+                tone_number=self.preset_manager.current_preset_number,
+                tone_name=self.preset_manager.get_preset_name_by_type(
+                    self.current_synth_type
+                ),
+                program_name=self.current_program_name,
+                active_synth=synth_data.display_prefix,
+            )
+        except Exception as ex:
+            log.error(f"Error updating display: {ex}")
 
     def _load_digital_font(self) -> None:
         """Load the digital LCD font for the display"""
