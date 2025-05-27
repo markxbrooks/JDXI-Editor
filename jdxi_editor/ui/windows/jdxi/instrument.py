@@ -97,6 +97,7 @@ from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.project import __package_name__
 
 
 class JDXiInstrument(JDXiUi):
@@ -118,7 +119,7 @@ class JDXiInstrument(JDXiUi):
         self.midi_out_indicator.set_state(self.midi_helper.is_output_open)
         self.sysex_composer = JDXiSysExComposer()
         self.program_helper = JDXiProgramHelper(self.midi_helper, MidiChannel.PROGRAM)
-        self.settings = QSettings("mabsoft", "jdxi_editor")
+        self.settings = QSettings("mabsoft", __package_name__)
         self._load_settings()
         self._toggle_illuminate_sequencer_lightshow(True)
         self._load_saved_favorites()
@@ -1224,7 +1225,7 @@ class JDXiInstrument(JDXiUi):
         :param index: int
         :return: None
         """
-        self.settings = QSettings("mabsoft", "jdxi_editor")
+        self.settings = QSettings("mabsoft", __package_name__)
         preset_name = f"favorite_{index + 1:02d}"
 
         if button.isChecked():

@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
-
+from jdxi_editor.project import __program__
 
 def add_title_container(central_widget):
     """add container for main title"""
@@ -17,7 +17,7 @@ def add_title_container(central_widget):
     title_container.setStyleSheet(JDXiStyle.TRANSPARENT_WHITE)
     title_layout = QHBoxLayout()
     title_container.setLayout(title_layout)
-    title_label = QLabel("JD-Xi Editor")
+    title_label = QLabel(__program__)
     font = QFont()
     font.setFamilies(["Myriad Pro", "Segoe UI"])  # Qt 6+
     font.setStyleHint(QFont.SansSerif)

@@ -75,6 +75,7 @@ from jdxi_editor.ui.windows.jdxi.containers import (
     create_parts_container,
 )
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
+from jdxi_editor.project import __program__, __package_name__
 
 
 class JDXiUi(QMainWindow):
@@ -104,7 +105,7 @@ class JDXiUi(QMainWindow):
         # Initialize octave
         self.current_octave = 0  # Initialize octave tracking first
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
-        self.setWindowTitle("JD-Xi Editor")
+        self.setWindowTitle(__program__)
         self.setMinimumSize(JDXiDimensions.WIDTH, JDXiDimensions.HEIGHT)
 
         # Initialize MIDI helper
@@ -130,7 +131,7 @@ class JDXiUi(QMainWindow):
         self._create_help_menu()
 
         # Load settings
-        self.settings = QSettings("mabsoft", "jdxi_editor")
+        self.settings = QSettings("mabsoft", __package_name__)
 
         # Add piano keyboard at bottom
         self.piano_keyboard = PianoKeyboard(parent=self)
