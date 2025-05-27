@@ -37,3 +37,10 @@ class MainEditor(QMainWindow):
         self.editor_tab_widget.setStyleSheet(JDXiStyle.TABS_MAIN_EDITOR)
         self.setStyleSheet(JDXiStyle.EDITOR)
         self.setWindowTitle(f"{__program__} - {__version__}")
+
+    def closeEvent(self, event):
+        """
+        close the editor tab widget, but dont delete it
+        :param event: QEvent
+        """
+        self.hide()
