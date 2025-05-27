@@ -12,6 +12,7 @@ from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
 from jdxi_editor.jdxi.synth.type import JDXiSynth
 from jdxi_editor.jdxi.preset.data import JDXiPresetData
+from jdxi_editor.project import __package_name__
 
 
 class FavoriteButton(QPushButton):
@@ -36,7 +37,7 @@ class FavoriteButton(QPushButton):
         self.preset = None
         self.setFixedSize(60, 30)
         self.setFlat(True)
-        self.settings = QSettings("mabsoft", "jdxi_editor")
+        self.settings = QSettings("mabsoft", __package_name__)
         # self._load_from_settings()
         self._update_style()
 

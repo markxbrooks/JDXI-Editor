@@ -2,18 +2,18 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-
+from jdxi_editor.project import __program__, __version__, __package_name__
 
 def setup_logging():
     """Set up logging configuration"""
     try:
         # Create logs directory in user's home directory
-        _ = logging.getLogger("jdxi_editor")
-        log_dir = Path.home() / ".jdxi_editor" / "logs"
+        _ = logging.getLogger(__package_name__)
+        log_dir = Path.home() / f".{__package_name__}" / "logs"
         log_dir.mkdir(parents=True, exist_ok=True)
 
         # Log file path
-        log_file = log_dir / "jdxi_editor.log"
+        log_file = log_dir / f"{__package_name__}.log"
         print(f"Setting up logging to: {log_file}")
 
         # Reset root handlers
@@ -48,9 +48,9 @@ def setup_logging():
         logging.root.addHandler(file_handler)
         logging.root.addHandler(console_handler)
 
-        logger = logging.getLogger("jdxi_editor")
+        logger = logging.getLogger(__package_name__)
         logger.info("Logging setup complete")
-        logger.info("JD-Xi Editor starting up...")
+        logger.info(f"{__program__} starting up...")
         logger.debug(f"Log file: {log_file}")
         return logger
 

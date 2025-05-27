@@ -7,6 +7,7 @@ from PySide6.QtGui import QPainter, QPen, QColor
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
+from jdxi_editor.project import __package_name__
 
 
 class SequencerSquare(QPushButton):
@@ -16,7 +17,7 @@ class SequencerSquare(QPushButton):
         super().__init__(parent)
         self.preset_loader = None  # we will be using this later
         self.midi_helper = midi_helper
-        self.settings = QSettings("mabsoft", "jdxi_editor")
+        self.settings = QSettings("mabsoft", __package_name__)
         self.slot_number = slot_num
         self.preset = None
         self.last_preset = None

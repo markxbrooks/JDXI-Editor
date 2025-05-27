@@ -1,5 +1,5 @@
 """
-btk_dialog for about JD-XI Editor
+btk_dialog for about box
 """
 
 import os
@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QSettings, QRect
 
-from jdxi_editor.project import __version__, __program__
+from jdxi_editor.project import __version__, __program__, __package_name__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
 
@@ -24,7 +24,7 @@ class UiAboutDialog(QDialog):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.version_label = None
-        self.settings = QSettings("mabsoft", "jdxi_editor")
+        self.settings = QSettings("mabsoft", __package_name__)
 
     def setup_ui(self, parent: QWidget = None) -> None:
         """
@@ -37,7 +37,7 @@ class UiAboutDialog(QDialog):
         self.setStyleSheet(JDXiStyle.SPLASH_SCREEN + JDXiStyle.CREDITS_LABEL_STYLE)
         main_layout = QVBoxLayout(self)
         group_box_layout = QVBoxLayout(self)
-        group_box = QGroupBox("JD-Xi Editor")
+        group_box = QGroupBox(__program__)
         group_box_layout.addWidget(group_box)
         image_layout = QVBoxLayout(self)
         group_box.setLayout(image_layout)

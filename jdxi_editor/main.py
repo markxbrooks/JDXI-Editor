@@ -21,6 +21,7 @@ Functions:
 
 
 import os
+import platform
 import sys
 import logging
 from pathlib import Path
@@ -41,6 +42,7 @@ from PySide6.QtGui import QIcon, QPixmap, QColor, Qt, QFont, QFontInfo
 
 from jdxi_editor.log.message import log_message
 from jdxi_editor.log.setup import setup_logging
+from jdxi_editor.project import __program__, __version__
 from jdxi_editor.resources import resource_path
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.windows.jdxi.instrument import JDXiInstrument
@@ -57,10 +59,10 @@ def main():
         app = QApplication(sys.argv)
 
         # Set application metadata
-        app.setApplicationName("JD-Xi Editor")
-        app.setApplicationVersion("0.30")
-        app.setOrganizationName("jdxieditor")
-        app.setOrganizationDomain("com.mabinc")
+        app.setApplicationName(__program__)
+        app.setApplicationVersion(__version__)
+        app.setOrganizationName("mabsoft")
+        app.setOrganizationDomain("com.mabsoft")
         app.setStyleSheet(
             """
             QLabel {
@@ -112,12 +114,16 @@ def main():
         layout.setSpacing(10)
 
         # Title
-        group_box = QGroupBox("JD-Xi Editor")
+        group_box = QGroupBox(__program__)
         group_box.setAlignment(Qt.AlignHCenter)
         group_box.setStyleSheet("color: white; font-size: 24px; font-weight: bold;")
         preferred_fonts = ["Myriad Pro", "Segoe UI", "Arial"]
+        if platform.system() == "Windows":
+            font_size = 18
+        else:
+            font_size = 20
         for font_name in preferred_fonts:
-            font = QFont(font_name, 20)
+            font = QFont(font_name, font_size)
             font.setBold(True)
             if QFontInfo(font).family() == font_name:
                 group_box.setFont(font)
