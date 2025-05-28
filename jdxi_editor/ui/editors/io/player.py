@@ -354,8 +354,26 @@ class MidiFileEditor(SynthEditor):
         self.event_index = 0
         self.position_slider.setValue(0)
         self.position_label.setText(f"0:00 / {format_time(self.duration_seconds)}")
-
+    
     def toggle_pause_playback(self):
+        if not self.midi_file or not self.timer.isActive():
+            return
+    
+        if self.paused:
+            # Resume playback
+            if self.paused_time is not None:
+                self.start_time += time.time() - self.paused_time  # Adjust start_time to account for paused duration
+            self.timer.start(10)  # Ensure consistent timer interval
+            self.paused = False
+            self.pause_button.setText("Pause")
+        else:
+            # Pause playback
+            self.paused_time = time.time()  # Record the current time as paused_time
+            self.timer.stop()
+            self.paused = True
+            self.pause_button.setText("Resume")
+
+    def toggle_pause_playback_old(self):
         if not self.midi_file or not self.timer.isActive():
             return
 
