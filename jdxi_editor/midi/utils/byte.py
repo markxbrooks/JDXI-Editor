@@ -112,4 +112,3 @@ def encode_14bit_to_7bit_midi_bytes(value: int) -> list[int]:
     msb = (value >> 7) & BitMask.LOW_7_BITS    # Upper 7 bits
 
     return [msb, lsb]
-

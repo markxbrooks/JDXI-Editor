@@ -49,7 +49,8 @@ class MidiOutHandler(MidiIOController):
         self.channel = 1
         self.sysex_parser = JDXiSysExParser()
 
-    def send_raw_message(self, message: Iterable[int]) -> bool:
+    def send_raw_message(self,
+                         message: Iterable[int]) -> bool:
         """
         Send a validated raw MIDI message through the output port.
         This method logs the message, checks the validity using `validate_midi_message`,
@@ -134,7 +135,10 @@ class MidiOutHandler(MidiIOController):
         message_bytes_list = channel_message.to_message_list()
         self.send_raw_message(message_bytes_list)
 
-    def send_bank_select(self, msb: int, lsb: int, channel: int = 0) -> bool:
+    def send_bank_select(self,
+                         msb: int,
+                         lsb: int,
+                         channel: int = 0) -> bool:
         """
         Send address bank select message.
         :param msb: int Upper byte of the bank.
@@ -176,7 +180,8 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending identity request: {ex}")
             return False
 
-    def send_midi_message(self, sysex_message: MidiMessage) -> bool:
+    def send_midi_message(self,
+                          sysex_message: MidiMessage) -> bool:
         """
         Send SysEx parameter change message using a MidiMessage.
         :param sysex_message: MidiMessage instance to be converted and sent.
@@ -190,7 +195,8 @@ class MidiOutHandler(MidiIOController):
             log.error(f"Error sending message: {ex}")
             return False
 
-    def send_program_change(self, program: int, channel: int = 0) -> bool:
+    def send_program_change(self, program: int,
+                            channel: int = 0) -> bool:
         """
         Send address program change message.
         :param program: int Program number (0-127).
@@ -242,7 +248,10 @@ class MidiOutHandler(MidiIOController):
             log.message(f"send_control_change: Error sending control change: {ex}")
             return False
 
-    def send_rpn(self, parameter: int, value: int, channel: int = 0) -> bool:
+    def send_rpn(self,
+                 parameter: int,
+                 value: int,
+                 channel: int = 0) -> bool:
         """
         Send a Registered Parameter Number (RPN) message via MIDI Control Change.
         :param parameter: int RPN parameter number (0–16383).
@@ -283,9 +292,11 @@ class MidiOutHandler(MidiIOController):
 
         return success
 
-    def send_nrpn(
-        self, parameter: int, value: int, channel: int = 0, use_14bit: bool = False
-    ) -> bool:
+    def send_nrpn(self,
+                  parameter: int,
+                  value: int,
+                  channel: int = 0,
+                  use_14bit: bool = False) -> bool:
         """
         Send a Non-Registered Parameter Number (NRPN) message via MIDI Control Change.
         :param parameter: int NRPN parameter number (0–16383).
@@ -372,7 +383,10 @@ class MidiOutHandler(MidiIOController):
             return False
 
     def identify_device(self) -> None:
-        """Send Identity Request and verify response"""
+        """
+        Send Identity Request and verify response
+        :return: None
+        """
         request = IdentityRequestMessage()
         self.send_message(request)
         log.parameter("sending identity request message:", request)

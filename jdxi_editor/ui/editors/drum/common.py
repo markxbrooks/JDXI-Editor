@@ -19,7 +19,6 @@ from PySide6.QtWidgets import QGroupBox, QFormLayout, QWidget, QVBoxLayout, QScr
 
 from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB, RolandSysExAddress
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
-from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
 from jdxi_editor.midi.io.helper import MidiIOHelper
 
 

@@ -168,4 +168,3 @@ class AnalogCommonSection(QWidget):
         layout.addLayout(legato_row)
 
         layout.addStretch()
-

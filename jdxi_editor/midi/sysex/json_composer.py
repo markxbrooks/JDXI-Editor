@@ -5,13 +5,13 @@ JDXiSysExComposer
 import json
 import os
 from pathlib import Path
-from typing import Optional
-
+from typing import Optional, Union, Any
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetTemporaryToneUMB
 from jdxi_editor.ui.editors import SynthEditor
 from jdxi_editor.ui.windows.midi.debugger import parse_sysex_byte
+from jdxi_editor.project import __package_name__
 
 
 class JDXiJSONComposer:
@@ -22,14 +22,14 @@ class JDXiJSONComposer:
         if editor:
             self.editor = editor
             self.address = editor.address
-        self.temp_folder = Path.home() / ".jdxi_editor" / "temp"
+        self.temp_folder = Path.home() / f".{__package_name__}" / "temp"
         if not os.path.exists(self.temp_folder):
             self.temp_folder.mkdir(parents=True, exist_ok=True)
 
     def compose_message(
         self,
         editor: SynthEditor,
-    ) -> Optional[str]:
+    ) -> Optional[dict[Union[str, Any], Union[str, Any]]]:
         """
         :param editor: SynthEditor Editor instance to process
         :return: str JSON SysEx message

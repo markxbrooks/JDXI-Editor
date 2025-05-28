@@ -3,7 +3,12 @@ debugger module
 ====================
 MIDI Debugger for monitoring and interacting with MIDI commands and SysEx messages.
 
-This class provides a graphical user interface (GUI) for sending, decoding, and logging MIDI messages, including SysEx messages. It allows the user to input MIDI commands in hexadecimal format, send them to a connected MIDI device, and view the decoded output for further analysis. The debugger supports both standard MIDI messages and Roland-specific address-based SysEx messages, including their parameters, values, and checksums.
+This class provides a graphical user interface (GUI) for sending, decoding,
+and logging MIDI messages, including SysEx messages. It allows the user to input
+MIDI commands in hexadecimal format, send them to a connected MIDI device,
+and view the decoded output for further analysis. The debugger supports both
+standard MIDI messages and Roland-specific address-based SysEx messages,
+including their parameters, values, and checksums.
 
 Key Features:
 - Send MIDI messages in hexadecimal format to a MIDI device.
@@ -35,7 +40,7 @@ This class is useful for MIDI developers, musicians, and anyone working with MID
 """
 
 import re
-from typing import Tuple
+from typing import Tuple, Protocol, TypeVar, Optional
 
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -60,18 +65,23 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.parser.sysex import JDXiSysExParser
 from jdxi_editor.ui.windows.midi.helpers.debugger import validate_checksum
 
-from typing import Protocol, TypeVar, Optional
-
 T = TypeVar("T", bound="EnumWithAddress")
 
 
 class EnumWithAddress(Protocol):
     @classmethod
     def message_position(cls) -> int:
+        """        Get the position of the message in the SysEx message.
+        :return: int - the position of the message
+        """
         ...
 
     @classmethod
     def get_parameter_by_address(cls, address: int) -> Optional[T]:
+        """        Get the enum member by address.
+        :param address: int
+        :return: Optional[T] - the enum member or None if not found
+        """
         ...
 
 
@@ -103,8 +113,8 @@ def parse_sysex_message(message: bytes, enum_cls: EnumWithAddress) -> Tuple[str,
 def parse_parameter(offset: int, parameter_type: AddressParameter) -> str:
     """
     Parses JD-Xi tone parameters from SysEx data for Digital, Analog, and Digital Common types.
-    :param offset: int
-    :param parameter_type: AddressParameter
+    :param offset: int - The offset in the SysEx message where the parameter starts.
+    :param parameter_type: AddressParameter - The parameter type to parse.
     :return: str name
     """
     return parameter_type.get_name_by_address(offset)
@@ -117,7 +127,7 @@ class MIDIDebugger(QMainWindow):
         """
         init method
         :param midi_helper: MidiIOHelper
-        :param parent: main window
+        :param parent: QWidget main window
         """
         super().__init__(parent)
         self.midi_helper = midi_helper
@@ -268,7 +278,7 @@ class MIDIDebugger(QMainWindow):
         except Exception as ex:
             return f"Error decoding message: {str(ex)}"
 
-    def _send_commands(self):
+    def _send_commands(self) -> None:
         """Send all valid SysEx MIDI messages from user-entered text input."""
         if not self.midi_helper:
             self.log_response("Error: MIDI helper not initialized")
@@ -301,7 +311,13 @@ class MIDIDebugger(QMainWindow):
         except Exception as ex:
             self.log_response(f"Unhandled error in _send_commands: {str(ex)}")
 
-    def send_message(self, match):
+    def send_message(self, match: str) -> None:
+        """
+        Send a SysEx message based on the provided hex string.
+        :param match: str - Hex string representing the SysEx message
+        :return: None
+        """
+
         try:
             # Convert hex string to list of ints
             hex_values = match.strip().split()
