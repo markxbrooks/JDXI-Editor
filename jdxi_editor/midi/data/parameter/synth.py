@@ -194,26 +194,6 @@ class AddressParameter(Enum):
         """
         return self.convert_value(midi_value, reverse=True)
 
-    def convert_to_midi_old(self, value: int) -> int:
-        """
-        Convert the value to MIDI range (0-127) for sending via MIDI.
-        :param value: int value to convert
-        :return: int MIDI value
-        """
-        if not isinstance(value, int):
-            raise ValueError(f"Value must be an integer, got {type(value)}")
-
-        if value < self.min_val or value > self.max_val:
-            raise ValueError(
-                f"Value {value} out of range for {self.name} (valid range: {self.min_val}-{self.max_val})"
-            )
-
-        if self.is_bipolar:
-            # Map -max_val..+max_val to 0-127
-            return int(((value - self.min_val) / (self.max_val - self.min_val)) * 127)
-
-        return value
-
     def get_switch_text(self, value: int) -> str:
         """
         Get the text representation of the switch value.

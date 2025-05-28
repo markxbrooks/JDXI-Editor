@@ -9,8 +9,9 @@ from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
+from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST
+from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.validation import validate_raw_sysex_message, validate_raw_midi_message
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
@@ -41,6 +42,8 @@ class JDXiSysExComposer:
         try:
             address = apply_address_offset(self.address, param)
             # Convert display value to MIDI value if needed
+            if isinstance(param, AddressParameterDrumCommon):
+                self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
             if hasattr(param, "convert_to_midi"):
                 midi_value = param.convert_to_midi(value)
             else:
