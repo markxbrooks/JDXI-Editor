@@ -90,7 +90,8 @@ class MidiInHandler(MidiIOController):
             log.error(f"Error {ex} occurred")
 
     def reopen_input_port_name(self, in_port: str) -> bool:
-        """Reopen the current MIDI input port and reattach the callback.
+        """
+        Reopen the current MIDI input port and reattach the callback.
         :param in_port: str
         :return: bool
         """

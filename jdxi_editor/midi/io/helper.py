@@ -52,7 +52,6 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
     def load_patch(self, file_path: str):
         """
         Load the JSON patch as a string and emit it.
-
         :param file_path: str
         :return: None
         """
@@ -87,7 +86,6 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
     def load_sysx_patch(self, file_path: str):
         """
         Load the SysEx patch from a file and emit it.
-
         :param file_path: str
         :return: None
         """
@@ -112,7 +110,6 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
     def set_midi_ports(self, in_port: str, out_port: str) -> bool:
         """
         Set MIDI input and output ports
-
         :param in_port: str
         :param out_port: str
         :return: bool
@@ -131,7 +128,6 @@ class MidiIOHelper(MidiInHandler, MidiOutHandler):
     def connect_port_names(self, in_port: str, out_port: str):
         """
         Attempt to automatically connect to JD-Xi MIDI ports.
-
         :param in_port: str
         :param out_port: str
         :return: bool

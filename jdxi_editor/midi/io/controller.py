@@ -35,7 +35,11 @@ from jdxi_editor.log.logger import Logger as log
 class MidiIOController(QObject):
     """Helper class for MIDI communication with the JD-Xi"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QObject = None):
+        """
+        Initialize the MIDI I/O Controller
+        :param parent: QObject, parent object for the controller
+        """
         super().__init__(parent)
         self.midi_in = rtmidi.MidiIn()
         self.midi_out = rtmidi.MidiOut()
@@ -46,7 +50,6 @@ class MidiIOController(QObject):
     def current_in_port(self) -> Optional[str]:
         """
         Get current input port name
-
         :return: Optional[str], MIDI input port name
         """
         if self.input_port_number is not None and self.is_input_open:
@@ -59,7 +62,6 @@ class MidiIOController(QObject):
     def current_out_port(self) -> Optional[str]:
         """
         Get current output port name
-
         :return: Optional[str], MIDI output port name
         """
         if self.output_port_number is not None and self.is_output_open:
@@ -71,7 +73,6 @@ class MidiIOController(QObject):
     def get_input_ports(self) -> List[str]:
         """
         Get available MIDI input ports
-
         :return: List[str], MIDI input ports
         """
         return self.midi_in.get_ports()
@@ -79,7 +80,6 @@ class MidiIOController(QObject):
     def get_output_ports(self) -> List[str]:
         """
         Get available MIDI output ports
-
         :return: List[str], MIDI output ports
         """
         return self.midi_out.get_ports()
@@ -87,7 +87,6 @@ class MidiIOController(QObject):
     def find_jdxi_ports(self) -> Tuple[Optional[str], Optional[str]]:
         """
         Find JD-Xi input and output ports
-
         :return: Tuple[Optional[str], Optional[str]], JD-Xi input and output ports
         """
         in_ports = self.get_input_ports()
@@ -101,7 +100,6 @@ class MidiIOController(QObject):
     def open_input(self, port_name_or_index) -> bool:
         """
         Open MIDI input port by name or index
-
         :param port_name_or_index: str, MIDI input port name or index
         :return: bool True if successful, False otherwise
         """
@@ -110,7 +108,6 @@ class MidiIOController(QObject):
     def open_output(self, port_name_or_index: str) -> bool:
         """
         Open MIDI output port by name or index
-
         :param port_name_or_index: str
         :return: bool True if successful, False otherwise
         """
@@ -119,7 +116,6 @@ class MidiIOController(QObject):
     def open_input_port(self, port_name_or_index: str) -> bool:
         """
         Open MIDI input port by name or index
-
         :param port_name_or_index: str
         :return: bool
         """
@@ -152,7 +148,6 @@ class MidiIOController(QObject):
     def open_output_port(self, port_name_or_index: str) -> bool:
         """
         Open MIDI output port by name or index
-
         :param port_name_or_index: str, MIDI output port name or index
         :return: bool True if successful, False otherwise
         """
@@ -191,7 +186,6 @@ class MidiIOController(QObject):
     def close_ports(self):
         """
         Close MIDI ports
-
         :return: None
         """
         if self.midi_in.is_port_open():
@@ -207,7 +201,6 @@ class MidiIOController(QObject):
     def is_input_open(self) -> bool:
         """
         Check if MIDI input port is open
-
         :return: bool
         """
         return self.midi_in.is_port_open()
@@ -224,7 +217,6 @@ class MidiIOController(QObject):
     def open_ports(self, in_port: str, out_port: str) -> bool:
         """
         Open both input and output ports by name
-
         :param in_port: str, Input port name or None
         :param out_port: str, Output port name or None
         :return: bool

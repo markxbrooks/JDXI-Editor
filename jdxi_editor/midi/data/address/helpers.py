@@ -19,9 +19,8 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-def apply_address_offset(
-    base_address: RolandSysExAddress, param: AddressParameter
-) -> RolandSysExAddress:
+def apply_address_offset(base_address: RolandSysExAddress,
+                         param: AddressParameter) -> RolandSysExAddress:
     """
     Applies the offset of a parameter to a base address.
     :param base_address: RolandSysExAddress
@@ -44,9 +43,8 @@ def address_to_hex_string(address: Tuple[int, int, int, int]) -> str:
     return " ".join(f"{b:02X}" for b in address)
 
 
-def parse_sysex_address_json(
-    address: Tuple[int, int, int, int], base_classes: Tuple[Type[Any], ...]
-) -> Dict[str, Any]:
+def parse_sysex_address_json(address: Tuple[int, int, int, int],
+                             base_classes: Tuple[Type[Any], ...]) -> Dict[str, Any]:
     """
     Parses a SysEx address into a JSON-like structure.
     :param address: Tuple[int, int, int, int]

@@ -57,10 +57,12 @@ class MIDIConnection:
 
     @property
     def midi_in(self):
+        """Get MIDI input port"""
         return self._midi_in
 
     @property
     def midi_out(self):
+        """Get MIDI output port"""
         return self._midi_out
 
     def initialize(
@@ -68,15 +70,25 @@ class MIDIConnection:
         midi_in: rtmidi.MidiIn,
         midi_out: rtmidi.MidiOut,
         main_window=Optional[QMainWindow],
-    ):
-        """Initialize MIDI connections"""
+    ) -> None:
+        """
+        Initialize MIDI connection with input and output ports
+        :param midi_in: rtmidi.MidiIn
+        :param midi_out: rtmidi.MidiOut
+        :param main_window: Optional[QMainWindow] for UI interaction
+        :return: None
+        """
         self._midi_in = midi_in
         self._midi_out = midi_out
         self._main_window = main_window
         log.message("MIDI Connection singleton initialized")
 
-    def send_message(self, message: Iterable[int]):
-        """Send MIDI message and trigger indicator"""
+    def send_message(self, message: Iterable[int]) -> None:
+        """
+        Send MIDI message and trigger indicator
+        :param message: Iterable[int], MIDI message to send
+        :return: None
+        """
         try:
             if self._midi_out:
                 self._midi_out.send_message(message)
@@ -92,7 +104,7 @@ class MIDIConnection:
         except Exception as ex:
             log.error(f"Error sending MIDI message: {str(ex)}")
 
-    def identify_device(self) -> bool:
+    def identify_device(self) -> None:
         """Send Identity Request and verify response"""
         request = IdentityRequestMessage()
         self.send_message(request)
