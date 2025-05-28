@@ -12,11 +12,11 @@ log.message(f"Parsed Data: {parsed_data}")
 """
 
 import json
-import os.path
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.project import __package_name__
 
 
 class JDXiJsonSysexParser:
@@ -26,36 +26,37 @@ class JDXiJsonSysexParser:
         """
         :param json_sysex_data: Optional[str] JSON Sysex data
         """
-        if json_sysex_data:
-            self.sysex_data_json = json_sysex_data
+        self.sysex_data_json = json_sysex_data
+        self.log_folder = Path.home() / f".{__package_name__}" / "logs"
+        self.log_folder.mkdir(parents=True, exist_ok=True)  # Safe even if it exists
 
-        self.log_folder = Path.home() / ".jdxi_editor" / "logs"
-        if not os.path.exists(self.log_folder):
-            self.log_folder.mkdir(parents=True, exist_ok=True)
-
-    def from_json(self, json_sysex_data: bytes) -> None:
+    def from_json(self, json_sysex_data: str) -> None:
         """
         from json
-        :param json_sysex_data: bytes
+        :param json_sysex_data: str
         :return: None
         """
         self.sysex_data_json = json_sysex_data
 
-    def parse(self) -> Optional[Any]:
+    def parse(self) -> Optional[Dict[str, Any]]:
         """
-        parse
-        :return: Optional[str, None] JSON dict on success, None otherwise
+        Parse the stored JSON string into a dictionary.
+        :return: Dictionary representation of SysEx data, or None if parsing fails.
         """
+        if self.sysex_data_json is None:
+            log.error("No SysEx JSON data provided.")
+            return None
+
         try:
-            sysex_dict = json.loads(self.sysex_data_json)
+            sysex_dict: Dict[str, Any] = json.loads(self.sysex_data_json)
             return sysex_dict
         except json.JSONDecodeError as ex:
             log.error(f"Invalid JSON format: {ex}")
             return None
 
-    def parse_json(self, json_sysex_data: str) -> dict:
+    def parse_json(self, json_sysex_data: str) -> Optional[Dict[str, Any]]:
         """
-        parse bytes
+        parse json
         :param json_sysex_data: str
         :return: dict
         """

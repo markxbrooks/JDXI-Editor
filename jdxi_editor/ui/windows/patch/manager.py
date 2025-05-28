@@ -45,7 +45,7 @@ from jdxi_editor.midi.sysex.json_composer import JDXiJSONComposer
 from jdxi_editor.ui.editors import ProgramEditor
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
-from jdxi_editor.ui.io.controls import save_all_controls_to_single_file
+from jdxi_editor.project import __package_name__
 
 
 def zip_directory(folder_path, zip_path):
@@ -142,7 +142,7 @@ class PatchManager(QMainWindow):
             random_int = random.randint(0, 10_000)
             today = datetime.today()
             date_str = today.strftime("%Y-%m-%d")
-            temp_folder = Path.home() / ".jdxi_editor" / "temp" / f"{date_str}_{random_int}/"
+            temp_folder = Path.home() / f".{__package_name__}" / "temp" / f"{date_str}_{random_int}/"
             if not temp_folder.exists():
                 temp_folder.mkdir(parents=True, exist_ok=True)
             if self.save_mode:
