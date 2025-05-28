@@ -71,6 +71,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from jdxi_editor.log.logger import Logger as log
+from jdxi_editor.midi.data.address.address import AddressOffsetProgramLMB
 from jdxi_editor.midi.data.drum.data import JDXiMapPartialDrum
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.drum.partial import AddressParameterDrumPartial
@@ -139,12 +140,12 @@ class DrumCommonEditor(SynthEditor):
         self._create_instrument_image_group()
         upper_layout.addWidget(self.instrument_image_group)
         self.update_instrument_image()
-
         common_group = DrumCommonSection(
-            self.controls,
-            self._create_parameter_combo_box,
-            self._create_parameter_slider,
-            self.midi_helper,
+            controls=self.controls,
+            create_parameter_combo_box=self._create_parameter_combo_box,
+            create_parameter_slider=self._create_parameter_slider,
+            midi_helper=self.midi_helper,
+            address=self.address
         )
         common_group.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
         upper_layout.addWidget(common_group)
