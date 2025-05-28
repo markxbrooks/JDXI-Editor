@@ -21,6 +21,7 @@ from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.midi.sysex.parser.utils import parse_sysex
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.message.jdxi import JD_XI_HEADER_LIST
+from jdxi_editor.project import __package_name__
 
 
 class JDXiSysExParser:
@@ -30,7 +31,7 @@ class JDXiSysExParser:
         if sysex_data:
             self.sysex_data = sysex_data
         self.sysex_dict = {}
-        self.log_folder = Path.home() / ".jdxi_editor" / "logs"
+        self.log_folder = Path.home() / f".{__package_name__}" / "logs"
         if not os.path.exists(self.log_folder):
             self.log_folder.mkdir(parents=True, exist_ok=True)
 
