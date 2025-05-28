@@ -9,12 +9,24 @@ from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.sysex.offset import JDXiSysExOffset
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
+from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalCommon, AddressParameterDigitalModify
 from jdxi_editor.midi.data.parameter.drum.common import AddressParameterDrumCommon
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.data.address.address import RolandSysExAddress, JD_XI_HEADER_LIST, AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.sysex.validation import validate_raw_sysex_message, validate_raw_midi_message
 from jdxi_editor.midi.utils.byte import split_16bit_value_to_nibbles
+
+
+def apply_lmb_offset(address: RolandSysExAddress, param: AddressParameter) -> RolandSysExAddress:
+    """
+    Set the LMB (Logical Memory Block) of the address depending on the parameter type.
+    """
+    if isinstance(param, (AddressParameterDigitalCommon, AddressParameterDrumCommon)):
+        address.lmb = AddressOffsetSuperNATURALLMB.COMMON
+    elif isinstance(param, AddressParameterDigitalModify):
+        address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
+    return address
 
 
 class JDXiSysExComposer:
@@ -25,6 +37,62 @@ class JDXiSysExComposer:
         self.sysex_message = None
 
     def compose_message(
+            self,
+            address: RolandSysExAddress,
+            param: AddressParameter,
+            value: int,
+            size: int = 1,
+    ) -> Optional[RolandSysEx]:
+        """
+        Compose a SysEx message for the given address and parameter.
+
+        :param address: RolandSysExAddress
+        :param param: AddressParameter
+        :param value: Parameter display value
+        :param size: Optional, number of bytes (1 or 4)
+        :return: RolandSysEx object or None on failure
+        """
+        self.address = address  # store original for potential debugging
+
+        try:
+            # Adjust address for the parameter
+            adjusted_address = apply_address_offset(address, param)
+            adjusted_address = apply_lmb_offset(adjusted_address, param)
+
+            # Convert value to MIDI encoding if supported
+            midi_value = (
+                param.convert_to_midi(value)
+                if hasattr(param, "convert_to_midi")
+                else param.validate_value(value)
+            )
+
+            # Determine size (1 byte or 4 nibble-based)
+            size = getattr(param, "get_nibbled_size", lambda: 1)()
+            if size == 1:
+                data_bytes = midi_value
+            elif size == 4:
+                data_bytes = split_16bit_value_to_nibbles(midi_value)
+            else:
+                log.message(f"Unsupported parameter size: {size}")
+                return None
+
+            # Build and store the SysEx message
+            sysex_message = RolandSysEx(sysex_address=adjusted_address, value=data_bytes)
+            self.sysex_message = sysex_message
+
+            # Validate the message
+            if not self._verify_header():
+                raise ValueError("Invalid JD-Xi header")
+            if not self._is_valid_sysex():
+                raise ValueError("Invalid JD-Xi SysEx status byte(s)")
+
+            return self.sysex_message
+
+        except (ValueError, TypeError, OSError, IOError) as ex:
+            log.error(f"Error sending message: {ex}")
+            return None
+
+    def compose_message_old(
         self,
         address: RolandSysExAddress,
         param: AddressParameter,
@@ -42,6 +110,10 @@ class JDXiSysExComposer:
         try:
             address = apply_address_offset(self.address, param)
             # Convert display value to MIDI value if needed
+            if isinstance(param, AddressParameterDigitalCommon):
+                self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
+            if isinstance(param, AddressParameterDigitalModify):
+                self.address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
             if isinstance(param, AddressParameterDrumCommon):
                 self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
             if hasattr(param, "convert_to_midi"):

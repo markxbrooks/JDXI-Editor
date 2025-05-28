@@ -122,10 +122,6 @@ class SynthBase(QWidget):
         :return: bool True on success, False otherwise
         """
         try:
-            if isinstance(param, AddressParameterDigitalCommon):
-                self.address.lmb = AddressOffsetSuperNATURALLMB.COMMON
-            if isinstance(param, AddressParameterDigitalModify):
-                self.address.lmb = AddressOffsetSuperNATURALLMB.MODIFY
             sysex_message = self.sysex_composer.compose_message(
                 address=self.address,
                 param=param,
