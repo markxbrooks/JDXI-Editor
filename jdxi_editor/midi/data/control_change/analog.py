@@ -28,3 +28,29 @@ class AnalogControlChange(ControlChange):
             shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]
         return str(value)
+        
+        
+from dataclasses import dataclass
+
+@dataclass
+class RPNValue:
+    _values: tuple
+    _range: tuple
+
+    @property
+    def values(self):
+        """Access the MSB and LSB values."""
+        return self._values
+
+    @property
+    def range(self):
+        """Access the valid value range (min, max)."""
+        return self._range
+
+    # Predefined constants for specific RPN values
+    ENVELOPE = RPNValue((0, 124), (0, 127))
+    LFO_SHAPE = RPNValue((0, 3), (0, 5))
+    LFO_PITCH_DEPTH = RPNValue((0, 15), (0, 127))
+    LFO_FILTER_DEPTH = RPNValue((0, 18), (0, 127))
+    LFO_AMP_DEPTH = RPNValue((0, 21), (0, 127))
+    PULSE_WIDTH = RPNValue((0, 37), (0, 127))
