@@ -16,18 +16,20 @@ class MidiConstant:
     ZERO_BYTE = 0x00
     VALUE_ON = 0x01
     VALUE_OFF = 0x00
-    VALUE_MAX_SEVEN_BIT = 0x7F  # 7-bit maximum value (standard MIDI data byte)
-    VALUE_MAX_EIGHT_BIT = 0xFF  # 8-bit max for comparison
-    
-    VALUE_MAX_FOURTEEN_BIT = 0x3FFF
-    VALUE_MAX_THIRTY_TWO_BIT = 0xFFFFFFFF
+    VALUE_MAX_FOUR_BIT = 0x0F  # 15, 4-bit max
+    VALUE_MAX_SEVEN_BIT = 0x7F  # 127, 7-bit max (standard MIDI data byte)
+    VALUE_MAX_EIGHT_BIT = 0xFF  # 255
+    VALUE_MAX_FOURTEEN_BIT = 0x3FFF  # 16383
+    VALUE_MAX_THIRTY_TWO_BIT = 0xFFFFFFFF  # 4294967295
     
     # Channel voice messages (base values)
     NOTE_OFF = 0x80
     NOTE_ON = 0x90
     POLY_AFTERTOUCH = 0xA0
-    CONTROL_CHANGE = 0xB0
-    PROGRAM_CHANGE = 0xC0
+    CONTROL_CHANGE = 0xB0 # Control Change (0xB0)
+    CONTROL_CHANGE_MAX = 0xBF  # Maximum Control Change value (0xBF)
+    PROGRAM_CHANGE = 0xC0 # Program Change (0xC0)
+    PROGRAM_CHANGE_MAX = 0xCF  # Maximum Program Change value (0xCF)
     CHANNEL_AFTERTOUCH = 0xD0
     PITCH_BEND = 0xE0
     BANK_SELECT_MSB = 0x00

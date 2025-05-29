@@ -45,6 +45,9 @@ Dependencies:
 from dataclasses import dataclass
 from typing import List, Optional
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
+from jdxi_editor.jdxi.sysex.offset import JDXIIdentityOffset
+
 
 @dataclass
 class DeviceInfo:
@@ -91,20 +94,25 @@ class DeviceInfo:
         """
         try:
             if (
-                len(data) < 14
-                or data[0] != 0xF0  # SysEx Start
-                or data[1] != 0x7E  # Universal Non-Realtime
-                or data[3] != 0x06  # General Info
-                or data[4] != 0x02  # Identity Reply
+                    len(data) < JDXIIdentityOffset.expected_length()  # Minimum length check
+                or data[JDXIIdentityOffset.SYSEX_START] != MidiConstant.START_OF_SYSEX  # SysEx Start
+                or data[JDXIIdentityOffset.ID_NUMBER] != JDXiConstant.ID_NUMBER # 0x7E  # Universal Non-Realtime
+                or data[JDXIIdentityOffset.SUB_ID_1_GENERAL_INFORMATION] != JDXiConstant.SUB_ID_1_GENERAL_INFORMATION  # 0x06 General Info
+                or data[JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY] != JDXiConstant.SUB_ID_2_IDENTITY_REPLY  # 0x02 Identity Reply
             ):
                 return None  # Invalid Identity Reply
 
             return cls(
-                device_id=data[2],
-                manufacturer=[data[5]],  # Manufacturer ID (Roland = 0x41)
-                family=[data[6], data[7]],  # Family Code (JD-Xi = [0x0E, 0x03])
-                model=[data[8], data[9]],  # Model Number
-                version=[data[10], data[11], data[12], data[13]],  # Firmware Version
+                device_id=data[JDXIIdentityOffset.DEVICE_ID],
+                manufacturer=[data[JDXIIdentityOffset.ROLAND_ID]],  # Manufacturer ID (Roland = 0x41)
+                family=[data[JDXIIdentityOffset.DEVICE_FAMILY_CODE_1],
+                        data[JDXIIdentityOffset.DEVICE_FAMILY_CODE_2]],  # Family Code (JD-Xi = [0x0E, 0x03])
+                model=[data[JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_1],
+                       data[JDXIIdentityOffset.DEVICE_FAMILY_NUMBER_CODE_2]],  # Model Number
+                version=[data[JDXIIdentityOffset.SOFTWARE_REVISION_1],
+                         data[JDXIIdentityOffset.SOFTWARE_REVISION_2],
+                         data[JDXIIdentityOffset.SOFTWARE_REVISION_3],
+                         data[JDXIIdentityOffset.SOFTWARE_REVISION_4]],  # Firmware Version
             )
         except Exception:
             return None

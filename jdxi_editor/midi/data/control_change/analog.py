@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Tuple
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 
@@ -36,10 +37,10 @@ class RPNValue:
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
         return [
-            (0xB0, 101, msb),    # RPN MSB
-            (0xB0, 100, lsb),    # RPN LSB
-            (0xB0, 6, value >> 7),   # Data Entry MSB
-            (0xB0, 38, value & 0x7F)  # Data Entry LSB
+            (MidiConstant.CONTROL_CHANGE, 101, msb),    # RPN MSB
+            (MidiConstant.CONTROL_CHANGE, 100, lsb),    # RPN LSB
+            (MidiConstant.CONTROL_CHANGE, 6, value >> 7),   # Data Entry MSB
+            (MidiConstant.CONTROL_CHANGE, 38, value & 0x7F)  # Data Entry LSB
         ]
 
 
@@ -75,10 +76,10 @@ class PartialRPNValue:
         msb, lsb = self.msb_lsb
         value = max(min(value, self.value_range[1]), self.value_range[0])
         return [
-            (0xB0, 101, msb),    # RPN MSB
-            (0xB0, 100, lsb),    # RPN LSB
-            (0xB0, 6, value >> 7),   # Data Entry MSB
-            (0xB0, 38, value & 0x7F)  # Data Entry LSB
+            (MidiConstant.CONTROL_CHANGE, 101, msb),    # RPN MSB
+            (MidiConstant.CONTROL_CHANGE, 100, lsb),    # RPN LSB
+            (MidiConstant.CONTROL_CHANGE, 6, value >> 7),   # Data Entry MSB
+            (MidiConstant.CONTROL_CHANGE, 38, value & 0x7F)  # Data Entry LSB
         ]
 
 

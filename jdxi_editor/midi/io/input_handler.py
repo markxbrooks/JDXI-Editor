@@ -188,7 +188,7 @@ class MidiInHandler(MidiIOController):
         try:
             if not (message.type == "sysex" and len(message.data) > 6):
                 return
-            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2 - 1  # account for lack of status byte
+            mido_sub_id_byte_offset = JDXIIdentityOffset.SUB_ID_2_IDENTITY_REPLY - 1  # account for lack of status byte
             if message.data[mido_sub_id_byte_offset] == JDXiConstant.SUB_ID_2_IDENTITY_REPLY:
                 handle_identity_request(message)
                 return
