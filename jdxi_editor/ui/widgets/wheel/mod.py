@@ -28,7 +28,7 @@ class ModWheel(WheelWidget):
         self.value = max(0.0, min(1.0, value))  # Clamp between 0 and 1
         cc_value = int(self.value * 127)
 
-        status = 0xB0 | (self.channel & 0x0F)
+        status = MidiConstant.CONTROL_CHANGE| (self.channel & 0x0F)
         cc_number = 1  # Modulation wheel
 
         if self.midi_helper.midi_out:
