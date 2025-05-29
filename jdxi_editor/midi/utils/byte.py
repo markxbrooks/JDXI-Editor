@@ -51,7 +51,7 @@ def split_32bit_value_to_nibbles(value: int) -> list[int]:
     :param value: int
     :return: list[int]
     """
-    if value < 0 or value > 0xFFFFFFFF:
+    if value < 0 or value > MidiConstant.VALUE_MAX_THIRTY_TWO_BIT: # 0xFFFFFFFF:
         raise ValueError("Value must be a 32-bit unsigned integer (0–4294967295).")
 
     return [(value >> (4 * (7 - i))) & BitMask.LOW_4_BITS for i in range(8)]  # 8 nibbles, MSB first
