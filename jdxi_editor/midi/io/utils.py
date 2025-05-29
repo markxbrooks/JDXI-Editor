@@ -33,7 +33,7 @@ def increment_if_lsb_exceeds_7bit(msb: int, lsb: int) -> int:
     :param lsb: Least significant byte (int)
     :return: Adjusted MSB (int)
     """
-    if not (0 <= msb <= 255):
+    if not (0 <= msb <= MidiConstant.VALUE_MAX_EIGHT_BIT):  # 255
         raise ValueError("MSB must be an 8-bit value (0–255).")
 
     if lsb > BitMask.LOW_7_BITS:  # 127
@@ -51,7 +51,7 @@ def nibble_data(data: list[int]) -> list[int]:
     """
     nibbled_data = []
     for byte in data:
-        if byte > 127:
+        if byte > MidiConstant.VALUE_MAX_SEVEN_BIT:  # 127
             high_nibble = (byte >> 4) & BitMask.LOW_4_BITS
             low_nibble = byte & BitMask.LOW_4_BITS
             # Combine nibbles into valid data bytes (0-127)
@@ -89,7 +89,7 @@ def convert_to_mido_message(
     # SysEx
     try:
         if status_byte == MidiConstant.START_OF_SYSEX and message_content[JDXiSysExOffset.SYSEX_END] == MidiConstant.END_OF_SYSEX:
-            sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.MIDI_CHANNEL:JDXIProgramChangeOffset.END])
+            sysex_data = nibble_data(message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER:JDXIProgramChangeOffset.END])
             if len(sysex_data) > 128:
                 nibbles = [sysex_data[i : i + 4] for i in range(0, len(sysex_data), 4)]
                 return [mido.Message("sysex", data=nibble) for nibble in nibbles]
@@ -98,7 +98,7 @@ def convert_to_mido_message(
         log.error(f"Error {ex} occurred")
     # Program Change
     try:
-        if 0xC0 <= status_byte <= 0xCF and len(message_content) >= 2:
+        if MidiConstant.PROGRAM_CHANGE <= status_byte <= MidiConstant.PROGRAM_CHANGE_MAX and len(message_content) >= 2:
             channel = status_byte & BitMask.LOW_4_BITS
             program = message_content[JDXIProgramChangeOffset.PROGRAM_NUMBER]
             return mido.Message("program_change", channel=channel, program=program)
@@ -106,7 +106,7 @@ def convert_to_mido_message(
         log.error(f"Error {ex} occurred")
     # Control Change
     try:
-        if 0xB0 <= status_byte <= 0xBF and len(message_content) >= 3:
+        if MidiConstant.CONTROL_CHANGE <= status_byte <= MidiConstant.CONTROL_CHANGE_MAX and len(message_content) >= 3:
             channel = status_byte & BitMask.LOW_4_BITS
             control = message_content[JDXIControlChangeOffset.CONTROL]
             value = message_content[JDXIControlChangeOffset.VALUE]
