@@ -12,8 +12,8 @@ It’s designed to implement as many features as possible from Roland’s MIDI i
 
 ### 🖥️ Current App Preview
 
-<a href="./resources/main_window.gif" rel="Current view of the Roland JD-Xi Editor App">
-  <img src="./resources/main_window_high.gif" alt="Roland JD-Xi Main Editor Window" />
+<a href="./resources/main_window_0.6.gif" rel="Current view of the Roland JD-Xi Editor App">
+  <img src="./resources/main_window_0.6.gif" alt="Roland JD-Xi Main Editor Window" />
 </a>
 
 ---
@@ -58,6 +58,12 @@ $ python -m jdxi_editor.main
   <img src="./resources/midi_player_600.png" alt="Midi File Player" />
 </a>
 
+&nbsp;
+
+**Pattern Sequencer**  
+<a href="./resources/pattern.png">
+  <img src="./resources/pattern_600.png" alt="Pattern Sequencer" />
+</a>
 
 &nbsp;
 
