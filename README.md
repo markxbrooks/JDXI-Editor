@@ -43,8 +43,12 @@ $ python -m jdxi_editor.main
 ### 🎹 UI Previews
 
 **Digital & Analog Synths**  
-<a href="./resources/digital_analog_synths.png">
-  <img src="./resources/digital_analog_synths_600.png" alt="Digital & Analog Synths" />
+<a href="./resources/analog_synth.png">
+  <img src="./resources/analog_synth_600.png" alt="Analog Synth" />
+</a>
+
+<a href="./resources/digital_synth.png">
+  <img src="./resources/digital_synth_600.png" alt="Digital Synths" />
 </a>
 
 &nbsp;
