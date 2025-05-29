@@ -66,7 +66,7 @@ def join_nibbles_to_32bit(nibbles: list[int]) -> int:
     if len(nibbles) != 8:
         raise ValueError("Exactly 8 nibbles are required to form a 32-bit integer.")
 
-    if any(n < 0 or n > 0x0F for n in nibbles):
+    if any(n < 0 or n > BitMask.LOW_4_BITS for n in nibbles):
         raise ValueError("Each nibble must be a 4-bit value (0–15).")
 
     value = 0
