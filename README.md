@@ -49,6 +49,14 @@ $ python -m jdxi_editor.main
 
 &nbsp;
 
+**Midi File Player**  
+<a href="./resources/midi_player.png">
+  <img src="./resources/midi_player_600.png" alt="Midi File Player" />
+</a>
+
+
+&nbsp;
+
 **Effects and Arpeggiator**  
 <a href="./resources/effects.png">
   <img src="./resources/effects_600.png" alt="Effects and Arpeggiator" />

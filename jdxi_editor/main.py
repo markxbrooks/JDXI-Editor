@@ -94,13 +94,14 @@ def main():
             logging.warning(
                 f"Icon not found in any of: {[str(p) for p in icon_locations]}"
             )
-            # Create address fallback icon
-            icon = QIcon()
-            pixmap = QPixmap(128, 128)
-            pixmap.fill(QColor("#2897B7"))  # Use the app's theme color
-            icon.addPixmap(pixmap)
-            app.setWindowIcon(icon)
-            log_message("Using fallback icon")
+            # Create address fallback icon only for windows, not macOS
+            if platform.system() == "Windows":
+                icon = QIcon()
+                pixmap = QPixmap(128, 128)
+                pixmap.fill(QColor("#2897B7"))  # Use the app's theme color
+                icon.addPixmap(pixmap)
+                app.setWindowIcon(icon)
+                log_message("Using fallback icon")
 
         splash = QWidget()
         splash.setWindowFlags(
