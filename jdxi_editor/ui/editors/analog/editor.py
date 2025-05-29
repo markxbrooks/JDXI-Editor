@@ -59,6 +59,7 @@ import qtawesome as qta
 
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.log.slider_parameter import log_slider_parameters
+from jdxi_editor.midi.data.control_change.analog import AnalogControlChange, DigitalRPN_Partial1, AnalogRPN
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.jdxi.synth.type import JDXiSynth
@@ -185,6 +186,7 @@ class AnalogSynthEditor(SynthEditor):
 
         self._create_instrument_image_group()
         upper_layout.addWidget(self.instrument_image_group)
+        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         self.update_instrument_image()
 
         # Tab sections
@@ -266,19 +268,19 @@ class AnalogSynthEditor(SynthEditor):
     def _init_parameter_mappings(self):
         """Initialize MIDI parameter mappings."""
         self.cc_parameters = {
-            "Cutoff": 102,
-            "Resonance": 105,
-            "Level": 117,
-            "LFO Rate": 16,
+            "Cutoff": AnalogControlChange.CUTOFF,
+            "Resonance": AnalogControlChange.RESONANCE,
+            "Level": AnalogControlChange.LEVEL,
+            "LFO Rate": AnalogControlChange.LFO_RATE,
         }
 
         self.nrpn_parameters = {
-            "Envelope": (0, 124),
-            "LFO Shape": (0, 3),
-            "LFO Pitch Depth": (0, 15),
-            "LFO Filter Depth": (0, 18),
-            "LFO Amp Depth": (0, 21),
-            "Pulse Width": (0, 37),
+            "Envelope": AnalogRPN.ENVELOPE.value.msb_lsb,  # (0, 124),
+            "LFO Shape": AnalogRPN.LFO_SHAPE.value.msb_lsb,  # (0, 3),
+            "LFO Pitch Depth": AnalogRPN.LFO_PITCH_DEPTH.value.msb_lsb,  # (0, 15),
+            "LFO Filter Depth": AnalogRPN.LFO_FILTER_DEPTH.value.msb_lsb,  # (0, 18),
+            "LFO Amp Depth": AnalogRPN.LFO_AMP_DEPTH.value.msb_lsb,  # (0, 21),
+            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb   # (0, 37),
         }
 
         # Reverse lookup map

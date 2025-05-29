@@ -87,6 +87,7 @@ class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
+    INSTRUMENT_IMAGE_WIDTH = 350
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # 1A1A1A"
     BACKGROUND_PRESSED = "#666666"
@@ -403,6 +404,96 @@ class JDXiStyle:
             border-radius: 10px;
         }
         """
+
+    SLIDER_VERTICAL = f"""
+        /* Groove (Track) */
+        QSlider::groove:vertical {{
+            font-family: {FONT_FAMILY};
+            background: #111; /* Dark background */
+            width: 6px;
+            border-radius: 3px;
+        }}
+
+        /* Handle (Knob) */
+        QSlider::handle:vertical {{
+            background: black;
+            border: 2px solid #ff1a1a; /* Neon red border */
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -8px;
+            margin-bottom: 2px;
+            margin-top: 1px;
+            border-radius: 5px;
+        }}
+        /* Handle (Knob) */
+        QSlider::handle:vertical:disabled {{
+            background: black;
+            border: 2px solid #333333; /* grey border */
+            width: 10px;  /* More rectangular */
+            height: 10px;  
+            margin: -10px;
+            border-radius: 5px;
+        }}
+        /* greyed out groove */
+        QSlider::sub-page:vertical:disabled {{
+            background: #333333;
+            border-radius: 3px;
+        }}
+
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical {{
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }}
+        /* Glowing effect when moving */
+        QSlider::sub-page:vertical:disabled:hover {{
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                         stop:0 #660000, stop:1 #ff1a1a);
+            border-radius: 3px;
+        }}
+
+        /* Unfilled portion */
+        QSlider::add-page:vertical {{
+            font-family: {FONT_FAMILY};
+            background: #222;
+            border-radius: 3px;
+        }}
+
+        /* Tick Marks (Small dashes on both sides) */
+        QSlider::tick-mark {{
+            background: #ff1a1a;
+            width: 4px;
+            height: 2px;
+            border-radius: 1px;
+            margin-left: -8px;
+            margin-right: 8px;
+        }}
+        QSlider::horizontal {{
+            margin-left: 6px;
+            margin-right: 6x;
+        }}
+
+        /* Handle Hover Effect */
+        QSlider::handle:vertical:hover {{
+            border: 2px solid #ff3333;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+             stop:0 #660000, stop:1 #ff1a1a);
+        }}
+        /* Spin Box */
+        QSpinBox, QDoubleSpinBox {{
+            background-color: #222;
+            border: 1px solid #ff1a1a;
+            border-radius: 3px;
+            padding: 1px;
+            margin: -2px;
+            color: #ff1a1a;
+        }}
+        /* QLabels */
+        QLabel {{
+            color: "{FONT_RED}";
+        }}
+    """
 
     SPLASH_SCREEN = generate_editor_style(
         accent=ACCENT,
