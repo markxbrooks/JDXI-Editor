@@ -1,4 +1,9 @@
 """Analog Control Change"""
+
+from dataclasses import dataclass
+from enum import Enum
+from typing import Tuple
+
 from jdxi_editor.midi.data.control_change.base import ControlChange
 
 
@@ -6,20 +11,10 @@ class AnalogControlChange(ControlChange):
     """Analog synth CC parameters"""
 
     # Direct CC parameters
-    CUTOFF_CC = 102  # Cutoff (0-127)
-    RESONANCE_CC = 105  # Resonance (0-127)
-    LEVEL_CC = 117  # Level (0-127)
-    LFO_RATE_CC = 16  # LFO Rate (0-127)
-
-    # NRPN parameters (MSB=0)
-    NRPN_ENV = 124  # Envelope (0-127)
-    NRPN_LFO_SHAPE = 3  # LFO Shape (0-5)
-    NRPN_LFO_PITCH = 15  # LFO Pitch Depth (0-127)
-    NRPN_LFO_FILTER = 18  # LFO Filter Depth (0-127)
-    NRPN_LFO_AMP = 21  # LFO Amp Depth (0-127)
-    NRPN_PW = 37  # Pulse Width (0-127)
-
-    KEY_HOLD = 64
+    CUTOFF = 102  # Cutoff (0-127)
+    RESONANCE = 105  # Resonance (0-127)
+    LEVEL = 117  # Level (0-127)
+    LFO_RATE = 16  # LFO Rate (0-127)
 
     @staticmethod
     def get_display_value(param: int, value: int) -> str:
@@ -28,29 +23,97 @@ class AnalogControlChange(ControlChange):
             shapes = ["TRI", "SIN", "SAW", "SQR", "S&H", "RND"]
             return shapes[value]
         return str(value)
-        
-        
-from dataclasses import dataclass
 
-@dataclass
+
+@dataclass(frozen=True)
 class RPNValue:
-    _values: tuple
-    _range: tuple
+    """Represents a MIDI RPN value with its MSB, LSB, and value range."""
+    msb_lsb: Tuple[int, int]
+    value_range: Tuple[int, int]
 
-    @property
-    def values(self):
-        """Access the MSB and LSB values."""
-        return self._values
+    def midi_bytes(self, value: int):
+        """Generate CC messages for this RPN and a given value."""
+        msb, lsb = self.msb_lsb
+        value = max(min(value, self.value_range[1]), self.value_range[0])
+        return [
+            (0xB0, 101, msb),    # RPN MSB
+            (0xB0, 100, lsb),    # RPN LSB
+            (0xB0, 6, value >> 7),   # Data Entry MSB
+            (0xB0, 38, value & 0x7F)  # Data Entry LSB
+        ]
 
-    @property
-    def range(self):
-        """Access the valid value range (min, max)."""
-        return self._range
 
-    # Predefined constants for specific RPN values
+class AnalogRPN(Enum):
+    """Analog synth RPN parameters with their MSB, LSB, and value range."""
     ENVELOPE = RPNValue((0, 124), (0, 127))
     LFO_SHAPE = RPNValue((0, 3), (0, 5))
     LFO_PITCH_DEPTH = RPNValue((0, 15), (0, 127))
     LFO_FILTER_DEPTH = RPNValue((0, 18), (0, 127))
     LFO_AMP_DEPTH = RPNValue((0, 21), (0, 127))
     PULSE_WIDTH = RPNValue((0, 37), (0, 127))
+
+
+@dataclass(frozen=True)
+class PartialRPNValue:
+    """Represents a MIDI RPN value with base MSB/LSB, value range, and partial."""
+    base_msb_lsb: Tuple[int, int]
+    value_range: Tuple[int, int]
+    partial: int
+
+    @property
+    def msb_lsb(self) -> Tuple[int, int]:
+        """Return the dynamically adjusted MSB/LSB based on the partial number."""
+        msb, base_lsb = self.base_msb_lsb
+        return msb, base_lsb + (self.partial - 1)
+
+    def __post_init__(self):
+        if not (1 <= self.partial <= 3):
+            raise ValueError("Partial must be between 1 and 3.")
+
+    def midi_bytes(self, value: int):
+        """Generate CC messages for this RPN and a given value."""
+        msb, lsb = self.msb_lsb
+        value = max(min(value, self.value_range[1]), self.value_range[0])
+        return [
+            (0xB0, 101, msb),    # RPN MSB
+            (0xB0, 100, lsb),    # RPN LSB
+            (0xB0, 6, value >> 7),   # Data Entry MSB
+            (0xB0, 38, value & 0x7F)  # Data Entry LSB
+        ]
+
+
+@dataclass(frozen=True)
+class PartialRPNValue:
+    base_msb_lsb: Tuple[int, int]
+    value_range: Tuple[int, int]
+    partial: int
+
+    @property
+    def msb_lsb(self) -> Tuple[int, int]:
+        msb, base_lsb = self.base_msb_lsb
+        return (msb, base_lsb + (self.partial - 1))
+
+
+def make_digital_rpn(partial: int):
+    class DigitalPartialRPN(Enum):
+        ENVELOPE = PartialRPNValue((0, 124), (0, 127), partial)
+        LFO_SHAPE = PartialRPNValue((0, 3), (0, 5), partial)
+        LFO_PITCH_DEPTH = PartialRPNValue((0, 15), (0, 127), partial)
+        LFO_FILTER_DEPTH = PartialRPNValue((0, 18), (0, 127), partial)
+        LFO_AMP_DEPTH = PartialRPNValue((0, 21), (0, 127), partial)
+
+    return DigitalPartialRPN
+
+
+DigitalRPN_Partial1 = make_digital_rpn(1)
+DigitalRPN_Partial2 = make_digital_rpn(2)
+DigitalRPN_Partial3 = make_digital_rpn(3)
+
+
+# Not using drums (26 Partials) thankfully :-)
+
+if __name__ == "__main__":
+    # Example usage
+    print(AnalogRPN.ENVELOPE.value.msb_lsb)  # (0, 124)
+    print(DigitalRPN_Partial1.ENVELOPE.value.msb_lsb)  # (0, 124)
+    print(DigitalRPN_Partial2.ENVELOPE.value.msb_lsb)  # (0, 125)

@@ -198,7 +198,7 @@ class SynthEditor(SynthBase):
         self.instrument_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         instrument_group_layout.addWidget(self.instrument_image_label)
         self.instrument_image_group.setStyleSheet(JDXiStyle.INSTRUMENT_IMAGE_LABEL)
-        self.instrument_image_group.setMinimumWidth(350)
+        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
 
     def _create_instrument_preset_group(self, synth_type: str = "Analog") -> QGroupBox:
         """

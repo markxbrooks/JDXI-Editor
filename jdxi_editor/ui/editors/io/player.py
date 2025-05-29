@@ -354,8 +354,31 @@ class MidiFileEditor(SynthEditor):
         self.event_index = 0
         self.position_slider.setValue(0)
         self.position_label.setText(f"0:00 / {format_time(self.duration_seconds)}")
-    
+
     def toggle_pause_playback(self):
+        """
+        Toggle pause and resume playback.
+        :return: None
+        """
+        if not self.midi_file or not self.timer:
+            return
+
+        if not self.paused:
+            # Pausing playback
+            self.paused_time = time.time()
+            self.timer.stop()
+            self.paused = True
+            self.pause_button.setText("Resume")
+        else:
+            # Resuming playback
+            if self.paused_time and self.start_time:
+                pause_duration = time.time() - self.paused_time
+                self.start_time += pause_duration  # Adjust start time
+            self.timer.start()
+            self.paused = False
+            self.pause_button.setText("Pause")
+    
+    def toggle_pause_playback_old(self):
         if not self.midi_file or not self.timer.isActive():
             return
     
@@ -369,23 +392,6 @@ class MidiFileEditor(SynthEditor):
         else:
             # Pause playback
             self.paused_time = time.time()  # Record the current time as paused_time
-            self.timer.stop()
-            self.paused = True
-            self.pause_button.setText("Resume")
-
-    def toggle_pause_playback_old(self):
-        if not self.midi_file or not self.timer.isActive():
-            return
-
-        if self.paused:
-            # Resume
-            self.start_time = time.time() - self.paused_time
-            self.timer.start(10)
-            self.paused = False
-            self.pause_button.setText("Pause")
-        else:
-            # Pause
-            self.paused_time = time.time() - self.start_time
             self.timer.stop()
             self.paused = True
             self.pause_button.setText("Resume")

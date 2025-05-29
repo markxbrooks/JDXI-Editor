@@ -138,8 +138,18 @@ class DrumCommonEditor(SynthEditor):
         )
         upper_layout.addWidget(instrument_preset_group)
         self._create_instrument_image_group()
+        self.address.lmb = AddressOffsetProgramLMB.COMMON
+        kit_level_slider = self._create_parameter_slider(
+            AddressParameterDrumCommon.KIT_LEVEL, "Kit Level", vertical=True
+        )
+        kit_level_slider.setStyleSheet(JDXiStyle.SLIDER_VERTICAL)
+        upper_layout.addWidget(kit_level_slider)
         upper_layout.addWidget(self.instrument_image_group)
+        self.instrument_image_group.setMinimumWidth(JDXiStyle.INSTRUMENT_IMAGE_WIDTH)
         self.update_instrument_image()
+
+
+        """
         common_group = DrumCommonSection(
             controls=self.controls,
             create_parameter_combo_box=self._create_parameter_combo_box,
@@ -149,6 +159,7 @@ class DrumCommonEditor(SynthEditor):
         )
         common_group.setContentsMargins(0, 0, 0, 0)  # No padding around the layout
         upper_layout.addWidget(common_group)
+        """
 
         splitter.addWidget(upper_widget)
 
