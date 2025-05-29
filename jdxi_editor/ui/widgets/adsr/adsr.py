@@ -17,6 +17,7 @@ from typing import Dict, Optional
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -32,17 +33,17 @@ class ADSR(QWidget):
     envelopeChanged = Signal(dict)
 
     def __init__(
-        self,
-        attack_param: AddressParameter,
-        decay_param: AddressParameter,
-        sustain_param: AddressParameter,
-        release_param: AddressParameter,
-        initial_param: Optional[AddressParameter] = None,
-        peak_param: Optional[AddressParameter] = None,
-        midi_helper: Optional[MidiIOHelper] = None,
-        address: Optional[RolandSysExAddress] = None,
-        controls: Dict[AddressParameter, QWidget] = None,
-        parent: Optional[QWidget] = None,
+            self,
+            attack_param: AddressParameter,
+            decay_param: AddressParameter,
+            sustain_param: AddressParameter,
+            release_param: AddressParameter,
+            initial_param: Optional[AddressParameter] = None,
+            peak_param: Optional[AddressParameter] = None,
+            midi_helper: Optional[MidiIOHelper] = None,
+            address: Optional[RolandSysExAddress] = None,
+            controls: Dict[AddressParameter, QWidget] = None,
+            parent: Optional[QWidget] = None,
     ):
         super().__init__(parent)
         self.sysex_composer = JDXiSysExComposer()
@@ -118,6 +119,16 @@ class ADSR(QWidget):
             self.sustain_control,
             self.release_control,
         ]
+        self.attack_parameter = attack_param
+        self.decay_parameter = decay_param
+        self.sustain_parameter = sustain_param
+        self.release_parameter = release_param
+        self.adsr_parameters = [
+            self.attack_parameter,
+            self.decay_parameter,
+            self.sustain_parameter,
+            self.release_parameter,
+        ]
         self.layout = QGridLayout()
         self.layout.addWidget(self.attack_control, 0, 0)
         self.layout.addWidget(self.decay_control, 0, 1)
@@ -187,7 +198,7 @@ class ADSR(QWidget):
         self.envelopeChanged.emit(self.envelope)
 
     def _create_parameter_slider(
-        self, param: AddressParameter, label: str, value: int = None
+            self, param: AddressParameter, label: str, value: int = None
     ) -> Slider:
         """
         Create address slider for address parameter with proper display conversion
@@ -240,9 +251,11 @@ class ADSR(QWidget):
         """Update envelope values from slider controls"""
         try:
             for param, slider in self.controls.items():
+                if param not in self.adsr_parameters:
+                    continue
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type in ["sustain_level", "peak_level"]:
-                    self.envelope["sustain_level"] = slider.value() / 127
+                    self.envelope["sustain_level"] = slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
                         slider.value()
@@ -255,9 +268,31 @@ class ADSR(QWidget):
         """Update slider controls from envelope values."""
         try:
             for param, slider in self.controls.items():
+                if param not in self.adsr_parameters:
+                    continue
+
+                envelope_key = param.get_envelope_param_type()
+                value = self.envelope.get(envelope_key)
+                if value is None:
+                    continue
+
+                if envelope_key == "sustain_level":
+                    slider.setValue(int(max(0.0, min(1.0, value)) * MidiConstant.VALUE_MAX_SEVEN_BIT))  # 127
+                else:
+                    slider.setValue(int(ms_to_midi_value(value)))
+        except Exception as ex:
+            log.error(f"Error updating controls from envelope: {ex}")
+        self.plot.set_values(self.envelope)
+
+    def update_controls_from_envelope_old(self):
+        """Update slider controls from envelope values."""
+        try:
+            for param, slider in self.controls.items():
+                if param not in self.adsr_parameters:
+                    continue
                 envelope_param_type = param.get_envelope_param_type()
                 if envelope_param_type == "sustain_level":
-                    slider.setValue(int(self.envelope["sustain_level"] * 127))
+                    slider.setValue(int(self.envelope["sustain_level"] * MidiConstant.VALUE_MAX_SEVEN_BIT))
                 else:
                     slider.setValue(
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))

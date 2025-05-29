@@ -23,7 +23,7 @@ class Logger:
         message: str,
         exception: Optional[Exception] = None,
         level: int = logging.ERROR,
-        stacklevel: int = 2,
+        stacklevel: int = 4,
         silent: bool = False
     ) -> None:
         """
@@ -38,7 +38,7 @@ class Logger:
         message: str,
         exception: Optional[Exception] = None,
         level: int = logging.WARNING,
-        stacklevel: int = 3,
+        stacklevel: int = 4,
         silent: bool = False
     ) -> None:
         """
@@ -49,7 +49,9 @@ class Logger:
         Logger.message(message, stacklevel=stacklevel, silent=silent, level=level)
 
     @staticmethod
-    def json(data: Any, silent: bool = False) -> None:
+    def json(data: Any,
+             stacklevel: int = 3,
+             silent: bool = False) -> None:
         """
         Log a JSON object or JSON string as a single compact line.
         """
@@ -57,7 +59,9 @@ class Logger:
             try:
                 data = json.loads(data)
             except json.JSONDecodeError:
-                Logger.message("Invalid JSON string provided.", level=logging.WARNING, stacklevel=3)
+                Logger.message("Invalid JSON string provided.",
+                               level=logging.WARNING,
+                               stacklevel=stacklevel)
                 return
 
         try:
