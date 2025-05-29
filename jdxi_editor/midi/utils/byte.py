@@ -105,7 +105,7 @@ def encode_14bit_to_7bit_midi_bytes(value: int) -> list[int]:
     print(data_bytes)  # Output: [0x24, 0x34] → [36, 52]
 
     """
-    if not (0 <= value <= 0x3FFF):
+    if not (0 <= value <= MidiConstant.VALUE_MAX_FOURTEEN_BYTES: # 0x3FFF):
         raise ValueError("Value must be a 14-bit integer (0–16383)")
 
     lsb = value & BitMask.LOW_7_BITS           # Lower 7 bits
