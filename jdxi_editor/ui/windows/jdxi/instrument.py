@@ -131,29 +131,29 @@ class JDXiInstrument(JDXiUi):
                 "Vocal Effects",
                 VocalFXEditor,
                 JDXiSynth.VOCAL_FX,
-                MidiChannel.VOCAL,
+                MidiChannel.VOCAL_FX,
             ),
             "digital1": (
                 "Digital Synth 1",
                 DigitalSynthEditor,
                 JDXiSynth.DIGITAL_SYNTH_1,
-                MidiChannel.DIGITAL1,
+                MidiChannel.DIGITAL_SYNTH_1,
                 {"synth_number": 1},
             ),
             "digital2": (
                 "Digital Synth 2",
                 DigitalSynth2Editor,
                 JDXiSynth.DIGITAL_SYNTH_2,
-                MidiChannel.DIGITAL2,
+                MidiChannel.DIGITAL_SYNTH_2,
                 {"synth_number": 2},
             ),
             "analog": (
                 "Analog Synth",
                 AnalogSynthEditor,
                 JDXiSynth.ANALOG_SYNTH,
-                MidiChannel.ANALOG,
+                MidiChannel.ANALOG_SYNTH,
             ),
-            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM),
+            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM_KIT),
             "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
             "effects": ("Effects", EffectsCommonEditor, None, None),
             "pattern": ("Pattern", PatternSequenceEditor, None, None),
@@ -168,6 +168,7 @@ class JDXiInstrument(JDXiUi):
         self.init_main_editor()
         # Initialize the current preset and synth type
         self.current_synth_type = JDXiSynth.DIGITAL_SYNTH_1
+        self.channel = MidiChannel.DIGITAL_SYNTH_1
 
     def _init_preset_helpers(self):
         """Initialize preset helpers dynamically"""
@@ -175,19 +176,19 @@ class JDXiInstrument(JDXiUi):
             (
                 JDXiSynth.DIGITAL_SYNTH_1,
                 JDXiPresetToneList.DIGITAL_ENUMERATED,
-                MidiChannel.DIGITAL1,
+                MidiChannel.DIGITAL_SYNTH_1,
             ),
             (
                 JDXiSynth.DIGITAL_SYNTH_2,
                 JDXiPresetToneList.DIGITAL_ENUMERATED,
-                MidiChannel.DIGITAL2,
+                MidiChannel.DIGITAL_SYNTH_2,
             ),
             (
                 JDXiSynth.ANALOG_SYNTH,
                 JDXiPresetToneList.ANALOG_ENUMERATED,
-                MidiChannel.ANALOG,
+                MidiChannel.ANALOG_SYNTH,
             ),
-            (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM),
+            (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM_KIT),
         ]
         from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 
@@ -353,6 +354,7 @@ class JDXiInstrument(JDXiUi):
         """
         log.parameter("Selected synth:", synth_type)
         self.current_synth_type = synth_type
+        self.channel = JDXiSynth.midi_channel_number(synth_type)
         self._update_synth_button_styles()
         self.preset_helper = self.get_preset_helper_for_current_synth()
         self.preset_helper.preset_changed.connect(self.midi_helper.send_program_change)
@@ -618,29 +620,29 @@ class JDXiInstrument(JDXiUi):
                 "Vocal Effects",
                 VocalFXEditor,
                 JDXiSynth.VOCAL_FX,
-                MidiChannel.VOCAL,
+                MidiChannel.VOCAL_FX,
             ),
             "digital1": (
                 "Digital Synth 1",
                 DigitalSynthEditor,
                 JDXiSynth.DIGITAL_SYNTH_1,
-                MidiChannel.DIGITAL1,
+                MidiChannel.DIGITAL_SYNTH_1,
                 {"synth_number": 1},
             ),
             "digital2": (
                 "Digital Synth 2",
                 DigitalSynth2Editor,
                 JDXiSynth.DIGITAL_SYNTH_2,
-                MidiChannel.DIGITAL2,
+                MidiChannel.DIGITAL_SYNTH_2,
                 {"synth_number": 2},
             ),
             "analog": (
                 "Analog Synth",
                 AnalogSynthEditor,
                 JDXiSynth.ANALOG_SYNTH,
-                MidiChannel.ANALOG,
+                MidiChannel.ANALOG_SYNTH,
             ),
-            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM),
+            "drums": ("Drums", DrumCommonEditor, JDXiSynth.DRUM_KIT, MidiChannel.DRUM_KIT),
             "arpeggio": ("Arpeggiator", ArpeggioEditor, None, None),
             "effects": ("Effects", EffectsCommonEditor, None, None),
             "pattern": ("Pattern", PatternSequenceEditor, None, None),
@@ -1002,7 +1004,7 @@ class JDXiInstrument(JDXiUi):
                 # cc_list = [68]
                 for cc in cc_list:
                     self.midi_helper.send_control_change(
-                        cc, cc_value, MidiChannel.DIGITAL1
+                        cc, cc_value, MidiChannel.DIGITAL_SYNTH_1
                     )
                 log.message(f"Sent arpeggiator key hold: {'ON' if state else 'OFF'}")
         except Exception as ex:

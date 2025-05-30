@@ -147,10 +147,10 @@ class SynthEditor(SynthBase):
             self.preset_loader = JDXiPresetHelper(self.midi_helper, JDXiPresetToneList.DIGITAL_ENUMERATED)
             # Initialize preset handlers dynamically
             preset_configs = [
-                (JDXiSynth.DIGITAL_SYNTH_1, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL1),
-                (JDXiSynth.DIGITAL_SYNTH_2, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL2),
-                (JDXiSynth.ANALOG_SYNTH, JDXiPresetToneList.ANALOG_ENUMERATED, MidiChannel.ANALOG),
-                (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM),
+                (JDXiSynth.DIGITAL_SYNTH_1, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL_SYNTH_1),
+                (JDXiSynth.DIGITAL_SYNTH_2, JDXiPresetToneList.DIGITAL_ENUMERATED, MidiChannel.DIGITAL_SYNTH_2),
+                (JDXiSynth.ANALOG_SYNTH, JDXiPresetToneList.ANALOG_ENUMERATED, MidiChannel.ANALOG_SYNTH),
+                (JDXiSynth.DRUM_KIT, JDXiPresetToneList.DRUM_ENUMERATED, MidiChannel.DRUM_KIT),
             ]
             self.preset_helpers = {
                 synth_type: JDXiPresetHelper(

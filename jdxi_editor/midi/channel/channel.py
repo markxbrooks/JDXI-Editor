@@ -17,7 +17,7 @@ Usage example:
     channel = MidiChannel.DIGITAL1
     print(str(channel))  # Output: "Digital 1 (Ch.1)"
     print(channel.midi_channel_number)  # Output: 1
-    print(MidiChannel.from_midi_channel(9))  # Output: MidiChannel.DRUM
+    print(MidiChannel.from_midi_channel(9))  # Output: MidiChannel.DRUM_KIT
 
 """
 
@@ -30,21 +30,21 @@ class MidiChannel(IntEnum):
     MIDI Channel Enum
     """
 
-    DIGITAL1 = 0  # Corresponds to channel 1
-    DIGITAL2 = 1  # Corresponds to channel 2
-    ANALOG = 2  # Corresponds to channel 3
-    DRUM = 9  # Corresponds to channel 10
+    DIGITAL_SYNTH_1 = 0  # Corresponds to channel 1
+    DIGITAL_SYNTH_2 = 1  # Corresponds to channel 2
+    ANALOG_SYNTH = 2  # Corresponds to channel 3
+    DRUM_KIT = 9  # Corresponds to channel 10
     PROGRAM = 15  # Program list
-    VOCAL = 2  # Is this correct?!
+    VOCAL_FX = 6  # Is this correct?!
 
     def __str__(self):
         return {
-            self.DIGITAL1: "Digital 1 (Ch.1)",
-            self.DIGITAL2: "Digital 2 (Ch.2)",
-            self.ANALOG: "Analog (Ch.3)",
-            self.DRUM: "Drums (Ch.10)",
+            self.DIGITAL_SYNTH_1: "Digital 1 (Ch.1)",
+            self.DIGITAL_SYNTH_2: "Digital 2 (Ch.2)",
+            self.ANALOG_SYNTH: "Analog (Ch.3)",
+            self.DRUM_KIT: "Drums (Ch.10)",
             self.PROGRAM: "Programs (Ch.16)",
-            self.VOCAL: "Programs (Ch.3)",
+            self.VOCAL_FX: "Programs (Ch.3)",
         }.get(self, f"Unknown (Ch.{self.value + 1})")
 
     @property

@@ -15,18 +15,17 @@ from PySide6.QtWidgets import (
     QComboBox,
 )
 
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.digital.oscillator import DigitalOscWave
 from jdxi_editor.midi.data.parameter import AddressParameter
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
-)
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
+from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
-from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope
 
 
@@ -54,6 +53,7 @@ class DigitalOscillatorSection(QWidget):
         self.send_midi_parameter = send_midi_parameter
         self.address = address
         self.setup_ui()
+        log.parameter(f"initialization complete for", self)
 
     def setup_ui(self):
         """Setup the oscillator section UI."""
