@@ -36,7 +36,6 @@ Dependencies:
     - QIcons generated from waveform base64 data
 """
 
-import logging
 from typing import Dict, Union, Optional
 
 import qtawesome as qta
@@ -46,7 +45,6 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 
-from jdxi_editor.globals import logger
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import AddressOffsetSuperNATURALLMB
 from jdxi_editor.midi.data.parameter.digital.partial import (
@@ -111,7 +109,7 @@ class DigitalPartialEditor(PartialEditor):
             self.part_name = DIGITAL_PARTIAL_NAMES[partial_number]
             log.parameter("Partial name:", self.part_name)
         else:
-            logger.error(f"Invalid partial_num: {partial_number}. Using default value.")
+            log.error(f"Invalid partial_num: {partial_number}. Using default value.")
             self.part_name = "Unknown"  # Provide a fallback value
         # Store parameter controls for easy access
         self.controls: Dict[
@@ -188,6 +186,7 @@ class DigitalPartialEditor(PartialEditor):
         # Add container to scroll area
         main_layout.addWidget(container)
         self.updating_from_spinbox = False
+        log.parameter(f"DigitalPartialEditor initialized for",  self)
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.preset_type} partial: {self.partial_number}"
@@ -233,4 +232,4 @@ class DigitalPartialEditor(PartialEditor):
         if not self.send_midi_parameter(
             AddressParameterDigitalPartial.OSC_WAVE, waveform.value
         ):
-            logging.warning(f"Failed to set waveform to {waveform.name}")
+            log.warning(f"Failed to set waveform to {waveform.name}")

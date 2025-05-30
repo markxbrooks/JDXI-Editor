@@ -1,20 +1,20 @@
 """
 Digital Filter Section for the JDXI Editor
 """
+
 from typing import Callable
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGroupBox
 from PySide6.QtCore import Qt
 import qtawesome as qta
 
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.parameter.digital.partial import (
-    AddressParameterDigitalPartial,
-)
+from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.ui.widgets.adsr.adsr import ADSR
 
 
@@ -48,6 +48,7 @@ class DigitalFilterSection(QWidget):
         self._create_parameter_switch = create_parameter_switch
 
         self.setup_ui()
+        log.parameter(f"initialization complete for", self)
 
     def setup_ui(self):
         """Set up the UI for the filter section."""

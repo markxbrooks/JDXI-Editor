@@ -21,5 +21,5 @@ class JDXiPresetButtonData:
     type: JDXiSynth = JDXiSynth.DIGITAL_SYNTH_1  # Adjust the type as needed
     number: int = 1
     modified: int = 0
-    channel: int = MidiChannel.DIGITAL1
+    channel: int = MidiChannel.DIGITAL_SYNTH_1
     name: Optional[str] = None

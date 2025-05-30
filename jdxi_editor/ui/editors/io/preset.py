@@ -94,7 +94,7 @@ class PresetEditor(BasicEditor):
         self.midi_helper = midi_helper
         self.preset_helper = preset_helper
         self.midi_channel = (
-            MidiChannel.DIGITAL1  # Default MIDI channel: 16 for programs, 0-based
+            MidiChannel.DIGITAL_SYNTH_1  # Default MIDI channel: 16 for programs, 0-based
         )
         self.default_image = "presets.png"
         self.instrument_icon_folder = "presets"
@@ -309,16 +309,16 @@ class PresetEditor(BasicEditor):
         preset_type = self.digital_preset_type_combo.currentText()
         log.message(f"preset_type: {preset_type}")
         if preset_type == "Digital Synth 1":
-            self.midi_channel = MidiChannel.DIGITAL1
+            self.midi_channel = MidiChannel.DIGITAL_SYNTH_1
             self.preset_list = DIGITAL_PRESET_LIST
         elif preset_type == "Digital Synth 2":
-            self.midi_channel = MidiChannel.DIGITAL2
+            self.midi_channel = MidiChannel.DIGITAL_SYNTH_2
             self.preset_list = JDXiPresetToneList.DIGITAL_TONE_PC
         elif preset_type == "Drums":
-            self.midi_channel = MidiChannel.DRUM
+            self.midi_channel = MidiChannel.DRUM_KIT
             self.preset_list = JDXiPresetToneList.DRUM_PROGRAM_CHANGE
         elif preset_type == "Analog Synth":
-            self.midi_channel = MidiChannel.ANALOG
+            self.midi_channel = MidiChannel.ANALOG_SYNTH
             self.preset_list = ANALOG_PRESET_LIST
         self._populate_presets()
         self.update_category_combo_box_categories()

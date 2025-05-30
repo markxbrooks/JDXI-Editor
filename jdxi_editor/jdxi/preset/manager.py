@@ -25,10 +25,10 @@ class JDXiPresetManager:
             JDXiSynth.DRUM_KIT: "Init Tone",
         }
         self.preset_channel_map = {
-            MidiChannel.ANALOG: JDXiPresetToneList.ANALOG_ENUMERATED,
-            MidiChannel.DIGITAL1: JDXiPresetToneList.DIGITAL_ENUMERATED,
-            MidiChannel.DIGITAL2: JDXiPresetToneList.DIGITAL_ENUMERATED,
-            MidiChannel.DRUM: JDXiPresetToneList.DRUM_ENUMERATED,
+            MidiChannel.ANALOG_SYNTH: JDXiPresetToneList.ANALOG_ENUMERATED,
+            MidiChannel.DIGITAL_SYNTH_1: JDXiPresetToneList.DIGITAL_ENUMERATED,
+            MidiChannel.DIGITAL_SYNTH_2: JDXiPresetToneList.DIGITAL_ENUMERATED,
+            MidiChannel.DRUM_KIT: JDXiPresetToneList.DRUM_ENUMERATED,
         }
         self.preset_synth_map = {
             JDXiSynth.ANALOG_SYNTH: JDXiPresetToneList.ANALOG_ENUMERATED,

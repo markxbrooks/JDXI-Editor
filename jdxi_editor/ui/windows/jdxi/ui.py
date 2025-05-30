@@ -113,7 +113,7 @@ class JDXiUi(QMainWindow):
         #  Initialize MIDI connectivity
         if self.midi_helper:
             self.midi_helper.close_ports()
-        self.channel = MidiChannel.DIGITAL1
+        self.channel = MidiChannel.DIGITAL_SYNTH_1
         self.midi_helper.midi_program_changed.connect(self._handle_program_change)
         self.midi_key_hold_latched = False
         self.midi_requests = MidiRequests.PROGRAM_TONE_NAME_PARTIAL

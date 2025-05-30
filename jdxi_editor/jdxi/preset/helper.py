@@ -89,13 +89,13 @@ class JDXiPresetHelper(QObject):
             JDXiSynth.DRUM_KIT: DRUM_KIT_LIST,
         }
         channel_map = {
-            JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL1,
-            JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL2,
-            JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG,
-            JDXiSynth.DRUM_KIT: MidiChannel.DRUM,
+            JDXiSynth.DIGITAL_SYNTH_1: MidiChannel.DIGITAL_SYNTH_1,
+            JDXiSynth.DIGITAL_SYNTH_2: MidiChannel.DIGITAL_SYNTH_2,
+            JDXiSynth.ANALOG_SYNTH: MidiChannel.ANALOG_SYNTH,
+            JDXiSynth.DRUM_KIT: MidiChannel.DRUM_KIT,
         }
         preset_list = preset_list_map.get(synth_type, DIGITAL_PRESET_LIST)
-        channel = channel_map.get(synth_type, MidiChannel.DIGITAL1)
+        channel = channel_map.get(synth_type, MidiChannel.DIGITAL_SYNTH_1)
 
         msb, lsb, pc = get_preset_values(preset_index, preset_list)
         if None in [msb, lsb, pc]:
@@ -114,8 +114,8 @@ class JDXiPresetHelper(QObject):
 
         # Select the correct preset list based on the channel
         preset_list = {
-            MidiChannel.DRUM: DRUM_KIT_LIST,
-            MidiChannel.ANALOG: ANALOG_PRESET_LIST,
+            MidiChannel.DRUM_KIT: DRUM_KIT_LIST,
+            MidiChannel.ANALOG_SYNTH: ANALOG_PRESET_LIST,
         }.get(channel, DIGITAL_PRESET_LIST)
 
         msb, lsb, pc = get_preset_values(program_number, preset_list)

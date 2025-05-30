@@ -32,7 +32,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
         address_lmb = DRUM_GROUP_MAP.get(partial_number)
         return DrumSynthData(
             midi_requests=MidiRequests.DRUMS_BD1_RIM_BD2_CLAP_BD3,
-            midi_channel=MidiChannel.DRUM,
+            midi_channel=MidiChannel.DRUM_KIT,
             presets=JDXiPresetToneList.DRUM_ENUMERATED,
             preset_list=JDXiPresetToneList.DRUM_PROGRAM_CHANGE,
             preset_type=synth_type,
@@ -68,9 +68,9 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
             midi_requests=MidiRequests.DIGITAL2
             if synth_number == 2
             else MidiRequests.DIGITAL1,
-            midi_channel=MidiChannel.DIGITAL2
+            midi_channel=MidiChannel.DIGITAL_SYNTH_2
             if synth_number == 2
-            else MidiChannel.DIGITAL1,
+            else MidiChannel.DIGITAL_SYNTH_1,
             presets=JDXiPresetToneList.DIGITAL_ENUMERATED,
             preset_list=JDXiPresetToneList.DIGITAL_LIST,
             preset_type=synth_type,
@@ -87,7 +87,7 @@ def create_synth_data(synth_type: JDXiSynth, partial_number: int = 0) -> Union[
     elif synth_type == JDXiSynth.ANALOG_SYNTH:
         return AnalogSynthData(
             midi_requests=[MidiRequests.PROGRAM_COMMON, MidiRequests.ANALOG],
-            midi_channel=MidiChannel.ANALOG,
+            midi_channel=MidiChannel.ANALOG_SYNTH,
             presets=JDXiPresetToneList.ANALOG_ENUMERATED,
             preset_list=JDXiPresetToneList.ANALOG_PROGRAM_CHANGE,
             preset_type=synth_type,

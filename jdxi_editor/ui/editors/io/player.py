@@ -83,7 +83,7 @@ class MidiFileEditor(SynthEditor):
             else JDXiPresetHelper(
                 self.midi_helper,
                 presets=DIGITAL_PRESET_LIST,
-                channel=MidiChannel.DIGITAL1,
+                channel=MidiChannel.DIGITAL_SYNTH_1,
             )
         )
         self.paused_time = None
