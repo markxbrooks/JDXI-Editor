@@ -39,11 +39,13 @@ import platform
 import threading
 from typing import Union, Optional
 
-from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
-
-from PySide6.QtWidgets import QMenu, QMessageBox
 from PySide6.QtCore import Qt, QSettings, QTimer
+from PySide6.QtGui import QShortcut, QKeySequence, QMouseEvent, QCloseEvent
+from PySide6.QtWidgets import QMenu, QMessageBox
 
+from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
+from jdxi_editor.jdxi.synth.type import JDXiSynth
+from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.jdxi.midi.constant import MidiConstant, JDXiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import (
@@ -61,9 +63,6 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.io.controller import MidiIOController
 from jdxi_editor.midi.io.delay import send_with_delay
 from jdxi_editor.midi.message.roland import RolandSysEx
-from jdxi_editor.jdxi.preset.button import JDXiPresetButtonData
-from jdxi_editor.jdxi.synth.type import JDXiSynth
-from jdxi_editor.jdxi.preset.lists import JDXiPresetToneList
 from jdxi_editor.midi.program.helper import JDXiProgramHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.ui.dialogs.about import UiAboutDialog
@@ -81,12 +80,13 @@ from jdxi_editor.ui.editors.digital.editor import DigitalSynth2Editor
 from jdxi_editor.ui.editors.helpers.program import (
     get_program_id_by_name,
 )
+from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.jdxi.style import JDXiStyle
+from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.editors.io.player import MidiFileEditor
 from jdxi_editor.ui.editors.main import MainEditor
 from jdxi_editor.ui.editors.pattern.pattern import PatternSequenceEditor
 from jdxi_editor.ui.editors.io.preset import PresetEditor
-from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.jdxi.style.factory import generate_sequencer_button_style
 from jdxi_editor.ui.widgets.button import SequencerSquare
 from jdxi_editor.ui.windows.jdxi.utils import show_message_box
 from jdxi_editor.ui.windows.midi.config_dialog import MIDIConfigDialog
@@ -96,7 +96,6 @@ from jdxi_editor.ui.windows.patch.manager import PatchManager
 from jdxi_editor.ui.windows.jdxi.ui import JDXiUi
 from jdxi_editor.ui.widgets.viewer.log import LogViewer
 from jdxi_editor.ui.widgets.button.favorite import FavoriteButton
-from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
 from jdxi_editor.project import __package_name__
 
 
