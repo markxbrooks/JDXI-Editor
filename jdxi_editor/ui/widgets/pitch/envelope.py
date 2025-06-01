@@ -31,7 +31,7 @@ from jdxi_editor.midi.utils.conversions import (
 )
 
 
-class PitchEnvelope(QWidget):
+class PitchEnvelopeWidget(QWidget):
     """
     Pitch Envelope Class
     """
