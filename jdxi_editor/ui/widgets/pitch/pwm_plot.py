@@ -35,20 +35,46 @@ from PySide6.QtGui import QPainter, QPainterPath, QLinearGradient, QColor, QPen,
 from jdxi_editor.jdxi.style import JDXiStyle
 
 
+def generate_square_wave(width: float,
+                         mod_depth: float,
+                         sample_rate: int,
+                         duration: float) -> np.ndarray:
+    """Generates a square wave with a given duty cycle (width ∈ [0, 1])."""
+    width = max(0.0, min(1.0, width))  # Clip to valid range
+    total_samples = int(duration * sample_rate)
+
+    # Define the period in samples (e.g., 10 Hz wave → 100 ms period)
+    period = max(1, sample_rate // 10)  # Avoid divide-by-zero
+    high_samples = int(period * width)
+    low_samples = period - high_samples
+
+    # At least 1 sample high and low to keep wave visually meaningful
+    high_samples = max(1, high_samples)
+    low_samples = max(1, low_samples)
+
+    cycle = np.concatenate([
+        np.ones(high_samples, dtype=np.float32),
+        np.zeros(low_samples, dtype=np.float32)
+    ])
+    num_cycles = total_samples // len(cycle) + 1
+    wave = np.tile(cycle, num_cycles)
+    return wave[:total_samples] * mod_depth
+
+
 class PWMPlot(QWidget):
     def __init__(
-        self,
-        width: int = 400,
-        height: int = 400,
-        # envelope: dict = None,
-        parent: QWidget = None,
+            self,
+            width: int = 400,
+            height: int = 400,
+            envelope: dict = None,
+            parent: QWidget = None,
     ):
         super().__init__(parent)
         self.point_moved = None
         self.parent = parent
         # Default envelope parameters (times in ms)
         self.enabled = True
-        # self.envelope = envelope
+        self.envelope = envelope
         # Set address fixed size for the widget (or use layouts as needed)
         self.setMinimumSize(width, height)
         self.setMaximumHeight(height)
@@ -122,7 +148,8 @@ class PWMPlot(QWidget):
         painter = QPainter(self)
         try:
             painter.setRenderHint(QPainter.Antialiasing)
-            # Background gradient
+
+            # === Background ===
             gradient = QLinearGradient(0, 0, self.width(), self.height())
             gradient.setColorAt(0.0, QColor("#321212"))
             gradient.setColorAt(0.3, QColor("#331111"))
@@ -133,131 +160,119 @@ class PWMPlot(QWidget):
             painter.setPen(QPen(QColor("#000000"), 0))
             painter.drawRect(0, 0, self.width(), self.height())
 
-            # Orange drawing pen
-            pen = QPen(QColor("orange"))
-            pen.setWidth(2)
+            # === Pens & Fonts ===
+            orange_pen = QPen(QColor("orange"), 2)
             axis_pen = QPen(QColor("white"))
-            painter.setRenderHint(QPainter.Antialiasing, False)
-            painter.setPen(pen)
+            grid_pen = QPen(Qt.GlobalColor.darkGray, 1, Qt.PenStyle.DashLine)
             painter.setFont(QFont("JD LCD Rounded", 10))
+            font_metrics = painter.fontMetrics()
 
-            # Envelope parameters
-            attack_time = self.envelope["attack_time"] / 1000.0
-            decay_time = self.envelope["decay_time"] / 1000.0
-            peak_level = self.envelope["peak_level"]
-            initial_level = self.envelope["initial_level"]
+            # === Envelope Parameters ===
+            width = self.envelope["width"]
+            mod_depth = self.envelope["mod_depth"]
+            shift = self.envelope["shift"]
+            width_samples = max(int(width * self.sample_rate), 1)
 
-            attack_samples = max(int(attack_time * self.sample_rate), 1)
-            decay_samples = max(int(decay_time * self.sample_rate), 1)
-
-            attack = np.linspace(
-                initial_level, peak_level, attack_samples, endpoint=False
-            )
-            decay = np.linspace(
-                peak_level, initial_level, decay_samples, endpoint=False
-            )
-            envelope = np.concatenate([attack, decay])
+            # Pulse width envelope: rise and fall
+            envelope = generate_square_wave(width=self.envelope["width"],
+                                            mod_depth=self.envelope["mod_depth"],
+                                            sample_rate=self.sample_rate,
+                                            duration=self.envelope.get("duration", 1.0))
             total_samples = len(envelope)
-            total_time = 10  # seconds
+            total_time = total_samples / self.sample_rate
 
-            # Plot area dimensions
-            w = self.width()
-            h = self.height()
-            top_padding = 50
-            bottom_padding = 80
-            left_padding = 80
-            right_padding = 50
-            plot_w = w - left_padding - right_padding
-            plot_h = h - top_padding - bottom_padding
+            # === Plot Layout ===
+            w, h = self.width(), self.height()
+            top_pad, bottom_pad = 50, 80
+            left_pad, right_pad = 80, 50
+            plot_w = w - left_pad - right_pad
+            plot_h = h - top_pad - bottom_pad
 
-            # Y range
-            y_min = -0.6
-            y_max = 0.6
+            y_min, y_max = -0.2, 1.2
+            zero_y = top_pad + (y_max / (y_max - y_min)) * plot_h
 
-            # Draw axes
+            # === Axes ===
             painter.setPen(axis_pen)
-            painter.drawLine(
-                left_padding, top_padding, left_padding, top_padding + plot_h
-            )  # Y-axis
+            # Y-axis
+            painter.drawLine(left_pad, top_pad, left_pad, top_pad + plot_h)
+            # X-axis
+            painter.drawLine(left_pad, zero_y, left_pad + plot_w, zero_y)
 
-            zero_y = top_padding + (y_max / (y_max - y_min)) * plot_h
-            painter.drawLine(
-                left_padding, zero_y, left_padding + plot_w, zero_y
-            )  # X-axis at Y=0
-
-            # X-axis labels
-            # painter.drawText(left_padding, zero_y + 20, "0")
-            # painter.drawText(left_padding + plot_w - 10, zero_y + 20, "5")
-            # X-axis ticks for 0, 3, 6, 9, 12, 15
+            # === X-axis Labels & Ticks ===
             num_ticks = 6
             for i in range(num_ticks + 1):
-                x = left_padding + i * plot_w / num_ticks
+                x = left_pad + i * plot_w / num_ticks
                 painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                # label = f"{i * (total_time // num_ticks)}"
                 label = f"{i * (total_time / num_ticks):.0f}"
-                painter.drawText(x - 10, zero_y + 20, label)
+                label_width = font_metrics.horizontalAdvance(label)
+                painter.drawText(x - label_width / 2, zero_y + 20, label)
 
-            # Y-axis ticks and labels from +0.6 to -0.6
-            for i in range(-3, 4):
+            # === Y-axis Labels & Ticks ===
+            for i in range(-1, 6):
                 y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding - 5, y, left_padding, y)
-                painter.drawText(left_padding - 40, y + 5, f"{y_val:.1f}")
+                y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
+                painter.drawLine(left_pad - 5, y, left_pad, y)
+                label = f"{y_val:.1f}"
+                label_width = font_metrics.horizontalAdvance(label)
+                painter.drawText(left_pad - 10 - label_width, y + font_metrics.ascent() / 2, label)
 
-            # Draw top title
+            # === Title ===
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("JD LCD Rounded", 16))
-            painter.drawText(
-                left_padding + plot_w / 2 - 40, top_padding / 2, "Pitch Envelope"
-            )
+            title = "Pulse Width Envelope"
+            title_width = painter.fontMetrics().horizontalAdvance(title)
+            painter.drawText(left_pad + (plot_w - title_width) / 2, top_pad / 2, title)
 
-            # Draw X-axis label
+            # === X-axis Label ===
             painter.setPen(QPen(QColor("white")))
-            painter.drawText(
-                left_padding + plot_w / 2 - 10, top_padding + plot_h + 35, "Time (s)"
-            )
+            painter.setFont(QFont("JD LCD Rounded", 10))
+            x_label = "Time (s)"
+            x_label_width = font_metrics.horizontalAdvance(x_label)
+            painter.drawText(left_pad + (plot_w - x_label_width) / 2, top_pad + plot_h + 35, x_label)
 
-            # Y-axis label rotated
+            # === Y-axis Label (rotated) ===
             painter.save()
-            painter.translate(left_padding - 50, top_padding + plot_h / 2 + 25)
+            y_label = "Voltage (V)"
+            y_label_width = font_metrics.horizontalAdvance(y_label)
+            painter.translate(left_pad - 50, top_pad + plot_h / 2 + y_label_width / 2)
             painter.rotate(-90)
-            painter.drawText(0, 0, "Pitch")
+            painter.drawText(0, 0, y_label)
             painter.restore()
 
-            # Background grid
-            pen = QPen(Qt.GlobalColor.darkGray, 1)
-            pen.setStyle(Qt.PenStyle.DashLine)
-            painter.setPen(pen)
+            # === Grid Lines ===
+            painter.setPen(grid_pen)
             for i in range(1, 7):
-                x = left_padding + i * plot_w / 6
-                painter.drawLine(x, top_padding, x, top_padding + plot_h)
-            for i in range(1, 4):
+                x = left_pad + i * plot_w / 6
+                painter.drawLine(x, top_pad, x, top_pad + plot_h)
+            for i in range(1, 6):
                 y_val = i * 0.2
-                y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(left_padding, y, left_padding + plot_w, y)
-                y_mirror = top_padding + ((y_max + y_val) / (y_max - y_min)) * plot_h
-                painter.drawLine(
-                    left_padding, y_mirror, left_padding + plot_w, y_mirror
-                )
+                y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
+                y_mirror = top_pad + ((y_max + y_val) / (y_max - y_min)) * plot_h
+                painter.drawLine(left_pad, y, left_pad + plot_w, y)
+                # painter.drawLine(left_pad, y_mirror, left_pad + plot_w, y_mirror)
 
-            # Draw envelope polyline
+            # === Envelope Plot ===
             if self.enabled:
-                painter.setPen(QPen(QColor("orange")))
+                painter.setPen(orange_pen)
                 points = []
                 num_points = 500
                 indices = np.linspace(0, total_samples - 1, num_points).astype(int)
+
                 for i in indices:
+                    if i >= len(envelope):
+                        continue
                     t = i / self.sample_rate
-                    x = left_padding + (t / total_time) * plot_w
+                    x = left_pad + (t / total_time) * plot_w
                     y_val = envelope[i]
-                    y = top_padding + ((y_max - y_val) / (y_max - y_min)) * plot_h
-                    points.append((x, y))
+                    y = top_pad + ((y_max - y_val) / (y_max - y_min)) * plot_h
+                    points.append(QPointF(x, y))
 
                 if points:
                     path = QPainterPath()
-                    path.moveTo(*points[0])
+                    path.moveTo(points[0])
                     for pt in points[1:]:
-                        path.lineTo(*pt)
+                        path.lineTo(pt)  # For smoothing: use cubicTo
                     painter.drawPath(path)
+
         finally:
             painter.end()

@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QSlider, QGroupBox
+    QApplication, QWidget, QVBoxLayout, QLabel, QSlider, QGroupBox, QHBoxLayout
 )
 from PySide6.QtCore import Qt
 
@@ -11,15 +11,26 @@ class PWMWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("PWM Widget")
+        self.envelope = {"width": 0.5,
+                         "mod_depth": 0.5,
+                         "shift": 50}
         self.setGeometry(100, 100, 300, 300)
         self.init_ui()
+
+    def on_width_changed(self, val):
+        self.envelope["width"] = val / 100  # Convert from 0–100 to 0.0–1.0
+        self.update()  # Trigger repaint if needed
+
+    def on_mod_depth_changed(self, val):
+        self.envelope["mod_depth"] = val / 100  # Convert from 0–100 to 0.0–1.0
+        self.update()  # Trigger repaint if needed
 
     def init_ui(self):
         layout = QVBoxLayout()
 
         # Group box for PWM controls
         group_box = QGroupBox("PWM Controls")
-        group_layout = QVBoxLayout()
+        group_layout = QHBoxLayout()
 
         # Width slider
         self.width_label = QLabel("Width (% of cycle): 50")
@@ -29,15 +40,17 @@ class PWMWidget(QWidget):
         self.width_slider.valueChanged.connect(
             lambda val: self.width_label.setText(f"Width (% of cycle): {val}")
         )
+        self.width_slider.valueChanged.connect(self.on_width_changed)
 
         # Mod Depth slider
-        self.mod_label = QLabel("Mod Depth (of LFO applied): 50")
-        self.mod_slider = QSlider(Qt.Vertical)
-        self.mod_slider.setRange(0, 100)
-        self.mod_slider.setValue(50)
-        self.mod_slider.valueChanged.connect(
-            lambda val: self.mod_label.setText(f"Mod Depth (of LFO applied): {val}")
+        self.mod_depth_label =     QLabel("Mod Depth (of LFO applied): 50")
+        self.mod_depth_slider = QSlider(Qt.Vertical)
+        self.mod_depth_slider.setRange(0, 100)
+        self.mod_depth_slider.setValue(50)
+        self.mod_depth_slider.valueChanged.connect(
+            lambda val: self.mod_depth_label.setText(f"Mod Depth (of LFO applied): {val}")
         )
+        self.mod_depth_slider.valueChanged.connect(self.on_mod_depth_changed)
 
         # Shift slider
         self.shift_label = QLabel("Shift (range of change): 50")
@@ -51,15 +64,16 @@ class PWMWidget(QWidget):
         # Add widgets to layout
         for label, slider in [
             (self.width_label, self.width_slider),
-            (self.mod_label, self.mod_slider),
+            (self.mod_depth_label, self.mod_depth_slider),
             (self.shift_label, self.shift_slider),
         ]:
             group_layout.addWidget(label)
             group_layout.addWidget(slider)
         self.plot = PWMPlot(width=300,
                             height=250,
-                            parent=self)
-        layout.addWidget(self.plot)
+                            parent=self,
+                            envelope=self.envelope)
+        group_layout.addWidget(self.plot)
         group_box.setLayout(group_layout)
         layout.addWidget(group_box)
         self.setLayout(layout)
