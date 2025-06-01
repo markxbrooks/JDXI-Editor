@@ -26,7 +26,87 @@ from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
+
+
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+
+from jdxi_editor.ui.widgets.slider import Slider
+
+
+class PulseWidthModWidget(QWidget):
+    def __init__(self,
+                 width_param: AddressParameter,
+                 mod_depth_param: AddressParameter,
+                 shift_param: AddressParameter,
+                 midi_helper: MidiIOHelper,
+                 controls,
+                 address: RolandSysExAddress,
+                 create_parameter_slider: Callable,
+                 parent: QWidget = None):
+        super().__init__(parent)
+        self.midi_helper = midi_helper
+        self.controls = controls
+        self.address = address
+
+        layout = QVBoxLayout(self)
+
+        self._create_parameter_slider = create_parameter_slider
+
+        # Pulse Width (% of cycle)
+        self.width_slider = self._create_parameter_slider(
+            width_param, "Width (% of cycle)"
+        )
+        layout.addWidget(self.width_slider)
+
+        # Mod Depth (LFO applied)
+        self.mod_depth_slider = self._create_parameter_slider(
+            mod_depth_param, "Mod Depth (of LFO applied)"
+        )
+        layout.addWidget(self.mod_depth_slider)
+
+        # Pulse Width Shift
+        self.shift_slider = self._create_parameter_slider(
+            shift_param, "PW Shift"
+        )
+        layout.addWidget(self.shift_slider)
+
+        self.setLayout(layout)
+
+    def _create_parameter_slider(
+            self,
+            param: AddressParameter,
+            label: str,
+            value: int = None) -> Slider:
+        """
+        Create address slider for address parameter with proper display conversion
+        :param param: AddressParameter
+        :param label: str
+        :param value: int
+        :return: Slider
+        """
+        if hasattr(param, "get_display_value"):
+            display_min, display_max = param.get_display_value()
+        else:
+            display_min, display_max = param.min_val, param.max_val
+        # Create vertical slider
+        slider = Slider(
+            label,
+            min_value=display_min,
+            max_value=display_max,
+            midi_helper=self.midi_helper,
+            vertical=True,
+            show_value_label=False,
+            is_bipolar=param.is_bipolar,
+        )
+        slider.setValue(value)
+        # Connect value changed signal
+        slider.valueChanged.connect(
+            lambda v, s=slider: self.update_envelope_from_slider(s)
+        )
+        slider.valueChanged.connect(lambda v: self.send_parameter_message(param, v))
+        self.controls[param] = slider
+        return slider
 
 
 class DigitalOscillatorSection(QWidget):
@@ -44,6 +124,7 @@ class DigitalOscillatorSection(QWidget):
         address: RolandSysExAddress,
     ):
         super().__init__()
+        self.pwm_widget = None
         self.partial_number = partial_number
         self.midi_helper = midi_helper
         self.controls = controls
@@ -115,6 +196,8 @@ class DigitalOscillatorSection(QWidget):
         pw_group = QGroupBox("Pulse Width")
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
+
+        
         self.pw_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
         )
@@ -129,7 +212,18 @@ class DigitalOscillatorSection(QWidget):
         pw_layout.addWidget(self.pw_slider)
         pw_layout.addWidget(self.pw_mod_slider)
         pw_layout.addWidget(self.pw_shift_slider)
+
         layout.addWidget(pw_group)
+
+        """self.pwm_widget = PulseWidthModWidget(
+            width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
+            mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+            shift_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
+            midi_helper=self.midi_helper,
+            controls=self.controls,
+            address=self.address,
+        )
+        layout.addWidget(self.pwm_widget)"""
 
         # PCM Wave controls
         pcm_group = QGroupBox("PCM Wave")
@@ -171,25 +265,8 @@ class DigitalOscillatorSection(QWidget):
         pitch_env_group = QGroupBox("Pitch Envelope")
         pitch_env_layout = QVBoxLayout()
         pitch_env_group.setLayout(pitch_env_layout)
-        """
-        pitch_env_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
-            )
-        )
-        pitch_env_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME, "Decay"
-            )
-        )
-        pitch_env_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH, "Depth"
-            )
-        )
-        """
         # Pitch Env Widget
-        self.pitch_env_widget = PitchEnvelope(
+        self.pitch_env_widget = PitchEnvelopeWidget(
             attack_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_ATTACK_TIME,
             decay_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterDigitalPartial.OSC_PITCH_ENV_DEPTH,

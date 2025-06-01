@@ -14,7 +14,7 @@ from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
-from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelope
+from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
 from jdxi_editor.ui.widgets.button.waveform.analog import AnalogWaveformButton
 
 
@@ -161,20 +161,8 @@ class AnalogOscillatorSection(QWidget):
                 AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
             )
         )
-        """
-        pitch_env_layout.addWidget(
-            self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME, "Attack"
-            )
-        )
-        pitch_env_layout.addWidget(
-            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_ENV_DECAY, "Decay")
-        )
-        pitch_env_layout.addWidget(
-            self._create_parameter_slider(AddressParameterAnalog.OSC_PITCH_ENV_DEPTH, "Depth")
-        )"""
         # Pitch Env Widget
-        self.pitch_env_widget = PitchEnvelope(
+        self.pitch_env_widget = PitchEnvelopeWidget(
             attack_param=AddressParameterAnalog.OSC_PITCH_ENV_ATTACK_TIME,
             decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
