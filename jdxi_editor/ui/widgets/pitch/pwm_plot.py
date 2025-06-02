@@ -65,7 +65,7 @@ class PWMPlot(QWidget):
     def __init__(
             self,
             width: int = 400,
-            height: int = 400,
+            height: int = 500,
             envelope: dict = None,
             parent: QWidget = None,
     ):
@@ -83,7 +83,7 @@ class PWMPlot(QWidget):
         self.setStyleSheet(JDXiStyle.ADSR_PLOT)
         # Sample rate for converting times to samples
         self.sample_rate = 256
-        self.setMinimumHeight(150)
+        self.setMinimumHeight(250)
         self.attack_x = 0.1
         self.decay_x = 0.3
         self.peak_level = 0.5
@@ -91,8 +91,8 @@ class PWMPlot(QWidget):
         self.dragging = None
         if hasattr(self.parent, "envelopeChanged"):
             self.parent.envelopeChanged.connect(self.set_values)
-        if hasattr(self.parent, "pitchEnvelopeChanged"):
-            self.parent.pitchEnvelopeChanged.connect(self.set_values)
+        if hasattr(self.parent, "pulse_width_changed"):
+            self.parent.pulse_width_changed.connect(self.set_values)
 
     def set_values(self, envelope: dict) -> None:
         """
@@ -168,11 +168,6 @@ class PWMPlot(QWidget):
             font_metrics = painter.fontMetrics()
 
             # === Envelope Parameters ===
-            width = self.envelope["width"]
-            mod_depth = self.envelope["mod_depth"]
-            shift = self.envelope["shift"]
-            width_samples = max(int(width * self.sample_rate), 1)
-
             # Pulse width envelope: rise and fall
             envelope = generate_square_wave(width=self.envelope["width"],
                                             mod_depth=self.envelope["mod_depth"],

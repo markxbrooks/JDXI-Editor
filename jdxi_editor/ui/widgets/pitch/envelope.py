@@ -250,7 +250,7 @@ class PitchEnvelopeWidget(QWidget):
                 if envelope_param_type == "sustain_level":
                     self.envelope["sustain_level"] = slider.value() / 127
                 elif envelope_param_type == "peak_level":
-                    self.envelope["sustain_level"] = slider.value() / 127
+                    self.envelope["peak_level"] = slider.value() / 127
                 else:
                     self.envelope[envelope_param_type] = midi_value_to_ms(
                         slider.value(), min_time=10, max_time=5000
