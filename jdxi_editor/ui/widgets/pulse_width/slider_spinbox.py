@@ -84,7 +84,8 @@ class PWMSliderSpinbox(QWidget):
             value,
         )
         param_type = param.get_envelope_param_type()
-        if param_type in ["mod_depth", "width"]:
+        if param_type in ["mod_depth",
+                          "pulse_width"]:
             self.spinbox = create_double_spinbox(
                 min_value=min_value, max_value=max_value, step=0.01, value=value
             )
@@ -110,7 +111,7 @@ class PWMSliderSpinbox(QWidget):
         param_type = self.param.get_envelope_param_type()
         if param_type == "mod_depth":
             return value / 127
-        if param_type == "width":
+        if param_type == "pulse_width":
             return value / 127
         else:
             log.error(f"Unknown envelope parameter type: {param_type}")
@@ -120,7 +121,7 @@ class PWMSliderSpinbox(QWidget):
         param_type = self.param.get_envelope_param_type()
         if param_type in ["mod_depth"]:
             return int(value * 127)
-        if param_type in ["width"]:
+        if param_type in ["pulse_width"]:
             return int(value * 127)
         else:
             return 64

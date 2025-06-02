@@ -93,6 +93,8 @@ class PWMPlot(QWidget):
             self.parent.envelopeChanged.connect(self.set_values)
         if hasattr(self.parent, "pulse_width_changed"):
             self.parent.pulse_width_changed.connect(self.set_values)
+        if hasattr(self.parent, "mod_depth_changed"):
+            self.parent.mod_depth_changed.connect(self.set_values)
 
     def set_values(self, envelope: dict) -> None:
         """
@@ -169,7 +171,7 @@ class PWMPlot(QWidget):
 
             # === Envelope Parameters ===
             # Pulse width envelope: rise and fall
-            envelope = generate_square_wave(width=self.envelope["width"],
+            envelope = generate_square_wave(width=self.envelope["pulse_width"],
                                             mod_depth=self.envelope["mod_depth"],
                                             sample_rate=self.sample_rate,
                                             duration=self.envelope.get("duration", 1.0))
