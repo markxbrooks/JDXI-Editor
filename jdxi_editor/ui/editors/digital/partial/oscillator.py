@@ -23,11 +23,11 @@ from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.digital.partial import AddressParameterDigitalPartial
 from jdxi_editor.midi.data.pcm.waves import PCM_WAVES_CATEGORIZED
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.button.waveform.waveform import WaveformButton
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
-
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 
@@ -113,15 +113,15 @@ class DigitalOscillatorSection(QWidget):
     """Digital Oscillator Section for the JDXI Editor"""
 
     def __init__(
-        self,
-        create_parameter_slider: Callable,
-        create_parameter_switch: Callable,
-        create_parameter_combo_box: Callable,
-        send_midi_parameter: Callable,
-        partial_number: int,
-        midi_helper: MidiIOHelper,
-        controls: dict[AddressParameter, QWidget],
-        address: RolandSysExAddress,
+            self,
+            create_parameter_slider: Callable,
+            create_parameter_switch: Callable,
+            create_parameter_combo_box: Callable,
+            send_midi_parameter: Callable,
+            partial_number: int,
+            midi_helper: MidiIOHelper,
+            controls: dict[AddressParameter, QWidget],
+            address: RolandSysExAddress,
     ):
         super().__init__()
         self.pwm_widget = None
@@ -197,7 +197,6 @@ class DigitalOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        
         self.pw_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
         )
@@ -209,21 +208,21 @@ class DigitalOscillatorSection(QWidget):
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
             "Shift (range of change)",
         )
-        pw_layout.addWidget(self.pw_slider)
-        pw_layout.addWidget(self.pw_mod_slider)
+        # pw_layout.addWidget(self.pw_slider)
+        # pw_layout.addWidget(self.pw_mod_slider)
+
+        self.pwm_widget = PWMWidget(width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
+                                    mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+                                    midi_helper=self.midi_helper,
+                                    address=self.address,
+                                    controls=self.controls)
+        self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
+        self.pwm_widget.setMaximumHeight(400)
+        pw_layout.addWidget(self.pwm_widget)
+
         pw_layout.addWidget(self.pw_shift_slider)
 
         layout.addWidget(pw_group)
-
-        """self.pwm_widget = PulseWidthModWidget(
-            width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
-            mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
-            shift_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
-            midi_helper=self.midi_helper,
-            controls=self.controls,
-            address=self.address,
-        )
-        layout.addWidget(self.pwm_widget)"""
 
         # PCM Wave controls
         pcm_group = QGroupBox("PCM Wave")
@@ -298,7 +297,7 @@ class DigitalOscillatorSection(QWidget):
 
         # Send MIDI message
         if not self.send_midi_parameter(
-            AddressParameterDigitalPartial.OSC_WAVE, waveform.value
+                AddressParameterDigitalPartial.OSC_WAVE, waveform.value
         ):
             logging.warning(f"Failed to set waveform to {waveform.name}")
 

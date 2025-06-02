@@ -132,6 +132,9 @@ class DigitalTitle(DigitalDisplayBase):
         self.show_upper_text = show_upper_text
         self.set_tone_name(tone_name)
 
+    def __del__(self):
+        print(f"{self.__class__.__name__} was deleted")
+
     def set_tone_name(self, tone_name: str) -> None:
         """Update the tone name display.
 

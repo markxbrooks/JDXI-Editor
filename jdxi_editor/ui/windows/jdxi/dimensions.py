@@ -15,6 +15,11 @@ class JDXiDimensions:
     A class to store dimensions for the JD-Xi editor UI.
     """
 
+    PWM_WIDGET_X = 100
+    PWM_WIDGET_Y = 100
+    PWM_WIDGET_WIDTH = 300
+    PWM_WIDGET_HEIGHT = 500
+
     HEIGHT = 400
     WIDTH = 1000
 
