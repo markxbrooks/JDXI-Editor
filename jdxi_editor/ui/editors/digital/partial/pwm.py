@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 
+from jdxi_editor.log.logger import Logger as logger
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter import AddressParameter
@@ -16,7 +17,6 @@ from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_valu
 from jdxi_editor.ui.widgets.pitch.pwm_plot import PWMPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
 from jdxi_editor.ui.widgets.slider import Slider
-from jdxi_editor.log.logger import Logger as logger
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -47,20 +47,20 @@ class PWMWidget(QWidget):
         self.width_control = PWMSliderSpinbox(
             width_param,
             min_value=0,
-            max_value=5000,
+            max_value=127,
             suffix=" %",
             label="Width",
-            value=self.envelope["width"] * 100,  # Convert from 0.0–1.0 to 0–100
+            value=int(self.envelope["width"] * 100),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
         self.mod_depth_control = PWMSliderSpinbox(
             mod_depth_param,
             min_value=0,
-            max_value=5000,
+            max_value=127,
             suffix=" %",
             label="Mod Depth",
-            value=self.envelope["mod_depth"] * 100,  # Convert from 0.0–1.0 to 0–100
+            value=int(self.envelope["mod_depth"] * 100),  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -86,15 +86,31 @@ class PWMWidget(QWidget):
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
         self.init_ui()
 
-    def on_envelope_changed(self, envelope: dict):
+    def on_envelope_changed(self, envelope: dict) -> None:
+        """
+        Handle envelope changes from controls
+        :param envelope: dict
+        :return: None
+        """
         self.envelope = envelope
+        print(f"Envelope changed: {self.envelope}")
         self.update()  # Trigger repaint if needed
 
-    def on_width_changed(self, val):
+    def on_width_changed(self, val: int) -> None:
+        """
+        Handle width changes from slider
+        :param val: int
+        :return: None
+        """
         self.envelope["width"] = val / 100  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
-    def on_mod_depth_changed(self, val):
+    def on_mod_depth_changed(self, val: int) -> None:
+        """
+        Handle modulation depth changes from slider
+        :param val: int
+        :return: None
+        """
         self.envelope["mod_depth"] = val / 100  # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
@@ -138,9 +154,10 @@ class PWMWidget(QWidget):
         layout.addWidget(group_box)
         # self.setLayout(layout)
         
-    def _create_parameter_slider(
-        self, param: AddressParameter, label: str, value: int = None
-    ) -> Slider:
+    def _create_parameter_slider(self,
+                                 param: AddressParameter,
+                                 label: str,
+                                 value: int = None) -> Slider:
         """
         Create address slider for address parameter with proper display conversion
         :param param: AddressParameter
