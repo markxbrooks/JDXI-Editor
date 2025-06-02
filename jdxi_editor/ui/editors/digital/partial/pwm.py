@@ -52,7 +52,7 @@ class PWMWidget(QWidget):
             max_value=127,
             suffix=" %",
             label="Width",
-            value=int(self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT),  # Convert from 0.0–1.0 to 0–100
+            value=self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
@@ -62,7 +62,7 @@ class PWMWidget(QWidget):
             max_value=127,
             suffix=" %",
             label="Mod Depth",
-            value=int(self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT),  # Convert from 0.0–1.0 to 0–100
+            value=self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )

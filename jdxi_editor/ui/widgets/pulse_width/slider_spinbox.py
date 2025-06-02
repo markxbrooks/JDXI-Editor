@@ -8,7 +8,29 @@ from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 
 
-def create_spinbox(min_value: int, max_value: int, suffix: str, value: int) -> QSpinBox:
+def create_double_spinbox_new(min_value: float,
+                          max_value: float,
+                          suffix: str,
+                          value: int) -> QDoubleSpinBox:
+    """
+    Create a double spinbox with specified range and suffix
+    :param min_value: float
+    :param max_value: float
+    :param suffix: str
+    :param value: int
+    :return: QSpinBox
+    """
+    sb = QDoubleSpinBox()
+    sb.setRange(min_value, max_value)
+    sb.setSuffix(suffix)
+    sb.setValue(value)
+    return sb
+
+
+def create_spinbox_new(min_value: int,
+                   max_value: int,
+                   suffix: str,
+                   value: int) -> QSpinBox:
     """
     Create a spinbox with specified range and suffix
     :param min_value: int
@@ -90,9 +112,9 @@ class PWMSliderSpinbox(QWidget):
                 min_value=min_value, max_value=max_value, step=0.01, value=value
             )
         else:
-            self.spinbox = create_spinbox(
-                min_value=int(min_value),
-                max_value=int(max_value),
+            self.spinbox = create_double_spinbox(
+                min_value=min_value,
+                max_value=max_value,
                 suffix=suffix,
                 value=value,
             )
