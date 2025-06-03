@@ -206,11 +206,11 @@ class DigitalOscillatorSection(QWidget):
         #)
         self.pw_shift_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
-            "Shift (range of change)",
+            "Shift (range of change)", vertical=True
         )
-        # pw_layout.addWidget(self.pw_slider)
-        # pw_layout.addWidget(self.pw_mod_slider)
-
+        self.pw_shift_slider.setStyleSheet(JDXiStyle.ADSR)
+        pwm_widget_layout = QHBoxLayout()
+        pw_layout.addLayout(pwm_widget_layout)
         self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
                                     mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
                                     midi_helper=self.midi_helper,
@@ -219,9 +219,9 @@ class DigitalOscillatorSection(QWidget):
                                     controls=self.controls)
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
-        pw_layout.addWidget(self.pwm_widget)
+        pwm_widget_layout.addWidget(self.pwm_widget)
 
-        pw_layout.addWidget(self.pw_shift_slider)
+        pwm_widget_layout.addWidget(self.pw_shift_slider)
 
         layout.addWidget(pw_group)
 
@@ -338,10 +338,8 @@ class DigitalOscillatorSection(QWidget):
 
     def _update_pw_controls_enabled_state(self, waveform: DigitalOscWave):
         """Update pulse width controls enabled state based on waveform"""
-        pass
         pw_enabled = waveform == DigitalOscWave.PW_SQUARE
-        """self.pw_slider.setEnabled(pw_enabled)
-        self.pw_mod_slider.setEnabled(pw_enabled)"""
+        self.pwm_widget.setEnabled(pw_enabled)
         self.pw_shift_slider.setEnabled(pw_enabled)
 
     def _update_pcm_controls_enabled_state(self, waveform: DigitalOscWave):

@@ -74,7 +74,7 @@ class PWMWidget(QWidget):
         )
         self.controls[pulse_width_param] = self.pulse_width_control
         self.controls[mod_depth_param] = self.mod_depth_control
-        self.pitch_envelope_controls = [
+        self.pwm_controls = [
             self.pulse_width_control,
             self.mod_depth_control,
         ]
@@ -95,6 +95,17 @@ class PWMWidget(QWidget):
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
         self.pulse_width_control.setValue(self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
         self.mod_depth_control.setValue(self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
+
+    def setEnabled(self, enabled: bool):
+        """
+        Set the enabled state (ON/OFF)
+        :param enabled:
+        :return:
+        """
+        super().setEnabled(enabled)
+        for control in self.pwm_controls:
+            control.setEnabled(enabled)
+        self.plot.setEnabled(enabled)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """
