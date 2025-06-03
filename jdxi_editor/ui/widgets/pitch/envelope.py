@@ -14,7 +14,7 @@ through an animated envelope curve.
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable
 
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
@@ -45,6 +45,7 @@ class PitchEnvelopeWidget(QWidget):
         decay_param: AddressParameter,
         depth_param: AddressParameter,
         midi_helper: Optional[MidiIOHelper] = None,
+        create_parameter_slider: Callable = None,
         controls: dict[AddressParameter, QWidget] = None,
         address: Optional[RolandSysExAddress] = None,
         parent: Optional[QWidget] = None,
@@ -56,6 +57,7 @@ class PitchEnvelopeWidget(QWidget):
             self.controls = controls
         else:
             self.controls = {}
+        self._create_parameter_slider = create_parameter_slider
         self.envelope = {
             "attack_time": 300,
             "decay_time": 800,
@@ -84,6 +86,7 @@ class PitchEnvelopeWidget(QWidget):
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
+        self._create_parameter_slider = create_parameter_slider
         self.depth_control = PitchEnvSliderSpinbox(
             depth_param,
             min_value=1,
@@ -178,7 +181,7 @@ class PitchEnvelopeWidget(QWidget):
         self.plot.set_values(self.envelope)
         self.pitchEnvelopeChanged.emit(self.envelope)
 
-    def _create_parameter_slider(
+    def _create_parameter_slider_old(
         self, param: AddressParameter, label: str, value: int = None
     ) -> Slider:
         """

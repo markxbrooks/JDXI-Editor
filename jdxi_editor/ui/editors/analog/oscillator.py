@@ -169,6 +169,7 @@ class AnalogOscillatorSection(QWidget):
             decay_param=AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME,
             depth_param=AddressParameterAnalog.OSC_PITCH_ENV_DEPTH,
             midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
         )
