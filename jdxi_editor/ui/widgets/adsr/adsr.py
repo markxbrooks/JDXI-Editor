@@ -27,7 +27,6 @@ from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
-from jdxi_editor.ui.widgets.slider.slider import Slider
 
 
 class ADSR(QWidget):
@@ -69,11 +68,11 @@ class ADSR(QWidget):
             self.controls = {}
         self._create_parameter_slider = create_parameter_slider
         self.envelope = {
-            "attack_time": 300,
-            "decay_time": 800,
-            "release_time": 500,
-            "initial_level": 0,
-            "peak_level": 1,
+            "attack_time": 300.0,
+            "decay_time": 800.0,
+            "release_time": 500.0,
+            "initial_level": 0.0,
+            "peak_level": 1.0,
             "sustain_level": 0.8,
         }
         self.attack_control = AdsrSliderSpinbox(
@@ -203,32 +202,6 @@ class ADSR(QWidget):
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
-    def _on_parameter_changed(self, param: AddressParameter, value: int) -> None:
-        """
-        Handle parameter value changes and update envelope accordingly
-        :param param: AddressParameter
-        :param value: int
-        :return: None
-        """
-        # 1) Update envelope based on slider values
-        self.update_envelope_from_controls()
-        self.envelopeChanged.emit(self.envelope)
-        # self._update_spin_box(param)
-        try:
-            # 2) Convert display value to MIDI value if needed
-            if hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(value)
-            else:
-                midi_value = param.validate_value(value)
-            # 3) Send MIDI message
-            if not self.send_midi_parameter(param, midi_value):
-                log.warning(f"Failed to send parameter {param.name}")
-        except ValueError as ex:
-            log.error(f"Error updating parameter: {ex}")
-        # 4) Update plot
-        self.plot.set_values(self.envelope)
-        self.envelopeChanged.emit(self.envelope)
-
     def update_envelope_from_controls(self):
         """Update envelope values from slider controls"""
         try:
@@ -265,25 +238,3 @@ class ADSR(QWidget):
         except Exception as ex:
             log.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
-
-    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
-        """Send MIDI parameter with error handling"""
-        if not self.midi_helper:
-            log.message("No MIDI helper available - parameter change ignored")
-            return False
-
-        try:
-            """
-            sysex_message = RolandSysEx(
-                msb=self.address.msb,
-                umb=self.address.umb,
-                lmb=self.address.lmb,
-                lsb=param.address,
-                value=value,
-            )"""
-            # self.address.lsb = param.address
-            sysex_message = self.sysex_composer.compose_message(self.address, param, value)
-            return self.midi_helper.send_midi_message(sysex_message)
-        except Exception as ex:
-            log.error(f"MIDI error setting {param}: {str(ex)}")
-            return False
