@@ -16,6 +16,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout, QSlider
 from typing import Dict, Optional
 
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.address.helpers import apply_address_offset
@@ -110,7 +111,10 @@ class PitchEnvelopeWidget(QWidget):
             "peak_level": self.depth_control.spinbox,
         }
         self.plot = PitchEnvPlot(
-            width=300, height=250, envelope=self.envelope, parent=self
+            width=JDXiStyle.ADSR_PLOT_WIDTH,
+            height=JDXiStyle.ADSR_PLOT_HEIGHT,
+            envelope=self.envelope,
+            parent=self
         )
         self.layout.addWidget(self.plot, 0, 4, 3, 1)
         self.plot.set_values(self.envelope)

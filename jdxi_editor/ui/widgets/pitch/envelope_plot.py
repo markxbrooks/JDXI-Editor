@@ -38,8 +38,8 @@ from jdxi_editor.jdxi.style import JDXiStyle
 class PitchEnvPlot(QWidget):
     def __init__(
         self,
-        width: int = 400,
-        height: int = 400,
+        width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+        height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
         envelope: dict = None,
         parent: QWidget = None,
     ):

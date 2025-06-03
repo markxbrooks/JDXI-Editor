@@ -87,6 +87,9 @@ class JDXiStyle:
     """Central style definitions for JD-Xi Manager"""
 
     # Colors
+    PWM_WIDGET_HEIGHT = 250
+    ADSR_PLOT_WIDTH = 300
+    ADSR_PLOT_HEIGHT = 200
     INSTRUMENT_IMAGE_WIDTH = 350
     TITLE_TEXT = "#FFFFFF"
     BACKGROUND = "#000000"  # 1A1A1A"

@@ -12,6 +12,7 @@ from jdxi_editor.midi.data.analog.oscillator import AnalogSubOscType, AnalogOscW
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.analog import AddressParameterAnalog
 from jdxi_editor.midi.io.helper import MidiIOHelper
+from jdxi_editor.ui.editors.digital.partial.pwm import PWMWidget
 from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.ui.widgets.pitch.envelope import PitchEnvelopeWidget
@@ -42,6 +43,7 @@ class AnalogOscillatorSection(QWidget):
         :param address: RolandSysExAddress
         """
         self.pitch_env_widget = None
+        self.pwm_widget = None
         self._create_parameter_slider = create_parameter_slider
         self._create_parameter_switch = create_parameter_switch
         self._on_waveform_selected = waveform_selected_callback
@@ -135,15 +137,14 @@ class AnalogOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        pw_slider = self._create_parameter_slider(
-            AddressParameterAnalog.OSC_PULSE_WIDTH, "Width (% of cycle)"
-        )
-        pwm_slider = self._create_parameter_slider(
-            AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH, "Mod Depth"
-        )
-
-        pw_layout.addWidget(pw_slider)
-        pw_layout.addWidget(pwm_slider)
+        self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterAnalog.OSC_PULSE_WIDTH,
+                                    mod_depth_param=AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH,
+                                    midi_helper=self.midi_helper,
+                                    address=self.address,
+                                    controls=self.controls)
+        self.pwm_widget.setStyleSheet(JDXiStyle.ADSR_ANALOG)
+        self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
+        pw_layout.addWidget(self.pwm_widget)
 
         return pw_group
 

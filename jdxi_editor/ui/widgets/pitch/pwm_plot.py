@@ -64,8 +64,8 @@ def generate_square_wave(width: float,
 class PWMPlot(QWidget):
     def __init__(
             self,
-            width: int = 400,
-            height: int = 500,
+            width: int = JDXiStyle.ADSR_PLOT_WIDTH,
+            height: int = JDXiStyle.ADSR_PLOT_HEIGHT,
             envelope: dict = None,
             parent: QWidget = None,
     ):
@@ -83,7 +83,7 @@ class PWMPlot(QWidget):
         self.setStyleSheet(JDXiStyle.ADSR_PLOT)
         # Sample rate for converting times to samples
         self.sample_rate = 256
-        self.setMinimumHeight(250)
+        self.setMinimumHeight(JDXiStyle.ADSR_PLOT_HEIGHT)
         self.attack_x = 0.1
         self.decay_x = 0.3
         self.peak_level = 0.5
@@ -180,7 +180,7 @@ class PWMPlot(QWidget):
 
             # === Plot Layout ===
             w, h = self.width(), self.height()
-            top_pad, bottom_pad = 50, 80
+            top_pad, bottom_pad = 50, 50
             left_pad, right_pad = 80, 50
             plot_w = w - left_pad - right_pad
             plot_h = h - top_pad - bottom_pad
@@ -199,10 +199,10 @@ class PWMPlot(QWidget):
             num_ticks = 6
             for i in range(num_ticks + 1):
                 x = left_pad + i * plot_w / num_ticks
-                painter.drawLine(x, zero_y - 5, x, zero_y + 5)
-                label = f"{i * (total_time / num_ticks):.0f}"
-                label_width = font_metrics.horizontalAdvance(label)
-                painter.drawText(x - label_width / 2, zero_y + 20, label)
+                # painter.drawLine(x, zero_y - 5, x, zero_y + 5)
+                # label = f"{i * (total_time / num_ticks):.0f}"
+                # label_width = font_metrics.horizontalAdvance(label)
+                # painter.drawText(x - label_width / 2, zero_y + 20, label)
 
             # === Y-axis Labels & Ticks ===
             for i in range(-1, 6):
@@ -216,7 +216,7 @@ class PWMPlot(QWidget):
             # === Title ===
             painter.setPen(QPen(QColor("orange")))
             painter.setFont(QFont("JD LCD Rounded", 16))
-            title = "Pulse Width Envelope"
+            title = "Pulse Width Modulation"
             title_width = painter.fontMetrics().horizontalAdvance(title)
             painter.drawText(left_pad + (plot_w - title_width) / 2, top_pad / 2, title)
 

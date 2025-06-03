@@ -18,6 +18,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
+from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
@@ -143,7 +144,10 @@ class ADSR(QWidget):
             "release_time": self.release_control.spinbox,
         }
         # Create layout
-        self.plot = ADSRPlot(width=300, height=250, envelope=self.envelope, parent=self)
+        self.plot = ADSRPlot(width=JDXiStyle.ADSR_PLOT_WIDTH,
+                             height=JDXiStyle.ADSR_PLOT_HEIGHT,
+                             envelope=self.envelope,
+                             parent=self)
         self.layout.addWidget(self.plot, 0, 4, 3, 1)
         self.plot.set_values(self.envelope)
         for control in self.adsr_controls:
