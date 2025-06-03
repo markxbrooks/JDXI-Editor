@@ -193,18 +193,18 @@ def main():
 
 if __name__ == "__main__":
     try:
-        profiler = cProfile.Profile()
-        profiler.enable()
+        # profiler = cProfile.Profile()
+        # profiler.enable()
 
         exit_code = main()
 
-        profiler.disable()
-        s = io.StringIO()
-        sortby = 'cumtime'  # or 'tottime'
-        ps = pstats.Stats(profiler, stream=s).sort_stats(sortby)
-        ps.print_stats(50)  # Top 50 entries
+        # profiler.disable()
+        # s = io.StringIO()
+        # sortby = 'cumtime'  # or 'tottime'
+        # ps = pstats.Stats(profiler, stream=s).sort_stats(sortby)
+        # ps.print_stats(50)  # Top 50 entries
 
-        print(s.getvalue())
+        # print(s.getvalue())
 
         sys.exit(exit_code)
     except Exception as ex:

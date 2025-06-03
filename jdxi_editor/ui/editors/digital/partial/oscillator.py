@@ -215,6 +215,7 @@ class DigitalOscillatorSection(QWidget):
                                     mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
                                     midi_helper=self.midi_helper,
                                     address=self.address,
+                                    create_parameter_slider=self._create_parameter_slider,
                                     controls=self.controls)
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
         self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
