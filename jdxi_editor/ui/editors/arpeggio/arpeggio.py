@@ -211,3 +211,4 @@ class ArpeggioEditor(BasicEditor):
         )
         motif_row.addWidget(self.motif_combo)
         layout.addLayout(motif_row)
+        layout.addStretch()

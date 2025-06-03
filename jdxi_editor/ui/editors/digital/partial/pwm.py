@@ -28,7 +28,7 @@ class PWMWidget(QWidget):
     envelopeChanged = Signal(dict)
 
     def __init__(self,
-                 width_param: AddressParameter,
+                 pulse_width_param: AddressParameter,
                  mod_depth_param: AddressParameter,
                  midi_helper: Optional[MidiIOHelper] = None,
                  controls: dict[AddressParameter, QWidget] = None,
@@ -46,10 +46,10 @@ class PWMWidget(QWidget):
             self.controls = {}
         self.envelope = {"pulse_width": 0.5,
                          "mod_depth": 0.5}
-        self.width_control = PWMSliderSpinbox(
-            width_param,
+        self.pulse_width_control = PWMSliderSpinbox(
+            pulse_width_param,
             min_value=0,
-            max_value=127,
+            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
             suffix=" %",
             label="Width",
             value=self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
@@ -59,23 +59,25 @@ class PWMWidget(QWidget):
         self.mod_depth_control = PWMSliderSpinbox(
             mod_depth_param,
             min_value=0,
-            max_value=127,
+            max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
             suffix=" %",
             label="Mod Depth",
             value=self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
+        self.controls[pulse_width_param] = self.pulse_width_control
+        self.controls[mod_depth_param] = self.mod_depth_control
         self.pitch_envelope_controls = [
-            self.width_control,
+            self.pulse_width_control,
             self.mod_depth_control,
         ]
         self.layout = QGridLayout()
         self.layout.addWidget(self.mod_depth_control, 0, 0)
-        self.layout.addWidget(self.width_control, 0, 1)
+        self.layout.addWidget(self.pulse_width_control, 0, 1)
         self.setLayout(self.layout)
-        self.plot = PWMPlot(width=300,
-                            height=250,
+        self.plot = PWMPlot(width=JDXiDimensions.PWM_WIDGET_WIDTH - 20,
+                            height=JDXiDimensions.PWM_WIDGET_HEIGHT - 20,
                             parent=self,
                             envelope=self.envelope)
         self.layout.addWidget(self.plot, 0, 4, 3, 1)
@@ -83,10 +85,10 @@ class PWMWidget(QWidget):
                          JDXiDimensions.PWM_WIDGET_Y,
                          JDXiDimensions.PWM_WIDGET_WIDTH,
                          JDXiDimensions.PWM_WIDGET_HEIGHT)
-        # self.mod_depth_control.envelopeChanged.connect(self.on_envelope_changed)
-        self.width_control.slider.valueChanged.connect(self.on_pulse_width_changed)
+        self.pulse_width_control.slider.valueChanged.connect(self.on_pulse_width_changed)
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
-        self.init_ui()
+        self.pulse_width_control.setValue(self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
+        self.mod_depth_control.setValue(self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """
@@ -116,46 +118,6 @@ class PWMWidget(QWidget):
         self.envelope["mod_depth"] = val / MidiConstant.VALUE_MAX_SEVEN_BIT   # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
-    def init_ui(self):
-        layout = QVBoxLayout()
-
-        # Group box for PWM controls
-        group_box = QGroupBox("PWM Controls")
-        group_layout = QHBoxLayout()
-
-        # Width slider
-        self.width_label = QLabel("Width (% of cycle): 50")
-        self.width_slider = QSlider(Qt.Vertical)
-        self.width_slider.setRange(0, 100)
-        self.width_slider.setValue(50)
-        self.width_slider.valueChanged.connect(
-            lambda val: self.width_label.setText(f"Width (% of cycle): {val}")
-        )
-        self.width_slider.valueChanged.connect(self.on_pulse_width_changed)
-
-        # Mod Depth slider
-        self.mod_depth_label = QLabel("Mod Depth (of LFO applied): 50")
-        self.mod_depth_slider = QSlider(Qt.Vertical)
-        self.mod_depth_slider.setRange(0, 100)
-        self.mod_depth_slider.setValue(50)
-        self.mod_depth_slider.valueChanged.connect(
-            lambda val: self.mod_depth_label.setText(f"Mod Depth (of LFO applied): {val}")
-        )
-        self.mod_depth_slider.valueChanged.connect(self.on_mod_depth_changed)
-
-        # Add widgets to layout
-        for label, slider in [
-            (self.width_label, self.width_slider),
-            (self.mod_depth_label, self.mod_depth_slider),
-        ]:
-            group_layout.addWidget(label)
-            group_layout.addWidget(slider)
-
-        # group_layout.addWidget(self.plot)
-        group_box.setLayout(group_layout)
-        layout.addWidget(group_box)
-        # self.setLayout(layout)
-        
     def _create_parameter_slider(self,
                                  param: AddressParameter,
                                  label: str,
@@ -304,7 +266,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     midi_helper = MidiIOHelper()
     address = RolandSysExAddress(msb=0x41, umb=0x00, lmb=0x00, lsb=0x00)
-    window = PWMWidget(width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+    window = PWMWidget(pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
                        mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
                        midi_helper=midi_helper,
                        address=address)

@@ -147,6 +147,7 @@ class DigitalFilterSection(QWidget):
             )
         )
         layout.addWidget(env_group)
+        layout.addStretch()
 
     def _on_filter_mode_changed(self, mode: int):
         """Handle filter mode changes"""

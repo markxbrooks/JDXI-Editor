@@ -78,6 +78,7 @@ from jdxi_editor.ui.image.utils import base64_to_pixmap
 from jdxi_editor.ui.image.waveform import generate_waveform_icon
 from jdxi_editor.jdxi.style import JDXiStyle
 from jdxi_editor.jdxi.preset.helper import JDXiPresetHelper
+from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
 class AnalogSynthEditor(SynthEditor):
@@ -149,12 +150,14 @@ class AnalogSynthEditor(SynthEditor):
             AddressParameterAnalog.OSC_PITCH_ENV_DECAY_TIME: self.oscillator_section.pitch_env_widget.decay_control,
             AddressParameterAnalog.OSC_PITCH_ENV_DEPTH: self.oscillator_section.pitch_env_widget.depth_control,
         }
+        self.pwm_mapping = [AddressParameterAnalog.OSC_PULSE_WIDTH,
+                            AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH]
         self.data_request()
 
     def setup_ui(self):
         """Set up the Analog Synth Editor UI."""
-        self.setMinimumSize(330, 600)
-        self.resize(950, 600)
+        self.setMinimumSize(JDXiDimensions.ANALOG_EDITOR_MIN_WIDTH, JDXiDimensions.ANALOG_EDITOR_MIN_HEIGHT)
+        self.resize(JDXiDimensions.ANALOG_EDITOR_WIDTH, JDXiDimensions.ANALOG_EDITOR_HEIGHT)
         self.setStyleSheet(JDXiStyle.TABS_ANALOG + JDXiStyle.EDITOR_ANALOG)
 
         main_layout = QVBoxLayout()
@@ -280,7 +283,7 @@ class AnalogSynthEditor(SynthEditor):
             "LFO Pitch Depth": AnalogRPN.LFO_PITCH_DEPTH.value.msb_lsb,  # (0, 15),
             "LFO Filter Depth": AnalogRPN.LFO_FILTER_DEPTH.value.msb_lsb,  # (0, 18),
             "LFO Amp Depth": AnalogRPN.LFO_AMP_DEPTH.value.msb_lsb,  # (0, 21),
-            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb   # (0, 37),
+            "Pulse Width": AnalogRPN.PULSE_WIDTH.value.msb_lsb  # (0, 37),
         }
 
         # Reverse lookup map
@@ -446,6 +449,37 @@ class AnalogSynthEditor(SynthEditor):
 
         if parameter in self.pitch_env_mapping:
             control = self.pitch_env_mapping[parameter]
+            control.setValue(new_value)
+            successes.append(parameter.name)
+        else:
+            failures.append(parameter.name)
+
+    def update_pwm_widget(
+            self,
+            parameter: AddressParameterAnalog,
+            value: int,
+            successes: list = None,
+            failures: list = None) -> None:
+        """
+        Helper function to update PWM widgets.
+        :param parameter: AddressParameterAnalog value
+        :param value: int value
+        :param failures: list of failed parameters
+        :param successes: list of successful parameters
+        :return: None
+        """
+        new_value = (
+            midi_value_to_fraction(value)
+            if parameter
+               in [
+                   AddressParameterAnalog.OSC_PULSE_WIDTH_MOD_DEPTH,
+                   AddressParameterAnalog.OSC_PULSE_WIDTH,
+               ]
+            else midi_value_to_ms(value, 10, 1000)
+        )
+
+        if parameter in self.pwm_mapping:
+            control = self.pwm_mapping[parameter]
             control.setValue(new_value)
             successes.append(parameter.name)
         else:

@@ -197,13 +197,13 @@ class DigitalOscillatorSection(QWidget):
         pw_layout = QVBoxLayout()
         pw_group.setLayout(pw_layout)
 
-        self.pw_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
-        )
-        self.pw_mod_slider = self._create_parameter_slider(
-            AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
-            "Mod Depth (of LFO applied)",
-        )
+        #self.pw_slider = self._create_parameter_slider(
+        #    AddressParameterDigitalPartial.OSC_PULSE_WIDTH, "Width (% of cycle)"
+        #)
+        #self.pw_mod_slider = self._create_parameter_slider(
+        #    AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
+        #    "Mod Depth (of LFO applied)",
+        #)
         self.pw_shift_slider = self._create_parameter_slider(
             AddressParameterDigitalPartial.OSC_PULSE_WIDTH_SHIFT,
             "Shift (range of change)",
@@ -211,13 +211,13 @@ class DigitalOscillatorSection(QWidget):
         # pw_layout.addWidget(self.pw_slider)
         # pw_layout.addWidget(self.pw_mod_slider)
 
-        self.pwm_widget = PWMWidget(width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
+        self.pwm_widget = PWMWidget(pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH,
                                     mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
                                     midi_helper=self.midi_helper,
                                     address=self.address,
                                     controls=self.controls)
         self.pwm_widget.setStyleSheet(JDXiStyle.ADSR)
-        self.pwm_widget.setMaximumHeight(400)
+        self.pwm_widget.setMaximumHeight(JDXiStyle.PWM_WIDGET_HEIGHT)
         pw_layout.addWidget(self.pwm_widget)
 
         pw_layout.addWidget(self.pw_shift_slider)
@@ -336,9 +336,10 @@ class DigitalOscillatorSection(QWidget):
 
     def _update_pw_controls_enabled_state(self, waveform: DigitalOscWave):
         """Update pulse width controls enabled state based on waveform"""
+        pass
         pw_enabled = waveform == DigitalOscWave.PW_SQUARE
-        self.pw_slider.setEnabled(pw_enabled)
-        self.pw_mod_slider.setEnabled(pw_enabled)
+        """self.pw_slider.setEnabled(pw_enabled)
+        self.pw_mod_slider.setEnabled(pw_enabled)"""
         self.pw_shift_slider.setEnabled(pw_enabled)
 
     def _update_pcm_controls_enabled_state(self, waveform: DigitalOscWave):

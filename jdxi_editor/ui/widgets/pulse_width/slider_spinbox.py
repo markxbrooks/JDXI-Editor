@@ -3,15 +3,15 @@ from typing import Callable
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QSpinBox, QDoubleSpinBox, QWidget, QVBoxLayout
 
+from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
-from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 
 
 def create_double_spinbox_new(min_value: float,
-                          max_value: float,
-                          suffix: str,
-                          value: int) -> QDoubleSpinBox:
+                              max_value: float,
+                              suffix: str,
+                              value: int) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range and suffix
     :param min_value: float
@@ -28,9 +28,9 @@ def create_double_spinbox_new(min_value: float,
 
 
 def create_spinbox_new(min_value: int,
-                   max_value: int,
-                   suffix: str,
-                   value: int) -> QSpinBox:
+                       max_value: int,
+                       suffix: str,
+                       value: int) -> QSpinBox:
     """
     Create a spinbox with specified range and suffix
     :param min_value: int
@@ -47,7 +47,7 @@ def create_spinbox_new(min_value: int,
 
 
 def create_double_spinbox(
-    min_value: float, max_value: float, step: float, value: int
+        min_value: float, max_value: float, step: float, value: int
 ) -> QDoubleSpinBox:
     """
     Create a double spinbox with specified range, step, and initial value.
@@ -72,15 +72,15 @@ class PWMSliderSpinbox(QWidget):
     envelopeChanged = Signal(dict)
 
     def __init__(
-        self,
-        param: AddressParameter,
-        min_value: float = 0.0,
-        max_value: float = 1.0,
-        suffix: str = "",
-        label: str = "",
-        value: int = None,
-        create_parameter_slider: Callable = None,
-        parent: QWidget = None,
+            self,
+            param: AddressParameter,
+            min_value: float = 0.0,
+            max_value: float = 1.0,
+            suffix: str = "",
+            label: str = "",
+            value: int = None,
+            create_parameter_slider: Callable = None,
+            parent: QWidget = None,
     ):
         """
         Initialize the ADSR slider and spinbox widget.
@@ -96,7 +96,7 @@ class PWMSliderSpinbox(QWidget):
         super().__init__(parent)
 
         self.param = param
-        self.factor = 127
+        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
         if max_value > 1:
             self.factor = max_value
         self.create_parameter_slider = create_parameter_slider
@@ -105,21 +105,15 @@ class PWMSliderSpinbox(QWidget):
             label,
             value,
         )
-        param_type = param.get_envelope_param_type()
-        if param_type in ["mod_depth",
-                          "pulse_width"]:
-            self.spinbox = create_double_spinbox(
-                min_value=min_value, max_value=max_value, step=0.01, value=value
-            )
-        else:
-            self.spinbox = create_double_spinbox(
-                min_value=min_value,
-                max_value=max_value,
-                suffix=suffix,
-                value=value,
-            )
-        self.spinbox.setRange(min_value, max_value)
-
+        self.spinbox = create_double_spinbox(
+            min_value=min_value,
+            max_value=max_value,
+            step=0.01,
+            value=value
+        )
+        self.spinbox.setRange(min_value,
+                              max_value)
+        self.factor = MidiConstant.VALUE_MAX_SEVEN_BIT
         layout = QVBoxLayout()
         layout.addWidget(self.slider)
         layout.addWidget(self.spinbox)
@@ -132,9 +126,9 @@ class PWMSliderSpinbox(QWidget):
     def convert_to_envelope(self, value: float):
         param_type = self.param.get_envelope_param_type()
         if param_type == "mod_depth":
-            return value / 127
+            return value / self.factor
         if param_type == "pulse_width":
-            return value / 127
+            return value / self.factor
         else:
             log.error(f"Unknown envelope parameter type: {param_type}")
             return 0.0  # or raise an error, depending on design
@@ -142,11 +136,11 @@ class PWMSliderSpinbox(QWidget):
     def convert_from_envelope(self, value: float):
         param_type = self.param.get_envelope_param_type()
         if param_type in ["mod_depth"]:
-            return int(value * 127)
+            return int(value * self.factor)
         if param_type in ["pulse_width"]:
-            return int(value * 127)
+            return int(value * self.factor)
         else:
-            return 64
+            return self.factor / 2  # Default case, or raise an error
 
     def _slider_changed(self, value: int) -> None:
         """
@@ -155,7 +149,7 @@ class PWMSliderSpinbox(QWidget):
         :return: None
         """
         self.spinbox.blockSignals(True)
-        self.spinbox.setValue(int(self.convert_to_envelope(value)))
+        self.spinbox.setValue(self.convert_to_envelope(value))
         self.spinbox.blockSignals(False)
         self.envelopeChanged.emit(
             {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
@@ -178,8 +172,11 @@ class PWMSliderSpinbox(QWidget):
         :param value: float
         :return: None
         """
-        self.slider.setValue(value)
-        self.spinbox.setValue(int(value))
+        self.slider.setValue(value * self.factor)
+        self.spinbox.setValue(value)
+        self.envelopeChanged.emit(
+            {self.param.get_envelope_param_type(): value}
+        )
 
     def value(self) -> float:
         """

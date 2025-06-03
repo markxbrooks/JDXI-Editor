@@ -15,6 +15,10 @@ class JDXiDimensions:
     A class to store dimensions for the JD-Xi editor UI.
     """
 
+    ANALOG_EDITOR_MIN_WIDTH = 330
+    ANALOG_EDITOR_MIN_HEIGHT = 330
+    ANALOG_EDITOR_WIDTH = 950
+    ANALOG_EDITOR_HEIGHT = 600
     PWM_WIDGET_X = 100
     PWM_WIDGET_Y = 100
     PWM_WIDGET_WIDTH = 300
