@@ -27,7 +27,7 @@ def create_double_spinbox_new(min_value: float,
     return sb
 
 
-def create_spinbox_new(min_value: int,
+def create_spinbox(min_value: int,
                        max_value: int,
                        suffix: str,
                        value: int) -> QSpinBox:
@@ -46,24 +46,6 @@ def create_spinbox_new(min_value: int,
     return sb
 
 
-def create_double_spinbox(
-        min_value: float, max_value: float, step: float, value: int
-) -> QDoubleSpinBox:
-    """
-    Create a double spinbox with specified range, step, and initial value.
-    :param min_value: int
-    :param max_value: int
-    :param step: float
-    :param value: int
-    :return: QDoubleSpinBox
-    """
-    sb = QDoubleSpinBox()
-    sb.setRange(min_value, max_value)
-    sb.setSingleStep(step)
-    sb.setValue(value)
-    return sb
-
-
 class PWMSliderSpinbox(QWidget):
     """
     Pitch Env Slider and Spinbox widget for Roland JD-Xi
@@ -76,7 +58,7 @@ class PWMSliderSpinbox(QWidget):
             param: AddressParameter,
             min_value: float = 0.0,
             max_value: float = 1.0,
-            suffix: str = "",
+            units: str = "",
             label: str = "",
             value: int = None,
             create_parameter_slider: Callable = None,
@@ -87,7 +69,7 @@ class PWMSliderSpinbox(QWidget):
         :param param: AddressParameter
         :param min_value: int
         :param max_value: int
-        :param suffix: str
+        :param units: str
         :param label: str
         :param value: int
         :param create_parameter_slider: Callable

@@ -1,23 +1,29 @@
-import sys
-from typing import Optional
+"""
+ PWM Widget
+ ==========
 
-from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QSlider, QGroupBox, QHBoxLayout, QGridLayout
-)
-from PySide6.QtCore import Qt, Signal
+ This widget provides a user interface for controlling Pulse Width Modulation (PWM) parameters,
+ with a graphical plot to visualize the modulation envelope.
+ It includes controls for pulse width and modulation depth,
+ and can communicate with MIDI devices.
+
+"""
+
+import sys
+from typing import Optional, Callable
+
+from PySide6.QtWidgets import QApplication, QWidget, QSlider, QGridLayout
+from PySide6.QtCore import Signal
 
 from jdxi_editor.jdxi.midi.constant import MidiConstant
-from jdxi_editor.log.logger import Logger as logger
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
-from jdxi_editor.midi.data.address.helpers import apply_address_offset
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.data.parameter.digital import AddressParameterDigitalPartial
 from jdxi_editor.midi.io.helper import MidiIOHelper
-from jdxi_editor.midi.message.roland import RolandSysEx
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.pitch.pwm_plot import PWMPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
-from jdxi_editor.ui.widgets.slider import Slider
+from jdxi_editor.log.logger import Logger as logger
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
@@ -33,6 +39,7 @@ class PWMWidget(QWidget):
                  midi_helper: Optional[MidiIOHelper] = None,
                  controls: dict[AddressParameter, QWidget] = None,
                  address: Optional[RolandSysExAddress] = None,
+                 create_parameter_slider: Callable = None,
                  parent: Optional[QWidget] = None,
                  ):
         super().__init__(parent)
@@ -40,6 +47,7 @@ class PWMWidget(QWidget):
         self.setWindowTitle("PWM Widget")
         self.address = address
         self.midi_helper = midi_helper
+        self._create_parameter_slider = create_parameter_slider
         if controls:
             self.controls = controls
         else:
@@ -50,7 +58,7 @@ class PWMWidget(QWidget):
             pulse_width_param,
             min_value=0,
             max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
-            suffix=" %",
+            units=" %",
             label="Width",
             value=self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
@@ -60,7 +68,7 @@ class PWMWidget(QWidget):
             mod_depth_param,
             min_value=0,
             max_value=MidiConstant.VALUE_MAX_SEVEN_BIT,
-            suffix=" %",
+            units=" %",
             label="Mod Depth",
             value=self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT,  # Convert from 0.0–1.0 to 0–100
             create_parameter_slider=self._create_parameter_slider,
@@ -118,40 +126,6 @@ class PWMWidget(QWidget):
         self.envelope["mod_depth"] = val / MidiConstant.VALUE_MAX_SEVEN_BIT   # Convert from 0–100 to 0.0–1.0
         self.update()  # Trigger repaint if needed
 
-    def _create_parameter_slider(self,
-                                 param: AddressParameter,
-                                 label: str,
-                                 value: int = None) -> Slider:
-        """
-        Create address slider for address parameter with proper display conversion
-        :param param: AddressParameter
-        :param label: str
-        :param value: int
-        :return: Slider
-        """
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-        # Create vertical slider
-        slider = Slider(
-            label,
-            min_value=display_min,
-            max_value=display_max,
-            midi_helper=self.midi_helper,
-            vertical=True,
-            show_value_label=False,
-            is_bipolar=param.is_bipolar,
-        )
-        slider.setValue(value)
-        # Connect value changed signal
-        slider.valueChanged.connect(
-            lambda v, s=slider: self.update_envelope_from_slider(s)
-        )
-        slider.valueChanged.connect(lambda v: self.send_parameter_message(param, v))
-        self.controls[param] = slider
-        return slider
-
     def update_envelope_from_slider(self, slider: QSlider) -> None:
         """Update envelope with value from a single slider"""
         for param, ctrl in self.controls.items():
@@ -164,41 +138,6 @@ class PWMWidget(QWidget):
                 else:
                     pass
                 break
-
-    def send_parameter_message(self, param: AddressParameter, value: int) -> None:
-        """
-        Handle slider value changes and send midi message
-        :param param: AddressParameter
-        :param value: int
-        :return: None
-        Convert display value to MIDI value if needed then send message
-        """
-        try:
-            if hasattr(param, "convert_to_midi"):
-                midi_value = param.convert_to_midi(value)
-            elif hasattr(param, "convert_from_display"):
-                midi_value = param.convert_from_display(value)
-            else:
-                midi_value = param.validate_value(value)
-            if not self.send_midi_parameter(param, midi_value):
-                logger.parameter("Failed to send parameter", param)
-        except ValueError as ex:
-            logger.error(f"Error updating parameter: {ex}")
-
-    def _on_parameter_changed(self, param: AddressParameter, value: int) -> None:
-        """
-        Handle parameter value changes and update envelope accordingly
-        :param param: AddressParameter
-        :param value: int
-        :return: None
-        """
-        # Update envelope based on slider values
-        self.update_envelope_from_controls()
-        self.pulse_width_changed.emit(self.envelope)
-        # self._update_spin_box(param)
-        self.send_parameter_message(param, value)
-        self.plot.set_values(self.envelope)
-        self.pulse_width_changed.emit(self.envelope)
 
     def update_envelope_from_controls(self) -> None:
         """Update envelope values from slider controls"""
@@ -235,41 +174,3 @@ class PWMWidget(QWidget):
         except Exception as ex:
             logging.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
-
-    def send_midi_parameter(self, param: AddressParameter, value: int) -> bool:
-        """
-        Send MIDI parameter with error handling
-        :param param: AddressParameter
-        :param value: int
-        :return: bool True on success, false otherwise
-        """
-        if not self.midi_helper:
-            logger.message("No MIDI helper available - parameter change ignored")
-            return False
-        address = apply_address_offset(self.address, param)
-
-        try:
-            sysex_message = RolandSysEx(
-                msb=address.msb,
-                umb=address.umb,
-                lmb=address.lmb,
-                lsb=address.lsb,
-                value=value,
-            )
-            return self.midi_helper.send_midi_message(sysex_message)
-        except Exception as ex:
-            logger.error(f"MIDI error setting {param}: {str(ex)}")
-            return False
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    midi_helper = MidiIOHelper()
-    address = RolandSysExAddress(msb=0x41, umb=0x00, lmb=0x00, lsb=0x00)
-    window = PWMWidget(pulse_width_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
-                       mod_depth_param=AddressParameterDigitalPartial.OSC_PULSE_WIDTH_MOD_DEPTH,
-                       midi_helper=midi_helper,
-                       address=address)
-
-    window.show()
-    sys.exit(app.exec())
