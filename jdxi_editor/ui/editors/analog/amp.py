@@ -112,6 +112,7 @@ class AmpSection(QWidget):
             sustain_param=AddressParameterAnalog.AMP_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
             address=self.address,
             controls=self.controls
         )

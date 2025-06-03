@@ -133,6 +133,7 @@ class DigitalFilterSection(QWidget):
             decay_param=AddressParameterDigitalPartial.FILTER_ENV_DECAY_TIME,
             sustain_param=AddressParameterDigitalPartial.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterDigitalPartial.FILTER_ENV_RELEASE_TIME,
+            create_parameter_slider=self._create_parameter_slider,
             midi_helper=self.midi_helper,
             controls=self.controls,
             address=self.address,

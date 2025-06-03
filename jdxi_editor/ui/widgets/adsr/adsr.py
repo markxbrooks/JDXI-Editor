@@ -12,7 +12,7 @@ The widget supports both analog and digital synth parameters and provides visual
 through an animated envelope curve.
 """
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout
@@ -41,6 +41,7 @@ class ADSR(QWidget):
             release_param: AddressParameter,
             initial_param: Optional[AddressParameter] = None,
             peak_param: Optional[AddressParameter] = None,
+            create_parameter_slider: Callable = None,
             midi_helper: Optional[MidiIOHelper] = None,
             address: Optional[RolandSysExAddress] = None,
             controls: Dict[AddressParameter, QWidget] = None,
@@ -66,6 +67,7 @@ class ADSR(QWidget):
             self.controls = controls
         else:
             self.controls = {}
+        self._create_parameter_slider = create_parameter_slider
         self.envelope = {
             "attack_time": 300,
             "decay_time": 800,
@@ -201,30 +203,6 @@ class ADSR(QWidget):
         self.plot.set_values(self.envelope)
         self.envelopeChanged.emit(self.envelope)
 
-    def _create_parameter_slider(
-            self, param: AddressParameter, label: str, value: int = None
-    ) -> Slider:
-        """
-        Create address slider for address parameter with proper display conversion
-        :param param: AddressParameter
-        :param label: str
-        :param value: int
-        :return: Slider
-        """
-        if hasattr(param, "get_display_value"):
-            display_min, display_max = param.get_display_value()
-        else:
-            display_min, display_max = param.min_val, param.max_val
-        # Create vertical slider
-        slider = Slider(
-            label, display_min, display_max, midi_helper=self.midi_helper, vertical=True, show_value_label=False
-        )
-        slider.setValue(value)
-        # Connect value changed signal
-        slider.valueChanged.connect(lambda v: self._on_parameter_changed(param, v))
-        self.controls[param] = slider
-        return slider
-
     def _on_parameter_changed(self, param: AddressParameter, value: int) -> None:
         """
         Handle parameter value changes and update envelope accordingly
@@ -284,23 +262,6 @@ class ADSR(QWidget):
                     slider.setValue(int(max(0.0, min(1.0, value)) * MidiConstant.VALUE_MAX_SEVEN_BIT))  # 127
                 else:
                     slider.setValue(int(ms_to_midi_value(value)))
-        except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
-        self.plot.set_values(self.envelope)
-
-    def update_controls_from_envelope_old(self):
-        """Update slider controls from envelope values."""
-        try:
-            for param, slider in self.controls.items():
-                if param not in self.adsr_parameters:
-                    continue
-                envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type == "sustain_level":
-                    slider.setValue(int(self.envelope["sustain_level"] * MidiConstant.VALUE_MAX_SEVEN_BIT))
-                else:
-                    slider.setValue(
-                        int(ms_to_midi_value(self.envelope[envelope_param_type]))
-                    )
         except Exception as ex:
             log.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)
