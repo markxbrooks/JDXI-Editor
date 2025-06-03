@@ -8,29 +8,10 @@ from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 
 
-def create_double_spinbox_new(min_value: float,
-                              max_value: float,
-                              suffix: str,
-                              value: int) -> QDoubleSpinBox:
-    """
-    Create a double spinbox with specified range and suffix
-    :param min_value: float
-    :param max_value: float
-    :param suffix: str
-    :param value: int
-    :return: QSpinBox
-    """
-    sb = QDoubleSpinBox()
-    sb.setRange(min_value, max_value)
-    sb.setSuffix(suffix)
-    sb.setValue(value)
-    return sb
-
-
 def create_spinbox(min_value: int,
-                       max_value: int,
-                       suffix: str,
-                       value: int) -> QSpinBox:
+                   max_value: int,
+                   suffix: str,
+                   value: int) -> QSpinBox:
     """
     Create a spinbox with specified range and suffix
     :param min_value: int
@@ -42,6 +23,24 @@ def create_spinbox(min_value: int,
     sb = QSpinBox()
     sb.setRange(min_value, max_value)
     sb.setSuffix(suffix)
+    sb.setValue(value)
+    return sb
+
+
+def create_double_spinbox(
+        min_value: float, max_value: float, step: float, value: int
+) -> QDoubleSpinBox:
+    """
+    Create a double spinbox with specified range, step, and initial value.
+    :param min_value: int
+    :param max_value: int
+    :param step: float
+    :param value: int
+    :return: QDoubleSpinBox
+    """
+    sb = QDoubleSpinBox()
+    sb.setRange(min_value, max_value)
+    sb.setSingleStep(step)
     sb.setValue(value)
     return sb
 

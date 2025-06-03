@@ -42,8 +42,8 @@ class AnalogFilterSection(QWidget):
         :param address: RolandSysExAddress
         """
         self.filter_resonance = None
-        self.create_parameter_slider = create_parameter_slider
-        self.create_parameter_switch = create_parameter_switch
+        self._create_parameter_slider = create_parameter_slider
+        self._create_parameter_switch = create_parameter_switch
         self._on_filter_mode_changed = on_filter_mode_changed
         self.send_control_change = send_control_change
         self.midi_helper = midi_helper
@@ -75,19 +75,19 @@ class AnalogFilterSection(QWidget):
         layout.addLayout(adsr_icon_row_layout)
 
         # Filter Controls
-        self.filter_mode_switch = self.create_parameter_switch(
+        self.filter_mode_switch = self._create_parameter_switch(
             AddressParameterAnalog.FILTER_MODE_SWITCH, "Filter", ["BYPASS", "LPF"]
         )
         self.filter_mode_switch.valueChanged.connect(
             lambda v: self._on_filter_mode_changed(v)
         )
-        self.filter_cutoff = self.create_parameter_slider(
+        self.filter_cutoff = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_CUTOFF, "Cutoff"
         )
-        self.filter_resonance = self.create_parameter_slider(
+        self.filter_resonance = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_RESONANCE, "Resonance"
         )
-        self.filter_cutoff_keyfollow = self.create_parameter_slider(
+        self.filter_cutoff_keyfollow = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_CUTOFF_KEYFOLLOW, "Keyfollow"
         )
 
@@ -104,10 +104,10 @@ class AnalogFilterSection(QWidget):
         )
 
         # Envelope Controls
-        self.filter_env_depth = self.create_parameter_slider(
+        self.filter_env_depth = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_ENV_DEPTH, "Depth"
         )
-        self.filter_env_velocity_sens = self.create_parameter_slider(
+        self.filter_env_velocity_sens = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY,
             "Env. Velocity Sens.",
         )
@@ -123,6 +123,7 @@ class AnalogFilterSection(QWidget):
             sustain_param=AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
         )

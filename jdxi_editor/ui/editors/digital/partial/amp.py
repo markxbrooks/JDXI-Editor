@@ -122,6 +122,7 @@ class DigitalAmpSection(QWidget):
             sustain_param=AddressParameterDigitalPartial.AMP_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterDigitalPartial.AMP_ENV_RELEASE_TIME,
             midi_helper=self.midi_helper,
+            create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,
             address=self.address,
         )
