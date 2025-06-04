@@ -19,17 +19,18 @@ from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
+from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase, TOOLTIPS
 from jdxi_editor.ui.widgets.pitch.pwm_plot import PWMPlot
 from jdxi_editor.ui.widgets.pulse_width.slider_spinbox import PWMSliderSpinbox
 from jdxi_editor.log.logger import Logger as logger
 from jdxi_editor.ui.windows.jdxi.dimensions import JDXiDimensions
 
 
-class PWMWidget(QWidget):
+class PWMWidget(EnvelopeWidgetBase):
 
     mod_depth_changed = Signal(dict)
     pulse_width_changed = Signal(dict)
-    envelopeChanged = Signal(dict)
+    envelope_changed = Signal(dict)
 
     def __init__(self,
                  pulse_width_param: AddressParameter,
@@ -40,7 +41,13 @@ class PWMWidget(QWidget):
                  create_parameter_slider: Callable = None,
                  parent: Optional[QWidget] = None,
                  ):
-        super().__init__(parent)
+        super().__init__(envelope_keys=["pulse_width", "mod_depth"],
+                         create_parameter_slider=create_parameter_slider,
+                         parameters=[pulse_width_param, mod_depth_param],
+                         midi_helper=midi_helper,
+                         address=address,
+                         controls=controls,
+                         parent=parent)
         self.plot = None
         self.setWindowTitle("PWM Widget")
         self.address = address
@@ -74,10 +81,14 @@ class PWMWidget(QWidget):
         )
         self.controls[pulse_width_param] = self.pulse_width_control
         self.controls[mod_depth_param] = self.mod_depth_control
-        self.pwm_controls = [
+        self._control_widgets = [
             self.pulse_width_control,
             self.mod_depth_control,
         ]
+        for key, widget in [("pulse_width", self.pulse_width_control),
+                            ("mod_depth", self.mod_depth_control)]:
+            if tooltip := TOOLTIPS.get(key):
+                widget.setToolTip(tooltip)
         self.layout = QGridLayout()
         self.layout.addWidget(self.mod_depth_control, 0, 0)
         self.layout.addWidget(self.pulse_width_control, 0, 1)
@@ -87,25 +98,10 @@ class PWMWidget(QWidget):
                             parent=self,
                             envelope=self.envelope)
         self.layout.addWidget(self.plot, 0, 4, 3, 1)
-        self.setGeometry(JDXiDimensions.PWM_WIDGET_X,
-                         JDXiDimensions.PWM_WIDGET_Y,
-                         JDXiDimensions.PWM_WIDGET_WIDTH,
-                         JDXiDimensions.PWM_WIDGET_HEIGHT)
         self.pulse_width_control.slider.valueChanged.connect(self.on_pulse_width_changed)
         self.mod_depth_control.slider.valueChanged.connect(self.on_mod_depth_changed)
         self.pulse_width_control.setValue(self.envelope["pulse_width"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
         self.mod_depth_control.setValue(self.envelope["mod_depth"] * MidiConstant.VALUE_MAX_SEVEN_BIT)
-
-    def setEnabled(self, enabled: bool):
-        """
-        Set the enabled state (ON/OFF)
-        :param enabled:
-        :return:
-        """
-        super().setEnabled(enabled)
-        for control in self.pwm_controls:
-            control.setEnabled(enabled)
-        self.plot.setEnabled(enabled)
 
     def on_envelope_changed(self, envelope: dict) -> None:
         """
@@ -181,5 +177,5 @@ class PWMWidget(QWidget):
                         int(ms_to_midi_value(self.envelope[envelope_param_type]))
                     )
         except Exception as ex:
-            logging.error(f"Error updating controls from envelope: {ex}")
+            logger.error(f"Error updating controls from envelope: {ex}")
         self.plot.set_values(self.envelope)

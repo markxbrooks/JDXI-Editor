@@ -89,8 +89,8 @@ class PWMPlot(QWidget):
         self.peak_level = 0.5
         self.release_x = 0.7
         self.dragging = None
-        if hasattr(self.parent, "envelopeChanged"):
-            self.parent.envelopeChanged.connect(self.set_values)
+        if hasattr(self.parent, "envelope_changed"):
+            self.parent.envelope_changed.connect(self.set_values)
         if hasattr(self.parent, "pulse_width_changed"):
             self.parent.pulse_width_changed.connect(self.set_values)
         if hasattr(self.parent, "mod_depth_changed"):
