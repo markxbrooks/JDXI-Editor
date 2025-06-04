@@ -23,11 +23,18 @@ class AddressParameterDrumCommon(AddressParameter):
     These parameters are shared across all partials.
     """
 
-    def __init__(self, address: int, min_val: int, max_val: int):
+    def __init__(self,
+                 address: int,
+                 min_val: int,
+                 max_val: int,
+                 tooltip: str = ""):
+        """Initialize the drum common parameter with address and value range."""
         super().__init__(address, min_val, max_val)
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
+        self.tooltip = tooltip
+
 
     # Tone name parameters (12 ASCII characters)
     TONE_NAME_1 = (0x00, 32, 127)  # ASCII character 1
@@ -44,7 +51,7 @@ class AddressParameterDrumCommon(AddressParameter):
     TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
 
     # Tone level
-    KIT_LEVEL = (0x0C, 0, 127)  # Overall tone level
+    KIT_LEVEL = (0x0C, 0, 127, "Sets the volume of the drum kit.\nMEMO\nThe volume of each partial in the drum kit is specified by the TVA Level parameter (p. 24).\nThe volume of each waveform within a partial is set by the Wave Level parameter (p. 21).")  # Overall tone level
 
     @property
     def display_name(self) -> str:

@@ -41,10 +41,12 @@ class AddressParameterDrumPartial(AddressParameter):
         max_val: int,
         display_min: Optional[int] = None,
         display_max: Optional[int] = None,
+        tooltip: Optional[str] = "",
     ):
         super().__init__(address, min_val, max_val)
         self.display_min = display_min if display_min is not None else min_val
         self.display_max = display_max if display_max is not None else max_val
+        self.tooltip = tooltip if tooltip else ""
         self.bipolar_parameters = [
             "PARTIAL_FINE_TUNE",
             "PITCH_ENV_DEPTH",
@@ -130,31 +132,31 @@ class AddressParameterDrumPartial(AddressParameter):
     PARTIAL_NAME_12 = (0x0B, 32, 127)
 
     # Assign Type
-    ASSIGN_TYPE = (0x0C, 0, 1)  # MULTI, SINGLE
+    ASSIGN_TYPE = (0x0C, 0, 1, 0, 1, "Assign Type sets the way sounds are played when the same key is pressed a number of times.\nMULTI: Layer the sound of the same keys. Even with continuous sounds where the sound plays\nfor an extended time, such as with crash cymbals, the sounds are layered, without previously\nplayed sounds being eliminated.\nSINGLE: Only one sound can be played at a time when the same key is pressed. With continuous\nsounds where the sound plays for an extended time, the previous sound is stopped when the\nfollowing sound is played.")  # MULTI, SINGLE
 
     # Mute Group
-    MUTE_GROUP = (0x0D, 0, 31, 0, 31)  # OFF, 1 - 31
+    MUTE_GROUP = (0x0D, 0, 31, 0, 31, "On an actual acoustic drum set, an open hi-hat and a closed hi-hat sound can never occur\nsimultaneously.\n\nTo reproduce the reality of this situation, you can set up a Mute Group.\nThe Mute Group function allows you to designate two or more drum partials that are not allowed\nto sound simultaneously. Up to 31 Mute Groups can be used.\nDrum partials that does not belong to any such group should be set to “OFF.”")  # OFF, 1 - 31
 
     # Partial Level
-    PARTIAL_LEVEL = (0x0E, 0, 127, 0, 127)
+    PARTIAL_LEVEL = (0x0E, 0, 127, 0, 127, "Sets the volume of the waveform.\nMEMO\nThe volume of each drum partial is specified by TVA Level (p. 24), and the overall volume of\nthe entire drum kit is specified by COMMON Kit Level (p. 20).")
 
     # Partial Coarse Tune
-    PARTIAL_COARSE_TUNE = (0x0F, 0, 127)  # C-1 - G9
+    PARTIAL_COARSE_TUNE = (0x0F, 0, 127, 0, 127, "Adjusts the pitch of the waveform’s sound up or down in semitone steps (+/- 4 octaves).\nMEMO\nThe overall coarse tuning for all of the drum partials is specified by PITCH Coarse Tune (p. 22).")  # C-1 - G9
 
     # Partial Fine Tune
-    PARTIAL_FINE_TUNE = (0x10, 14, 114, -50, 50)  # -50 - +50
+    PARTIAL_FINE_TUNE = (0x10, 14, 114, -50, 50, "Adjusts the pitch of the waveform’s sound up or down in 1-cent steps (+/-50 cents).\n* One cent is 1/100th of a semitone.\nMEMO\nThe overall fine tuning for all of the drum partials is specified by PITCH Fine Tune (p. 22 of maanual).")  # -50 - +50
 
     # Partial Random Pitch Depth
-    PARTIAL_RANDOM_PITCH_DEPTH = (0x11, 0, 30, 0, 30)
+    PARTIAL_RANDOM_PITCH_DEPTH = (0x11, 0, 30, 0, 30, "Specifies the width of random pitch deviation that will occur each time a key is pressed. If you do\nnot want the pitch to change randomly, set this to “0.” These values are in units of cents (1/100th\n of a semitone).")
 
     # Partial Pan
-    PARTIAL_PAN = (0x12, 0, 127, -64, 63)  # L64 - 63R
+    PARTIAL_PAN = (0x12, 0, 127, -64, 63, "This specifies the pan of the waveform.\n“L64” is far left, “0” is center, and “63R” is far right.")  # L64 - 63R
 
     # Partial Random Pan Depth
-    PARTIAL_RANDOM_PAN_DEPTH = (0x13, 0, 63, 0, 63)
+    PARTIAL_RANDOM_PAN_DEPTH = (0x13, 0, 63, 0, 63, "When a loop waveform is selected, the sound will normally continue as long as the key is\npressed. If you want the sound to decay naturally even if the key remains pressed, set this to\nNO-SUS.\n* If a one-shot type Wave is selected, it will not sustain even if this parameter is set to\nSUSTAIN.")
 
     # Partial Alternate Pan Depth
-    PARTIAL_ALTERNATE_PAN_DEPTH = (0x14, 1, 127, -63, 63)  # L63 - 63R
+    PARTIAL_ALTERNATE_PAN_DEPTH = (0x14, 1, 127, -63, 63, "")  # L63 - 63R
 
     # Partial Env Mode
     PARTIAL_ENV_MODE = (0x15, 0, 1)  # NO-SUS, SUSTAIN
@@ -169,19 +171,19 @@ class AddressParameterDrumPartial(AddressParameter):
     PARTIAL_REVERB_SEND_LEVEL = (0x1A, 0, 127, 0, 127)
 
     # Partial Output Assign
-    PARTIAL_OUTPUT_ASSIGN = (0x1B, 0, 4, 0, 4)  # EFX1, EFX2, DLY, REV, DIR
+    PARTIAL_OUTPUT_ASSIGN = (0x1B, 0, 4, 0, 4   )  # EFX1, EFX2, DLY, REV, DIR
 
     # Partial Pitch Bend Range
-    PARTIAL_PITCH_BEND_RANGE = (0x1C, 0, 48, 0, 48)
+    PARTIAL_PITCH_BEND_RANGE = (0x1C, 0, 48, 0, 48, "Specifies the amount of pitch change in semitones (4 octaves) that will occur when the Pitch\nBend Lever is moved. The amount of change when the lever is tilted is set to the same value for\n both left and right sides")
 
     # Partial Receive Expression
-    PARTIAL_RECEIVE_EXPRESSION = (0x1D, 0, 1, 0, 1)  # OFF, ON
+    PARTIAL_RECEIVE_EXPRESSION = (0x1D, 0, 1, 0, 1, "For each drum partial, specify whether MIDI Expression messages will be received (ON), or not\n(OFF).")  # OFF, ON
 
     # Partial Receive Hold-1
-    PARTIAL_RECEIVE_HOLD_1 = (0x1E, 0, 1, 0, 1)  # OFF, ON
+    PARTIAL_RECEIVE_HOLD_1 = (0x1E, 0, 1, 0, 1, "For each drum partial, specify whether MIDI Hold-1 messages will be received (ON), or not (OFF).\nNOTE\nThis has no effect if the Env Mode parameter is set to “NO-SUS.”")  # OFF, ON
 
     # WMT Velocity Control
-    WMT_VELOCITY_CONTROL = (0x20, 0, 2, 0, 2)  # OFF, ON, RANDOM
+    WMT_VELOCITY_CONTROL = (0x20, 0, 2, 0, 2, "WMT Velocity Control determines whether a different drum partial is played (ON) or not (OFF)\ndepending on the force with which the key is played (velocity).\nWhen set to “RANDOM,” the drum kit’s constituent drum partials will sound randomly,\n\nregardless of any Velocity messages.")  # OFF, ON, RANDOM
 
     # WMT1 Wave Switch
     WMT1_WAVE_SWITCH = (0x21, 0, 1, 0, 1)  # OFF, ON
@@ -556,7 +558,7 @@ class AddressParameterDrumPartial(AddressParameter):
     TVA_ENV_LEVEL_3 = (0x140, 0, 127, 0, 127)
 
     # One Shot Mode
-    ONE_SHOT_MODE = (0x141, 0, 1, 0, 1)  # OFF, ON
+    ONE_SHOT_MODE = (0x141, 0, 1, 0, 1, "The sound will play back until the end of the waveform (or the end of the envelope, whichever\ncomes first).\nThe result will be the same as when the envelope’s Env Mode parameter is set to “NO-SUS.”")  # OFF, ON
 
     # Relative Level
     RELATIVE_LEVEL = (0x142, 0, 127, -64, 64)  # -64 - +63

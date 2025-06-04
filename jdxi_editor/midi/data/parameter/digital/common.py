@@ -49,11 +49,17 @@ class AddressParameterDigitalCommon(AddressParameter):
     These parameters are shared across all partials.
     """
 
-    def __init__(self, address: int, min_val: int, max_val: int):
+    def __init__(self,
+                 address: int,
+                 min_val: int,
+                 max_val: int,
+                 tooltip: str = ""
+                 ):
         super().__init__(address, min_val, max_val)
         self.address = address
         self.min_val = min_val
         self.max_val = max_val
+        self.tooltip = tooltip
 
     # Tone name parameters (12 ASCII characters)
     TONE_NAME_1 = (0x00, 32, 127)  # ASCII character 1
@@ -70,33 +76,33 @@ class AddressParameterDigitalCommon(AddressParameter):
     TONE_NAME_12 = (0x0B, 32, 127)  # ASCII character 12
 
     # Tone level
-    TONE_LEVEL = (0x0C, 0, 127)  # Overall tone level
+    TONE_LEVEL = (0x0C, 0, 127, "Adjusts the overall volume of the tone")  # Overall tone level
 
     # Performance parameters
-    PORTAMENTO_SWITCH = (0x12, 0, 1)  # Portamento Switch (OFF, ON)
-    PORTAMENTO_TIME = (0x13, 0, 127)  # Portamento Time (CC# 5)
-    MONO_SWITCH = (0x14, 0, 1)  # Mono Switch (OFF, ON)
-    OCTAVE_SHIFT = (0x15, 61, 67)  # Octave Shift (-3 to +3)
-    PITCH_BEND_UP = (0x16, 0, 24)  # Pitch Bend Range Up (semitones)
-    PITCH_BEND_DOWN = (0x17, 0, 24)  # Pitch Bend Range Down (semitones)
+    PORTAMENTO_SWITCH = (0x12, 0, 1, "Specifies whether the portamento effect will be applied (ON) or not applied (OFF)")  # Portamento Switch (OFF, ON)
+    PORTAMENTO_TIME = (0x13, 0, 127, "Specifies the time taken for the pitch to change when playing portamento. Higher values \nlengthen the time over which the pitch will change to the next note.")  # Portamento Time (CC# 5)
+    MONO_SWITCH = (0x14, 0, 1, "Specifies whether notes will sound polyphonically (POLY) or monophonically (MONO)")  # Mono Switch (OFF, ON)
+    OCTAVE_SHIFT = (0x15, 61, 67, "Specifies the octave of the tone")  # Octave Shift (-3 to +3)
+    PITCH_BEND_UP = (0x16, 0, 24, "Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is \nmoved all the way up.")  # Pitch Bend Range Up (semitones)
+    PITCH_BEND_DOWN = (0x17, 0, 24, "Specifies the amount of pitch change that occurs when the pitch bend/modulation lever is \nmoved all the way to the dowm.")  # Pitch Bend Range Down (semitones)
 
     # Partial switches
-    PARTIAL1_SWITCH = (0x19, 0, 1)  # Partial 1 Switch (OFF, ON)
-    PARTIAL1_SELECT = (0x1A, 0, 1)  # Partial 1 Select (OFF, ON)
-    PARTIAL2_SWITCH = (0x1B, 0, 1)  # Partial 2 Switch (OFF, ON)
-    PARTIAL2_SELECT = (0x1C, 0, 1)  # Partial 2 Select (OFF, ON)
-    PARTIAL3_SWITCH = (0x1D, 0, 1)  # Partial 3 Switch (OFF, ON)
-    PARTIAL3_SELECT = (0x1E, 0, 1)  # Partial 3 Select (OFF, ON)
+    PARTIAL1_SWITCH = (0x19, 0, 1, "Partial 1 turn on (OFF, ON)")  # Partial 1 Switch (OFF, ON)
+    PARTIAL1_SELECT = (0x1A, 0, 1, "Partial 1 select and edit (OFF, ON)")  # Partial 1 Select (OFF, ON)
+    PARTIAL2_SWITCH = (0x1B, 0, 1, "Partial 2 turn on (OFF, ON)")  # Partial 2 Switch (OFF, ON)
+    PARTIAL2_SELECT = (0x1C, 0, 1, "Partial 2 select and edit (OFF, ON)")  # Partial 2 Select (OFF, ON)
+    PARTIAL3_SWITCH = (0x1D, 0, 1, "Partial 1 turn on (OFF, ON)")  # Partial 3 Switch (OFF, ON)
+    PARTIAL3_SELECT = (0x1E, 0, 1, "Partial 3 select and edit (OFF, ON)")  # Partial 3 Select (OFF, ON)
 
     # Additional parameters
-    RING_SWITCH = (0x1F, 0, 2)  # OFF(0), ---(1), ON(2)
-    UNISON_SWITCH = (0x2E, 0, 1)  # OFF, ON
-    PORTAMENTO_MODE = (0x31, 0, 1)  # NORMAL, LEGATO
-    LEGATO_SWITCH = (0x32, 0, 1)  # OFF, ON
-    ANALOG_FEEL = (0x34, 0, 127)  # Analog Feel amount
-    WAVE_SHAPE = (0x35, 0, 127)  # Wave Shape amount
-    TONE_CATEGORY = (0x36, 0, 127)  # Tone Category
-    UNISON_SIZE = (0x3C, 0, 3)  # Unison voice count (2-5 voices)
+    RING_SWITCH = (0x1F, 0, 2, "Turns ring modulator on/off. \nBy multiplying partial 1’s OSC and partial 2’s OSC, this creates a complex, metallic-sounding waveform like that of a bell. \nIf Ring Switch is turned on, the OSC Pulse Width Mod Depth, OSC Pulse Width, and SUPER SAW\nDetune of partial 1 and partial 2 cannot be used.\nIn addition, if an asymmetrical square wave is selected as the OSC waveform, the OSC variation\nwill be ignored, and there will be a slight difference in sound compared to the originally selected\n waveform (OFF, ON)")  # OFF(0), ---(1), ON(2)
+    UNISON_SWITCH = (0x2E, 0, 1, "This layers a single sound.\nIf the Unison Switch is on, the number of notes layered on one key will change according to the\nnumber of keys you play.")  # OFF, ON
+    PORTAMENTO_MODE = (0x31, 0, 1, "NORMAL: Portamento will always be applied.\nLEGATO: Portamento will be applied only when you play legato (i.e., when you press the next\nkey before releasing the previous key).")  # NORMAL, LEGATO
+    LEGATO_SWITCH = (0x32, 0, 1, "Specifies the time taken for the pitch to change when playing portamento. Higher values\nlengthen the time over which the pitch will change to the next note.")  # OFF, ON
+    ANALOG_FEEL = (0x34, 0, 127, "Use this to apply “1/f fluctuation,” a type of randomness or instability that is present in many\nnatural systems (such as a babbling brook or whispering breeze) and is perceived as pleasant by \nmany people.\nBy applying “1/f fluctuation” you can create the natural-sounding instability that is\ncharacteristic of an analog synthesizer.")  # Analog Feel amount
+    WAVE_SHAPE = (0x35, 0, 127, "Partial 1 will be modulated by the pitch of partial 2. Higher values produce a greater effect.\nThis has no effect if the partial 1 waveform is PW-SQR or SP-SAW.")  # Wave Shape amount
+    TONE_CATEGORY = (0x36, 0, 127, "Selects the tone’s category.")  # Tone Category
+    UNISON_SIZE = (0x3C, 0, 3, "Number of notes assigned to each key when the Unison Switch is on.\nkeys | notes\n1   | 8\n2   |4 notes\n3–4  |2 each\n5-8  | 1 each ")  # Unison voice count (2-5 voices)
 
     @property
     def display_name(self) -> str:
