@@ -115,10 +115,6 @@ class AddressParameterDigitalPartial(AddressParameter):
         """Get the display range for the parameter"""
         return self.display_min, self.display_max
 
-    def get_tooltip(self) -> str:
-        """Get tooltip for the parameter"""
-        return self.tooltip if hasattr(self, 'tooltip') else ""
-
     # Oscillator parameters
     OSC_WAVE = (0x00, 0, 7, 0, 7, "Waveform of the Oscillator; Select from classic waveforms: SAW, SQR, TRI, SINE, NOISE, SUPER SAW or PCM. \nEach offers unique harmonic content for shaping tone and texture")  # Waveform preset_type
     OSC_WAVE_VARIATION = (0x01, 0, 2, 0, 2, "You can select variations of the currently selected WAVE")  # Wave variation

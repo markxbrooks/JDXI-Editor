@@ -228,6 +228,10 @@ class AddressParameter(Enum):
         lsb = value & BitMask.FULL_BYTE  # Extract LSB
         return umb, lmb, lsb
 
+    def get_tooltip(self) -> str:
+        """Get tooltip for the parameter"""
+        return self.tooltip if hasattr(self, 'tooltip') else ""
+
     @property
     def lsb(self) -> Optional[int]:
         """
