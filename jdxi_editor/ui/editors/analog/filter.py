@@ -107,7 +107,7 @@ class AnalogFilterSection(QWidget):
             "Env. Velocity Sens.",
         )
 
-        layout.addWidget(self.filter_env_depth)
+        # layout.addWidget(self.filter_env_depth)
         layout.addWidget(self.filter_env_velocity_sens)
         layout.addSpacing(JDXiStyle.SPACING)
 
