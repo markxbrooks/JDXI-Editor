@@ -328,6 +328,9 @@ class AddressParameterDrumPartial(AddressParameter):
     # WMT3 Wave FXM Color
     WMT3_WAVE_FXM_COLOR = (0x6B, 0, 3, 0, 3, "Specifies how FXM will perform frequency modulation.\nHigher settings result in a grainier sound, while lower settings result in a more metallic sound.")  # 1 - 4
 
+    # WMT3 Wave FXM Depth
+    WMT3_WAVE_FXM_DEPTH = (0x6C, 0, 16, 0, 16, "Specifies the depth of the modulation produced by FXM.\nNOTE\nIf Wave Tempo Sync is “ON,” pitch-related settings (p. 22) and FMX-related settings have no\neffect.")  # 0 - 16
+
     # WMT3 Wave Tempo Sync
     WMT3_WAVE_TEMPO_SYNC = (0x6D, 0, 1, 0, 1, "OFF, ON")  # OFF, ON
 
