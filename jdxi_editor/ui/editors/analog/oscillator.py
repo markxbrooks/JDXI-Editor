@@ -160,7 +160,7 @@ class AnalogOscillatorSection(QWidget):
 
         pitch_env_layout.addWidget(
             self._create_parameter_slider(
-                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Mod Depth"
+                AddressParameterAnalog.OSC_PITCH_ENV_VELOCITY_SENSITIVITY, "Velocity Sensitivity"
             )
         )
         # Pitch Env Widget
