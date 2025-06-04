@@ -52,14 +52,14 @@ class AdsrSliderSpinbox(QWidget):
     ADSR Slider and Spinbox widget for Roland JD-Xi
     """
 
-    envelopeChanged = Signal(dict)
+    envelope_changed = Signal(dict)
 
     def __init__(
         self,
         param: AddressParameter,
         min_value: float = 0.0,
         max_value: float = 1.0,
-        suffix: str = "",
+        units: str = "",
         label: str = "",
         value: int = None,
         create_parameter_slider: Callable = None,
@@ -70,7 +70,7 @@ class AdsrSliderSpinbox(QWidget):
         :param param: AddressParameter
         :param min_value: int
         :param max_value: int
-        :param suffix: str
+        :param units: str
         :param label: str
         :param value: int
         :param create_parameter_slider: Callable
@@ -97,7 +97,7 @@ class AdsrSliderSpinbox(QWidget):
             self.spinbox = create_spinbox(
                 min_value=int(min_value),
                 max_value=int(max_value),
-                suffix=suffix,
+                suffix=units,
                 value=value,
             )
         self.spinbox.setRange(min_value, max_value)
@@ -153,7 +153,7 @@ class AdsrSliderSpinbox(QWidget):
         self.spinbox.blockSignals(True)
         self.spinbox.setValue(self.convert_to_envelope(value))
         self.spinbox.blockSignals(False)
-        self.envelopeChanged.emit(
+        self.envelope_changed.emit(
             {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
         )
 
@@ -166,7 +166,7 @@ class AdsrSliderSpinbox(QWidget):
         self.slider.blockSignals(True)
         self.slider.setValue(self.convert_from_envelope(value))
         self.slider.blockSignals(False)
-        self.envelopeChanged.emit({self.param.get_envelope_param_type(): value})
+        self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
 
     def setValue(self, value: float):
         """

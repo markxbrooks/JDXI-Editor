@@ -102,11 +102,6 @@ class AnalogFilterSection(QWidget):
                 AddressParameterAnalog.FILTER_RESONANCE.lsb, v
             )
         )
-
-        # Envelope Controls
-        self.filter_env_depth = self._create_parameter_slider(
-            AddressParameterAnalog.FILTER_ENV_DEPTH, "Depth"
-        )
         self.filter_env_velocity_sens = self._create_parameter_slider(
             AddressParameterAnalog.FILTER_ENV_VELOCITY_SENSITIVITY,
             "Env. Velocity Sens.",
@@ -122,6 +117,7 @@ class AnalogFilterSection(QWidget):
             decay_param=AddressParameterAnalog.FILTER_ENV_DECAY_TIME,
             sustain_param=AddressParameterAnalog.FILTER_ENV_SUSTAIN_LEVEL,
             release_param=AddressParameterAnalog.FILTER_ENV_RELEASE_TIME,
+            peak_param=AddressParameterAnalog.FILTER_ENV_DEPTH,
             midi_helper=self.midi_helper,
             create_parameter_slider=self._create_parameter_slider,
             controls=self.controls,

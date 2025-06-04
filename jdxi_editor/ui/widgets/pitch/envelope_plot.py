@@ -63,10 +63,10 @@ class PitchEnvPlot(QWidget):
         self.peak_level = 0.5
         self.release_x = 0.7
         self.dragging = None
-        if hasattr(self.parent, "envelopeChanged"):
-            self.parent.envelopeChanged.connect(self.set_values)
-        if hasattr(self.parent, "pitchEnvelopeChanged"):
-            self.parent.pitchEnvelopeChanged.connect(self.set_values)
+        if hasattr(self.parent, "envelope_changed"):
+            self.parent.envelope_changed.connect(self.set_values)
+        if hasattr(self.parent, "pitchenvelope_changed"):
+            self.parent.pitchenvelope_changed.connect(self.set_values)
 
     def set_values(self, envelope: dict) -> None:
         """

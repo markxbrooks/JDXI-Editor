@@ -17,20 +17,19 @@ from typing import Dict, Optional, Callable
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QGridLayout
 
-from jdxi_editor.jdxi.midi.constant import MidiConstant
 from jdxi_editor.jdxi.style import JDXiStyle
-from jdxi_editor.log.logger import Logger as log
 from jdxi_editor.midi.data.address.address import RolandSysExAddress
 from jdxi_editor.midi.data.parameter.synth import AddressParameter
 from jdxi_editor.midi.io.helper import MidiIOHelper
 from jdxi_editor.midi.sysex.composer import JDXiSysExComposer
-from jdxi_editor.midi.utils.conversions import midi_value_to_ms, ms_to_midi_value
 from jdxi_editor.ui.widgets.adsr.plot import ADSRPlot
+from jdxi_editor.ui.widgets.envelope.base import EnvelopeWidgetBase, TOOLTIPS
 from jdxi_editor.ui.widgets.slider_spinbox.slider_spinbox import AdsrSliderSpinbox
 
 
-class ADSR(QWidget):
-    envelopeChanged = Signal(dict)
+class ADSR(EnvelopeWidgetBase):
+    """ ADSR Widget for Roland JD-Xi """
+    envelope_changed = Signal(dict)
 
     def __init__(
             self,
@@ -46,7 +45,13 @@ class ADSR(QWidget):
             controls: Dict[AddressParameter, QWidget] = None,
             parent: Optional[QWidget] = None,
     ):
-        super().__init__(parent)
+        super().__init__(envelope_keys=["attack_time", "decay_time", "sustain_level", "release_time"],
+                         create_parameter_slider=create_parameter_slider,
+                         parameters=[attack_param, decay_param, sustain_param, release_param],
+                         midi_helper=midi_helper,
+                         address=address,
+                         controls=controls,
+                         parent=parent)
         self.sysex_composer = JDXiSysExComposer()
         """
         Initialize the ADSR widget
@@ -79,7 +84,7 @@ class ADSR(QWidget):
             attack_param,
             min_value=0,
             max_value=1000,
-            suffix=" ms",
+            units=" ms",
             label="Attack",
             value=self.envelope["attack_time"],
             create_parameter_slider=self._create_parameter_slider,
@@ -89,7 +94,7 @@ class ADSR(QWidget):
             decay_param,
             min_value=0,
             max_value=1000,
-            suffix=" ms",
+            units=" ms",
             label="Decay",
             value=self.envelope["decay_time"],
             create_parameter_slider=self._create_parameter_slider,
@@ -99,7 +104,7 @@ class ADSR(QWidget):
             sustain_param,
             min_value=0.0,
             max_value=1.0,
-            suffix="",
+            units="",
             label="Sustain",
             value=self.envelope["sustain_level"],
             create_parameter_slider=self._create_parameter_slider,
@@ -109,28 +114,53 @@ class ADSR(QWidget):
             release_param,
             min_value=0,
             max_value=1000,
-            suffix=" ms",
+            units=" ms",
             label="Release",
             value=self.envelope["release_time"],
             create_parameter_slider=self._create_parameter_slider,
             parent=self,
         )
-        self.adsr_controls = [
+        self._control_widgets = [
             self.attack_control,
             self.decay_control,
             self.sustain_control,
             self.release_control,
         ]
+        self.controls[attack_param] = self.attack_control
+        self.controls[decay_param] = self.decay_control
+        self.controls[sustain_param] = self.sustain_control
+        self.controls[release_param] = self.release_control
+        if peak_param:
+            self.peak_control = AdsrSliderSpinbox(
+                peak_param,
+                min_value=0,
+                max_value=1.0,
+                units="",
+                label="Depth",
+                value=self.envelope["peak_level"],
+                create_parameter_slider=self._create_parameter_slider,
+                parent=self,
+            )
+            self._control_widgets.append(self.peak_control)
+
+        for key, widget in [("attack_time", self.attack_control),
+                            ("decay_time", self.decay_control),
+                            ("sustain_level", self.sustain_control),
+                            ("release_time", self.release_control),]:
+            if tooltip := TOOLTIPS.get(key):
+                widget.setToolTip(tooltip)
         self.attack_parameter = attack_param
         self.decay_parameter = decay_param
         self.sustain_parameter = sustain_param
         self.release_parameter = release_param
-        self.adsr_parameters = [
+        self._control_parameters = [
             self.attack_parameter,
             self.decay_parameter,
             self.sustain_parameter,
             self.release_parameter,
         ]
+        if peak_param:
+            self._control_parameters.append(peak_param)
         self.layout = QGridLayout()
         self.layout.addWidget(self.attack_control, 0, 0)
         self.layout.addWidget(self.decay_control, 0, 1)
@@ -149,49 +179,30 @@ class ADSR(QWidget):
                              height=JDXiStyle.ADSR_PLOT_HEIGHT,
                              envelope=self.envelope,
                              parent=self)
-        self.layout.addWidget(self.plot, 0, 4, 3, 1)
+        if hasattr(self, 'peak_control'):
+            self.layout.addWidget(self.peak_control, 0, 4)
+            self.envelope_spinbox_map["peak_level"] = self.peak_control.spinbox
+            self.layout.addWidget(self.plot, 0, 5, 3, 1)
+        else:
+            self.layout.addWidget(self.plot, 0, 4, 3, 1)
         self.plot.set_values(self.envelope)
-        for control in self.adsr_controls:
-            control.envelopeChanged.connect(self.on_control_changed)
+        for control in self._control_widgets:
+            control.envelope_changed.connect(self.on_control_changed)
         self.update_controls_from_envelope()
 
     def on_control_changed(self, change: dict):
         self.envelope.update(change)
         self.plot.set_values(self.envelope)
-        self.envelopeChanged.emit(self.envelope)
-
-    def update(self):
-        """Update the envelope values and plot"""
-        super().update()
-        self.plot.update()
-
-    def emit_envelope_changed(self) -> None:
-        """
-        Emit the envelope changed signal
-        :param envelope: dict
-        :return: None
-        """
-        self.plot.set_values(self.envelope)
-
-    def setEnabled(self, enabled: bool):
-        """
-        Set the enabled state (ON/OFF)
-        :param enabled:
-        :return:
-        """
-        super().setEnabled(enabled)
-        for control in self.adsr_controls:
-            control.setEnabled(enabled)
-        self.plot.setEnabled(enabled)
+        self.envelope_changed.emit(self.envelope)
 
     def update_envelope_from_spinboxes(self):
-        """Update envelope values from spinboxes"""
+        """Update envelope values from spin boxes"""
         self.envelope["attack_time"] = self.attack_control.value()
         self.envelope["decay_time"] = self.decay_control.value()
         self.envelope["sustain_level"] = self.sustain_control.value()
         self.envelope["release_time"] = self.release_control.value()
         self.plot.set_values(self.envelope)
-        self.envelopeChanged.emit(self.envelope)
+        self.envelope_changed.emit(self.envelope)
 
     def update_spinboxes_from_envelope(self):
         """Update spinboxes from envelope values"""
@@ -200,41 +211,4 @@ class ADSR(QWidget):
         self.sustain_control.setValue(self.envelope["sustain_level"])
         self.release_control.setValue(self.envelope["release_time"])
         self.plot.set_values(self.envelope)
-        self.envelopeChanged.emit(self.envelope)
-
-    def update_envelope_from_controls(self):
-        """Update envelope values from slider controls"""
-        try:
-            for param, slider in self.controls.items():
-                if param not in self.adsr_parameters:
-                    continue
-                envelope_param_type = param.get_envelope_param_type()
-                if envelope_param_type in ["sustain_level", "peak_level"]:
-                    self.envelope["sustain_level"] = slider.value() / MidiConstant.VALUE_MAX_SEVEN_BIT
-                else:
-                    self.envelope[envelope_param_type] = midi_value_to_ms(
-                        slider.value()
-                    )
-        except Exception as ex:
-            log.error(f"Error updating envelope from controls: {ex}")
-        self.plot.set_values(self.envelope)
-
-    def update_controls_from_envelope(self):
-        """Update slider controls from envelope values."""
-        try:
-            for param, slider in self.controls.items():
-                if param not in self.adsr_parameters:
-                    continue
-
-                envelope_key = param.get_envelope_param_type()
-                value = self.envelope.get(envelope_key)
-                if value is None:
-                    continue
-
-                if envelope_key == "sustain_level":
-                    slider.setValue(int(max(0.0, min(1.0, value)) * MidiConstant.VALUE_MAX_SEVEN_BIT))  # 127
-                else:
-                    slider.setValue(int(ms_to_midi_value(value)))
-        except Exception as ex:
-            log.error(f"Error updating controls from envelope: {ex}")
-        self.plot.set_values(self.envelope)
+        self.envelope_changed.emit(self.envelope)

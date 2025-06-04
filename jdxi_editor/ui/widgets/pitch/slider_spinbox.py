@@ -47,7 +47,7 @@ class PitchEnvSliderSpinbox(QWidget):
     Pitch Env Slider and Spinbox widget for Roland JD-Xi
     """
 
-    envelopeChanged = Signal(dict)
+    envelope_changed = Signal(dict)
 
     def __init__(
         self,
@@ -138,7 +138,7 @@ class PitchEnvSliderSpinbox(QWidget):
         self.spinbox.blockSignals(True)
         self.spinbox.setValue(int(self.convert_to_envelope(value)))
         self.spinbox.blockSignals(False)
-        self.envelopeChanged.emit(
+        self.envelope_changed.emit(
             {self.param.get_envelope_param_type(): self.convert_to_envelope(value)}
         )
 
@@ -151,7 +151,7 @@ class PitchEnvSliderSpinbox(QWidget):
         self.slider.blockSignals(True)
         self.slider.setValue(int(self.convert_from_envelope(int(value))))
         self.slider.blockSignals(False)
-        self.envelopeChanged.emit({self.param.get_envelope_param_type(): value})
+        self.envelope_changed.emit({self.param.get_envelope_param_type(): value})
 
     def setValue(self, value: float):
         """
